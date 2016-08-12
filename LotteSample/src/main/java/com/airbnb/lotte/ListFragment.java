@@ -41,6 +41,7 @@ public class ListFragment extends Fragment {
         try {
             adapter.setFiles(getContext().getAssets().list(""));
         } catch (IOException e) {
+            //noinspection ConstantConditions
             Snackbar.make(container, R.string.invalid_assets, Snackbar.LENGTH_LONG).show();
         }
 
@@ -48,7 +49,12 @@ public class ListFragment extends Fragment {
     }
 
     private void onFileClicked(String fileName) {
-
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
+                .remove(this)
+                .replace(R.id.content_2, AnimationFragment.newInstance(fileName))
+                .commit();
     }
 
     final class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
@@ -87,9 +93,14 @@ public class ListFragment extends Fragment {
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(String fileName) {
+        void bind(final String fileName) {
             fileNameView.setText(fileName);
-            onFileClicked(fileName);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onFileClicked(fileName);
+                }
+            });
         }
     }
 }
