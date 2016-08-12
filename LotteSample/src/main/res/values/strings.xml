@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lotte</string>
+    <string name="invalid_assets">Unable to load assets</string>
 </resources>
