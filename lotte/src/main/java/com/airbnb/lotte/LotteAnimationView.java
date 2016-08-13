@@ -7,7 +7,7 @@ import android.util.LongSparseArray;
 import android.widget.FrameLayout;
 
 import com.airbnb.lotte.layers.LotteLayer;
-import com.airbnb.lotte.layers.LotteLayerDrawable;
+import com.airbnb.lotte.layers.LotteLayerView;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.utils.LayerDrawableCompat;
 
@@ -25,7 +25,7 @@ public class LotteAnimationView extends FrameLayout {
     }
 
     private final LayerDrawableCompat background = new LayerDrawableCompat();
-    private final LongSparseArray<LotteLayerDrawable> layerMap = new LongSparseArray<>();
+    private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
 
     private boolean isPlaying;
     private boolean loop;
@@ -95,9 +95,9 @@ public class LotteAnimationView extends FrameLayout {
         List<LotteLayer> reversedLayers = composition.getLayers();
         Collections.reverse(reversedLayers);
 
-        LotteLayerDrawable maskedLayer = null;
+        LotteLayerView maskedLayer = null;
         for (LotteLayer layer : reversedLayers) {
-            LotteLayerDrawable layerDrawable = new LotteLayerDrawable(layer, composition);
+            LotteLayerView layerDrawable = new LotteLayerView(layer, composition);
             layerMap.put(layerDrawable.getId(), layerDrawable);
             if (maskedLayer != null) {
                 maskedLayer.setMask(layerDrawable);

@@ -20,6 +20,11 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
         this.remapInterface = remapInterface;
     }
 
+    public float getInitialValue() {
+        // TODO
+        return -1f;
+    }
+
 
     @Override
     public Object animationForKeyPath(String keyPath) {

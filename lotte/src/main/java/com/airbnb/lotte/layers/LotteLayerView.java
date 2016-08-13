@@ -1,12 +1,12 @@
 package com.airbnb.lotte.layers;
 
-import com.airbnb.lotte.model.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.LotteAnimationGroup;
 
 import java.util.List;
 
-public class LotteLayerDrawable extends LotteAnimatableDrawable {
+public class LotteLayerView extends LotteAnimatableLayer {
 
     private final LotteLayer layer;
     private final LotteComposition composition;
@@ -18,16 +18,18 @@ public class LotteLayerDrawable extends LotteAnimatableDrawable {
     private LotteKeyframeAnimation inOutAnimation;
     private List<LotteParentLayer> parentLayers;
     private LotteMaskLayer maskLayer;
-    private LotteLayerDrawable mask;
+    private LotteLayerView mask;
 
 
-    public LotteLayerDrawable(LotteLayer layer, LotteComposition composition) {
+    public LotteLayerView(LotteLayer layer, LotteComposition composition) {
+        super(composition.getDuration());
         this.layer = layer;
         this.composition = composition;
+        setBounds(composition.getBounds());
+        setupForModel();
     }
 
     private void setupForModel() {
-        setBounds(composition.getBounds());
     }
 
     public long getId() {
@@ -42,7 +44,7 @@ public class LotteLayerDrawable extends LotteAnimatableDrawable {
         this.maskLayer = maskLayer;
     }
 
-    public void setMask(LotteLayerDrawable mask) {
+    public void setMask(LotteLayerView mask) {
         this.mask = mask;
     }
 }

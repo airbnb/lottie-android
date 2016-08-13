@@ -1,5 +1,6 @@
 package com.airbnb.lotte.model;
 
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import org.json.JSONObject;
@@ -18,5 +19,10 @@ public class LotteAnimatablePointValue {
 
     public void setUsePathAnimation(boolean usePathAnimation) {
         this.usePathAnimation = usePathAnimation;
+    }
+
+    public Point getInitialPoint() {
+        // TODO
+        return null;
     }
 }
