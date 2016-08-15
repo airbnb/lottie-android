@@ -4,8 +4,9 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.airbnb.lotte.layers.LotteAnimatableLayer;
 import com.airbnb.lotte.layers.LotteLayer;
 import com.airbnb.lotte.layers.LotteLayerView;
 import com.airbnb.lotte.model.LotteComposition;
@@ -19,7 +20,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-public class LotteAnimationView extends FrameLayout {
+public class LotteAnimationView extends ImageView {
     public interface OnAnimationCompletedListener {
         void onAnimationCompleted();
     }
@@ -27,10 +28,12 @@ public class LotteAnimationView extends FrameLayout {
     private final LayerDrawableCompat background = new LayerDrawableCompat();
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
 
+    private LotteAnimatableLayer animationContainer;
+    private LotteComposition sceneModel;
     private boolean isPlaying;
     private boolean loop;
     private float progress;
-    private float speed;
+    private float animationSpeed;
     // TODO: not supported yet.
     private boolean autoReverseAnimation;
 
@@ -52,8 +55,15 @@ public class LotteAnimationView extends FrameLayout {
     private void init(@Nullable AttributeSet attrs) {
     }
 
-    public void setAnimationName(String animationName) {
-        InputStream file = null;
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        if (animationContainer != null) {
+            animationContainer.setBounds(0, 0, w, h);
+        }
+    }
+
+    public void setAnimation(String animationName) {
+        InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
             int size = file.available();
@@ -72,11 +82,17 @@ public class LotteAnimationView extends FrameLayout {
     }
 
     public void setJson(JSONObject json) {
-        setModel(new LotteComposition(json));
+        setModel(LotteComposition.fromJson(json));
     }
 
     public void setModel(LotteComposition model) {
-
+        sceneModel = model;
+        animationSpeed = 1f;
+        animationContainer = new LotteAnimatableLayer(0);
+        animationContainer.setBounds(0, 0, getWidth(), getHeight());
+        animationContainer.setSpeed(0f);
+        setImageDrawable(animationContainer);
+        buildSubviewsForModel();
     }
 
     public void play() {
@@ -91,13 +107,13 @@ public class LotteAnimationView extends FrameLayout {
 
     }
 
-    private void buildViewsForModel(LotteComposition composition) {
-        List<LotteLayer> reversedLayers = composition.getLayers();
+    private void buildSubviewsForModel() {
+        List<LotteLayer> reversedLayers = sceneModel.getLayers();
         Collections.reverse(reversedLayers);
 
         LotteLayerView maskedLayer = null;
         for (LotteLayer layer : reversedLayers) {
-            LotteLayerView layerDrawable = new LotteLayerView(layer, composition);
+            LotteLayerView layerDrawable = new LotteLayerView(layer, sceneModel);
             layerMap.put(layerDrawable.getId(), layerDrawable);
             if (maskedLayer != null) {
                 maskedLayer.setMask(layerDrawable);

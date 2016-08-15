@@ -32,7 +32,7 @@ public class LotteComposition {
         try {
             composition.startFrame = json.getLong("ip");
             composition.endFrame = json.getLong("op");
-            composition.frameRate = json.getLong("fr");
+            composition.frameRate = json.getInt("fr");
         } catch (JSONException e) {
             //
         }
@@ -62,7 +62,7 @@ public class LotteComposition {
     private Rect bounds;
     private long startFrame;
     private long endFrame;
-    private long frameRate;
+    private int frameRate;
     private long duration;
 
     public LotteLayer layerModelForId(long id) {
@@ -93,11 +93,11 @@ public class LotteComposition {
         this.endFrame = endFrame;
     }
 
-    public long getFrameRate() {
+    public int getFrameRate() {
         return frameRate;
     }
 
-    public void setFrameRate(long frameRate) {
+    public void setFrameRate(int frameRate) {
         this.frameRate = frameRate;
     }
 

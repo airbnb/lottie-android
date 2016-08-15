@@ -53,7 +53,9 @@ public class LotteLayer {
                 layer.layerType = LotteLayerType.Unknown;
             }
 
-            layer.parentId = json.getLong("parent");
+            try {
+                layer.parentId = json.getLong("parent");
+            } catch (JSONException e) { }
             layer.inFrame = json.getLong("ip");
             layer.outFrame = json.getLong("op");
 
@@ -68,7 +70,7 @@ public class LotteLayer {
 
             JSONObject opacity = null;
             try {
-                opacity = json.getJSONObject("o");
+                opacity = ks.getJSONObject("o");
             } catch (JSONException e) { }
             if (opacity != null) {
                 layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate);
@@ -77,7 +79,7 @@ public class LotteLayer {
 
             JSONObject rotation = null;
             try {
-                rotation = json.getJSONObject("r");
+                rotation = ks.getJSONObject("r");
             } catch (JSONException e) { }
             if (rotation != null) {
                 layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate);
@@ -91,7 +93,7 @@ public class LotteLayer {
 
             JSONObject position = null;
             try {
-                position = json.getJSONObject("p");
+                position = ks.getJSONObject("p");
             } catch (JSONException e) { }
             if (position != null) {
                 layer.position = new LotteAnimatablePointValue(position, layer.frameRate);
@@ -99,7 +101,7 @@ public class LotteLayer {
 
             JSONObject anchor = null;
             try {
-                anchor = json.getJSONObject("a");
+                anchor = ks.getJSONObject("a");
             } catch (JSONException e) { }
             if (anchor != null) {
                 layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate);
@@ -109,13 +111,15 @@ public class LotteLayer {
 
             JSONObject scale = null;
             try {
-                scale = json.getJSONObject("s");
+                scale = ks.getJSONObject("s");
             } catch (JSONException e) { }
             if (scale != null) {
                 layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate);
             }
 
-            layer.matteType = MatteType.values()[json.getInt("tt")];
+            try {
+                layer.matteType = MatteType.values()[json.getInt("tt")];
+            } catch (JSONException e) { }
 
             JSONArray jsonMasks = null;
             try {
@@ -182,16 +186,17 @@ public class LotteLayer {
         return layer;
     }
 
+    private final List<Object> shapes = new ArrayList<>();
+
     private String layerName;
     private long layerId;
     private LotteLayerType layerType;
-    private long parentId;
+    private long parentId = -1;
     private long inFrame;
     private long outFrame;
     private Rect compBounds;
-    private long frameRate;
+    private int frameRate;
 
-    private List<LotteShapeGroup> shapes;
     private List<LotteMask> masks;
 
     private int solidWidth;
@@ -300,7 +305,7 @@ public class LotteLayer {
         return scale;
     }
 
-    public List<LotteShapeGroup> getShapes() {
+    public List<Object> getShapes() {
         return shapes;
     }
 
@@ -308,11 +313,11 @@ public class LotteLayer {
         return solidColor;
     }
 
-    public long getSolidHeight() {
+    public int getSolidHeight() {
         return solidHeight;
     }
 
-    public long getSolidWidth() {
+    public int getSolidWidth() {
         return solidWidth;
     }
 }

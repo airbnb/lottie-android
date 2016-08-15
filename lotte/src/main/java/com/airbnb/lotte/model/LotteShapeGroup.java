@@ -15,7 +15,7 @@ public class LotteShapeGroup {
 
     private final List<Object> items = new ArrayList<>();
 
-    public LotteShapeGroup(JSONObject json, long frameRate, Rect compBounds) {
+    public LotteShapeGroup(JSONObject json, int frameRate, Rect compBounds) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -33,7 +33,7 @@ public class LotteShapeGroup {
     }
 
     @Nullable
-    private Object shapeItemWithJson(JSONObject json, long framerate, Rect compBounds) {
+    private Object shapeItemWithJson(JSONObject json, int framerate, Rect compBounds) {
         String type = null;
         try {
             type = json.getString("ty");
