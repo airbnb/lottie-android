@@ -15,13 +15,13 @@ public class LotteShapeFill {
     private LotteAnimatableColorValue color;
     private LotteAnimatableNumberValue opacity;
 
-    public LotteShapeFill(JSONObject json, long frameRate) {
+    public LotteShapeFill(JSONObject json, int frameRate) {
         JSONObject jsonColor = null;
         try {
             jsonColor = json.getJSONObject("c");
         } catch (JSONException e) { }
         if (jsonColor != null) {
-            color = new LotteAnimatableColorValue(json, frameRate);
+            color = new LotteAnimatableColorValue(jsonColor, frameRate);
         }
 
         JSONObject jsonOpacity = null;

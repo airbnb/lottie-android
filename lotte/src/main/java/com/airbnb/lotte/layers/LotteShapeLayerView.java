@@ -41,6 +41,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         this.trim = trim;
         this.transformModel = transformModel;
 
+        fillPaint.setAlpha(0);
         fillPaint.setAntiAlias(true);
         strokePaint.setAntiAlias(true);
 
@@ -68,7 +69,6 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             // TODO
         }
 
-        strokeLayer.setFillColor(0);
     }
 
     public LotteShapeFill getFill() {
@@ -94,6 +94,8 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     @Override
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
-        canvas.drawPath(path.getShapePath().getInitialShape(), fillPaint);
+        if (fillPaint.getAlpha() != 0) {
+            canvas.drawPath(path.getShapePath().getInitialShape(), fillPaint);
+        }
     }
 }

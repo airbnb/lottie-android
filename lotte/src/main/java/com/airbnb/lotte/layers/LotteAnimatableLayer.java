@@ -1,7 +1,6 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -40,6 +39,7 @@ public class LotteAnimatableLayer extends Drawable {
     public LotteAnimatableLayer(long duration) {
         this.duration = duration;
 
+        solidBackgroundPaint.setAlpha(0);
         solidBackgroundPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -80,7 +80,7 @@ public class LotteAnimatableLayer extends Drawable {
             canvas.translate(-anchorPoint.x, -anchorPoint.y);
         }
 
-        if (solidBackgroundPaint.getColor() != Color.BLACK) {
+        if (solidBackgroundPaint.getAlpha() != 0) {
             canvas.drawRect(getBounds(), solidBackgroundPaint);
            if (L.DBG) Log.d(TAG, "Drawing solid " + Integer.toHexString(solidBackgroundPaint.getColor()) + " at " + getBounds().toShortString() + " canvas " + canvas.getWidth() + "x" + canvas.getHeight());
         }
