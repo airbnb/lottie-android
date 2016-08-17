@@ -1,5 +1,7 @@
 package com.airbnb.lotte.layers;
 
+import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.model.LotteShapeCircle;
@@ -83,6 +85,7 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
                 LotteShapeGroup shapeGroup = (LotteShapeGroup) item;
                 LotteGroupLayerView groupLayer = new LotteGroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, duration);
                 groupLayers.add(groupLayer);
+                addLayer(groupLayer);
             }
         }
 
@@ -91,5 +94,10 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
 
     private void buildAnimation() {
         // TODO
+    }
+
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        super.draw(canvas);
     }
 }

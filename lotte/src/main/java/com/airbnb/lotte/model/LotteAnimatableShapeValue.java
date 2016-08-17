@@ -117,7 +117,11 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
         try {
             JSONArray pointArray = points.getJSONArray(idx);
-            return new PointF((int) pointArray.get(0), (int) pointArray.get(1));
+            Object x = pointArray.get(0);
+            Object y = pointArray.get(1);
+                return new PointF(
+                        x instanceof Double ? new Float((Double) x) : (int) x,
+                        y instanceof Double ? new Float((Double) y) : (int) y);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to get point.", e);
         }

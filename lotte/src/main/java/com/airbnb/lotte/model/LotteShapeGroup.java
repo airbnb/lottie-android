@@ -17,10 +17,10 @@ import java.util.List;
 public class LotteShapeGroup {
     private static final String TAG = LotteShapeGroup.class.getSimpleName();
 
+    private String name;
     private final List<Object> items = new ArrayList<>();
 
     public LotteShapeGroup(JSONObject json, int frameRate, Rect compBounds) {
-        if (L.DBG) Log.d(TAG, "Parsing new shape group.");
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -28,6 +28,10 @@ public class LotteShapeGroup {
         if (jsonItems == null) {
             throw new IllegalStateException("There are no items.");
         }
+
+        try {
+            name = json.getString("nm");
+        } catch (JSONException e) {}
 
         for (int i = 0; i < jsonItems.length(); i++) {
             JSONObject jsonItem = null;
@@ -44,6 +48,8 @@ public class LotteShapeGroup {
                 items.add(newItem);
             }
         }
+
+        if (L.DBG) Log.d(TAG, "Parsed new group " + name);
     }
 
     @Nullable
@@ -55,6 +61,10 @@ public class LotteShapeGroup {
         if (type == null) {
             throw new IllegalStateException("Shape has no type.");
         }
+
+        try {
+            if (L.DBG) Log.d(TAG, "Parsing group layer " + json.getString("nm") + " type " + type);
+        } catch (JSONException e) { }
 
         switch (type) {
             case "gr":
@@ -79,5 +89,13 @@ public class LotteShapeGroup {
 
     public List<Object> getItems() {
         return items;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteShapeGroup{");
+        sb.append("name='").append(name).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

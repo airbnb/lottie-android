@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.airbnb.lotte.layers.LotteAnimatableLayer;
 import com.airbnb.lotte.layers.LotteLayer;
 import com.airbnb.lotte.layers.LotteLayerView;
+import com.airbnb.lotte.layers.RootLotteAnimatableLayer;
 import com.airbnb.lotte.model.LotteComposition;
 
 import org.json.JSONException;
@@ -86,7 +87,7 @@ public class LotteAnimationView extends ImageView {
     public void setModel(LotteComposition model) {
         sceneModel = model;
         animationSpeed = 1f;
-        animationContainer = new LotteAnimatableLayer(0);
+        animationContainer = new RootLotteAnimatableLayer();
         animationContainer.setBounds(0, 0, getWidth(), getHeight());
         animationContainer.setSpeed(0f);
         setImageDrawable(animationContainer);

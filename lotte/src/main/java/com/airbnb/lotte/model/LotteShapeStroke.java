@@ -1,9 +1,5 @@
 package com.airbnb.lotte.model;
 
-import android.util.Log;
-
-import com.airbnb.lotte.L;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +32,6 @@ public class LotteShapeStroke {
     private LineJoinType joinType;
 
     public LotteShapeStroke(JSONObject json, int frameRate) {
-        if (L.DBG) Log.d(TAG, "Parsing new shape stroke.");
         try {
             JSONObject colorJson = json.getJSONObject("c");
             color = new LotteAnimatableColorValue(colorJson, frameRate);

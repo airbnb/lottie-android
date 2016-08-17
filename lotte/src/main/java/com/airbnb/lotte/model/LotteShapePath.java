@@ -10,6 +10,7 @@ import org.json.JSONObject;
 public class LotteShapePath {
     private static final String TAG = LotteShapePath.class.getSimpleName();
 
+    private String name;
     private boolean closed;
     private int index;
     private LotteAnimatableShapeValue shapePath;
@@ -18,13 +19,19 @@ public class LotteShapePath {
         try {
             index = json.getInt("ind");
         } catch (JSONException e) {
-            throw new IllegalArgumentException("ShapePath has no index.");
+            throw new IllegalArgumentException("ShapePath has no index.", e);
+        }
+
+        try {
+            name = json.getString("nm");
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Layer has no name.", e);
         }
 
         try {
             closed = json.getBoolean("closed");
         } catch (JSONException e) {
-            throw new IllegalArgumentException("ShapePath index " + index + " has no value for 'closed'.");
+            throw new IllegalArgumentException("ShapePath index " + index + " has no value for 'closed'.", e);
         }
 
         JSONObject shape = null;
@@ -45,7 +52,8 @@ public class LotteShapePath {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LotteShapePath{");
-        sb.append("closed=").append(closed);
+        sb.append("name=").append(name);
+        sb.append(", closed=").append(closed);
         sb.append(", index=").append(index);
         sb.append(", shapePath=").append(shapePath.getInitialShape());
         sb.append('}');

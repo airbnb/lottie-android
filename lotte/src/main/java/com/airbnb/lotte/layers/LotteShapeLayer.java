@@ -31,6 +31,7 @@ public class LotteShapeLayer extends Drawable {
 
     public LotteShapeLayer() {
         paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
     }
 
     public void setStyle(Paint.Style style) {

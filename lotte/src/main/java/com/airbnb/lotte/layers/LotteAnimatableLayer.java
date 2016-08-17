@@ -88,8 +88,6 @@ public class LotteAnimatableLayer extends Drawable {
             layer.draw(canvas);
         }
         canvas.restore();
-
-        canvas.clipRect(getBounds());
     }
 
     @Override
