@@ -5,21 +5,22 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LotteAnimatableLayer extends Drawable {
 
-    @Nullable private LayerDrawable layerDrawable;
+    @Nullable private List<Drawable> layers = new ArrayList<>();
 
     /** This should mimic CALayer#position */
-    protected Point position;
+    protected PointF position;
     /** This should mimic CALayer#anchorPoint */
-    protected Point anchorPoint;
+    protected PointF anchorPoint;
     /** This should mimic CALayer#transform */
     protected Camera transform;
     /** This should mimic CALayer#sublayerTransform */
@@ -60,6 +61,13 @@ public class LotteAnimatableLayer extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         canvas.drawRect(getBounds(), solidBackgroundPaint);
+        if (position != null) {
+            canvas.translate(position.x, position.y);
+        }
+
+        for (Drawable layer : layers) {
+            layer.draw(canvas);
+        }
     }
 
     @Override
@@ -78,19 +86,7 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void addLayer(Drawable layer) {
-        if (layerDrawable == null) {
-            layerDrawable = new LayerDrawable(new Drawable[]{layer});
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            layerDrawable.addLayer(layer);
-        } else {
-            int count = layerDrawable.getNumberOfLayers();
-            Drawable[] drawables = new Drawable[count + 1];
-            for (int i = 0; i < count; i++) {
-                drawables[i] = layerDrawable.getDrawable(i);
-            }
-            drawables[count] = layer;
-            layerDrawable = new LayerDrawable(drawables);
-        }
+        layers.add(layer);
         int width = Math.max(getBounds().width(), layer.getBounds().width());
         int height = Math.max(getBounds().height(), layer.getBounds().height());
         setBounds(0, 0, width, height);

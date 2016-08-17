@@ -32,4 +32,16 @@ public class LotteShapeFill {
             fillEnabled = json.getBoolean("fillEnabled");
         } catch (JSONException e) { }
     }
+
+    public LotteAnimatableColorValue getColor() {
+        return color;
+    }
+
+    public LotteAnimatableNumberValue getOpacity() {
+        return opacity;
+    }
+
+    public boolean isFillEnabled() {
+        return fillEnabled;
+    }
 }

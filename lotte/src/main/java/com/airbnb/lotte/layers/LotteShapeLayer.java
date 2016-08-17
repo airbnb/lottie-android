@@ -9,8 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 
-import static android.R.attr.fillColor;
-
 /**
  * Mimics CAShapeLayer
  */
@@ -26,7 +24,7 @@ public class LotteShapeLayer extends Drawable {
     }
 
     public int getFillColor() {
-        return fillColor;
+        return paint.getColor();
     }
 
     public void setFillColor(@ColorInt int fillColor) {

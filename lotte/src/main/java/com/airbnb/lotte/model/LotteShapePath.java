@@ -29,6 +29,9 @@ public class LotteShapePath {
         } catch (JSONException e) {
             // Ignore
         }
+    }
 
+    public LotteAnimatableShapeValue getShapePath() {
+        return shapePath;
     }
 }

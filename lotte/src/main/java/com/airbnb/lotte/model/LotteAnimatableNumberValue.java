@@ -1,5 +1,6 @@
 package com.airbnb.lotte.model;
 
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
@@ -20,9 +21,10 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
         this.remapInterface = remapInterface;
     }
 
+    @FloatRange(from=0f, to=1f)
     public float getInitialValue() {
         // TODO
-        return -1f;
+        return 1f;
     }
 
 

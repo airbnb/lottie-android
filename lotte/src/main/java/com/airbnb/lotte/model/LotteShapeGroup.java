@@ -24,8 +24,17 @@ public class LotteShapeGroup {
             throw new IllegalStateException("There are no items.");
         }
 
-        for (int i = 0; i < items.size(); i++) {
-            Object newItem = shapeItemWithJson(json, frameRate, compBounds);
+        for (int i = 0; i < jsonItems.length(); i++) {
+            JSONObject jsonItem = null;
+            try {
+                jsonItem = jsonItems.getJSONObject(i);
+            } catch (JSONException e) { }
+            if (jsonItem == null) {
+                throw new IllegalStateException("Unable to get jsonItem");
+            }
+
+
+            Object newItem = shapeItemWithJson(jsonItem, frameRate, compBounds);
             if (newItem != null) {
                 items.add(newItem);
             }
@@ -61,5 +70,9 @@ public class LotteShapeGroup {
                 return new LotteShapeTrimPath(json, framerate);
         }
         return null;
+    }
+
+    public List<Object> getItems() {
+        return items;
     }
 }

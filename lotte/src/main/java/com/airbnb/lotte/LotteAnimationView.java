@@ -10,7 +10,6 @@ import com.airbnb.lotte.layers.LotteAnimatableLayer;
 import com.airbnb.lotte.layers.LotteLayer;
 import com.airbnb.lotte.layers.LotteLayerView;
 import com.airbnb.lotte.model.LotteComposition;
-import com.airbnb.lotte.utils.LayerDrawableCompat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +24,6 @@ public class LotteAnimationView extends ImageView {
         void onAnimationCompleted();
     }
 
-    private final LayerDrawableCompat background = new LayerDrawableCompat();
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
 
     private LotteAnimatableLayer animationContainer;
@@ -121,7 +119,7 @@ public class LotteAnimationView extends ImageView {
                 if (layer.getMatteType() == LotteLayer.MatteType.Add) {
                     maskedLayer = layerDrawable;
                 }
-                background.addDrawable(layerDrawable);
+                ((LotteAnimatableLayer) getDrawable()).addLayer(layerDrawable);
             }
         }
     }

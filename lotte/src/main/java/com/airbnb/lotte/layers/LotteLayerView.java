@@ -1,7 +1,7 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Camera;
-import android.graphics.Point;
+import android.graphics.PointF;
 
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteKeyframeAnimation;
@@ -41,7 +41,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private void setupForModel() {
         setBounds(composition.getBounds());
-        anchorPoint = new Point();
+        anchorPoint = new PointF();
 
         LotteAnimatableLayer childContainerLayer = new LotteAnimatableLayer(0);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
@@ -58,6 +58,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             currentChild = parentLayer;
             parentId = parentModel.getParentId();
         }
+        addLayer(currentChild);
 
         childContainerLayer.setAlpha((int) (layerModel.getOpacity().getInitialValue() * 255));
         childContainerLayer.position = layerModel.getPosition().getInitialPoint();
@@ -76,8 +77,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         for (Object item : reversedItems) {
             if (item instanceof LotteShapeGroup) {
-                LotteGroupLayerView groupLayer = new LotteGroupLayerView((LotteShapeGroup) item, currentTransform, currentFill, currentStroke,
-                        currentTrimPath, duration);
+                LotteGroupLayerView groupLayer = new LotteGroupLayerView((LotteShapeGroup) item, currentFill,
+                        currentStroke, currentTrimPath, currentTransform, duration);
                 childContainerLayer.addLayer(groupLayer);
                 shapeLayers.add(groupLayer);
             } else if (item instanceof LotteShapeTransform) {

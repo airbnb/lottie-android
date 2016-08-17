@@ -1,4 +1,4 @@
-package com.airbnb.lotte;
+package com.airbnb.lotte.samples;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -1,4 +1,4 @@
-package com.airbnb.lotte;
+package com.airbnb.lotte.samples;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,7 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.airbnb.lotte.LotteAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +23,7 @@ public class AnimationFragment extends Fragment {
         return frag;
     }
 
-    @BindView(R.id.file_name) TextView fileNameView;
+    @BindView(R.id.animation_view) LotteAnimationView animationView;
 
     @Nullable
     @Override
@@ -31,7 +32,7 @@ public class AnimationFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         String fileName = getArguments().getString(ARG_FILE_NAME);
-        fileNameView.setText(fileName);
+        animationView.setAnimation(fileName);
 
         return view;
     }
