@@ -7,7 +7,9 @@ import android.graphics.RectF;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.airbnb.lotte.L;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeRectangle;
 import com.airbnb.lotte.model.LotteShapeStroke;
@@ -75,6 +77,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     }
 
     private static class LotteRoundRectLayer extends LotteAnimatableLayer {
+        private static final String TAG = LotteRoundRectLayer.class.getSimpleName();
 
         private final Paint fillPaint = new Paint();
         private final RectF fillRect = new RectF();
@@ -127,6 +130,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
                     rectPosition.y - halfHeight,
                     rectPosition.x + halfWidth,
                     rectPosition.y + halfHeight);
+            if (L.DBG) Log.d(TAG, "Drawing round rect " + fillRect.toShortString() + " radius " + rectCornerRadius);
             canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, fillPaint);
         }
     }

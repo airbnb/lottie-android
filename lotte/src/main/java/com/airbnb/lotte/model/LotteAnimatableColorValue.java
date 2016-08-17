@@ -28,4 +28,12 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
     public int getInitialColor() {
         return initialColor;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteAnimatableColorValue{");
+        sb.append("initialColor=").append(initialColor);
+        sb.append('}');
+        return sb.toString();
+    }
 }

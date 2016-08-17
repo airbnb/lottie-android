@@ -1,10 +1,14 @@
 package com.airbnb.lotte.layers;
 
+import android.util.Log;
+
+import com.airbnb.lotte.L;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.utils.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 public class LotteParentLayer extends LotteAnimatableLayer {
+    private static final String TAG = LotteParentLayer.class.getSimpleName();
 
     private LotteLayer parent;
     private LotteAnimationGroup animation;
@@ -13,6 +17,7 @@ public class LotteParentLayer extends LotteAnimatableLayer {
         super(composition.getDuration());
         this.parent = parent;
         setupLayerFromModel();
+        if (L.DBG) Log.d(TAG, "Creating parent layer for " + parent.toString());
     }
 
     private void setupLayerFromModel() {

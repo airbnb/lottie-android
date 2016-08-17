@@ -77,4 +77,12 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     public boolean hasAnimation() {
         return false;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteAnimatableScaleValue{");
+        sb.append("initialScale=").append(initialScale);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -50,7 +50,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                 throw new IllegalArgumentException("Unable to parse value.");
             }
 
-            if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("k")) {
+            if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t")) {
                 // Keyframes
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
@@ -97,5 +97,13 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     @Override
     public boolean hasAnimation() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteAnimatablePointValue{");
+        sb.append("initialPoint=").append(initialPoint);
+        sb.append('}');
+        return sb.toString();
     }
 }

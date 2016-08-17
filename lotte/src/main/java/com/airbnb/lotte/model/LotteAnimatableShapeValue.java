@@ -137,4 +137,11 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
         return false;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteAnimatableShapeValue{");
+        sb.append("initialShape=").append(initialShape);
+        sb.append('}');
+        return sb.toString();
+    }
 }

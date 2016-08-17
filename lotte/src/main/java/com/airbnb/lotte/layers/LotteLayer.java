@@ -339,4 +339,36 @@ public class LotteLayer {
     public int getSolidWidth() {
         return solidWidth;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteLayer{");
+        sb.append("anchor=").append(anchor);
+        sb.append(", shapes=").append(shapes);
+        sb.append(", layerName='").append(layerName).append('\'');
+        sb.append(", layerId=").append(layerId);
+        sb.append(", layerType=").append(layerType);
+        sb.append(", parentId=").append(parentId);
+        sb.append(", inFrame=").append(inFrame);
+        sb.append(", outFrame=").append(outFrame);
+        sb.append(", compBounds=").append(compBounds);
+        sb.append(", frameRate=").append(frameRate);
+        sb.append(", masks=").append(masks);
+        sb.append(", solidWidth=").append(solidWidth);
+        sb.append(", solidHeight=").append(solidHeight);
+        sb.append(", solidColor=").append(solidColor);
+        sb.append(", opacity=").append(opacity);
+        sb.append(", rotation=").append(rotation);
+        sb.append(", position=").append(position);
+        sb.append(", scale=").append(scale);
+        sb.append(", hasOutAnimation=").append(hasOutAnimation);
+        sb.append(", hasInAnimation=").append(hasInAnimation);
+        sb.append(", hasInOutAnimation=").append(hasInOutAnimation);
+        sb.append(", inOutKeyFrames=").append(inOutKeyFrames);
+        sb.append(", inOutKeyTimes=").append(inOutKeyTimes);
+        sb.append(", compDuration=").append(compDuration);
+        sb.append(", matteType=").append(matteType);
+        sb.append('}');
+        return sb.toString();
+    }
 }
