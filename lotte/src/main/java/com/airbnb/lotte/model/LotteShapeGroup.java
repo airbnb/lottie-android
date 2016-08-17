@@ -2,6 +2,9 @@ package com.airbnb.lotte.model;
 
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.airbnb.lotte.L;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,10 +15,12 @@ import java.util.List;
 
 @SuppressWarnings({"EmptyCatchBlock", "FieldCanBeLocal"})
 public class LotteShapeGroup {
+    private static final String TAG = LotteShapeGroup.class.getSimpleName();
 
     private final List<Object> items = new ArrayList<>();
 
     public LotteShapeGroup(JSONObject json, int frameRate, Rect compBounds) {
+        if (L.DBG) Log.d(TAG, "Parsing new shape group.");
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");

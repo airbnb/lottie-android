@@ -1,9 +1,8 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Camera;
-
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.utils.LotteAnimationGroup;
+import com.airbnb.lotte.utils.LotteTransform3D;
 
 public class LotteParentLayer extends LotteAnimatableLayer {
 
@@ -20,7 +19,7 @@ public class LotteParentLayer extends LotteAnimatableLayer {
         position = parent.getPosition().getInitialPoint();
         anchorPoint = parent.getAnchor().getInitialPoint();
         transform = parent.getScale().getInitialScale();
-        sublayerTransform = new Camera();
+        sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(parent.getRotation().getInitialValue());
         buildAnimations();
     }

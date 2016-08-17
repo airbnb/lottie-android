@@ -1,11 +1,15 @@
 package com.airbnb.lotte.model;
 
 import android.graphics.Rect;
+import android.util.Log;
+
+import com.airbnb.lotte.L;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LotteShapeTransform {
+    private static final String TAG = LotteShapeTransform.class.getSimpleName();
 
     private final Rect compBounds;
     private LotteAnimatablePointValue position;
@@ -15,7 +19,6 @@ public class LotteShapeTransform {
     private LotteAnimatableNumberValue opacity;
 
     public LotteShapeTransform(JSONObject json, int frameRate, Rect compBounds) {
-        // TODO
         this.compBounds = compBounds;
 
         JSONObject jsonPosition = null;
@@ -70,6 +73,8 @@ public class LotteShapeTransform {
             throw new IllegalStateException("Transform has no opacity.");
         }
         opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate);
+
+        if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }
 
     public Rect getCompBounds() {
@@ -94,5 +99,18 @@ public class LotteShapeTransform {
 
     public LotteAnimatableNumberValue getOpacity() {
         return opacity;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteShapeTransform{");
+        sb.append("anchor=").append(anchor.getInitialPoint());
+        sb.append(", compBounds=").append(compBounds);
+        sb.append(", position=").append(position.getInitialPoint());
+        sb.append(", scale=").append(scale.getInitialScale());
+        sb.append(", rotation=").append(rotation.getInitialValue());
+        sb.append(", opacity=").append(opacity.getInitialValue());
+        sb.append('}');
+        return sb.toString();
     }
 }

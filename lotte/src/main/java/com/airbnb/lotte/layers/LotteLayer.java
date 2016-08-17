@@ -3,7 +3,9 @@ package com.airbnb.lotte.layers;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.airbnb.lotte.L;
 import com.airbnb.lotte.model.LotteAnimatableNumberValue;
 import com.airbnb.lotte.model.LotteAnimatablePointValue;
 import com.airbnb.lotte.model.LotteAnimatableScaleValue;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @SuppressWarnings({"UnusedAssignment", "unused", "EmptyCatchBlock"})
 public class LotteLayer {
+    private static final String TAG = LotteLayer.class.getSimpleName();
 
     @SuppressWarnings("WeakerAccess")
     public enum LotteLayerType {
@@ -41,9 +44,13 @@ public class LotteLayer {
     public static LotteLayer fromJson(JSONObject json, LotteComposition composition) {
         LotteLayer layer = new LotteLayer();
         try {
+            if (L.DBG) Log.d(TAG, "Parsing new layer.");
             layer.layerName = json.getString("nm");
+            if (L.DBG) Log.d(TAG, "\tName=" + layer.layerName);
             layer.layerId = json.getLong("ind");
+            if (L.DBG) Log.d(TAG, "\tId=" + layer.layerId);
             layer.compBounds = composition.getBounds();
+            if (L.DBG) Log.d(TAG, "\tComp Bounds=" + composition.getBounds());
             layer.frameRate = composition.getFrameRate();
 
             int layerType = json.getInt("ty");
@@ -55,15 +62,21 @@ public class LotteLayer {
 
             try {
                 layer.parentId = json.getLong("parent");
+                if (L.DBG) Log.d(TAG, "\tparentId=" + layer.parentId);
             } catch (JSONException e) { }
             layer.inFrame = json.getLong("ip");
             layer.outFrame = json.getLong("op");
+            if (L.DBG) Log.d(TAG, "\tFrames=" + layer.inFrame + "->" + layer.outFrame);
 
             if (layer.layerType == LotteLayerType.Solid) {
                 layer.solidWidth = json.getInt("sw");
                 layer.solidHeight = json.getInt("sh");
                 layer.compBounds = new Rect(0, 0, layer.solidWidth, layer.solidHeight);
                 layer.solidColor = Color.parseColor(json.getString("sc"));
+                if (L.DBG) {
+                    Log.d(TAG, "\tSolid=" + Integer.toHexString(layer.solidColor) + " " +
+                            layer.solidWidth + "x" + layer.solidHeight + " " + layer.compBounds);
+                }
             }
 
             JSONObject ks = json.getJSONObject("ks");
@@ -71,6 +84,7 @@ public class LotteLayer {
             JSONObject opacity = null;
             try {
                 opacity = ks.getJSONObject("o");
+                if (L.DBG) Log.d(TAG, "\tOpacity=" + opacity);
             } catch (JSONException e) { }
             if (opacity != null) {
                 layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate);
@@ -83,6 +97,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (rotation != null) {
                 layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate);
+                if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
                 layer.rotation.remapWith(new RemapInterface() {
                     @Override
                     public float remap(float inValue) {
@@ -97,6 +112,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (position != null) {
                 layer.position = new LotteAnimatablePointValue(position, layer.frameRate);
+                if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().getInitialPoint());
             }
 
             JSONObject anchor = null;
@@ -107,6 +123,7 @@ public class LotteLayer {
                 layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate);
                 layer.anchor.remapPointsFromBounds(new Rect(0, 0, 1, 1));
                 layer.anchor.setUsePathAnimation(false);
+                if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.getInitialPoint());
             }
 
             JSONObject scale = null;
@@ -115,6 +132,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (scale != null) {
                 layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate);
+                if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.getInitialScale());
             }
 
             try {
@@ -129,6 +147,7 @@ public class LotteLayer {
                 for (int i = 0; i < jsonMasks.length(); i++) {
                     LotteMask mask = new LotteMask(jsonMasks.getJSONObject(i), layer.frameRate);
                     layer.masks.add(mask);
+                    if (L.DBG) Log.d(TAG, "\tMask=" + mask.getMaskMode());
                 }
             }
 

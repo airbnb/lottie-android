@@ -1,10 +1,15 @@
 package com.airbnb.lotte.model;
 
+import android.util.Log;
+
+import com.airbnb.lotte.L;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressWarnings({"EmptyCatchBlock", "WeakerAccess", "FieldCanBeLocal"})
 public class LotteShapeFill {
+    private static final String TAG = LotteShapeFill.class.getSimpleName();
 
     private boolean fillEnabled;
     private LotteAnimatableColorValue color;
@@ -31,6 +36,7 @@ public class LotteShapeFill {
         try {
             fillEnabled = json.getBoolean("fillEnabled");
         } catch (JSONException e) { }
+        if (L.DBG) Log.d(TAG, "Parsed new shape fill " + toString());
     }
 
     public LotteAnimatableColorValue getColor() {
@@ -43,5 +49,15 @@ public class LotteShapeFill {
 
     public boolean isFillEnabled() {
         return fillEnabled;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteShapeFill{");
+        sb.append("color=").append(Integer.toHexString(color.getInitialColor()));
+        sb.append(", fillEnabled=").append(fillEnabled);
+        sb.append(", opacity=").append(opacity.getInitialValue());
+        sb.append('}');
+        return sb.toString();
     }
 }

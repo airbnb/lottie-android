@@ -1,9 +1,14 @@
 package com.airbnb.lotte.model;
 
+import android.util.Log;
+
+import com.airbnb.lotte.L;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LotteShapeRectangle {
+    private static final String TAG = LotteShapeRectangle.class.getSimpleName();
 
     private LotteAnimatablePointValue position;
     private LotteAnimatablePointValue size;
@@ -31,6 +36,8 @@ public class LotteShapeRectangle {
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle size.", e);
         }
+
+        if (L.DBG) Log.d(TAG, "Parsed new rectangle " + toString());
     }
 
     public LotteAnimatableNumberValue getCornerRadius() {
@@ -43,5 +50,15 @@ public class LotteShapeRectangle {
 
     public LotteAnimatablePointValue getPosition() {
         return position;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LotteShapeRectangle{");
+        sb.append("cornerRadius=").append(cornerRadius.getInitialValue());
+        sb.append(", position=").append(position.getInitialPoint());
+        sb.append(", size=").append(size.getInitialPoint());
+        sb.append('}');
+        return sb.toString();
     }
 }

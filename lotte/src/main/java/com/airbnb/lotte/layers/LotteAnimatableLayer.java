@@ -1,30 +1,36 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Camera;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import com.airbnb.lotte.L;
+import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class LotteAnimatableLayer extends Drawable {
+    private static final String TAG = LotteAnimatableLayer.class.getSimpleName();
 
-    @Nullable private List<Drawable> layers = new ArrayList<>();
+    private final List<Drawable> layers = new ArrayList<>();
 
     /** This should mimic CALayer#position */
     protected PointF position;
     /** This should mimic CALayer#anchorPoint */
     protected PointF anchorPoint;
     /** This should mimic CALayer#transform */
-    protected Camera transform;
+    protected LotteTransform3D transform;
     /** This should mimic CALayer#sublayerTransform */
-    protected Camera sublayerTransform;
+    protected LotteTransform3D sublayerTransform;
     protected long duration;
     protected LotteMaskLayer mask;
     protected float speed;
@@ -59,15 +65,31 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        canvas.drawRect(getBounds(), solidBackgroundPaint);
+    public void draw(@NonNull Canvas canvas) {
+        canvas.save();
         if (position != null) {
             canvas.translate(position.x, position.y);
         }
+        if (transform != null) {
+            canvas.scale(transform.getScaleX(), transform.getScaleY());
+        }
 
+
+
+        if (anchorPoint != null) {
+            canvas.translate(-anchorPoint.x, -anchorPoint.y);
+        }
+
+        if (solidBackgroundPaint.getColor() != Color.BLACK) {
+            canvas.drawRect(getBounds(), solidBackgroundPaint);
+           if (L.DBG) Log.d(TAG, "Drawing solid " + Integer.toHexString(solidBackgroundPaint.getColor()) + " at " + getBounds().toShortString() + " canvas " + canvas.getWidth() + "x" + canvas.getHeight());
+        }
         for (Drawable layer : layers) {
             layer.draw(canvas);
         }
+        canvas.restore();
+
+        canvas.clipRect(getBounds());
     }
 
     @Override

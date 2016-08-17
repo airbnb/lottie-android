@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LotteAnimatablePointValue implements LotteAnimatableValue {
+    private static final String TAG = LotteAnimatablePointValue.class.getSimpleName();
 
     private final List<Point> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();

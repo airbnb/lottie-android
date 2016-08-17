@@ -13,6 +13,7 @@ import static com.airbnb.lotte.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock", "unused", "FieldCanBeLocal", "WeakerAccess"})
 public class LotteAnimatableShapeValue implements LotteAnimatableValue {
+    private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
     private Path initialShape;
     private List<Integer> shapeKeyframes;

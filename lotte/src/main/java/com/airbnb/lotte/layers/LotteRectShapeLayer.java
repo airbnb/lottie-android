@@ -1,11 +1,11 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.model.LotteShapeFill;
@@ -13,6 +13,7 @@ import com.airbnb.lotte.model.LotteShapeRectangle;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.utils.LotteAnimationGroup;
+import com.airbnb.lotte.utils.LotteTransform3D;
 
 public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
@@ -44,7 +45,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         setAlpha((int) (transform.getOpacity().getInitialValue() * 255));
         position = transform.getPosition().getInitialPoint();
         this.transform = transform.getScale().getInitialScale();
-        sublayerTransform = new Camera();
+        sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
@@ -69,7 +70,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
     }
 
@@ -117,7 +118,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         @Override
-        public void draw(Canvas canvas) {
+        public void draw(@NonNull Canvas canvas) {
             super.draw(canvas);
             float halfWidth = rectSize.x / 2f;
             float halfHeight = rectSize.y / 2f;
