@@ -56,19 +56,33 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         if (fill != null) {
             fillLayer = new LotteShapeLayer();
             fillLayer.setPath(path.getShapePath().getInitialShape());
-            fillLayer.setFillColor(fill.getColor().getInitialColor());
+            fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue() * 255));
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
-            // TODO
+            strokeLayer = new LotteShapeLayer();
+            strokeLayer.setStyle(Paint.Style.STROKE);
+            strokeLayer.setPath(path.getShapePath().getInitialShape());
+            strokeLayer.setColor(stroke.getColor().getInitialColor());
+            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue() * 255));
+            strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
+            strokeLayer.setDashPattern(stroke.getLineDashPattern());
+            strokeLayer.setLineCapType(stroke.getCapType());
+            strokeLayer.setLineJoinType(stroke.getJoinType());
+
+            if (trim != null) {
+                // TODO
+            }
+            addLayer(strokeLayer);
         }
 
-        if (trim != null) {
-            // TODO
-        }
+        buildAnimation();
+    }
 
+    private void buildAnimation() {
+        // TODO
     }
 
     public LotteShapeFill getFill() {
@@ -94,8 +108,8 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     @Override
     public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
-        if (fillPaint.getAlpha() != 0) {
-            canvas.drawPath(path.getShapePath().getInitialShape(), fillPaint);
-        }
+//        if (fillPaint.getAlpha() != 0) {
+//            canvas.drawPath(path.getShapePath().getInitialShape(), fillPaint);
+//        }
     }
 }
