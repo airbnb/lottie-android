@@ -17,6 +17,8 @@ import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.utils.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
+import java.util.List;
+
 public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
     private final Paint paint = new Paint();
@@ -51,8 +53,8 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
-            fillLayer = new LotteRoundRectLayer(0);
-            fillLayer.setFillColor(fill.getColor().getInitialColor());
+            fillLayer = new LotteRoundRectLayer(duration);
+            fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue() * 255));
             fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
             fillLayer.setRectSize(rectShape.getSize().getInitialPoint());
@@ -61,7 +63,17 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         if (stroke != null) {
-            // TODO
+            strokeLayer = new LotteRoundRectLayer(duration);
+            strokeLayer.setStyle(Paint.Style.STROKE);
+            strokeLayer.setColor(stroke.getColor().getInitialColor());
+            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue() * 255));
+            strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
+            strokeLayer.setDashPattern(stroke.getLineDashPattern());
+            strokeLayer.setLineCapType(stroke.getCapType());
+            strokeLayer.rectCornerRadius = rectShape.getCornerRadius().getInitialValue();
+            strokeLayer.rectSize = rectShape.getSize().getInitialPoint();
+            strokeLayer.rectPosition = rectShape.getPosition().getInitialPoint();
+            addLayer(strokeLayer);
         }
 
         // TODO
@@ -85,6 +97,9 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         private PointF rectPosition;
         private PointF rectSize;
         private float rectCornerRadius;
+        private List<Float> lineDashPattern;
+        private LotteShapeStroke.LineCapType lineCapType;
+        private LotteShapeStroke.LineJoinType lineJoinType;
 
         LotteRoundRectLayer(long duration) {
             super(duration);
@@ -92,8 +107,28 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(Paint.Style.FILL);
         }
 
-        public void setFillColor(@ColorInt int color) {
+        public void setColor(@ColorInt int color) {
             paint.setColor(color);
+        }
+
+        public void setStyle(Paint.Style style) {
+            paint.setStyle(style);
+        }
+
+        public void setLineWidth(float width) {
+            paint.setStrokeWidth(width);
+        }
+
+        public void setDashPattern(List<Float> lineDashPattern) {
+            this.lineDashPattern = lineDashPattern;
+        }
+
+        public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
+            this.lineCapType = lineCapType;
+        }
+
+        public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
+            this.lineJoinType = lineJoinType;
         }
 
         public float getRectCornerRadius() {

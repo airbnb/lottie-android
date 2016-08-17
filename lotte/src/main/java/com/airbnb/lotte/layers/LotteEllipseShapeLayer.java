@@ -36,7 +36,6 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
     public LotteEllipseShapeLayer(LotteShapeCircle circleShape, LotteShapeFill fill, LotteShapeStroke stroke,
             LotteShapeTrimPath trim, LotteShapeTransform transform, long duration) {
         super(duration);
-        // TODO
         this.circleShape = circleShape;
         this.fill = fill;
         this.stroke = stroke;
