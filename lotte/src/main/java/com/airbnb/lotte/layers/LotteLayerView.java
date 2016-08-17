@@ -97,6 +97,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             childContainerLayer.setMask(maskLayer);
         }
 
+        // TODO: figure out if this is necessary
         List<Object> childLayers = new ArrayList<>(parentLayers.size() + shapeLayers.size() + (maskLayer == null ? 0 : 1));
         childLayers.addAll(parentLayers);
         childLayers.addAll(shapeLayers);

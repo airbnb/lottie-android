@@ -61,6 +61,15 @@ public class LotteAnimationView extends ImageView {
         }
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (animationContainer != null) {
+            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+    }
+
     public void setAnimation(String animationName) {
         InputStream file;
         try {
