@@ -53,11 +53,11 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
     @ColorInt
     private int colorValueFromArray(JSONArray colorArray) throws JSONException {
         if (colorArray.length() == 4) {
-            boolean shouldUse255 = false;
+            boolean shouldUse255 = true;
             for (int i = 0; i < colorArray.length(); i++) {
                 double colorChannel = colorArray.getDouble(i);
-                if (colorChannel <= 1f) {
-                    shouldUse255 = true;
+                if (colorChannel > 1f) {
+                    shouldUse255 = false;
                 }
             }
 

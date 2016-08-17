@@ -45,7 +45,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
             Object firstObject = null;
             try {
                 firstObject = ((JSONArray) value).get(0);
-            } catch (JSONException e) {}
+            } catch (JSONException e) { }
             if (firstObject == null) {
                 throw new IllegalArgumentException("Unable to parse value.");
             }

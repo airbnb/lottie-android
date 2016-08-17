@@ -79,7 +79,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     private static class LotteRoundRectLayer extends LotteAnimatableLayer {
         private static final String TAG = LotteRoundRectLayer.class.getSimpleName();
 
-        private final Paint fillPaint = new Paint();
+        private final Paint paint = new Paint();
         private final RectF fillRect = new RectF();
 
         private PointF rectPosition;
@@ -88,12 +88,12 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         LotteRoundRectLayer(long duration) {
             super(duration);
-            fillPaint.setAntiAlias(true);
-            fillPaint.setStyle(Paint.Style.FILL);
+            paint.setAntiAlias(true);
+            paint.setStyle(Paint.Style.FILL);
         }
 
         public void setFillColor(@ColorInt int color) {
-            fillPaint.setColor(color);
+            paint.setColor(color);
         }
 
         public float getRectCornerRadius() {
@@ -131,7 +131,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
                     rectPosition.x + halfWidth,
                     rectPosition.y + halfHeight);
             if (L.DBG) Log.d(TAG, "Drawing round rect " + fillRect.toShortString() + " radius " + rectCornerRadius);
-            canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, fillPaint);
+            canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, paint);
         }
     }
 
