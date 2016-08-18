@@ -69,6 +69,11 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.circlePosition = circleShape.getPosition().getInitialPoint();
             strokeLayer.circleSize = circleShape.getSize().getInitialPoint();
+            if (trim != null) {
+                strokeLayer.strokeStart = trim.getStart().getInitialValue();
+                strokeLayer.strokeEnd = trim.getEnd().getInitialValue();
+            }
+
             addLayer(strokeLayer);
         }
     }
@@ -83,6 +88,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         private List<Float> lineDashPattern;
         private LotteShapeStroke.LineCapType lineCapType;
         private LotteShapeStroke.LineJoinType lineJoinType;
+        private float strokeStart;
+        private float strokeEnd;
 
         public LotteCircleShapeLayer(long duration) {
             super(duration);

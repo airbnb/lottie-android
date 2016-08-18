@@ -26,7 +26,9 @@ public class LotteShapeGroup {
             jsonItems = json.getJSONArray("it");
         } catch (JSONException e) {}
         if (jsonItems == null) {
-            throw new IllegalStateException("There are no items.");
+            // Thought this was necessary but maybe not?
+            // throw new IllegalStateException("There are no items.");
+            jsonItems = new JSONArray();
         }
 
         try {

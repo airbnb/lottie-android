@@ -1,5 +1,6 @@
 package com.airbnb.lotte.model;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -13,6 +14,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
     @Nullable private RemapInterface remapInterface;
     private float initialValue;
 
+    @SuppressLint("UseValueOf")
     public LotteAnimatableNumberValue(JSONObject numberValues, int frameRate) {
         this.frameRate = frameRate;
         try {
@@ -24,7 +26,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
                 buildAnimationForKeyframes((JSONArray) value);
             } else if (value instanceof Double) {
                 // Single value, no animation
-                initialValue = (float) value;
+                initialValue = new Float((Double) value);
             } else if (value instanceof Integer) {
                 initialValue = (Integer) value;
             }

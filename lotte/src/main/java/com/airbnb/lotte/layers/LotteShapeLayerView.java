@@ -73,7 +73,8 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setLineJoinType(stroke.getJoinType());
 
             if (trim != null) {
-                // TODO
+                strokeLayer.setStrokeStart(trim.getStart().getInitialValue());
+                strokeLayer.setStrokeEnd(trim.getEnd().getInitialValue());
             }
             addLayer(strokeLayer);
         }
