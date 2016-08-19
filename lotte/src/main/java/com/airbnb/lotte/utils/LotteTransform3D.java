@@ -1,33 +1,31 @@
 package com.airbnb.lotte.utils;
 
-import android.opengl.Matrix;
-
 public class LotteTransform3D {
-    private static final int IDX_SX = 0;
-    private static final int IDX_SY = 5;
+    private float rotationZ;
+    private float scaleX = 1f;
+    private float scaleY = 1f;
 
-    private final float[] matrix = new float[16];
-
-    public LotteTransform3D() {
-        Matrix.setIdentityM(matrix, 0);
-    }
-
-    public LotteTransform3D scale(float sx, float sy, float sz) {
-        Matrix.scaleM(matrix, 0, sx, sy, sz);
+    public LotteTransform3D scale(float sx, float sy) {
+        this.scaleX = sx;
+        this.scaleY = sy;
         return this;
     }
 
     public LotteTransform3D rotateZ(float rz) {
-        Matrix.rotateM(matrix, 0, rz, 0, 0, 1);
+        rotationZ = rz;
         return this;
     }
 
+    public float getRotationZ() {
+        return rotationZ;
+    }
+
     public float getScaleX() {
-        return matrix[IDX_SX];
+        return scaleX;
     }
 
     public float getScaleY() {
-        return matrix[IDX_SY];
+        return scaleY;
     }
 
     @Override

@@ -74,7 +74,9 @@ public class LotteAnimatableLayer extends Drawable {
             canvas.scale(transform.getScaleX(), transform.getScaleY());
         }
 
-        // TODO sublayer transform (used for rotation).
+        if (sublayerTransform != null) {
+            canvas.rotate(sublayerTransform.getRotationZ());
+        }
 
         if (anchorPoint != null) {
             canvas.translate(-anchorPoint.x, -anchorPoint.y);

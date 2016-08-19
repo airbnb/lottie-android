@@ -56,7 +56,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     private LotteTransform3D xformForValueArray(JSONArray value) {
         try {
             if (value.length() >= 2) {
-                return new LotteTransform3D().scale((float) value.getDouble(0) / 100f, (float) value.getDouble(1) / 100f, 1);
+                return new LotteTransform3D().scale((float) value.getDouble(0) / 100f, (float) value.getDouble(1) / 100f);
             }
         } catch (JSONException e) {}
 

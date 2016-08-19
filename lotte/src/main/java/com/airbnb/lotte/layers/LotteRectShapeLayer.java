@@ -125,6 +125,13 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
             this.lineCapType = lineCapType;
+            switch (lineCapType) {
+                case Butt:
+                    paint.setStrokeCap(Paint.Cap.BUTT);
+                case Round:
+                default:
+                    paint.setStrokeCap(Paint.Cap.ROUND);
+            }
         }
 
         public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
