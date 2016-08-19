@@ -216,7 +216,7 @@ public class LotteLayer {
     private Rect compBounds;
     private int frameRate;
 
-    private List<LotteMask> masks;
+    private List<LotteMask> masks = new ArrayList<>();
 
     private int solidWidth;
     private int solidHeight;

@@ -3,10 +3,12 @@ package com.airbnb.lotte.layers;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PixelFormat;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
@@ -24,6 +26,12 @@ public class LotteShapeLayer extends Drawable {
     private final Path trimPath = new Path();
     private PathMeasure pathMeasure = new PathMeasure();
     private float pathLength;
+
+    private float scaleX = 1f;
+    private float scaleY = 1f;
+    private final RectF scaleRect = new RectF();
+    private final Matrix scaleMatrix = new Matrix();
+    private Path scaledPath = new Path();
 
     private Path path;
     @IntRange(from = 0, to = 255) private int alpha;
@@ -49,14 +57,16 @@ public class LotteShapeLayer extends Drawable {
     }
 
     public Path getPath() {
-        return path;
+        return scaledPath;
     }
 
     public void setPath(Path path) {
         this.path = path;
-        pathMeasure.setPath(path, false);
+        setScale(scaleX, scaleY);
+        pathMeasure.setPath(scaledPath, false);
         // Cache for perf.
         pathLength = pathMeasure.getLength();
+        invalidateSelf();
     }
 
     @Override
@@ -68,7 +78,7 @@ public class LotteShapeLayer extends Drawable {
             trimPath.rLineTo(0, 0);
             canvas.drawPath(trimPath, paint);
         } else {
-            canvas.drawPath(path, paint);
+            canvas.drawPath(scaledPath, paint);
         }
 
     }
@@ -140,5 +150,11 @@ public class LotteShapeLayer extends Drawable {
 
     public void setStrokeStart(float strokeStart) {
         this.strokeStart = strokeStart;
+    }
+
+    public void setScale(float scaleX, float scaleY) {
+        path.computeBounds(scaleRect, true);
+        scaleMatrix.setScale(scaleX, scaleY, scaleRect.centerX(), scaleRect.centerY());
+        path.transform(scaleMatrix, scaledPath);
     }
 }
