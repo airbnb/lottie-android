@@ -2,6 +2,8 @@ package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
@@ -54,8 +56,9 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             fillLayer = new LotteCircleShapeLayer(duration);
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue() * 255));
-            fillLayer.circlePosition = circleShape.getPosition().getInitialPoint();
-            fillLayer.circleSize = circleShape.getSize().getInitialPoint();
+            fillLayer.updateCircle(
+                    circleShape.getPosition().getInitialPoint(),
+                    circleShape.getSize().getInitialPoint());
             addLayer(fillLayer);
         }
 
@@ -67,11 +70,13 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern());
             strokeLayer.setLineCapType(stroke.getCapType());
-            strokeLayer.circlePosition = circleShape.getPosition().getInitialPoint();
-            strokeLayer.circleSize = circleShape.getSize().getInitialPoint();
+            strokeLayer.updateCircle(
+                    circleShape.getPosition().getInitialPoint(),
+                    circleShape.getSize().getInitialPoint());
             if (trim != null) {
-                strokeLayer.strokeStart = trim.getStart().getInitialValue();
-                strokeLayer.strokeEnd = trim.getEnd().getInitialValue();
+                strokeLayer.setTrimPath(
+                        trim.getStart().getInitialValue(),
+                        trim.getEnd().getInitialValue());
             }
 
             addLayer(strokeLayer);
@@ -79,9 +84,13 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
     }
 
     private static final class LotteCircleShapeLayer extends LotteAnimatableLayer {
+        private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
         private final RectF rect = new RectF();
         private final Paint paint = new Paint();
+        private final Path path = new Path();
+        private final Path trimPath = new Path();
+        private final PathMeasure pathMeasure = new PathMeasure();
 
         private PointF circleSize;
         private PointF circlePosition;
@@ -95,6 +104,53 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             super(duration);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
+        }
+
+        public void updateCircle(PointF circlePosition, PointF circleSize) {
+            this.circleSize = circleSize;
+            this.circlePosition = circlePosition;
+            float halfWidth = circleSize.x / 2f;
+            float halfHeight = circleSize.y / 2f;
+
+            PointF circleQ1 = new PointF(0, -halfHeight);
+            PointF circleQ2 = new PointF(halfWidth, 0);
+            PointF circleQ3 = new PointF(0, halfHeight);
+            PointF circleQ4 = new PointF(-halfWidth, 0);
+
+            float cpW = halfWidth * ELLIPSE_CONTROL_POINT_PERCENTAGE;
+            float cpH = halfHeight * ELLIPSE_CONTROL_POINT_PERCENTAGE;
+
+            path.reset();
+            path.moveTo(circleQ1.x, circleQ1.y);
+            path.cubicTo(circleQ1.x + cpW, circleQ1.y, circleQ2.x, circleQ2.y - cpH, circleQ2.x, circleQ2.y);
+            path.cubicTo(circleQ2.x, circleQ2.y + cpH, circleQ3.x + cpW, circleQ3.y, circleQ3.x, circleQ3.y);
+            path.cubicTo(circleQ3.x - cpW, circleQ3.y, circleQ4.x, circleQ4.y + cpH, circleQ4.x, circleQ4.y);
+            path.cubicTo(circleQ4.x, circleQ4.y - cpH, circleQ1.x - cpW, circleQ1.y, circleQ1.x, circleQ1.y);
+
+            pathMeasure.setPath(path, false);
+            updateTrimPath();
+            invalidateSelf();
+        }
+
+        public void setTrimPath(float strokeStart, float strokeEnd) {
+            this.strokeStart = strokeStart;
+            this.strokeEnd = strokeEnd;
+            updateTrimPath();
+            invalidateSelf();
+        }
+
+        private void updateTrimPath() {
+            if (strokeStart != strokeEnd) {
+                float length = pathMeasure.getLength();
+                float start = length * strokeStart / 100f;
+                float end = length * strokeEnd / 100f;
+
+                pathMeasure.getSegment(
+                        Math.min(start, end),
+                        Math.max(start, end),
+                        trimPath,
+                        true);
+            }
         }
 
         public void setStyle(Paint.Style style) {
@@ -125,13 +181,11 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         @Override
         public void draw(@NonNull Canvas canvas) {
             super.draw(canvas);
-            float halfWidth = circleSize.x / 2f;
-            float halfHeight = circleSize.y / 2f;
-            rect.set(circlePosition.x - halfWidth,
-                    circlePosition.y - halfHeight,
-                    circlePosition.x + halfHeight,
-                    circlePosition.y + halfHeight);
-            canvas.drawOval(rect, paint);
+            if (trimPath.isEmpty()) {
+                canvas.drawPath(path, paint);
+            } else {
+                canvas.drawPath(trimPath, paint);
+            }
         }
     }
 }
