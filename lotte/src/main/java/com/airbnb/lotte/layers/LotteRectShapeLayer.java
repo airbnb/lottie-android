@@ -1,7 +1,9 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PathEffect;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
@@ -71,7 +73,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             strokeLayer.setDashPattern(stroke.getLineDashPattern());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.rectCornerRadius = rectShape.getCornerRadius().getInitialValue();
-            strokeLayer.rectSize = rectShape.getSize().getInitialPoint();
+            strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
             strokeLayer.rectPosition = rectShape.getPosition().getInitialPoint();
             addLayer(strokeLayer);
         }
@@ -97,9 +99,9 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         private PointF rectPosition;
         private PointF rectSize;
         private float rectCornerRadius;
-        private List<Float> lineDashPattern;
-        private LotteShapeStroke.LineCapType lineCapType;
-        private LotteShapeStroke.LineJoinType lineJoinType;
+
+        @Nullable private PathEffect dashPatternPathEffect;
+        @Nullable private PathEffect lineJoinPathEffect;
 
         LotteRoundRectLayer(long duration) {
             super(duration);
@@ -120,11 +122,17 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         public void setDashPattern(List<Float> lineDashPattern) {
-            this.lineDashPattern = lineDashPattern;
+            if (lineDashPattern.isEmpty()) {
+                return;
+            }
+            float[] values = new float[lineDashPattern.size()];
+            for (int i = 0; i < lineDashPattern.size(); i++) {
+                values[i] = lineDashPattern.get(i);
+            }
+            paint.setPathEffect(new DashPathEffect(values, 0f));
         }
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
-            this.lineCapType = lineCapType;
             switch (lineCapType) {
                 case Butt:
                     paint.setStrokeCap(Paint.Cap.BUTT);
@@ -135,7 +143,17 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
-            this.lineJoinType = lineJoinType;
+            switch (lineJoinType) {
+                case Bevel:
+                    paint.setStrokeJoin(Paint.Join.BEVEL);
+                    break;
+                case Miter:
+                    paint.setStrokeJoin(Paint.Join.MITER);
+                    break;
+                case Round:
+                    paint.setStrokeJoin(Paint.Join.ROUND);
+                    break;
+            }
         }
 
         public float getRectCornerRadius() {

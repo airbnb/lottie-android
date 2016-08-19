@@ -1,6 +1,7 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -94,11 +95,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         private PointF circleSize;
         private PointF circlePosition;
-        private List<Float> lineDashPattern;
-        private LotteShapeStroke.LineCapType lineCapType;
-        private LotteShapeStroke.LineJoinType lineJoinType;
-        private float strokeStart;
-        private float strokeEnd;
+        private float strokeStart = -1f;
+        private float strokeEnd = -1f;
 
         public LotteCircleShapeLayer(long duration) {
             super(duration);
@@ -140,7 +138,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         private void updateTrimPath() {
-            if (strokeStart != strokeEnd) {
+            if (strokeStart != -1f && strokeEnd != -1f) {
                 float length = pathMeasure.getLength();
                 float start = length * strokeStart / 100f;
                 float end = length * strokeEnd / 100f;
@@ -162,11 +160,17 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         public void setDashPattern(List<Float> lineDashPattern) {
-            this.lineDashPattern = lineDashPattern;
+            if (lineDashPattern.isEmpty()) {
+                return;
+            }
+            float[] values = new float[lineDashPattern.size()];
+            for (int i = 0; i < lineDashPattern.size(); i++) {
+                values[i] = lineDashPattern.get(i);
+            }
+            paint.setPathEffect(new DashPathEffect(values, 0f));
         }
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
-            this.lineCapType = lineCapType;
             switch (lineCapType) {
                 case Butt:
                     paint.setStrokeCap(Paint.Cap.BUTT);
@@ -177,7 +181,17 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
-            this.lineJoinType = lineJoinType;
+            switch (lineJoinType) {
+                case Bevel:
+                    paint.setStrokeJoin(Paint.Join.BEVEL);
+                    break;
+                case Miter:
+                    paint.setStrokeJoin(Paint.Join.MITER);
+                    break;
+                case Round:
+                    paint.setStrokeJoin(Paint.Join.ROUND);
+                    break;
+            }
         }
 
         void setColor(@ColorInt int color) {

@@ -2,6 +2,7 @@ package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -9,7 +10,6 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
-import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.model.LotteShapeStroke;
 
@@ -27,11 +27,8 @@ public class LotteShapeLayer extends Drawable {
 
     private Path path;
     @IntRange(from = 0, to = 255) private int alpha;
-    @Nullable private List<Float> lineDashPattern;
-    private LotteShapeStroke.LineCapType lineCapType;
-    private LotteShapeStroke.LineJoinType lineJoinType;
-    private float strokeStart;
-    private float strokeEnd;
+    private float strokeStart = -1f;
+    private float strokeEnd = -1f;
 
     public LotteShapeLayer() {
         paint.setStyle(Paint.Style.FILL);
@@ -64,7 +61,7 @@ public class LotteShapeLayer extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        if (strokeStart != strokeEnd) {
+        if (strokeStart != -1f && strokeEnd != -1f) {
             pathMeasure.getSegment(pathLength * (strokeStart / 100f), pathLength * (strokeEnd / 100f), trimPath, true);
             // Workaround to get hardware acceleration on KitKat
             // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
@@ -103,11 +100,17 @@ public class LotteShapeLayer extends Drawable {
     }
 
     public void setDashPattern(List<Float> lineDashPattern) {
-        this.lineDashPattern = lineDashPattern;
+        if (lineDashPattern.isEmpty()) {
+            return;
+        }
+        float[] values = new float[lineDashPattern.size()];
+        for (int i = 0; i < lineDashPattern.size(); i++) {
+            values[i] = lineDashPattern.get(i);
+        }
+        paint.setPathEffect(new DashPathEffect(values, 0f));
     }
 
     public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
-        this.lineCapType = lineCapType;
         switch (lineCapType) {
             case Butt:
                 paint.setStrokeCap(Paint.Cap.BUTT);
@@ -118,7 +121,17 @@ public class LotteShapeLayer extends Drawable {
     }
 
     public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
-        this.lineJoinType = lineJoinType;
+        switch (lineJoinType) {
+            case Bevel:
+                paint.setStrokeJoin(Paint.Join.BEVEL);
+                break;
+            case Miter:
+                paint.setStrokeJoin(Paint.Join.MITER);
+                break;
+            case Round:
+                paint.setStrokeJoin(Paint.Join.ROUND);
+                break;
+        }
     }
 
     public void setStrokeEnd(float strokeEnd) {
