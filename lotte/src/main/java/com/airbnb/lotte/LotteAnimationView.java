@@ -124,7 +124,8 @@ public class LotteAnimationView extends ImageView {
             LotteLayerView layerDrawable = new LotteLayerView(layer, sceneModel);
             layerMap.put(layerDrawable.getId(), layerDrawable);
             if (maskedLayer != null) {
-                maskedLayer.setMask(layerDrawable);
+                maskedLayer.setMatte(layerDrawable);
+                maskedLayer = null;
             } else {
                 if (layer.getMatteType() == LotteLayer.MatteType.Add) {
                     maskedLayer = layerDrawable;

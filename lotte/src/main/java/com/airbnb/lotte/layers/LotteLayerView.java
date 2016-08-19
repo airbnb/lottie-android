@@ -27,8 +27,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private LotteAnimationGroup animation;
     private LotteKeyframeAnimation inOutAnimation;
     private List<LotteParentLayer> parentLayers;
-    private LotteMaskLayer maskLayer;
-    private LotteLayerView mask;
 
 
     public LotteLayerView(LotteLayer layerModel, LotteComposition composition) {
@@ -93,16 +91,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
 
         if (layerModel.getMasks() != null) {
-            maskLayer = new LotteMaskLayer(layerModel.getMasks(), composition);
-            childContainerLayer.setMask(maskLayer);
-        }
-
-        // TODO: figure out if this is necessary
-        List<Object> childLayers = new ArrayList<>(parentLayers.size() + shapeLayers.size() + (maskLayer == null ? 0 : 1));
-        childLayers.addAll(parentLayers);
-        childLayers.addAll(shapeLayers);
-        if (maskLayer != null) {
-            childLayers.add(maskLayer);
+            mask = new LotteMaskLayer(layerModel.getMasks(), composition);
+            childContainerLayer.setMask(mask);
         }
         buildAnimations();
     }
@@ -113,17 +103,5 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     public long getId() {
         return layerModel.getId();
-    }
-
-    public LotteMaskLayer getMaskLayer() {
-        return maskLayer;
-    }
-
-    public void setMaskLayer(LotteMaskLayer maskLayer) {
-        this.maskLayer = maskLayer;
-    }
-
-    public void setMask(LotteLayerView mask) {
-        this.mask = mask;
     }
 }
