@@ -1,6 +1,10 @@
 package com.airbnb.lotte.layers;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteKeyframeAnimation;
@@ -18,6 +22,10 @@ import java.util.List;
 
 public class LotteLayerView extends LotteAnimatableLayer {
 
+    private final Bitmap bitmap;
+    private final Canvas canvas;
+    private final Paint paint = new Paint();
+
     private final LotteLayer layerModel;
     private final LotteComposition composition;
 
@@ -34,6 +42,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
         this.layerModel = layerModel;
         this.composition = composition;
         setBounds(composition.getBounds());
+        bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
         setupForModel();
     }
 
@@ -95,6 +105,15 @@ public class LotteLayerView extends LotteAnimatableLayer {
             childContainerLayer.setMask(mask);
         }
         buildAnimations();
+    }
+
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        int saveCount = canvas.save();
+        super.draw(this.canvas);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        canvas.restoreToCount(saveCount);
+
     }
 
     private void buildAnimations() {
