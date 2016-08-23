@@ -130,15 +130,16 @@ public class LotteLayerView extends LotteAnimatableLayer {
     public void draw(@NonNull Canvas canvas) {
         int saveCount = canvas.save();
         super.draw(this.canvas);
-
-        if (mask != null) {
+        if (mask != null && !mask.getMasks().isEmpty()) {
             for (LotteMask m : mask.getMasks()) {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), individualMaskPaint);
             }
             canvas.drawBitmap(maskBitmap, 0, 0, compositeMaskPaint);
+            canvas.drawBitmap(bitmap, 0, 0, contentPaint);
+        } else {
+            canvas.drawBitmap(bitmap, 0, 0, individualMaskPaint);
         }
 
-        canvas.drawBitmap(bitmap, 0, 0, contentPaint);
         canvas.restoreToCount(saveCount);
     }
 
