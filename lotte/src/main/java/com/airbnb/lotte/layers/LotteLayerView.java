@@ -4,10 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteKeyframeAnimation;
+import com.airbnb.lotte.model.LotteMask;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeGroup;
 import com.airbnb.lotte.model.LotteShapeStroke;
@@ -25,6 +28,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private final Bitmap bitmap;
     private final Canvas canvas;
     private final Paint paint = new Paint();
+    private final Paint maskPaint = new Paint();
 
     private final LotteLayer layerModel;
     private final LotteComposition composition;
@@ -44,6 +48,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         setBounds(composition.getBounds());
         bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
+        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OVER));
         setupForModel();
     }
 
@@ -114,6 +119,11 @@ public class LotteLayerView extends LotteAnimatableLayer {
         canvas.drawBitmap(bitmap, 0, 0, paint);
         canvas.restoreToCount(saveCount);
 
+        if (mask != null) {
+            for (LotteMask m : mask.getMasks()) {
+                canvas.drawPath(m.getMaskPath().getInitialShape(), maskPaint);
+            }
+        }
     }
 
     private void buildAnimations() {

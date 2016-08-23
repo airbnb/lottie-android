@@ -157,8 +157,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
-                    LotteShapeGroup shapeGroup = new LotteShapeGroup(shapes.getJSONObject(i), layer.frameRate, layer.compBounds);
-                    layer.shapes.add(shapeGroup);
+                    layer.shapes.add(LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, layer.compBounds));
                 }
             }
         } catch (JSONException e) {
@@ -216,7 +215,7 @@ public class LotteLayer {
     private Rect compBounds;
     private int frameRate;
 
-    private List<LotteMask> masks = new ArrayList<>();
+    private List<LotteMask> masks;
 
     private int solidWidth;
     private int solidHeight;

@@ -17,6 +17,41 @@ import java.util.List;
 public class LotteShapeGroup {
     private static final String TAG = LotteShapeGroup.class.getSimpleName();
 
+    @Nullable
+    public static Object shapeItemWithJson(JSONObject json, int framerate, Rect compBounds) {
+        String type = null;
+        try {
+            type = json.getString("ty");
+        } catch (JSONException e) { }
+        if (type == null) {
+            throw new IllegalStateException("Shape has no type.");
+        }
+
+        try {
+            if (L.DBG) Log.d(TAG, "Parsing group layer " + json.getString("nm") + " type " + type);
+        } catch (JSONException e) { }
+
+        switch (type) {
+            case "gr":
+                return new LotteShapeGroup(json, framerate, compBounds);
+            case "st":
+                return new LotteShapeStroke(json, framerate);
+            case "fl":
+                return new LotteShapeFill(json, framerate);
+            case "tr":
+                return new LotteShapeTransform(json, framerate, compBounds);
+            case "sh":
+                return new LotteShapePath(json, framerate);
+            case "el":
+                return new LotteShapeCircle(json, framerate);
+            case "rc":
+                return new LotteShapeRectangle(json, framerate);
+            case "tm":
+                return new LotteShapeTrimPath(json, framerate);
+        }
+        return null;
+    }
+
     private String name;
     private final List<Object> items = new ArrayList<>();
 
@@ -52,41 +87,6 @@ public class LotteShapeGroup {
         }
 
         if (L.DBG) Log.d(TAG, "Parsed new group " + name);
-    }
-
-    @Nullable
-    private Object shapeItemWithJson(JSONObject json, int framerate, Rect compBounds) {
-        String type = null;
-        try {
-            type = json.getString("ty");
-        } catch (JSONException e) { }
-        if (type == null) {
-            throw new IllegalStateException("Shape has no type.");
-        }
-
-        try {
-            if (L.DBG) Log.d(TAG, "Parsing group layer " + json.getString("nm") + " type " + type);
-        } catch (JSONException e) { }
-
-        switch (type) {
-            case "gr":
-                return new LotteShapeGroup(json, framerate, compBounds);
-            case "st":
-                return new LotteShapeStroke(json, framerate);
-            case "fl":
-                return new LotteShapeFill(json, framerate);
-            case "tr":
-                return new LotteShapeTransform(json, framerate, compBounds);
-            case "sh":
-                return new LotteShapePath(json, framerate);
-            case "el":
-                return new LotteShapeCircle(json, framerate);
-            case "rc":
-                return new LotteShapeRectangle(json, framerate);
-            case "tm":
-                return new LotteShapeTrimPath(json, framerate);
-        }
-        return null;
     }
 
     public List<Object> getItems() {
