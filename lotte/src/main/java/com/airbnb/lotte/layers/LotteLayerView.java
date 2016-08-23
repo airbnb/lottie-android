@@ -30,8 +30,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private Bitmap maskBitmap;
     private final Canvas canvas;
     private Canvas maskCanvas;
-    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint individualMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint compositeMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final LotteLayer layerModel;
     private final LotteComposition composition;
@@ -51,15 +52,15 @@ public class LotteLayerView extends LotteAnimatableLayer {
         setBounds(composition.getBounds());
         bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
-        // Inverts the alpha channel.
-        float[] colorMatrix = {
+        float[] invertAlphaMatrix = {
                 1, 0, 0, 0, 0,
                 0, 1, 0, 0, 0,
                 0, 0, 1, 0, 0,
                 0, 0, 0, -1, 255
         };
-        maskPaint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        compositeMaskPaint.setColorFilter(new ColorMatrixColorFilter(invertAlphaMatrix));
+        compositeMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+        contentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP));
         setupForModel();
     }
 
@@ -118,7 +119,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         if (layerModel.getMasks() != null) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition);
-            maskBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
+            maskBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
             maskCanvas = new Canvas(maskBitmap);
             childContainerLayer.setMask(mask);
         }
@@ -132,12 +133,12 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         if (mask != null) {
             for (LotteMask m : mask.getMasks()) {
-                maskCanvas.drawPath(m.getMaskPath().getInitialShape(), paint);
+                maskCanvas.drawPath(m.getMaskPath().getInitialShape(), individualMaskPaint);
             }
-            this.canvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
+            canvas.drawBitmap(maskBitmap, 0, 0, compositeMaskPaint);
         }
 
-        canvas.drawBitmap(bitmap, 0, 0, paint);
+        canvas.drawBitmap(bitmap, 0, 0, contentPaint);
         canvas.restoreToCount(saveCount);
     }
 
