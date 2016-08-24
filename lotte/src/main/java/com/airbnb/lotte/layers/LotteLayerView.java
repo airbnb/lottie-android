@@ -5,8 +5,6 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.annotation.NonNull;
 
@@ -130,7 +128,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         if (layerModel.getMasks() != null) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition);
-            maskBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
+            maskBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();
@@ -141,36 +139,29 @@ public class LotteLayerView extends LotteAnimatableLayer {
         super.draw(this.canvas);
 
         if (mask != null && !mask.getMasks().isEmpty()) {
-            int saveCount = this.canvas.save();
             int maskSaveCount = maskCanvas.save();
             if (childContainerLayer.position != null) {
-                this.canvas.translate(childContainerLayer.position.x, childContainerLayer.position.y);
                 maskCanvas.translate(childContainerLayer.position.x, childContainerLayer.position.y);
             }
             if (childContainerLayer.transform != null) {
-                this.canvas.scale(childContainerLayer.transform.getScaleX(), childContainerLayer.transform.getScaleY());
                 maskCanvas.scale(childContainerLayer.transform.getScaleX(), childContainerLayer.transform.getScaleY());
             }
 
             if (childContainerLayer.sublayerTransform != null) {
-                this.canvas.rotate(childContainerLayer.sublayerTransform.getRotationZ());
                 maskCanvas.rotate(childContainerLayer.sublayerTransform.getRotationZ());
             }
 
             if (childContainerLayer.anchorPoint != null) {
-                this.canvas.translate(-childContainerLayer.anchorPoint.x, -childContainerLayer.anchorPoint.y);
                 maskCanvas.translate(-childContainerLayer.anchorPoint.x, -childContainerLayer.anchorPoint.y);
             }
 
             for (LotteMask m : mask.getMasks()) {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), new Paint());
             }
-            this.canvas.restoreToCount(saveCount);
             maskCanvas.restoreToCount(maskSaveCount);
             Paint paint = new Paint();
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            maskCanvas.drawBitmap(bitmap, 0, 0, paint);
-            canvas.drawBitmap(maskBitmap, 0, 0, new Paint());
+            paint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            canvas.drawBitmap(maskBitmap, 0, 0, paint);
         } else {
             canvas.drawBitmap(bitmap, 0, 0, null);
         }
