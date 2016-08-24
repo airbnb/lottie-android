@@ -18,7 +18,7 @@ public class LotteParentLayer extends LotteAnimatableLayer {
         setBounds(parent.getCompBounds());
         this.parentModel = parent;
         setupLayerFromModel();
-        if (L.DBG) Log.d(TAG, "Creating parentModel layer for " + parent.toString());
+        if (L.DBG) Log.d(TAG, "Creating parentModel layer for " + parent.getLayerName());
     }
 
     private void setupLayerFromModel() {
