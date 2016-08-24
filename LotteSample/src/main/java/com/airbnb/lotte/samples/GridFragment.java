@@ -52,6 +52,7 @@ public class GridFragment extends Fragment {
                 "Mask_09.json",
                 "Mask_10.json",
                 "Mask_11.json",
+                "Mask_11b.json",
                 "Mask_12.json",
                 "Mask_13.json",
                 "Mask_14.json",
