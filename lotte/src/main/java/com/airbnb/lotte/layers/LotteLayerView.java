@@ -85,11 +85,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
         addLayer(currentChild);
 
         childContainerLayer.setAlpha((int) (layerModel.getOpacity().getInitialValue() * 255));
-        childContainerLayer.position = layerModel.getPosition().getInitialPoint();
-        childContainerLayer.anchorPoint = layerModel.getAnchor().getInitialPoint();
-        childContainerLayer.transform = layerModel.getScale().getInitialScale();
-        childContainerLayer.sublayerTransform = new LotteTransform3D();
-        childContainerLayer.sublayerTransform.rotateZ(layerModel.getRotation().getInitialValue());
         setVisible(layerModel.isHasInAnimation(), false);
 
         List<Object> reversedItems = layerModel.getShapes();
@@ -116,18 +111,23 @@ public class LotteLayerView extends LotteAnimatableLayer {
             }
         }
 
+        position = layerModel.getPosition().getInitialPoint();
+        anchorPoint = layerModel.getAnchor().getInitialPoint();
+        transform = layerModel.getScale().getInitialScale();
+        sublayerTransform = new LotteTransform3D();
+        sublayerTransform.rotateZ(layerModel.getRotation().getInitialValue());
+
+
         if (layerModel.getMasks() != null) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition);
             maskBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
             maskCanvas = new Canvas(maskBitmap);
-//            childContainerLayer.setMask(mask);
         }
         buildAnimations();
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        int saveCount = canvas.save();
         super.draw(this.canvas);
 
         if (mask != null && !mask.getMasks().isEmpty()) {
@@ -144,7 +144,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             }
 
             if (anchorPoint != null) {
-                maskCanvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
+//                maskCanvas.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
                 maskCanvas.translate(-anchorPoint.x, -anchorPoint.y);
             }
 
@@ -152,14 +152,13 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), individualMaskPaint);
             }
             maskCanvas.restoreToCount(maskSaveCount);
-            canvas.drawBitmap(bitmap, 0, 0, individualMaskPaint /*contentPaint*/);
+            canvas.drawBitmap(bitmap, 0, 0, contentPaint /*contentPaint*/);
             this.canvas.drawBitmap(maskBitmap, 0, 0, compositeMaskPaint /*compositeMaskPaint*/);
             canvas.drawBitmap(bitmap, 0, 0, individualMaskPaint);
         } else {
             canvas.drawBitmap(bitmap, 0, 0, individualMaskPaint);
         }
 
-        canvas.restoreToCount(saveCount);
     }
 
     private void buildAnimations() {
