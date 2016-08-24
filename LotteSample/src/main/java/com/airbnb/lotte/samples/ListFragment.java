@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -57,8 +58,13 @@ public class ListFragment extends Fragment {
                 .commit();
     }
 
-    final class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
+    private void onGridClicked() {
+        Toast.makeText(getContext(), "Grid", Toast.LENGTH_SHORT).show();
+    }
 
+    final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
+        static final int VIEW_TYPE_GRID = 1;
+        static final int VIEW_TYPE_FILE = 2;
 
         @Nullable private String[] files = null;
 
@@ -68,37 +74,50 @@ public class ListFragment extends Fragment {
         }
 
         @Override
-        public FileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new FileViewHolder(parent);
+        public StringViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new StringViewHolder(parent);
         }
 
         @Override
-        public void onBindViewHolder(FileViewHolder holder, int position) {
-            //noinspection ConstantConditions
-            holder.bind(files[position]);
+        public void onBindViewHolder(StringViewHolder holder, int position) {
+            if (holder.getItemViewType() == VIEW_TYPE_GRID) {
+                holder.bind("Grid");
+            } else {
+                //noinspection ConstantConditions
+                holder.bind(files[position]);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return files == null ? 0 : files.length;
+            return (files == null ? 0 : files.length) + 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position == 0 ? VIEW_TYPE_GRID : VIEW_TYPE_FILE;
         }
     }
 
-    final class FileViewHolder extends RecyclerView.ViewHolder {
+    final class StringViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.file_name) TextView fileNameView;
 
-        FileViewHolder(ViewGroup parent) {
+        StringViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_file, parent, false));
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(final String fileName) {
-            fileNameView.setText(fileName);
+        void bind(final String name) {
+            fileNameView.setText(name);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onFileClicked(fileName);
+                    if (getItemViewType() == FileAdapter.VIEW_TYPE_GRID) {
+                        onGridClicked();
+                    } else {
+                        onFileClicked(name);
+                    }
                 }
             });
         }
