@@ -1,6 +1,7 @@
 package com.airbnb.lotte;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
@@ -52,6 +53,12 @@ public class LotteAnimationView extends ImageView {
     }
 
     private void init(@Nullable AttributeSet attrs) {
+        TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LotteAnimationView);
+        String fileName = ta.getString(R.styleable.LotteAnimationView_fileName);
+        if (fileName != null) {
+            setAnimation(fileName);
+        }
+        ta.recycle();
     }
 
     @Override
@@ -63,11 +70,11 @@ public class LotteAnimationView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (animationContainer != null) {
-            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
-        } else {
+//        if (animationContainer != null) {
+//            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
+//        } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
+//        }
     }
 
     public void setAnimation(String animationName) {
@@ -83,7 +90,7 @@ public class LotteAnimationView extends ImageView {
 
             setJson(new JSONObject(json));
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to find file.", e);
+            throw new IllegalStateException("Unable to find file " + animationName, e);
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to load JSON.", e);
         }

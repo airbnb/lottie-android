@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -59,7 +58,12 @@ public class ListFragment extends Fragment {
     }
 
     private void onGridClicked() {
-        Toast.makeText(getContext(), "Grid", Toast.LENGTH_SHORT).show();
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
+                .remove(this)
+                .replace(R.id.content_2, GridFragment.newInstance())
+                .commit();
     }
 
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
@@ -84,7 +88,7 @@ public class ListFragment extends Fragment {
                 holder.bind("Grid");
             } else {
                 //noinspection ConstantConditions
-                holder.bind(files[position]);
+                holder.bind(files[position - 1]);
             }
         }
 
