@@ -2,6 +2,7 @@ package com.airbnb.lotte;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
@@ -70,34 +71,64 @@ public class LotteAnimationView extends ImageView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        if (animationContainer != null) {
-//            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
-//        } else {
+        if (animationContainer != null && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
+            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
+        } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//        }
-    }
-
-    public void setAnimation(String animationName) {
-        InputStream file;
-        try {
-            file = getContext().getAssets().open(animationName);
-            int size = file.available();
-            byte[] buffer = new byte[size];
-            //noinspection ResultOfMethodCallIgnored
-            file.read(buffer);
-            file.close();
-            String json = new String(buffer, "UTF-8");
-
-            setJson(new JSONObject(json));
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to find file " + animationName, e);
-        } catch (JSONException e) {
-            throw new IllegalStateException("Unable to load JSON.", e);
         }
     }
 
+    public void setAnimation(String animationName) {
+        setImageDrawable(null);
+        InputStream file;
+        try {
+            file = getContext().getAssets().open(animationName);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to find file " + animationName, e);
+        }
+
+        new AsyncTask<InputStream, Void, JSONObject>() {
+            @Override
+            protected JSONObject doInBackground(InputStream... params) {
+                try {
+                    InputStream file = params[0];
+                    int size = file.available();
+                    byte[] buffer = new byte[size];
+                    //noinspection ResultOfMethodCallIgnored
+                    file.read(buffer);
+                    file.close();
+                    String json = new String(buffer, "UTF-8");
+
+                    return new JSONObject(json);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Unable to find file.", e);
+                } catch (JSONException e) {
+                    throw new IllegalStateException("Unable to load JSON.", e);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(JSONObject jsonObject) {
+                setJson(jsonObject);
+            }
+        }.execute(file);
+    }
+
     public void setJson(JSONObject json) {
-        setModel(LotteComposition.fromJson(json));
+        new AsyncTask<JSONObject, Void, LotteComposition>() {
+
+            @Override
+            protected LotteComposition doInBackground(JSONObject... params) {
+                return LotteComposition.fromJson(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(LotteComposition model) {
+                setModel(model);
+                setImageDrawable(animationContainer);
+                buildSubviewsForModel();
+            }
+        }.execute(json);
     }
 
     public void setModel(LotteComposition model) {
@@ -106,8 +137,6 @@ public class LotteAnimationView extends ImageView {
         animationContainer = new RootLotteAnimatableLayer();
         animationContainer.setBounds(0, 0, getWidth(), getHeight());
         animationContainer.setSpeed(0f);
-        setImageDrawable(animationContainer);
-        buildSubviewsForModel();
     }
 
     public void play() {

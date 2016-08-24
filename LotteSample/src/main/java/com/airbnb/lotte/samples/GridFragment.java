@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.airbnb.lotte.LotteAnimationView;
 
@@ -76,14 +77,19 @@ public class GridFragment extends Fragment {
         }
     }
 
-    private static final class ViewHolder extends RecyclerView.ViewHolder {
+    static final class ViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.name) TextView nameView;
+        @BindView(R.id.animation_view) LotteAnimationView animationView;
 
         public ViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_grid_item, parent, false));
+            ButterKnife.bind(this, itemView);
         }
 
         void bind(String name) {
-            ((LotteAnimationView) itemView).setAnimation(name);
+            nameView.setText(name);
+            animationView.setAnimation(name);
         }
     }
 }
