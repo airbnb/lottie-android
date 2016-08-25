@@ -35,6 +35,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private final LotteLayer layerModel;
     private final LotteComposition composition;
 
+    private long parentId = -1;
     private LotteAnimatableLayer childContainerLayer;
     private LotteLayer rotationLayer;
     private LotteAnimationGroup animation;
@@ -63,6 +64,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
         long parentId = layerModel.getParentId();
         LotteAnimatableLayer currentChild = childContainerLayer;
         while (parentId >= 0) {
+            if (parentId >= 0) {
+                this.parentId = parentId;
+            }
             LotteLayer parentModel = composition.layerModelForId(parentId);
             LotteParentLayer parentLayer = new LotteParentLayer(parentModel, composition);
             parentLayer.addLayer(currentChild);
@@ -122,20 +126,14 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         if (mask != null && !mask.getMasks().isEmpty()) {
             int maskSaveCount = maskCanvas.save();
-            if (childContainerLayer.position != null) {
-                maskCanvas.translate(childContainerLayer.position.x, childContainerLayer.position.y);
-            }
-            if (childContainerLayer.transform != null) {
-                maskCanvas.scale(childContainerLayer.transform.getScaleX(), childContainerLayer.transform.getScaleY());
-            }
-
-            if (childContainerLayer.sublayerTransform != null) {
-                maskCanvas.rotate(childContainerLayer.sublayerTransform.getRotationZ());
+            long parentId = this.parentId;
+            while (parentId >= 0) {
+                LotteLayer parent = composition.layerModelForId(parentId);
+                applyTransformForLayer(maskCanvas, parent);
+                parentId = parent.getParentId();
             }
 
-            if (childContainerLayer.anchorPoint != null) {
-                maskCanvas.translate(-childContainerLayer.anchorPoint.x, -childContainerLayer.anchorPoint.y);
-            }
+            applyTransformForLayer(maskCanvas, layerModel);
 
             for (LotteMask m : mask.getMasks()) {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), maskShapePaint);
@@ -144,6 +142,23 @@ public class LotteLayerView extends LotteAnimatableLayer {
             mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
         } else {
             mainCanvas.drawBitmap(bitmap, 0, 0, null);
+        }
+    }
+
+    private void applyTransformForLayer(Canvas canvas, LotteLayer layer) {
+        if (layer.getPosition() != null) {
+            canvas.translate(layer.getPosition().getInitialPoint().x, layer.getPosition().getInitialPoint().y);
+        }
+        if (layer.getScale().getInitialScale() != null) {
+            canvas.scale(layer.getScale().getInitialScale().getScaleX(), layer.getScale().getInitialScale().getScaleY());
+        }
+
+        if (layer.getRotation().getInitialValue() != 0) {
+            canvas.rotate(layer.getRotation().getInitialValue());
+        }
+
+        if (layer.getAnchor() != null) {
+            canvas.translate(-layer.getAnchor().getInitialPoint().x, -layer.getAnchor().getInitialPoint().y);
         }
     }
 
