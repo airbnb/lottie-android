@@ -27,7 +27,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private final Bitmap bitmap;
     private Bitmap maskBitmap;
-    private final Canvas canvas;
+    private final Canvas contentCanvas;
     private Canvas maskCanvas;
     private final Paint maskShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -48,7 +48,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         setBounds(composition.getBounds());
         bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         maskPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-        canvas = new Canvas(bitmap);
+        contentCanvas = new Canvas(bitmap);
         setupForModel();
     }
 
@@ -117,8 +117,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
-        super.draw(this.canvas);
+    public void draw(@NonNull Canvas mainCanvas) {
+        super.draw(contentCanvas);
 
         if (mask != null && !mask.getMasks().isEmpty()) {
             int maskSaveCount = maskCanvas.save();
@@ -141,9 +141,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), maskShapePaint);
             }
             maskCanvas.restoreToCount(maskSaveCount);
-            canvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
+            mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
         } else {
-            canvas.drawBitmap(bitmap, 0, 0, null);
+            mainCanvas.drawBitmap(bitmap, 0, 0, null);
         }
     }
 

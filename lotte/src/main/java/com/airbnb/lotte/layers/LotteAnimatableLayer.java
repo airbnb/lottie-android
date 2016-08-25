@@ -20,7 +20,7 @@ import java.util.List;
 public class LotteAnimatableLayer extends Drawable {
     private static final String TAG = LotteAnimatableLayer.class.getSimpleName();
 
-    private final List<Drawable> layers = new ArrayList<>();
+    protected final List<Drawable> layers = new ArrayList<>();
 
     /** This should mimic CALayer#position */
     protected PointF position;
