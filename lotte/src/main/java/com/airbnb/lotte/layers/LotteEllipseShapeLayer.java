@@ -172,11 +172,12 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
             switch (lineCapType) {
-                case Butt:
-                    paint.setStrokeCap(Paint.Cap.BUTT);
                 case Round:
-                default:
                     paint.setStrokeCap(Paint.Cap.ROUND);
+                    break;
+                case Butt:
+                default:
+                    paint.setStrokeCap(Paint.Cap.BUTT);
             }
         }
 
