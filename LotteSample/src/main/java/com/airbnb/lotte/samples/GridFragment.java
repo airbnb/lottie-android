@@ -42,6 +42,7 @@ public class GridFragment extends Fragment {
                 "Mask_19.json",
                 "Mask_20.json",
                 "Mask_21.json",
+                "ellipseTrim.json",
         };
 
         @Override

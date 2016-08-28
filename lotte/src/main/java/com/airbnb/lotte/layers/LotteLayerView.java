@@ -143,6 +143,16 @@ public class LotteLayerView extends LotteAnimatableLayer {
         } else {
             mainCanvas.drawBitmap(bitmap, 0, 0, null);
         }
+
+        if (matte != null) {
+            // a = Sa * Da
+            // c = Dc
+            Paint mattePaint = new Paint();
+//            mattePaint.setShader(new BitmapShader(matte.getContentBitmap(), Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            matte.draw(matte.contentCanvas);
+
+            mainCanvas.drawBitmap(maskBitmap, 0, 0, mattePaint);
+        }
     }
 
     private void applyTransformForLayer(Canvas canvas, LotteLayer layer) {
