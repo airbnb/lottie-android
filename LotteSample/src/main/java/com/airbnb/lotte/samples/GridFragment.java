@@ -36,14 +36,12 @@ public class GridFragment extends Fragment {
 
     private static final class Adapter extends RecyclerView.Adapter<ViewHolder> {
         private static final String[] FILE_NAMES = {
-                "bigClock.json",
-                "Icon_Diamond_Still.json",
                 "Icon_Lightbulb_Still.json",
-                "Mask_19.json",
-                "Mask_20.json",
-                "Mask_21.json",
                 "Mask_22.json",
                 "Mask_23.json",
+                "bigClock.json",
+                "Icon_Diamond_Still.json",
+                "Mask_20.json",
                 "ellipseTrim.json",
         };
 
