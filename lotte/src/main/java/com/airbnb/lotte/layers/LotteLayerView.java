@@ -37,6 +37,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private Canvas matteCanvas;
     private final Paint maskShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final LotteLayer layerModel;
     private final LotteComposition composition;
@@ -133,6 +134,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         this.matte = matte;
         matteBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         matteCanvas = new Canvas(matteBitmap);
+        mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
     }
 
     @Override
@@ -164,12 +166,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
 
         if (matte != null) {
-            // a = Sa * Da
-            // c = Dc
-            Paint mattePaint = new Paint();
-            mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
             matte.draw(matteCanvas);
-
             mainCanvas.drawBitmap(matteBitmap, 0, 0, mattePaint);
         }
     }
