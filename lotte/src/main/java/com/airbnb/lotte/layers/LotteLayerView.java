@@ -139,19 +139,23 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 maskCanvas.drawPath(m.getMaskPath().getInitialShape(), maskShapePaint);
             }
             maskCanvas.restoreToCount(maskSaveCount);
-            mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
+            if (matte == null) {
+                mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
+            }
         } else {
-            mainCanvas.drawBitmap(bitmap, 0, 0, null);
+            if (matte == null) {
+                mainCanvas.drawBitmap(bitmap, 0, 0, null);
+            }
         }
 
         if (matte != null) {
             // a = Sa * Da
             // c = Dc
             Paint mattePaint = new Paint();
-//            mattePaint.setShader(new BitmapShader(matte.getContentBitmap(), Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-            matte.draw(matte.contentCanvas);
+            mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            matte.draw(contentCanvas);
 
-            mainCanvas.drawBitmap(maskBitmap, 0, 0, mattePaint);
+            mainCanvas.drawBitmap(matte.bitmap, 0, 0, mattePaint);
         }
     }
 
