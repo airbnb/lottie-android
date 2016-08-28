@@ -8,9 +8,7 @@ import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.airbnb.lotte.L;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.ArrayList;
@@ -79,7 +77,6 @@ public class LotteAnimatableLayer extends Drawable {
 
         if (solidBackgroundPaint.getAlpha() != 0) {
             canvas.drawRect(getBounds(), solidBackgroundPaint);
-           if (L.DBG) Log.d(TAG, "Drawing solid " + Integer.toHexString(solidBackgroundPaint.getColor()) + " at " + getBounds().toShortString() + " canvas " + canvas.getWidth() + "x" + canvas.getHeight());
         }
         for (Drawable layer : layers) {
             layer.draw(canvas);

@@ -84,11 +84,11 @@ public class LotteLayer {
             JSONObject opacity = null;
             try {
                 opacity = ks.getJSONObject("o");
-                if (L.DBG) Log.d(TAG, "\tOpacity=" + opacity);
             } catch (JSONException e) { }
             if (opacity != null) {
                 layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate);
                 layer.opacity.remapValues(0, 100, 0, 1);
+                if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
 
             JSONObject rotation = null;
@@ -137,6 +137,7 @@ public class LotteLayer {
 
             try {
                 layer.matteType = MatteType.values()[json.getInt("tt")];
+                if (L.DBG) Log.d(TAG, "\tMatte=" + layer.matteType);
             } catch (JSONException e) { }
 
             JSONArray jsonMasks = null;
@@ -157,7 +158,11 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
-                    layer.shapes.add(LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, layer.compBounds));
+                    Object shape = LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, layer.compBounds);
+                    if (shape != null) {
+                        layer.shapes.add(shape);
+                        if (L.DBG) Log.d(TAG, "\tShapes+=" + shape.getClass().getSimpleName());
+                    }
                 }
             }
         } catch (JSONException e) {

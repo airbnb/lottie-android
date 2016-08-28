@@ -2,9 +2,6 @@ package com.airbnb.lotte.model;
 
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.airbnb.lotte.L;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,10 +23,6 @@ public class LotteShapeGroup {
         if (type == null) {
             throw new IllegalStateException("Shape has no type.");
         }
-
-        try {
-            if (L.DBG) Log.d(TAG, "Parsing group layer " + json.getString("nm") + " type " + type);
-        } catch (JSONException e) { }
 
         switch (type) {
             case "gr":
@@ -85,8 +78,6 @@ public class LotteShapeGroup {
                 items.add(newItem);
             }
         }
-
-        if (L.DBG) Log.d(TAG, "Parsed new group " + name);
     }
 
     public List<Object> getItems() {
