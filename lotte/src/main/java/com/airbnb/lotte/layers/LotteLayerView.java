@@ -25,10 +25,16 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class LotteLayerView extends LotteAnimatableLayer {
 
+    /** CALayer#mask */
+    protected LotteMaskLayer mask;
+    protected LotteLayerView matte;
+
     private final Bitmap bitmap;
     private Bitmap maskBitmap;
+    private Bitmap matteBitmap;
     private final Canvas contentCanvas;
     private Canvas maskCanvas;
+    private Canvas matteCanvas;
     private final Paint maskShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -36,7 +42,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private final LotteComposition composition;
 
     private long parentId = -1;
-    private LotteAnimatableLayer childContainerLayer;
     private LotteLayer rotationLayer;
     private LotteAnimationGroup animation;
     private LotteKeyframeAnimation inOutAnimation;
@@ -57,7 +62,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         setBounds(composition.getBounds());
         anchorPoint = new PointF();
 
-        childContainerLayer =  new LotteAnimatableLayer(0);
+        LotteAnimatableLayer childContainerLayer = new LotteAnimatableLayer(0);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
         childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
@@ -120,6 +125,16 @@ public class LotteLayerView extends LotteAnimatableLayer {
         buildAnimations();
     }
 
+    public void setMask(LotteMaskLayer mask) {
+        this.mask = mask;
+    }
+
+    public void setMatte(LotteLayerView matte) {
+        this.matte = matte;
+        matteBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
+        matteCanvas = new Canvas(matteBitmap);
+    }
+
     @Override
     public void draw(@NonNull Canvas mainCanvas) {
         super.draw(contentCanvas);
@@ -153,9 +168,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
             // c = Dc
             Paint mattePaint = new Paint();
             mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-            matte.draw(contentCanvas);
+            matte.draw(matteCanvas);
 
-            mainCanvas.drawBitmap(matte.bitmap, 0, 0, mattePaint);
+            mainCanvas.drawBitmap(matteBitmap, 0, 0, mattePaint);
         }
     }
 

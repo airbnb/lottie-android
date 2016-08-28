@@ -30,9 +30,6 @@ public class LotteAnimatableLayer extends Drawable {
     protected LotteTransform3D transform;
     /** This should mimic CALayer#sublayerTransform */
     protected LotteTransform3D sublayerTransform;
-    /** CALayer#mask */
-    protected LotteMaskLayer mask;
-    protected LotteLayerView matte;
     protected long duration;
     protected float speed;
 
@@ -52,14 +49,6 @@ public class LotteAnimatableLayer extends Drawable {
     public void setBackgroundColor(@ColorInt int color) {
         solidBackgroundPaint.setColor(color);
         invalidateSelf();
-    }
-
-    public void setMask(LotteMaskLayer mask) {
-        this.mask = mask;
-    }
-
-    public void setMatte(LotteLayerView matte) {
-        this.matte = matte;
     }
 
     public float getSpeed() {
