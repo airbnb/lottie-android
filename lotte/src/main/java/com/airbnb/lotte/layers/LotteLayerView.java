@@ -5,6 +5,8 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.annotation.NonNull;
 
@@ -134,13 +136,14 @@ public class LotteLayerView extends LotteAnimatableLayer {
         this.matte = matte;
         matteBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         matteCanvas = new Canvas(matteBitmap);
-        mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+//        mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
     }
 
     @Override
     public void draw(@NonNull Canvas mainCanvas) {
         super.draw(contentCanvas);
 
+        Bitmap mainBitmap;
         if (mask != null && !mask.getMasks().isEmpty()) {
             int maskSaveCount = maskCanvas.save();
             long parentId = this.parentId;
@@ -159,15 +162,19 @@ public class LotteLayerView extends LotteAnimatableLayer {
             if (matte == null) {
                 mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
             }
+            mainBitmap = maskBitmap;
         } else {
             if (matte == null) {
                 mainCanvas.drawBitmap(bitmap, 0, 0, null);
             }
+            mainBitmap = bitmap;
         }
 
         if (matte != null) {
             matte.draw(matteCanvas);
-            mainCanvas.drawBitmap(matteBitmap, 0, 0, mattePaint);
+            mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
+            mainCanvas.drawBitmap(matteBitmap, 0, 0, new Paint());
         }
     }
 
