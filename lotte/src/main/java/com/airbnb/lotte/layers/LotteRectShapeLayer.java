@@ -70,7 +70,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             strokeLayer.setColor(stroke.getColor().getInitialColor());
             strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue() * 255));
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
-            strokeLayer.setDashPattern(stroke.getLineDashPattern());
+            strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.rectCornerRadius = rectShape.getCornerRadius().getInitialValue();
             strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
@@ -122,7 +122,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             paint.setStrokeWidth(width);
         }
 
-        public void setDashPattern(List<Float> lineDashPattern) {
+        public void setDashPattern(List<Float> lineDashPattern, float offset) {
             if (lineDashPattern.isEmpty()) {
                 return;
             }
@@ -130,7 +130,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             for (int i = 0; i < lineDashPattern.size(); i++) {
                 values[i] = lineDashPattern.get(i);
             }
-            paint.setPathEffect(new DashPathEffect(values, 0f));
+            paint.setPathEffect(new DashPathEffect(values, offset));
         }
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {

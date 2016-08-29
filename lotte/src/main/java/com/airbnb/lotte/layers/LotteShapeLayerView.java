@@ -68,7 +68,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setColor(stroke.getColor().getInitialColor());
             strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue() * 255));
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
-            strokeLayer.setDashPattern(stroke.getLineDashPattern());
+            strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             strokeLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());

@@ -22,6 +22,7 @@ public class LotteShapeStroke {
         Bevel
     }
 
+    private float offset;
     private final List<Float> lineDashPattern = new ArrayList<>();
 
     private boolean fillEnabled;
@@ -51,11 +52,14 @@ public class LotteShapeStroke {
                 JSONArray dashesJson = json.getJSONArray("d");
                 for (int i = 0; i < dashesJson.length(); i++) {
                     JSONObject dashJson = dashesJson.getJSONObject(i);
-                    if (dashJson.getString("n").equals("o")) {
-                        continue;
+                    String n = dashJson.getString("n");
+                    if (n.equals("o")) {
+                        JSONObject value = dashJson.getJSONObject("v");
+                        offset = new LotteAnimatableNumberValue(value, frameRate).getInitialValue();
+                    } else if (n.equals("d") || n.equals("g")) {
+                        JSONObject value = dashJson.getJSONObject("v");
+                        lineDashPattern.add(new LotteAnimatableNumberValue(value, frameRate).getInitialValue());
                     }
-                    JSONObject value = dashJson.getJSONObject("v");
-                    lineDashPattern.add(new LotteAnimatableNumberValue(value, frameRate).getInitialValue());
                 }
                 if (lineDashPattern.size() == 1) {
                     // If there is only 1 value then it is assumed to be equal parts on and off.
@@ -81,6 +85,10 @@ public class LotteShapeStroke {
 
     public List<Float> getLineDashPattern() {
         return lineDashPattern;
+    }
+
+    public float getDashOffset() {
+        return offset;
     }
 
     public LineCapType getCapType() {

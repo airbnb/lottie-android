@@ -109,7 +109,7 @@ public class LotteShapeLayer extends Drawable {
         invalidateSelf();
     }
 
-    public void setDashPattern(List<Float> lineDashPattern) {
+    public void setDashPattern(List<Float> lineDashPattern, float offset) {
         if (lineDashPattern.isEmpty()) {
             return;
         }
@@ -117,7 +117,7 @@ public class LotteShapeLayer extends Drawable {
         for (int i = 0; i < lineDashPattern.size(); i++) {
             values[i] = lineDashPattern.get(i);
         }
-        paint.setPathEffect(new DashPathEffect(values, 0f));
+        paint.setPathEffect(new DashPathEffect(values, offset));
     }
 
     public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
