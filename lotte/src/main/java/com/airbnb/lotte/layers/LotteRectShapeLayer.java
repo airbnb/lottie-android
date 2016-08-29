@@ -75,6 +75,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             strokeLayer.rectCornerRadius = rectShape.getCornerRadius().getInitialValue();
             strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
             strokeLayer.rectPosition = rectShape.getPosition().getInitialPoint();
+            strokeLayer.setLineJoinType(stroke.getJoinType());
             addLayer(strokeLayer);
         }
 
@@ -192,7 +193,11 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
                     rectPosition.x + halfWidth,
                     rectPosition.y + halfHeight);
             if (L.DBG) Log.d(TAG, "Drawing round rect " + fillRect.toShortString() + " radius " + rectCornerRadius);
-            canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, paint);
+            if (rectCornerRadius == 0) {
+                canvas.drawRect(fillRect, paint);
+            } else {
+                canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, paint);
+            }
         }
     }
 
