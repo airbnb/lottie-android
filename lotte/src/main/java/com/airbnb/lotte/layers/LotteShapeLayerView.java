@@ -1,8 +1,6 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.model.LotteShapeFill;
@@ -107,13 +105,5 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
 
     public LotteShapeTrimPath getTrim() {
         return trim;
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        super.draw(canvas);
-//        if (fillPaint.getAlpha() != 0) {
-//            canvas.drawPath(path.getShapePath().getInitialShape(), fillPaint);
-//        }
     }
 }
