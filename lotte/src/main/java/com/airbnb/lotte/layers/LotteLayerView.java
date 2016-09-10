@@ -28,8 +28,8 @@ import java.util.List;
 public class LotteLayerView extends LotteAnimatableLayer {
 
     /** CALayer#mask */
-    protected LotteMaskLayer mask;
-    protected LotteLayerView matte;
+    private LotteMaskLayer mask;
+    private LotteLayerView matte;
 
     private final Bitmap bitmap;
     private Bitmap maskBitmap;
@@ -45,7 +45,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private final LotteComposition composition;
 
     private long parentId = -1;
-    private LotteLayer rotationLayer;
     private LotteAnimationGroup animation;
     private LotteKeyframeAnimation inOutAnimation;
 
@@ -83,7 +82,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
         addLayer(currentChild);
 
-        childContainerLayer.setAlpha((int) (layerModel.getOpacity().getInitialValue() * 255));
+        childContainerLayer.setAlpha((int) (layerModel.getOpacity().getInitialValue()));
 
         childContainerLayer.position = layerModel.getPosition().getInitialPoint();
         childContainerLayer.anchorPoint = layerModel.getAnchor().getInitialPoint();
@@ -136,7 +135,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
         this.matte = matte;
         matteBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         matteCanvas = new Canvas(matteBitmap);
-//        mattePaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
     }
 
     @Override

@@ -85,13 +85,12 @@ public class LotteShapeLayer extends Drawable {
 
     @Override
     public int getAlpha() {
-        return alpha;
+        return paint.getAlpha();
     }
 
     @Override
     public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-        this.alpha = alpha;
-        invalidateSelf();
+        // TODO?
     }
 
     @Override

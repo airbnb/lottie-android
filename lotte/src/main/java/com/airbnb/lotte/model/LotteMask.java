@@ -39,6 +39,7 @@ public class LotteMask {
 
             maskPath = new LotteAnimatableShapeValue(json.getJSONObject("pt"), frameRate, closed);
             opacity = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate);
+            opacity.remapValues(0, 100, 0, 255);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);
         }

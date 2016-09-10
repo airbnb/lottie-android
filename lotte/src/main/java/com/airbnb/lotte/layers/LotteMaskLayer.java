@@ -23,7 +23,7 @@ public class LotteMaskLayer extends LotteAnimatableLayer {
             LotteShapeLayer maskLayer = new LotteShapeLayer();
             maskLayer.setPath(mask.getMaskPath().getInitialShape());
             maskLayer.setColor(Color.WHITE);
-            maskLayer.setAlpha((int) (mask.getOpacity().getInitialValue() * 255));
+            maskLayer.setAlpha((int) (mask.getOpacity().getInitialValue()));
             addLayer(maskLayer);
 
             // TODO: animations

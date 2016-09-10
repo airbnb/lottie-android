@@ -12,13 +12,13 @@ import com.airbnb.lotte.model.LotteAnimatableScaleValue;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteMask;
 import com.airbnb.lotte.model.LotteShapeGroup;
-import com.airbnb.lotte.model.RemapInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"UnusedAssignment", "unused", "EmptyCatchBlock"})
@@ -62,7 +62,16 @@ public class LotteLayer {
 
             try {
                 layer.parentId = json.getLong("parent");
-                if (L.DBG) Log.d(TAG, "\tparentId=" + layer.parentId);
+                if (layer.parentId != -1 && L.DBG) {
+                    long parentId = layer.parentId;
+                    List<String> parentNames = new ArrayList<>();
+                    LotteLayer parent = composition.layerModelForId(parentId);
+                    while (parent != null) {
+                        parentNames.add(parent.getLayerName());
+                        parent = composition.layerModelForId(parent.getParentId());
+                    }
+                    Log.d(TAG, "\tParents=" + Arrays.toString(parentNames.toArray()));
+                }
             } catch (JSONException e) { }
             layer.inFrame = json.getLong("ip");
             layer.outFrame = json.getLong("op");
@@ -87,7 +96,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (opacity != null) {
                 layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate);
-                layer.opacity.remapValues(0, 100, 0, 1);
+                layer.opacity.remapValues(0, 100, 0, 255);
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
 
@@ -98,12 +107,12 @@ public class LotteLayer {
             if (rotation != null) {
                 layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate);
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
-                layer.rotation.remapWith(new RemapInterface() {
-                    @Override
-                    public float remap(float inValue) {
-                        return (float) Math.toRadians(inValue);
-                    }
-                });
+//                layer.rotation.remapWith(new RemapInterface() {
+//                    @Override
+//                    public float remap(float inValue) {
+//                        return (float) Math.toRadians(inValue);
+//                    }
+//                });
             }
 
             JSONObject position = null;

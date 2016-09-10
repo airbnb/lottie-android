@@ -176,8 +176,19 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
         return point;
     }
 
-    public void remapValues(float fromMin, float fromMax, float toMin, float toMax) {
-        // TODO
+    public void remapValues(final float fromMin, final float fromMax, final float toMin, final float toMax) {
+        remapInterface = new RemapInterface() {
+            @Override
+            public float remap(float inValue) {
+                if (inValue < fromMin) {
+                    return toMin;
+                } else if (inValue > fromMax) {
+                    return toMax;
+                } else {
+                    return toMin + (inValue / (fromMax - fromMin) * (toMax - toMin));
+                }
+            }
+        };
     }
 
     public void remapWith(RemapInterface remapInterface) {
@@ -185,6 +196,9 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
     }
 
     public float getInitialValue() {
+        if (remapInterface != null) {
+            return remapInterface.remap(initialValue);
+        }
         return initialValue;
     }
 

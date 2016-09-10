@@ -47,11 +47,11 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         setBounds(transform.getCompBounds());
         anchorPoint = transform.getAnchor().getInitialPoint();
-        setAlpha((int) (transform.getOpacity().getInitialValue() * 255));
+        setAlpha((int) transform.getOpacity().getInitialValue());
         position = transform.getPosition().getInitialPoint();
         this.transform = transform.getScale().getInitialScale();
         sublayerTransform = new LotteTransform3D();
-        sublayerTransform.rotateZ((float) Math.toDegrees(transform.getRotation().getInitialValue()));
+        sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
             fillLayer = new LotteCircleShapeLayer(duration);
@@ -67,7 +67,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             strokeLayer = new LotteCircleShapeLayer(duration);
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setColor(stroke.getColor().getInitialColor());
-            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue() * 255));
+            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue()));
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());

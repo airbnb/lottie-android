@@ -1,12 +1,14 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.utils.LotteTransform3D;
@@ -30,6 +32,7 @@ public class LotteAnimatableLayer extends Drawable {
     protected LotteTransform3D sublayerTransform;
     protected long duration;
     protected float speed;
+    @IntRange(from=0, to=255) private int alpha;
 
     private final Paint solidBackgroundPaint = new Paint();
 
@@ -46,6 +49,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void setBackgroundColor(@ColorInt int color) {
         solidBackgroundPaint.setColor(color);
+        solidBackgroundPaint.setAlpha(Color.alpha(color));
         invalidateSelf();
     }
 
@@ -86,7 +90,11 @@ public class LotteAnimatableLayer extends Drawable {
 
     @Override
     public void setAlpha(int alpha) {
-
+        this.alpha = alpha;
+        for (Drawable layer : layers) {
+            layer.setAlpha(alpha);
+        }
+        invalidateSelf();
     }
 
     @Override
@@ -100,6 +108,7 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void addLayer(Drawable layer) {
+        layer.setAlpha(alpha);
         layers.add(layer);
         int width = Math.max(getBounds().width(), layer.getBounds().width());
         int height = Math.max(getBounds().height(), layer.getBounds().height());

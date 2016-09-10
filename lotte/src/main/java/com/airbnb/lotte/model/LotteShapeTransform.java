@@ -58,12 +58,12 @@ public class LotteShapeTransform {
             throw new IllegalStateException("Transform has no rotation.");
         }
         rotation = new LotteAnimatableNumberValue(jsonRotation, frameRate);
-        rotation.remapWith(new RemapInterface() {
-            @Override
-            public float remap(float inValue) {
-                return (float) Math.toRadians(inValue);
-            }
-        });
+//        rotation.remapWith(new RemapInterface() {
+//            @Override
+//            public float remap(float inValue) {
+//                return (float) Math.toRadians(inValue);
+//            }
+//        });
 
         JSONObject jsonOpacity = null;
         try {
@@ -73,6 +73,7 @@ public class LotteShapeTransform {
             throw new IllegalStateException("Transform has no opacity.");
         }
         opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate);
+        opacity.remapValues(0, 100, 0, 255);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }

@@ -42,6 +42,7 @@ public class LotteShapeStroke {
 
             JSONObject opacityJson = json.getJSONObject("o");
             opacity = new LotteAnimatableNumberValue(opacityJson, frameRate);
+            opacity.remapValues(0, 100, 0, 255);
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
             joinType = LineJoinType.values()[json.getInt("lj") - 1];
@@ -58,7 +59,11 @@ public class LotteShapeStroke {
                         offset = new LotteAnimatableNumberValue(value, frameRate).getInitialValue();
                     } else if (n.equals("d") || n.equals("g")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        lineDashPattern.add(new LotteAnimatableNumberValue(value, frameRate).getInitialValue());
+                        float initialValue = new LotteAnimatableNumberValue(value, frameRate).getInitialValue();
+                        if (initialValue == 0) {
+                            initialValue = 0.01f;
+                        }
+                        lineDashPattern.add(initialValue);
                     }
                 }
                 if (lineDashPattern.size() == 1) {

@@ -30,7 +30,7 @@ public class LotteShapeFill {
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
             opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate);
-            opacity.remapValues(0, 100, 0, 1);
+            opacity.remapValues(0, 100, 0, 255);
         }
 
         try {
