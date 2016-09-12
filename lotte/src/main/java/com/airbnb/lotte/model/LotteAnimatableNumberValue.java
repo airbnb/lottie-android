@@ -21,8 +21,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
     @Nullable private RemapInterface remapInterface;
     private float initialValue;
 
-    private final ArrayList<Float> valueKeyframes = new ArrayList<>();
-    private final ArrayList<Float> keyTimes = new ArrayList<>();
+    private final List<Float> valueKeyframes = new ArrayList<>();
+    private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> timingFunctions = new ArrayList<>();
     private long delayMs;
     private long durationMs;
