@@ -19,7 +19,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
     private final List<PointF> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
-    private final List<Interpolator> timingFunctions = new ArrayList<>();
+    private final List<Interpolator> interpolators = new ArrayList<>();
 
     private boolean usePathAnimation = true;
     private PointF initialPoint;
@@ -87,7 +87,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
             boolean addStartValue = true;
             boolean addTimePadding =  false;
-            JSONArray outPoint = null;
+            PointF outPoint = null;
 
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
@@ -95,10 +95,10 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                 float timePercentage = (frame - startFrame) / durationFrames;
 
                 if (outPoint != null) {
-                    PointF vertex = pointFromValueArray(outPoint);
+                    PointF vertex = outPoint;
                     animationPath.lineTo(vertex.x, vertex.y);
                     pointKeyframes.add(vertex);
-                    timingFunctions.add(new LinearInterpolator());
+                    interpolators.add(new LinearInterpolator());
                     outPoint = null;
                 }
 
@@ -111,7 +111,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                     } else {
                         animationPath.lineTo(startPoint.x, startPoint.y);
                         pointKeyframes.add(startPoint);
-                        timingFunctions.add(new LinearInterpolator());
+                        interpolators.add(new LinearInterpolator());
                     }
                     addStartValue = false;
                 }
@@ -125,24 +125,33 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                 if (keyframe.has("e")) {
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
 
-                    Interpolator timingFunction;
                     if (keyframe.has("o") && keyframe.has("i")) {
                         PointF cp1 = pointFromValueArray(keyframe.getJSONArray("to"));
                         PointF cp2 = pointFromValueArray(keyframe.getJSONArray("ti"));
-                        // TODO: inVertex
-//                        animationPath.cubicTo(inVer);
-
-                        timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                        PointF inVertex = startPoint;
+                        animationPath.cubicTo(
+                                inVertex.x + cp1.x, inVertex.y + cp1.y,
+                                vertex.x + cp2.x, vertex.y + cp2.y,
+                                vertex.x, vertex.y);
                     } else {
-                        timingFunction = new LinearInterpolator();
+                        animationPath.lineTo(vertex.x, vertex.y);
                     }
-                    timingFunctions.add(timingFunction);
+
+                    Interpolator interpolator;
+                    if (keyframe.has("o") && keyframe.has("i")) {
+                        PointF cp1 = pointFromValueObject(keyframe.getJSONObject("o"));
+                        PointF cp2 = pointFromValueObject(keyframe.getJSONObject("i"));
+                        interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                    } else {
+                        interpolator = new LinearInterpolator();
+                    }
+                    interpolators.add(interpolator);
                 }
 
                 keyTimes.add(timePercentage);
 
                 if (keyframe.has("h") && keyframe.getBoolean("h")) {
-//                    outPoint = startValue;
+                    outPoint = startPoint;
                     addStartValue = true;
                     addTimePadding = true;
                 }
@@ -162,6 +171,30 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
         }
 
         return new PointF();
+    }
+
+    private PointF pointFromValueObject(JSONObject value) {
+        try {
+            Object x = value.get("x");
+            Object y = value.get("y");
+
+            PointF point = new PointF();
+            if (x instanceof JSONArray) {
+                point.x = new Float(((JSONArray) x).getDouble(0));
+            } else {
+                point.x = new Float((Double) x);
+            }
+
+            if (y instanceof JSONArray) {
+                point.y = new Float(((JSONArray) y).getDouble(0));
+            } else {
+                point.y = new Float((Double) y);
+            }
+
+            return point;
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Unable to parse point for " + value);
+        }
     }
 
 
