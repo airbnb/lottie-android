@@ -2,11 +2,17 @@ package com.airbnb.lotte.model;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.v4.view.animation.PathInterpolatorCompat;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+
+import com.airbnb.lotte.utils.JsonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lotte.utils.MiscUtils.addPoints;
@@ -16,8 +22,9 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
     private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
     private Path initialShape;
-    private List<Integer> shapeKeyframes;
-    private List<Integer> keyTimes;
+    private List<Path> shapeKeyframes = new ArrayList<>();
+    private List<Float> keyTimes = new ArrayList<>();
+    private List<Interpolator> interpolators;
     private long delay;
     private long duration;
     private int startFrame;
@@ -43,8 +50,82 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
         }
     }
 
-    private void buildAnimationForKeyFrames(JSONArray value, boolean closed) {
-        // TODO
+    private void buildAnimationForKeyFrames(JSONArray keyframes, boolean closed) {
+        try {
+            startFrame = keyframes.getJSONObject(0).getInt("t");
+            int endFrame = keyframes.getJSONObject(keyframes.length() - 1).getInt("t");
+
+            if (endFrame <= startFrame) {
+                throw new IllegalArgumentException("End frame must be after start frame " + endFrame + " vs " + startFrame);
+            }
+
+            durationFrames = endFrame - startFrame;
+
+            duration = durationFrames / frameRate;
+            delay = startFrame / frameRate;
+
+            boolean addStartValue = true;
+            boolean addTimePadding = false;
+            Path outShape = null;
+
+            for (int i = 0; i < keyframes.length(); i++) {
+                JSONObject keyframe = keyframes.getJSONObject(i);
+                int frame = keyframe.getInt("t");
+                float timePercentage = (frame - startFrame) / (float) durationFrames;
+
+                if (outShape != null) {
+                    shapeKeyframes.add(outShape);
+                    interpolators.add(new LinearInterpolator());
+                    outShape = null;
+                }
+
+                Path startShape = keyframe.has("s") ? bezierShapeFromValue(keyframe.getJSONObject("s"), closed) : null;
+                if (addStartValue) {
+                    if (keyframe.has("s")) {
+                        if (i == 0) {
+                            initialShape = startShape;
+                        }
+
+                        shapeKeyframes.add(startShape);
+                        if (!interpolators.isEmpty()) {
+                            interpolators.add(new LinearInterpolator());
+                        }
+                    }
+                    addStartValue = false;
+                }
+
+                if (addTimePadding) {
+                    float holdPercentage = timePercentage - 0.00001f;
+                    keyTimes.add(holdPercentage);
+                    addTimePadding = false;
+                }
+
+                if (keyframe.has("e")) {
+                    JSONObject endShape = keyframe.getJSONObject("e");
+
+                    Interpolator interpolator;
+                    if (keyframe.has("o") && keyframe.has("i")) {
+                        PointF cp1 = JsonUtils.pointValueFromDict(keyframe.getJSONObject("o"));
+                        PointF cp2 = JsonUtils.pointValueFromDict(keyframe.getJSONObject("i"));
+                        interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                    } else {
+                        interpolator = new LinearInterpolator();
+                    }
+                    interpolators.add(interpolator);
+
+                    keyTimes.add(timePercentage);
+
+                    if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                        outShape = startShape;
+                        addStartValue = true;
+                        addTimePadding = true;
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Unable to parse shape animation " + keyframes, e);
+        }
+
     }
 
     private Path bezierShapeFromValue(Object value, boolean closed) {

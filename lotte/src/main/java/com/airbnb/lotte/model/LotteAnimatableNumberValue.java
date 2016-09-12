@@ -7,6 +7,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 
 import org.json.JSONArray;
@@ -123,8 +124,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
                     if (keyframe.has("o") && keyframe.has("i")) {
                         JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
                         JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
-                        PointF cp1 = pointValueFromDict(timingControlPoint1);
-                        PointF cp2 = pointValueFromDict(timingControlPoint2);
+                        PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
+                        PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
 
                         timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
                     } else {
@@ -154,28 +155,6 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
             return new Float(((JSONArray) valueObject).getDouble(0));
         }
         return null;
-    }
-
-    private PointF pointValueFromDict(JSONObject values) {
-        PointF point = new PointF();
-        try {
-            Object x = values.get("x");
-            if (x instanceof Float) {
-                point.x = (float) x;
-            } else if (x instanceof JSONArray) {
-                point.x = new Float(((JSONArray) x).getDouble(0));
-            }
-
-            Object y = values.get("y");
-            if (y instanceof Float) {
-                point.y = (float) y;
-            } else if (y instanceof JSONArray) {
-                point.y = new Float(((JSONArray) y).getDouble(0));
-            }
-        } catch (JSONException e) {
-            throw new IllegalArgumentException("Unable to parse point " + values, e);
-        }
-        return point;
     }
 
     public void remapValues(final float fromMin, final float fromMax, final float toMin, final float toMax) {

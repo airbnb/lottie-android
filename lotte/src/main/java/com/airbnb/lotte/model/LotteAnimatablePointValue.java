@@ -166,7 +166,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
             try {
                 return new PointF((float) values.getDouble(0), (float) values.getDouble(1));
             } catch (JSONException e) {
-                throw new IllegalArgumentException("Unable to parse point for " + values);
+                throw new IllegalArgumentException("Unable to parse point for " + values, e);
             }
         }
 
