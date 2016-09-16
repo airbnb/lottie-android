@@ -5,6 +5,8 @@ import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
+
 import java.util.List;
 
 
@@ -13,8 +15,8 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
     private final float[] pos = new float[2];
     private final PathMeasure pathMeasure;
 
-    public LottePathKeyframeAnimation(String objectProperty, long duration, List<Float> keyTimes, Path path) {
-        super(objectProperty, duration, keyTimes);
+    public LottePathKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, Path path) {
+        super(property, duration, keyTimes);
         pathMeasure = new PathMeasure(path, false);
     }
 
@@ -35,9 +37,13 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
         float startKeytime = keyTimes.get(keyframeIndex );
         float endKeytime = keyTimes.get(keyframeIndex);
 
-        float percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
-        if (interpolators != null) {
-            percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+
+        float percentageIntoFrame = 0;
+        if (!isDiscrete) {
+            percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
+            if (interpolators != null) {
+                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+            }
         }
 
         pathMeasure.getPosTan(startKeytime + percentageIntoFrame * (endKeytime - startKeytime), pos, null);

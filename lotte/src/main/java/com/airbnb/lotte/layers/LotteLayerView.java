@@ -9,7 +9,11 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.animation.LotteAnimatableValue;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteMask;
 import com.airbnb.lotte.model.LotteShapeFill;
@@ -17,10 +21,11 @@ import com.airbnb.lotte.model.LotteShapeGroup;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.utils.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,6 +53,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private long parentId = -1;
     private LotteAnimationGroup animation;
     private LotteKeyframeAnimation inOutAnimation;
+    private LotteAnimatableLayer childContainerLayer;
 
 
     public LotteLayerView(LotteLayer layerModel, LotteComposition composition) {
@@ -65,7 +71,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         setBounds(composition.getBounds());
         anchorPoint = new PointF();
 
-        LotteAnimatableLayer childContainerLayer = new LotteAnimatableLayer(0);
+        childContainerLayer = new LotteAnimatableLayer(0);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
         childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
@@ -125,6 +131,25 @@ public class LotteLayerView extends LotteAnimatableLayer {
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();
+    }
+
+    private void buildAnimations() {
+        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+        propertyAnimations.put(LotteAnimatableProperty.OPACITY, layerModel.getOpacity());
+        propertyAnimations.put(LotteAnimatableProperty.POSITION, layerModel.getPosition());
+        propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, layerModel.getAnchor());
+        propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, layerModel.getScale());
+        propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, layerModel.getRotation());
+        childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+
+        if (layerModel.isHasInOutAnimation()) {
+            inOutAnimation = new LotteNumberKeyframeAnimation<>(LotteAnimatableProperty.HIDDEN, layerModel.getCompDuration(),
+                    layerModel.getInOutKeyTimes(), Long.class, layerModel.getInOutKeyFrames());
+            inOutAnimation.setIsDiscrete();
+            List<LotteKeyframeAnimation> animations = new ArrayList<>(1);
+            animations.add(inOutAnimation);
+            addAnimation(new LotteAnimationGroup(animations));
+        }
     }
 
     public void setMask(LotteMaskLayer mask) {
@@ -191,10 +216,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
         if (layer.getAnchor() != null) {
             canvas.translate(-layer.getAnchor().getInitialPoint().x, -layer.getAnchor().getInitialPoint().y);
         }
-    }
-
-    private void buildAnimations() {
-        // TODO
     }
 
     public long getId() {

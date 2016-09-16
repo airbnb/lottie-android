@@ -1,10 +1,13 @@
 package com.airbnb.lotte.layers;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.airbnb.lotte.L;
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.animation.LotteAnimatableValue;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
-import com.airbnb.lotte.utils.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 public class LotteParentLayer extends LotteAnimatableLayer {
@@ -31,6 +34,11 @@ public class LotteParentLayer extends LotteAnimatableLayer {
     }
 
     private void buildAnimations() {
-        // TODO
+        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+        propertyAnimations.put(LotteAnimatableProperty.POSITION, parentModel.getPosition());
+        propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, parentModel.getAnchor());
+        propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, parentModel.getScale());
+        propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, parentModel.getRotation());
+        addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 }

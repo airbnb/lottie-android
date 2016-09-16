@@ -221,8 +221,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(keyPath, duration, keyTimes, shapeKeyframes);
+    public LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property) {
+        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(property, duration, keyTimes, shapeKeyframes);
         animation.setInterpolators(interpolators);
 
         return animation;

@@ -3,6 +3,7 @@ package com.airbnb.lotte.utils;
 import android.graphics.Path;
 import android.support.annotation.FloatRange;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.model.LotteShapeData;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
     private final LotteShapeData tempShapeData = new LotteShapeData();
     private final List<LotteShapeData> shapeData;
 
-    public LotteShapeKeyframeAnimation(String objectProperty, long duration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
-        super(objectProperty, duration, keyTimes);
+    public LotteShapeKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
+        super(property, duration, keyTimes);
         this.shapeData = shapeData;
     }
 
@@ -32,9 +33,12 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
         float startKeytime = keyTimes.get(keyframeIndex);
         float endKeytime = keyTimes.get(keyframeIndex + 1);
 
-        float percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
-        if (interpolators != null) {
-            percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+        float percentageIntoFrame = 0;
+        if (!isDiscrete) {
+            percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
+            if (interpolators != null) {
+                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+            }
         }
 
         LotteShapeData startShapeData = shapeData.get(keyframeIndex - 1);

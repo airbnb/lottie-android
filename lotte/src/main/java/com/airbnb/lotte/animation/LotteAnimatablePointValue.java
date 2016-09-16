@@ -7,6 +7,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
@@ -106,7 +107,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                     outPoint = null;
                 }
 
-                PointF startPoint = pointFromValueArray(keyframe.getJSONArray("s"));
+                PointF startPoint = keyframe.has("s") ? pointFromValueArray(keyframe.getJSONArray("s")) : new PointF();
                 if (addStartValue) {
                     if (i == 0) {
                         pointKeyframes.add(startPoint);
@@ -227,16 +228,16 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
+    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
         if (!hasAnimation()) {
             return null;
         }
 
         LotteKeyframeAnimation animation;
         if (!animationPath.isEmpty() && usePathAnimation) {
-            animation = new LottePathKeyframeAnimation(keyPath, durationMs, keyTimes, animationPath);
+            animation = new LottePathKeyframeAnimation(property, durationMs, keyTimes, animationPath);
         } else {
-            animation = new LottePointKeyframeAnimation(keyPath, durationMs, keyTimes, pointKeyframes);
+            animation = new LottePointKeyframeAnimation(property, durationMs, keyTimes, pointKeyframes);
         }
         animation.setStartDelay(delayMs);
         return animation;

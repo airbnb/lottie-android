@@ -15,7 +15,7 @@ import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.utils.LotteAnimationGroup;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.List;

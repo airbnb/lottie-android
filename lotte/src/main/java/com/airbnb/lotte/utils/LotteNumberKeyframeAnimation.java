@@ -1,21 +1,21 @@
 package com.airbnb.lotte.utils;
 
-import android.graphics.Color;
 import android.support.annotation.FloatRange;
 
 import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 
 import java.util.List;
 
+import static com.airbnb.lotte.utils.MiscUtils.lerp;
 
-public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer> {
-    private final float[] hsv1 = new float[3];
-    private final float[] hsv2 = new float[3];
+public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyframeAnimation<T> {
 
-    private final List<Integer> values;
+    private final List<T> values;
+    private final Class<T> klass;
 
-    public LotteColorKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<Integer> values) {
+    public LotteNumberKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, Class<T> klass, List<T> values) {
         super(property, duration, keyTimes);
+        this.klass = klass;
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());
         }
@@ -23,7 +23,7 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
     }
 
     @Override
-    public Integer getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    public T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         if (progress < startDelay) {
             return values.get(0);
         } else if (progress > startDelay + duration) {
@@ -43,19 +43,9 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
             }
         }
 
-        int startColor = values.get(keyframeIndex - 1);
-        int endColor = values.get(keyframeIndex);
+        Number startValue = values.get(keyframeIndex - 1);
+        Number endValue = values.get(keyframeIndex);
 
-        Color.colorToHSV(startColor, hsv1);
-        Color.colorToHSV(endColor, hsv2);
-
-        int a = (int) MiscUtils.lerp(Color.alpha(startColor), Color.alpha(endColor), percentageIntoFrame);
-        float h = MiscUtils.lerp(hsv1[0], hsv2[0], percentageIntoFrame);
-        float s = MiscUtils.lerp(hsv1[1], hsv2[1], percentageIntoFrame);
-        float v = MiscUtils.lerp(hsv1[2], hsv2[2], percentageIntoFrame);
-        hsv1[0] = h;
-        hsv1[1] = s;
-        hsv1[2] = v;
-        return Color.HSVToColor(a, hsv1);
+        return klass.cast(lerp(startValue.floatValue(), endValue.floatValue(), percentageIntoFrame));
     }
 }

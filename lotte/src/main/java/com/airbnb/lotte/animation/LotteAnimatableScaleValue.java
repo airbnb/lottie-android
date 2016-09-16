@@ -5,6 +5,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
@@ -148,8 +149,8 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(keyPath, duration, keyTimes, scaleKeyframes);
+    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
+        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(property, duration, keyTimes, scaleKeyframes);
         animation.setInterpolators(interpolators);
         animation.setStartDelay(delay);
         return animation;

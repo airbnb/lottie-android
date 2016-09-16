@@ -7,6 +7,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteColorKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
@@ -166,11 +167,11 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
+    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
         if (!hasAnimation()) {
             return null;
         }
-        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(keyPath, duration, keyTimes, colorKeyframes);
+        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, keyTimes, colorKeyframes);
         animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
         return animation;

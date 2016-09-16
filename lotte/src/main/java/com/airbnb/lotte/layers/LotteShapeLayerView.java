@@ -2,13 +2,16 @@ package com.airbnb.lotte.layers;
 
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapePath;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.utils.LotteAnimationGroup;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 public class LotteShapeLayerView extends LotteAnimatableLayer {
@@ -83,6 +86,16 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         buildAnimation();
     }
 
+    private void buildAnimation() {
+        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+        propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
+        propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
+        propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
+        propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
+        propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+        addAnimation(new LotteAnimationGroup(propertyAnimations));
+    }
+
     @Override
     public void setAlpha(int alpha) {
         super.setAlpha(alpha);
@@ -92,10 +105,6 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         if (strokeLayer != null) {
             strokeLayer.setAlpha(alpha);
         }
-    }
-
-    private void buildAnimation() {
-        // TODO
     }
 
     public LotteShapeFill getFill() {

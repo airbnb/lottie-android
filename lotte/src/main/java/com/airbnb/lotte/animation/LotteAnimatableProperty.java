@@ -1,0 +1,25 @@
+package com.airbnb.lotte.animation;
+
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+public class LotteAnimatableProperty {
+    @IntDef({OPACITY, POSITION, ANCHOR_POINT, TRANSFORM, SUBLAYER_TRANSFORM, STROKE_COLOR, LINE_WIDTH, RECT_SIZE,
+            RECT_POSITION, RECT_CORNER_RADIUS, BACKGROUND_COLOR, HIDDEN})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AnimatableProperty {}
+    public static final int OPACITY = 1;
+    public static final int POSITION = 2;
+    public static final int ANCHOR_POINT = 3;
+    public static final int TRANSFORM = 4;
+    public static final int SUBLAYER_TRANSFORM = 5;
+    public static final int STROKE_COLOR = 6;
+    public static final int LINE_WIDTH = 7;
+    public static final int RECT_SIZE = 8;
+    public static final int RECT_POSITION = 9;
+    public static final int RECT_CORNER_RADIUS = 10;
+    public static final int BACKGROUND_COLOR = 11;
+    public static final int HIDDEN = 12;
+}

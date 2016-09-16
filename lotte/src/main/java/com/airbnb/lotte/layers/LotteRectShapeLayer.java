@@ -11,13 +11,16 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.airbnb.lotte.L;
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.animation.LotteAnimatableValue;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeRectangle;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
-import com.airbnb.lotte.utils.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.List;
@@ -33,10 +36,6 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
     @Nullable private LotteRoundRectLayer fillLayer;
     @Nullable private LotteRoundRectLayer strokeLayer;
-
-    LotteAnimationGroup animation;
-    LotteAnimationGroup strokeAnimation;
-    LotteAnimationGroup fillAanimation;
 
     public LotteRectShapeLayer(LotteShapeRectangle rectShape, @Nullable LotteShapeFill fill,
             @Nullable LotteShapeStroke stroke, LotteShapeTransform transform, long duration) {
@@ -82,11 +81,40 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             addLayer(strokeLayer);
         }
 
-        // TODO
+        buildAnimation();
     }
 
     private void buildAnimation() {
-        // TODO
+        if (transformModel != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
+            propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
+            propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
+            propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+            addAnimation(new LotteAnimationGroup(propertyAnimations));
+        }
+
+        if (stroke != null && strokeLayer != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+            propertyAnimations.put(LotteAnimatableProperty.STROKE_COLOR, stroke.getColor());
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, stroke.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.LINE_WIDTH, stroke.getWidth());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, rectShape.getSize());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_POSITION, rectShape.getPosition());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_CORNER_RADIUS, rectShape.getCornerRadius());
+            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+        }
+
+        if (fill != null && fillLayer != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+            propertyAnimations.put(LotteAnimatableProperty.BACKGROUND_COLOR, fill.getColor());
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, fill.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, rectShape.getSize());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_POSITION, rectShape.getPosition());
+            propertyAnimations.put(LotteAnimatableProperty.RECT_CORNER_RADIUS, rectShape.getCornerRadius());
+            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+        }
     }
 
     @Override

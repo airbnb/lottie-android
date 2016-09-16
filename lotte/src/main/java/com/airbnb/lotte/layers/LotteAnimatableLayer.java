@@ -11,6 +11,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class LotteAnimatableLayer extends Drawable {
     @IntRange(from=0, to=255) private int alpha = 255;
 
     private final Paint solidBackgroundPaint = new Paint();
+    private final List<LotteAnimationGroup> animations = new ArrayList<>();
 
     public LotteAnimatableLayer(long duration) {
         this.duration = duration;
@@ -51,6 +53,10 @@ public class LotteAnimatableLayer extends Drawable {
         solidBackgroundPaint.setColor(color);
         solidBackgroundPaint.setAlpha(Color.alpha(color));
         invalidateSelf();
+    }
+
+    public void addAnimation(LotteAnimationGroup animation) {
+        animations.add(animation);
     }
 
     public float getSpeed() {
