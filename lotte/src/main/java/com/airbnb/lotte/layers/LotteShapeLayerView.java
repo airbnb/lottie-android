@@ -55,9 +55,9 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             fillLayer = new LotteShapeLayer();
             fillLayer.setPath(path.getShapePath().getInitialShape());
             fillLayer.setColor(fill.getColor().getInitialColor());
-            fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue()));
+            fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
+            fillLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
             fillLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
-            fillLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             addLayer(fillLayer);
         }
 
@@ -66,13 +66,13 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setPath(path.getShapePath().getInitialShape());
             strokeLayer.setColor(stroke.getColor().getInitialColor());
-            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue()));
+            strokeLayer.setShapeAlpha((int) (stroke.getOpacity().getInitialValue()));
+            strokeLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             strokeLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
-            strokeLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             if (trim != null) {
                 strokeLayer.setStrokeStart(trim.getStart().getInitialValue());
                 strokeLayer.setStrokeEnd(trim.getEnd().getInitialValue());

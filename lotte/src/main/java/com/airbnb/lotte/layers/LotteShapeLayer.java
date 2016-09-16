@@ -38,6 +38,9 @@ public class LotteShapeLayer extends Drawable {
     private float strokeStart = -1f;
     private float strokeEnd = -1f;
 
+    @IntRange(from = 0, to = 255) private int shapeAlpha;
+    @IntRange(from = 0, to = 255) private int transformAlpha;
+
     public LotteShapeLayer() {
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
@@ -86,6 +89,16 @@ public class LotteShapeLayer extends Drawable {
     @Override
     public int getAlpha() {
         return paint.getAlpha();
+    }
+
+    public void setShapeAlpha(@IntRange(from = 0, to = 255) int alpha) {
+        this.shapeAlpha = alpha;
+        setAlpha((shapeAlpha * transformAlpha) / 255);
+    }
+
+    public void setTransformAlpha(@IntRange(from = 0, to = 255) int alpha) {
+        transformAlpha = alpha;
+        setAlpha((shapeAlpha * transformAlpha) / 255);
     }
 
     @Override

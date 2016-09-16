@@ -7,6 +7,7 @@ import android.graphics.PathEffect;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.ColorInt;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -57,11 +58,11 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         if (fill != null) {
             fillLayer = new LotteRoundRectLayer(duration);
             fillLayer.setColor(fill.getColor().getInitialColor());
-            fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue()));
+            fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
+            fillLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
             fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
             fillLayer.setRectSize(rectShape.getSize().getInitialPoint());
             fillLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
-            fillLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             addLayer(fillLayer);
         }
 
@@ -69,14 +70,14 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             strokeLayer = new LotteRoundRectLayer(duration);
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setColor(stroke.getColor().getInitialColor());
-            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue()));
+            strokeLayer.setShapeAlpha((int) (stroke.getOpacity().getInitialValue()));
+            strokeLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
             strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
             strokeLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
-            strokeLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             addLayer(strokeLayer);
         }
@@ -114,6 +115,9 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         private PointF rectSize;
         private float rectCornerRadius;
 
+        @IntRange(from = 0, to = 255) private int shapeAlpha;
+        @IntRange(from = 0, to = 255) private int transformAlpha;
+
         @Nullable private PathEffect dashPatternPathEffect;
         @Nullable private PathEffect lineJoinPathEffect;
 
@@ -121,6 +125,26 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             super(duration);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
+        }
+
+        public void setShapeAlpha(@IntRange(from = 0, to = 255) int alpha) {
+            this.shapeAlpha = alpha;
+            setAlpha((shapeAlpha * transformAlpha) / 255);
+        }
+
+        public void setTransformAlpha(@IntRange(from = 0, to = 255) int alpha) {
+            transformAlpha = alpha;
+            setAlpha((shapeAlpha * transformAlpha) / 255);
+        }
+
+        @Override
+        public void setAlpha(int alpha) {
+            paint.setAlpha(alpha);
+        }
+
+        @Override
+        public int getAlpha() {
+            return paint.getAlpha();
         }
 
         public void setColor(@ColorInt int color) {
