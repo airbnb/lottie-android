@@ -356,9 +356,9 @@ public class LotteLayer {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LotteLayer{");
-        sb.append("anchor=").append(anchor);
+        sb.append("layerName='").append(layerName);
+        sb.append(", anchor=").append(anchor);
         sb.append(", shapes=").append(shapes);
-        sb.append(", layerName='").append(layerName).append('\'');
         sb.append(", layerId=").append(layerId);
         sb.append(", layerType=").append(layerType);
         sb.append(", parentId=").append(parentId);

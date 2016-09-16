@@ -31,6 +31,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private LotteMaskLayer mask;
     private LotteLayerView matte;
 
+    private final Paint mainCanvasPaint = new Paint();
     private final Bitmap bitmap;
     private Bitmap maskBitmap;
     private Bitmap matteBitmap;
@@ -82,13 +83,12 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
         addLayer(currentChild);
 
-        childContainerLayer.setAlpha((int) (layerModel.getOpacity().getInitialValue()));
-
         childContainerLayer.position = layerModel.getPosition().getInitialPoint();
         childContainerLayer.anchorPoint = layerModel.getAnchor().getInitialPoint();
         childContainerLayer.transform = layerModel.getScale().getInitialScale();
         childContainerLayer.sublayerTransform = new LotteTransform3D();
         childContainerLayer.sublayerTransform.rotateZ(layerModel.getRotation().getInitialValue());
+        mainCanvasPaint.setAlpha((int) layerModel.getOpacity().getInitialValue());
 
         setVisible(layerModel.isHasInAnimation(), false);
 
@@ -163,7 +163,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             mainBitmap = maskBitmap;
         } else {
             if (matte == null) {
-                mainCanvas.drawBitmap(bitmap, 0, 0, null);
+                mainCanvas.drawBitmap(bitmap, 0, 0, mainCanvasPaint);
             }
             mainBitmap = bitmap;
         }
@@ -172,7 +172,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             matte.draw(matteCanvas);
             mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
-            mainCanvas.drawBitmap(matteBitmap, 0, 0, new Paint());
+            mainCanvas.drawBitmap(matteBitmap, 0, 0, mainCanvasPaint);
         }
     }
 

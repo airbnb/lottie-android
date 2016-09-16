@@ -22,8 +22,8 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     private final LotteShapeTrimPath trim;
     private final LotteShapeTransform transformModel;
 
-    private LotteShapeLayer fillLayer;
-    private LotteShapeLayer strokeLayer;
+    @Nullable private LotteShapeLayer fillLayer;
+    @Nullable private LotteShapeLayer strokeLayer;
 
     private LotteAnimationGroup animation;
     private LotteAnimationGroup strokeAnimation;
@@ -45,7 +45,6 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
 
         setBounds(transformModel.getCompBounds());
         anchorPoint = transformModel.getAnchor().getInitialPoint();
-        setAlpha((int) (transformModel.getOpacity().getInitialValue()));
         position = transformModel.getPosition().getInitialPoint();
         sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(transformModel.getRotation().getInitialValue());
@@ -58,6 +57,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue()));
             fillLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
+            fillLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             addLayer(fillLayer);
         }
 
@@ -72,7 +72,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             strokeLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
-
+            strokeLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             if (trim != null) {
                 strokeLayer.setStrokeStart(trim.getStart().getInitialValue());
                 strokeLayer.setStrokeEnd(trim.getEnd().getInitialValue());
@@ -81,6 +81,17 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         }
 
         buildAnimation();
+    }
+
+    @Override
+    public void setAlpha(int alpha) {
+        super.setAlpha(alpha);
+        if (fillLayer != null) {
+            fillLayer.setAlpha(alpha);
+        }
+        if (strokeLayer != null) {
+            strokeLayer.setAlpha(alpha);
+        }
     }
 
     private void buildAnimation() {

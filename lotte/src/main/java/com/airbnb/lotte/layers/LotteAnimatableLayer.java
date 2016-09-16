@@ -32,7 +32,7 @@ public class LotteAnimatableLayer extends Drawable {
     protected LotteTransform3D sublayerTransform;
     protected long duration;
     protected float speed;
-    @IntRange(from=0, to=255) private int alpha;
+    @IntRange(from=0, to=255) private int alpha = 255;
 
     private final Paint solidBackgroundPaint = new Paint();
 
@@ -91,10 +91,12 @@ public class LotteAnimatableLayer extends Drawable {
     @Override
     public void setAlpha(int alpha) {
         this.alpha = alpha;
-        for (Drawable layer : layers) {
-            layer.setAlpha(alpha);
-        }
         invalidateSelf();
+    }
+
+    @Override
+    public int getAlpha() {
+        return alpha;
     }
 
     @Override
@@ -108,7 +110,6 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void addLayer(Drawable layer) {
-        layer.setAlpha(alpha);
         layers.add(layer);
         int width = Math.max(getBounds().width(), layer.getBounds().width());
         int height = Math.max(getBounds().height(), layer.getBounds().height());

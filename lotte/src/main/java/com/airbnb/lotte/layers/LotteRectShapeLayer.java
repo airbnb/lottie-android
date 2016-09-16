@@ -30,8 +30,8 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     private final LotteShapeFill fill;
     private final LotteShapeRectangle rectShape;
 
-    private LotteRoundRectLayer fillLayer;
-    private LotteRoundRectLayer strokeLayer;
+    @Nullable private LotteRoundRectLayer fillLayer;
+    @Nullable private LotteRoundRectLayer strokeLayer;
 
     LotteAnimationGroup animation;
     LotteAnimationGroup strokeAnimation;
@@ -61,6 +61,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
             fillLayer.setRectSize(rectShape.getSize().getInitialPoint());
             fillLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
+            fillLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             addLayer(fillLayer);
         }
 
@@ -72,9 +73,10 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
-            strokeLayer.rectCornerRadius = rectShape.getCornerRadius().getInitialValue();
+            strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
             strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
-            strokeLayer.rectPosition = rectShape.getPosition().getInitialPoint();
+            strokeLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
+            strokeLayer.setAlpha((int) transformModel.getOpacity().getInitialValue());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             addLayer(strokeLayer);
         }
@@ -84,6 +86,17 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
     private void buildAnimation() {
         // TODO
+    }
+
+    @Override
+    public void setAlpha(int alpha) {
+        super.setAlpha(alpha);
+        if (fillLayer != null) {
+            fillLayer.setAlpha(alpha);
+        }
+        if (strokeLayer != null) {
+            strokeLayer.setAlpha(alpha);
+        }
     }
 
     @Override
