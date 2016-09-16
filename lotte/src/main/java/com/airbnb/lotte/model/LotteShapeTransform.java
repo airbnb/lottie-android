@@ -4,6 +4,9 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.airbnb.lotte.L;
+import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatablePointValue;
+import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,5 +1,7 @@
 package com.airbnb.lotte.model;
 
+import com.airbnb.lotte.animation.LotteAnimatablePointValue;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

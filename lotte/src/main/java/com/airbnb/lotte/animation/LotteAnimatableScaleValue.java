@@ -1,4 +1,4 @@
-package com.airbnb.lotte.model;
+package com.airbnb.lotte.animation;
 
 import android.graphics.PointF;
 import android.support.v4.view.animation.PathInterpolatorCompat;

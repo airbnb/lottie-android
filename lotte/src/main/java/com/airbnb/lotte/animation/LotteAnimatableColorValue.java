@@ -1,4 +1,4 @@
-package com.airbnb.lotte.model;
+package com.airbnb.lotte.animation;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;

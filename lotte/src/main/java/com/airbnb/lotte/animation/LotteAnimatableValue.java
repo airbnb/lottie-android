@@ -1,4 +1,4 @@
-package com.airbnb.lotte.model;
+package com.airbnb.lotte.animation;
 
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 

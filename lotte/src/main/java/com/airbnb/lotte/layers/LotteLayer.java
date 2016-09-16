@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.airbnb.lotte.L;
-import com.airbnb.lotte.model.LotteAnimatableNumberValue;
-import com.airbnb.lotte.model.LotteAnimatablePointValue;
-import com.airbnb.lotte.model.LotteAnimatableScaleValue;
+import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatablePointValue;
+import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
 import com.airbnb.lotte.model.LotteComposition;
 import com.airbnb.lotte.model.LotteMask;
 import com.airbnb.lotte.model.LotteShapeGroup;

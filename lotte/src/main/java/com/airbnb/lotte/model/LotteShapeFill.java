@@ -3,6 +3,8 @@ package com.airbnb.lotte.model;
 import android.util.Log;
 
 import com.airbnb.lotte.L;
+import com.airbnb.lotte.animation.LotteAnimatableColorValue;
+import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
