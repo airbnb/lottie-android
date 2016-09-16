@@ -94,14 +94,12 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
                 Integer startColor = colorValueFromArray(keyframe.getJSONArray("s"));
                 if (addStartValue) {
-                    if (startColor != null) {
-                        if (i == 0) {
-                            initialColor = startColor;
-                        }
-                        colorKeyframes.add(startColor);
-                        if (!timingFunctions.isEmpty()) {
-                            timingFunctions.add(new LinearInterpolator());
-                        }
+                    if (i == 0) {
+                        initialColor = startColor;
+                    }
+                    colorKeyframes.add(startColor);
+                    if (!timingFunctions.isEmpty()) {
+                        timingFunctions.add(new LinearInterpolator());
                     }
                     addStartValue = false;
                 }
@@ -113,25 +111,23 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
                 }
 
                 Integer endColor = colorValueFromArray(keyframe.getJSONArray("e"));
-                if (endColor != null) {
-                    colorKeyframes.add(endColor);
-                    /**
-                     * Timing function for time interpolation between keyframes.
-                     * Should be n - 1 where n is the number of keyframes.
-                     */
-                    Interpolator timingFunction;
-                    if (keyframe.has("o") && keyframe.has("i")) {
-                        JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
-                        JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
-                        PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
-                        PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
+                colorKeyframes.add(endColor);
+                /**
+                 * Timing function for time interpolation between keyframes.
+                 * Should be n - 1 where n is the number of keyframes.
+                 */
+                Interpolator timingFunction;
+                if (keyframe.has("o") && keyframe.has("i")) {
+                    JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
+                    JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
+                    PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
+                    PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
 
-                        timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
-                    } else {
-                        timingFunction = new LinearInterpolator();
-                    }
-                    timingFunctions.add(timingFunction);
+                    timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                } else {
+                    timingFunction = new LinearInterpolator();
                 }
+                timingFunctions.add(timingFunction);
 
                 keyTimes.add(timePercentage);
 
@@ -175,6 +171,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
             return null;
         }
         LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(keyPath, duration, keyTimes, colorKeyframes);
+        animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
         return animation;
     }
@@ -191,9 +188,6 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteAnimatableColorValue{");
-        sb.append("initialColor=").append(initialColor);
-        sb.append('}');
-        return sb.toString();
+        return "LotteAnimatableColorValue{" + "initialColor=" + initialColor + '}';
     }
 }
