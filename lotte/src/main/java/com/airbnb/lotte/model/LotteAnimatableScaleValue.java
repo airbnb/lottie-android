@@ -6,6 +6,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lotte.utils.JsonUtils;
+import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import org.json.JSONArray;
@@ -147,7 +148,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     }
 
     @Override
-    public Object animationForKeyPath(String keyPath) {
+    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
         return null;
     }
 

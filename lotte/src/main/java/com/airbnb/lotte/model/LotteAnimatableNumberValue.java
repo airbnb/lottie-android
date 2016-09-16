@@ -9,6 +9,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.LotteValueKeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -186,7 +187,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        LotteKeyframeAnimation animation = new LotteKeyframeAnimation(keyPath, durationMs, keyTimes, valueKeyframes);
+        LotteKeyframeAnimation animation = new LotteValueKeyframeAnimation(keyPath, durationMs, keyTimes, valueKeyframes);
         animation.setStartDelay(delayMs);
         return animation;
     }

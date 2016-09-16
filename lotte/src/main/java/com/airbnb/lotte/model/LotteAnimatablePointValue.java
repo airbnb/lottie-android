@@ -7,6 +7,10 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
+import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +28,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     private boolean usePathAnimation = true;
     private PointF initialPoint;
     private Path animationPath;
-    private float delayMs;
-    private float durationMs;
+    private long delayMs;
+    private long durationMs;
     private long startFrame;
     private long durationFrames;
     private int frameRate;
@@ -198,8 +202,20 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     }
 
 
-    public void remapPointsFromBounds(Rect bounds) {
-        // TODO
+    public void remapPointsFromBounds(Rect fromBounds, Rect toBounds) {
+        // TODO: this is broken. Maybe not necessary.
+//        if (pointKeyframes.isEmpty()) {
+//            initialPoint = new PointF(
+//                    MiscUtils.remapValue(initialPoint.x, fromBounds.left, fromBounds.width(), toBounds.left, toBounds.width()),
+//                    MiscUtils.remapValue(initialPoint.y, fromBounds.top, fromBounds.height(), toBounds.top, toBounds.height()));
+//        } else {
+//            for (PointF point : pointKeyframes) {
+//               point.set(
+//                        MiscUtils.remapValue(point.x, fromBounds.left, fromBounds.width(), toBounds.left, toBounds.width()),
+//                        MiscUtils.remapValue(point.y, fromBounds.top, fromBounds.height(), toBounds.top, toBounds.height()));
+//
+//            }
+//        }
     }
 
     public void setUsePathAnimation(boolean usePathAnimation) {
@@ -211,13 +227,24 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     }
 
     @Override
-    public Object animationForKeyPath(String keyPath) {
-        return null;
+    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
+        if (!hasAnimation()) {
+            return null;
+        }
+
+        LotteKeyframeAnimation animation;
+        if (animationPath != null && usePathAnimation) {
+            animation = new LottePathKeyframeAnimation(keyPath, durationMs, keyTimes, animationPath);
+        } else {
+            animation = new LottePointKeyframeAnimation(keyPath, durationMs, keyTimes, pointKeyframes);
+        }
+        animation.setStartDelay(delayMs);
+        return animation;
     }
 
     @Override
     public boolean hasAnimation() {
-        return false;
+        return animationPath != null || !pointKeyframes.isEmpty();
     }
 
     @Override

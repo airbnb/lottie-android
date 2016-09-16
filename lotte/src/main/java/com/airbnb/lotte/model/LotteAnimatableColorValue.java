@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.view.animation.Interpolator;
 
+import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +75,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
 
     @Override
-    public Object animationForKeyPath(String keyPath) {
+    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
         return null;
     }
 

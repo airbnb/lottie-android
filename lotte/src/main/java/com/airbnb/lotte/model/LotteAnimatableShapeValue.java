@@ -7,6 +7,9 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lotte.utils.JsonUtils;
+import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.LotteShapeKeyframeAnimation;
+import com.airbnb.lotte.utils.MiscUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,9 +24,11 @@ import static com.airbnb.lotte.utils.MiscUtils.addPoints;
 public class LotteAnimatableShapeValue implements LotteAnimatableValue {
     private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
-    private Path initialShape;
-    private List<Path> shapeKeyframes = new ArrayList<>();
-    private List<Float> keyTimes = new ArrayList<>();
+    private final Path path = new Path();
+
+    private LotteShapeData initialShape;
+    private final List<LotteShapeData> shapeKeyframes = new ArrayList<>();
+    private final List<Float> keyTimes = new ArrayList<>();
     private List<Interpolator> interpolators;
     private long delay;
     private long duration;
@@ -66,7 +71,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
             boolean addStartValue = true;
             boolean addTimePadding = false;
-            Path outShape = null;
+            LotteShapeData outShape = null;
 
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
@@ -79,7 +84,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
                     outShape = null;
                 }
 
-                Path startShape = keyframe.has("s") ? bezierShapeFromValue(keyframe.getJSONObject("s"), closed) : null;
+                LotteShapeData startShape = keyframe.has("s") ? bezierShapeFromValue(keyframe.getJSONObject("s"), closed) : null;
                 if (addStartValue) {
                     if (keyframe.has("s")) {
                         if (i == 0) {
@@ -128,7 +133,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
     }
 
-    private Path bezierShapeFromValue(Object value, boolean closed) {
+    private LotteShapeData bezierShapeFromValue(Object value, boolean closed) {
         JSONObject pointsData = null;
         if (value instanceof JSONArray) {
             try {
@@ -161,10 +166,10 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
             throw new IllegalStateException("Unable to process points array or tangents. " + pointsData);
         }
 
-        Path shape = new Path();
+        LotteShapeData shape = new LotteShapeData();
 
         PointF vertex = vertexAtIndex(0, pointsArray);
-        shape.moveTo(vertex.x, vertex.y);
+        shape.setInitialPoint(vertex);
 
         for (int i = 1; i < pointsArray.length(); i++) {
             vertex = vertexAtIndex(i, pointsArray);
@@ -174,7 +179,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
             PointF shapeCp1 = addPoints(previousVertex, cp1);
             PointF shapeCp2 = addPoints(vertex, cp2);
-            shape.cubicTo(shapeCp1.x, shapeCp1.y, shapeCp2.x, shapeCp2.y, vertex.x, vertex.y);
+            shape.addCurve(new LotteCubicCurveData(shapeCp1, shapeCp2, vertex));
         }
 
         if (closed) {
@@ -185,7 +190,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
             PointF shapeCp1 = addPoints(previousVertex, cp1);
             PointF shapeCp2 = addPoints(vertex, cp2);
-            shape.cubicTo(shapeCp1.x, shapeCp1.y, shapeCp2.x, shapeCp2.y, vertex.x, vertex.y);
+            shape.addCurve(new LotteCubicCurveData(shapeCp1, shapeCp2, vertex));
         }
 
         return shape;
@@ -209,17 +214,21 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
     }
 
     public Path getInitialShape() {
-        return initialShape;
+        MiscUtils.getPathFromData(initialShape, path);
+        return path;
     }
 
     @Override
-    public Object animationForKeyPath(String keyPath) {
-        return null;
+    public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
+        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(keyPath, duration, keyTimes, shapeKeyframes);
+        animation.setInterpolators(interpolators);
+
+        return animation;
     }
 
     @Override
     public boolean hasAnimation() {
-        return false;
+        return !shapeKeyframes.isEmpty();
     }
 
     @Override

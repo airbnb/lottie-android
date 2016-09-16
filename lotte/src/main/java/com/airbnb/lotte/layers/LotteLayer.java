@@ -130,7 +130,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (anchor != null) {
                 layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate);
-                layer.anchor.remapPointsFromBounds(new Rect(0, 0, 1, 1));
+                layer.anchor.remapPointsFromBounds(composition.getBounds(), new Rect(0, 0, 1, 1));
                 layer.anchor.setUsePathAnimation(false);
                 if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.getInitialPoint());
             }
