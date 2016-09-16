@@ -25,8 +25,8 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
 
-    private float delay;
-    private float duration;
+    private long delay;
+    private long duration;
     private int startFrame;
     private int durationFrames;
     private int frameRate;
@@ -149,12 +149,15 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        return null;
+        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(keyPath, duration, keyTimes, scaleKeyframes);
+        animation.setInterpolators(interpolators);
+        animation.setStartDelay(delay);
+        return animation;
     }
 
     @Override
     public boolean hasAnimation() {
-        return false;
+        return !scaleKeyframes.isEmpty();
     }
 
     @Override

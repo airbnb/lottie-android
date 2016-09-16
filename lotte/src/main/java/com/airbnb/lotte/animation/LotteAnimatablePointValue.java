@@ -27,7 +27,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
     private boolean usePathAnimation = true;
     private PointF initialPoint;
-    private Path animationPath;
+    private final Path animationPath = new Path();
     private long delayMs;
     private long durationMs;
     private long startFrame;
@@ -233,7 +233,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
         }
 
         LotteKeyframeAnimation animation;
-        if (animationPath != null && usePathAnimation) {
+        if (!animationPath.isEmpty() && usePathAnimation) {
             animation = new LottePathKeyframeAnimation(keyPath, durationMs, keyTimes, animationPath);
         } else {
             animation = new LottePointKeyframeAnimation(keyPath, durationMs, keyTimes, pointKeyframes);
@@ -244,7 +244,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
     @Override
     public boolean hasAnimation() {
-        return animationPath != null || !pointKeyframes.isEmpty();
+        return !animationPath.isEmpty() || !pointKeyframes.isEmpty();
     }
 
     @Override

@@ -195,7 +195,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
 
     @Override
     public boolean hasAnimation() {
-        return false;
+        return !valueKeyframes.isEmpty();
     }
 
 
