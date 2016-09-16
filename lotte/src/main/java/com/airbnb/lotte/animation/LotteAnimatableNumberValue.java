@@ -29,8 +29,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
     private final List<Float> valueKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> timingFunctions = new ArrayList<>();
-    private long delayMs;
-    private long durationMs;
+    private long delay;
+    private long duration;
     private long startFrame;
     private long durationFrames;
 
@@ -74,8 +74,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    durationMs = durationFrames / frameRate;
-                    delayMs = startFrame / frameRate;
+                    duration = durationFrames / frameRate;
+                    delay = startFrame / frameRate;
                     break;
                 }
             }
@@ -188,8 +188,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        LotteKeyframeAnimation animation = new LotteValueKeyframeAnimation(keyPath, durationMs, keyTimes, valueKeyframes);
-        animation.setStartDelay(delayMs);
+        LotteKeyframeAnimation animation = new LotteValueKeyframeAnimation(keyPath, duration, keyTimes, valueKeyframes);
+        animation.setStartDelay(delay);
         return animation;
     }
 

@@ -1,9 +1,14 @@
 package com.airbnb.lotte.animation;
 
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.support.annotation.ColorInt;
+import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lotte.utils.JsonUtils;
+import com.airbnb.lotte.utils.LotteColorKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 
 import org.json.JSONArray;
@@ -15,8 +20,8 @@ import java.util.List;
 
 public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
-    private final List<Integer> colorKeyFrames = new ArrayList<>();
-    private final List<Integer> keyTimes = new ArrayList<>();
+    private final List<Integer> colorKeyframes = new ArrayList<>();
+    private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> timingFunctions = new ArrayList<>();
     private long delay;
     private long duration;
@@ -49,8 +54,98 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
     }
 
     private void buildAnimationForKeyframes(JSONArray keyframes) {
+        try {
+            for (int i = 0; i < keyframes.length(); i++) {
+                JSONObject kf = keyframes.getJSONObject(i);
+                if (kf.has("t")) {
+                    startFrame = kf.getLong("t");
+                    break;
+                }
+            }
 
+            for (int i = keyframes.length() - 1; i >= 0; i--) {
+                JSONObject keyframe = keyframes.getJSONObject(i);
+                if (keyframe.has("t")) {
+                    long endFrame = keyframe.getLong("t");
+                    if (endFrame <= startFrame) {
+                        throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
+                    }
+                    durationFrames = endFrame - startFrame;
+                    duration = durationFrames / frameRate;
+                    delay = startFrame / frameRate;
+                    break;
+                }
+            }
+
+            boolean addStartValue = true;
+            boolean addTimePadding =  false;
+            Integer outColor = null;
+
+            for (int i = 0; i < keyframes.length(); i++) {
+                JSONObject keyframe = keyframes.getJSONObject(i);
+                long frame = keyframe.getLong("t");
+                float timePercentage = (frame - startFrame) / durationFrames;
+
+                if (outColor != null) {
+                    colorKeyframes.add(outColor);
+                    timingFunctions.add(new LinearInterpolator());
+                    outColor = null;
+                }
+
+                Integer startColor = colorValueFromArray(keyframe.getJSONArray("s"));
+                if (addStartValue) {
+                    if (startColor != null) {
+                        if (i == 0) {
+                            initialColor = startColor;
+                        }
+                        colorKeyframes.add(startColor);
+                        if (!timingFunctions.isEmpty()) {
+                            timingFunctions.add(new LinearInterpolator());
+                        }
+                    }
+                    addStartValue = false;
+                }
+
+                if (addTimePadding) {
+                    float holdPercentage = timePercentage - 0.00001f;
+                    keyTimes.add(holdPercentage);
+                    addTimePadding = false;
+                }
+
+                Integer endColor = colorValueFromArray(keyframe.getJSONArray("e"));
+                if (endColor != null) {
+                    colorKeyframes.add(endColor);
+                    /**
+                     * Timing function for time interpolation between keyframes.
+                     * Should be n - 1 where n is the number of keyframes.
+                     */
+                    Interpolator timingFunction;
+                    if (keyframe.has("o") && keyframe.has("i")) {
+                        JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
+                        JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
+                        PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
+                        PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
+
+                        timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                    } else {
+                        timingFunction = new LinearInterpolator();
+                    }
+                    timingFunctions.add(timingFunction);
+                }
+
+                keyTimes.add(timePercentage);
+
+                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                    outColor = startColor;
+                    addStartValue = true;
+                    addTimePadding = true;
+                }
+            }
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Unable to parse color values.", e);
+        }
     }
+
 
     @ColorInt
     private int colorValueFromArray(JSONArray colorArray) throws JSONException {
@@ -76,12 +171,17 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(String keyPath) {
-        return null;
+        if (!hasAnimation()) {
+            return null;
+        }
+        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(keyPath, duration, keyTimes, colorKeyframes);
+        animation.setInterpolators(timingFunctions);
+        return animation;
     }
 
     @Override
     public boolean hasAnimation() {
-        return false;
+        return !colorKeyframes.isEmpty();
     }
 
     @ColorInt
