@@ -12,6 +12,7 @@ import com.airbnb.lotte.model.RemapInterface;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
+import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class LotteAnimatableNumberValue implements LotteAnimatableValue {
+public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> {
 
+    private final Observable<Number> observable = new Observable<>();
     private final int frameRate;
     @Nullable private RemapInterface remapInterface;
     private float initialValue;
@@ -75,8 +77,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    duration = durationFrames / frameRate;
-                    delay = startFrame / frameRate;
+                    duration = durationFrames / frameRate * 1000;
+                    delay = startFrame / frameRate * 1000;
                     break;
                 }
             }
@@ -199,6 +201,10 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue {
         return !valueKeyframes.isEmpty();
     }
 
+    @Override
+    public Observable<Number> getObservable() {
+        return observable;
+    }
 
     @Override
     public String toString() {

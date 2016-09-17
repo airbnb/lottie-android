@@ -11,6 +11,7 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
+import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,9 +20,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LotteAnimatablePointValue implements LotteAnimatableValue {
+public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     private static final String TAG = LotteAnimatablePointValue.class.getSimpleName();
 
+    private final Observable<PointF> observable = new Observable<>();
     private final List<PointF> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
@@ -29,8 +31,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
     private boolean usePathAnimation = true;
     private PointF initialPoint;
     private final Path animationPath = new Path();
-    private long delayMs;
-    private long durationMs;
+    private long delay;
+    private long duration;
     private long startFrame;
     private long durationFrames;
     private int frameRate;
@@ -62,6 +64,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
             } else {
                 // Single Value, no animation
                 initialPoint = pointFromValueArray((JSONArray) value);
+                observable.setValue(initialPoint);
             }
         }
     }
@@ -84,8 +87,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    durationMs = durationFrames / frameRate;
-                    delayMs = startFrame / frameRate;
+                    duration = durationFrames / frameRate * 1000;
+                    delay = startFrame / frameRate * 1000;
                     break;
                 }
             }
@@ -223,6 +226,11 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
         this.usePathAnimation = usePathAnimation;
     }
 
+    @Override
+    public Observable<PointF> getObservable() {
+        return observable;
+    }
+
     public PointF getInitialPoint() {
         return initialPoint;
     }
@@ -235,11 +243,11 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
         LotteKeyframeAnimation animation;
         if (!animationPath.isEmpty() && usePathAnimation) {
-            animation = new LottePathKeyframeAnimation(property, durationMs, keyTimes, animationPath);
+            animation = new LottePathKeyframeAnimation(property, duration, keyTimes, animationPath);
         } else {
-            animation = new LottePointKeyframeAnimation(property, durationMs, keyTimes, pointKeyframes);
+            animation = new LottePointKeyframeAnimation(property, duration, keyTimes, pointKeyframes);
         }
-        animation.setStartDelay(delayMs);
+        animation.setStartDelay(delay);
         return animation;
     }
 

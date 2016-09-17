@@ -11,6 +11,7 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteColorKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,8 +20,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LotteAnimatableColorValue implements LotteAnimatableValue {
+public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> {
 
+    private final Observable<Integer> observable = new Observable<>();
     private final List<Integer> colorKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> timingFunctions = new ArrayList<>();
@@ -72,8 +74,8 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    duration = durationFrames / frameRate;
-                    delay = startFrame / frameRate;
+                    duration = durationFrames / frameRate * 1000;
+                    delay = startFrame / frameRate * 1000;
                     break;
                 }
             }
@@ -180,6 +182,11 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue {
     @Override
     public boolean hasAnimation() {
         return !colorKeyframes.isEmpty();
+    }
+
+    @Override
+    public Observable<Integer> getObservable() {
+        return observable;
     }
 
     @ColorInt

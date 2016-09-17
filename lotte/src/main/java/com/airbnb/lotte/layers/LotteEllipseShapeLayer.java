@@ -48,7 +48,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         setBounds(transform.getCompBounds());
         anchorPoint = transform.getAnchor().getInitialPoint();
         setAlpha((int) transform.getOpacity().getInitialValue());
-        position = transform.getPosition().getInitialPoint();
+        position.setValue(transform.getPosition().getInitialPoint());
         this.transform = transform.getScale().getInitialScale();
         sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(transform.getRotation().getInitialValue());

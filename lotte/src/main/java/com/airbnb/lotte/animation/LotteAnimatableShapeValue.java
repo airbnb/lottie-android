@@ -12,6 +12,7 @@ import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteShapeKeyframeAnimation;
 import com.airbnb.lotte.utils.MiscUtils;
+import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,9 +24,10 @@ import java.util.List;
 import static com.airbnb.lotte.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock", "unused", "FieldCanBeLocal", "WeakerAccess"})
-public class LotteAnimatableShapeValue implements LotteAnimatableValue {
+public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
+    private final Observable<Path> observable = new Observable<>();
     private final Path path = new Path();
 
     private LotteShapeData initialShape;
@@ -68,8 +70,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
 
             durationFrames = endFrame - startFrame;
 
-            duration = durationFrames / frameRate;
-            delay = startFrame / frameRate;
+            duration = durationFrames / frameRate * 1000;
+            delay = startFrame / frameRate * 1000;
 
             boolean addStartValue = true;
             boolean addTimePadding = false;
@@ -231,6 +233,11 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue {
     @Override
     public boolean hasAnimation() {
         return !shapeKeyframes.isEmpty();
+    }
+
+    @Override
+    public Observable<Path> getObservable() {
+        return observable;
     }
 
     @Override

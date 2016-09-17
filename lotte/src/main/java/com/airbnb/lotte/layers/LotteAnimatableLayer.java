@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class LotteAnimatableLayer extends Drawable {
     protected final List<Drawable> layers = new ArrayList<>();
 
     /** This should mimic CALayer#position */
-    protected PointF position;
+    protected final Observable<PointF> position = new Observable<>();
     /** This should mimic CALayer#anchorPoint */
     protected PointF anchorPoint;
     /** This should mimic CALayer#transform */
@@ -71,7 +72,7 @@ public class LotteAnimatableLayer extends Drawable {
     public void draw(@NonNull Canvas canvas) {
         canvas.save();
         if (position != null) {
-            canvas.translate(position.x, position.y);
+            canvas.translate(position.getValue().x, position.getValue().y);
         }
         if (transform != null) {
             canvas.scale(transform.getScaleX(), transform.getScaleY());

@@ -9,6 +9,7 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,9 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"EmptyCatchBlock", "unused"})
-public class LotteAnimatableScaleValue implements LotteAnimatableValue {
+public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTransform3D> {
     private static final String TAG = LotteAnimatableScaleValue.class.getSimpleName();
 
+    private final Observable<LotteTransform3D> observable = new Observable<>();
     private LotteTransform3D initialScale;
     private final List<LotteTransform3D> scaleKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
@@ -65,8 +67,8 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
 
             durationFrames = endFrame - startFrame;
 
-            duration = durationFrames / frameRate;
-            delay = startFrame / frameRate;
+            duration = durationFrames / frameRate * 1000;
+            delay = startFrame / frameRate * 1000;
 
             boolean addStartValue = true;
             boolean addTimePadding = false;
@@ -159,6 +161,11 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue {
     @Override
     public boolean hasAnimation() {
         return !scaleKeyframes.isEmpty();
+    }
+
+    @Override
+    public Observable<LotteTransform3D> getObservable() {
+        return observable;
     }
 
     @Override
