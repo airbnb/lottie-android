@@ -129,7 +129,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue {
 
                 if (keyframe.has("e")) {
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
-
+                    pointKeyframes.add(vertex);
                     if (keyframe.has("o") && keyframe.has("i")) {
                         PointF cp1 = pointFromValueArray(keyframe.getJSONArray("to"));
                         PointF cp2 = pointFromValueArray(keyframe.getJSONArray("ti"));
