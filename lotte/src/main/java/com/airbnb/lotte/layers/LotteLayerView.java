@@ -3,11 +3,13 @@ package com.airbnb.lotte.layers;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
@@ -24,7 +26,6 @@ import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
-import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,32 +58,23 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private LotteAnimatableLayer childContainerLayer;
 
 
-    public LotteLayerView(LotteLayer layerModel, LotteComposition composition) {
-        super(composition.getDuration());
+    public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Drawable.Callback callback) {
+        super(composition.getDuration(), callback);
         this.layerModel = layerModel;
         this.composition = composition;
         setBounds(composition.getBounds());
         bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         maskPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
         contentCanvas = new Canvas(bitmap);
-        addPropertyListeners();
-        setupForModel();
+        setupForModel(callback);
     }
 
-    private void addPropertyListeners() {
-        position.addChangeListener(new Observable.OnChangedListener<PointF>() {
-            @Override
-            public void onChanged(PointF value) {
-                invalidateSelf();
-            }
-        });
-    }
-
-    private void setupForModel() {
+    private void setupForModel(Drawable.Callback callback) {
         setBounds(composition.getBounds());
         anchorPoint = new PointF();
 
-        childContainerLayer = new LotteAnimatableLayer(0);
+        childContainerLayer = new LotteAnimatableLayer(0, getCallback());
+        childContainerLayer.setCallback(callback);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
         childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
@@ -93,14 +85,15 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 this.parentId = parentId;
             }
             LotteLayer parentModel = composition.layerModelForId(parentId);
-            LotteParentLayer parentLayer = new LotteParentLayer(parentModel, composition);
+            LotteParentLayer parentLayer = new LotteParentLayer(parentModel, composition, getCallback());
+            parentLayer.setCallback(callback);
             parentLayer.addLayer(currentChild);
             currentChild = parentLayer;
             parentId = parentModel.getParentId();
         }
         addLayer(currentChild);
 
-        childContainerLayer.position.setValue(layerModel.getPosition().getInitialPoint());
+        childContainerLayer.setPosition(layerModel.getPosition().getObservable());
         childContainerLayer.anchorPoint = layerModel.getAnchor().getInitialPoint();
         childContainerLayer.transform = layerModel.getScale().getInitialScale();
         childContainerLayer.sublayerTransform = new LotteTransform3D();
@@ -119,7 +112,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         for (Object item : reversedItems) {
             if (item instanceof LotteShapeGroup) {
                 LotteGroupLayerView groupLayer = new LotteGroupLayerView((LotteShapeGroup) item, currentFill,
-                        currentStroke, currentTrimPath, currentTransform, duration);
+                        currentStroke, currentTrimPath, currentTransform, duration, getCallback());
                 childContainerLayer.addLayer(groupLayer);
             } else if (item instanceof LotteShapeTransform) {
                 currentTransform = (LotteShapeTransform) item;
@@ -134,7 +127,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
 
         if (layerModel.getMasks() != null) {
-            mask = new LotteMaskLayer(layerModel.getMasks(), composition);
+            mask = new LotteMaskLayer(layerModel.getMasks(), composition, getCallback());
             maskBitmap = Bitmap.createBitmap(
                     composition.getBounds().width(),
                     composition.getBounds().height(),
@@ -175,6 +168,13 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     @Override
     public void draw(@NonNull Canvas mainCanvas) {
+        bitmap.eraseColor(Color.TRANSPARENT);
+        if (maskBitmap != null) {
+            maskBitmap.eraseColor(Color.TRANSPARENT);
+        }
+        if (matteBitmap != null) {
+            matteBitmap.eraseColor(Color.TRANSPARENT);
+        }
         super.draw(contentCanvas);
 
         Bitmap mainBitmap;

@@ -6,14 +6,13 @@ import android.graphics.Paint;
 import android.graphics.PathEffect;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 
-import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
@@ -38,8 +37,8 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     @Nullable private LotteRoundRectLayer strokeLayer;
 
     public LotteRectShapeLayer(LotteShapeRectangle rectShape, @Nullable LotteShapeFill fill,
-            @Nullable LotteShapeStroke stroke, LotteShapeTransform transform, long duration) {
-        super(duration);
+            @Nullable LotteShapeStroke stroke, LotteShapeTransform transform, long duration, Drawable.Callback callback) {
+        super(duration, callback);
         this.rectShape = rectShape;
         this.fill = fill;
         this.stroke = stroke;
@@ -49,13 +48,13 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         setBounds(transform.getCompBounds());
         anchorPoint = transform.getAnchor().getInitialPoint();
         setAlpha((int) (transform.getOpacity().getInitialValue()));
-        position.setValue(transform.getPosition().getInitialPoint());
+        setPosition(transform.getPosition().getObservable());
         this.transform = transform.getScale().getInitialScale();
         sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
-            fillLayer = new LotteRoundRectLayer(duration);
+            fillLayer = new LotteRoundRectLayer(duration, getCallback());
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
             fillLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
@@ -66,7 +65,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new LotteRoundRectLayer(duration);
+            strokeLayer = new LotteRoundRectLayer(duration, getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setColor(stroke.getColor().getInitialColor());
             strokeLayer.setShapeAlpha((int) (stroke.getOpacity().getInitialValue()));
@@ -149,8 +148,8 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         @Nullable private PathEffect dashPatternPathEffect;
         @Nullable private PathEffect lineJoinPathEffect;
 
-        LotteRoundRectLayer(long duration) {
-            super(duration);
+        LotteRoundRectLayer(long duration, Drawable.Callback callback) {
+            super(duration, callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
         }
@@ -257,7 +256,6 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
                     rectPosition.y - halfHeight,
                     rectPosition.x + halfWidth,
                     rectPosition.y + halfHeight);
-            if (L.DBG) Log.d(TAG, "Drawing round rect " + fillRect.toShortString() + " radius " + rectCornerRadius);
             if (rectCornerRadius == 0) {
                 canvas.drawRect(fillRect, paint);
             } else {

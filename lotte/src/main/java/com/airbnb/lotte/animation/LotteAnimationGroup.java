@@ -34,4 +34,10 @@ public class LotteAnimationGroup {
     public LotteAnimationGroup(List<LotteKeyframeAnimation> animations) {
         this.animations = animations;
     }
+
+    public void play() {
+        for (LotteKeyframeAnimation animation : animations) {
+            animation.play();
+        }
+    }
 }

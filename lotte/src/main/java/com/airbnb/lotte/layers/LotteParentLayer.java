@@ -1,5 +1,6 @@
 package com.airbnb.lotte.layers;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -16,8 +17,8 @@ public class LotteParentLayer extends LotteAnimatableLayer {
     private LotteLayer parentModel;
     private LotteAnimationGroup animation;
 
-    public LotteParentLayer(LotteLayer parent, LotteComposition composition) {
-        super(composition.getDuration());
+    public LotteParentLayer(LotteLayer parent, LotteComposition composition, Drawable.Callback callback) {
+        super(composition.getDuration(), callback);
         setBounds(parent.getCompBounds());
         this.parentModel = parent;
         setupLayerFromModel();

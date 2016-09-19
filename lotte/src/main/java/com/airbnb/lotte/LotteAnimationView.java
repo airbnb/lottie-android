@@ -2,6 +2,7 @@ package com.airbnb.lotte;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -28,8 +29,8 @@ public class LotteAnimationView extends ImageView {
     }
 
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
+    private final RootLotteAnimatableLayer animationContainer = new RootLotteAnimatableLayer(this);
 
-    private LotteAnimatableLayer animationContainer;
     private LotteComposition sceneModel;
     private boolean isPlaying;
     private boolean loop;
@@ -76,6 +77,11 @@ public class LotteAnimationView extends ImageView {
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
+    }
+
+    @Override
+    protected boolean verifyDrawable(Drawable drawable) {
+        return true;
     }
 
     public void setAnimation(String animationName) {
@@ -134,7 +140,6 @@ public class LotteAnimationView extends ImageView {
     public void setModel(LotteComposition model) {
         sceneModel = model;
         animationSpeed = 1f;
-        animationContainer = new RootLotteAnimatableLayer();
         animationContainer.setBounds(0, 0, getWidth(), getHeight());
         animationContainer.setSpeed(0f);
     }
@@ -144,7 +149,7 @@ public class LotteAnimationView extends ImageView {
     }
 
     public void play(@Nullable OnAnimationCompletedListener listener) {
-
+        animationContainer.play();
     }
 
     public void pause() {
@@ -157,7 +162,7 @@ public class LotteAnimationView extends ImageView {
 
         LotteLayerView maskedLayer = null;
         for (LotteLayer layer : reversedLayers) {
-            LotteLayerView layerDrawable = new LotteLayerView(layer, sceneModel);
+            LotteLayerView layerDrawable = new LotteLayerView(layer, sceneModel, this);
             layerMap.put(layerDrawable.getId(), layerDrawable);
             if (maskedLayer != null) {
                 maskedLayer.setMatte(layerDrawable);

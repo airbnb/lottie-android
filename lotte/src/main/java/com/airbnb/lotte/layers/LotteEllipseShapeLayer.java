@@ -7,15 +7,16 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 
 import java.util.List;
@@ -37,8 +38,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
     private LotteAnimationGroup fillAnimation;
 
     public LotteEllipseShapeLayer(LotteShapeCircle circleShape, LotteShapeFill fill, LotteShapeStroke stroke,
-            LotteShapeTrimPath trim, LotteShapeTransform transform, long duration) {
-        super(duration);
+            LotteShapeTrimPath trim, LotteShapeTransform transform, long duration, Drawable.Callback callback) {
+        super(duration, callback);
         this.circleShape = circleShape;
         this.fill = fill;
         this.stroke = stroke;
@@ -48,13 +49,13 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         setBounds(transform.getCompBounds());
         anchorPoint = transform.getAnchor().getInitialPoint();
         setAlpha((int) transform.getOpacity().getInitialValue());
-        position.setValue(transform.getPosition().getInitialPoint());
+        setPosition(transform.getPosition().getObservable());
         this.transform = transform.getScale().getInitialScale();
         sublayerTransform = new LotteTransform3D();
         sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
-            fillLayer = new LotteCircleShapeLayer(duration);
+            fillLayer = new LotteCircleShapeLayer(duration, getCallback());
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue() * 255));
             fillLayer.updateCircle(
@@ -64,7 +65,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new LotteCircleShapeLayer(duration);
+            strokeLayer = new LotteCircleShapeLayer(duration, getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setColor(stroke.getColor().getInitialColor());
             strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue()));
@@ -98,8 +99,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         private float strokeStart = -1f;
         private float strokeEnd = -1f;
 
-        public LotteCircleShapeLayer(long duration) {
-            super(duration);
+        public LotteCircleShapeLayer(long duration, Drawable.Callback callback) {
+            super(duration, callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
         }

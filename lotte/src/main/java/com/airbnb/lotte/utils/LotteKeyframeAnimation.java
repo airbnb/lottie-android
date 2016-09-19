@@ -19,7 +19,7 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     protected final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-    protected final List<AnimationListener> listeners = new ArrayList<>();
+    protected final List<AnimationListener<T>> listeners = new ArrayList<>();
     protected final @AnimatableProperty int property;
     protected final List<Float> keyTimes;
     protected final long duration;
@@ -73,7 +73,7 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     private void onProgressChanged() {
-        for (AnimationListener l : listeners) {
+        for (AnimationListener<T> l : listeners) {
             l.onValueChanged(getValueForProgress(progress));
         }
     }
@@ -94,6 +94,10 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public long getStartDelay() {
         return startDelay;
+    }
+
+    public void play() {
+        animator.start();
     }
 
     public abstract T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress);

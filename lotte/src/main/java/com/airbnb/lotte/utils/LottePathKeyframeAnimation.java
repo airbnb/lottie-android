@@ -22,11 +22,11 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
 
     @Override
     public PointF getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress < startDelay) {
+        if (progress <= (float) startDelay / (startDelay + duration)) {
             pathMeasure.getPosTan(0, pos, null);
             point.set(pos[0], pos[1]);
             return point;
-        } else if (progress > startDelay + duration) {
+        } else if (progress >= 1f) {
             pathMeasure.getPosTan(pathMeasure.getLength(), pos, null);
             point.set(pos[0], pos[1]);
             return point;
@@ -34,8 +34,8 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
 
         int keyframeIndex = getKeyframeIndex();
 
-        float startKeytime = keyTimes.get(keyframeIndex );
-        float endKeytime = keyTimes.get(keyframeIndex);
+        float startKeytime = keyTimes.get(keyframeIndex);
+        float endKeytime = keyTimes.get(keyframeIndex + 1);
 
 
         float percentageIntoFrame = 0;
@@ -46,7 +46,7 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
             }
         }
 
-        pathMeasure.getPosTan(startKeytime + percentageIntoFrame * (endKeytime - startKeytime), pos, null);
+        pathMeasure.getPosTan(startKeytime + percentageIntoFrame * (endKeytime - startKeytime) * pathMeasure.getLength(), pos, null);
         point.set(pos[0], pos[1]);
         return point;
     }

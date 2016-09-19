@@ -11,4 +11,10 @@
         android:layout_width="256dp"
         android:layout_height="256dp"
         android:background="@drawable/outline"/>
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play"/>
 </FrameLayout>

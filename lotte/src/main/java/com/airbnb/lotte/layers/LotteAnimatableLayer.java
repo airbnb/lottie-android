@@ -24,8 +24,15 @@ public class LotteAnimatableLayer extends Drawable {
 
     protected final List<Drawable> layers = new ArrayList<>();
 
+    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            invalidateSelf();
+        }
+    };
+
     /** This should mimic CALayer#position */
-    protected final Observable<PointF> position = new Observable<>();
+    protected Observable<PointF> position;
     /** This should mimic CALayer#anchorPoint */
     protected PointF anchorPoint;
     /** This should mimic CALayer#transform */
@@ -37,9 +44,9 @@ public class LotteAnimatableLayer extends Drawable {
     @IntRange(from=0, to=255) private int alpha = 255;
 
     private final Paint solidBackgroundPaint = new Paint();
-    private final List<LotteAnimationGroup> animations = new ArrayList<>();
+    protected final List<LotteAnimationGroup> animations = new ArrayList<>();
 
-    public LotteAnimatableLayer(long duration) {
+    public LotteAnimatableLayer(long duration, Drawable.Callback callback) {
         this.duration = duration;
 
         solidBackgroundPaint.setAlpha(0);
@@ -71,7 +78,7 @@ public class LotteAnimatableLayer extends Drawable {
     @Override
     public void draw(@NonNull Canvas canvas) {
         canvas.save();
-        if (position != null) {
+        if (position != null && position.getValue() != null) {
             canvas.translate(position.getValue().x, position.getValue().y);
         }
         if (transform != null) {
@@ -111,6 +118,14 @@ public class LotteAnimatableLayer extends Drawable {
 
     }
 
+    public void setPosition(Observable<PointF> position) {
+        if (this.position != null) {
+            this.position.removeChangeListemer(changedListener);
+        }
+        this.position = position;
+        position.addChangeListener(changedListener);
+    }
+
     @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
@@ -122,5 +137,17 @@ public class LotteAnimatableLayer extends Drawable {
         int height = Math.max(getBounds().height(), layer.getBounds().height());
         setBounds(0, 0, width, height);
         invalidateSelf();
+    }
+
+    public void play() {
+        for (LotteAnimationGroup animation : animations) {
+            animation.play();
+        }
+
+        for (Drawable layer : layers) {
+            if (layer instanceof LotteAnimatableLayer) {
+                ((LotteAnimatableLayer) layer).play();
+            }
+        }
     }
 }

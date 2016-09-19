@@ -130,12 +130,14 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                     addTimePadding = false;
                 }
 
+                PointF cp1;
+                PointF cp2;
                 if (keyframe.has("e")) {
+                    cp1 = pointFromValueArray(keyframe.getJSONArray("to"));
+                    cp2 = pointFromValueArray(keyframe.getJSONArray("ti"));
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
                     pointKeyframes.add(vertex);
-                    if (keyframe.has("o") && keyframe.has("i")) {
-                        PointF cp1 = pointFromValueArray(keyframe.getJSONArray("to"));
-                        PointF cp2 = pointFromValueArray(keyframe.getJSONArray("ti"));
+                    if (cp1.x != 0 || cp1.y != 0 || cp2.x != 0 || cp2.y != 0) {
                         PointF inVertex = startPoint;
                         animationPath.cubicTo(
                                 inVertex.x + cp1.x, inVertex.y + cp1.y,
@@ -147,8 +149,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
                     Interpolator interpolator;
                     if (keyframe.has("o") && keyframe.has("i")) {
-                        PointF cp1 = pointFromValueObject(keyframe.getJSONObject("o"));
-                        PointF cp2 = pointFromValueObject(keyframe.getJSONObject("i"));
+                        cp1 = pointFromValueObject(keyframe.getJSONObject("o"));
+                        cp2 = pointFromValueObject(keyframe.getJSONObject("i"));
                         interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
                     } else {
                         interpolator = new LinearInterpolator();
@@ -164,6 +166,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                     addTimePadding = true;
                 }
             }
+
+            observable.setValue(pointKeyframes.get(0));
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse keyframes " + keyframes, e);
         }
@@ -247,6 +251,12 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
         } else {
             animation = new LottePointKeyframeAnimation(property, duration, keyTimes, pointKeyframes);
         }
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            @Override
+            public void onValueChanged(Object progress) {
+                observable.setValue((PointF) progress);
+            }
+        });
         animation.setStartDelay(delay);
         return animation;
     }

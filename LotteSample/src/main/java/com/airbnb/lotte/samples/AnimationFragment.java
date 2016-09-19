@@ -11,6 +11,7 @@ import com.airbnb.lotte.LotteAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AnimationFragment extends Fragment {
     private static final String ARG_FILE_NAME = "file_name";
@@ -35,5 +36,10 @@ public class AnimationFragment extends Fragment {
         animationView.setAnimation(fileName);
 
         return view;
+    }
+
+    @OnClick(R.id.play)
+    public void onPlayClicked() {
+        animationView.play();
     }
 }

@@ -1,6 +1,7 @@
 package com.airbnb.lotte.layers;
 
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
@@ -34,8 +35,8 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
 
     public LotteShapeLayerView(LotteShapePath shape, @Nullable LotteShapeFill fill,
             @Nullable LotteShapeStroke stroke, @Nullable LotteShapeTrimPath trim,
-            LotteShapeTransform transformModel, long duration) {
-        super(duration);
+            LotteShapeTransform transformModel, long duration, Drawable.Callback callback) {
+        super(duration, callback);
         path = shape;
         this.fill = fill;
         this.stroke = stroke;
