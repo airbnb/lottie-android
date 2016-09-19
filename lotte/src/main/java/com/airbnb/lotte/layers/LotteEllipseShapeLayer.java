@@ -18,6 +18,7 @@ import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
 
@@ -47,12 +48,12 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         this.transformModel = transform;
 
         setBounds(transform.getCompBounds());
-        anchorPoint = transform.getAnchor().getInitialPoint();
+        anchorPoint = transform.getAnchor().getObservable();
         setAlpha((int) transform.getOpacity().getInitialValue());
         setPosition(transform.getPosition().getObservable());
-        this.transform = transform.getScale().getInitialScale();
-        sublayerTransform = new LotteTransform3D();
-        sublayerTransform.rotateZ(transform.getRotation().getInitialValue());
+        this.transform = transform.getScale().getObservable();
+        sublayerTransform = new Observable<>(new LotteTransform3D());
+        sublayerTransform.getValue().rotateZ(transform.getRotation().getInitialValue());
 
         if (fill != null) {
             fillLayer = new LotteCircleShapeLayer(duration, getCallback());

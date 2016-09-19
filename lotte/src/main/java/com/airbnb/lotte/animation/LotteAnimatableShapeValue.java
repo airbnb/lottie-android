@@ -47,6 +47,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
             if (value instanceof JSONObject) {
                 // Single value, no animation
                 initialShape = bezierShapeFromValue(value, closed);
+                observable.setValue(new Path());
+                MiscUtils.getPathFromData(initialShape, observable.getValue());
             } else if (value instanceof JSONArray) {
                 Object firstObject = ((JSONArray) value).get(0);
                 if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t")) {
@@ -226,7 +228,12 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     public LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property) {
         LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(property, duration, keyTimes, shapeKeyframes);
         animation.setInterpolators(interpolators);
-
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            @Override
+            public void onValueChanged(Object progress) {
+                observable.setValue((Path) progress);
+            }
+        });
         return animation;
     }
 

@@ -14,6 +14,8 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 
 import com.airbnb.lotte.model.LotteShapeStroke;
+import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
 
@@ -27,8 +29,7 @@ public class LotteShapeLayer extends Drawable {
     private PathMeasure pathMeasure = new PathMeasure();
     private float pathLength;
 
-    private float scaleX = 1f;
-    private float scaleY = 1f;
+    private Observable<LotteTransform3D> scale = new Observable<>(new LotteTransform3D());
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
     private Path scaledPath = new Path();
@@ -44,6 +45,7 @@ public class LotteShapeLayer extends Drawable {
     public LotteShapeLayer() {
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
+        scale.getValue().scale(1f, 1f);
     }
 
     public void setStyle(Paint.Style style) {
@@ -65,7 +67,7 @@ public class LotteShapeLayer extends Drawable {
 
     public void setPath(Path path) {
         this.path = path;
-        setScale(scaleX, scaleY);
+        setScale(scale);
         pathMeasure.setPath(scaledPath, false);
         // Cache for perf.
         pathLength = pathMeasure.getLength();
@@ -165,9 +167,10 @@ public class LotteShapeLayer extends Drawable {
         this.strokeStart = strokeStart;
     }
 
-    public void setScale(float scaleX, float scaleY) {
+    public void setScale(Observable<LotteTransform3D> scale) {
+        this.scale = scale;
         path.computeBounds(scaleRect, true);
-        scaleMatrix.setScale(scaleX, scaleY, scaleRect.centerX(), scaleRect.centerY());
+        scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
         path.transform(scaleMatrix, scaledPath);
     }
 }

@@ -14,6 +14,7 @@ import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 public class LotteShapeLayerView extends LotteAnimatableLayer {
 
@@ -48,12 +49,12 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         strokePaint.setAntiAlias(true);
 
         setBounds(transformModel.getCompBounds());
-        anchorPoint = transformModel.getAnchor().getInitialPoint();
+        anchorPoint = transformModel.getAnchor().getObservable();
         position = transformModel.getPosition().getObservable();
-        sublayerTransform = new LotteTransform3D();
-        sublayerTransform.rotateZ(transformModel.getRotation().getInitialValue());
+        sublayerTransform = new Observable<>(new LotteTransform3D());
+        sublayerTransform.getValue().rotateZ(transformModel.getRotation().getInitialValue());
 
-        LotteTransform3D initialScale = transformModel.getScale().getInitialScale();
+        Observable<LotteTransform3D> initialScale = transformModel.getScale().getObservable();
         this.transform = initialScale;
         if (fill != null) {
             fillLayer = new LotteShapeLayer();
@@ -61,7 +62,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
             fillLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
-            fillLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
+            fillLayer.setScale(initialScale);
             addLayer(fillLayer);
         }
 
@@ -76,7 +77,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
-            strokeLayer.setScale(initialScale.getScaleX(), initialScale.getScaleY());
+            strokeLayer.setScale(initialScale);
             if (trim != null) {
                 strokeLayer.setStrokeStart(trim.getStart().getInitialValue());
                 strokeLayer.setStrokeEnd(trim.getEnd().getInitialValue());

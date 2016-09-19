@@ -26,6 +26,7 @@ import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +72,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private void setupForModel(Drawable.Callback callback) {
         setBounds(composition.getBounds());
-        anchorPoint = new PointF();
+        anchorPoint = new Observable<>();
+        anchorPoint.setValue(new PointF());
 
         childContainerLayer = new LotteAnimatableLayer(0, getCallback());
         childContainerLayer.setCallback(callback);
@@ -94,10 +96,10 @@ public class LotteLayerView extends LotteAnimatableLayer {
         addLayer(currentChild);
 
         childContainerLayer.setPosition(layerModel.getPosition().getObservable());
-        childContainerLayer.anchorPoint = layerModel.getAnchor().getInitialPoint();
-        childContainerLayer.transform = layerModel.getScale().getInitialScale();
-        childContainerLayer.sublayerTransform = new LotteTransform3D();
-        childContainerLayer.sublayerTransform.rotateZ(layerModel.getRotation().getInitialValue());
+        childContainerLayer.anchorPoint = layerModel.getAnchor().getObservable();
+        childContainerLayer.transform = layerModel.getScale().getObservable();
+        childContainerLayer.sublayerTransform = new Observable<>(new LotteTransform3D());
+        childContainerLayer.sublayerTransform.getValue().rotateZ(layerModel.getRotation().getInitialValue());
         mainCanvasPaint.setAlpha((int) layerModel.getOpacity().getInitialValue());
 
         setVisible(layerModel.isHasInAnimation(), false);

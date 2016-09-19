@@ -34,11 +34,11 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#position */
     protected Observable<PointF> position;
     /** This should mimic CALayer#anchorPoint */
-    protected PointF anchorPoint;
+    protected Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
-    protected LotteTransform3D transform;
+    protected Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
-    protected LotteTransform3D sublayerTransform;
+    protected Observable<LotteTransform3D> sublayerTransform;
     protected long duration;
     protected float speed;
     @IntRange(from=0, to=255) private int alpha = 255;
@@ -81,16 +81,16 @@ public class LotteAnimatableLayer extends Drawable {
         if (position != null && position.getValue() != null) {
             canvas.translate(position.getValue().x, position.getValue().y);
         }
-        if (transform != null) {
-            canvas.scale(transform.getScaleX(), transform.getScaleY());
+        if (transform != null && transform.getValue() != null) {
+            canvas.scale(transform.getValue().getScaleX(), transform.getValue().getScaleY());
         }
 
-        if (sublayerTransform != null) {
-            canvas.rotate(sublayerTransform.getRotationZ());
+        if (sublayerTransform != null && sublayerTransform.getValue() != null) {
+            canvas.rotate(sublayerTransform.getValue().getRotationZ());
         }
 
-        if (anchorPoint != null) {
-            canvas.translate(-anchorPoint.x, -anchorPoint.y);
+        if (anchorPoint != null && anchorPoint.getValue() != null) {
+            canvas.translate(-anchorPoint.getValue().x, -anchorPoint.getValue().y);
         }
 
         if (solidBackgroundPaint.getAlpha() != 0) {

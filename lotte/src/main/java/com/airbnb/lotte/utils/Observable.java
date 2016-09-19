@@ -11,6 +11,13 @@ public class Observable<T> {
     private final List<OnChangedListener> listeners = new ArrayList<>(1);
     private T value;
 
+    public Observable() {
+    }
+
+    public Observable(T value) {
+        this.value = value;
+    }
+
     public void addChangeListener(OnChangedListener listener) {
         if (listeners.contains(listener)) {
             throw new IllegalArgumentException("Listener already added.");

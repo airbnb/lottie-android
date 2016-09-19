@@ -15,6 +15,7 @@ import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +43,12 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             LotteShapeStroke previousStroke, LotteShapeTrimPath previousTrimPath) {
         if (shapeTransform != null) {
             setBounds(shapeTransform.getCompBounds());
-            anchorPoint = shapeTransform.getAnchor().getInitialPoint();
+            anchorPoint = shapeTransform.getAnchor().getObservable();
             position.setValue(shapeTransform.getPosition().getInitialPoint());
             setAlpha((int) (shapeTransform.getOpacity().getInitialValue()));
-            transform = shapeTransform.getScale().getInitialScale();
-            sublayerTransform = new LotteTransform3D();
-            sublayerTransform.rotateZ(shapeTransform.getRotation().getInitialValue());
+            transform = shapeTransform.getScale().getObservable();
+            sublayerTransform = new Observable<>(new LotteTransform3D());
+            sublayerTransform.getValue().rotateZ(shapeTransform.getRotation().getInitialValue());
         }
 
         List<Object> reversedItems = shapeGroup.getItems();

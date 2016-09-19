@@ -46,6 +46,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
                 } else {
                     // Single value, no animation.
                     initialScale = xformForValueArray((JSONArray) value);
+                    observable.setValue(initialScale);
                 }
 
             } else {
@@ -155,6 +156,12 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
         LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(property, duration, keyTimes, scaleKeyframes);
         animation.setInterpolators(interpolators);
         animation.setStartDelay(delay);
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            @Override
+            public void onValueChanged(Object progress) {
+                observable.setValue((LotteTransform3D) progress);
+            }
+        });
         return animation;
     }
 

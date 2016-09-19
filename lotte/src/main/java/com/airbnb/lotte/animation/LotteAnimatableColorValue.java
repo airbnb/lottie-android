@@ -47,6 +47,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                     buildAnimationForKeyframes((JSONArray) value);
                 } else {
                     initialColor = colorValueFromArray((JSONArray) value);
+                    observable.setValue(initialColor);
                 }
             } else {
                 throw new IllegalStateException("Invalid color values.");
@@ -176,6 +177,12 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
         LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, keyTimes, colorKeyframes);
         animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            @Override
+            public void onValueChanged(Object progress) {
+                observable.setValue((Integer) progress);
+            }
+        });
         return animation;
     }
 

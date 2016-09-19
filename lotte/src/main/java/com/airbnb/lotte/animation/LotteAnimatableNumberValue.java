@@ -53,7 +53,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
             } else if (value instanceof Integer) {
                 initialValue = (Integer) value;
             }
-
+            observable.setValue(initialValue);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse number value " + numberValues, e);
         }
@@ -193,6 +193,12 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
     public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
         LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(property, duration, keyTimes, Float.class, valueKeyframes);
         animation.setStartDelay(delay);
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            @Override
+            public void onValueChanged(Object progress) {
+                observable.setValue((Number) progress);
+            }
+        });
         return animation;
     }
 
