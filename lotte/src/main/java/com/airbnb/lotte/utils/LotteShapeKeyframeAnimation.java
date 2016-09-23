@@ -20,10 +20,10 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
 
     @Override
     public Path getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress <= startDelay) {
+        if (progress <= getStartDelayProgress()) {
             MiscUtils.getPathFromData(shapeData.get(0), tempPath);
             return tempPath;
-        } else if (progress >= startDelay + duration) {
+        } else if (progress >= 1f) {
             MiscUtils.getPathFromData(shapeData.get(shapeData.size() - 1), tempPath);
             return tempPath;
         }

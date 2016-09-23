@@ -77,8 +77,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    duration = durationFrames / frameRate * 1000;
-                    delay = startFrame / frameRate * 1000;
+                    duration = (long) (durationFrames / (float) frameRate * 1000);
+                    delay = (long) (startFrame / (float) frameRate * 1000);
                     break;
                 }
             }
@@ -98,7 +98,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                     outValue = null;
                 }
 
-                Float startValue = numberValueFromObject(keyframe.get("s"));
+                Float startValue = keyframe.has("s") ? numberValueFromObject(keyframe.get("s")) : null;
                 if (addStartValue) {
                     if (startValue != null) {
                         if (i == 0) {
@@ -118,7 +118,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                     addTimePadding = false;
                 }
 
-                Float endValue = numberValueFromObject(keyframe.get("e"));
+                Float endValue = keyframe.has("e") ? numberValueFromObject(keyframe.get("e")) : null;
                 if (endValue != null) {
                     valueKeyframes.add(endValue);
                     /**
@@ -148,7 +148,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                 }
             }
         } catch (JSONException e) {
-
+            throw new IllegalArgumentException("Unable to parse animatable number value.", e);
         }
     }
 
@@ -158,6 +158,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
             return (Float) valueObject;
         } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Float) {
             return new Float(((JSONArray) valueObject).getDouble(0));
+        } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Integer) {
+            return new Float(((JSONArray) valueObject).getInt(0));
         }
         return null;
     }

@@ -20,9 +20,9 @@ public class LotteTransformKeyframeAnimation extends LotteKeyframeAnimation<Lott
 
     @Override
     public LotteTransform3D getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress < startDelay) {
+        if (progress < getStartDelayProgress()) {
             return transforms.get(0);
-        } else if (progress > startDelay + duration) {
+        } else if (progress >= 1f) {
             return transforms.get(transforms.size() - 1);
         }
 

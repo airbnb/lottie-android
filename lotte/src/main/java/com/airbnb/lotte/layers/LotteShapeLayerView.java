@@ -57,7 +57,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         Observable<LotteTransform3D> initialScale = transformModel.getScale().getObservable();
         setTransform(transformModel.getScale().getObservable());
         if (fill != null) {
-            fillLayer = new LotteShapeLayer();
+            fillLayer = new LotteShapeLayer(getCallback());
             fillLayer.setPath(path.getShapePath().getInitialShape());
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
@@ -67,7 +67,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new LotteShapeLayer();
+            strokeLayer = new LotteShapeLayer(getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setPath(path.getShapePath().getInitialShape());
             strokeLayer.setColor(stroke.getColor().getInitialColor());
@@ -79,8 +79,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer.setLineJoinType(stroke.getJoinType());
             strokeLayer.setScale(initialScale);
             if (trim != null) {
-                strokeLayer.setStrokeStart(trim.getStart().getInitialValue());
-                strokeLayer.setStrokeEnd(trim.getEnd().getInitialValue());
+                strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
             }
             addLayer(strokeLayer);
         }
@@ -95,6 +94,9 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
         propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
         propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
+        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
+        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
         addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 

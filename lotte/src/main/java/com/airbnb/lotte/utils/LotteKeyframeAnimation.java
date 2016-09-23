@@ -92,6 +92,11 @@ public abstract class LotteKeyframeAnimation<T> {
         return duration;
     }
 
+    @FloatRange(from=0f, to=1f)
+    protected float getStartDelayProgress() {
+        return startDelay / (float) (startDelay + duration);
+    }
+
     public long getStartDelay() {
         return startDelay;
     }

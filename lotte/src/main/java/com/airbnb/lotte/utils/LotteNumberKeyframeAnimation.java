@@ -24,9 +24,9 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
 
     @Override
     public T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress < startDelay) {
+        if (progress < getStartDelayProgress()) {
             return values.get(0);
-        } else if (progress > startDelay + duration) {
+        } else if (progress >= 1f) {
             return values.get(values.size() - 1);
         }
 

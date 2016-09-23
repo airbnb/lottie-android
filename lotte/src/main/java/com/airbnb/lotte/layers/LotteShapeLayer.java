@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.utils.LotteTransform3D;
@@ -24,6 +25,14 @@ import java.util.List;
  */
 public class LotteShapeLayer extends Drawable {
 
+    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            invalidateSelf();
+        }
+    };
+
+    private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
     private PathMeasure pathMeasure = new PathMeasure();
@@ -36,13 +45,14 @@ public class LotteShapeLayer extends Drawable {
 
     private Path path;
     @IntRange(from = 0, to = 255) private int alpha;
-    private float strokeStart = -1f;
-    private float strokeEnd = -1f;
+    @Nullable private Observable<Number> strokeStart;
+    @Nullable private Observable<Number> strokeEnd;
 
     @IntRange(from = 0, to = 255) private int shapeAlpha;
     @IntRange(from = 0, to = 255) private int transformAlpha;
 
-    public LotteShapeLayer() {
+    public LotteShapeLayer(Drawable.Callback callback) {
+        setCallback(callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
         scale.getValue().scale(1f, 1f);
@@ -72,12 +82,22 @@ public class LotteShapeLayer extends Drawable {
         // Cache for perf.
         pathLength = pathMeasure.getLength();
         invalidateSelf();
+        updateBounds();
+    }
+
+    private void updateBounds() {
+        scaledPath.computeBounds(bounds, true);
+        bounds.left -= paint.getStrokeWidth();
+        bounds.top -= paint.getStrokeWidth();
+        bounds.right += paint.getStrokeWidth();
+        bounds.bottom += paint.getStrokeWidth();
+        setBounds(0, 0, (int) bounds.width(), (int) bounds.height());
     }
 
     @Override
     public void draw(Canvas canvas) {
-        if (strokeStart != -1f && strokeEnd != -1f) {
-            pathMeasure.getSegment(pathLength * (strokeStart / 100f), pathLength * (strokeEnd / 100f), trimPath, true);
+        if (strokeStart != null && strokeEnd != null) {
+            pathMeasure.getSegment(pathLength * (((Float) strokeStart.getValue()) / 100f), pathLength * (((Float) strokeEnd.getValue()) / 100f), trimPath, true);
             // Workaround to get hardware acceleration on KitKat
             // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
             trimPath.rLineTo(0, 0);
@@ -85,7 +105,6 @@ public class LotteShapeLayer extends Drawable {
         } else {
             canvas.drawPath(scaledPath, paint);
         }
-
     }
 
     @Override
@@ -120,6 +139,7 @@ public class LotteShapeLayer extends Drawable {
 
     public void setLineWidth(float width) {
         paint.setStrokeWidth(width);
+        updateBounds();
         invalidateSelf();
     }
 
@@ -159,12 +179,17 @@ public class LotteShapeLayer extends Drawable {
         }
     }
 
-    public void setStrokeEnd(float strokeEnd) {
-        this.strokeEnd = strokeEnd;
-    }
-
-    public void setStrokeStart(float strokeStart) {
+    public void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
+        if (this.strokeStart != null) {
+            this.strokeStart.removeChangeListemer(changedListener);
+        }
+        if (this.strokeEnd != null) {
+            this.strokeEnd.removeChangeListemer(changedListener);
+        }
         this.strokeStart = strokeStart;
+        this.strokeEnd = strokeEnd;
+        strokeStart.addChangeListener(changedListener);
+        strokeEnd.addChangeListener(changedListener);
     }
 
     public void setScale(Observable<LotteTransform3D> scale) {

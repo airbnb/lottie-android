@@ -22,7 +22,7 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
 
     @Override
     public PointF getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress <= (float) startDelay / (startDelay + duration)) {
+        if (progress <= getStartDelayProgress()) {
             pathMeasure.getPosTan(0, pos, null);
             point.set(pos[0], pos[1]);
             return point;

@@ -75,8 +75,8 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                         throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
-                    duration = durationFrames / frameRate * 1000;
-                    delay = startFrame / frameRate * 1000;
+                    duration = (long) (durationFrames / (float) frameRate * 1000);
+                    delay = (long) (startFrame / (float) frameRate * 1000);
                     break;
                 }
             }

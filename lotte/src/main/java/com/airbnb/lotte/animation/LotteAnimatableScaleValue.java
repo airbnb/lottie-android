@@ -70,8 +70,8 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
             durationFrames = endFrame - startFrame;
 
-            duration = durationFrames / frameRate * 1000;
-            delay = startFrame / frameRate * 1000;
+            duration = (long) (durationFrames / (float) frameRate * 1000);
+            delay = (long) (startFrame / (float) frameRate * 1000);
 
             boolean addStartValue = true;
             boolean addTimePadding = false;

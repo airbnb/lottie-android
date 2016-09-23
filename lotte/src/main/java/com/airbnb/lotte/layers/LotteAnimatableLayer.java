@@ -24,7 +24,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     protected final List<Drawable> layers = new ArrayList<>();
 
-    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+    protected final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
             invalidateSelf();
@@ -47,6 +47,7 @@ public class LotteAnimatableLayer extends Drawable {
     protected final List<LotteAnimationGroup> animations = new ArrayList<>();
 
     public LotteAnimatableLayer(long duration, Drawable.Callback callback) {
+        setCallback(callback);
         this.duration = duration;
 
         solidBackgroundPaint.setAlpha(0);

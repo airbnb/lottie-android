@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
@@ -77,9 +78,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
                     circleShape.getPosition().getInitialPoint(),
                     circleShape.getSize().getInitialPoint());
             if (trim != null) {
-                strokeLayer.setTrimPath(
-                        trim.getStart().getInitialValue(),
-                        trim.getEnd().getInitialValue());
+                strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
             }
 
             addLayer(strokeLayer);
@@ -97,8 +96,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         private PointF circleSize;
         private PointF circlePosition;
-        private float strokeStart = -1f;
-        private float strokeEnd = -1f;
+        @Nullable private Observable<Number> strokeStart;
+        @Nullable private Observable<Number> strokeEnd;
 
         public LotteCircleShapeLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -132,18 +131,28 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setTrimPath(float strokeStart, float strokeEnd) {
+        public void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
+            if (this.strokeStart != null) {
+                this.strokeStart.removeChangeListemer(changedListener);
+            }
+            if (this.strokeEnd != null) {
+                this.strokeEnd.removeChangeListemer(changedListener);
+            }
+
             this.strokeStart = strokeStart;
             this.strokeEnd = strokeEnd;
+
+            strokeStart.addChangeListener(changedListener);
+            strokeEnd.addChangeListener(changedListener);
             updateTrimPath();
             invalidateSelf();
         }
 
         private void updateTrimPath() {
-            if (strokeStart != -1f && strokeEnd != -1f) {
+            if (strokeStart != null && strokeEnd != null) {
                 float length = pathMeasure.getLength();
-                float start = length * strokeStart / 100f;
-                float end = length * strokeEnd / 100f;
+                float start = length * ((Float) strokeStart.getValue()) / 100f;
+                float end = length * ((Float) strokeEnd.getValue()) / 100f;
 
                 pathMeasure.getSegment(
                         Math.min(start, end),

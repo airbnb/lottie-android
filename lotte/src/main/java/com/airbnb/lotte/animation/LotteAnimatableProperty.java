@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public class LotteAnimatableProperty {
     @IntDef({OPACITY, POSITION, ANCHOR_POINT, TRANSFORM, SUBLAYER_TRANSFORM, STROKE_COLOR, LINE_WIDTH, RECT_SIZE,
-            RECT_POSITION, RECT_CORNER_RADIUS, BACKGROUND_COLOR, HIDDEN})
+            RECT_POSITION, RECT_CORNER_RADIUS, BACKGROUND_COLOR, HIDDEN, TRIM_PATH_START, TRIM_PATH_END, TRIM_PATH_OFFSET})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimatableProperty {}
     public static final int OPACITY = 1;
@@ -22,4 +22,7 @@ public class LotteAnimatableProperty {
     public static final int RECT_CORNER_RADIUS = 10;
     public static final int BACKGROUND_COLOR = 11;
     public static final int HIDDEN = 12;
+    public static final int TRIM_PATH_START = 13;
+    public static final int TRIM_PATH_END = 14;
+    public static final int TRIM_PATH_OFFSET = 15;
 }
