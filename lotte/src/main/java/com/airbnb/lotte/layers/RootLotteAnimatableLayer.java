@@ -14,7 +14,7 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        transform = new Observable<>(new LotteTransform3D());
+        setTransform(new Observable<>(new LotteTransform3D()));
         super.draw(canvas);
         canvas.clipRect(getBounds());
     }

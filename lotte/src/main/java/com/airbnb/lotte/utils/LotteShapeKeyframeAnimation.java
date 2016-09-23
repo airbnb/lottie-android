@@ -37,12 +37,12 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
         if (!isDiscrete) {
             percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
             if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
             }
         }
 
-        LotteShapeData startShapeData = shapeData.get(keyframeIndex - 1);
-        LotteShapeData endShapeData = shapeData.get(keyframeIndex);
+        LotteShapeData startShapeData = shapeData.get(keyframeIndex);
+        LotteShapeData endShapeData = shapeData.get(keyframeIndex + 1);
 
         tempShapeData.interpolateBetween(startShapeData, endShapeData, percentageIntoFrame);
         MiscUtils.getPathFromData(tempShapeData, tempPath);

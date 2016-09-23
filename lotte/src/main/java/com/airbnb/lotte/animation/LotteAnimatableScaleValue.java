@@ -9,6 +9,7 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
+import com.airbnb.lotte.utils.LotteTransformKeyframeAnimation;
 import com.airbnb.lotte.utils.Observable;
 
 import org.json.JSONArray;
@@ -35,12 +36,13 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
     private int frameRate;
 
 
-    public LotteAnimatableScaleValue(JSONObject scaleValues, long frameRate) {
+    public LotteAnimatableScaleValue(JSONObject scaleValues, int frameRate) {
+        this.frameRate = frameRate;
         try {
             Object value = scaleValues.get("k");
             if (value instanceof JSONArray) {
                 Object firstChild = ((JSONArray) value).get(0);
-                if (firstChild instanceof JSONObject && ((JSONObject) firstChild).has("k")) {
+                if (firstChild instanceof JSONObject && ((JSONObject) firstChild).has("t")) {
                     // Keyframes
                     buildAnimationForKeyframes((JSONArray) value);
                 } else {

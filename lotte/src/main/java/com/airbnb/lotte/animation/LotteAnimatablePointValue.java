@@ -194,13 +194,21 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
             if (x instanceof JSONArray) {
                 point.x = new Float(((JSONArray) x).getDouble(0));
             } else {
-                point.x = new Float((Double) x);
+                if (x instanceof Integer) {
+                    point.x = (Integer) x;
+                } else {
+                    point.x = new Float((Double) x);
+                }
             }
 
             if (y instanceof JSONArray) {
                 point.y = new Float(((JSONArray) y).getDouble(0));
             } else {
-                point.y = new Float((Double) y);
+                if (y instanceof Integer) {
+                    point.y = (Integer) y;
+                } else {
+                    point.y = new Float((Double) y);
+                }
             }
 
             return point;

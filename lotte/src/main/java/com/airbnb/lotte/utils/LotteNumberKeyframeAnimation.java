@@ -39,12 +39,12 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
         if (!isDiscrete) {
             percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
             if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
             }
         }
 
-        Number startValue = values.get(keyframeIndex - 1);
-        Number endValue = values.get(keyframeIndex);
+        Number startValue = values.get(keyframeIndex);
+        Number endValue = values.get(keyframeIndex + 1);
 
         return klass.cast(lerp(startValue.floatValue(), endValue.floatValue(), percentageIntoFrame));
     }

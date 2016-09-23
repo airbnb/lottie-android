@@ -32,11 +32,11 @@ public class LotteAnimatableLayer extends Drawable {
     };
 
     /** This should mimic CALayer#position */
-    protected Observable<PointF> position;
+    private Observable<PointF> position;
     /** This should mimic CALayer#anchorPoint */
     protected Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
-    protected Observable<LotteTransform3D> transform;
+    private Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
     protected Observable<LotteTransform3D> sublayerTransform;
     protected long duration;
@@ -124,6 +124,14 @@ public class LotteAnimatableLayer extends Drawable {
         }
         this.position = position;
         position.addChangeListener(changedListener);
+    }
+
+    public void setTransform(Observable<LotteTransform3D> transform) {
+        if (this.transform != null) {
+            this.transform.removeChangeListemer(changedListener);
+        }
+        this.transform = transform;
+        transform.addChangeListener(changedListener);
     }
 
     @Override

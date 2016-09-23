@@ -50,7 +50,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         anchorPoint = transform.getAnchor().getObservable();
         setAlpha((int) (transform.getOpacity().getInitialValue()));
         setPosition(transform.getPosition().getObservable());
-        this.transform = transform.getScale().getObservable();
+        setTransform(transform.getScale().getObservable());
         sublayerTransform = new Observable<>(new LotteTransform3D());
         sublayerTransform.getValue().rotateZ(transform.getRotation().getInitialValue());
 

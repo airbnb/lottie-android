@@ -33,12 +33,12 @@ public class LottePointKeyframeAnimation extends LotteKeyframeAnimation<PointF> 
         if (!isDiscrete) {
             percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
             if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
             }
         }
 
-        PointF startPoint = points.get(keyframeIndex - 1);
-        PointF endPoint = points.get(keyframeIndex);
+        PointF startPoint = points.get(keyframeIndex);
+        PointF endPoint = points.get(keyframeIndex + 1);
 
         point.set(startPoint.x + percentageIntoFrame * (endPoint.x - startPoint.x),
                 startPoint.y + percentageIntoFrame * (endPoint.y - startPoint.y));

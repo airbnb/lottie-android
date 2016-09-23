@@ -56,7 +56,7 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     public LotteKeyframeAnimation setInterpolators(@Nullable List<Interpolator> interpolators) {
-        if (interpolators != null && interpolators.size() != keyTimes.size()) {
+        if (interpolators != null && interpolators.size() != (keyTimes.size() - 1)) {
             throw new IllegalArgumentException("Interpolators and values must be the same length " + interpolators.size() + " vs " + keyTimes.size());
         }
         this.interpolators = interpolators;

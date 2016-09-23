@@ -39,12 +39,12 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
         if (!isDiscrete) {
             percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
             if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
             }
         }
 
-        int startColor = values.get(keyframeIndex - 1);
-        int endColor = values.get(keyframeIndex);
+        int startColor = values.get(keyframeIndex);
+        int endColor = values.get(keyframeIndex + 1);
 
         Color.colorToHSV(startColor, hsv1);
         Color.colorToHSV(endColor, hsv2);

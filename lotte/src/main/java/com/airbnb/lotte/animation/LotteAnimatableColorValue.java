@@ -96,14 +96,17 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                     outColor = null;
                 }
 
-                Integer startColor = colorValueFromArray(keyframe.getJSONArray("s"));
+                Integer startColor = keyframe.has("s") ? colorValueFromArray(keyframe.getJSONArray("s")) : null;
                 if (addStartValue) {
-                    if (i == 0) {
-                        initialColor = startColor;
-                    }
-                    colorKeyframes.add(startColor);
-                    if (!timingFunctions.isEmpty()) {
-                        timingFunctions.add(new LinearInterpolator());
+                    if (startColor != null) {
+                        if (i == 0) {
+                            //noinspection ResourceAsColor
+                            initialColor = startColor;
+                        }
+                        colorKeyframes.add(startColor);
+                        if (!timingFunctions.isEmpty()) {
+                            timingFunctions.add(new LinearInterpolator());
+                        }
                     }
                     addStartValue = false;
                 }
@@ -114,31 +117,33 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                     addTimePadding = false;
                 }
 
-                Integer endColor = colorValueFromArray(keyframe.getJSONArray("e"));
-                colorKeyframes.add(endColor);
-                /**
-                 * Timing function for time interpolation between keyframes.
-                 * Should be n - 1 where n is the number of keyframes.
-                 */
-                Interpolator timingFunction;
-                if (keyframe.has("o") && keyframe.has("i")) {
-                    JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
-                    JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
-                    PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
-                    PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
+                if (keyframe.has("e")) {
+                    Integer endColor = colorValueFromArray(keyframe.getJSONArray("e"));
+                    colorKeyframes.add(endColor);
+                    /**
+                     * Timing function for time interpolation between keyframes.
+                     * Should be n - 1 where n is the number of keyframes.
+                     */
+                    Interpolator timingFunction;
+                    if (keyframe.has("o") && keyframe.has("i")) {
+                        JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
+                        JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
+                        PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
+                        PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
 
-                    timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
-                } else {
-                    timingFunction = new LinearInterpolator();
-                }
-                timingFunctions.add(timingFunction);
+                        timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                    } else {
+                        timingFunction = new LinearInterpolator();
+                    }
+                    timingFunctions.add(timingFunction);
 
-                keyTimes.add(timePercentage);
+                    keyTimes.add(timePercentage);
 
-                if (keyframe.has("h") && keyframe.getBoolean("h")) {
-                    outColor = startColor;
-                    addStartValue = true;
-                    addTimePadding = true;
+                    if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                        outColor = startColor;
+                        addStartValue = true;
+                        addTimePadding = true;
+                    }
                 }
             }
         } catch (JSONException e) {

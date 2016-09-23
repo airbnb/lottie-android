@@ -42,7 +42,7 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
         if (!isDiscrete) {
             percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
             if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex - 1).getInterpolation(percentageIntoFrame);
+                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
             }
         }
 

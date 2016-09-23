@@ -97,7 +97,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         childContainerLayer.setPosition(layerModel.getPosition().getObservable());
         childContainerLayer.anchorPoint = layerModel.getAnchor().getObservable();
-        childContainerLayer.transform = layerModel.getScale().getObservable();
+        childContainerLayer.setTransform(layerModel.getScale().getObservable());
         childContainerLayer.sublayerTransform = new Observable<>(new LotteTransform3D());
         childContainerLayer.sublayerTransform.getValue().rotateZ(layerModel.getRotation().getInitialValue());
         mainCanvasPaint.setAlpha((int) layerModel.getOpacity().getInitialValue());

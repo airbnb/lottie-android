@@ -61,6 +61,7 @@ public class LotteAnimationView extends ImageView {
             setAnimation(fileName);
         }
         ta.recycle();
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override
