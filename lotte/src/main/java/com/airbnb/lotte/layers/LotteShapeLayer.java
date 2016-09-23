@@ -97,6 +97,7 @@ public class LotteShapeLayer extends Drawable {
     @Override
     public void draw(Canvas canvas) {
         if (strokeStart != null && strokeEnd != null) {
+            trimPath.reset();
             pathMeasure.getSegment(pathLength * (((Float) strokeStart.getValue()) / 100f), pathLength * (((Float) strokeEnd.getValue()) / 100f), trimPath, true);
             // Workaround to get hardware acceleration on KitKat
             // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)

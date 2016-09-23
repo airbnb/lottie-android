@@ -30,10 +30,6 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     @Nullable private LotteShapeLayer fillLayer;
     @Nullable private LotteShapeLayer strokeLayer;
 
-    private LotteAnimationGroup animation;
-    private LotteAnimationGroup strokeAnimation;
-    private LotteAnimationGroup fillAnimation;
-
     public LotteShapeLayerView(LotteShapePath shape, @Nullable LotteShapeFill fill,
             @Nullable LotteShapeStroke stroke, @Nullable LotteShapeTrimPath trim,
             LotteShapeTransform transformModel, long duration, Drawable.Callback callback) {
