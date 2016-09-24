@@ -135,7 +135,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             }
         }
 
-        if (layerModel.getMasks() != null) {
+        if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition, getCallback());
             maskCanvas = new Canvas(maskBitmap);
         }

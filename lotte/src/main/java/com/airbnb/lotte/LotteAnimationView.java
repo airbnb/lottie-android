@@ -162,9 +162,23 @@ public class LotteAnimationView extends ImageView {
         List<LotteLayer> reversedLayers = sceneModel.getLayers();
         Collections.reverse(reversedLayers);
 
+        boolean needsMatte = false;
+        boolean needsMask = false;
+        for (LotteLayer layer : reversedLayers) {
+            if (layer.getMatteType() != null && layer.getMatteType() != LotteLayer.MatteType.None) {
+                needsMatte = true;
+            }
+            if (!layer.getMasks().isEmpty()) {
+                needsMask = true;
+            }
+            if (needsMatte && needsMask) {
+                break;
+            }
+        }
+
         Bitmap mainBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
-        Bitmap maskBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
-        Bitmap matteBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = needsMask ? Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8) : null;
+        Bitmap matteBitmap = needsMatte ? Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888) : null;
 
         Bitmap mainBitmapForMatte = null;
         Bitmap maskBitmapForMatte = null;
