@@ -156,7 +156,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
     private Float numberValueFromObject(Object valueObject) throws JSONException {
         if (valueObject instanceof Float) {
             return (Float) valueObject;
-        } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Float) {
+        } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Double) {
             return new Float(((JSONArray) valueObject).getDouble(0));
         } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Integer) {
             return new Float(((JSONArray) valueObject).getInt(0));

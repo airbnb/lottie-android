@@ -90,9 +90,11 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
         propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
         propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
-        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
-        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
-        propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
+        if (trim != null) {
+            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
+            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
+            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
+        }
         addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 

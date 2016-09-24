@@ -17,7 +17,7 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
         super(property, duration, keyTimes);
         this.klass = klass;
         if (keyTimes.size() != values.size()) {
-            throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());
+            throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes + " vs " + values);
         }
         this.values = values;
     }
