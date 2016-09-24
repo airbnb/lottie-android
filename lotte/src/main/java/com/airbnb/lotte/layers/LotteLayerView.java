@@ -88,6 +88,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 this.parentId = parentId;
             }
             LotteLayer parentModel = composition.layerModelForId(parentId);
+            // TODO: see if we can avoid this every time.
             LotteParentLayer parentLayer = new LotteParentLayer(parentModel, composition, getCallback());
             parentLayer.setCallback(callback);
             parentLayer.addLayer(currentChild);
