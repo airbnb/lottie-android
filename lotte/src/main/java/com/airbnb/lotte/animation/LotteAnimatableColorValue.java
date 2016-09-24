@@ -136,14 +136,14 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                         timingFunction = new LinearInterpolator();
                     }
                     timingFunctions.add(timingFunction);
+                }
 
-                    keyTimes.add(timePercentage);
+                keyTimes.add(timePercentage);
 
-                    if (keyframe.has("h") && keyframe.getBoolean("h")) {
-                        outColor = startColor;
-                        addStartValue = true;
-                        addTimePadding = true;
-                    }
+                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                    outColor = startColor;
+                    addStartValue = true;
+                    addTimePadding = true;
                 }
             }
         } catch (JSONException e) {
