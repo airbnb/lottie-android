@@ -166,15 +166,20 @@ public class LotteAnimationView extends ImageView {
         Bitmap maskBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
         Bitmap matteBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
 
-        Bitmap mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
-        Bitmap maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
-        Bitmap matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+        Bitmap mainBitmapForMatte = null;
+        Bitmap maskBitmapForMatte = null;
+        Bitmap matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
         for (LotteLayer layer : reversedLayers) {
             LotteLayerView layerDrawable;
             if (maskedLayer == null) {
                 layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
             } else {
+                if (mainBitmapForMatte == null) {
+                    mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+                    maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
+                    matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+                }
                 layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
             }
             layerMap.put(layerDrawable.getId(), layerDrawable);
