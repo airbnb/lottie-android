@@ -36,7 +36,13 @@ public class LotteShapeLayer extends Drawable {
         @Override
         public void onChanged() {
             onPathChanged();
-            invalidateSelf();
+        }
+    };
+
+    private final Observable.OnChangedListener alphaChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onAlphaChanged();
         }
     };
 
@@ -56,8 +62,8 @@ public class LotteShapeLayer extends Drawable {
     @Nullable private Observable<Number> strokeStart;
     @Nullable private Observable<Number> strokeEnd;
 
-    @IntRange(from = 0, to = 255) private int shapeAlpha;
-    @IntRange(from = 0, to = 255) private int transformAlpha;
+    private Observable<Number> shapeAlpha;
+    private Observable<Number> transformAlpha;
 
     public LotteShapeLayer(Drawable.Callback callback) {
         setCallback(callback);
@@ -95,7 +101,7 @@ public class LotteShapeLayer extends Drawable {
     }
 
     private void onPathChanged() {
-        if (path != null && path.getValue() != null) {
+        if (path != null && path.getValue() != null && scale != null && scale.getValue() != null) {
             path.getValue().computeBounds(scaleRect, true);
             scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
             path.getValue().transform(scaleMatrix, scaledPath);
@@ -135,19 +141,34 @@ public class LotteShapeLayer extends Drawable {
         return paint.getAlpha();
     }
 
-    public void setShapeAlpha(@IntRange(from = 0, to = 255) int alpha) {
+    public void setShapeAlpha(Observable<Number> alpha) {
+        if (this.shapeAlpha != null) {
+            this.shapeAlpha.removeChangeListemer(alphaChangedListener);
+        }
         this.shapeAlpha = alpha;
-        setAlpha((shapeAlpha * transformAlpha) / 255);
+        alpha.addChangeListener(alphaChangedListener);
+        onAlphaChanged();
     }
 
-    public void setTransformAlpha(@IntRange(from = 0, to = 255) int alpha) {
+    public void setTransformAlpha(Observable<Number> alpha) {
+        if (this.transformAlpha != null) {
+            this.transformAlpha.removeChangeListemer(alphaChangedListener);
+        }
         transformAlpha = alpha;
-        setAlpha((shapeAlpha * transformAlpha) / 255);
+        alpha.addChangeListener(alphaChangedListener);
+        onAlphaChanged();
+    }
+
+    private void onAlphaChanged() {
+        Float shapeAlpha = this.shapeAlpha == null ? 1f : (Float) this.shapeAlpha.getValue();
+        Float transformAlpha = this.transformAlpha == null ? 1f : (Float) this.transformAlpha.getValue();
+        setAlpha((int) ((shapeAlpha * transformAlpha) * 255));
     }
 
     @Override
     public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
         paint.setAlpha(alpha);
+        invalidateSelf();
     }
 
     @Override

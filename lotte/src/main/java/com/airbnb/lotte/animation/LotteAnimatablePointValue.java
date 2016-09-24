@@ -133,11 +133,11 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                 PointF cp1;
                 PointF cp2;
                 if (keyframe.has("e")) {
-                    cp1 = pointFromValueArray(keyframe.getJSONArray("to"));
-                    cp2 = pointFromValueArray(keyframe.getJSONArray("ti"));
+                    cp1 = keyframe.has("to") ? pointFromValueArray(keyframe.getJSONArray("to")) : null;
+                    cp2 = keyframe.has("ti") ? pointFromValueArray(keyframe.getJSONArray("ti")) : null;
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
                     pointKeyframes.add(vertex);
-                    if (cp1.x != 0 || cp1.y != 0 || cp2.x != 0 || cp2.y != 0) {
+                    if (cp1 != null && cp2 != null) {
                         PointF inVertex = startPoint;
                         animationPath.cubicTo(
                                 inVertex.x + cp1.x, inVertex.y + cp1.y,
@@ -160,7 +160,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
                 keyTimes.add(timePercentage);
 
-                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                if (keyframe.has("h") && keyframe.getInt("h") == 1) {
                     outPoint = startPoint;
                     addStartValue = true;
                     addTimePadding = true;

@@ -130,14 +130,14 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
                 keyTimes.add(timePercentage);
 
-                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                if (keyframe.has("h") && keyframe.getInt("h") == 1) {
                     outShape = startShape;
                     addStartValue = true;
                     addTimePadding = true;
                 }
             }
         } catch (JSONException e) {
-            throw new IllegalArgumentException("Unable to parse shape animation " + keyframes, e);
+            throw new IllegalArgumentException("Unable to parse shape animation", e);
         }
 
     }
