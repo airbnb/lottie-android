@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Mimics CAShapeLayer
  */
-public class LotteShapeLayer extends Drawable {
+public class LotteShapeLayer extends LotteAnimatableLayer {
 
     private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
@@ -80,7 +80,7 @@ public class LotteShapeLayer extends Drawable {
     private Observable<Number> transformAlpha;
 
     public LotteShapeLayer(Drawable.Callback callback) {
-        setCallback(callback);
+        super(0, callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
         scale.getValue().scale(1f, 1f);

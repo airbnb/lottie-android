@@ -105,6 +105,11 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, circleShape.getSize());
             propertyAnimations.put(LotteAnimatableProperty.CIRCLE_POSITION, circleShape.getPosition());
             propertyAnimations.put(LotteAnimatableProperty.CIRCLE_SIZE, circleShape.getSize());
+            if (trim != null) {
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
+            }
             strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
 

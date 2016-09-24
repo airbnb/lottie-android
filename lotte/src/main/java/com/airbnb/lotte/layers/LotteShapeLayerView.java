@@ -83,35 +83,37 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     }
 
     private void buildAnimation() {
-        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
         if (transformModel != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
             propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
             propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
             propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
             propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
             propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+            addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
 
-        if (stroke != null) {
+        if (stroke != null && strokeLayer != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
             propertyAnimations.put(LotteAnimatableProperty.STROKE_COLOR, stroke.getColor());
             propertyAnimations.put(LotteAnimatableProperty.OPACITY, stroke.getOpacity());
             propertyAnimations.put(LotteAnimatableProperty.LINE_WIDTH, stroke.getWidth());
             propertyAnimations.put(LotteAnimatableProperty.PATH, path.getShapePath());
+            if (trim != null) {
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
+                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
+            }
+            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
 
-        if (trim != null) {
-            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
-            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
-            propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
-        }
-
-        if (fill != null) {
+        if (fill != null && fillLayer != null) {
+            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
             propertyAnimations.put(LotteAnimatableProperty.BACKGROUND_COLOR, fill.getColor());
             propertyAnimations.put(LotteAnimatableProperty.OPACITY, fill.getOpacity());
             propertyAnimations.put(LotteAnimatableProperty.PATH, path.getShapePath());
+            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
-
-        addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 
     @Override
