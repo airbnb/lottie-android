@@ -41,8 +41,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private final Paint mainCanvasPaint = new Paint();
     private final Bitmap bitmap;
-    private Bitmap maskBitmap;
-    private Bitmap matteBitmap;
+    private final Bitmap maskBitmap;
+    private final Bitmap matteBitmap;
     private final Canvas contentCanvas;
     private Canvas maskCanvas;
     private Canvas matteCanvas;
@@ -60,12 +60,14 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private Observable<Number> opacity;
 
 
-    public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Drawable.Callback callback) {
+    public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Callback callback, Bitmap mainBitmap, Bitmap maskBitmap, Bitmap matteBitmap) {
         super(composition.getDuration(), callback);
         this.layerModel = layerModel;
         this.composition = composition;
+        this.maskBitmap = maskBitmap;
+        this.matteBitmap = matteBitmap;
+        this.bitmap = mainBitmap;
         setBounds(composition.getBounds());
-        bitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         maskPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
         contentCanvas = new Canvas(bitmap);
         setupForModel(callback);
@@ -136,10 +138,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         if (layerModel.getMasks() != null) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition, getCallback());
-            maskBitmap = Bitmap.createBitmap(
-                    composition.getBounds().width(),
-                    composition.getBounds().height(),
-                    Bitmap.Config.ALPHA_8);
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();
@@ -180,7 +178,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     public void setMatte(LotteLayerView matte) {
         this.matte = matte;
-        matteBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
         matteCanvas = new Canvas(matteBitmap);
     }
 

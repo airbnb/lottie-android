@@ -2,6 +2,7 @@ package com.airbnb.lotte;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -161,9 +162,21 @@ public class LotteAnimationView extends ImageView {
         List<LotteLayer> reversedLayers = sceneModel.getLayers();
         Collections.reverse(reversedLayers);
 
+        Bitmap mainBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
+        Bitmap matteBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+
+        Bitmap mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
+        Bitmap matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
         LotteLayerView maskedLayer = null;
         for (LotteLayer layer : reversedLayers) {
-            LotteLayerView layerDrawable = new LotteLayerView(layer, sceneModel, this);
+            LotteLayerView layerDrawable;
+            if (maskedLayer == null) {
+                layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
+            } else {
+                layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
+            }
             layerMap.put(layerDrawable.getId(), layerDrawable);
             if (maskedLayer != null) {
                 maskedLayer.setMatte(layerDrawable);
