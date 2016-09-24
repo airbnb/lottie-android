@@ -21,8 +21,6 @@ import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
 
-import static android.R.attr.width;
-
 public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
     private final LotteShapeCircle circleShape;
@@ -215,7 +213,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         private void onLineWidthChanged() {
-            paint.setStrokeWidth(width);
+            paint.setStrokeWidth((float) lineWidth.getValue());
         }
 
         public void setDashPattern(List<Float> lineDashPattern, float offset) {
