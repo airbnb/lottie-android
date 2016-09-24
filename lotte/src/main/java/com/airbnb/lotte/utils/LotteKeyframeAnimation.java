@@ -47,7 +47,7 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public LotteKeyframeAnimation setStartDelay(long startDelay) {
         this.startDelay = startDelay;
-        animator.setStartDelay(startDelay);
+        animator.setDuration(duration + startDelay);
         return this;
     }
 
