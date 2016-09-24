@@ -183,28 +183,28 @@ public class LotteLayer {
         layer.hasInOutAnimation = layer.hasInOutAnimation || layer.hasOutAnimation;
 
         if (layer.hasInOutAnimation) {
-            List<Long> keys = new ArrayList<>();
+            List<Float> keys = new ArrayList<>();
             List<Float> keyTimes = new ArrayList<>();
             long length = composition.getEndFrame() - composition.getStartFrame();
 
             if (layer.hasInAnimation) {
-                keys.add(1L);
+                keys.add(1f);
                 keyTimes.add(0f);
-                keys.add(0L);
+                keys.add(0f);
                 float inTime = layer.inFrame / (float) length;
                 keyTimes.add(inTime);
             } else {
-                keys.add(0L);
+                keys.add(0f);
                 keyTimes.add(0f);
             }
 
             if (layer.hasOutAnimation) {
-                keys.add(0L);
+                keys.add(0f);
                 keyTimes.add(layer.outFrame / (float) length);
-                keys.add(1L);
+                keys.add(1f);
                 keyTimes.add(1f);
             } else {
-                keys.add(1L);
+                keys.add(1f);
                 keyTimes.add(1f);
             }
 
@@ -244,7 +244,7 @@ public class LotteLayer {
     private boolean hasOutAnimation;
     private boolean hasInAnimation;
     private boolean hasInOutAnimation;
-    @Nullable private List<Long> inOutKeyFrames;
+    @Nullable private List<Float> inOutKeyFrames;
     @Nullable private List<Float> inOutKeyTimes;
     private long compDuration;
 
@@ -283,7 +283,7 @@ public class LotteLayer {
     }
 
     @Nullable
-    public List<Long> getInOutKeyFrames() {
+    public List<Float> getInOutKeyFrames() {
         return inOutKeyFrames;
     }
 
