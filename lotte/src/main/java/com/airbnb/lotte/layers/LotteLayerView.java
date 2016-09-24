@@ -55,7 +55,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private long parentId = -1;
     private LotteAnimationGroup animation;
-    private LotteNumberKeyframeAnimation<Float> inOutAnimation;
     private LotteAnimatableLayer childContainerLayer;
     private Observable<Number> opacity;
 
@@ -153,8 +152,12 @@ public class LotteLayerView extends LotteAnimatableLayer {
         childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
 
         if (layerModel.isHasInOutAnimation()) {
-            inOutAnimation = new LotteNumberKeyframeAnimation<>(LotteAnimatableProperty.HIDDEN, layerModel.getCompDuration(),
-                    layerModel.getInOutKeyTimes(), Float.class, layerModel.getInOutKeyFrames());
+            LotteNumberKeyframeAnimation<Float> inOutAnimation = new LotteNumberKeyframeAnimation<>(
+                    LotteAnimatableProperty.HIDDEN,
+                    layerModel.getCompDuration(),
+                    layerModel.getInOutKeyTimes(),
+                    Float.class,
+                    layerModel.getInOutKeyFrames());
             inOutAnimation.setIsDiscrete();
             inOutAnimation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
                 @Override

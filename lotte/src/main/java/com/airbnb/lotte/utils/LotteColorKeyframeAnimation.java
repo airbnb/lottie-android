@@ -1,6 +1,6 @@
 package com.airbnb.lotte.utils;
 
-import android.graphics.Color;
+import android.animation.ArgbEvaluator;
 import android.support.annotation.FloatRange;
 
 import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
@@ -9,8 +9,7 @@ import java.util.List;
 
 
 public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer> {
-    private final float[] hsv1 = new float[3];
-    private final float[] hsv2 = new float[3];
+    private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     private final List<Integer> values;
 
@@ -46,16 +45,6 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
         int startColor = values.get(keyframeIndex);
         int endColor = values.get(keyframeIndex + 1);
 
-        Color.colorToHSV(startColor, hsv1);
-        Color.colorToHSV(endColor, hsv2);
-
-        int a = (int) MiscUtils.lerp(Color.alpha(startColor), Color.alpha(endColor), percentageIntoFrame);
-        float h = MiscUtils.lerp(hsv1[0], hsv2[0], percentageIntoFrame);
-        float s = MiscUtils.lerp(hsv1[1], hsv2[1], percentageIntoFrame);
-        float v = MiscUtils.lerp(hsv1[2], hsv2[2], percentageIntoFrame);
-        hsv1[0] = h;
-        hsv1[1] = s;
-        hsv1[2] = v;
-        return Color.HSVToColor(a, hsv1);
+        return (Integer) argbEvaluator.evaluate(percentageIntoFrame, startColor, endColor);
     }
 }

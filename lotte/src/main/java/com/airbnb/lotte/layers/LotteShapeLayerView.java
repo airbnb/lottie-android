@@ -104,6 +104,13 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
             propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
         }
+
+        if (fill != null) {
+            propertyAnimations.put(LotteAnimatableProperty.BACKGROUND_COLOR, fill.getColor());
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, fill.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.PATH, path.getShapePath());
+        }
+
         addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 

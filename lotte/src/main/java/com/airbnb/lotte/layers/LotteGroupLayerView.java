@@ -4,7 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
 import com.airbnb.lotte.model.LotteShapeFill;
@@ -92,7 +95,15 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
     }
 
     private void buildAnimation() {
-        // TODO
+        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+        if (shapeTransform != null) {
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, shapeTransform.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.POSITION, shapeTransform.getPosition());
+            propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, shapeTransform.getAnchor());
+            propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, shapeTransform.getScale());
+            propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, shapeTransform.getRotation());
+        }
+        addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 
     @Override

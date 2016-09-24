@@ -5,10 +5,11 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+// TODO: potentially delete these completely
 public class LotteAnimatableProperty {
     @IntDef({OPACITY, POSITION, ANCHOR_POINT, TRANSFORM, SUBLAYER_TRANSFORM, STROKE_COLOR, LINE_WIDTH, RECT_SIZE,
             RECT_POSITION, RECT_CORNER_RADIUS, BACKGROUND_COLOR, HIDDEN, TRIM_PATH_START, TRIM_PATH_END,
-            TRIM_PATH_OFFSET, PATH})
+            TRIM_PATH_OFFSET, PATH, CIRCLE_POSITION, CIRCLE_SIZE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimatableProperty {}
     public static final int OPACITY = 1;
@@ -27,4 +28,6 @@ public class LotteAnimatableProperty {
     public static final int TRIM_PATH_END = 14;
     public static final int TRIM_PATH_OFFSET = 15;
     public static final int PATH = 16;
+    public static final int CIRCLE_POSITION = 17;
+    public static final int CIRCLE_SIZE = 18;
 }
