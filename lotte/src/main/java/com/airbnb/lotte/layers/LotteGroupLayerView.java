@@ -43,7 +43,7 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             setBounds(shapeTransform.getCompBounds());
             anchorPoint = shapeTransform.getAnchor().getObservable();
             setPosition(shapeTransform.getPosition().getObservable());
-            setAlpha((int) (shapeTransform.getOpacity().getInitialValue()));
+            setAlpha(shapeTransform.getOpacity().getObservable());
             setTransform(shapeTransform.getScale().getObservable());
             sublayerTransform = shapeTransform.getRotation().getObservable();
         }

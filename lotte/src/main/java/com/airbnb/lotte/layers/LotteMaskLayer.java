@@ -1,6 +1,5 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import com.airbnb.lotte.model.LotteComposition;
@@ -17,18 +16,6 @@ public class LotteMaskLayer extends LotteAnimatableLayer {
         super(composition.getDuration(), callback);
         this.masks = masks;
         this.composition = composition;
-    }
-
-    private void setupViewFromModel() {
-        for (LotteMask mask : masks) {
-            LotteShapeLayer maskLayer = new LotteShapeLayer(getCallback());
-            maskLayer.setPath(mask.getMaskPath().getObservable());
-            maskLayer.setColor(Color.WHITE);
-            maskLayer.setAlpha((int) (mask.getOpacity().getInitialValue()));
-            addLayer(maskLayer);
-
-            // TODO: animations
-        }
     }
 
     public List<LotteMask> getMasks() {

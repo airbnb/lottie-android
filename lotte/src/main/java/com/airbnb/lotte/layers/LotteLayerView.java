@@ -25,6 +25,7 @@ import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
+import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
@@ -213,20 +214,16 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     private void applyTransformForLayer(Canvas canvas, LotteLayer layer) {
-        if (layer.getPosition() != null) {
-            canvas.translate(layer.getPosition().getInitialPoint().x, layer.getPosition().getInitialPoint().y);
-        }
-        if (layer.getScale().getInitialScale() != null) {
-            canvas.scale(layer.getScale().getInitialScale().getScaleX(), layer.getScale().getInitialScale().getScaleY());
-        }
+        PointF position = layer.getPosition().getObservable().getValue();
+        canvas.translate(position.x, position.y);
 
-        if (layer.getRotation().getInitialValue() != 0) {
-            canvas.rotate(layer.getRotation().getInitialValue());
-        }
+        LotteTransform3D scale = layer.getScale().getObservable().getValue();
+        canvas.scale(scale.getScaleX(), scale.getScaleY());
 
-        if (layer.getAnchor() != null) {
-            canvas.translate(-layer.getAnchor().getInitialPoint().x, -layer.getAnchor().getInitialPoint().y);
-        }
+        canvas.rotate((float) layer.getRotation().getObservable().getValue());
+
+        PointF translation = layer.getAnchor().getObservable().getValue();
+        canvas.translate(-translation.x, -translation.y);
     }
 
     public long getId() {
