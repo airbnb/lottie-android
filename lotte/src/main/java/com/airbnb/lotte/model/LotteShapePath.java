@@ -56,7 +56,7 @@ public class LotteShapePath {
         sb.append("name=").append(name);
         sb.append(", closed=").append(closed);
         sb.append(", index=").append(index);
-        sb.append(", shapePath=").append(shapePath.getInitialShape());
+        sb.append(", hasAnimation=").append(shapePath.hasAnimation());
         sb.append('}');
         return sb.toString();
     }

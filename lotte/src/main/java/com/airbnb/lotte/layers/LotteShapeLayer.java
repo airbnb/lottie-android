@@ -32,6 +32,14 @@ public class LotteShapeLayer extends Drawable {
         }
     };
 
+    private final Observable.OnChangedListener pathChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onPathChanged();
+            invalidateSelf();
+        }
+    };
+
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
@@ -43,7 +51,7 @@ public class LotteShapeLayer extends Drawable {
     private final Matrix scaleMatrix = new Matrix();
     private Path scaledPath = new Path();
 
-    private Path path;
+    private Observable<Path> path;
     @IntRange(from = 0, to = 255) private int alpha;
     @Nullable private Observable<Number> strokeStart;
     @Nullable private Observable<Number> strokeEnd;
@@ -75,9 +83,23 @@ public class LotteShapeLayer extends Drawable {
         return scaledPath;
     }
 
-    public void setPath(Path path) {
+    public void setPath(Observable<Path> path) {
+        if (this.path != null) {
+            this.path.removeChangeListemer(pathChangedListener);
+        }
+
         this.path = path;
-        setScale(scale);
+        // TODO: When the path changes, we probably have to scale it again.
+        path.addChangeListener(pathChangedListener);
+        onPathChanged();
+    }
+
+    private void onPathChanged() {
+        if (path != null && path.getValue() != null) {
+            path.getValue().computeBounds(scaleRect, true);
+            scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
+            path.getValue().transform(scaleMatrix, scaledPath);
+        }
         pathMeasure.setPath(scaledPath, false);
         // Cache for perf.
         pathLength = pathMeasure.getLength();
@@ -195,8 +217,6 @@ public class LotteShapeLayer extends Drawable {
 
     public void setScale(Observable<LotteTransform3D> scale) {
         this.scale = scale;
-        path.computeBounds(scaleRect, true);
-        scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
-        path.transform(scaleMatrix, scaledPath);
+        onPathChanged();
     }
 }

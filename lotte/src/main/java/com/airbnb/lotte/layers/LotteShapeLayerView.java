@@ -54,7 +54,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         setTransform(transformModel.getScale().getObservable());
         if (fill != null) {
             fillLayer = new LotteShapeLayer(getCallback());
-            fillLayer.setPath(path.getShapePath().getInitialShape());
+            fillLayer.setPath(path.getShapePath().getObservable());
             fillLayer.setColor(fill.getColor().getInitialColor());
             fillLayer.setShapeAlpha((int) (fill.getOpacity().getInitialValue()));
             fillLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
@@ -65,7 +65,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         if (stroke != null) {
             strokeLayer = new LotteShapeLayer(getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
-            strokeLayer.setPath(path.getShapePath().getInitialShape());
+            strokeLayer.setPath(path.getShapePath().getObservable());
             strokeLayer.setColor(stroke.getColor().getInitialColor());
             strokeLayer.setShapeAlpha((int) (stroke.getOpacity().getInitialValue()));
             strokeLayer.setTransformAlpha((int) transformModel.getOpacity().getInitialValue());
@@ -85,11 +85,21 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
 
     private void buildAnimation() {
         SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
-        propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
-        propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
-        propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
-        propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
-        propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+        if (transformModel != null) {
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
+            propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
+            propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
+            propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
+        }
+
+        if (stroke != null) {
+            propertyAnimations.put(LotteAnimatableProperty.STROKE_COLOR, stroke.getColor());
+            propertyAnimations.put(LotteAnimatableProperty.OPACITY, stroke.getOpacity());
+            propertyAnimations.put(LotteAnimatableProperty.LINE_WIDTH, stroke.getWidth());
+            propertyAnimations.put(LotteAnimatableProperty.PATH, path.getShapePath());
+        }
+
         if (trim != null) {
             propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
             propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());

@@ -192,7 +192,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             applyTransformForLayer(maskCanvas, layerModel);
 
             for (LotteMask m : mask.getMasks()) {
-                maskCanvas.drawPath(m.getMaskPath().getInitialShape(), maskShapePaint);
+                maskCanvas.drawPath(m.getMaskPath().getObservable().getValue(), maskShapePaint);
             }
             maskCanvas.restoreToCount(maskSaveCount);
             if (matte == null) {

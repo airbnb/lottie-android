@@ -56,6 +56,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                     buildAnimationForKeyFrames((JSONArray) value, closed);
                 }
             }
+            observable.setValue(getInitialShape());
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse keyframes or initial value.");
         }
@@ -113,7 +114,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
                 if (keyframe.has("e")) {
                     JSONArray endShape = keyframe.getJSONArray("e");
-                    shapeKeyframes.add(bezierShapeFromValue(endFrame, closed));
+                    LotteShapeData shape = bezierShapeFromValue(endShape, closed);
+                    shapeKeyframes.add(shape);
 
                     Interpolator interpolator;
                     if (keyframe.has("o") && keyframe.has("i")) {
@@ -124,14 +126,14 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                         interpolator = new LinearInterpolator();
                     }
                     interpolators.add(interpolator);
+                }
 
-                    keyTimes.add(timePercentage);
+                keyTimes.add(timePercentage);
 
-                    if (keyframe.has("h") && keyframe.getBoolean("h")) {
-                        outShape = startShape;
-                        addStartValue = true;
-                        addTimePadding = true;
-                    }
+                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                    outShape = startShape;
+                    addStartValue = true;
+                    addTimePadding = true;
                 }
             }
         } catch (JSONException e) {
@@ -220,7 +222,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
         }
     }
 
-    public Path getInitialShape() {
+    private Path getInitialShape() {
         MiscUtils.getPathFromData(initialShape, path);
         return path;
     }
