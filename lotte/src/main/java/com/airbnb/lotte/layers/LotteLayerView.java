@@ -57,6 +57,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private LotteAnimationGroup animation;
     private LotteKeyframeAnimation inOutAnimation;
     private LotteAnimatableLayer childContainerLayer;
+    private Observable<Number> opacity;
 
 
     public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Drawable.Callback callback) {
@@ -99,7 +100,14 @@ public class LotteLayerView extends LotteAnimatableLayer {
         childContainerLayer.anchorPoint = layerModel.getAnchor().getObservable();
         childContainerLayer.setTransform(layerModel.getScale().getObservable());
         childContainerLayer.sublayerTransform = layerModel.getRotation().getObservable();
-        mainCanvasPaint.setAlpha((int) layerModel.getOpacity().getInitialValue());
+        layerModel.getOpacity().getObservable().addChangeListener(new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                mainCanvasPaint.setAlpha(Math.round((float) layerModel.getOpacity().getObservable().getValue()));
+                invalidateSelf();
+            }
+        });
+        mainCanvasPaint.setAlpha(Math.round((float) layerModel.getOpacity().getObservable().getValue()));
 
         setVisible(layerModel.isHasInAnimation(), false);
 
@@ -125,7 +133,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
                 currentStroke = (LotteShapeStroke) item;
             }
         }
-
 
         if (layerModel.getMasks() != null) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition, getCallback());

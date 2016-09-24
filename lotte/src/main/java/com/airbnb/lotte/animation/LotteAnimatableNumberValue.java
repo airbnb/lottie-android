@@ -178,10 +178,12 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                 }
             }
         };
+        observable.setValue(remapInterface.remap((float) observable.getValue()));
     }
 
     public void remapWith(RemapInterface remapInterface) {
         this.remapInterface = remapInterface;
+        observable.setValue(remapInterface.remap((float) observable.getValue()));
     }
 
     public float getInitialValue() {

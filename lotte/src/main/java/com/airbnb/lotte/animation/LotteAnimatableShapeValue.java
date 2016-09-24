@@ -28,7 +28,6 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
     private final Observable<Path> observable = new Observable<>();
-    private final Path path = new Path();
 
     private LotteShapeData initialShape;
     private final List<LotteShapeData> shapeKeyframes = new ArrayList<>();
@@ -47,8 +46,6 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
             if (value instanceof JSONObject) {
                 // Single value, no animation
                 initialShape = bezierShapeFromValue(value, closed);
-                observable.setValue(new Path());
-                MiscUtils.getPathFromData(initialShape, observable.getValue());
             } else if (value instanceof JSONArray) {
                 Object firstObject = ((JSONArray) value).get(0);
                 if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t")) {
@@ -56,7 +53,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                     buildAnimationForKeyFrames((JSONArray) value, closed);
                 }
             }
-            observable.setValue(getInitialShape());
+            observable.setValue(new Path());
+            MiscUtils.getPathFromData(initialShape, observable.getValue());
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse keyframes or initial value.");
         }
@@ -96,7 +94,6 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                     if (keyframe.has("s")) {
                         if (i == 0) {
                             initialShape = startShape;
-                            observable.setValue(getInitialShape());
                         }
 
                         shapeKeyframes.add(startShape);
@@ -221,11 +218,6 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to get point.", e);
         }
-    }
-
-    private Path getInitialShape() {
-        MiscUtils.getPathFromData(initialShape, path);
-        return path;
     }
 
     @Override

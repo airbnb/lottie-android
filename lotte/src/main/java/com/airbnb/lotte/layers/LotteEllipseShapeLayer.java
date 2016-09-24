@@ -8,7 +8,6 @@ import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -21,6 +20,8 @@ import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
+
+import static android.R.attr.width;
 
 public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
@@ -55,25 +56,25 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         if (fill != null) {
             fillLayer = new LotteCircleShapeLayer(duration, getCallback());
-            fillLayer.setColor(fill.getColor().getInitialColor());
+            fillLayer.setColor(fill.getColor().getObservable());
             fillLayer.setAlpha(fill.getOpacity().getObservable());
             fillLayer.updateCircle(
-                    circleShape.getPosition().getInitialPoint(),
-                    circleShape.getSize().getInitialPoint());
+                    circleShape.getPosition().getObservable(),
+                    circleShape.getSize().getObservable());
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
             strokeLayer = new LotteCircleShapeLayer(duration, getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
-            strokeLayer.setColor(stroke.getColor().getInitialColor());
+            strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setAlpha(stroke.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
+            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.updateCircle(
-                    circleShape.getPosition().getInitialPoint(),
-                    circleShape.getSize().getInitialPoint());
+                    circleShape.getPosition().getObservable(),
+                    circleShape.getSize().getObservable());
             if (trim != null) {
                 strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
             }
@@ -85,16 +86,46 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
     private static final class LotteCircleShapeLayer extends LotteAnimatableLayer {
         private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
+        private final Observable.OnChangedListener lineWidthChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onLineWidthChanged();
+            }
+        };
+
+        private final Observable.OnChangedListener colorChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onColorChanged();
+            }
+        };
+
+        private final Observable.OnChangedListener circleSizeChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onCircleSizeChanged();
+            }
+        };
+
+        private final Observable.OnChangedListener circlePositionListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                invalidateSelf();
+            }
+        };
+
         private final RectF rect = new RectF();
         private final Paint paint = new Paint();
         private final Path path = new Path();
         private final Path trimPath = new Path();
         private final PathMeasure pathMeasure = new PathMeasure();
 
-        private PointF circleSize;
-        private PointF circlePosition;
+        private Observable<PointF> circleSize;
+        private Observable<PointF> circlePosition;
+        @Nullable private Observable<Number> lineWidth;
         @Nullable private Observable<Number> strokeStart;
         @Nullable private Observable<Number> strokeEnd;
+        @Nullable private Observable<Integer> color;
 
         public LotteCircleShapeLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -102,11 +133,22 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(Paint.Style.FILL);
         }
 
-        public void updateCircle(PointF circlePosition, PointF circleSize) {
+        public void updateCircle(Observable<PointF> circlePosition, Observable<PointF> circleSize) {
+            if (this.circleSize != null) {
+                this.circleSize.removeChangeListemer(circleSizeChangedListener);
+            }
+            if (this.circlePosition != null)
+                this.circlePosition.removeChangeListemer(circlePositionListener);
             this.circleSize = circleSize;
             this.circlePosition = circlePosition;
-            float halfWidth = circleSize.x / 2f;
-            float halfHeight = circleSize.y / 2f;
+            circleSize.addChangeListener(circleSizeChangedListener);
+            circlePosition.addChangeListener(circlePositionListener);
+            onCircleSizeChanged();
+        }
+
+        private void onCircleSizeChanged() {
+            float halfWidth = circleSize.getValue().x / 2f;
+            float halfHeight = circleSize.getValue().y / 2f;
 
             PointF circleQ1 = new PointF(0, -halfHeight);
             PointF circleQ2 = new PointF(halfWidth, 0);
@@ -163,7 +205,16 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(style);
         }
 
-        public void setLineWidth(float width) {
+        public void setLineWidth(Observable<Number> lineWidth) {
+            if (this.lineWidth != null) {
+                this.lineWidth.removeChangeListemer(lineWidthChangedListener);
+            }
+            this.lineWidth = lineWidth;
+            lineWidth.addChangeListener(lineWidthChangedListener);
+            onLineWidthChanged();
+        }
+
+        private void onLineWidthChanged() {
             paint.setStrokeWidth(width);
         }
 
@@ -203,8 +254,17 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        void setColor(@ColorInt int color) {
-            paint.setColor(color);
+        void setColor(Observable<Integer> color) {
+            if (this.color != null) {
+                this.color.removeChangeListemer(colorChangedListener);
+            }
+            this.color = color;
+            color.addChangeListener(colorChangedListener);
+            onColorChanged();
+        }
+
+        private void onColorChanged() {
+            paint.setColor(color.getValue());
             invalidateSelf();
         }
 

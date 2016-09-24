@@ -8,8 +8,8 @@
     <com.airbnb.lotte.LotteAnimationView
         android:id="@+id/animation_view"
         android:layout_gravity="center"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/outline"/>
 
     <Button
