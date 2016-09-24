@@ -33,7 +33,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     private LotteShapeData initialShape;
     private final List<LotteShapeData> shapeKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
-    private List<Interpolator> interpolators;
+    private final List<Interpolator> interpolators = new ArrayList<>();
     private long delay;
     private long duration;
     private int startFrame;
@@ -90,7 +90,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                     outShape = null;
                 }
 
-                LotteShapeData startShape = keyframe.has("s") ? bezierShapeFromValue(keyframe.getJSONObject("s"), closed) : null;
+                LotteShapeData startShape = keyframe.has("s") ? bezierShapeFromValue(keyframe.getJSONArray("s"), closed) : null;
                 if (addStartValue) {
                     if (keyframe.has("s")) {
                         if (i == 0) {
@@ -112,7 +112,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                 }
 
                 if (keyframe.has("e")) {
-                    JSONObject endShape = keyframe.getJSONObject("e");
+                    JSONArray endShape = keyframe.getJSONArray("e");
+                    shapeKeyframes.add(bezierShapeFromValue(endFrame, closed));
 
                     Interpolator interpolator;
                     if (keyframe.has("o") && keyframe.has("i")) {
