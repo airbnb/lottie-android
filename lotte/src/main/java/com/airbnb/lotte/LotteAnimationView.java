@@ -176,9 +176,9 @@ public class LotteAnimationView extends ImageView {
                 layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
             } else {
                 if (mainBitmapForMatte == null) {
-                    mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_4444);
+                    mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
                     maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
-                    matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_4444);
+                    matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
                 }
                 layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
             }
