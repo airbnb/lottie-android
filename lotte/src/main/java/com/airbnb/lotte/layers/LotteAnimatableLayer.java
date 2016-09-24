@@ -8,6 +8,7 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.animation.LotteAnimationGroup;
@@ -167,6 +168,18 @@ public class LotteAnimatableLayer extends Drawable {
         for (Drawable layer : layers) {
             if (layer instanceof LotteAnimatableLayer) {
                 ((LotteAnimatableLayer) layer).play();
+            }
+        }
+    }
+
+    public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+        for (LotteAnimationGroup animation : animations) {
+            animation.setProgress(progress);
+        }
+
+        for (Drawable layer : layers) {
+            if (layer instanceof LotteAnimatableLayer) {
+                ((LotteAnimatableLayer) layer).setProgress(progress);
             }
         }
     }

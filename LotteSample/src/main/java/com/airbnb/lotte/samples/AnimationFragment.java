@@ -3,9 +3,11 @@ package com.airbnb.lotte.samples;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 
 import com.airbnb.lotte.LotteAnimationView;
 
@@ -25,6 +27,7 @@ public class AnimationFragment extends Fragment {
     }
 
     @BindView(R.id.animation_view) LotteAnimationView animationView;
+    @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
 
     @Nullable
     @Override
@@ -34,6 +37,23 @@ public class AnimationFragment extends Fragment {
 
         String fileName = getArguments().getString(ARG_FILE_NAME);
         animationView.setAnimation(fileName);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                animationView.setProgress(progress / 100f);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         return view;
     }

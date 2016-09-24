@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
@@ -152,6 +153,10 @@ public class LotteAnimationView extends ImageView {
 
     public void play(@Nullable OnAnimationCompletedListener listener) {
         animationContainer.play();
+    }
+
+    public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
+        animationContainer.setProgress(progress);
     }
 
     public void pause() {

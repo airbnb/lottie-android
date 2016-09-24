@@ -1,5 +1,6 @@
 package com.airbnb.lotte.animation;
 
+import android.support.annotation.FloatRange;
 import android.util.SparseArray;
 
 import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
@@ -38,6 +39,12 @@ public class LotteAnimationGroup {
     public void play() {
         for (LotteKeyframeAnimation animation : animations) {
             animation.play();
+        }
+    }
+
+    public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
+        for (LotteKeyframeAnimation animation : animations) {
+            animation.setProgress(progress);
         }
     }
 }
