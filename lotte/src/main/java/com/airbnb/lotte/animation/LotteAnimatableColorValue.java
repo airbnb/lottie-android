@@ -102,6 +102,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                         if (i == 0) {
                             //noinspection ResourceAsColor
                             initialColor = startColor;
+                            observable.setValue(initialColor);
                         }
                         colorKeyframes.add(startColor);
                         if (!timingFunctions.isEmpty()) {

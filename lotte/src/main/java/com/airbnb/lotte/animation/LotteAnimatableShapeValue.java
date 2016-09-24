@@ -96,6 +96,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
                     if (keyframe.has("s")) {
                         if (i == 0) {
                             initialShape = startShape;
+                            observable.setValue(getInitialShape());
                         }
 
                         shapeKeyframes.add(startShape);

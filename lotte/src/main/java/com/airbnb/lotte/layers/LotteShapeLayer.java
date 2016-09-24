@@ -10,7 +10,6 @@ import android.graphics.PathMeasure;
 import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
@@ -46,6 +45,20 @@ public class LotteShapeLayer extends Drawable {
         }
     };
 
+    private final Observable.OnChangedListener colorChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onColorChanged();
+        }
+    };
+
+    private final Observable.OnChangedListener lineWidthChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onLineWidthChanged();
+        }
+    };
+
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
@@ -58,7 +71,8 @@ public class LotteShapeLayer extends Drawable {
     private Path scaledPath = new Path();
 
     private Observable<Path> path;
-    @IntRange(from = 0, to = 255) private int alpha;
+    private Observable<Integer> color;
+    private Observable<Number> lineWidth;
     @Nullable private Observable<Number> strokeStart;
     @Nullable private Observable<Number> strokeEnd;
 
@@ -80,8 +94,17 @@ public class LotteShapeLayer extends Drawable {
         return paint.getColor();
     }
 
-    public void setColor(@ColorInt int strokeColor) {
-        paint.setColor(strokeColor);
+    public void setColor(Observable<Integer> color) {
+        if (this.color != null) {
+            this.color.removeChangeListemer(colorChangedListener);
+        }
+        this.color = color;
+        color.addChangeListener(colorChangedListener);
+        onColorChanged();
+    }
+
+    private void onColorChanged() {
+        paint.setColor(color.getValue());
         invalidateSelf();
     }
 
@@ -141,21 +164,21 @@ public class LotteShapeLayer extends Drawable {
         return paint.getAlpha();
     }
 
-    public void setShapeAlpha(Observable<Number> alpha) {
+    public void setShapeAlpha(Observable<Number> shapeAlpha) {
         if (this.shapeAlpha != null) {
             this.shapeAlpha.removeChangeListemer(alphaChangedListener);
         }
-        this.shapeAlpha = alpha;
-        alpha.addChangeListener(alphaChangedListener);
+        this.shapeAlpha = shapeAlpha;
+        shapeAlpha.addChangeListener(alphaChangedListener);
         onAlphaChanged();
     }
 
-    public void setTransformAlpha(Observable<Number> alpha) {
+    public void setTransformAlpha(Observable<Number> transformAlpha) {
         if (this.transformAlpha != null) {
             this.transformAlpha.removeChangeListemer(alphaChangedListener);
         }
-        transformAlpha = alpha;
-        alpha.addChangeListener(alphaChangedListener);
+        this.transformAlpha = transformAlpha;
+        transformAlpha.addChangeListener(alphaChangedListener);
         onAlphaChanged();
     }
 
@@ -181,8 +204,17 @@ public class LotteShapeLayer extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void setLineWidth(float width) {
-        paint.setStrokeWidth(width);
+    public void setLineWidth(Observable<Number> lineWidth) {
+        if (this.lineWidth != null) {
+            this.lineWidth.removeChangeListemer(lineWidthChangedListener);
+        }
+        this.lineWidth = lineWidth;
+        lineWidth.addChangeListener(lineWidthChangedListener);
+        onLineWidthChanged();
+    }
+
+    private void onLineWidthChanged() {
+        paint.setStrokeWidth((float) lineWidth.getValue());
         updateBounds();
         invalidateSelf();
     }

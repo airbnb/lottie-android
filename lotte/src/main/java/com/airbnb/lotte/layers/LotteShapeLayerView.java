@@ -49,15 +49,15 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         setPosition(transformModel.getPosition().getObservable());
         sublayerTransform = transformModel.getRotation().getObservable();
 
-        Observable<LotteTransform3D> initialScale = transformModel.getScale().getObservable();
+        Observable<LotteTransform3D> scale = transformModel.getScale().getObservable();
         setTransform(transformModel.getScale().getObservable());
         if (fill != null) {
             fillLayer = new LotteShapeLayer(getCallback());
             fillLayer.setPath(path.getShapePath().getObservable());
-            fillLayer.setColor(fill.getColor().getInitialColor());
+            fillLayer.setColor(fill.getColor().getObservable());
             fillLayer.setShapeAlpha(fill.getOpacity().getObservable());
             fillLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            fillLayer.setScale(initialScale);
+            fillLayer.setScale(scale);
             addLayer(fillLayer);
         }
 
@@ -65,14 +65,14 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             strokeLayer = new LotteShapeLayer(getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setPath(path.getShapePath().getObservable());
-            strokeLayer.setColor(stroke.getColor().getInitialColor());
+            strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
             strokeLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
+            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
-            strokeLayer.setScale(initialScale);
+            strokeLayer.setScale(scale);
             if (trim != null) {
                 strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
             }

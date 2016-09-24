@@ -103,6 +103,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                     if (startValue != null) {
                         if (i == 0) {
                             initialValue = startValue;
+                            observable.setValue(initialValue);
                         }
                         valueKeyframes.add(startValue);
                         if (!timingFunctions.isEmpty()) {

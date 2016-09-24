@@ -116,6 +116,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                         pointKeyframes.add(startPoint);
                         animationPath.moveTo(startPoint.x, startPoint.y);
                         initialPoint = startPoint;
+                        observable.setValue(initialPoint);
                     } else {
                         animationPath.lineTo(startPoint.x, startPoint.y);
                         pointKeyframes.add(startPoint);

@@ -7,7 +7,6 @@ import android.graphics.PathEffect;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
@@ -53,27 +52,27 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         if (fill != null) {
             fillLayer = new LotteRoundRectLayer(duration, getCallback());
-            fillLayer.setColor(fill.getColor().getInitialColor());
+            fillLayer.setColor(fill.getColor().getObservable());
             fillLayer.setShapeAlpha(fill.getOpacity().getObservable());
             fillLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
-            fillLayer.setRectSize(rectShape.getSize().getInitialPoint());
-            fillLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
+            fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getObservable());
+            fillLayer.setRectSize(rectShape.getSize().getObservable());
+            fillLayer.setRectPosition(rectShape.getPosition().getObservable());
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
             strokeLayer = new LotteRoundRectLayer(duration, getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
-            strokeLayer.setColor(stroke.getColor().getInitialColor());
+            strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
             strokeLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
+            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());
-            strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().getInitialValue());
-            strokeLayer.setRectSize(rectShape.getSize().getInitialPoint());
-            strokeLayer.setRectPosition(rectShape.getPosition().getInitialPoint());
+            strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().getObservable());
+            strokeLayer.setRectSize(rectShape.getSize().getObservable());
+            strokeLayer.setRectPosition(rectShape.getPosition().getObservable());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             addLayer(strokeLayer);
         }
@@ -133,6 +132,13 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     private static class LotteRoundRectLayer extends LotteAnimatableLayer {
         private static final String TAG = LotteRoundRectLayer.class.getSimpleName();
 
+        private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                invalidateSelf();
+            }
+        };
+
         private final Observable.OnChangedListener alphaChangedListener = new Observable.OnChangedListener() {
             @Override
             public void onChanged() {
@@ -140,15 +146,30 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
         };
 
+        private final Observable.OnChangedListener colorChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onColorChanged();
+            }
+        };
+
+        private final Observable.OnChangedListener lineWidthChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onLineWidthChanged();
+            }
+        };
+
         private final Paint paint = new Paint();
         private final RectF fillRect = new RectF();
 
-        private PointF rectPosition;
-        private PointF rectSize;
-        private float rectCornerRadius;
-
+        private Observable<Integer> color;
+        private Observable<Number> lineWidth;
         private Observable<Number> shapeAlpha;
         private Observable<Number> transformAlpha;
+        private Observable<Number> rectCornerRadius;
+        private Observable<PointF> rectPosition;
+        private Observable<PointF> rectSize;
 
         @Nullable private PathEffect dashPatternPathEffect;
         @Nullable private PathEffect lineJoinPathEffect;
@@ -193,16 +214,36 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             return paint.getAlpha();
         }
 
-        public void setColor(@ColorInt int color) {
-            paint.setColor(color);
+        public void setColor(Observable<Integer> color) {
+            if (this.color != null) {
+                this.color.removeChangeListemer(colorChangedListener);
+            }
+            this.color = color;
+            color.addChangeListener(colorChangedListener);
+            onColorChanged();
+        }
+
+        private void onColorChanged() {
+            paint.setColor(color.getValue());
+            invalidateSelf();
         }
 
         public void setStyle(Paint.Style style) {
             paint.setStyle(style);
         }
 
-        public void setLineWidth(float width) {
-            paint.setStrokeWidth(width);
+        public void setLineWidth(Observable<Number> lineWidth) {
+            if (this.lineWidth != null) {
+                this.lineWidth.removeChangeListemer(lineWidthChangedListener);
+            }
+            this.lineWidth = lineWidth;
+            lineWidth.addChangeListener(lineWidthChangedListener);
+            onLineWidthChanged();
+        }
+
+        private void onLineWidthChanged() {
+            paint.setStrokeWidth((float) lineWidth.getValue());
+            invalidateSelf();
         }
 
         public void setDashPattern(List<Float> lineDashPattern, float offset) {
@@ -241,44 +282,47 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        public float getRectCornerRadius() {
-            return rectCornerRadius;
-        }
-
-        public void setRectCornerRadius(float rectCornerRadius) {
+        public void setRectCornerRadius(Observable<Number> rectCornerRadius) {
+            if (this.rectCornerRadius != null) {
+                this.rectCornerRadius.removeChangeListemer(changedListener);
+            }
             this.rectCornerRadius = rectCornerRadius;
+            rectCornerRadius.addChangeListener(changedListener);
+            invalidateSelf();
         }
 
-        public PointF getRectPosition() {
-            return rectPosition;
-        }
-
-        public void setRectPosition(PointF rectPosition) {
+        public void setRectPosition(Observable<PointF> rectPosition) {
+            if (this.rectPosition != null) {
+                this.rectPosition.removeChangeListemer(changedListener);
+            }
             this.rectPosition = rectPosition;
+            rectPosition.addChangeListener(changedListener);
+            invalidateSelf();
         }
 
-        public PointF getRectSize() {
-            return rectSize;
-        }
-
-        public void setRectSize(PointF rectSize) {
+        public void setRectSize(Observable<PointF> rectSize) {
+            if (this.rectSize != null) {
+                this.rectSize.removeChangeListemer(changedListener);
+            }
             this.rectSize = rectSize;
+            this.rectSize.addChangeListener(changedListener);
+            invalidateSelf();
         }
 
         @Override
         public void draw(@NonNull Canvas canvas) {
             super.draw(canvas);
-            float halfWidth = rectSize.x / 2f;
-            float halfHeight = rectSize.y / 2f;
+            float halfWidth = rectSize.getValue().x / 2f;
+            float halfHeight = rectSize.getValue().y / 2f;
 
-            fillRect.set(rectPosition.x - halfWidth,
-                    rectPosition.y - halfHeight,
-                    rectPosition.x + halfWidth,
-                    rectPosition.y + halfHeight);
-            if (rectCornerRadius == 0) {
+            fillRect.set(rectPosition.getValue().x - halfWidth,
+                    rectPosition.getValue().y - halfHeight,
+                    rectPosition.getValue().x + halfWidth,
+                    rectPosition.getValue().y + halfHeight);
+            if ((float) rectCornerRadius.getValue() == 0) {
                 canvas.drawRect(fillRect, paint);
             } else {
-                canvas.drawRoundRect(fillRect, rectCornerRadius, rectCornerRadius, paint);
+                canvas.drawRoundRect(fillRect, (float) rectCornerRadius.getValue(), (float) rectCornerRadius.getValue(), paint);
             }
         }
     }

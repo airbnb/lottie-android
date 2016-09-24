@@ -94,6 +94,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
                         startValue = xformForValueArray(keyframe.getJSONArray("s"));
                         if (i == 0) {
                             initialScale = startValue;
+                            observable.setValue(initialScale);
                         }
                         scaleKeyframes.add(startValue);
                         if (!interpolators.isEmpty()) {
