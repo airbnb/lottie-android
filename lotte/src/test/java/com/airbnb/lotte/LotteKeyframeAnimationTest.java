@@ -1,7 +1,8 @@
 package com.airbnb.lotte;
 
 
-import com.airbnb.lotte.utils.LotteKeyframeAnimation;
+import com.airbnb.lotte.animation.LotteAnimatableProperty;
+import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +23,7 @@ public class LotteKeyframeAnimationTest {
     List<Float> keyTimes = Arrays.asList(0f, 0.5f, 1f);
     List<Float> values = Arrays.asList(0f, 1f, 10f);
 
-    LotteKeyframeAnimation animation = new LotteKeyframeAnimation("alpha", 1000, keyTimes, values);
+    LotteNumberKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(LotteAnimatableProperty.OPACITY, 1000, keyTimes, Float.class, values);
 
     assertEquals(animation.getValueForProgress(0f), 0f);
     assertEquals(animation.getValueForProgress(0.25f), 0.5f);
