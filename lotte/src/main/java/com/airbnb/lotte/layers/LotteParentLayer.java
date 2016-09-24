@@ -9,8 +9,6 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
-import com.airbnb.lotte.utils.LotteTransform3D;
-import com.airbnb.lotte.utils.Observable;
 
 public class LotteParentLayer extends LotteAnimatableLayer {
     private static final String TAG = LotteParentLayer.class.getSimpleName();
@@ -30,8 +28,7 @@ public class LotteParentLayer extends LotteAnimatableLayer {
         setPosition(parentModel.getPosition().getObservable());
         anchorPoint = parentModel.getAnchor().getObservable();
         setTransform(parentModel.getScale().getObservable());
-        sublayerTransform = new Observable<>(new LotteTransform3D());
-        sublayerTransform.getValue().rotateZ(parentModel.getRotation().getInitialValue());
+        sublayerTransform = parentModel.getRotation().getObservable();
         buildAnimations();
     }
 

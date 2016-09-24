@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeGroup;
@@ -13,9 +14,6 @@ import com.airbnb.lotte.model.LotteShapeRectangle;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.animation.LotteAnimationGroup;
-import com.airbnb.lotte.utils.LotteTransform3D;
-import com.airbnb.lotte.utils.Observable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +45,7 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             setPosition(shapeTransform.getPosition().getObservable());
             setAlpha((int) (shapeTransform.getOpacity().getInitialValue()));
             setTransform(shapeTransform.getScale().getObservable());
-            sublayerTransform = new Observable<>(new LotteTransform3D());
-            sublayerTransform.getValue().rotateZ(shapeTransform.getRotation().getInitialValue());
+            sublayerTransform = shapeTransform.getRotation().getObservable();
         }
 
         List<Object> reversedItems = shapeGroup.getItems();

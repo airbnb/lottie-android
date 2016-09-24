@@ -34,5 +34,6 @@ public class LotteTransform3D {
         sb.append("scale=").append(getScaleX()).append("x").append(getScaleY());
         sb.append('}');
         return sb.toString();
+
     }
 }

@@ -18,13 +18,11 @@ import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
 
 public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
-
 
     private final LotteShapeCircle circleShape;
     private final LotteShapeFill fill;
@@ -50,16 +48,15 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         setBounds(transform.getCompBounds());
         anchorPoint = transform.getAnchor().getObservable();
-        setAlpha((int) transform.getOpacity().getInitialValue());
+        setAlpha(transform.getOpacity().getObservable());
         setPosition(transform.getPosition().getObservable());
         setTransform(transform.getScale().getObservable());
-        sublayerTransform = new Observable<>(new LotteTransform3D());
-        sublayerTransform.getValue().rotateZ(transform.getRotation().getInitialValue());
+        setSublayerTransform(transform.getRotation().getObservable());
 
         if (fill != null) {
             fillLayer = new LotteCircleShapeLayer(duration, getCallback());
             fillLayer.setColor(fill.getColor().getInitialColor());
-            fillLayer.setAlpha((int) (fill.getOpacity().getInitialValue() * 255));
+            fillLayer.setAlpha(fill.getOpacity().getObservable());
             fillLayer.updateCircle(
                     circleShape.getPosition().getInitialPoint(),
                     circleShape.getSize().getInitialPoint());
@@ -70,7 +67,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             strokeLayer = new LotteCircleShapeLayer(duration, getCallback());
             strokeLayer.setStyle(Paint.Style.STROKE);
             strokeLayer.setColor(stroke.getColor().getInitialColor());
-            strokeLayer.setAlpha((int) (stroke.getOpacity().getInitialValue()));
+            strokeLayer.setAlpha(stroke.getOpacity().getObservable());
             strokeLayer.setLineWidth(stroke.getWidth().getInitialValue());
             strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
             strokeLayer.setLineCapType(stroke.getCapType());

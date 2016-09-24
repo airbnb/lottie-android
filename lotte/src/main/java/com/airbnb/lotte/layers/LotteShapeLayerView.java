@@ -47,8 +47,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         setBounds(transformModel.getCompBounds());
         anchorPoint = transformModel.getAnchor().getObservable();
         setPosition(transformModel.getPosition().getObservable());
-        sublayerTransform = new Observable<>(new LotteTransform3D());
-        sublayerTransform.getValue().rotateZ(transformModel.getRotation().getInitialValue());
+        sublayerTransform = transformModel.getRotation().getObservable();
 
         Observable<LotteTransform3D> initialScale = transformModel.getScale().getObservable();
         setTransform(transformModel.getScale().getObservable());

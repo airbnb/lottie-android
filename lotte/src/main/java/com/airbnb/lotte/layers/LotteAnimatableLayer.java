@@ -8,7 +8,6 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lotte.animation.LotteAnimationGroup;
@@ -38,10 +37,10 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#transform */
     private Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
-    protected Observable<LotteTransform3D> sublayerTransform;
+    private Observable<Number> alpha;
+    protected Observable<Number> sublayerTransform;
     protected long duration;
     protected float speed;
-    @IntRange(from=0, to=255) private int alpha = 255;
 
     private final Paint solidBackgroundPaint = new Paint();
     protected final List<LotteAnimationGroup> animations = new ArrayList<>();
@@ -87,7 +86,7 @@ public class LotteAnimatableLayer extends Drawable {
         }
 
         if (sublayerTransform != null && sublayerTransform.getValue() != null) {
-            canvas.rotate(sublayerTransform.getValue().getRotationZ());
+            canvas.rotate((float) sublayerTransform.getValue());
         }
 
         if (anchorPoint != null && anchorPoint.getValue() != null) {
@@ -105,13 +104,17 @@ public class LotteAnimatableLayer extends Drawable {
 
     @Override
     public void setAlpha(int alpha) {
+        throw new IllegalArgumentException("This shouldn't be used.");
+    }
+
+    public void setAlpha(Observable<Number> alpha) {
         this.alpha = alpha;
         invalidateSelf();
     }
 
     @Override
     public int getAlpha() {
-        return alpha;
+        return (int) alpha.getValue();
     }
 
     @Override
@@ -133,6 +136,14 @@ public class LotteAnimatableLayer extends Drawable {
         }
         this.transform = transform;
         transform.addChangeListener(changedListener);
+    }
+
+    public void setSublayerTransform(Observable<Number> sublayerTransform) {
+        if (this.sublayerTransform != null) {
+            this.sublayerTransform.removeChangeListemer(changedListener);
+        }
+        this.sublayerTransform = sublayerTransform;
+        sublayerTransform.addChangeListener(changedListener);
     }
 
     @Override
