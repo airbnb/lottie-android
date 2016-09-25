@@ -18,7 +18,7 @@ public class LottePointKeyframeAnimation extends LotteKeyframeAnimation<PointF> 
 
     @Override
     public PointF getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        if (progress < getStartDelayProgress()) {
+        if (progress <= 0f) {
             return points.get(0);
         } else if (progress > 1f) {
             return points.get(points.size() - 1);

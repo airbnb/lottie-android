@@ -81,7 +81,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
                 int frame = keyframe.getInt("t");
-                float timePercentage = (frame - startFrame) / (float) durationFrames;
+                float timePercentage = (float) (frame - startFrame) / (float) durationFrames;
 
                 if (outShape != null) {
                     shapeKeyframes.add(outShape);

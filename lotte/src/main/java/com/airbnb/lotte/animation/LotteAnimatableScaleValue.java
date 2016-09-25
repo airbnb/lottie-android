@@ -80,7 +80,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
                 int frame = keyframe.getInt("t");
-                float timePercentage = (frame - startFrame) / (float) durationFrames;
+                float timePercentage = (float) (frame - startFrame) / (float) durationFrames;
 
                 if (outValue != null) {
                     scaleKeyframes.add(outValue);

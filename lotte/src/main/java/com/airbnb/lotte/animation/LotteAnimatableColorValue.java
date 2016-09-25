@@ -88,7 +88,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
                 long frame = keyframe.getLong("t");
-                float timePercentage = (frame - startFrame) / durationFrames;
+                float timePercentage = (float) (frame - startFrame) / (float) durationFrames;
 
                 if (outColor != null) {
                     colorKeyframes.add(outColor);

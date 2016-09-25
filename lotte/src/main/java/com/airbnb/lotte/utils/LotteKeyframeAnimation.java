@@ -63,11 +63,16 @@ public abstract class LotteKeyframeAnimation<T> {
         return this;
     }
 
-    public void addUpdateListener(AnimationListener listener) {
+    public void addUpdateListener(AnimationListener<T> listener) {
         listeners.add(listener);
     }
 
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+        if (progress < getStartDelayProgress()) {
+            progress = 0f;
+        } else {
+            progress = (progress - getStartDelayProgress()) / getDurationProgressRange();
+        }
         this.progress = progress;
         onProgressChanged();
     }
@@ -83,18 +88,24 @@ public abstract class LotteKeyframeAnimation<T> {
         float keyTime = keyTimes.get(1);
         while (keyTime < progress && keyframeIndex < keyTimes.size() - 1) {
             keyframeIndex++;
-            keyTime = keyTimes.get(0);
+            keyTime = keyTimes.get(keyframeIndex);
         }
         return keyframeIndex - 1;
     }
+
 
     public long getDuration() {
         return duration;
     }
 
     @FloatRange(from=0f, to=1f)
-    protected float getStartDelayProgress() {
-        return startDelay / (float) (startDelay + duration);
+    private float getStartDelayProgress() {
+        return (float) startDelay / (float) (startDelay + duration);
+    }
+
+    @FloatRange(from=0f, to=1f)
+    private float getDurationProgressRange() {
+        return 1f - getStartDelayProgress();
     }
 
     public long getStartDelay() {
