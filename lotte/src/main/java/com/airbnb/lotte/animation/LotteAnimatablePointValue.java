@@ -100,7 +100,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
                 long frame = keyframe.getLong("t");
-                float timePercentage = (float) (frame - startFrame) / (float) frameRate;
+                float timePercentage = (float) (frame - startFrame) / (float) durationFrames;
 
                 if (outPoint != null) {
                     PointF vertex = outPoint;

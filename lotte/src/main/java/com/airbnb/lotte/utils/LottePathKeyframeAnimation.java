@@ -32,21 +32,7 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
             return point;
         }
 
-        int keyframeIndex = getKeyframeIndex();
-
-        float startKeytime = keyTimes.get(keyframeIndex);
-        float endKeytime = keyTimes.get(keyframeIndex + 1);
-
-
-        float percentageIntoFrame = 0;
-        if (!isDiscrete) {
-            percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
-            if (interpolators != null) {
-                percentageIntoFrame = interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
-            }
-        }
-
-        pathMeasure.getPosTan(startKeytime + percentageIntoFrame * (endKeytime - startKeytime) * pathMeasure.getLength(), pos, null);
+        pathMeasure.getPosTan(progress * pathMeasure.getLength(), pos, null);
         point.set(pos[0], pos[1]);
         return point;
     }
