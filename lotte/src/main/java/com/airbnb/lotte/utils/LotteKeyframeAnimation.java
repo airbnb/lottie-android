@@ -40,7 +40,7 @@ public abstract class LotteKeyframeAnimation<T> {
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                setProgress((Float) animation.getAnimatedValue());
+                setProgress(animation.getAnimatedFraction());
             }
         });
     }
@@ -74,10 +74,7 @@ public abstract class LotteKeyframeAnimation<T> {
             progress = (progress - getStartDelayProgress()) / getDurationProgressRange();
         }
         this.progress = progress;
-        onProgressChanged();
-    }
 
-    private void onProgressChanged() {
         for (AnimationListener<T> l : listeners) {
             l.onValueChanged(getValueForProgress(progress));
         }
@@ -99,7 +96,7 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     @FloatRange(from=0f, to=1f)
-    private float getStartDelayProgress() {
+    protected float getStartDelayProgress() {
         return (float) startDelay / (float) (startDelay + duration);
     }
 

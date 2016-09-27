@@ -22,7 +22,7 @@ import java.util.List;
 public class LotteAnimatableLayer extends Drawable {
     private static final String TAG = LotteAnimatableLayer.class.getSimpleName();
 
-    protected final List<Drawable> layers = new ArrayList<>();
+    protected final List<LotteAnimatableLayer> layers = new ArrayList<>();
 
     protected final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
@@ -152,7 +152,7 @@ public class LotteAnimatableLayer extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void addLayer(Drawable layer) {
+    public void addLayer(LotteAnimatableLayer layer) {
         layers.add(layer);
         int width = Math.max(getBounds().width(), layer.getBounds().width());
         int height = Math.max(getBounds().height(), layer.getBounds().height());
@@ -177,10 +177,8 @@ public class LotteAnimatableLayer extends Drawable {
             animation.setProgress(progress);
         }
 
-        for (Drawable layer : layers) {
-            if (layer instanceof LotteAnimatableLayer) {
-                ((LotteAnimatableLayer) layer).setProgress(progress);
-            }
+        for (LotteAnimatableLayer layer : layers) {
+            layer.setProgress(progress);
         }
     }
 }

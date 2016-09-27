@@ -159,10 +159,10 @@ public class LotteLayerView extends LotteAnimatableLayer {
                     Float.class,
                     layerModel.getInOutKeyFrames());
             inOutAnimation.setIsDiscrete();
-            inOutAnimation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+            inOutAnimation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Float>() {
                 @Override
-                public void onValueChanged(Object progress) {
-                    setVisible((float) progress == 1f, false);
+                public void onValueChanged(Float progress) {
+                    setVisible(progress == 1f, false);
                 }
             });
             setVisible(inOutAnimation.getValueForProgress(0f) == 1f, false);
