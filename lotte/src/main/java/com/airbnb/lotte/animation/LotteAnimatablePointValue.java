@@ -12,6 +12,7 @@ import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
 import com.airbnb.lotte.utils.Observable;
+import com.airbnb.lotte.utils.SegmentedPath;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +31,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
     private boolean usePathAnimation = true;
     private PointF initialPoint;
-    private final Path animationPath = new Path();
+    private final SegmentedPath animationPath = new SegmentedPath();
     private long delay;
     private long duration;
     private long startFrame;
@@ -260,10 +261,10 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
         } else {
             animation = new LottePointKeyframeAnimation(property, duration, keyTimes, pointKeyframes);
         }
-        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<PointF>() {
             @Override
-            public void onValueChanged(Object progress) {
-                observable.setValue((PointF) progress);
+            public void onValueChanged(PointF progress) {
+                observable.setValue(progress);
             }
         });
         animation.setStartDelay(delay);
