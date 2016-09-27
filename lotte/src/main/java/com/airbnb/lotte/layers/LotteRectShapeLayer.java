@@ -342,6 +342,9 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         @Override
         public void draw(@NonNull Canvas canvas) {
+            if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
+                return;
+            }
             super.draw(canvas);
             float halfWidth = rectSize.getValue().x / 2f;
             float halfHeight = rectSize.getValue().y / 2f;

@@ -343,6 +343,9 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         @Override
         public void draw(@NonNull Canvas canvas) {
+            if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
+                return;
+            }
             super.draw(canvas);
             if (trimPath.isEmpty()) {
                 canvas.drawPath(path, paint);
