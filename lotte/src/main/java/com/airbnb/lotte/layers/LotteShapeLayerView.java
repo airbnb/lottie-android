@@ -7,12 +7,12 @@ import android.util.SparseArray;
 
 import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
+import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapePath;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
-import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
 
@@ -99,6 +99,11 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.OPACITY, stroke.getOpacity());
             propertyAnimations.put(LotteAnimatableProperty.LINE_WIDTH, stroke.getWidth());
             propertyAnimations.put(LotteAnimatableProperty.PATH, path.getShapePath());
+            if (!stroke.getLineDashPattern().isEmpty()) {
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN, stroke.getLineDashPattern().get(0));
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_GAP, stroke.getLineDashPattern().get(1));
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_OFFSET, stroke.getDashOffset());
+            }
             if (trim != null) {
                 propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
                 propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());

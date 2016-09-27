@@ -25,8 +25,8 @@ public class LotteShapeStroke {
         Bevel
     }
 
-    private float offset;
-    private final List<Float> lineDashPattern = new ArrayList<>();
+    private LotteAnimatableNumberValue offset;
+    private final List<LotteAnimatableNumberValue> lineDashPattern = new ArrayList<>();
 
     private boolean fillEnabled;
     private LotteAnimatableColorValue color;
@@ -59,13 +59,10 @@ public class LotteShapeStroke {
                     String n = dashJson.getString("n");
                     if (n.equals("o")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        offset = new LotteAnimatableNumberValue(value, frameRate).getInitialValue();
+                        offset = new LotteAnimatableNumberValue(value, frameRate);
                     } else if (n.equals("d") || n.equals("g")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        float initialValue = new LotteAnimatableNumberValue(value, frameRate).getInitialValue();
-                        if (initialValue == 0) {
-                            initialValue = 0.01f;
-                        }
+                        LotteAnimatableNumberValue initialValue = new LotteAnimatableNumberValue(value, frameRate);
                         lineDashPattern.add(initialValue);
                     }
                 }
@@ -91,11 +88,11 @@ public class LotteShapeStroke {
         return width;
     }
 
-    public List<Float> getLineDashPattern() {
+    public List<LotteAnimatableNumberValue> getLineDashPattern() {
         return lineDashPattern;
     }
 
-    public float getDashOffset() {
+    public LotteAnimatableNumberValue getDashOffset() {
         return offset;
     }
 

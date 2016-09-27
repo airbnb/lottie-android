@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 public class LotteAnimatableProperty {
     @IntDef({OPACITY, POSITION, ANCHOR_POINT, TRANSFORM, SUBLAYER_TRANSFORM, STROKE_COLOR, LINE_WIDTH, RECT_SIZE,
             RECT_POSITION, RECT_CORNER_RADIUS, BACKGROUND_COLOR, HIDDEN, TRIM_PATH_START, TRIM_PATH_END,
-            TRIM_PATH_OFFSET, PATH, CIRCLE_POSITION, CIRCLE_SIZE})
+            TRIM_PATH_OFFSET, PATH, CIRCLE_POSITION, CIRCLE_SIZE, DASH_PATTERN, DASH_PATTERN_OFFSET, DASH_PATTERN_GAP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AnimatableProperty {}
     public static final int OPACITY = 1;
@@ -30,4 +30,7 @@ public class LotteAnimatableProperty {
     public static final int PATH = 16;
     public static final int CIRCLE_POSITION = 17;
     public static final int CIRCLE_SIZE = 18;
+    public static final int DASH_PATTERN = 19;
+    public static final int DASH_PATTERN_OFFSET = 20;
+    public static final int DASH_PATTERN_GAP = 21;
 }

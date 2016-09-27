@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
+import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
@@ -105,6 +106,11 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, circleShape.getSize());
             propertyAnimations.put(LotteAnimatableProperty.CIRCLE_POSITION, circleShape.getPosition());
             propertyAnimations.put(LotteAnimatableProperty.CIRCLE_SIZE, circleShape.getSize());
+            if (!stroke.getLineDashPattern().isEmpty()) {
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN, stroke.getLineDashPattern().get(0));
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_GAP, stroke.getLineDashPattern().get(1));
+                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_OFFSET, stroke.getDashOffset());
+            }
             if (trim != null) {
                 propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
                 propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
@@ -155,6 +161,14 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             }
         };
 
+        private final Observable.OnChangedListener dashPatternChangedListener = new Observable.OnChangedListener() {
+            @Override
+            public void onChanged() {
+                onDashPatternChanged();
+            }
+        };
+
+
         private final RectF rect = new RectF();
         private final Paint paint = new Paint();
         private final Path path = new Path();
@@ -167,6 +181,8 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         @Nullable private Observable<Number> strokeStart;
         @Nullable private Observable<Number> strokeEnd;
         @Nullable private Observable<Integer> color;
+        @Nullable private List<LotteAnimatableNumberValue> lineDashPattern;
+        @Nullable private LotteAnimatableNumberValue lineDashPatternOffset;
 
         public LotteCircleShapeLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -259,15 +275,31 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             paint.setStrokeWidth((float) lineWidth.getValue());
         }
 
-        public void setDashPattern(List<Float> lineDashPattern, float offset) {
+        public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+            if (this.lineDashPattern != null) {
+                this.lineDashPattern.get(0).getObservable().removeChangeListemer(dashPatternChangedListener);
+            }
+            if (this.lineDashPatternOffset != null) {
+                this.lineDashPatternOffset.getObservable().removeChangeListemer(dashPatternChangedListener);
+            }
             if (lineDashPattern.isEmpty()) {
                 return;
             }
+            this.lineDashPattern = lineDashPattern;
+            this.lineDashPatternOffset = offset;
+            lineDashPattern.get(0).getObservable().addChangeListener(dashPatternChangedListener);
+            lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+            offset.getObservable().addChangeListener(dashPatternChangedListener);
+            onDashPatternChanged();
+        }
+
+        private void onDashPatternChanged() {
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
-                values[i] = lineDashPattern.get(i);
+                values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
             }
-            paint.setPathEffect(new DashPathEffect(values, offset));
+            paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
+            invalidateSelf();
         }
 
         public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {

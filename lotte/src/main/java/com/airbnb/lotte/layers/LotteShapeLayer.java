@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
+import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
@@ -59,6 +60,13 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         }
     };
 
+    private final Observable.OnChangedListener dashPatternChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onDashPatternChanged();
+        }
+    };
+
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
@@ -78,6 +86,8 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     private Observable<Number> shapeAlpha;
     private Observable<Number> transformAlpha;
+    private List<LotteAnimatableNumberValue> lineDashPattern;
+    private LotteAnimatableNumberValue lineDashPatternOffset;
 
     public LotteShapeLayer(Drawable.Callback callback) {
         super(0, callback);
@@ -219,15 +229,31 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         invalidateSelf();
     }
 
-    public void setDashPattern(List<Float> lineDashPattern, float offset) {
+    public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+        if (this.lineDashPattern != null) {
+            this.lineDashPattern.get(0).getObservable().removeChangeListemer(dashPatternChangedListener);
+        }
+        if (this.lineDashPatternOffset != null) {
+            this.lineDashPatternOffset.getObservable().removeChangeListemer(dashPatternChangedListener);
+        }
         if (lineDashPattern.isEmpty()) {
             return;
         }
+        this.lineDashPattern = lineDashPattern;
+        this.lineDashPatternOffset = offset;
+        lineDashPattern.get(0).getObservable().addChangeListener(dashPatternChangedListener);
+        lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+        offset.getObservable().addChangeListener(dashPatternChangedListener);
+        onDashPatternChanged();
+    }
+
+    private void onDashPatternChanged() {
         float[] values = new float[lineDashPattern.size()];
         for (int i = 0; i < lineDashPattern.size(); i++) {
-            values[i] = lineDashPattern.get(i);
+            values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
         }
-        paint.setPathEffect(new DashPathEffect(values, offset));
+        paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
+        invalidateSelf();
     }
 
     public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
