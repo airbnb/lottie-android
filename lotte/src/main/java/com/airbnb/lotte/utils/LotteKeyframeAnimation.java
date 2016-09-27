@@ -36,7 +36,6 @@ public abstract class LotteKeyframeAnimation<T> {
         this.property = property;
         this.duration = duration;
         this.keyTimes = keyTimes;
-        animator.setDuration(duration);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -47,8 +46,11 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public LotteKeyframeAnimation setStartDelay(long startDelay) {
         this.startDelay = startDelay;
-        animator.setDuration(duration + startDelay);
         return this;
+    }
+
+    public void setTotalDuration(long totalDuration) {
+        animator.setDuration(totalDuration);
     }
 
     public void setIsDiscrete() {
@@ -70,8 +72,10 @@ public abstract class LotteKeyframeAnimation<T> {
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         if (progress < getStartDelayProgress()) {
             progress = 0f;
+        } else if (progress > getDurationEndProgress()){
+            progress = 1f;
         } else {
-            progress = (progress - getStartDelayProgress()) / getDurationProgressRange();
+            progress = (progress - getStartDelayProgress()) / getDurationRangeProgress();
         }
         this.progress = progress;
 
@@ -101,8 +105,13 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     @FloatRange(from=0f, to=1f)
-    private float getDurationProgressRange() {
-        return 1f - getStartDelayProgress();
+    private float getDurationEndProgress() {
+        return getStartDelayProgress() + getDurationRangeProgress();
+    }
+
+    @FloatRange(from=0f, to=1f)
+    private float getDurationRangeProgress() {
+        return (float) duration / (float) animator.getDuration();
     }
 
     public long getStartDelay() {

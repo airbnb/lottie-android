@@ -12,7 +12,7 @@ import java.util.List;
 public class LotteAnimationGroup {
 
     private final List<LotteKeyframeAnimation> animations;
-    private long duration;
+    private long maxDuration = 0;
 
     public LotteAnimationGroup(SparseArray<LotteAnimatableValue> propertyAnimations) {
         animations = new ArrayList<>(propertyAnimations.size());
@@ -25,8 +25,8 @@ public class LotteAnimationGroup {
                 animations.add(animation);
 
                 long animationDuration = animation.getDuration() + animation.getStartDelay();
-                if (animationDuration > duration) {
-                    duration = animationDuration;
+                if (animationDuration > maxDuration) {
+                    maxDuration = animationDuration;
                 }
             }
         }
@@ -45,6 +45,17 @@ public class LotteAnimationGroup {
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         for (LotteKeyframeAnimation animation : animations) {
             animation.setProgress(progress);
+        }
+    }
+
+    public long getMaxDuration() {
+        return maxDuration;
+    }
+
+    public void setMaxDuration(long maxDuration) {
+        this.maxDuration = maxDuration;
+        for (LotteKeyframeAnimation<?> animation : animations) {
+            animation.setTotalDuration(maxDuration);
         }
     }
 }

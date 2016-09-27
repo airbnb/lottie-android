@@ -189,28 +189,32 @@ public class LotteAnimationView extends ImageView {
         Bitmap maskBitmapForMatte = null;
         Bitmap matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
+        LotteAnimatableLayer rootAnimatableLayer = (LotteAnimatableLayer) getDrawable();
         for (LotteLayer layer : reversedLayers) {
-            LotteLayerView layerDrawable;
+            LotteLayerView layerView;
             if (maskedLayer == null) {
-                layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
+                layerView = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
             } else {
                 if (mainBitmapForMatte == null) {
                     mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
                     maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
                     matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
                 }
-                layerDrawable = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
+                layerView = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
             }
-            layerMap.put(layerDrawable.getId(), layerDrawable);
+            layerMap.put(layerView.getId(), layerView);
             if (maskedLayer != null) {
-                maskedLayer.setMatte(layerDrawable);
+                maskedLayer.setMatte(layerView);
                 maskedLayer = null;
             } else {
                 if (layer.getMatteType() == LotteLayer.MatteType.Add) {
-                    maskedLayer = layerDrawable;
+                    maskedLayer = layerView;
                 }
-                ((LotteAnimatableLayer) getDrawable()).addLayer(layerDrawable);
+                rootAnimatableLayer.addLayer(layerView);
             }
         }
+
+        long maxDuration = rootAnimatableLayer.getMaxDuration();
+        rootAnimatableLayer.setMaxDuration(maxDuration);
     }
 }

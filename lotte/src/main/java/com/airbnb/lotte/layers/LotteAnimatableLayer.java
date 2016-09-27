@@ -181,4 +181,30 @@ public class LotteAnimatableLayer extends Drawable {
             layer.setProgress(progress);
         }
     }
+
+    public long getMaxDuration() {
+        long maxDuration = 0;
+        for (LotteAnimationGroup animationGroup : animations) {
+            long md = animationGroup.getMaxDuration();
+            if (md > maxDuration) {
+                maxDuration = md;
+            }
+        }
+        for (LotteAnimatableLayer layer : layers) {
+            long md = layer.getMaxDuration();
+            if (md > maxDuration) {
+                maxDuration = md;
+            }
+        }
+        return maxDuration;
+    }
+
+    public void setMaxDuration(long maxDuration) {
+        for (LotteAnimationGroup animationGroup : animations) {
+            animationGroup.setMaxDuration(maxDuration);
+        }
+        for (LotteAnimatableLayer layer : layers) {
+            layer.setMaxDuration(maxDuration);
+        }
+    }
 }
