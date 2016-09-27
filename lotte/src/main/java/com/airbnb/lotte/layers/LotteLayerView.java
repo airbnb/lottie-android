@@ -110,7 +110,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         });
         mainCanvasPaint.setAlpha(Math.round((float) layerModel.getOpacity().getObservable().getValue()));
 
-        setVisible(layerModel.isHasInAnimation(), false);
+        setVisible(layerModel.hasInAnimation(), false);
 
         List<Object> reversedItems = layerModel.getShapes();
         Collections.reverse(reversedItems);
@@ -151,7 +151,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, layerModel.getRotation());
         childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
 
-        if (layerModel.isHasInOutAnimation()) {
+        if (layerModel.hasInOutAnimation()) {
             LotteNumberKeyframeAnimation<Float> inOutAnimation = new LotteNumberKeyframeAnimation<>(
                     LotteAnimatableProperty.HIDDEN,
                     layerModel.getCompDuration(),
@@ -169,6 +169,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
             List<LotteKeyframeAnimation> animations = new ArrayList<>(1);
             animations.add(inOutAnimation);
             addAnimation(new LotteAnimationGroup(animations));
+        } else {
+            setVisible(true, false);
         }
     }
 
@@ -189,6 +191,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
         if (matteBitmap != null) {
             matteBitmap.eraseColor(Color.TRANSPARENT);
+        }
+        if (!isVisible()) {
+            return;
         }
         super.draw(contentCanvas);
 

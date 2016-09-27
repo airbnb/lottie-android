@@ -188,23 +188,23 @@ public class LotteLayer {
             long length = composition.getEndFrame() - composition.getStartFrame();
 
             if (layer.hasInAnimation) {
-                keys.add(1f);
-                keyTimes.add(0f);
                 keys.add(0f);
+                keyTimes.add(0f);
+                keys.add(1f);
                 float inTime = layer.inFrame / (float) length;
                 keyTimes.add(inTime);
             } else {
-                keys.add(0f);
+                keys.add(1f);
                 keyTimes.add(0f);
             }
 
             if (layer.hasOutAnimation) {
                 keys.add(0f);
                 keyTimes.add(layer.outFrame / (float) length);
-                keys.add(1f);
+                keys.add(0f);
                 keyTimes.add(1f);
             } else {
-                keys.add(1f);
+                keys.add(0f);
                 keyTimes.add(1f);
             }
 
@@ -266,15 +266,15 @@ public class LotteLayer {
         return frameRate;
     }
 
-    public boolean isHasInAnimation() {
+    public boolean hasInAnimation() {
         return hasInAnimation;
     }
 
-    public boolean isHasInOutAnimation() {
+    public boolean hasInOutAnimation() {
         return hasInOutAnimation;
     }
 
-    public boolean isHasOutAnimation() {
+    public boolean hasOutAnimation() {
         return hasOutAnimation;
     }
 
