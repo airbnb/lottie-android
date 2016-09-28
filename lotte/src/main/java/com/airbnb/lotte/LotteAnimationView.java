@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
 
@@ -16,6 +17,7 @@ import com.airbnb.lotte.layers.LotteLayer;
 import com.airbnb.lotte.layers.LotteLayerView;
 import com.airbnb.lotte.layers.RootLotteAnimatableLayer;
 import com.airbnb.lotte.model.LotteComposition;
+import com.airbnb.lotte.model.LotteCubicCurveData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,8 +78,10 @@ public class LotteAnimationView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (animationContainer != null && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
+            Log.d("Gabe", "onMeasure " + animationContainer.getBounds().width());
             setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
         } else {
+            Log.d("Gabe", "onMeasure2 " + MeasureSpec.getSize(widthMeasureSpec));
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -95,25 +99,11 @@ public class LotteAnimationView extends ImageView {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + animationName, e);
         }
-
         new AsyncTask<InputStream, Void, JSONObject>() {
             @Override
             protected JSONObject doInBackground(InputStream... params) {
-                try {
-                    InputStream file = params[0];
-                    int size = file.available();
-                    byte[] buffer = new byte[size];
-                    //noinspection ResultOfMethodCallIgnored
-                    file.read(buffer);
-                    file.close();
-                    String json = new String(buffer, "UTF-8");
-
-                    return new JSONObject(json);
-                } catch (IOException e) {
-                    throw new IllegalStateException("Unable to find file.", e);
-                } catch (JSONException e) {
-                    throw new IllegalStateException("Unable to load JSON.", e);
-                }
+                //noinspection WrongThread
+                return setAnimationSync(params[0]);
             }
 
             @Override
@@ -121,6 +111,35 @@ public class LotteAnimationView extends ImageView {
                 setJson(jsonObject);
             }
         }.execute(file);
+    }
+
+    public void setAnimationSync(String animationName) {
+        setImageDrawable(null);
+        Log.d("Gabe", "setAnimSync " + animationName);
+        InputStream file;
+        try {
+            file = getContext().getAssets().open(animationName);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to find file " + animationName, e);
+        }
+        setJsonSync(setAnimationSync(file));
+    }
+
+    private JSONObject setAnimationSync(InputStream file) {
+        try {
+            int size = file.available();
+            byte[] buffer = new byte[size];
+            //noinspection ResultOfMethodCallIgnored
+            file.read(buffer);
+            file.close();
+            String json = new String(buffer, "UTF-8");
+
+            return new JSONObject(json);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to find file.", e);
+        } catch (JSONException e) {
+            throw new IllegalStateException("Unable to load JSON.", e);
+        }
     }
 
     public void setJson(JSONObject json) {
@@ -138,6 +157,13 @@ public class LotteAnimationView extends ImageView {
                 buildSubviewsForModel();
             }
         }.execute(json);
+    }
+
+    private void setJsonSync(JSONObject json) {
+        LotteComposition composition = LotteComposition.fromJson(json);
+        setModel(composition);
+        setImageDrawable(animationContainer);
+        buildSubviewsForModel();
     }
 
     public void setModel(LotteComposition model) {
