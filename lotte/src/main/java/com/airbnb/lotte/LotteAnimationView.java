@@ -214,7 +214,6 @@ public class LotteAnimationView extends ImageView {
             }
         }
 
-        long maxDuration = rootAnimatableLayer.getMaxDuration();
-        rootAnimatableLayer.setMaxDuration(maxDuration);
+        rootAnimatableLayer.setMaxDuration(sceneModel.getDuration());
     }
 }

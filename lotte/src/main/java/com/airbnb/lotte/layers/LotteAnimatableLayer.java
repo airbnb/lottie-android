@@ -45,6 +45,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     private final Paint solidBackgroundPaint = new Paint();
     protected final List<LotteAnimationGroup> animations = new ArrayList<>();
+    private float progress;
 
     public LotteAnimatableLayer(long duration, Drawable.Callback callback) {
         setCallback(callback);
@@ -173,6 +174,7 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+        this.progress = progress;
         for (LotteAnimationGroup animation : animations) {
             animation.setProgress(progress);
         }
@@ -180,23 +182,6 @@ public class LotteAnimatableLayer extends Drawable {
         for (LotteAnimatableLayer layer : layers) {
             layer.setProgress(progress);
         }
-    }
-
-    public long getMaxDuration() {
-        long maxDuration = 0;
-        for (LotteAnimationGroup animationGroup : animations) {
-            long md = animationGroup.getMaxDuration();
-            if (md > maxDuration) {
-                maxDuration = md;
-            }
-        }
-        for (LotteAnimatableLayer layer : layers) {
-            long md = layer.getMaxDuration();
-            if (md > maxDuration) {
-                maxDuration = md;
-            }
-        }
-        return maxDuration;
     }
 
     public void setMaxDuration(long maxDuration) {
