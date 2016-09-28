@@ -142,7 +142,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
                 keyTimes.add(timePercentage);
 
-                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                if (keyframe.has("h") && keyframe.getInt("h") == 1) {
                     outValue = startValue;
                     addStartValue = true;
                     addTimePadding = true;

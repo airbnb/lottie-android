@@ -68,13 +68,18 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         }
     };
 
+    private final Observable.OnChangedListener trimPathChangedListener = new Observable.OnChangedListener() {
+        @Override
+        public void onChanged() {
+            onTrimPathChanged();
+        }
+    };
 
 
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
     private PathMeasure pathMeasure = new PathMeasure();
-    private float pathLength;
 
     @Nullable private Observable<LotteTransform3D> scale;
     private final RectF scaleRect = new RectF();
@@ -92,7 +97,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
     private List<LotteAnimatableNumberValue> lineDashPattern;
     private LotteAnimatableNumberValue lineDashPatternOffset;
 
-    public LotteShapeLayer(Drawable.Callback callback) {
+    LotteShapeLayer(Drawable.Callback callback) {
         super(0, callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
@@ -100,10 +105,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     public void setStyle(Paint.Style style) {
         paint.setStyle(style);
-    }
-
-    public int getStrokeColor() {
-        return paint.getColor();
+        invalidateSelf();
     }
 
     public void setColor(Observable<Integer> color) {
@@ -145,8 +147,6 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
             scaledPath.set(path.getValue());
         }
         pathMeasure.setPath(scaledPath, false);
-        // Cache for perf.
-        pathLength = pathMeasure.getLength();
         invalidateSelf();
         updateBounds();
     }
@@ -165,12 +165,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
             return;
         }
-        if (strokeStart != null && strokeEnd != null) {
-            trimPath.reset();
-            pathMeasure.getSegment(pathLength * (((Float) strokeStart.getValue()) / 100f), pathLength * (((Float) strokeEnd.getValue()) / 100f), trimPath, true);
-            // Workaround to get hardware acceleration on KitKat
-            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
-            trimPath.rLineTo(0, 0);
+        if (!trimPath.isEmpty()) {
             canvas.drawPath(trimPath, paint);
         } else {
             canvas.drawPath(scaledPath, paint);
@@ -182,7 +177,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         return paint.getAlpha();
     }
 
-    public void setShapeAlpha(Observable<Number> shapeAlpha) {
+    void setShapeAlpha(Observable<Number> shapeAlpha) {
         if (this.shapeAlpha != null) {
             this.shapeAlpha.removeChangeListemer(alphaChangedListener);
         }
@@ -191,7 +186,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         onAlphaChanged();
     }
 
-    public void setTransformAlpha(Observable<Number> transformAlpha) {
+    void setTransformAlpha(Observable<Number> transformAlpha) {
         if (this.transformAlpha != null) {
             this.transformAlpha.removeChangeListemer(alphaChangedListener);
         }
@@ -222,7 +217,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void setLineWidth(Observable<Number> lineWidth) {
+    void setLineWidth(Observable<Number> lineWidth) {
         if (this.lineWidth != null) {
             this.lineWidth.removeChangeListemer(lineWidthChangedListener);
         }
@@ -237,7 +232,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         invalidateSelf();
     }
 
-    public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+    void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
         if (this.lineDashPattern != null) {
             this.lineDashPattern.get(0).getObservable().removeChangeListemer(dashPatternChangedListener);
             this.lineDashPattern.get(1).getObservable().removeChangeListemer(dashPatternChangedListener);
@@ -270,7 +265,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         invalidateSelf();
     }
 
-    public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
+    void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
         switch (lineCapType) {
             case Round:
                 paint.setStrokeCap(Paint.Cap.ROUND);
@@ -279,9 +274,10 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
             default:
                 paint.setStrokeCap(Paint.Cap.BUTT);
         }
+        invalidateSelf();
     }
 
-    public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
+    void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
         switch (lineJoinType) {
             case Bevel:
                 paint.setStrokeJoin(Paint.Join.BEVEL);
@@ -295,20 +291,40 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         }
     }
 
-    public void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
+    void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
         if (this.strokeStart != null) {
-            this.strokeStart.removeChangeListemer(changedListener);
+            this.strokeStart.removeChangeListemer(trimPathChangedListener);
         }
         if (this.strokeEnd != null) {
-            this.strokeEnd.removeChangeListemer(changedListener);
+            this.strokeEnd.removeChangeListemer(trimPathChangedListener);
         }
         this.strokeStart = strokeStart;
         this.strokeEnd = strokeEnd;
-        strokeStart.addChangeListener(changedListener);
-        strokeEnd.addChangeListener(changedListener);
+        strokeStart.addChangeListener(trimPathChangedListener);
+        strokeEnd.addChangeListener(trimPathChangedListener);
+        onTrimPathChanged();
     }
 
-    public void setScale(Observable<LotteTransform3D> scale) {
+    void onTrimPathChanged() {
+        if (strokeStart != null && strokeEnd != null) {
+            float length = pathMeasure.getLength();
+            float start = length * ((Float) strokeStart.getValue()) / 100f;
+            float end = length * ((Float) strokeEnd.getValue()) / 100f;
+
+            trimPath.reset();
+            // Workaround to get hardware acceleration on KitKat
+            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
+            trimPath.rLineTo(0, 0);
+            pathMeasure.getSegment(
+                    Math.min(start, end),
+                    Math.max(start, end),
+                    trimPath,
+                    true);
+        }
+        invalidateSelf();
+    }
+
+    void setScale(@SuppressWarnings("NullableProblems") Observable<LotteTransform3D> scale) {
         if (this.scale != null) {
             this.scale.removeChangeListemer(pathChangedListener);
         }

@@ -28,20 +28,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class LotteAnimationView extends ImageView {
-    public interface OnAnimationCompletedListener {
-        void onAnimationCompleted();
-    }
-
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
     private final RootLotteAnimatableLayer animationContainer = new RootLotteAnimatableLayer(this);
 
     private LotteComposition sceneModel;
-    private boolean isPlaying;
-    private boolean loop;
-    private float progress;
-    private float animationSpeed;
-    // TODO: not supported yet.
-    private boolean autoReverseAnimation;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -168,16 +158,11 @@ public class LotteAnimationView extends ImageView {
 
     public void setModel(LotteComposition model) {
         sceneModel = model;
-        animationSpeed = 1f;
         animationContainer.setBounds(0, 0, getWidth(), getHeight());
         animationContainer.setSpeed(0f);
     }
 
     public void play() {
-        play(null);
-    }
-
-    public void play(@Nullable OnAnimationCompletedListener listener) {
         animationContainer.play();
     }
 
