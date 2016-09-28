@@ -258,6 +258,9 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         float[] values = new float[lineDashPattern.size()];
         for (int i = 0; i < lineDashPattern.size(); i++) {
             values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
+            if (values[i] == 0) {
+                values[i] = 0.01f;
+            }
         }
         paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
         invalidateSelf();

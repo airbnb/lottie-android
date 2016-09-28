@@ -206,6 +206,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         private void onCircleSizeChanged() {
             float halfWidth = circleSize.getValue().x / 2f;
             float halfHeight = circleSize.getValue().y / 2f;
+            setBounds(0, 0, (int) halfWidth * 2, (int) halfHeight * 2);
 
             PointF circleQ1 = new PointF(0, -halfHeight);
             PointF circleQ2 = new PointF(halfWidth, 0);
@@ -250,16 +251,19 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
                 float start = length * ((Float) strokeStart.getValue()) / 100f;
                 float end = length * ((Float) strokeEnd.getValue()) / 100f;
 
+                trimPath.reset();
                 pathMeasure.getSegment(
                         Math.min(start, end),
                         Math.max(start, end),
                         trimPath,
                         true);
             }
+            invalidateSelf();
         }
 
         public void setStyle(Paint.Style style) {
             paint.setStyle(style);
+            invalidateSelf();
         }
 
         public void setLineWidth(Observable<Number> lineWidth) {
@@ -273,6 +277,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         private void onLineWidthChanged() {
             paint.setStrokeWidth((float) lineWidth.getValue());
+            invalidateSelf();
         }
 
         public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
@@ -301,6 +306,9 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
                 values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
+                if (values[i] == 0) {
+                    values[i] = 0.01f;
+                }
             }
             assert lineDashPatternOffset != null;
             paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
