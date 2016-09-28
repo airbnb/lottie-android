@@ -101,7 +101,7 @@ public abstract class LotteKeyframeAnimation<T> {
 
     @FloatRange(from=0f, to=1f)
     protected float getStartDelayProgress() {
-        return (float) startDelay / (float) (startDelay + duration);
+        return (float) startDelay / (float) (animator.getDuration());
     }
 
     @FloatRange(from=0f, to=1f)
