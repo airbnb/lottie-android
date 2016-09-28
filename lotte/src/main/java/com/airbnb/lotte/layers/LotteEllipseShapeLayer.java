@@ -289,7 +289,9 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             this.lineDashPattern = lineDashPattern;
             this.lineDashPatternOffset = offset;
             lineDashPattern.get(0).getObservable().addChangeListener(dashPatternChangedListener);
-            lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+            if (!lineDashPattern.get(1).equals(lineDashPattern.get(1))) {
+                lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+            }
             offset.getObservable().addChangeListener(dashPatternChangedListener);
             onDashPatternChanged();
         }
