@@ -297,15 +297,17 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         }
 
         private void onDashPatternChanged() {
+            assert lineDashPattern != null;
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
                 values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
             }
+            assert lineDashPatternOffset != null;
             paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
             invalidateSelf();
         }
 
-        public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
+        void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
             switch (lineCapType) {
                 case Round:
                     paint.setStrokeCap(Paint.Cap.ROUND);
@@ -316,21 +318,7 @@ public class LotteEllipseShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
-            switch (lineJoinType) {
-                case Bevel:
-                    paint.setStrokeJoin(Paint.Join.BEVEL);
-                    break;
-                case Miter:
-                    paint.setStrokeJoin(Paint.Join.MITER);
-                    break;
-                case Round:
-                    paint.setStrokeJoin(Paint.Join.ROUND);
-                    break;
-            }
-        }
-
-        void setColor(Observable<Integer> color) {
+        void setColor(@SuppressWarnings("NullableProblems") Observable<Integer> color) {
             if (this.color != null) {
                 this.color.removeChangeListemer(colorChangedListener);
             }
