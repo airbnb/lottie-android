@@ -180,7 +180,7 @@ public class LotteLayer {
 
         layer.hasInAnimation = layer.inFrame > composition.getStartFrame();
         layer.hasOutAnimation = layer.outFrame < composition.getEndFrame();
-        layer.hasInOutAnimation = layer.hasInOutAnimation || layer.hasOutAnimation;
+        layer.hasInOutAnimation = layer.hasInAnimation || layer.hasOutAnimation;
 
         if (layer.hasInOutAnimation) {
             List<Float> keys = new ArrayList<>();
