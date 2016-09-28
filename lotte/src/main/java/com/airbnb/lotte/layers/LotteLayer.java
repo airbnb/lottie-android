@@ -204,7 +204,7 @@ public class LotteLayer {
                 keys.add(0f);
                 keyTimes.add(1f);
             } else {
-                keys.add(0f);
+                keys.add(1f);
                 keyTimes.add(1f);
             }
 

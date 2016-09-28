@@ -10,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 
@@ -73,7 +74,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     private void setupForModel(Drawable.Callback callback) {
-        setBounds(composition.getBounds());
         anchorPoint = new Observable<>();
         anchorPoint.setValue(new PointF());
 
@@ -243,6 +243,30 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
         PointF translation = layer.getAnchor().getObservable().getValue();
         canvas.translate(-translation.x, -translation.y);
+    }
+
+    @Override
+    public void play() {
+        super.play();
+        if (matte != null) {
+            matte.play();
+        }
+    }
+
+    @Override
+    public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+        super.setProgress(progress);
+        if (matte != null) {
+            matte.setProgress(progress);
+        }
+    }
+
+    @Override
+    public void setMaxDuration(long maxDuration) {
+        super.setMaxDuration(maxDuration);
+        if (matte != null) {
+            matte.setMaxDuration(maxDuration);
+        }
     }
 
     public long getId() {
