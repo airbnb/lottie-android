@@ -68,13 +68,15 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         }
     };
 
+
+
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
     private PathMeasure pathMeasure = new PathMeasure();
     private float pathLength;
 
-    private Observable<LotteTransform3D> scale = new Observable<>(new LotteTransform3D());
+    @Nullable private Observable<LotteTransform3D> scale;
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
     private Path scaledPath = new Path();
@@ -94,7 +96,6 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
         super(0, callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
-        scale.getValue().scale(1f, 1f);
     }
 
     public void setStyle(Paint.Style style) {
@@ -135,10 +136,13 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
     }
 
     private void onPathChanged() {
-        if (path != null && path.getValue() != null && scale != null && scale.getValue() != null) {
+        if (path != null && path.getValue() != null && scale != null) {
             path.getValue().computeBounds(scaleRect, true);
             scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
             path.getValue().transform(scaleMatrix, scaledPath);
+        } else {
+            scaledPath.reset();
+            scaledPath.set(path.getValue());
         }
         pathMeasure.setPath(scaledPath, false);
         // Cache for perf.
@@ -305,7 +309,11 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
     }
 
     public void setScale(Observable<LotteTransform3D> scale) {
+        if (this.scale != null) {
+            this.scale.removeChangeListemer(pathChangedListener);
+        }
         this.scale = scale;
+        scale.addChangeListener(pathChangedListener);
         onPathChanged();
     }
 }
