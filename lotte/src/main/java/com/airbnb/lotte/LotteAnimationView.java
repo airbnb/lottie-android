@@ -5,6 +5,8 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.FloatRange;
@@ -28,7 +30,7 @@ import java.util.List;
 
 public class LotteAnimationView extends ImageView {
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
-    private RootLotteAnimatableLayer rootAnimatableLayer;
+    private final RootLotteAnimatableLayer rootAnimatableLayer = new RootLotteAnimatableLayer(this);
 
     private LotteComposition composition;
 
@@ -55,6 +57,7 @@ public class LotteAnimationView extends ImageView {
         }
         ta.recycle();
         setLayerType(LAYER_TYPE_SOFTWARE, null);
+        setImageDrawable(rootAnimatableLayer);
     }
 
     @Override
@@ -71,8 +74,12 @@ public class LotteAnimationView extends ImageView {
         return true;
     }
 
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+    }
+
     public void setAnimation(String animationName) {
-        setImageDrawable(null);
         InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
@@ -94,7 +101,6 @@ public class LotteAnimationView extends ImageView {
     }
 
     public void setAnimationSync(String animationName) {
-        setImageDrawable(null);
         InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
@@ -122,36 +128,87 @@ public class LotteAnimationView extends ImageView {
     }
 
     public void setJson(JSONObject json) {
+        // TODO: cancel these if the iew gets detached.
         new AsyncTask<JSONObject, Void, LotteComposition>() {
 
             @Override
             protected LotteComposition doInBackground(JSONObject... params) {
-                LotteComposition composition = LotteComposition.fromJson(params[0]);
-                rootAnimatableLayer = new RootLotteAnimatableLayer(composition.getDuration(), LotteAnimationView.this);
-                return composition;
+                return LotteComposition.fromJson(params[0]);
             }
 
             @Override
             protected void onPostExecute(LotteComposition model) {
-                setModel(model);
-                setImageDrawable(rootAnimatableLayer);
-                buildSubviewsForModel();
+                setComposition(model);
             }
         }.execute(json);
     }
 
     private void setJsonSync(JSONObject json) {
         LotteComposition composition = LotteComposition.fromJson(json);
-        rootAnimatableLayer = new RootLotteAnimatableLayer(composition.getDuration(), this);
-        setModel(composition);
-        setImageDrawable(rootAnimatableLayer);
-        buildSubviewsForModel();
+        setComposition(composition);
     }
 
-    public void setModel(LotteComposition composition) {
+    public void setComposition(LotteComposition composition) {
         this.composition = composition;
+        rootAnimatableLayer.setCompDuration(composition.getDuration());
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
+        buildSubviewsForComposition();
+        requestLayout();
     }
+
+    private void buildSubviewsForComposition() {
+        List<LotteLayer> reversedLayers = composition.getLayers();
+        Collections.reverse(reversedLayers);
+
+        boolean needsMatte = false;
+        boolean needsMask = false;
+        for (LotteLayer layer : reversedLayers) {
+            if (layer.getMatteType() != null && layer.getMatteType() != LotteLayer.MatteType.None) {
+                needsMatte = true;
+            }
+            if (!layer.getMasks().isEmpty()) {
+                needsMask = true;
+            }
+            if (needsMatte && needsMask) {
+                break;
+            }
+        }
+
+        Rect bounds = composition.getBounds();
+        Bitmap mainBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = needsMask ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8) : null;
+        Bitmap matteBitmap = needsMatte ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
+
+        Bitmap mainBitmapForMatte = null;
+        Bitmap maskBitmapForMatte = null;
+        Bitmap matteBitmapForMatte = null;
+        LotteLayerView maskedLayer = null;
+        for (LotteLayer layer : reversedLayers) {
+            LotteLayerView layerView;
+            if (maskedLayer == null) {
+                layerView = new LotteLayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
+            } else {
+                if (mainBitmapForMatte == null) {
+                    mainBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+                    // TODO: only create matte mask and matte if necessary.
+                    maskBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+                    matteBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+                }
+                layerView = new LotteLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
+            }
+            layerMap.put(layerView.getId(), layerView);
+            if (maskedLayer != null) {
+                maskedLayer.setMatte(layerView);
+                maskedLayer = null;
+            } else {
+                if (layer.getMatteType() == LotteLayer.MatteType.Add) {
+                    maskedLayer = layerView;
+                }
+                rootAnimatableLayer.addLayer(layerView);
+            }
+        }
+    }
+
 
     public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
         rootAnimatableLayer.addAnimatorUpdateListener(updateListener);
@@ -177,62 +234,11 @@ public class LotteAnimationView extends ImageView {
         rootAnimatableLayer.play();
     }
 
+    public void pause() {
+        rootAnimatableLayer.pause();
+    }
+
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         rootAnimatableLayer.setProgress(progress);
-    }
-
-    public void pause() {
-
-    }
-
-    private void buildSubviewsForModel() {
-        List<LotteLayer> reversedLayers = composition.getLayers();
-        Collections.reverse(reversedLayers);
-
-        boolean needsMatte = false;
-        boolean needsMask = false;
-        for (LotteLayer layer : reversedLayers) {
-            if (layer.getMatteType() != null && layer.getMatteType() != LotteLayer.MatteType.None) {
-                needsMatte = true;
-            }
-            if (!layer.getMasks().isEmpty()) {
-                needsMask = true;
-            }
-            if (needsMatte && needsMask) {
-                break;
-            }
-        }
-
-        Bitmap mainBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
-        Bitmap maskBitmap = needsMask ? Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8) : null;
-        Bitmap matteBitmap = needsMatte ? Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888) : null;
-
-        Bitmap mainBitmapForMatte = null;
-        Bitmap maskBitmapForMatte = null;
-        Bitmap matteBitmapForMatte = null;
-        LotteLayerView maskedLayer = null;
-        for (LotteLayer layer : reversedLayers) {
-            LotteLayerView layerView;
-            if (maskedLayer == null) {
-                layerView = new LotteLayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
-            } else {
-                if (mainBitmapForMatte == null) {
-                    mainBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
-                    maskBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
-                    matteBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
-                }
-                layerView = new LotteLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
-            }
-            layerMap.put(layerView.getId(), layerView);
-            if (maskedLayer != null) {
-                maskedLayer.setMatte(layerView);
-                maskedLayer = null;
-            } else {
-                if (layer.getMatteType() == LotteLayer.MatteType.Add) {
-                    maskedLayer = layerView;
-                }
-                rootAnimatableLayer.addLayer(layerView);
-            }
-        }
     }
 }

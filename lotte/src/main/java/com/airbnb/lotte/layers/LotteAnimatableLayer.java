@@ -44,7 +44,6 @@ public class LotteAnimatableLayer extends Drawable {
 
     private final Paint solidBackgroundPaint = new Paint();
     protected final List<LotteAnimationGroup> animations = new ArrayList<>();
-    private float progress;
 
     public LotteAnimatableLayer(long compDuration, Drawable.Callback callback) {
         setCallback(callback);
@@ -149,7 +148,6 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        this.progress = progress;
         for (LotteAnimationGroup animation : animations) {
             animation.setProgress(progress);
         }

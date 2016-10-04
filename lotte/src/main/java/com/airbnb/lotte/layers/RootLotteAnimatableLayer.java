@@ -11,9 +11,8 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
 
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
-    public RootLotteAnimatableLayer(long duration, Drawable.Callback callback) {
-        super(duration, callback);
-        animator.setDuration(duration);
+    public RootLotteAnimatableLayer(Drawable.Callback callback) {
+        super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -22,6 +21,10 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
                 setProgress(animation.getAnimatedFraction());
             }
         });
+    }
+
+    public void setCompDuration(long duration) {
+        animator.setDuration(duration);
     }
 
     @Override
@@ -35,6 +38,10 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
     }
 
     public void play() {
+        animator.start();
+    }
+
+    public void pause() {
         animator.start();
     }
 
