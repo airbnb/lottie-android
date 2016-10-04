@@ -33,6 +33,7 @@ public class LotteAnimationView extends ImageView {
     private final RootLotteAnimatableLayer rootAnimatableLayer = new RootLotteAnimatableLayer(this);
 
     private LotteComposition composition;
+    private boolean hasInvalidatedThisFrame;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -75,8 +76,17 @@ public class LotteAnimationView extends ImageView {
     }
 
     @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
+    public void invalidateDrawable(Drawable dr) {
+        if (!hasInvalidatedThisFrame) {
+            super.invalidateDrawable(rootAnimatableLayer);
+            hasInvalidatedThisFrame = true;
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        hasInvalidatedThisFrame = false;
+        super.onDraw(canvas);
     }
 
     public void setAnimation(String animationName) {
