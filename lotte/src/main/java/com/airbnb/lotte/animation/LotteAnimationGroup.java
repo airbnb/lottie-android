@@ -31,8 +31,8 @@ public class LotteAnimationGroup {
     }
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
-        for (LotteKeyframeAnimation animation : animations) {
-            animation.setProgress(progress);
+        for (int i = 0; i < animations.size(); i++) {
+            animations.get(i).setProgress(progress);
         }
     }
 }

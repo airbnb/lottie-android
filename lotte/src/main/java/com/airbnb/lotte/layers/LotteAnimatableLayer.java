@@ -84,8 +84,8 @@ public class LotteAnimatableLayer extends Drawable {
         if (solidBackgroundPaint.getAlpha() != 0) {
             canvas.drawRect(getBounds(), solidBackgroundPaint);
         }
-        for (Drawable layer : layers) {
-            layer.draw(canvas);
+        for (int i = 0; i < layers.size(); i++) {
+            layers.get(i).draw(canvas);
         }
         canvas.restore();
     }
@@ -148,12 +148,12 @@ public class LotteAnimatableLayer extends Drawable {
     }
 
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-        for (LotteAnimationGroup animation : animations) {
-            animation.setProgress(progress);
+        for (int i = 0; i < animations.size(); i++) {
+            animations.get(i).setProgress(progress);
         }
 
-        for (LotteAnimatableLayer layer : layers) {
-            layer.setProgress(progress);
+        for (int i = 0; i < layers.size(); i++) {
+            layers.get(i).setProgress(progress);
         }
     }
 }

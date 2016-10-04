@@ -67,8 +67,8 @@ public abstract class LotteKeyframeAnimation<T> {
         }
         this.progress = progress;
 
-        for (AnimationListener<T> l : listeners) {
-            l.onValueChanged(getValueForProgress(progress));
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onValueChanged(getValueForProgress(progress));
         }
     }
 

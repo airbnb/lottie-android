@@ -5,6 +5,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -18,7 +19,6 @@ import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
-import com.airbnb.lotte.model.LotteMask;
 import com.airbnb.lotte.model.LotteShapeFill;
 import com.airbnb.lotte.model.LotteShapeGroup;
 import com.airbnb.lotte.model.LotteShapeStroke;
@@ -119,7 +119,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
         LotteShapeFill currentFill = null;
         LotteShapeStroke currentStroke = null;
 
-        for (Object item : reversedItems) {
+        for (int i = 0; i < reversedItems.size(); i++) {
+            Object item = reversedItems.get(i);
             if (item instanceof LotteShapeGroup) {
                 LotteGroupLayerView groupLayer = new LotteGroupLayerView((LotteShapeGroup) item, currentFill,
                         currentStroke, currentTrimPath, currentTransform, compDuration, getCallback());
@@ -210,8 +211,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
             applyTransformForLayer(maskCanvas, layerModel);
 
-            for (LotteMask m : mask.getMasks()) {
-                maskCanvas.drawPath(m.getMaskPath().getObservable().getValue(), maskShapePaint);
+            for (int i = 0; i < mask.getMasks().size(); i++) {
+                Path path = mask.getMasks().get(i).getMaskPath().getObservable().getValue();
+                maskCanvas.drawPath(path, maskShapePaint);
             }
             maskCanvas.restoreToCount(maskSaveCount);
             if (matte == null) {

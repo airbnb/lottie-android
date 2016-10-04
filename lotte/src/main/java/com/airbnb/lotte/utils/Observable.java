@@ -33,8 +33,8 @@ public class Observable<T> {
 
     public void setValue(T value) {
         this.value = value;
-        for (OnChangedListener listener : listeners) {
-            listener.onChanged();
+        for (int i = 0; i < listeners.size(); i++) {
+            listeners.get(i).onChanged();
         }
     }
 

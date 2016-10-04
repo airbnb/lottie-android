@@ -172,7 +172,8 @@ public class LotteAnimationView extends ImageView {
 
         boolean needsMatte = false;
         boolean needsMask = false;
-        for (LotteLayer layer : reversedLayers) {
+        for (int i = 0; i < reversedLayers.size(); i++) {
+            LotteLayer layer = reversedLayers.get(i);
             if (layer.getMatteType() != null && layer.getMatteType() != LotteLayer.MatteType.None) {
                 needsMatte = true;
             }
@@ -193,7 +194,8 @@ public class LotteAnimationView extends ImageView {
         Bitmap maskBitmapForMatte = null;
         Bitmap matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
-        for (LotteLayer layer : reversedLayers) {
+        for (int i = 0; i < reversedLayers.size(); i++) {
+            LotteLayer layer = reversedLayers.get(i);
             LotteLayerView layerView;
             if (maskedLayer == null) {
                 layerView = new LotteLayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);

@@ -59,7 +59,8 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
         LotteShapeTransform currentTransform = null;
         LotteShapeTrimPath currentTrim = previousTrimPath;
 
-        for (Object item : reversedItems) {
+        for (int i = 0; i < reversedItems.size(); i++) {
+            Object item = reversedItems.get(i);
             if (item instanceof LotteShapeTransform) {
                 currentTransform = (LotteShapeTransform) item;
             } else if (item instanceof LotteShapeStroke) {
@@ -89,6 +90,7 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
                 groupLayers.add(groupLayer);
                 addLayer(groupLayer);
             }
+
         }
 
         buildAnimation();

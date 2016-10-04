@@ -17,7 +17,8 @@ public class MiscUtils {
         outPath.reset();
         PointF initialPoint = shapeData.getInitialPoint();
         outPath.moveTo(initialPoint.x, initialPoint.y);
-        for (LotteCubicCurveData curveData : shapeData.getCurves()) {
+        for (int i = 0; i < shapeData.getCurves().size(); i++) {
+            LotteCubicCurveData curveData = shapeData.getCurves().get(i);
             outPath.cubicTo(curveData.getControlPoint1().x, curveData.getControlPoint1().y,
                     curveData.getControlPoint2().x, curveData.getControlPoint2().y,
                     curveData.getVertex().x, curveData.getVertex().y);
