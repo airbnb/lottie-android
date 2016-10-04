@@ -48,6 +48,12 @@ public class LotteComposition {
                 LotteLayer layer = LotteLayer.fromJson(jsonLayers.getJSONObject(i), composition);
                 composition.layers.add(layer);
                 composition.layerMap.put(layer.getId(), layer);
+                if (!layer.getMasks().isEmpty()) {
+                    composition.hasMasks = true;
+                }
+                if (layer.getMatteType() != null && layer.getMatteType() != LotteLayer.MatteType.None) {
+                    composition.hasMattes = true;
+                }
             }
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to find layers.", e);
@@ -64,6 +70,8 @@ public class LotteComposition {
     private long endFrame;
     private int frameRate;
     private long duration;
+    private boolean hasMasks;
+    private boolean hasMattes;
 
     public LotteLayer layerModelForId(long id) {
         return layerMap.get(id);
@@ -89,10 +97,6 @@ public class LotteComposition {
         return endFrame;
     }
 
-    public void setEndFrame(long endFrame) {
-        this.endFrame = endFrame;
-    }
-
     public int getFrameRate() {
         return frameRate;
     }
@@ -113,7 +117,11 @@ public class LotteComposition {
         return startFrame;
     }
 
-    public void setStartFrame(long startFrame) {
-        this.startFrame = startFrame;
+    public boolean hasMasks() {
+        return hasMasks;
+    }
+
+    public boolean hasMattes() {
+        return hasMattes;
     }
 }

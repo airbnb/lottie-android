@@ -13,6 +13,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
 import com.airbnb.lotte.animation.LotteAnimatableProperty;
@@ -41,12 +42,12 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private LotteLayerView matte;
 
     private final Paint mainCanvasPaint = new Paint();
-    private final Bitmap bitmap;
-    private final Bitmap maskBitmap;
-    private final Bitmap matteBitmap;
-    private final Canvas contentCanvas;
-    private Canvas maskCanvas;
-    private Canvas matteCanvas;
+    @Nullable private final Bitmap contentBitmap;
+    @Nullable private final Bitmap maskBitmap;
+    @Nullable private final Bitmap matteBitmap;
+    @Nullable private Canvas contentCanvas;
+    @Nullable private Canvas maskCanvas;
+    @Nullable private Canvas matteCanvas;
     private final Paint maskShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -60,16 +61,21 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private Observable<Number> opacity;
 
 
-    public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Callback callback, Bitmap mainBitmap, Bitmap maskBitmap, Bitmap matteBitmap) {
+    public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
         super(composition.getDuration(), callback);
         this.layerModel = layerModel;
         this.composition = composition;
         this.maskBitmap = maskBitmap;
         this.matteBitmap = matteBitmap;
-        this.bitmap = mainBitmap;
+        this.contentBitmap = mainBitmap;
         setBounds(composition.getBounds());
-        maskPaint.setShader(new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-        contentCanvas = new Canvas(bitmap);
+        if (contentBitmap != null) {
+            contentCanvas = new Canvas(contentBitmap);
+            if (maskBitmap != null) {
+                maskPaint.setShader(new BitmapShader(contentBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
+            }
+        }
+
         setupForModel(callback);
     }
 
@@ -136,7 +142,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             }
         }
 
-        if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
+        if (maskBitmap != null && layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
             mask = new LotteMaskLayer(layerModel.getMasks(), composition, getCallback());
             maskCanvas = new Canvas(maskBitmap);
         }
@@ -181,13 +187,18 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     public void setMatte(LotteLayerView matte) {
+        if (matteBitmap == null) {
+            throw new IllegalArgumentException("Cannot set a matte if no matte contentBitmap was given!");
+        }
         this.matte = matte;
         matteCanvas = new Canvas(matteBitmap);
     }
 
     @Override
     public void draw(@NonNull Canvas mainCanvas) {
-        bitmap.eraseColor(Color.TRANSPARENT);
+        if (contentBitmap != null) {
+            contentBitmap.eraseColor(Color.TRANSPARENT);
+        }
         if (maskBitmap != null) {
             maskBitmap.eraseColor(Color.TRANSPARENT);
         }
@@ -197,10 +208,14 @@ public class LotteLayerView extends LotteAnimatableLayer {
         if (!isVisible()) {
             return;
         }
+        if (contentCanvas == null || contentBitmap != null) {
+            super.draw(mainCanvas);
+            return;
+        }
         super.draw(contentCanvas);
 
         Bitmap mainBitmap;
-        if (mask != null && !mask.getMasks().isEmpty()) {
+        if (maskBitmap != null && maskCanvas != null && mask != null && !mask.getMasks().isEmpty()) {
             int maskSaveCount = maskCanvas.save();
             long parentId = this.parentId;
             while (parentId >= 0) {
@@ -222,14 +237,16 @@ public class LotteLayerView extends LotteAnimatableLayer {
             mainBitmap = maskBitmap;
         } else {
             if (matte == null) {
-                mainCanvas.drawBitmap(bitmap, 0, 0, mainCanvasPaint);
+                //noinspection ConstantConditions
+                mainCanvas.drawBitmap(contentBitmap, 0, 0, mainCanvasPaint);
             }
-            mainBitmap = bitmap;
+            mainBitmap = contentBitmap;
         }
 
-        if (matte != null) {
+        if (matteCanvas != null && matteBitmap != null && matte != null) {
             matte.draw(matteCanvas);
             mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+            //noinspection ConstantConditions
             matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
             mainCanvas.drawBitmap(matteBitmap, 0, 0, mainCanvasPaint);
         }
