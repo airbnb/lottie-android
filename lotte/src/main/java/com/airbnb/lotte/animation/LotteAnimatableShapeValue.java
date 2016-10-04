@@ -38,9 +38,11 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     private int startFrame;
     private long durationFrames;
     private int frameRate;
+    private final long compDuration;
 
-    public LotteAnimatableShapeValue(JSONObject shapeValues, int frameRate, boolean closed) {
+    public LotteAnimatableShapeValue(JSONObject shapeValues, int frameRate, long compDuration, boolean closed) {
         this.frameRate = frameRate;
+        this.compDuration = compDuration;
         try {
             Object value = shapeValues.get("k");
             if (value instanceof JSONObject) {
@@ -222,7 +224,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property) {
-        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(property, duration, keyTimes, shapeKeyframes);
+        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(property, duration, compDuration, keyTimes, shapeKeyframes);
         animation.setInterpolators(interpolators);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
             @Override

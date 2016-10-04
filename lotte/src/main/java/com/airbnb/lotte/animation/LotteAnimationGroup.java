@@ -13,7 +13,7 @@ public class LotteAnimationGroup {
 
     private final List<LotteKeyframeAnimation> animations;
 
-    public LotteAnimationGroup(SparseArray<LotteAnimatableValue> propertyAnimations) {
+    public LotteAnimationGroup(SparseArray<LotteAnimatableValue> propertyAnimations, long compDuration) {
         animations = new ArrayList<>(propertyAnimations.size());
 
         for (int i = 0; i < propertyAnimations.size(); i++) {
@@ -30,21 +30,9 @@ public class LotteAnimationGroup {
         this.animations = animations;
     }
 
-    public void play() {
-        for (LotteKeyframeAnimation animation : animations) {
-            animation.play();
-        }
-    }
-
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         for (LotteKeyframeAnimation animation : animations) {
             animation.setProgress(progress);
-        }
-    }
-
-    public void setMaxDuration(long maxDuration) {
-        for (LotteKeyframeAnimation<?> animation : animations) {
-            animation.setTotalDuration(maxDuration);
         }
     }
 }

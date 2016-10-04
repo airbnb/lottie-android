@@ -11,11 +11,11 @@ public class LotteShapeCircle {
     private LotteAnimatablePointValue position;
     private LotteAnimatablePointValue size;
 
-    public LotteShapeCircle(JSONObject json, int frameRate) {
+    public LotteShapeCircle(JSONObject json, int frameRate, long compDuration) {
         try {
-            position = new LotteAnimatablePointValue(json.getJSONObject("p"), frameRate);
+            position = new LotteAnimatablePointValue(json.getJSONObject("p"), frameRate, compDuration);
             position.setUsePathAnimation(false);
-            size = new LotteAnimatablePointValue(json.getJSONObject("s"), frameRate);
+            size = new LotteAnimatablePointValue(json.getJSONObject("s"), frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse circle " + json, e);
         }

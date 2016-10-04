@@ -16,7 +16,7 @@ public class LotteShapePath {
     private int index;
     private LotteAnimatableShapeValue shapePath;
 
-    public LotteShapePath(JSONObject json, int frameRate) {
+    public LotteShapePath(JSONObject json, int frameRate, long compDuration) {
         try {
             index = json.getInt("ind");
         } catch (JSONException e) {
@@ -38,7 +38,7 @@ public class LotteShapePath {
         JSONObject shape = null;
         try {
             shape = json.getJSONObject("ks");
-            shapePath = new LotteAnimatableShapeValue(shape, frameRate, closed);
+            shapePath = new LotteAnimatableShapeValue(shape, frameRate, compDuration, closed);
         } catch (JSONException e) {
             // Ignore
         }

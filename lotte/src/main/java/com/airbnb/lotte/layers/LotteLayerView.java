@@ -77,7 +77,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         anchorPoint = new Observable<>();
         anchorPoint.setValue(new PointF());
 
-        childContainerLayer = new LotteAnimatableLayer(0, getCallback());
+        childContainerLayer = new LotteAnimatableLayer(composition.getDuration(), getCallback());
         childContainerLayer.setCallback(callback);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
         childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
@@ -122,7 +122,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         for (Object item : reversedItems) {
             if (item instanceof LotteShapeGroup) {
                 LotteGroupLayerView groupLayer = new LotteGroupLayerView((LotteShapeGroup) item, currentFill,
-                        currentStroke, currentTrimPath, currentTransform, duration, getCallback());
+                        currentStroke, currentTrimPath, currentTransform, compDuration, getCallback());
                 childContainerLayer.addLayer(groupLayer);
             } else if (item instanceof LotteShapeTransform) {
                 currentTransform = (LotteShapeTransform) item;
@@ -149,11 +149,12 @@ public class LotteLayerView extends LotteAnimatableLayer {
         propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, layerModel.getAnchor());
         propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, layerModel.getScale());
         propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, layerModel.getRotation());
-        childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+        childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, layerModel.getCompDuration()));
 
         if (layerModel.hasInOutAnimation()) {
             LotteNumberKeyframeAnimation<Float> inOutAnimation = new LotteNumberKeyframeAnimation<>(
                     LotteAnimatableProperty.HIDDEN,
+                    layerModel.getCompDuration(),
                     layerModel.getCompDuration(),
                     layerModel.getInOutKeyTimes(),
                     Float.class,
@@ -246,26 +247,10 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     @Override
-    public void play() {
-        super.play();
-        if (matte != null) {
-            matte.play();
-        }
-    }
-
-    @Override
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         super.setProgress(progress);
         if (matte != null) {
             matte.setProgress(progress);
-        }
-    }
-
-    @Override
-    public void setMaxDuration(long maxDuration) {
-        super.setMaxDuration(maxDuration);
-        if (matte != null) {
-            matte.setMaxDuration(maxDuration);
         }
     }
 

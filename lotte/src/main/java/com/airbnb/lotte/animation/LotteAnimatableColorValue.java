@@ -32,11 +32,13 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
     private long startFrame;
     private long durationFrames;
     private int frameRate;
+    private final long compDuration;
 
     @ColorInt private int initialColor;
 
-    public LotteAnimatableColorValue(JSONObject colorValues, int frameRate) {
+    public LotteAnimatableColorValue(JSONObject colorValues, int frameRate, long compDuration) {
         this.frameRate = frameRate;
+        this.compDuration = compDuration;
         try {
             Object value = colorValues.get("k");
 
@@ -72,7 +74,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
                 if (keyframe.has("t")) {
                     long endFrame = keyframe.getLong("t");
                     if (endFrame <= startFrame) {
-                        throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
+                        throw new IllegalStateException("Invalid frame compDuration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
                     duration = (long) (durationFrames / (float) frameRate * 1000);
@@ -180,7 +182,7 @@ public class LotteAnimatableColorValue implements LotteAnimatableValue<Integer> 
         if (!hasAnimation()) {
             return null;
         }
-        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, keyTimes, colorKeyframes);
+        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, compDuration, keyTimes, colorKeyframes);
         animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {

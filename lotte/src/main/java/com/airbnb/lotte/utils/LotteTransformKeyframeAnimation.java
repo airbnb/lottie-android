@@ -13,8 +13,8 @@ public class LotteTransformKeyframeAnimation extends LotteKeyframeAnimation<Lott
 
     private final List<LotteTransform3D> transforms;
 
-    public LotteTransformKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<LotteTransform3D> transforms) {
-        super(property, duration, keyTimes);
+    public LotteTransformKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<LotteTransform3D> transforms) {
+        super(property, duration, compDuration, keyTimes);
         this.transforms = transforms;
     }
 

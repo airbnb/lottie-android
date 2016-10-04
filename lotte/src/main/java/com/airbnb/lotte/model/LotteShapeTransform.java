@@ -21,7 +21,7 @@ public class LotteShapeTransform {
     private LotteAnimatableNumberValue rotation;
     private LotteAnimatableNumberValue opacity;
 
-    public LotteShapeTransform(JSONObject json, int frameRate, Rect compBounds) {
+    public LotteShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         this.compBounds = compBounds;
 
         JSONObject jsonPosition = null;
@@ -31,7 +31,7 @@ public class LotteShapeTransform {
         if (jsonPosition == null) {
             throw new IllegalStateException("Transform has no position.");
         }
-        position = new LotteAnimatablePointValue(jsonPosition, frameRate);
+        position = new LotteAnimatablePointValue(jsonPosition, frameRate, compDuration);
 
         JSONObject jsonAnchor = null;
         try {
@@ -40,7 +40,7 @@ public class LotteShapeTransform {
         if (jsonAnchor == null) {
             throw new IllegalStateException("Transform has no anchor.");
         }
-        anchor = new LotteAnimatablePointValue(jsonAnchor, frameRate);
+        anchor = new LotteAnimatablePointValue(jsonAnchor, frameRate, compDuration);
         anchor.remapPointsFromBounds(compBounds, new Rect(0, 0, 1, 1));
         anchor.setUsePathAnimation(false);
 
@@ -51,7 +51,7 @@ public class LotteShapeTransform {
         if (jsonScale == null) {
             throw new IllegalStateException("Transform has no scale.");
         }
-        scale = new LotteAnimatableScaleValue(jsonScale, frameRate);
+        scale = new LotteAnimatableScaleValue(jsonScale, frameRate, compDuration);
 
         JSONObject jsonRotation = null;
         try {
@@ -60,7 +60,7 @@ public class LotteShapeTransform {
         if (jsonRotation == null) {
             throw new IllegalStateException("Transform has no rotation.");
         }
-        rotation = new LotteAnimatableNumberValue(jsonRotation, frameRate);
+        rotation = new LotteAnimatableNumberValue(jsonRotation, frameRate, compDuration);
 //        rotation.remapWith(new RemapInterface() {
 //            @Override
 //            public float remap(float inValue) {
@@ -75,7 +75,7 @@ public class LotteShapeTransform {
         if (jsonOpacity == null) {
             throw new IllegalStateException("Transform has no opacity.");
         }
-        opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate);
+        opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate, compDuration);
         opacity.remapValues(0, 100, 0, 255);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());

@@ -15,7 +15,7 @@ public class LotteShapeGroup {
     private static final String TAG = LotteShapeGroup.class.getSimpleName();
 
     @Nullable
-    public static Object shapeItemWithJson(JSONObject json, int framerate, Rect compBounds) {
+    public static Object shapeItemWithJson(JSONObject json, int framerate, long compDuration, Rect compBounds) {
         String type = null;
         try {
             type = json.getString("ty");
@@ -26,21 +26,21 @@ public class LotteShapeGroup {
 
         switch (type) {
             case "gr":
-                return new LotteShapeGroup(json, framerate, compBounds);
+                return new LotteShapeGroup(json, framerate, compDuration, compBounds);
             case "st":
-                return new LotteShapeStroke(json, framerate);
+                return new LotteShapeStroke(json, framerate, compDuration);
             case "fl":
-                return new LotteShapeFill(json, framerate);
+                return new LotteShapeFill(json, framerate, compDuration);
             case "tr":
-                return new LotteShapeTransform(json, framerate, compBounds);
+                return new LotteShapeTransform(json, framerate, compDuration, compBounds);
             case "sh":
-                return new LotteShapePath(json, framerate);
+                return new LotteShapePath(json, framerate, compDuration);
             case "el":
-                return new LotteShapeCircle(json, framerate);
+                return new LotteShapeCircle(json, framerate, compDuration);
             case "rc":
-                return new LotteShapeRectangle(json, framerate);
+                return new LotteShapeRectangle(json, framerate, compDuration);
             case "tm":
-                return new LotteShapeTrimPath(json, framerate);
+                return new LotteShapeTrimPath(json, framerate, compDuration);
         }
         return null;
     }
@@ -48,7 +48,7 @@ public class LotteShapeGroup {
     private String name;
     private final List<Object> items = new ArrayList<>();
 
-    public LotteShapeGroup(JSONObject json, int frameRate, Rect compBounds) {
+    public LotteShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -73,7 +73,7 @@ public class LotteShapeGroup {
             }
 
 
-            Object newItem = shapeItemWithJson(jsonItem, frameRate, compBounds);
+            Object newItem = shapeItemWithJson(jsonItem, frameRate, compDuration, compBounds);
             if (newItem != null) {
                 items.add(newItem);
             }

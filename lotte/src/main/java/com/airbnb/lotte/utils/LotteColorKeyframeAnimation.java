@@ -13,8 +13,8 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
 
     private final List<Integer> values;
 
-    public LotteColorKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<Integer> values) {
-        super(property, duration, keyTimes);
+    public LotteColorKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<Integer> values) {
+        super(property, duration, compDuration, keyTimes);
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());
         }

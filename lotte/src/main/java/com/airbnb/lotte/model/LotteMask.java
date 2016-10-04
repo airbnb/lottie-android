@@ -21,7 +21,7 @@ public class LotteMask {
     private LotteAnimatableShapeValue maskPath;
     private LotteAnimatableNumberValue opacity;
 
-    public LotteMask(JSONObject json, int frameRate) {
+    public LotteMask(JSONObject json, int frameRate, long compDuration) {
         try {
             closed = json.getBoolean("cl");
             inverted = json.getBoolean("inv");
@@ -40,8 +40,8 @@ public class LotteMask {
                         maskMode = MaskMode.MaskModeUnknown;
             }
 
-            maskPath = new LotteAnimatableShapeValue(json.getJSONObject("pt"), frameRate, closed);
-            opacity = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate);
+            maskPath = new LotteAnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
+            opacity = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate, compDuration);
             opacity.remapValues(0, 100, 0, 255);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);

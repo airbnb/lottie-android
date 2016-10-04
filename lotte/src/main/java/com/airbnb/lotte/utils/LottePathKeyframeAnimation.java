@@ -16,8 +16,8 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
     private PathMeasure pathMeasure;
     private int pathMeasureKeyframeIndex = -1;
 
-    public LottePathKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, SegmentedPath segmentedPath) {
-        super(property, duration, keyTimes);
+    public LottePathKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath) {
+        super(property, duration, compDuration, keyTimes);
         this.segmentedPath = segmentedPath;
     }
 

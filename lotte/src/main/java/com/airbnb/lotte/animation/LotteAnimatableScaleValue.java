@@ -34,10 +34,12 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
     private int startFrame;
     private int durationFrames;
     private int frameRate;
+    private final long compDuration;
 
 
-    public LotteAnimatableScaleValue(JSONObject scaleValues, int frameRate) {
+    public LotteAnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration) {
         this.frameRate = frameRate;
+        this.compDuration = compDuration;
         try {
             Object value = scaleValues.get("k");
             if (value instanceof JSONArray) {
@@ -156,7 +158,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
-        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(property, duration, keyTimes, scaleKeyframes);
+        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(property, duration, compDuration, keyTimes, scaleKeyframes);
         animation.setInterpolators(interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {

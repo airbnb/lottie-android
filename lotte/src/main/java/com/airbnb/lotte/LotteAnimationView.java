@@ -8,16 +8,13 @@ import android.os.AsyncTask;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
 
-import com.airbnb.lotte.layers.LotteAnimatableLayer;
 import com.airbnb.lotte.layers.LotteLayer;
 import com.airbnb.lotte.layers.LotteLayerView;
 import com.airbnb.lotte.layers.RootLotteAnimatableLayer;
 import com.airbnb.lotte.model.LotteComposition;
-import com.airbnb.lotte.model.LotteCubicCurveData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,9 +26,9 @@ import java.util.List;
 
 public class LotteAnimationView extends ImageView {
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
-    private final RootLotteAnimatableLayer animationContainer = new RootLotteAnimatableLayer(this);
+    private RootLotteAnimatableLayer rootAnimatableLayer;
 
-    private LotteComposition sceneModel;
+    private LotteComposition composition;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -59,19 +56,10 @@ public class LotteAnimationView extends ImageView {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        if (animationContainer != null) {
-            animationContainer.setBounds(0, 0, w, h);
-        }
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (animationContainer != null && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
-            Log.d("Gabe", "onMeasure " + animationContainer.getBounds().width());
-            setMeasuredDimension(animationContainer.getBounds().width(), animationContainer.getBounds().height());
+        if (rootAnimatableLayer != null && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
+            setMeasuredDimension(rootAnimatableLayer.getBounds().width(), rootAnimatableLayer.getBounds().height());
         } else {
-            Log.d("Gabe", "onMeasure2 " + MeasureSpec.getSize(widthMeasureSpec));
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
@@ -105,7 +93,6 @@ public class LotteAnimationView extends ImageView {
 
     public void setAnimationSync(String animationName) {
         setImageDrawable(null);
-        Log.d("Gabe", "setAnimSync " + animationName);
         InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
@@ -137,13 +124,15 @@ public class LotteAnimationView extends ImageView {
 
             @Override
             protected LotteComposition doInBackground(JSONObject... params) {
-                return LotteComposition.fromJson(params[0]);
+                LotteComposition composition = LotteComposition.fromJson(params[0]);
+                rootAnimatableLayer = new RootLotteAnimatableLayer(composition.getDuration(), LotteAnimationView.this);
+                return composition;
             }
 
             @Override
             protected void onPostExecute(LotteComposition model) {
                 setModel(model);
-                setImageDrawable(animationContainer);
+                setImageDrawable(rootAnimatableLayer);
                 buildSubviewsForModel();
             }
         }.execute(json);
@@ -151,23 +140,27 @@ public class LotteAnimationView extends ImageView {
 
     private void setJsonSync(JSONObject json) {
         LotteComposition composition = LotteComposition.fromJson(json);
+        rootAnimatableLayer = new RootLotteAnimatableLayer(composition.getDuration(), this);
         setModel(composition);
-        setImageDrawable(animationContainer);
+        setImageDrawable(rootAnimatableLayer);
         buildSubviewsForModel();
     }
 
-    public void setModel(LotteComposition model) {
-        sceneModel = model;
-        animationContainer.setBounds(0, 0, getWidth(), getHeight());
-        animationContainer.setSpeed(0f);
+    public void setModel(LotteComposition composition) {
+        this.composition = composition;
+        rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
+    }
+
+    public void loop(boolean loop) {
+        rootAnimatableLayer.loop(loop);
     }
 
     public void play() {
-        animationContainer.play();
+        rootAnimatableLayer.play();
     }
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
-        animationContainer.setProgress(progress);
+        rootAnimatableLayer.setProgress(progress);
     }
 
     public void pause() {
@@ -175,7 +168,7 @@ public class LotteAnimationView extends ImageView {
     }
 
     private void buildSubviewsForModel() {
-        List<LotteLayer> reversedLayers = sceneModel.getLayers();
+        List<LotteLayer> reversedLayers = composition.getLayers();
         Collections.reverse(reversedLayers);
 
         boolean needsMatte = false;
@@ -192,26 +185,25 @@ public class LotteAnimationView extends ImageView {
             }
         }
 
-        Bitmap mainBitmap = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888);
-        Bitmap maskBitmap = needsMask ? Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8) : null;
-        Bitmap matteBitmap = needsMatte ? Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ARGB_8888) : null;
+        Bitmap mainBitmap = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888);
+        Bitmap maskBitmap = needsMask ? Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8) : null;
+        Bitmap matteBitmap = needsMatte ? Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ARGB_8888) : null;
 
         Bitmap mainBitmapForMatte = null;
         Bitmap maskBitmapForMatte = null;
         Bitmap matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
-        LotteAnimatableLayer rootAnimatableLayer = (LotteAnimatableLayer) getDrawable();
         for (LotteLayer layer : reversedLayers) {
             LotteLayerView layerView;
             if (maskedLayer == null) {
-                layerView = new LotteLayerView(layer, sceneModel, this, mainBitmap, maskBitmap, matteBitmap);
+                layerView = new LotteLayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
             } else {
                 if (mainBitmapForMatte == null) {
-                    mainBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
-                    maskBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
-                    matteBitmapForMatte = Bitmap.createBitmap(sceneModel.getBounds().width(), sceneModel.getBounds().height(), Bitmap.Config.ALPHA_8);
+                    mainBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
+                    maskBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
+                    matteBitmapForMatte = Bitmap.createBitmap(composition.getBounds().width(), composition.getBounds().height(), Bitmap.Config.ALPHA_8);
                 }
-                layerView = new LotteLayerView(layer, sceneModel, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
+                layerView = new LotteLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
             }
             layerMap.put(layerView.getId(), layerView);
             if (maskedLayer != null) {
@@ -224,7 +216,5 @@ public class LotteAnimationView extends ImageView {
                 rootAnimatableLayer.addLayer(layerView);
             }
         }
-
-        rootAnimatableLayer.setMaxDuration(sceneModel.getDuration());
     }
 }

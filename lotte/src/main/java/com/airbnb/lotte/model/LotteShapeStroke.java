@@ -35,16 +35,16 @@ public class LotteShapeStroke {
     private LineCapType capType;
     private LineJoinType joinType;
 
-    public LotteShapeStroke(JSONObject json, int frameRate) {
+    public LotteShapeStroke(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject colorJson = json.getJSONObject("c");
-            color = new LotteAnimatableColorValue(colorJson, frameRate);
+            color = new LotteAnimatableColorValue(colorJson, frameRate, compDuration);
 
             JSONObject widthJson = json.getJSONObject("w");
-            width = new LotteAnimatableNumberValue(widthJson, frameRate);
+            width = new LotteAnimatableNumberValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
-            opacity = new LotteAnimatableNumberValue(opacityJson, frameRate);
+            opacity = new LotteAnimatableNumberValue(opacityJson, frameRate, compDuration);
             opacity.remapValues(0, 100, 0, 255);
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
@@ -59,10 +59,10 @@ public class LotteShapeStroke {
                     String n = dashJson.getString("n");
                     if (n.equals("o")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        offset = new LotteAnimatableNumberValue(value, frameRate);
+                        offset = new LotteAnimatableNumberValue(value, frameRate, compDuration);
                     } else if (n.equals("d") || n.equals("g")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        LotteAnimatableNumberValue initialValue = new LotteAnimatableNumberValue(value, frameRate);
+                        LotteAnimatableNumberValue initialValue = new LotteAnimatableNumberValue(value, frameRate, compDuration);
                         lineDashPattern.add(initialValue);
                     }
                 }

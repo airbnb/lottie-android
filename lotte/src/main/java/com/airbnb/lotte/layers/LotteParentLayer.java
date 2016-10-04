@@ -38,6 +38,6 @@ public class LotteParentLayer extends LotteAnimatableLayer {
         propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, parentModel.getAnchor());
         propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, parentModel.getScale());
         propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, parentModel.getRotation());
-        addAnimation(new LotteAnimationGroup(propertyAnimations));
+        addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
     }
 }

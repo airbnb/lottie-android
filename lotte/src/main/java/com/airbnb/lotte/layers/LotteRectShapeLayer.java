@@ -89,7 +89,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
             propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
             propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
-            addAnimation(new LotteAnimationGroup(propertyAnimations));
+            addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
         }
 
         if (stroke != null && strokeLayer != null) {
@@ -105,7 +105,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
                 propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_GAP, stroke.getLineDashPattern().get(1));
                 propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_OFFSET, stroke.getDashOffset());
             }
-            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
         }
 
         if (fill != null && fillLayer != null) {
@@ -115,7 +115,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, rectShape.getSize());
             propertyAnimations.put(LotteAnimatableProperty.RECT_POSITION, rectShape.getPosition());
             propertyAnimations.put(LotteAnimatableProperty.RECT_CORNER_RADIUS, rectShape.getCornerRadius());
-            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
+            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
         }
     }
 

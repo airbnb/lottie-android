@@ -16,10 +16,10 @@ public class LotteShapeRectangle {
     private LotteAnimatablePointValue size;
     private LotteAnimatableNumberValue cornerRadius;
 
-    public LotteShapeRectangle(JSONObject json, int frameRate) {
+    public LotteShapeRectangle(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject positionJson = json.getJSONObject("p");
-            position = new LotteAnimatablePointValue(positionJson, frameRate);
+            position = new LotteAnimatablePointValue(positionJson, frameRate, compDuration);
             position.setUsePathAnimation(false);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle position.", e);
@@ -27,14 +27,14 @@ public class LotteShapeRectangle {
 
         try {
             JSONObject cornerRadiusJson = json.getJSONObject("r");
-            cornerRadius = new LotteAnimatableNumberValue(cornerRadiusJson, frameRate);
+            cornerRadius = new LotteAnimatableNumberValue(cornerRadiusJson, frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle corner radius.", e);
         }
 
         try {
             JSONObject sizeJson = json.getJSONObject("s");
-            size = new LotteAnimatablePointValue(sizeJson, frameRate);
+            size = new LotteAnimatablePointValue(sizeJson, frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle size.", e);
         }

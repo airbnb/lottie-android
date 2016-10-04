@@ -26,6 +26,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
     private final Observable<Number> observable = new Observable<>();
     private final int frameRate;
+    private final long compDuration;
     @Nullable private RemapInterface remapInterface;
     private float initialValue;
 
@@ -38,8 +39,9 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
     private long durationFrames;
 
     @SuppressLint("UseValueOf")
-    public LotteAnimatableNumberValue(JSONObject numberValues, int frameRate) {
+    public LotteAnimatableNumberValue(JSONObject numberValues, int frameRate, long compDuration) {
         this.frameRate = frameRate;
+        this.compDuration = compDuration;
         try {
             Object value = numberValues.get("k");
             if (value instanceof JSONArray &&
@@ -74,7 +76,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                 if (keyframe.has("t")) {
                     long endFrame = keyframe.getLong("t");
                     if (endFrame <= startFrame) {
-                        throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
+                        throw new IllegalStateException("Invalid frame compDuration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
                     duration = (long) (durationFrames / (float) frameRate * 1000);
@@ -196,7 +198,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
-        LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(property, duration, keyTimes, Float.class, valueKeyframes);
+        LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(property, duration, compDuration, keyTimes, Float.class, valueKeyframes);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
             @Override

@@ -13,8 +13,8 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
     private final List<T> values;
     private final Class<T> klass;
 
-    public LotteNumberKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, Class<T> klass, List<T> values) {
-        super(property, duration, keyTimes);
+    public LotteNumberKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values) {
+        super(property, duration, compDuration, keyTimes);
         this.klass = klass;
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes + " vs " + values);

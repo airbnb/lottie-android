@@ -40,23 +40,18 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#sublayerTransform */
     private Observable<Number> alpha;
     protected Observable<Number> sublayerTransform;
-    protected long duration;
-    protected float speed;
+    protected long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
     protected final List<LotteAnimationGroup> animations = new ArrayList<>();
     private float progress;
 
-    public LotteAnimatableLayer(long duration, Drawable.Callback callback) {
+    public LotteAnimatableLayer(long compDuration, Drawable.Callback callback) {
         setCallback(callback);
-        this.duration = duration;
+        this.compDuration = compDuration;
 
         solidBackgroundPaint.setAlpha(0);
         solidBackgroundPaint.setStyle(Paint.Style.FILL);
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
     }
 
     public void setBackgroundColor(@ColorInt int color) {
@@ -67,14 +62,6 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void addAnimation(LotteAnimationGroup animation) {
         animations.add(animation);
-    }
-
-    public float getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     @Override
@@ -161,18 +148,6 @@ public class LotteAnimatableLayer extends Drawable {
         invalidateSelf();
     }
 
-    public void play() {
-        for (LotteAnimationGroup animation : animations) {
-            animation.play();
-        }
-
-        for (Drawable layer : layers) {
-            if (layer instanceof LotteAnimatableLayer) {
-                ((LotteAnimatableLayer) layer).play();
-            }
-        }
-    }
-
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         this.progress = progress;
         for (LotteAnimationGroup animation : animations) {
@@ -181,15 +156,6 @@ public class LotteAnimatableLayer extends Drawable {
 
         for (LotteAnimatableLayer layer : layers) {
             layer.setProgress(progress);
-        }
-    }
-
-    public void setMaxDuration(long maxDuration) {
-        for (LotteAnimationGroup animationGroup : animations) {
-            animationGroup.setMaxDuration(maxDuration);
-        }
-        for (LotteAnimatableLayer layer : layers) {
-            layer.setMaxDuration(maxDuration);
         }
     }
 }

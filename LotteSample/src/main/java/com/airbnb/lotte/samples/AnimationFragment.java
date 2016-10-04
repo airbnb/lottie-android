@@ -8,11 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
+import android.widget.ToggleButton;
 
 import com.airbnb.lotte.LotteAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 public class AnimationFragment extends Fragment {
@@ -28,6 +30,7 @@ public class AnimationFragment extends Fragment {
 
     @BindView(R.id.animation_view) LotteAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
+    @BindView(R.id.loop_button) ToggleButton loopButton;
 
     @Nullable
     @Override
@@ -61,5 +64,10 @@ public class AnimationFragment extends Fragment {
     @OnClick(R.id.play)
     public void onPlayClicked() {
         animationView.play();
+    }
+
+    @OnCheckedChanged(R.id.loop_button)
+    public void onLoopChanged(boolean loop) {
+        animationView.loop(loop);
     }
 }

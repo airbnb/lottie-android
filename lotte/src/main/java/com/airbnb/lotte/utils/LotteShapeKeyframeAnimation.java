@@ -13,8 +13,8 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
     private final LotteShapeData tempShapeData = new LotteShapeData();
     private final List<LotteShapeData> shapeData;
 
-    public LotteShapeKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
-        super(property, duration, keyTimes);
+    public LotteShapeKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
+        super(property, duration, compDuration, keyTimes);
         this.shapeData = shapeData;
     }
 

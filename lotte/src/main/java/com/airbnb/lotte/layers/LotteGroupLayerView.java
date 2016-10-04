@@ -33,8 +33,8 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
 
     public LotteGroupLayerView(LotteShapeGroup shapeGroup, @Nullable LotteShapeFill previousFill,
             @Nullable LotteShapeStroke previousStroke, @Nullable LotteShapeTrimPath previousTrimPath,
-            @Nullable LotteShapeTransform previousTransform, long duration, Drawable.Callback callback) {
-        super(duration, callback);
+            @Nullable LotteShapeTransform previousTransform, long compDuration, Drawable.Callback callback) {
+        super(compDuration, callback);
         this.shapeGroup = shapeGroup;
         shapeTransform = previousTransform;
         setupShapeGroupWithFill(previousFill, previousStroke, previousTrimPath);
@@ -70,22 +70,22 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
                 currentTrim = (LotteShapeTrimPath) item;
             } else if (item instanceof LotteShapePath) {
                 LotteShapePath shapePath = (LotteShapePath) item;
-                LotteShapeLayerView shapeLayer = new LotteShapeLayerView(shapePath, currentFill, currentStroke, currentTrim, currentTransform, duration, getCallback());
+                LotteShapeLayerView shapeLayer = new LotteShapeLayerView(shapePath, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
                 shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeRectangle) {
                 LotteShapeRectangle shapeRect = (LotteShapeRectangle) item;
-                LotteRectShapeLayer shapeLayer = new LotteRectShapeLayer(shapeRect, currentFill, currentStroke, currentTransform, duration, getCallback());
+                LotteRectShapeLayer shapeLayer = new LotteRectShapeLayer(shapeRect, currentFill, currentStroke, currentTransform, compDuration, getCallback());
                 shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeCircle) {
                 LotteShapeCircle shapeCircle = (LotteShapeCircle) item;
-                LotteEllipseShapeLayer shapeLayer = new LotteEllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, duration, getCallback());
+                LotteEllipseShapeLayer shapeLayer = new LotteEllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
                 shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeGroup) {
                 LotteShapeGroup shapeGroup = (LotteShapeGroup) item;
-                LotteGroupLayerView groupLayer = new LotteGroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, duration, getCallback());
+                LotteGroupLayerView groupLayer = new LotteGroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
                 groupLayers.add(groupLayer);
                 addLayer(groupLayer);
             }
@@ -103,7 +103,7 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, shapeTransform.getScale());
             propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, shapeTransform.getRotation());
         }
-        addAnimation(new LotteAnimationGroup(propertyAnimations));
+        addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
     }
 
     @Override

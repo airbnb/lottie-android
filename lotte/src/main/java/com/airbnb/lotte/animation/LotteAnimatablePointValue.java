@@ -1,6 +1,5 @@
 package com.airbnb.lotte.animation;
 
-import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.support.v4.view.animation.PathInterpolatorCompat;
@@ -28,6 +27,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     private final List<PointF> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
+    private final long compDuration;
 
     private boolean usePathAnimation = true;
     private PointF initialPoint;
@@ -38,7 +38,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     private long durationFrames;
     private int frameRate;
 
-    public LotteAnimatablePointValue(JSONObject pointValues, int frameRate) {
+    public LotteAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
+        this.compDuration = compDuration;
         usePathAnimation = true;
         this.frameRate = frameRate;
 
@@ -85,7 +86,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                 if (keyframe.has("t")) {
                     long endFrame = keyframe.getLong("t");
                     if (endFrame <= startFrame) {
-                        throw new IllegalStateException("Invalid frame duration " + startFrame + "->" + endFrame);
+                        throw new IllegalStateException("Invalid frame compDuration " + startFrame + "->" + endFrame);
                     }
                     durationFrames = endFrame - startFrame;
                     duration = (long) (durationFrames / (float) frameRate * 1000);
@@ -257,9 +258,9 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
         LotteKeyframeAnimation animation;
         if (!animationPath.isEmpty() && usePathAnimation) {
-            animation = new LottePathKeyframeAnimation(property, duration, keyTimes, animationPath);
+            animation = new LottePathKeyframeAnimation(property, duration, compDuration, keyTimes, animationPath);
         } else {
-            animation = new LottePointKeyframeAnimation(property, duration, keyTimes, pointKeyframes);
+            animation = new LottePointKeyframeAnimation(property, duration, compDuration, keyTimes, pointKeyframes);
         }
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<PointF>() {
             @Override

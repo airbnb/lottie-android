@@ -95,7 +95,7 @@ public class LotteLayer {
                 opacity = ks.getJSONObject("o");
             } catch (JSONException e) { }
             if (opacity != null) {
-                layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate);
+                layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate, composition.getDuration());
                 layer.opacity.remapValues(0, 100, 0, 255);
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
@@ -105,7 +105,7 @@ public class LotteLayer {
                 rotation = ks.getJSONObject("r");
             } catch (JSONException e) { }
             if (rotation != null) {
-                layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate);
+                layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
 //                layer.rotation.remapWith(new RemapInterface() {
 //                    @Override
@@ -120,7 +120,7 @@ public class LotteLayer {
                 position = ks.getJSONObject("p");
             } catch (JSONException e) { }
             if (position != null) {
-                layer.position = new LotteAnimatablePointValue(position, layer.frameRate);
+                layer.position = new LotteAnimatablePointValue(position, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().getInitialPoint());
             }
 
@@ -129,7 +129,7 @@ public class LotteLayer {
                 anchor = ks.getJSONObject("a");
             } catch (JSONException e) { }
             if (anchor != null) {
-                layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate);
+                layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate, composition.getDuration());
                 layer.anchor.remapPointsFromBounds(composition.getBounds(), new Rect(0, 0, 1, 1));
                 layer.anchor.setUsePathAnimation(false);
                 if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.getInitialPoint());
@@ -140,7 +140,7 @@ public class LotteLayer {
                 scale = ks.getJSONObject("s");
             } catch (JSONException e) { }
             if (scale != null) {
-                layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate);
+                layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.getInitialScale());
             }
 
@@ -155,7 +155,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (jsonMasks != null) {
                 for (int i = 0; i < jsonMasks.length(); i++) {
-                    LotteMask mask = new LotteMask(jsonMasks.getJSONObject(i), layer.frameRate);
+                    LotteMask mask = new LotteMask(jsonMasks.getJSONObject(i), layer.frameRate, composition.getDuration());
                     layer.masks.add(mask);
                     if (L.DBG) Log.d(TAG, "\tMask=" + mask.getMaskMode());
                 }
@@ -167,7 +167,7 @@ public class LotteLayer {
             } catch (JSONException e) { }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
-                    Object shape = LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, layer.compBounds);
+                    Object shape = LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition.getDuration(), layer.compBounds);
                     if (shape != null) {
                         layer.shapes.add(shape);
                         if (L.DBG) Log.d(TAG, "\tShapes+=" + shape.getClass().getSimpleName());

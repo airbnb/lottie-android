@@ -11,8 +11,8 @@ public class LottePointKeyframeAnimation extends LotteKeyframeAnimation<PointF> 
     private final PointF point = new PointF();
     private final List<PointF> points;
 
-    public LottePointKeyframeAnimation(@AnimatableProperty int property, long duration, List<Float> keyTimes, List<PointF> points) {
-        super(property, duration, keyTimes);
+    public LottePointKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<PointF> points) {
+        super(property, duration, compDuration, keyTimes);
         this.points = points;
     }
 

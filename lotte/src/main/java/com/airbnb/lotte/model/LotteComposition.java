@@ -39,7 +39,7 @@ public class LotteComposition {
 
         if (composition.endFrame != 0 && composition.frameRate != 0) {
             long frameDuration = composition.endFrame - composition.startFrame;
-            composition.duration = frameDuration / composition.frameRate * 1000;
+            composition.duration = (long) (frameDuration / (float) composition.frameRate * 1000);
         }
 
         try {

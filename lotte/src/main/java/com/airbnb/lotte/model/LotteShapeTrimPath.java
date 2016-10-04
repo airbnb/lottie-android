@@ -12,11 +12,11 @@ public class LotteShapeTrimPath {
     private LotteAnimatableNumberValue end;
     private LotteAnimatableNumberValue offset;
 
-    public LotteShapeTrimPath(JSONObject json, int frameRate) {
+    public LotteShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
         try {
-            start = new LotteAnimatableNumberValue(json.getJSONObject("s"), frameRate);
-            end = new LotteAnimatableNumberValue(json.getJSONObject("e"), frameRate);
-            offset = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate);
+            start = new LotteAnimatableNumberValue(json.getJSONObject("s"), frameRate, compDuration);
+            end = new LotteAnimatableNumberValue(json.getJSONObject("e"), frameRate, compDuration);
+            offset = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse trim path " + json, e);
         }
