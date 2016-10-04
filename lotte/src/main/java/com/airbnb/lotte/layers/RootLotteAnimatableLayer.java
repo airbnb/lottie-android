@@ -1,5 +1,6 @@
 package com.airbnb.lotte.layers;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -35,6 +36,22 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
 
     public void play() {
         animator.start();
+    }
+
+    public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+        animator.addUpdateListener(updateListener);
+    }
+
+    public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+        animator.removeUpdateListener(updateListener);
+    }
+
+    public void addAnimatorListener(Animator.AnimatorListener listener) {
+        animator.addListener(listener);
+    }
+
+    public void removeAnimatorListener(Animator.AnimatorListener listener) {
+        animator.removeListener(listener);
     }
 
     @Override

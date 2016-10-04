@@ -1,5 +1,7 @@
 package com.airbnb.lotte;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -149,6 +151,22 @@ public class LotteAnimationView extends ImageView {
     public void setModel(LotteComposition composition) {
         this.composition = composition;
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
+    }
+
+    public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+        rootAnimatableLayer.addAnimatorUpdateListener(updateListener);
+    }
+
+    public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+        rootAnimatableLayer.removeAnimatorUpdateListener(updateListener);
+    }
+
+    public void addAnimatorListener(Animator.AnimatorListener listener) {
+        rootAnimatableLayer.addAnimatorListener(listener);
+    }
+
+    public void removeAnimatorListener(Animator.AnimatorListener listener) {
+        rootAnimatableLayer.removeAnimatorListener(listener);
     }
 
     public void loop(boolean loop) {
