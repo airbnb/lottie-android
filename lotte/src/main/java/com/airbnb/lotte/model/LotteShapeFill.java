@@ -56,7 +56,7 @@ public class LotteShapeFill {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("LotteShapeFill{");
-        sb.append("color=").append(Integer.toHexString(color.getInitialColor()));
+        sb.append("color=").append(Integer.toHexString(color.getInitialValue()));
         sb.append(", fillEnabled=").append(fillEnabled);
         sb.append(", opacity=").append(opacity.getInitialValue());
         sb.append('}');
