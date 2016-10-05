@@ -171,7 +171,7 @@ public class LotteAnimationView extends ImageView {
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();
-        Bitmap mainBitmap = composition.hasMasks() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
+        Bitmap mainBitmap = (composition.hasMasks() || composition.hasMattes()) ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
         Bitmap maskBitmap = composition.hasMasks() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8) : null;
         Bitmap matteBitmap = composition.hasMattes() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
 

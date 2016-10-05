@@ -208,7 +208,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         if (!isVisible()) {
             return;
         }
-        if (contentCanvas == null || contentBitmap != null) {
+        if (contentCanvas == null || contentBitmap == null) {
             super.draw(mainCanvas);
             return;
         }
