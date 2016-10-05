@@ -36,11 +36,11 @@ public class LotteAnimationView extends ImageView {
     /** Can be null because it is created async */
     @Nullable private LotteComposition composition;
     private boolean hasInvalidatedThisFrame;
-    @Nullable private Bitmap mainBitmap;
-    @Nullable private Bitmap maskBitmap;
-    @Nullable private Bitmap matteBitmap;
-    @Nullable private Bitmap mainBitmapForMatte;
-    @Nullable private Bitmap maskBitmapForMatte;
+    @Nullable private Bitmap mainBitmap = null;
+    @Nullable private Bitmap maskBitmap = null;
+    @Nullable private Bitmap matteBitmap = null;
+    @Nullable private Bitmap mainBitmapForMatte = null;
+    @Nullable private Bitmap maskBitmapForMatte = null;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -204,12 +204,15 @@ public class LotteAnimationView extends ImageView {
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();
-        mainBitmap = (composition.hasMasks() || composition.hasMattes()) ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
-        maskBitmap = composition.hasMasks() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8) : null;
-        matteBitmap = composition.hasMattes() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
-
-        mainBitmapForMatte = null;
-        maskBitmapForMatte = null;
+        if (composition.hasMasks() || composition.hasMattes()) {
+            mainBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
+        }
+        if (composition.hasMasks()) {
+            maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+        }
+        if (composition.hasMattes()) {
+            matteBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
+        }
         LotteLayerView maskedLayer = null;
         for (int i = 0; i < reversedLayers.size(); i++) {
             LotteLayer layer = reversedLayers.get(i);
