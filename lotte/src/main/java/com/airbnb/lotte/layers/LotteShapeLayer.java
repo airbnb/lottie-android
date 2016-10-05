@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 import com.airbnb.lotte.model.LotteShapeStroke;
@@ -25,13 +26,7 @@ import java.util.List;
  * Mimics CAShapeLayer
  */
 public class LotteShapeLayer extends LotteAnimatableLayer {
-
-    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
-        @Override
-        public void onChanged() {
-            invalidateSelf();
-        }
-    };
+    private static final float MIN_TRIM_PATH_CHANGE_DELTA = 7;
 
     private final Observable.OnChangedListener pathChangedListener = new Observable.OnChangedListener() {
         @Override
@@ -91,6 +86,8 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
     private Observable<Number> lineWidth;
     @Nullable private Observable<Number> strokeStart;
     @Nullable private Observable<Number> strokeEnd;
+    private float lastMeasuredStrokeStart = Float.MIN_VALUE;
+    private float lastMeasuredStrokeEnd = Float.MIN_VALUE;
 
     private Observable<Number> shapeAlpha;
     private Observable<Number> transformAlpha;
@@ -307,9 +304,18 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void onTrimPathChanged() {
         if (strokeStart != null && strokeEnd != null) {
+            float strokeStartVal = (float) strokeStart.getValue();
+            float strokeEndVal = (float) strokeEnd.getValue();
+            if (Math.abs(strokeStartVal - lastMeasuredStrokeStart) < MIN_TRIM_PATH_CHANGE_DELTA &&
+                    Math.abs(strokeEndVal - lastMeasuredStrokeEnd) < MIN_TRIM_PATH_CHANGE_DELTA) {
+                return;
+            }
+            lastMeasuredStrokeStart = strokeStartVal;
+            lastMeasuredStrokeEnd = strokeEndVal;
+
             float length = pathMeasure.getLength();
-            float start = length * ((Float) strokeStart.getValue()) / 100f;
-            float end = length * ((Float) strokeEnd.getValue()) / 100f;
+            float start = length * strokeStartVal / 100f;
+            float end = length * strokeEndVal / 100f;
 
             trimPath.reset();
             // Workaround to get hardware acceleration on KitKat
