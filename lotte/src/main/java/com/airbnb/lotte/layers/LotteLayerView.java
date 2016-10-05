@@ -259,7 +259,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         }
 
         LotteTransform3D scale = layer.getScale().getObservable().getValue();
-        if (scale.getScaleX() != 0f || scale.getScaleY() != 0f) {
+        if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
             canvas.scale(scale.getScaleX(), scale.getScaleY());
         }
 

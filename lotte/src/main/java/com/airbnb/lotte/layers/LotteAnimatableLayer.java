@@ -72,7 +72,7 @@ public class LotteAnimatableLayer extends Drawable {
             }
         }
         if (transform != null && transform.getValue() != null) {
-            if (transform.getValue().getScaleX() != 0f || transform.getValue().getScaleY() != 0f) {
+            if (transform.getValue().getScaleX() != 1f || transform.getValue().getScaleY() != 1f) {
                 canvas.scale(transform.getValue().getScaleX(), transform.getValue().getScaleY());
             }
         }
