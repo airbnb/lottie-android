@@ -254,15 +254,24 @@ public class LotteLayerView extends LotteAnimatableLayer {
 
     private void applyTransformForLayer(Canvas canvas, LotteLayer layer) {
         PointF position = layer.getPosition().getObservable().getValue();
-        canvas.translate(position.x, position.y);
+        if (position.x != 0 || position.y != 0) {
+            canvas.translate(position.x, position.y);
+        }
 
         LotteTransform3D scale = layer.getScale().getObservable().getValue();
-        canvas.scale(scale.getScaleX(), scale.getScaleY());
+        if (scale.getScaleX() != 0f || scale.getScaleY() != 0f) {
+            canvas.scale(scale.getScaleX(), scale.getScaleY());
+        }
 
-        canvas.rotate((float) layer.getRotation().getObservable().getValue());
+        float rotation = (float) layer.getRotation().getObservable().getValue();
+        if (rotation != 0f) {
+            canvas.rotate(rotation);
+        }
 
         PointF translation = layer.getAnchor().getObservable().getValue();
-        canvas.translate(-translation.x, -translation.y);
+        if (translation.x != 0 || translation.y != 0) {
+            canvas.translate(-translation.x, -translation.y);
+        }
     }
 
     @Override

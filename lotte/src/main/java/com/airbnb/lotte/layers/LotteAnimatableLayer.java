@@ -67,18 +67,27 @@ public class LotteAnimatableLayer extends Drawable {
     public void draw(@NonNull Canvas canvas) {
         canvas.save();
         if (position != null && position.getValue() != null) {
-            canvas.translate(position.getValue().x, position.getValue().y);
+            if (position.getValue().x != 0 || position.getValue().y != 0) {
+                canvas.translate(position.getValue().x, position.getValue().y);
+            }
         }
         if (transform != null && transform.getValue() != null) {
-            canvas.scale(transform.getValue().getScaleX(), transform.getValue().getScaleY());
+            if (transform.getValue().getScaleX() != 0f || transform.getValue().getScaleY() != 0f) {
+                canvas.scale(transform.getValue().getScaleX(), transform.getValue().getScaleY());
+            }
         }
 
         if (sublayerTransform != null && sublayerTransform.getValue() != null) {
-            canvas.rotate((float) sublayerTransform.getValue());
+            float rotation = (float) sublayerTransform.getValue();
+            if (rotation != 0f) {
+                canvas.rotate(rotation);
+            }
         }
 
         if (anchorPoint != null && anchorPoint.getValue() != null) {
-            canvas.translate(-anchorPoint.getValue().x, -anchorPoint.getValue().y);
+            if (anchorPoint.getValue().x != 0 || anchorPoint.getValue().y != 0) {
+                canvas.translate(-anchorPoint.getValue().x, -anchorPoint.getValue().y);
+            }
         }
 
         if (solidBackgroundPaint.getAlpha() != 0) {
