@@ -66,10 +66,13 @@ public abstract class LotteKeyframeAnimation<T> {
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         if (progress < getStartDelayProgress()) {
             progress = 0f;
-        } else if (progress > getDurationEndProgress()){
+        } else if (progress > getDurationEndProgress()) {
             progress = 1f;
         } else {
             progress = (progress - getStartDelayProgress()) / getDurationRangeProgress();
+        }
+        if (progress == this.progress) {
+            return;
         }
         this.progress = progress;
 
