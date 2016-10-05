@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.FloatRange;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
@@ -32,7 +33,8 @@ public class LotteAnimationView extends ImageView {
     private final LongSparseArray<LotteLayerView> layerMap = new LongSparseArray<>();
     private final RootLotteAnimatableLayer rootAnimatableLayer = new RootLotteAnimatableLayer(this);
 
-    private LotteComposition composition;
+    /** Can be null because it is created async */
+    @Nullable private LotteComposition composition;
     private boolean hasInvalidatedThisFrame;
     @Nullable private Bitmap mainBitmap;
     @Nullable private Bitmap maskBitmap;
@@ -80,12 +82,12 @@ public class LotteAnimationView extends ImageView {
     }
 
     @Override
-    protected boolean verifyDrawable(Drawable drawable) {
+    protected boolean verifyDrawable(@NonNull Drawable drawable) {
         return true;
     }
 
     @Override
-    public void invalidateDrawable(Drawable dr) {
+    public void invalidateDrawable(@NonNull Drawable dr) {
         if (!hasInvalidatedThisFrame) {
             super.invalidateDrawable(rootAnimatableLayer);
             hasInvalidatedThisFrame = true;
@@ -191,7 +193,7 @@ public class LotteAnimationView extends ImageView {
         setComposition(composition);
     }
 
-    public void setComposition(LotteComposition composition) {
+    public void setComposition(@NonNull LotteComposition composition) {
         this.composition = composition;
         rootAnimatableLayer.setCompDuration(composition.getDuration());
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
@@ -201,6 +203,7 @@ public class LotteAnimationView extends ImageView {
     }
 
     private void buildSubviewsForComposition() {
+        //noinspection ConstantConditions
         List<LotteLayer> reversedLayers = composition.getLayers();
         Collections.reverse(reversedLayers);
 
@@ -278,10 +281,10 @@ public class LotteAnimationView extends ImageView {
     }
 
     public int getFrameRate() {
-        return composition.getFrameRate();
+        return composition != null ? composition.getFrameRate() : 60;
     }
 
     public long getDuration() {
-        return composition.getDuration();
+        return composition != null ? composition.getDuration() : 0;
     }
 }
