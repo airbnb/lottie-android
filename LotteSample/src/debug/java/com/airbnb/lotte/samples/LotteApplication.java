@@ -11,19 +11,9 @@ public class LotteApplication extends Application {
     @Override
     public void onCreate() {
         TinyDancer.create()
-                .show(this);
-
-        //alternatively
-        TinyDancer.create()
-                .redFlagPercentage(.1f) // set red indicator for 10%
-                .startingGravity(Gravity.TOP)
-                .startingXPosition(200)
-                .startingYPosition(600)
-                .show(this);
-
-        //you can add a callback to get frame times and the calculated
-        //number of dropped frames within that window
-        TinyDancer.create()
+                .startingGravity(Gravity.TOP|Gravity.END)
+                .startingXPosition(50)
+                .startingYPosition(50)
                 .addFrameDataCallback(new FrameDataCallback() {
                     @Override
                     public void doFrame(long previousFrameNS, long currentFrameNS, int droppedFrames) {
