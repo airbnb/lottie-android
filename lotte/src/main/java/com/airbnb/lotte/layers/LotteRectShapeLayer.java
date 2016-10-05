@@ -197,7 +197,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setShapeAlpha(Observable<Number> alpha) {
             if (this.shapeAlpha != null) {
-                this.shapeAlpha.removeChangeListemer(alphaChangedListener);
+                this.shapeAlpha.removeChangeListener(alphaChangedListener);
             }
             this.shapeAlpha = alpha;
             alpha.addChangeListener(alphaChangedListener);
@@ -206,7 +206,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setTransformAlpha(Observable<Number> alpha) {
             if (this.transformAlpha != null) {
-                this.transformAlpha.removeChangeListemer(alphaChangedListener);
+                this.transformAlpha.removeChangeListener(alphaChangedListener);
             }
             transformAlpha = alpha;
             alpha.addChangeListener(alphaChangedListener);
@@ -231,7 +231,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setColor(Observable<Integer> color) {
             if (this.color != null) {
-                this.color.removeChangeListemer(colorChangedListener);
+                this.color.removeChangeListener(colorChangedListener);
             }
             this.color = color;
             color.addChangeListener(colorChangedListener);
@@ -249,7 +249,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setLineWidth(Observable<Number> lineWidth) {
             if (this.lineWidth != null) {
-                this.lineWidth.removeChangeListemer(lineWidthChangedListener);
+                this.lineWidth.removeChangeListener(lineWidthChangedListener);
             }
             this.lineWidth = lineWidth;
             lineWidth.addChangeListener(lineWidthChangedListener);
@@ -263,11 +263,11 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
             if (this.lineDashPattern != null) {
-                this.lineDashPattern.get(0).getObservable().removeChangeListemer(dashPatternChangedListener);
-                this.lineDashPattern.get(1).getObservable().removeChangeListemer(dashPatternChangedListener);
+                this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
+                this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
             }
             if (this.lineDashPatternOffset != null) {
-                this.lineDashPatternOffset.getObservable().removeChangeListemer(dashPatternChangedListener);
+                this.lineDashPatternOffset.getObservable().removeChangeListener(dashPatternChangedListener);
             }
             if (lineDashPattern.isEmpty()) {
                 return;
@@ -318,7 +318,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setRectCornerRadius(Observable<Number> rectCornerRadius) {
             if (this.rectCornerRadius != null) {
-                this.rectCornerRadius.removeChangeListemer(changedListener);
+                this.rectCornerRadius.removeChangeListener(changedListener);
             }
             this.rectCornerRadius = rectCornerRadius;
             rectCornerRadius.addChangeListener(changedListener);
@@ -327,7 +327,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setRectPosition(Observable<PointF> rectPosition) {
             if (this.rectPosition != null) {
-                this.rectPosition.removeChangeListemer(changedListener);
+                this.rectPosition.removeChangeListener(changedListener);
             }
             this.rectPosition = rectPosition;
             rectPosition.addChangeListener(changedListener);
@@ -336,7 +336,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         public void setRectSize(Observable<PointF> rectSize) {
             if (this.rectSize != null) {
-                this.rectSize.removeChangeListemer(changedListener);
+                this.rectSize.removeChangeListener(changedListener);
             }
             this.rectSize = rectSize;
             this.rectSize.addChangeListener(changedListener);

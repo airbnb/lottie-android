@@ -121,7 +121,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void setAnchorPoint(Observable<PointF> anchorPoint) {
         if (this.anchorPoint != null) {
-            this.anchorPoint.removeChangeListemer(changedListener);
+            this.anchorPoint.removeChangeListener(changedListener);
         }
         this.anchorPoint = anchorPoint;
         anchorPoint.addChangeListener(changedListener);
@@ -129,7 +129,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void setPosition(Observable<PointF> position) {
         if (this.position != null) {
-            this.position.removeChangeListemer(changedListener);
+            this.position.removeChangeListener(changedListener);
         }
         this.position = position;
         position.addChangeListener(changedListener);
@@ -137,7 +137,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void setTransform(Observable<LotteTransform3D> transform) {
         if (this.transform != null) {
-            this.transform.removeChangeListemer(changedListener);
+            this.transform.removeChangeListener(changedListener);
         }
         this.transform = transform;
         transform.addChangeListener(changedListener);
@@ -145,7 +145,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     public void setSublayerTransform(Observable<Number> sublayerTransform) {
         if (this.sublayerTransform != null) {
-            this.sublayerTransform.removeChangeListemer(changedListener);
+            this.sublayerTransform.removeChangeListener(changedListener);
         }
         this.sublayerTransform = sublayerTransform;
         sublayerTransform.addChangeListener(changedListener);

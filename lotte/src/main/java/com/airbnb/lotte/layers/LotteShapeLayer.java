@@ -102,7 +102,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     public void setColor(Observable<Integer> color) {
         if (this.color != null) {
-            this.color.removeChangeListemer(colorChangedListener);
+            this.color.removeChangeListener(colorChangedListener);
         }
         this.color = color;
         color.addChangeListener(colorChangedListener);
@@ -120,7 +120,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     public void setPath(Observable<Path> path) {
         if (this.path != null) {
-            this.path.removeChangeListemer(pathChangedListener);
+            this.path.removeChangeListener(pathChangedListener);
         }
 
         this.path = path;
@@ -171,7 +171,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setShapeAlpha(Observable<Number> shapeAlpha) {
         if (this.shapeAlpha != null) {
-            this.shapeAlpha.removeChangeListemer(alphaChangedListener);
+            this.shapeAlpha.removeChangeListener(alphaChangedListener);
         }
         this.shapeAlpha = shapeAlpha;
         shapeAlpha.addChangeListener(alphaChangedListener);
@@ -180,7 +180,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setTransformAlpha(Observable<Number> transformAlpha) {
         if (this.transformAlpha != null) {
-            this.transformAlpha.removeChangeListemer(alphaChangedListener);
+            this.transformAlpha.removeChangeListener(alphaChangedListener);
         }
         this.transformAlpha = transformAlpha;
         transformAlpha.addChangeListener(alphaChangedListener);
@@ -211,7 +211,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setLineWidth(Observable<Number> lineWidth) {
         if (this.lineWidth != null) {
-            this.lineWidth.removeChangeListemer(lineWidthChangedListener);
+            this.lineWidth.removeChangeListener(lineWidthChangedListener);
         }
         this.lineWidth = lineWidth;
         lineWidth.addChangeListener(lineWidthChangedListener);
@@ -226,11 +226,11 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
         if (this.lineDashPattern != null) {
-            this.lineDashPattern.get(0).getObservable().removeChangeListemer(dashPatternChangedListener);
-            this.lineDashPattern.get(1).getObservable().removeChangeListemer(dashPatternChangedListener);
+            this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
+            this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
         }
         if (this.lineDashPatternOffset != null) {
-            this.lineDashPatternOffset.getObservable().removeChangeListemer(dashPatternChangedListener);
+            this.lineDashPatternOffset.getObservable().removeChangeListener(dashPatternChangedListener);
         }
         if (lineDashPattern.isEmpty()) {
             return;
@@ -285,10 +285,10 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
         if (this.strokeStart != null) {
-            this.strokeStart.removeChangeListemer(trimPathChangedListener);
+            this.strokeStart.removeChangeListener(trimPathChangedListener);
         }
         if (this.strokeEnd != null) {
-            this.strokeEnd.removeChangeListemer(trimPathChangedListener);
+            this.strokeEnd.removeChangeListener(trimPathChangedListener);
         }
         this.strokeStart = strokeStart;
         this.strokeEnd = strokeEnd;
@@ -320,7 +320,7 @@ public class LotteShapeLayer extends LotteAnimatableLayer {
 
     void setScale(@SuppressWarnings("NullableProblems") Observable<LotteTransform3D> scale) {
         if (this.scale != null) {
-            this.scale.removeChangeListemer(pathChangedListener);
+            this.scale.removeChangeListener(pathChangedListener);
         }
         this.scale = scale;
         scale.addChangeListener(pathChangedListener);

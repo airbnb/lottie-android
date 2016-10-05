@@ -150,10 +150,10 @@ class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         void updateCircle(Observable<PointF> circlePosition, Observable<PointF> circleSize) {
             if (this.circleSize != null) {
-                this.circleSize.removeChangeListemer(circleSizeChangedListener);
+                this.circleSize.removeChangeListener(circleSizeChangedListener);
             }
             if (this.circlePosition != null)
-                this.circlePosition.removeChangeListemer(circlePositionListener);
+                this.circlePosition.removeChangeListener(circlePositionListener);
             this.circleSize = circleSize;
             this.circlePosition = circlePosition;
             circleSize.addChangeListener(circleSizeChangedListener);
