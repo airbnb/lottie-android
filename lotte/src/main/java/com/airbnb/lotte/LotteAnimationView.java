@@ -231,11 +231,19 @@ public class LotteAnimationView extends ImageView {
         rootAnimatableLayer.play();
     }
 
-    public void pause() {
-        rootAnimatableLayer.pause();
+    public void cancelAnimation() {
+        rootAnimatableLayer.cancelAnimation();
     }
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         rootAnimatableLayer.setProgress(progress);
+    }
+
+    public int getFrameRate() {
+        return composition.getFrameRate();
+    }
+
+    public long getDuration() {
+        return composition.getDuration();
     }
 }

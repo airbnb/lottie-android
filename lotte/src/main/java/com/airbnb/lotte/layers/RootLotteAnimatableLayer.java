@@ -41,8 +41,8 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
         animator.start();
     }
 
-    public void pause() {
-        animator.start();
+    public void cancelAnimation() {
+        animator.cancel();
     }
 
     public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
