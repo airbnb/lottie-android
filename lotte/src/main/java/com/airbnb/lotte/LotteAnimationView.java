@@ -34,6 +34,12 @@ public class LotteAnimationView extends ImageView {
 
     private LotteComposition composition;
     private boolean hasInvalidatedThisFrame;
+    @Nullable private Bitmap mainBitmap;
+    @Nullable private Bitmap maskBitmap;
+    @Nullable private Bitmap matteBitmap;
+    @Nullable private Bitmap mainBitmapForMatte;
+    @Nullable private Bitmap maskBitmapForMatte;
+    @Nullable private Bitmap matteBitmapForMatte;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -86,6 +92,30 @@ public class LotteAnimationView extends ImageView {
     protected void onDraw(Canvas canvas) {
         hasInvalidatedThisFrame = false;
         super.onDraw(canvas);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (mainBitmap != null) {
+            mainBitmap.recycle();
+        }
+        if (maskBitmap != null) {
+            maskBitmap.recycle();
+        }
+        if (matteBitmap != null) {
+            matteBitmap.recycle();
+        }
+        if (mainBitmapForMatte != null) {
+            mainBitmapForMatte.recycle();
+        }
+        if (maskBitmapForMatte != null) {
+            maskBitmapForMatte.recycle();
+        }
+        if (matteBitmapForMatte != null) {
+            matteBitmapForMatte.recycle();
+        }
+
+        super.onDetachedFromWindow();
     }
 
     public void setAnimation(String animationName) {
@@ -171,13 +201,13 @@ public class LotteAnimationView extends ImageView {
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();
-        Bitmap mainBitmap = (composition.hasMasks() || composition.hasMattes()) ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
-        Bitmap maskBitmap = composition.hasMasks() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8) : null;
-        Bitmap matteBitmap = composition.hasMattes() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
+        mainBitmap = (composition.hasMasks() || composition.hasMattes()) ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
+        maskBitmap = composition.hasMasks() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8) : null;
+        matteBitmap = composition.hasMattes() ? Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888) : null;
 
-        Bitmap mainBitmapForMatte = null;
-        Bitmap maskBitmapForMatte = null;
-        Bitmap matteBitmapForMatte = null;
+        mainBitmapForMatte = null;
+        maskBitmapForMatte = null;
+        matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
         for (int i = 0; i < reversedLayers.size(); i++) {
             LotteLayer layer = reversedLayers.get(i);
