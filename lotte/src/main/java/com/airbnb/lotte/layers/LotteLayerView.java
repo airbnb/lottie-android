@@ -205,7 +205,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
         if (matteBitmap != null) {
             matteBitmap.eraseColor(Color.TRANSPARENT);
         }
-        if (!isVisible()) {
+        if (!isVisible() || mainCanvasPaint.getAlpha() == 0) {
             return;
         }
         if (contentCanvas == null || contentBitmap == null) {
