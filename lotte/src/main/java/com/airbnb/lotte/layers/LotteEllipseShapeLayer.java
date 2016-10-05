@@ -37,7 +37,7 @@ class LotteEllipseShapeLayer extends LotteAnimatableLayer {
         this.transformModel = transform;
 
         setBounds(transform.getCompBounds());
-        anchorPoint = transform.getAnchor().getObservable();
+        setAnchorPoint(transform.getAnchor().getObservable());
         setAlpha(transform.getOpacity().getObservable());
         setPosition(transform.getPosition().getObservable());
         setTransform(transform.getScale().getObservable());

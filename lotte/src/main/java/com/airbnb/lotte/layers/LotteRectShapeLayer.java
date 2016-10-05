@@ -45,11 +45,11 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         paint.setAntiAlias(true);
         setBounds(transform.getCompBounds());
-        anchorPoint = transform.getAnchor().getObservable();
+        setAnchorPoint(transform.getAnchor().getObservable());
         setAlpha(transform.getOpacity().getObservable());
         setPosition(transform.getPosition().getObservable());
         setTransform(transform.getScale().getObservable());
-        sublayerTransform = transform.getRotation().getObservable();
+        setSublayerTransform(transform.getRotation().getObservable());
 
         if (fill != null) {
             fillLayer = new LotteRoundRectLayer(duration, getCallback());

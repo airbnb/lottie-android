@@ -44,11 +44,11 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             LotteShapeStroke previousStroke, LotteShapeTrimPath previousTrimPath) {
         if (shapeTransform != null) {
             setBounds(shapeTransform.getCompBounds());
-            anchorPoint = shapeTransform.getAnchor().getObservable();
+            setAnchorPoint(shapeTransform.getAnchor().getObservable());
             setPosition(shapeTransform.getPosition().getObservable());
             setAlpha(shapeTransform.getOpacity().getObservable());
             setTransform(shapeTransform.getScale().getObservable());
-            sublayerTransform = shapeTransform.getRotation().getObservable();
+            setSublayerTransform(shapeTransform.getRotation().getObservable());
         }
 
         List<Object> reversedItems = shapeGroup.getItems();

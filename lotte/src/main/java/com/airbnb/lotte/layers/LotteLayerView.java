@@ -80,8 +80,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     private void setupForModel(Drawable.Callback callback) {
-        anchorPoint = new Observable<>();
+        Observable<PointF> anchorPoint = new Observable<>();
         anchorPoint.setValue(new PointF());
+        setAnchorPoint(anchorPoint);
 
         childContainerLayer = new LotteAnimatableLayer(composition.getDuration(), getCallback());
         childContainerLayer.setCallback(callback);
@@ -104,9 +105,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
         addLayer(currentChild);
 
         childContainerLayer.setPosition(layerModel.getPosition().getObservable());
-        childContainerLayer.anchorPoint = layerModel.getAnchor().getObservable();
+        childContainerLayer.setAnchorPoint(layerModel.getAnchor().getObservable());
         childContainerLayer.setTransform(layerModel.getScale().getObservable());
-        childContainerLayer.sublayerTransform = layerModel.getRotation().getObservable();
+        childContainerLayer.setSublayerTransform(layerModel.getRotation().getObservable());
         layerModel.getOpacity().getObservable().addChangeListener(new Observable.OnChangedListener() {
             @Override
             public void onChanged() {

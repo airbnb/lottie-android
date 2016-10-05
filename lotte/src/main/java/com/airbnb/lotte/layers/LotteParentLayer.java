@@ -26,9 +26,9 @@ public class LotteParentLayer extends LotteAnimatableLayer {
 
     private void setupLayerFromModel() {
         setPosition(parentModel.getPosition().getObservable());
-        anchorPoint = parentModel.getAnchor().getObservable();
+        setAnchorPoint(parentModel.getAnchor().getObservable());
         setTransform(parentModel.getScale().getObservable());
-        sublayerTransform = parentModel.getRotation().getObservable();
+        setSublayerTransform(parentModel.getRotation().getObservable());
         buildAnimations();
     }
 

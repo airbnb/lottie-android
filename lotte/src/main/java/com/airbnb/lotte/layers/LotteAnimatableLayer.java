@@ -34,12 +34,12 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#position */
     private Observable<PointF> position;
     /** This should mimic CALayer#anchorPoint */
-    protected Observable<PointF> anchorPoint;
+    private Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
     private Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
     private Observable<Number> alpha;
-    protected Observable<Number> sublayerTransform;
+    private Observable<Number> sublayerTransform;
     protected long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
@@ -117,6 +117,14 @@ public class LotteAnimatableLayer extends Drawable {
     @Override
     public void setColorFilter(ColorFilter colorFilter) {
 
+    }
+
+    public void setAnchorPoint(Observable<PointF> anchorPoint) {
+        if (this.anchorPoint != null) {
+            this.anchorPoint.removeChangeListemer(changedListener);
+        }
+        this.anchorPoint = anchorPoint;
+        anchorPoint.addChangeListener(changedListener);
     }
 
     public void setPosition(Observable<PointF> position) {
