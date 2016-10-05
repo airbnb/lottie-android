@@ -41,7 +41,6 @@ public class LotteAnimationView extends ImageView {
     @Nullable private Bitmap matteBitmap;
     @Nullable private Bitmap mainBitmapForMatte;
     @Nullable private Bitmap maskBitmapForMatte;
-    @Nullable private Bitmap matteBitmapForMatte;
 
     public LotteAnimationView(Context context) {
         super(context);
@@ -116,9 +115,6 @@ public class LotteAnimationView extends ImageView {
         }
         if (maskBitmapForMatte != null) {
             maskBitmapForMatte.recycle();
-        }
-        if (matteBitmapForMatte != null) {
-            matteBitmapForMatte.recycle();
         }
 
         super.onDetachedFromWindow();
@@ -214,7 +210,6 @@ public class LotteAnimationView extends ImageView {
 
         mainBitmapForMatte = null;
         maskBitmapForMatte = null;
-        matteBitmapForMatte = null;
         LotteLayerView maskedLayer = null;
         for (int i = 0; i < reversedLayers.size(); i++) {
             LotteLayer layer = reversedLayers.get(i);
@@ -224,11 +219,12 @@ public class LotteAnimationView extends ImageView {
             } else {
                 if (mainBitmapForMatte == null) {
                     mainBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-                    // TODO: only create matte mask and matte if necessary.
-                    maskBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-                    matteBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
                 }
-                layerView = new LotteLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, matteBitmapForMatte);
+                if (maskBitmapForMatte == null && !layer.getMasks().isEmpty()) {
+                    maskBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
+                }
+
+                layerView = new LotteLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, null);
             }
             layerMap.put(layerView.getId(), layerView);
             if (maskedLayer != null) {
