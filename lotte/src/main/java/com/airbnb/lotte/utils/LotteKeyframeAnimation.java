@@ -32,6 +32,7 @@ public abstract class LotteKeyframeAnimation<T> {
     private int cachedKeyframeIndex = -1;
     private float cachedKeyframeIndexStart;
     private float cachedKeyframeIndexEnd;
+    private float cachedDurationEndProgress = Float.MIN_VALUE;
 
     public LotteKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes) {
         this.property = property;
@@ -42,6 +43,7 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public LotteKeyframeAnimation setStartDelay(long startDelay) {
         this.startDelay = startDelay;
+        cachedDurationEndProgress = Float.MIN_VALUE;
         return this;
     }
 
@@ -106,7 +108,11 @@ public abstract class LotteKeyframeAnimation<T> {
 
     @FloatRange(from=0f, to=1f)
     private float getDurationEndProgress() {
-        return getStartDelayProgress() + getDurationRangeProgress();
+        if (cachedDurationEndProgress == Float.MIN_VALUE) {
+            // This was taking a surprisingly long time according to systrace. Cache it!
+            cachedDurationEndProgress = getStartDelayProgress() + getDurationRangeProgress();
+        }
+        return cachedDurationEndProgress;
     }
 
     @FloatRange(from=0f, to=1f)
