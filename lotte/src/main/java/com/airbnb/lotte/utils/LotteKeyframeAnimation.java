@@ -29,6 +29,10 @@ public abstract class LotteKeyframeAnimation<T> {
 
     private float progress;
 
+    private int cachedKeyframeIndex = -1;
+    private float cachedKeyframeIndexStart;
+    private float cachedKeyframeIndexEnd;
+
     public LotteKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes) {
         this.property = property;
         this.duration = duration;
@@ -74,11 +78,19 @@ public abstract class LotteKeyframeAnimation<T> {
 
     int getKeyframeIndex() {
         int keyframeIndex = 1;
-        float keyTime = keyTimes.get(1);
-        while (keyTime < progress && keyframeIndex < keyTimes.size() - 1) {
-            keyframeIndex++;
-            keyTime = keyTimes.get(keyframeIndex);
+        if (cachedKeyframeIndex != -1 && progress >= cachedKeyframeIndexStart && progress <= cachedKeyframeIndexEnd) {
+            keyframeIndex = cachedKeyframeIndex;
+        } else {
+            float keyTime = keyTimes.get(1);
+            while (keyTime < progress && keyframeIndex < keyTimes.size() - 1) {
+                keyframeIndex++;
+                keyTime = keyTimes.get(keyframeIndex);
+            }
+            cachedKeyframeIndex = keyframeIndex;
+            cachedKeyframeIndexStart = keyTimes.get(cachedKeyframeIndex - 1);
+            cachedKeyframeIndexEnd = keyTimes.get(cachedKeyframeIndex);
         }
+
         return keyframeIndex - 1;
     }
 
