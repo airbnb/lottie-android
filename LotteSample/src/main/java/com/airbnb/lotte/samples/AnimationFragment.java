@@ -1,6 +1,7 @@
 package com.airbnb.lotte.samples;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -20,6 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+
+import static com.airbnb.lotte.samples.R.id.play;
 
 public class AnimationFragment extends Fragment {
     private static final String ARG_FILE_NAME = "file_name";
@@ -34,6 +38,7 @@ public class AnimationFragment extends Fragment {
 
     @BindView(R.id.animation_view) LotteAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
+    @BindView(play) Button playButton;
     @BindView(R.id.loop_button) ToggleButton loopButton;
     @BindView(R.id.frames_per_second) TextView fpsView;
     @BindView(R.id.dropped_frames) TextView droppedFramesView;
@@ -67,6 +72,12 @@ public class AnimationFragment extends Fragment {
                 startRecordingDroppedFrames();
             }
         });
+        animationView.addAnimatorUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                seekBar.setProgress((int) (animation.getAnimatedFraction() * 100));
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -90,14 +101,23 @@ public class AnimationFragment extends Fragment {
         super.onStop();
     }
 
-    @OnClick(R.id.play)
+    @OnClick(play)
     public void onPlayClicked() {
-        animationView.play();
+        if (animationView.isAnimating()) {
+            animationView.cancelAnimation();
+            playButton.setText("Play");
+        } else {
+            animationView.playAnimation();
+            playButton.setText("Cancel");
+        }
     }
 
     @OnCheckedChanged(R.id.loop_button)
     public void onLoopChanged(boolean loop) {
         animationView.loop(loop);
+        if (!loop) {
+            animationView.cancelAnimation();
+        }
     }
 
     private void startRecordingDroppedFrames() {

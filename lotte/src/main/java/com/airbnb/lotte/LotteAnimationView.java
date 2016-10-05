@@ -257,7 +257,11 @@ public class LotteAnimationView extends ImageView {
         rootAnimatableLayer.loop(loop);
     }
 
-    public void play() {
+    public boolean isAnimating() {
+        return rootAnimatableLayer.isAnimating();
+    }
+
+    public void playAnimation() {
         rootAnimatableLayer.play();
     }
 

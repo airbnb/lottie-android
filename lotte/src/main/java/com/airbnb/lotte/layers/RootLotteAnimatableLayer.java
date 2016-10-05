@@ -37,6 +37,10 @@ public class RootLotteAnimatableLayer extends LotteAnimatableLayer {
         animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
     }
 
+    public boolean isAnimating() {
+        return animator.isRunning();
+    }
+
     public void play() {
         animator.start();
     }
