@@ -50,6 +50,8 @@ public class AnimationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_animation, container, false);
         ButterKnife.bind(this, view);
 
+        updatePlayButtonText();
+        loopButton.setChecked(true);
         String fileName = getArguments().getString(ARG_FILE_NAME);
         animationView.setAnimation(fileName);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
@@ -105,11 +107,15 @@ public class AnimationFragment extends Fragment {
     public void onPlayClicked() {
         if (animationView.isAnimating()) {
             animationView.cancelAnimation();
-            playButton.setText("Play");
+            updatePlayButtonText();
         } else {
             animationView.playAnimation();
-            playButton.setText("Cancel");
+            updatePlayButtonText();
         }
+    }
+
+    private void updatePlayButtonText() {
+        playButton.setText(animationView.isAnimating() ? "Cancel" : "Play");
     }
 
     @OnCheckedChanged(R.id.loop_button)

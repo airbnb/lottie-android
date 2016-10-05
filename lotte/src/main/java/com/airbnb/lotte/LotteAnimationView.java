@@ -58,10 +58,14 @@ public class LotteAnimationView extends ImageView {
 
     private void init(@Nullable AttributeSet attrs) {
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LotteAnimationView);
-        String fileName = ta.getString(R.styleable.LotteAnimationView_fileName);
+        String fileName = ta.getString(R.styleable.LotteAnimationView_lotte_fileName);
         if (fileName != null) {
             setAnimation(fileName);
         }
+        if (ta.getBoolean(R.styleable.LotteAnimationView_lotte_autoPlay, false)) {
+            rootAnimatableLayer.play();
+        }
+        rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LotteAnimationView_lotte_loop, false));
         ta.recycle();
         setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
