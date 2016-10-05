@@ -107,7 +107,7 @@ public class AnimationFragment extends Fragment {
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void recordDroppedFrames() {
         Pair<Integer, Long> droppedFrames = getApplication().stopRecordingDroppedFrames();
-        int targetFrames = (int) ((droppedFrames.second / 1000000000f) * animationView.getFrameRate());
+        int targetFrames = (int) ((droppedFrames.second / 1000000000f) * 60);
         int actualFrames = targetFrames - droppedFrames.first;
         fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
         droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
