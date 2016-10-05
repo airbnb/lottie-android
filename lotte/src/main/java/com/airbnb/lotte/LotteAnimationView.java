@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -58,7 +57,6 @@ public class LotteAnimationView extends ImageView {
         }
         ta.recycle();
         setLayerType(LAYER_TYPE_SOFTWARE, null);
-        setImageDrawable(rootAnimatableLayer);
     }
 
     @Override
@@ -164,6 +162,7 @@ public class LotteAnimationView extends ImageView {
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
         buildSubviewsForComposition();
         requestLayout();
+        setImageDrawable(rootAnimatableLayer);
     }
 
     private void buildSubviewsForComposition() {
