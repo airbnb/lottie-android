@@ -264,7 +264,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
             canvas.scale(scale.getScaleX(), scale.getScaleY());
         }
 
-        float rotation = (float) layer.getRotation().getObservable().getValue();
+        float rotation = layer.getRotation().getObservable().getValue();
         if (rotation != 0f) {
             canvas.rotate(rotation);
         }

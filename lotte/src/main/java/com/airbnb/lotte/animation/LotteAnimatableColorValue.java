@@ -17,7 +17,8 @@ public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer>
     }
 
     @Override
-    protected Integer valueFromArray(JSONArray colorArray) throws JSONException {
+    protected Integer valueFromObject(Object object) throws JSONException {
+        JSONArray colorArray = (JSONArray) object;
         if (colorArray.length() == 4) {
             boolean shouldUse255 = true;
             for (int i = 0; i < colorArray.length(); i++) {
@@ -43,7 +44,7 @@ public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer>
         if (!hasAnimation()) {
             return null;
         }
-        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, compDuration, keyTimes, keyFrames);
+        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, compDuration, keyTimes, keyValues);
         animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {

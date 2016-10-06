@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.airbnb.lotte.L;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
@@ -105,14 +106,8 @@ public class LotteLayer {
                 rotation = ks.getJSONObject("r");
             } catch (JSONException e) { }
             if (rotation != null) {
-                layer.rotation = new LotteAnimatableNumberValue(rotation, layer.frameRate, composition.getDuration());
+                layer.rotation = new LotteAnimatableFloatValue(rotation, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
-//                layer.rotation.remapWith(new RemapInterface() {
-//                    @Override
-//                    public float remap(float inValue) {
-//                        return (float) Math.toRadians(inValue);
-//                    }
-//                });
             }
 
             JSONObject position = null;
@@ -235,7 +230,7 @@ public class LotteLayer {
     private int solidColor;
 
     private LotteAnimatableNumberValue opacity;
-    private LotteAnimatableNumberValue rotation;
+    private LotteAnimatableFloatValue rotation;
     private LotteAnimatablePointValue position;
 
     private LotteAnimatablePointValue anchor;
@@ -328,7 +323,7 @@ public class LotteLayer {
         return position;
     }
 
-    public LotteAnimatableNumberValue getRotation() {
+    public LotteAnimatableFloatValue getRotation() {
         return rotation;
     }
 

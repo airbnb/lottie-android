@@ -39,7 +39,7 @@ public class LotteAnimatableLayer extends Drawable {
     private Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
     private Observable<Number> alpha;
-    private Observable<Number> sublayerTransform;
+    private Observable<Float> sublayerTransform;
     protected long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
@@ -78,7 +78,7 @@ public class LotteAnimatableLayer extends Drawable {
         }
 
         if (sublayerTransform != null && sublayerTransform.getValue() != null) {
-            float rotation = (float) sublayerTransform.getValue();
+            float rotation = sublayerTransform.getValue();
             if (rotation != 0f) {
                 canvas.rotate(rotation);
             }
@@ -143,7 +143,7 @@ public class LotteAnimatableLayer extends Drawable {
         transform.addChangeListener(changedListener);
     }
 
-    public void setSublayerTransform(Observable<Number> sublayerTransform) {
+    public void setSublayerTransform(Observable<Float> sublayerTransform) {
         if (this.sublayerTransform != null) {
             this.sublayerTransform.removeChangeListener(changedListener);
         }

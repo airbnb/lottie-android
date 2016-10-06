@@ -20,40 +20,36 @@ import java.util.List;
 public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValue<T> {
 
     protected final Observable<T> observable = new Observable<>();
-    protected final List<T> keyFrames = new ArrayList<>();
+    final List<T> keyValues = new ArrayList<>();
     protected final List<Float> keyTimes = new ArrayList<>();
-    protected final List<Interpolator> timingFunctions = new ArrayList<>();
-    protected long delay;
+    final List<Interpolator> timingFunctions = new ArrayList<>();
+    long delay;
     protected long duration;
 
-    protected long startFrame;
-    protected long durationFrames;
+    private long startFrame;
+    private long durationFrames;
     protected int frameRate;
     protected final long compDuration;
 
-    protected T initialValue;
+    T initialValue;
 
-    public BaseLotteAnimatableValue(JSONObject json, int frameRate, long compDuration) {
+    BaseLotteAnimatableValue(JSONObject json, int frameRate, long compDuration) {
         this.frameRate = frameRate;
         this.compDuration = compDuration;
 
         try {
             Object value = json.get("k");
 
-            if (value instanceof JSONArray) {
-                Object firstObject = ((JSONArray) value).get(0);
-                if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t")) {
-                    // Keyframes
-                    buildAnimationForKeyframes((JSONArray) value);
-                } else {
-                    initialValue = valueFromArray((JSONArray) value);
-                    observable.setValue(initialValue);
-                }
+            if (value instanceof JSONArray &&
+                    ((JSONArray) value).get(0) instanceof JSONObject &&
+                    ((JSONArray) value).getJSONObject(0).has("t")) {
+                buildAnimationForKeyframes((JSONArray) value);
             } else {
-                throw new IllegalStateException("Invalid color values.");
+                initialValue = valueFromObject(value);
+                observable.setValue(initialValue);
             }
         } catch (JSONException e) {
-            throw new IllegalStateException("Unable to parse color " + json, e);
+            throw new IllegalStateException("Unable to parse json " + json, e);
         }
     }
 
@@ -83,28 +79,28 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
 
             boolean addStartValue = true;
             boolean addTimePadding =  false;
-            T outColor = null;
+            T outValue = null;
 
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
                 long frame = keyframe.getLong("t");
                 float timePercentage = (float) (frame - startFrame) / (float) durationFrames;
 
-                if (outColor != null) {
-                    keyFrames.add(outColor);
+                if (outValue != null) {
+                    keyValues.add(outValue);
                     timingFunctions.add(new LinearInterpolator());
-                    outColor = null;
+                    outValue = null;
                 }
 
-                T startColor = keyframe.has("s") ? valueFromArray(keyframe.getJSONArray("s")) : null;
+                T startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s")) : null;
                 if (addStartValue) {
-                    if (startColor != null) {
+                    if (startValue != null) {
                         if (i == 0) {
                             //noinspection ResourceAsColor
-                            initialValue = startColor;
+                            initialValue = startValue;
                             observable.setValue(initialValue);
                         }
-                        keyFrames.add(startColor);
+                        keyValues.add(startValue);
                         if (!timingFunctions.isEmpty()) {
                             timingFunctions.add(new LinearInterpolator());
                         }
@@ -119,8 +115,8 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                 }
 
                 if (keyframe.has("e")) {
-                    T endColor = valueFromArray(keyframe.getJSONArray("e"));
-                    keyFrames.add(endColor);
+                    T endValue = valueFromObject(keyframe.getJSONArray("e"));
+                    keyValues.add(endValue);
                     /**
                      * Timing function for time interpolation between keyframes.
                      * Should be n - 1 where n is the number of keyframes.
@@ -142,7 +138,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                 keyTimes.add(timePercentage);
 
                 if (keyframe.has("h") && keyframe.getBoolean("h")) {
-                    outColor = startColor;
+                    outValue = startValue;
                     addStartValue = true;
                     addTimePadding = true;
                 }
@@ -153,7 +149,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
     }
 
     public boolean hasAnimation() {
-        return !keyFrames.isEmpty();
+        return !keyValues.isEmpty();
     }
 
     public T getInitialValue() {
@@ -164,7 +160,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
         return observable;
     }
 
-    protected abstract T valueFromArray(JSONArray array) throws JSONException;
+    protected abstract T valueFromObject(Object array) throws JSONException;
 
     public abstract LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property);
 }
