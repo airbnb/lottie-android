@@ -19,6 +19,7 @@ public class SegmentedPath {
         Path path = new Path();
         path.moveTo(currentPoint.x, currentPoint.y);
         path.lineTo(x, y);
+        // TODO: figure out why this isn't needed/figure out why it breaks with it enabled
 //        segments.add(path);
         currentPoint.set(x, y);
     }
@@ -27,6 +28,7 @@ public class SegmentedPath {
         Path path = new Path();
         path.moveTo(currentPoint.x, currentPoint.y);
         path.cubicTo(x1, y1, x2, y2, x3, y3);
+        // TODO: figure out why this isn't needed/figure out why it breaks with it enabled
 //        segments.add(path);
         currentPoint.set(x3, y3);
     }
