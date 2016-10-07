@@ -104,7 +104,7 @@ public class LotteShapeTransform {
         return "LotteShapeTransform{" + "anchor=" + anchor.getInitialPoint() +
                 ", compBounds=" + compBounds +
                 ", position=" + position.getInitialPoint() +
-                ", scale=" + scale.getInitialScale() +
+                ", scale=" + scale.toString() +
                 ", rotation=" + rotation.getInitialValue() +
                 ", opacity=" + opacity.getInitialValue() +
                 '}';

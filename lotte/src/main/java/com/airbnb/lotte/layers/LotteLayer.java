@@ -141,7 +141,7 @@ public class LotteLayer {
             }
             if (scale != null) {
                 layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate, composition.getDuration());
-                if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.getInitialScale());
+                if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.toString());
             }
 
             try {

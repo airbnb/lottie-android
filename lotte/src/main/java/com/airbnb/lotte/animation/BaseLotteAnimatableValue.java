@@ -160,7 +160,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
         return observable;
     }
 
-    protected abstract T valueFromObject(Object array) throws JSONException;
+    protected abstract T valueFromObject(Object object) throws JSONException;
 
     public abstract LotteKeyframeAnimation animationForKeyPath();
 }
