@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LotteShapeStroke {
-    private static final String TAG = LotteShapeStroke.class.getSimpleName();
 
     public enum LineCapType {
         Butt,
@@ -28,7 +27,6 @@ public class LotteShapeStroke {
     private LotteAnimatableNumberValue offset;
     private final List<LotteAnimatableNumberValue> lineDashPattern = new ArrayList<>();
 
-    private boolean fillEnabled;
     private LotteAnimatableColorValue color;
     private LotteAnimatableNumberValue opacity;
     private LotteAnimatableNumberValue width;
@@ -49,8 +47,6 @@ public class LotteShapeStroke {
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
             joinType = LineJoinType.values()[json.getInt("lj") - 1];
-
-            fillEnabled = json.getBoolean("fillEnabled");
 
             if (json.has("d")) {
                 JSONArray dashesJson = json.getJSONArray("d");

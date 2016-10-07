@@ -1,5 +1,5 @@
 package com.airbnb.lotte;
 
 public class L {
-    public static boolean DBG = false;
+    public static final boolean DBG = false;
 }

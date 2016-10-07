@@ -6,12 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LotteShapeCircle {
-    private static final String TAG = LotteShapeCircle.class.getSimpleName();
-
     private LotteAnimatablePointValue position;
     private LotteAnimatablePointValue size;
 
-    public LotteShapeCircle(JSONObject json, int frameRate, long compDuration) {
+    LotteShapeCircle(JSONObject json, int frameRate, long compDuration) {
         try {
             position = new LotteAnimatablePointValue(json.getJSONObject("p"), frameRate, compDuration);
             position.setUsePathAnimation(false);

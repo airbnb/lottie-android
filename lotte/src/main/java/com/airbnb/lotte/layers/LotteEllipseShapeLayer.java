@@ -56,7 +56,7 @@ class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
         if (stroke != null) {
             strokeLayer = new LotteCircleShapeLayer(getCallback());
-            strokeLayer.setStyle(Paint.Style.STROKE);
+            strokeLayer.setIsStroke();
             strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setAlpha(stroke.getOpacity().getObservable());
             strokeLayer.setLineWidth(stroke.getWidth().getObservable());

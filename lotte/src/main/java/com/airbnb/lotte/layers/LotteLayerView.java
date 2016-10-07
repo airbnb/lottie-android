@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 public class LotteLayerView extends LotteAnimatableLayer {
 
     /** CALayer#mask */
@@ -56,9 +55,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
     private final LotteComposition composition;
 
     private long parentId = -1;
-    private LotteAnimationGroup animation;
     private LotteAnimatableLayer childContainerLayer;
-    private Observable<Number> opacity;
 
 
     public LotteLayerView(LotteLayer layerModel, LotteComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
@@ -181,10 +178,6 @@ public class LotteLayerView extends LotteAnimatableLayer {
         } else {
             setVisible(true, false);
         }
-    }
-
-    public void setMask(LotteMaskLayer mask) {
-        this.mask = mask;
     }
 
     public void setMatte(LotteLayerView matte) {

@@ -17,7 +17,7 @@ public class LotteShapeData {
         this.initialPoint = initialPoint;
     }
 
-    public void setInitialPoint(float x, float y) {
+    private void setInitialPoint(float x, float y) {
         if (initialPoint == null) {
             initialPoint = new PointF();
         }

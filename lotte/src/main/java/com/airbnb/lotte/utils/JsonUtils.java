@@ -19,14 +19,14 @@ public class JsonUtils {
             if (x instanceof Float) {
                 point.x = (float) x;
             } else if (x instanceof JSONArray) {
-                point.x = new Float(((JSONArray) x).getDouble(0));
+                point.x = (float) ((JSONArray) x).getDouble(0);
             }
 
             Object y = values.get("y");
             if (y instanceof Float) {
                 point.y = (float) y;
             } else if (y instanceof JSONArray) {
-                point.y = new Float(((JSONArray) y).getDouble(0));
+                point.y = (float) ((JSONArray) y).getDouble(0);
             }
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse point " + values, e);

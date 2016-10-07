@@ -18,22 +18,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"EmptyCatchBlock", "unused"})
+@SuppressWarnings({"EmptyCatchBlock"})
 public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTransform3D> {
-    private static final String TAG = LotteAnimatableScaleValue.class.getSimpleName();
 
     private final Observable<LotteTransform3D> observable = new Observable<>();
     private LotteTransform3D initialScale;
     private final List<LotteTransform3D> scaleKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
+    private final int frameRate;
+    private final long compDuration;
 
     private long delay;
     private long duration;
-    private int startFrame;
-    private int durationFrames;
-    private int frameRate;
-    private final long compDuration;
 
 
     public LotteAnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration) {
@@ -48,7 +45,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
                     buildAnimationForKeyframes((JSONArray) value);
                 } else {
                     // Single value, no animation.
-                    initialScale = xformForValueArray((JSONArray) value);
+                    initialScale = transformForValueArray((JSONArray) value);
                     observable.setValue(initialScale);
                 }
 
@@ -62,14 +59,14 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
     private void buildAnimationForKeyframes(JSONArray keyframes) {
         try {
-            startFrame = keyframes.getJSONObject(0).getInt("t");
+            int startFrame = keyframes.getJSONObject(0).getInt("t");
             int endFrame = keyframes.getJSONObject(keyframes.length() - 1).getInt("t");
 
             if (endFrame <= startFrame) {
                 throw new IllegalArgumentException("End frame must be after start frame " + endFrame + " vs " + startFrame);
             }
 
-            durationFrames = endFrame - startFrame;
+            int durationFrames = endFrame - startFrame;
 
             duration = (long) (durationFrames / (float) frameRate * 1000);
             delay = (long) (startFrame / (float) frameRate * 1000);
@@ -92,7 +89,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
                 LotteTransform3D startValue = null;
                 if (addStartValue) {
                     if (keyframe.has("s")) {
-                        startValue = xformForValueArray(keyframe.getJSONArray("s"));
+                        startValue = transformForValueArray(keyframe.getJSONArray("s"));
                         if (i == 0) {
                             initialScale = startValue;
                             observable.setValue(initialScale);
@@ -112,7 +109,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
                 }
 
                 if (keyframe.has("e")) {
-                    LotteTransform3D endValue = xformForValueArray(keyframe.getJSONArray("e"));
+                    LotteTransform3D endValue = transformForValueArray(keyframe.getJSONArray("e"));
                     scaleKeyframes.add(endValue);
 
                     Interpolator interpolator;
@@ -140,7 +137,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
         }
     }
 
-    private LotteTransform3D xformForValueArray(JSONArray value) {
+    private LotteTransform3D transformForValueArray(JSONArray value) {
         try {
             if (value.length() >= 2) {
                 return new LotteTransform3D().scale((float) value.getDouble(0) / 100f, (float) value.getDouble(1) / 100f);
@@ -157,12 +154,12 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
-        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(duration, compDuration, keyTimes, scaleKeyframes, interpolators);
+        LotteTransformKeyframeAnimation animation = new LotteTransformKeyframeAnimation(duration, compDuration, keyTimes, scaleKeyframes, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<LotteTransform3D>() {
             @Override
-            public void onValueChanged(Object progress) {
-                observable.setValue((LotteTransform3D) progress);
+            public void onValueChanged(LotteTransform3D progress) {
+                observable.setValue(progress);
             }
         });
         return animation;
@@ -180,9 +177,6 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteAnimatableScaleValue{");
-        sb.append("initialScale=").append(initialScale);
-        sb.append('}');
-        return sb.toString();
+        return "LotteAnimatableScaleValue{" + "initialScale=" + initialScale + '}';
     }
 }

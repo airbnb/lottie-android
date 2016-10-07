@@ -49,17 +49,11 @@ public class LotteShapeFill {
         return opacity;
     }
 
-    public boolean isFillEnabled() {
-        return fillEnabled;
-    }
-
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteShapeFill{");
-        sb.append("color=").append(Integer.toHexString(color.getInitialValue()));
-        sb.append(", fillEnabled=").append(fillEnabled);
-        sb.append(", opacity=").append(opacity.getInitialValue());
-        sb.append('}');
-        return sb.toString();
+        return "LotteShapeFill{" + "color=" + Integer.toHexString(color.getInitialValue()) +
+                ", fillEnabled=" + fillEnabled +
+                ", opacity=" + opacity.getInitialValue() +
+                '}';
     }
 }

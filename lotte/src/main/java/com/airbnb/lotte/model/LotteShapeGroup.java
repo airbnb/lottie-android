@@ -10,9 +10,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"EmptyCatchBlock", "FieldCanBeLocal"})
+@SuppressWarnings({"EmptyCatchBlock"})
 public class LotteShapeGroup {
-    private static final String TAG = LotteShapeGroup.class.getSimpleName();
 
     @Nullable
     public static Object shapeItemWithJson(JSONObject json, int framerate, long compDuration, Rect compBounds) {
@@ -48,7 +47,7 @@ public class LotteShapeGroup {
     private String name;
     private final List<Object> items = new ArrayList<>();
 
-    public LotteShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    private LotteShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -86,9 +85,6 @@ public class LotteShapeGroup {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteShapeGroup{");
-        sb.append("name='").append(name).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "LotteShapeGroup{" + "name='" + name + '\'' + '}';
     }
 }

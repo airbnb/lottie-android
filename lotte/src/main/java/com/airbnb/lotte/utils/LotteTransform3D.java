@@ -11,9 +11,8 @@ public class LotteTransform3D {
         return this;
     }
 
-    public LotteTransform3D rotateZ(float rz) {
+    public void rotateZ(float rz) {
         rotationZ = rz;
-        return this;
     }
 
     public float getRotationZ() {
@@ -30,10 +29,7 @@ public class LotteTransform3D {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteTransform3D{");
-        sb.append("scale=").append(getScaleX()).append("x").append(getScaleY());
-        sb.append('}');
-        return sb.toString();
+        return "LotteTransform3D{" + "scale=" + getScaleX() + "x" + getScaleY() + '}';
 
     }
 }

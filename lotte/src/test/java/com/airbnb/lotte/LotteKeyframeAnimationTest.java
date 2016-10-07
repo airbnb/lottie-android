@@ -1,6 +1,8 @@
 package com.airbnb.lotte;
 
 
+import android.view.animation.Interpolator;
+
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,12 +20,12 @@ import static junit.framework.Assert.assertEquals;
 @Config(manifest = Config.NONE)
 public class LotteKeyframeAnimationTest {
   @Test
-  public void simpleAnimation() throws Exception {
+  public void simpleAnimation() {
 
     List<Float> keyTimes = Arrays.asList(0f, 0.5f, 1f);
     List<Float> values = Arrays.asList(0f, 1f, 10f);
 
-    LotteNumberKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(1000, 1000, keyTimes, Float.class, values);
+    LotteNumberKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(1000, 1000, keyTimes, Float.class, values, new ArrayList<Interpolator>(0));
 
     animation.setProgress(0f);
     assertEquals(animation.getValue(), 0f);

@@ -18,13 +18,10 @@ import com.airbnb.lotte.utils.Observable;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class LotteAnimatableLayer extends Drawable {
-    private static final String TAG = LotteAnimatableLayer.class.getSimpleName();
 
-    protected final List<LotteAnimatableLayer> layers = new ArrayList<>();
-
-    protected final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+    private final List<LotteAnimatableLayer> layers = new ArrayList<>();
+    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
             invalidateSelf();
@@ -40,12 +37,12 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#sublayerTransform */
     private Observable<Number> alpha;
     private Observable<Float> sublayerTransform;
-    protected long compDuration;
+    final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
-    protected final List<LotteAnimationGroup> animations = new ArrayList<>();
+    private final List<LotteAnimationGroup> animations = new ArrayList<>();
 
-    public LotteAnimatableLayer(long compDuration, Drawable.Callback callback) {
+    LotteAnimatableLayer(long compDuration, Drawable.Callback callback) {
         setCallback(callback);
         this.compDuration = compDuration;
 
@@ -53,13 +50,13 @@ public class LotteAnimatableLayer extends Drawable {
         solidBackgroundPaint.setStyle(Paint.Style.FILL);
     }
 
-    public void setBackgroundColor(@ColorInt int color) {
+    void setBackgroundColor(@ColorInt int color) {
         solidBackgroundPaint.setColor(color);
         solidBackgroundPaint.setAlpha(Color.alpha(color));
         invalidateSelf();
     }
 
-    public void addAnimation(LotteAnimationGroup animation) {
+    void addAnimation(LotteAnimationGroup animation) {
         animations.add(animation);
     }
 
@@ -104,7 +101,7 @@ public class LotteAnimatableLayer extends Drawable {
         throw new IllegalArgumentException("This shouldn't be used.");
     }
 
-    public void setAlpha(Observable<Number> alpha) {
+    void setAlpha(Observable<Number> alpha) {
         this.alpha = alpha;
         invalidateSelf();
     }
@@ -119,7 +116,7 @@ public class LotteAnimatableLayer extends Drawable {
 
     }
 
-    public void setAnchorPoint(Observable<PointF> anchorPoint) {
+    void setAnchorPoint(Observable<PointF> anchorPoint) {
         if (this.anchorPoint != null) {
             this.anchorPoint.removeChangeListener(changedListener);
         }
@@ -127,7 +124,7 @@ public class LotteAnimatableLayer extends Drawable {
         anchorPoint.addChangeListener(changedListener);
     }
 
-    public void setPosition(Observable<PointF> position) {
+    void setPosition(Observable<PointF> position) {
         if (this.position != null) {
             this.position.removeChangeListener(changedListener);
         }
@@ -135,7 +132,7 @@ public class LotteAnimatableLayer extends Drawable {
         position.addChangeListener(changedListener);
     }
 
-    public void setTransform(Observable<LotteTransform3D> transform) {
+    void setTransform(Observable<LotteTransform3D> transform) {
         if (this.transform != null) {
             this.transform.removeChangeListener(changedListener);
         }
@@ -143,7 +140,7 @@ public class LotteAnimatableLayer extends Drawable {
         transform.addChangeListener(changedListener);
     }
 
-    public void setSublayerTransform(Observable<Float> sublayerTransform) {
+    void setSublayerTransform(Observable<Float> sublayerTransform) {
         if (this.sublayerTransform != null) {
             this.sublayerTransform.removeChangeListener(changedListener);
         }

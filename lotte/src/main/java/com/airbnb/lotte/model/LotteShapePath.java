@@ -35,7 +35,7 @@ public class LotteShapePath {
             throw new IllegalArgumentException("ShapePath index " + index + " has no value for 'closed'.", e);
         }
 
-        JSONObject shape = null;
+        JSONObject shape;
         try {
             shape = json.getJSONObject("ks");
             shapePath = new LotteAnimatableShapeValue(shape, frameRate, compDuration, closed);
@@ -52,12 +52,10 @@ public class LotteShapePath {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteShapePath{");
-        sb.append("name=").append(name);
-        sb.append(", closed=").append(closed);
-        sb.append(", index=").append(index);
-        sb.append(", hasAnimation=").append(shapePath.hasAnimation());
-        sb.append('}');
-        return sb.toString();
+        return "LotteShapePath{" + "name=" + name +
+                ", closed=" + closed +
+                ", index=" + index +
+                ", hasAnimation=" + shapePath.hasAnimation() +
+                '}';
     }
 }

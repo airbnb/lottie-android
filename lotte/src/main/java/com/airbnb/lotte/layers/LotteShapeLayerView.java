@@ -1,6 +1,5 @@
 package com.airbnb.lotte.layers;
 
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
@@ -57,7 +56,7 @@ class LotteShapeLayerView extends LotteAnimatableLayer {
 
         if (stroke != null) {
             strokeLayer = new LotteShapeLayer(getCallback());
-            strokeLayer.setStyle(Paint.Style.STROKE);
+            strokeLayer.setIsStroke();
             strokeLayer.setPath(path.getShapePath().getObservable());
             strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
@@ -124,25 +123,5 @@ class LotteShapeLayerView extends LotteAnimatableLayer {
         if (strokeLayer != null) {
             strokeLayer.setAlpha(alpha);
         }
-    }
-
-    public LotteShapeFill getFill() {
-        return fill;
-    }
-
-    public LotteShapePath getShape() {
-        return path;
-    }
-
-    public LotteShapeStroke getStroke() {
-        return stroke;
-    }
-
-    public LotteShapeTransform getTransform() {
-        return transformModel;
-    }
-
-    public LotteShapeTrimPath getTrim() {
-        return trim;
     }
 }

@@ -6,8 +6,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LotteShapeTrimPath {
-    private static final String TAG = LotteShapeTrimPath.class.getSimpleName();
-
     private LotteAnimatableNumberValue start;
     private LotteAnimatableNumberValue end;
     private LotteAnimatableNumberValue offset;

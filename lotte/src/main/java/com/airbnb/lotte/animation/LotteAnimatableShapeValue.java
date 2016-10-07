@@ -25,7 +25,6 @@ import static com.airbnb.lotte.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock", "unused", "FieldCanBeLocal", "WeakerAccess"})
 public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
-    private static final String TAG = LotteAnimatableShapeValue.class.getSimpleName();
 
     private final Observable<Path> observable = new Observable<>();
 
@@ -35,9 +34,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     private final List<Interpolator> interpolators = new ArrayList<>();
     private long delay;
     private long duration;
-    private int startFrame;
-    private long durationFrames;
-    private int frameRate;
+    private final int frameRate;
     private final long compDuration;
 
     public LotteAnimatableShapeValue(JSONObject shapeValues, int frameRate, long compDuration, boolean closed) {
@@ -64,14 +61,14 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
     private void buildAnimationForKeyFrames(JSONArray keyframes, boolean closed) {
         try {
-            startFrame = keyframes.getJSONObject(0).getInt("t");
+            int startFrame = keyframes.getJSONObject(0).getInt("t");
             int endFrame = keyframes.getJSONObject(keyframes.length() - 1).getInt("t");
 
             if (endFrame <= startFrame) {
                 throw new IllegalArgumentException("End frame must be after start frame " + endFrame + " vs " + startFrame);
             }
 
-            durationFrames = endFrame - startFrame;
+            long durationFrames = endFrame - startFrame;
 
             duration = (long) (durationFrames / (float) frameRate * 1000);
             delay = (long) (startFrame / (float) frameRate * 1000);
@@ -225,6 +222,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
         LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(duration, compDuration, keyTimes, shapeKeyframes, interpolators);
+//        animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Path>() {
             @Override
             public void onValueChanged(Path progress) {
@@ -246,9 +244,6 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteAnimatableShapeValue{");
-        sb.append("initialShape=").append(initialShape);
-        sb.append('}');
-        return sb.toString();
+        return "LotteAnimatableShapeValue{" + "initialShape=" + initialShape + '}';
     }
 }

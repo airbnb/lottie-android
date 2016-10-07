@@ -101,14 +101,12 @@ public class LotteShapeTransform {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteShapeTransform{");
-        sb.append("anchor=").append(anchor.getInitialPoint());
-        sb.append(", compBounds=").append(compBounds);
-        sb.append(", position=").append(position.getInitialPoint());
-        sb.append(", scale=").append(scale.getInitialScale());
-        sb.append(", rotation=").append(rotation.getInitialValue());
-        sb.append(", opacity=").append(opacity.getInitialValue());
-        sb.append('}');
-        return sb.toString();
+        return "LotteShapeTransform{" + "anchor=" + anchor.getInitialPoint() +
+                ", compBounds=" + compBounds +
+                ", position=" + position.getInitialPoint() +
+                ", scale=" + scale.getInitialScale() +
+                ", rotation=" + rotation.getInitialValue() +
+                ", opacity=" + opacity.getInitialValue() +
+                '}';
     }
 }

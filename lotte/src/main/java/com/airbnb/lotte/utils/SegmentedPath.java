@@ -19,6 +19,7 @@ public class SegmentedPath {
         Path path = new Path();
         path.moveTo(currentPoint.x, currentPoint.y);
         path.lineTo(x, y);
+//        segments.add(path);
         currentPoint.set(x, y);
     }
 
@@ -26,14 +27,19 @@ public class SegmentedPath {
         Path path = new Path();
         path.moveTo(currentPoint.x, currentPoint.y);
         path.cubicTo(x1, y1, x2, y2, x3, y3);
+//        segments.add(path);
         currentPoint.set(x3, y3);
     }
 
-    public Path getSegment(int index) {
+    Path getSegment(int index) {
         return segments.get(index);
     }
 
-    public boolean isEmpty() {
-        return segments.isEmpty();
+    int getSegmentCount() {
+        return segments.size();
+    }
+
+    public boolean hasSegments() {
+        return !segments.isEmpty();
     }
 }

@@ -14,7 +14,7 @@ import java.util.Set;
 class LotteParentLayer extends LotteAnimatableLayer {
     private static final String TAG = LotteParentLayer.class.getSimpleName();
 
-    private LotteLayer parentModel;
+    private final LotteLayer parentModel;
 
     LotteParentLayer(LotteLayer parent, LotteComposition composition, Drawable.Callback callback) {
         super(composition.getDuration(), callback);
