@@ -19,13 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
-    private static final String TAG = LotteAnimatablePointValue.class.getSimpleName();
 
     private final Observable<PointF> observable = new Observable<>();
     private final List<PointF> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
     private final long compDuration;
+    private final int frameRate;
 
     private boolean usePathAnimation = true;
     private PointF initialPoint;
@@ -34,7 +34,6 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     private long duration;
     private long startFrame;
     private long durationFrames;
-    private int frameRate;
 
     @SuppressWarnings("EmptyCatchBlock")
     public LotteAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
@@ -238,7 +237,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
         }
 
         LotteKeyframeAnimation<PointF> animation;
-        if (!animationPath.isEmpty() && usePathAnimation) {
+        if (animationPath.hasSegments() && usePathAnimation) {
             animation = new LottePathKeyframeAnimation(duration, compDuration, keyTimes, animationPath, interpolators);
         } else {
             animation = new LottePointKeyframeAnimation(duration, compDuration, keyTimes, pointKeyframes, interpolators);
@@ -255,7 +254,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
     @Override
     public boolean hasAnimation() {
-        return !animationPath.isEmpty() || !pointKeyframes.isEmpty();
+        return animationPath.hasSegments() || !pointKeyframes.isEmpty();
     }
 
     @Override

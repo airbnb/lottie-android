@@ -81,16 +81,8 @@ public class LotteComposition {
         return bounds;
     }
 
-    public void setBounds(Rect bounds) {
-        this.bounds = bounds;
-    }
-
     public long getDuration() {
         return duration;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
     }
 
     public long getEndFrame() {
@@ -99,14 +91,6 @@ public class LotteComposition {
 
     public int getFrameRate() {
         return frameRate;
-    }
-
-    public void setFrameRate(int frameRate) {
-        this.frameRate = frameRate;
-    }
-
-    public LongSparseArray<LotteLayer> getLayerMap() {
-        return layerMap;
     }
 
     public List<LotteLayer> getLayers() {

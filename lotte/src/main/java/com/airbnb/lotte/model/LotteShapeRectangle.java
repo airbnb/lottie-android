@@ -56,11 +56,9 @@ public class LotteShapeRectangle {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteShapeRectangle{");
-        sb.append("cornerRadius=").append(cornerRadius.getInitialValue());
-        sb.append(", position=").append(position.getInitialPoint());
-        sb.append(", size=").append(size.getInitialPoint());
-        sb.append('}');
-        return sb.toString();
+        return "LotteShapeRectangle{" + "cornerRadius=" + cornerRadius.getInitialValue() +
+                ", position=" + position.getInitialPoint() +
+                ", size=" + size.getInitialPoint() +
+                '}';
     }
 }

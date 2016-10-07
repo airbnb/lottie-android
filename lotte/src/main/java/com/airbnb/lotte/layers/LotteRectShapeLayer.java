@@ -60,7 +60,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         if (stroke != null) {
             strokeLayer = new LotteRoundRectLayer(duration, getCallback());
-            strokeLayer.setStyle(Paint.Style.STROKE);
+            strokeLayer.setIsStroke();
             strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
             strokeLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
@@ -124,11 +124,6 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
         if (strokeLayer != null) {
             strokeLayer.setAlpha(alpha);
         }
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        super.draw(canvas);
     }
 
     private static class LotteRoundRectLayer extends LotteAnimatableLayer {
@@ -236,8 +231,9 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setStyle(Paint.Style style) {
-            paint.setStyle(style);
+        public void setIsStroke() {
+            paint.setStyle(Paint.Style.STROKE);
+            invalidateSelf();
         }
 
         void setLineWidth(Observable<Number> lineWidth) {

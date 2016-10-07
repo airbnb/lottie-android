@@ -1,8 +1,6 @@
 package com.airbnb.lotte.utils;
 
-import android.graphics.Path;
 import android.support.annotation.FloatRange;
-import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import java.util.ArrayList;
@@ -16,22 +14,21 @@ public abstract class LotteKeyframeAnimation<T> {
 
     private final List<AnimationListener<T>> listeners = new ArrayList<>();
     private final long compDuration;
-    protected final List<Float> keyTimes;
-    protected final long duration;
-    @Nullable protected Path path;
+    private final long duration;
+    final List<Float> keyTimes;
 
     private long startDelay;
     boolean isDiscrete = false;
-    protected final List<Interpolator> interpolators;
+    final List<Interpolator> interpolators;
 
-    protected float progress;
+    float progress;
 
     private int cachedKeyframeIndex = -1;
     private float cachedKeyframeIndexStart;
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    public LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
+    LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
         this.duration = duration;
         this.compDuration = compDuration;
         this.keyTimes = keyTimes;
@@ -41,10 +38,9 @@ public abstract class LotteKeyframeAnimation<T> {
         }
     }
 
-    public LotteKeyframeAnimation setStartDelay(long startDelay) {
+    public void setStartDelay(long startDelay) {
         this.startDelay = startDelay;
         cachedDurationEndProgress = Float.MIN_VALUE;
-        return this;
     }
 
     public void setIsDiscrete() {
@@ -91,13 +87,8 @@ public abstract class LotteKeyframeAnimation<T> {
         return keyframeIndex - 1;
     }
 
-
-    public long getDuration() {
-        return duration;
-    }
-
     @FloatRange(from=0f, to=1f)
-    protected float getStartDelayProgress() {
+    private float getStartDelayProgress() {
         return (float) startDelay / (float) (compDuration);
     }
 
@@ -115,5 +106,5 @@ public abstract class LotteKeyframeAnimation<T> {
         return (float) duration / (float) compDuration;
     }
 
-    public abstract T getValue();
+    protected abstract T getValue();
 }

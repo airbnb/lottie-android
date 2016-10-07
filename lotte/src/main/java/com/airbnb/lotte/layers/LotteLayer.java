@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings({"UnusedAssignment", "unused", "EmptyCatchBlock"})
+@SuppressWarnings({"EmptyCatchBlock"})
 public class LotteLayer {
     private static final String TAG = LotteLayer.class.getSimpleName();
 
@@ -231,7 +231,7 @@ public class LotteLayer {
     private Rect compBounds;
     private int frameRate;
 
-    private List<LotteMask> masks = new ArrayList<>();
+    private final List<LotteMask> masks = new ArrayList<>();
 
     private int solidWidth;
     private int solidHeight;
@@ -265,24 +265,12 @@ public class LotteLayer {
         return compDuration;
     }
 
-    public long getFrameRate() {
-        return frameRate;
-    }
-
     boolean hasInAnimation() {
         return hasInAnimation;
     }
 
     boolean hasInOutAnimation() {
         return hasInOutAnimation;
-    }
-
-    public boolean hasOutAnimation() {
-        return hasOutAnimation;
-    }
-
-    public long getInFrame() {
-        return inFrame;
     }
 
     @Nullable
@@ -303,10 +291,6 @@ public class LotteLayer {
         return layerName;
     }
 
-    public LotteLayerType getLayerType() {
-        return layerType;
-    }
-
     public List<LotteMask> getMasks() {
         return masks;
     }
@@ -317,10 +301,6 @@ public class LotteLayer {
 
     public LotteAnimatableNumberValue getOpacity() {
         return opacity;
-    }
-
-    public long getOutFrame() {
-        return outFrame;
     }
 
     long getParentId() {
@@ -357,7 +337,7 @@ public class LotteLayer {
 
     @Override
     public String toString() {
-        String sb = "LotteLayer{" + "layerName='" + layerName +
+        return "LotteLayer{" + "layerName='" + layerName +
                 ", anchor=" + anchor +
                 ", shapes=" + shapes +
                 ", layerId=" + layerId +
@@ -383,6 +363,5 @@ public class LotteLayer {
                 ", compDuration=" + compDuration +
                 ", matteType=" + matteType +
                 '}';
-        return sb;
     }
 }

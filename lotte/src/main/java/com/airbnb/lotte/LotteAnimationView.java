@@ -168,7 +168,7 @@ public class LotteAnimationView extends ImageView {
         }
     }
 
-    public void setJson(JSONObject json) {
+    private void setJson(JSONObject json) {
         // TODO: cancel these if the iew gets detached.
         new AsyncTask<JSONObject, Void, LotteComposition>() {
 
@@ -189,7 +189,7 @@ public class LotteAnimationView extends ImageView {
         setComposition(composition);
     }
 
-    public void setComposition(@NonNull LotteComposition composition) {
+    private void setComposition(@NonNull LotteComposition composition) {
         this.composition = composition;
         rootAnimatableLayer.setCompDuration(composition.getDuration());
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
@@ -277,10 +277,6 @@ public class LotteAnimationView extends ImageView {
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         rootAnimatableLayer.setProgress(progress);
-    }
-
-    public int getFrameRate() {
-        return composition != null ? composition.getFrameRate() : 60;
     }
 
     public long getDuration() {

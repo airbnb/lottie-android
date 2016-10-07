@@ -19,17 +19,17 @@ import java.util.List;
 
 public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValue<T> {
 
-    protected final Observable<T> observable = new Observable<>();
+    final Observable<T> observable = new Observable<>();
     final List<T> keyValues = new ArrayList<>();
-    protected final List<Float> keyTimes = new ArrayList<>();
+    final List<Float> keyTimes = new ArrayList<>();
     final List<Interpolator> interpolators = new ArrayList<>();
     long delay;
-    protected long duration;
+    long duration;
+    final long compDuration;
 
     private long startFrame;
     private long durationFrames;
-    protected int frameRate;
-    protected final long compDuration;
+    private final int frameRate;
 
     T initialValue;
 

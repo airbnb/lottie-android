@@ -1,7 +1,5 @@
 package com.airbnb.lotte.utils;
 
-import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,6 @@ public class Observable<T> {
 
     private final List<OnChangedListener> listeners = new ArrayList<>(1);
     private T value;
-    @Nullable private T lastValue;
 
     public Observable() {
     }
@@ -35,9 +32,6 @@ public class Observable<T> {
     }
 
     public void setValue(T value) {
-        if (lastValue != null && lastValue.equals(value)) {
-            return;
-        }
         this.value = value;
         for (int i = 0; i < listeners.size(); i++) {
             listeners.get(i).onChanged();

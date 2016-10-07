@@ -68,12 +68,12 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path trimPath = new Path();
-    private PathMeasure pathMeasure = new PathMeasure();
+    private final PathMeasure pathMeasure = new PathMeasure();
 
     @Nullable private Observable<LotteTransform3D> scale;
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
-    private Path scaledPath = new Path();
+    private final Path scaledPath = new Path();
 
     private Observable<Path> path;
     private Observable<Integer> color;
@@ -92,8 +92,8 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         paint.setAntiAlias(true);
     }
 
-    public void setStyle(Paint.Style style) {
-        paint.setStyle(style);
+    public void setIsStroke() {
+        paint.setStyle(Paint.Style.STROKE);
         invalidateSelf();
     }
 
@@ -109,10 +109,6 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     private void onColorChanged() {
         paint.setColor(color.getValue());
         invalidateSelf();
-    }
-
-    public Path getPath() {
-        return scaledPath;
     }
 
     public void setPath(Observable<Path> path) {

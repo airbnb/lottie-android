@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> {
 
     private final Observable<Number> observable = new Observable<>();
@@ -179,11 +178,6 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                 }
             }
         };
-        observable.setValue(remapInterface.remap((float) observable.getValue()));
-    }
-
-    public void remapWith(RemapInterface remapInterface) {
-        this.remapInterface = remapInterface;
         observable.setValue(remapInterface.remap((float) observable.getValue()));
     }
 
