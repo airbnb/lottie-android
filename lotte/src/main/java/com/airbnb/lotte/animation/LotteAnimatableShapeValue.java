@@ -223,8 +223,8 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property) {
-        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(property, duration, compDuration, keyTimes, shapeKeyframes);
+    public LotteKeyframeAnimation animationForKeyPath() {
+        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(duration, compDuration, keyTimes, shapeKeyframes);
         animation.setInterpolators(interpolators);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
             @Override

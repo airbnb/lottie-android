@@ -1,27 +1,24 @@
 package com.airbnb.lotte.animation;
 
 import android.support.annotation.FloatRange;
-import android.util.SparseArray;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LotteAnimationGroup {
 
     private final List<LotteKeyframeAnimation> animations;
 
-    public LotteAnimationGroup(SparseArray<LotteAnimatableValue> propertyAnimations, long compDuration) {
-        animations = new ArrayList<>(propertyAnimations.size());
+    public LotteAnimationGroup(Set<LotteAnimatableValue> animations) {
+        this.animations = new ArrayList<>(animations.size());
 
-        for (int i = 0; i < propertyAnimations.size(); i++) {
-            @AnimatableProperty int property = propertyAnimations.keyAt(i);
-            LotteAnimatableValue animatableValue = propertyAnimations.get(property);
+        for (LotteAnimatableValue animatableValue : animations) {
             if (animatableValue.hasAnimation()) {
-                LotteKeyframeAnimation animation = animatableValue.animationForKeyPath(property);
-                animations.add(animation);
+                LotteKeyframeAnimation animation = animatableValue.animationForKeyPath();
+                this.animations.add(animation);
             }
         }
     }

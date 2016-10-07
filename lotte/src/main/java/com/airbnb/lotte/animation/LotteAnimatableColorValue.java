@@ -2,7 +2,6 @@ package com.airbnb.lotte.animation;
 
 import android.graphics.Color;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteColorKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 
@@ -40,11 +39,11 @@ public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer>
 
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
+    public LotteKeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
-        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(property, duration, compDuration, keyTimes, keyValues);
+        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues);
         animation.setStartDelay(delay);
         animation.setInterpolators(timingFunctions);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {

@@ -14,9 +14,8 @@ public class LotteTest extends ActivityInstrumentationTestCase2<MainActivity> {
     @Test
     public void testHosts() {
         TestRobot.testStaticFile(getActivity(), "Hosts Still.json");
-        TestRobot.testStaticFile(getActivity(), "BusinessTravel01_Still.json");
-        TestRobot.testStaticFile(getActivity(), "BusinessTravel02_Still.json");
-        TestRobot.testStaticFile(getActivity(), "BusinessTravel03_Still.json");
+        TestRobot.testAnimatedFile(getActivity(), "BusinessTravel01.json");
+        TestRobot.testAnimatedFile(getActivity(), "BusinessTravel03.json");
         TestRobot.testAnimatedFile(getActivity(), "LightBulb.json");
         TestRobot.testAnimatedFile(getActivity(), "Diamond 2.json");
         TestRobot.testAnimatedFile(getActivity(), "CheckSwitch.json");

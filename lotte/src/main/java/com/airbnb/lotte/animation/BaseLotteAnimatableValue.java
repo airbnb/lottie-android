@@ -162,5 +162,5 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
 
     protected abstract T valueFromObject(Object array) throws JSONException;
 
-    public abstract LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property);
+    public abstract LotteKeyframeAnimation animationForKeyPath();
 }

@@ -5,8 +5,6 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +15,6 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     private final List<AnimationListener<T>> listeners = new ArrayList<>();
-    protected final @AnimatableProperty int property;
     private final long compDuration;
     protected final List<Float> keyTimes;
     protected final long duration;
@@ -27,15 +24,14 @@ public abstract class LotteKeyframeAnimation<T> {
     boolean isDiscrete = false;
     @Nullable protected List<Interpolator> interpolators;
 
-    private float progress;
+    protected float progress;
 
     private int cachedKeyframeIndex = -1;
     private float cachedKeyframeIndexStart;
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    public LotteKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes) {
-        this.property = property;
+    public LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes) {
         this.duration = duration;
         this.compDuration = compDuration;
         this.keyTimes = keyTimes;
@@ -77,7 +73,7 @@ public abstract class LotteKeyframeAnimation<T> {
         this.progress = progress;
 
         for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onValueChanged(getValueForProgress(progress));
+            listeners.get(i).onValueChanged(getValue());
         }
     }
 
@@ -123,5 +119,5 @@ public abstract class LotteKeyframeAnimation<T> {
         return (float) duration / (float) compDuration;
     }
 
-    public abstract T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress);
+    public abstract T getValue();
 }

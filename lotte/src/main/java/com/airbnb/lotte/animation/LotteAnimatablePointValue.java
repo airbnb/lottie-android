@@ -6,7 +6,6 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
@@ -251,16 +250,16 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
+    public LotteKeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
 
         LotteKeyframeAnimation animation;
         if (!animationPath.isEmpty() && usePathAnimation) {
-            animation = new LottePathKeyframeAnimation(property, duration, compDuration, keyTimes, animationPath);
+            animation = new LottePathKeyframeAnimation(duration, compDuration, keyTimes, animationPath);
         } else {
-            animation = new LottePointKeyframeAnimation(property, duration, compDuration, keyTimes, pointKeyframes);
+            animation = new LottePointKeyframeAnimation(duration, compDuration, keyTimes, pointKeyframes);
         }
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<PointF>() {
             @Override
