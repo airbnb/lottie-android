@@ -42,7 +42,6 @@ public class LotteShapeTransform {
             throw new IllegalStateException("Transform has no anchor.");
         }
         anchor = new LotteAnimatablePointValue(jsonAnchor, frameRate, compDuration);
-        anchor.remapPointsFromBounds(compBounds, new Rect(0, 0, 1, 1));
         anchor.setUsePathAnimation(false);
 
         JSONObject jsonScale = null;

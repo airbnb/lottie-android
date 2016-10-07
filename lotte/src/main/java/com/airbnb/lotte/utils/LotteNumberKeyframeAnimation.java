@@ -1,8 +1,6 @@
 package com.airbnb.lotte.utils;
 
-import android.support.annotation.FloatRange;
-
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -13,8 +11,8 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
     private final List<T> values;
     private final Class<T> klass;
 
-    public LotteNumberKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values) {
-        super(property, duration, compDuration, keyTimes);
+    public LotteNumberKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.klass = klass;
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes + " vs " + values);
@@ -23,7 +21,7 @@ public class LotteNumberKeyframeAnimation<T extends Number> extends LotteKeyfram
     }
 
     @Override
-    public T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    public T getValue() {
         if (progress <= 0f) {
             return values.get(0);
         } else if (progress >= 1f) {

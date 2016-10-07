@@ -21,10 +21,7 @@ import com.airbnb.lotte.utils.Observable;
 
 import java.util.List;
 
-/**
- * Mimics CAShapeLayer
- */
-public class LotteShapeLayer extends LotteAnimatableLayer {
+class LotteShapeLayer extends LotteAnimatableLayer {
     private final Observable.OnChangedListener pathChangedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {

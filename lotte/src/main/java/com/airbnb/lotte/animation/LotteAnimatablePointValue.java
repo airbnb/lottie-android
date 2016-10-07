@@ -1,12 +1,10 @@
 package com.airbnb.lotte.animation;
 
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePathKeyframeAnimation;
 import com.airbnb.lotte.utils.LottePointKeyframeAnimation;
@@ -38,6 +36,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     private long durationFrames;
     private int frameRate;
 
+    @SuppressWarnings("EmptyCatchBlock")
     public LotteAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
         this.compDuration = compDuration;
         usePathAnimation = true;
@@ -141,9 +140,8 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
                     pointKeyframes.add(vertex);
                     if (cp1 != null && cp2 != null) {
-                        PointF inVertex = startPoint;
                         animationPath.cubicTo(
-                                inVertex.x + cp1.x, inVertex.y + cp1.y,
+                                startPoint.x + cp1.x, startPoint.y + cp1.y,
                                 vertex.x + cp2.x, vertex.y + cp2.y,
                                 vertex.x, vertex.y);
                     } else {
@@ -195,7 +193,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
             PointF point = new PointF();
             if (x instanceof JSONArray) {
-                point.x = new Float(((JSONArray) x).getDouble(0));
+                point.x = (float) ((JSONArray) x).getDouble(0);
             } else {
                 if (x instanceof Integer) {
                     point.x = (Integer) x;
@@ -205,7 +203,7 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
             }
 
             if (y instanceof JSONArray) {
-                point.y = new Float(((JSONArray) y).getDouble(0));
+                point.y = (float) ((JSONArray) y).getDouble(0);
             } else {
                 if (y instanceof Integer) {
                     point.y = (Integer) y;
@@ -218,23 +216,6 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse point for " + value);
         }
-    }
-
-
-    public void remapPointsFromBounds(Rect fromBounds, Rect toBounds) {
-        // TODO: this is broken. Maybe not necessary.
-//        if (pointKeyframes.isEmpty()) {
-//            initialPoint = new PointF(
-//                    MiscUtils.remapValue(initialPoint.x, fromBounds.left, fromBounds.width(), toBounds.left, toBounds.width()),
-//                    MiscUtils.remapValue(initialPoint.y, fromBounds.top, fromBounds.height(), toBounds.top, toBounds.height()));
-//        } else {
-//            for (PointF point : pointKeyframes) {
-//               point.set(
-//                        MiscUtils.remapValue(point.x, fromBounds.left, fromBounds.width(), toBounds.left, toBounds.width()),
-//                        MiscUtils.remapValue(point.y, fromBounds.top, fromBounds.height(), toBounds.top, toBounds.height()));
-//
-//            }
-//        }
     }
 
     public void setUsePathAnimation(boolean usePathAnimation) {
@@ -251,24 +232,24 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
+    public LotteKeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
 
-        LotteKeyframeAnimation animation;
+        LotteKeyframeAnimation<PointF> animation;
         if (!animationPath.isEmpty() && usePathAnimation) {
-            animation = new LottePathKeyframeAnimation(property, duration, compDuration, keyTimes, animationPath);
+            animation = new LottePathKeyframeAnimation(duration, compDuration, keyTimes, animationPath, interpolators);
         } else {
-            animation = new LottePointKeyframeAnimation(property, duration, compDuration, keyTimes, pointKeyframes);
+            animation = new LottePointKeyframeAnimation(duration, compDuration, keyTimes, pointKeyframes, interpolators);
         }
+        animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<PointF>() {
             @Override
             public void onValueChanged(PointF progress) {
                 observable.setValue(progress);
             }
         });
-        animation.setStartDelay(delay);
         return animation;
     }
 
@@ -279,9 +260,6 @@ public class LotteAnimatablePointValue implements LotteAnimatableValue<PointF> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteAnimatablePointValue{");
-        sb.append("initialPoint=").append(initialPoint);
-        sb.append('}');
-        return sb.toString();
+        return "LotteAnimatablePointValue{" + "initialPoint=" + initialPoint + '}';
     }
 }

@@ -7,7 +7,6 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.model.RemapInterface;
 import com.airbnb.lotte.utils.JsonUtils;
 import com.airbnb.lotte.utils.LotteKeyframeAnimation;
@@ -32,7 +31,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
     private final List<Float> valueKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
-    private final List<Interpolator> timingFunctions = new ArrayList<>();
+    private final List<Interpolator> interpolators = new ArrayList<>();
     private long delay;
     private long duration;
     private long startFrame;
@@ -96,7 +95,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
                 if (outValue != null) {
                     valueKeyframes.add(outValue);
-                    timingFunctions.add(new LinearInterpolator());
+                    interpolators.add(new LinearInterpolator());
                     outValue = null;
                 }
 
@@ -108,8 +107,8 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                             observable.setValue(initialValue);
                         }
                         valueKeyframes.add(startValue);
-                        if (!timingFunctions.isEmpty()) {
-                            timingFunctions.add(new LinearInterpolator());
+                        if (!interpolators.isEmpty()) {
+                            interpolators.add(new LinearInterpolator());
                         }
                     }
                     addStartValue = false;
@@ -139,7 +138,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
                     } else {
                         timingFunction = new LinearInterpolator();
                     }
-                    timingFunctions.add(timingFunction);
+                    interpolators.add(timingFunction);
                 }
 
                 keyTimes.add(timePercentage);
@@ -160,9 +159,9 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
         if (valueObject instanceof Float) {
             return (Float) valueObject;
         } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Double) {
-            return new Float(((JSONArray) valueObject).getDouble(0));
+            return (float) ((JSONArray) valueObject).getDouble(0);
         } else if (valueObject instanceof JSONArray && ((JSONArray) valueObject).get(0) instanceof Integer) {
-            return new Float(((JSONArray) valueObject).getInt(0));
+            return (float) ((JSONArray) valueObject).getInt(0);
         }
         return null;
     }
@@ -197,13 +196,13 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@AnimatableProperty int property) {
-        LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(property, duration, compDuration, keyTimes, Float.class, valueKeyframes);
+    public LotteKeyframeAnimation animationForKeyPath() {
+        LotteNumberKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, valueKeyframes, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Float>() {
             @Override
-            public void onValueChanged(Object progress) {
-                observable.setValue((Number) progress);
+            public void onValueChanged(Float progress) {
+                observable.setValue(progress);
             }
         });
         return animation;
@@ -221,9 +220,6 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteAnimatableNumberValue{");
-        sb.append("initialValue=").append(initialValue);
-        sb.append('}');
-        return sb.toString();
+        return "LotteAnimatableNumberValue{" + "initialValue=" + initialValue + '}';
     }
 }

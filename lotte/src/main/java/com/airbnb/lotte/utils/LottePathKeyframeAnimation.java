@@ -2,9 +2,7 @@ package com.airbnb.lotte.utils;
 
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
-import android.support.annotation.FloatRange;
-
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -16,13 +14,13 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
     private PathMeasure pathMeasure;
     private int pathMeasureKeyframeIndex = -1;
 
-    public LottePathKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath) {
-        super(property, duration, compDuration, keyTimes);
+    public LottePathKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.segmentedPath = segmentedPath;
     }
 
     @Override
-    public PointF getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    public PointF getValue() {
         if (progress <= 0f) {
             pathMeasure.getPosTan(0, pos, null);
             point.set(pos[0], pos[1]);

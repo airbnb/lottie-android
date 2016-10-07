@@ -28,8 +28,8 @@ public class LotteAnimatableFloatValue extends BaseLotteAnimatableValue<Float> {
     }
 
     @Override
-    public LotteKeyframeAnimation animationForKeyPath(@LotteAnimatableProperty.AnimatableProperty int property) {
-        LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(property, duration, compDuration, keyTimes, Float.class, keyValues);
+    public LotteKeyframeAnimation animationForKeyPath() {
+        LotteKeyframeAnimation<Float> animation = new LotteNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Float>() {
             @Override

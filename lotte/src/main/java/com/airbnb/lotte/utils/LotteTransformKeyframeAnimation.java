@@ -1,8 +1,6 @@
 package com.airbnb.lotte.utils;
 
-import android.support.annotation.FloatRange;
-
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -13,13 +11,13 @@ public class LotteTransformKeyframeAnimation extends LotteKeyframeAnimation<Lott
 
     private final List<LotteTransform3D> transforms;
 
-    public LotteTransformKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<LotteTransform3D> transforms) {
-        super(property, duration, compDuration, keyTimes);
+    public LotteTransformKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteTransform3D> transforms, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.transforms = transforms;
     }
 
     @Override
-    public LotteTransform3D getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    public LotteTransform3D getValue() {
         if (progress <= 0f) {
             return transforms.get(0);
         } else if (progress >= 1f) {

@@ -5,8 +5,6 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +15,6 @@ public abstract class LotteKeyframeAnimation<T> {
     }
 
     private final List<AnimationListener<T>> listeners = new ArrayList<>();
-    protected final @AnimatableProperty int property;
     private final long compDuration;
     protected final List<Float> keyTimes;
     protected final long duration;
@@ -25,20 +22,23 @@ public abstract class LotteKeyframeAnimation<T> {
 
     private long startDelay;
     boolean isDiscrete = false;
-    @Nullable protected List<Interpolator> interpolators;
+    protected final List<Interpolator> interpolators;
 
-    private float progress;
+    protected float progress;
 
     private int cachedKeyframeIndex = -1;
     private float cachedKeyframeIndexStart;
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    public LotteKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes) {
-        this.property = property;
+    public LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
         this.duration = duration;
         this.compDuration = compDuration;
         this.keyTimes = keyTimes;
+        this.interpolators = interpolators;
+        if (!interpolators.isEmpty() && interpolators.size() != (keyTimes.size() - 1)) {
+            throw new IllegalArgumentException("There must be 1 fewer interpolator than keytime " + interpolators.size() + " vs " + keyTimes.size());
+        }
     }
 
     public LotteKeyframeAnimation setStartDelay(long startDelay) {
@@ -49,14 +49,6 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public void setIsDiscrete() {
         isDiscrete = true;
-    }
-
-    public LotteKeyframeAnimation setInterpolators(@Nullable List<Interpolator> interpolators) {
-        if (interpolators != null && interpolators.size() != (keyTimes.size() - 1)) {
-            throw new IllegalArgumentException("There must be 1 fewer interpolator than keytime " + interpolators.size() + " vs " + keyTimes.size());
-        }
-        this.interpolators = interpolators;
-        return this;
     }
 
     public void addUpdateListener(AnimationListener<T> listener) {
@@ -77,7 +69,7 @@ public abstract class LotteKeyframeAnimation<T> {
         this.progress = progress;
 
         for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onValueChanged(getValueForProgress(progress));
+            listeners.get(i).onValueChanged(getValue());
         }
     }
 
@@ -123,5 +115,5 @@ public abstract class LotteKeyframeAnimation<T> {
         return (float) duration / (float) compDuration;
     }
 
-    public abstract T getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress);
+    public abstract T getValue();
 }

@@ -4,9 +4,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import android.util.SparseArray;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
@@ -15,6 +13,9 @@ import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 import com.airbnb.lotte.utils.Observable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
@@ -76,44 +77,44 @@ class LotteEllipseShapeLayer extends LotteAnimatableLayer {
 
     private void buildAnimation() {
         if (transformModel != null) {
-            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
-            propertyAnimations.put(LotteAnimatableProperty.OPACITY, transformModel.getOpacity());
-            propertyAnimations.put(LotteAnimatableProperty.POSITION, transformModel.getPosition());
-            propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, transformModel.getAnchor());
-            propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, transformModel.getScale());
-            propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, transformModel.getRotation());
-            addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
+            Set<LotteAnimatableValue> propertyAnimations = new HashSet<>();
+            propertyAnimations.add(transformModel.getOpacity());
+            propertyAnimations.add(transformModel.getPosition());
+            propertyAnimations.add(transformModel.getAnchor());
+            propertyAnimations.add(transformModel.getScale());
+            propertyAnimations.add(transformModel.getRotation());
+            addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
 
         if (stroke != null && strokeLayer != null) {
-            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
-            propertyAnimations.put(LotteAnimatableProperty.STROKE_COLOR, stroke.getColor());
-            propertyAnimations.put(LotteAnimatableProperty.OPACITY, stroke.getOpacity());
-            propertyAnimations.put(LotteAnimatableProperty.LINE_WIDTH, stroke.getWidth());
-            propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, circleShape.getSize());
-            propertyAnimations.put(LotteAnimatableProperty.CIRCLE_POSITION, circleShape.getPosition());
-            propertyAnimations.put(LotteAnimatableProperty.CIRCLE_SIZE, circleShape.getSize());
+            Set<LotteAnimatableValue> propertyAnimations = new HashSet<>();
+            propertyAnimations.add(stroke.getColor());
+            propertyAnimations.add(stroke.getOpacity());
+            propertyAnimations.add(stroke.getWidth());
+            propertyAnimations.add(circleShape.getSize());
+            propertyAnimations.add(circleShape.getPosition());
+            propertyAnimations.add(circleShape.getSize());
             if (!stroke.getLineDashPattern().isEmpty()) {
-                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN, stroke.getLineDashPattern().get(0));
-                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_GAP, stroke.getLineDashPattern().get(1));
-                propertyAnimations.put(LotteAnimatableProperty.DASH_PATTERN_OFFSET, stroke.getDashOffset());
+                propertyAnimations.add(stroke.getLineDashPattern().get(0));
+                propertyAnimations.add(stroke.getLineDashPattern().get(1));
+                propertyAnimations.add(stroke.getDashOffset());
             }
             if (trim != null) {
-                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_START, trim.getStart());
-                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_END, trim.getEnd());
-                propertyAnimations.put(LotteAnimatableProperty.TRIM_PATH_OFFSET, trim.getOffset());
+                propertyAnimations.add(trim.getStart());
+                propertyAnimations.add(trim.getEnd());
+                propertyAnimations.add(trim.getOffset());
             }
-            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
+            strokeLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
 
         if (fill != null && fillLayer != null) {
-            SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
-            propertyAnimations.put(LotteAnimatableProperty.BACKGROUND_COLOR, fill.getColor());
-            propertyAnimations.put(LotteAnimatableProperty.OPACITY, fill.getOpacity());
-            propertyAnimations.put(LotteAnimatableProperty.RECT_SIZE, circleShape.getSize());
-            propertyAnimations.put(LotteAnimatableProperty.CIRCLE_POSITION, circleShape.getPosition());
-            propertyAnimations.put(LotteAnimatableProperty.CIRCLE_SIZE, circleShape.getSize());
-            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
+            Set<LotteAnimatableValue> propertyAnimations = new HashSet<>();
+            propertyAnimations.add(fill.getColor());
+            propertyAnimations.add(fill.getOpacity());
+            propertyAnimations.add(circleShape.getSize());
+            propertyAnimations.add(circleShape.getPosition());
+            propertyAnimations.add(circleShape.getSize());
+            fillLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
         }
     }
 

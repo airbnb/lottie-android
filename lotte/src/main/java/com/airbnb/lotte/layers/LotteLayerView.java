@@ -14,9 +14,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
+import android.view.animation.Interpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteComposition;
@@ -29,10 +28,11 @@ import com.airbnb.lotte.utils.LotteKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteNumberKeyframeAnimation;
 import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class LotteLayerView extends LotteAnimatableLayer {
@@ -151,22 +151,22 @@ public class LotteLayerView extends LotteAnimatableLayer {
     }
 
     private void buildAnimations() {
-        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
-        propertyAnimations.put(LotteAnimatableProperty.OPACITY, layerModel.getOpacity());
-        propertyAnimations.put(LotteAnimatableProperty.POSITION, layerModel.getPosition());
-        propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, layerModel.getAnchor());
-        propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, layerModel.getScale());
-        propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, layerModel.getRotation());
-        childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations, layerModel.getCompDuration()));
+        Set<LotteAnimatableValue> propertyAnimations = new HashSet<>();
+        propertyAnimations.add(layerModel.getOpacity());
+        propertyAnimations.add(layerModel.getPosition());
+        propertyAnimations.add(layerModel.getAnchor());
+        propertyAnimations.add(layerModel.getScale());
+        propertyAnimations.add(layerModel.getRotation());
+        childContainerLayer.addAnimation(new LotteAnimationGroup(propertyAnimations));
 
         if (layerModel.hasInOutAnimation()) {
             LotteNumberKeyframeAnimation<Float> inOutAnimation = new LotteNumberKeyframeAnimation<>(
-                    LotteAnimatableProperty.HIDDEN,
                     layerModel.getCompDuration(),
                     layerModel.getCompDuration(),
                     layerModel.getInOutKeyTimes(),
                     Float.class,
-                    layerModel.getInOutKeyFrames());
+                    layerModel.getInOutKeyFrames(),
+                    Collections.<Interpolator>emptyList());
             inOutAnimation.setIsDiscrete();
             inOutAnimation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Float>() {
                 @Override
@@ -174,7 +174,7 @@ public class LotteLayerView extends LotteAnimatableLayer {
                     setVisible(progress == 1f, false);
                 }
             });
-            setVisible(inOutAnimation.getValueForProgress(0f) == 1f, false);
+            setVisible(inOutAnimation.getValue() == 1f, false);
             List<LotteKeyframeAnimation> animations = new ArrayList<>(1);
             animations.add(inOutAnimation);
             addAnimation(new LotteAnimationGroup(animations));

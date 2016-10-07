@@ -4,9 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeCircle;
@@ -18,20 +16,17 @@ import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.model.LotteShapeTransform;
 import com.airbnb.lotte.model.LotteShapeTrimPath;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class LotteGroupLayerView extends LotteAnimatableLayer {
-
-    private final List<LotteGroupLayerView> groupLayers = new ArrayList<>();
-    private final List<LotteAnimatableLayer> shapeLayers = new ArrayList<>();
+class LotteGroupLayerView extends LotteAnimatableLayer {
 
     private LotteShapeGroup shapeGroup;
     @Nullable private LotteShapeTransform shapeTransform;
-    private LotteAnimationGroup animation;
 
-    public LotteGroupLayerView(LotteShapeGroup shapeGroup, @Nullable LotteShapeFill previousFill,
+    LotteGroupLayerView(LotteShapeGroup shapeGroup, @Nullable LotteShapeFill previousFill,
             @Nullable LotteShapeStroke previousStroke, @Nullable LotteShapeTrimPath previousTrimPath,
             @Nullable LotteShapeTransform previousTransform, long compDuration, Drawable.Callback callback) {
         super(compDuration, callback);
@@ -72,22 +67,18 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
             } else if (item instanceof LotteShapePath) {
                 LotteShapePath shapePath = (LotteShapePath) item;
                 LotteShapeLayerView shapeLayer = new LotteShapeLayerView(shapePath, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
-                shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeRectangle) {
                 LotteShapeRectangle shapeRect = (LotteShapeRectangle) item;
                 LotteRectShapeLayer shapeLayer = new LotteRectShapeLayer(shapeRect, currentFill, currentStroke, currentTransform, compDuration, getCallback());
-                shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeCircle) {
                 LotteShapeCircle shapeCircle = (LotteShapeCircle) item;
                 LotteEllipseShapeLayer shapeLayer = new LotteEllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
-                shapeLayers.add(shapeLayer);
                 addLayer(shapeLayer);
             } else if (item instanceof LotteShapeGroup) {
                 LotteShapeGroup shapeGroup = (LotteShapeGroup) item;
                 LotteGroupLayerView groupLayer = new LotteGroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
-                groupLayers.add(groupLayer);
                 addLayer(groupLayer);
             }
 
@@ -97,15 +88,15 @@ public class LotteGroupLayerView extends LotteAnimatableLayer {
     }
 
     private void buildAnimation() {
-        SparseArray<LotteAnimatableValue> propertyAnimations = new SparseArray<>();
+        Set<LotteAnimatableValue> propertyAnimations = new HashSet<>();
         if (shapeTransform != null) {
-            propertyAnimations.put(LotteAnimatableProperty.OPACITY, shapeTransform.getOpacity());
-            propertyAnimations.put(LotteAnimatableProperty.POSITION, shapeTransform.getPosition());
-            propertyAnimations.put(LotteAnimatableProperty.ANCHOR_POINT, shapeTransform.getAnchor());
-            propertyAnimations.put(LotteAnimatableProperty.TRANSFORM, shapeTransform.getScale());
-            propertyAnimations.put(LotteAnimatableProperty.SUBLAYER_TRANSFORM, shapeTransform.getRotation());
+            propertyAnimations.add(shapeTransform.getOpacity());
+            propertyAnimations.add(shapeTransform.getPosition());
+            propertyAnimations.add(shapeTransform.getAnchor());
+            propertyAnimations.add(shapeTransform.getScale());
+            propertyAnimations.add(shapeTransform.getRotation());
         }
-        addAnimation(new LotteAnimationGroup(propertyAnimations, compDuration));
+        addAnimation(new LotteAnimationGroup(propertyAnimations));
     }
 
     @Override

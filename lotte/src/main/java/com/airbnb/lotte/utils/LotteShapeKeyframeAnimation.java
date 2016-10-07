@@ -1,9 +1,8 @@
 package com.airbnb.lotte.utils;
 
 import android.graphics.Path;
-import android.support.annotation.FloatRange;
+import android.view.animation.Interpolator;
 
-import com.airbnb.lotte.animation.LotteAnimatableProperty.AnimatableProperty;
 import com.airbnb.lotte.model.LotteShapeData;
 
 import java.util.List;
@@ -13,13 +12,13 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
     private final LotteShapeData tempShapeData = new LotteShapeData();
     private final List<LotteShapeData> shapeData;
 
-    public LotteShapeKeyframeAnimation(@AnimatableProperty int property, long duration, long compDuration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
-        super(property, duration, compDuration, keyTimes);
+    public LotteShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteShapeData> shapeData, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.shapeData = shapeData;
     }
 
     @Override
-    public Path getValueForProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    public Path getValue() {
         if (progress <= 0f) {
             MiscUtils.getPathFromData(shapeData.get(0), tempPath);
             return tempPath;
