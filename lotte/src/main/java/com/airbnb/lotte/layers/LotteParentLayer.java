@@ -11,13 +11,12 @@ import com.airbnb.lotte.model.LotteComposition;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LotteParentLayer extends LotteAnimatableLayer {
+class LotteParentLayer extends LotteAnimatableLayer {
     private static final String TAG = LotteParentLayer.class.getSimpleName();
 
     private LotteLayer parentModel;
-    private LotteAnimationGroup animation;
 
-    public LotteParentLayer(LotteLayer parent, LotteComposition composition, Drawable.Callback callback) {
+    LotteParentLayer(LotteLayer parent, LotteComposition composition, Drawable.Callback callback) {
         super(composition.getDuration(), callback);
         setBounds(parent.getCompBounds());
         this.parentModel = parent;

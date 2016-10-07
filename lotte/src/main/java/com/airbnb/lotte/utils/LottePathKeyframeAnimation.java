@@ -2,6 +2,7 @@ package com.airbnb.lotte.utils;
 
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class LottePathKeyframeAnimation extends LotteKeyframeAnimation<PointF> {
     private PathMeasure pathMeasure;
     private int pathMeasureKeyframeIndex = -1;
 
-    public LottePathKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath) {
-        super(duration, compDuration, keyTimes);
+    public LottePathKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.segmentedPath = segmentedPath;
     }
 

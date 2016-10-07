@@ -24,7 +24,7 @@ public class LotteAnimatableIntegerValue extends BaseLotteAnimatableValue<Intege
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
-        LotteKeyframeAnimation<Integer> animation = new LotteNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Integer.class, keyValues);
+        LotteKeyframeAnimation<Integer> animation = new LotteNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Integer.class, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Integer>() {
             @Override

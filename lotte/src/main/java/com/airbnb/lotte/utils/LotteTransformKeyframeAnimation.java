@@ -1,5 +1,7 @@
 package com.airbnb.lotte.utils;
 
+import android.view.animation.Interpolator;
+
 import java.util.List;
 
 import static com.airbnb.lotte.utils.MiscUtils.lerp;
@@ -9,8 +11,8 @@ public class LotteTransformKeyframeAnimation extends LotteKeyframeAnimation<Lott
 
     private final List<LotteTransform3D> transforms;
 
-    public LotteTransformKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteTransform3D> transforms) {
-        super(duration, compDuration, keyTimes);
+    public LotteTransformKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteTransform3D> transforms, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.transforms = transforms;
     }
 

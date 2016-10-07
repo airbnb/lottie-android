@@ -17,10 +17,7 @@ import com.airbnb.lotte.utils.Observable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LotteShapeLayerView extends LotteAnimatableLayer {
-
-    private final Paint fillPaint = new Paint();
-    private final Paint strokePaint = new Paint();
+class LotteShapeLayerView extends LotteAnimatableLayer {
 
     private final LotteShapePath path;
     private final LotteShapeFill fill;
@@ -31,7 +28,7 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
     @Nullable private LotteShapeLayer fillLayer;
     @Nullable private LotteShapeLayer strokeLayer;
 
-    public LotteShapeLayerView(LotteShapePath shape, @Nullable LotteShapeFill fill,
+    LotteShapeLayerView(LotteShapePath shape, @Nullable LotteShapeFill fill,
             @Nullable LotteShapeStroke stroke, @Nullable LotteShapeTrimPath trim,
             LotteShapeTransform transformModel, long duration, Drawable.Callback callback) {
         super(duration, callback);
@@ -40,10 +37,6 @@ public class LotteShapeLayerView extends LotteAnimatableLayer {
         this.stroke = stroke;
         this.trim = trim;
         this.transformModel = transformModel;
-
-        fillPaint.setAlpha(0);
-        fillPaint.setAntiAlias(true);
-        strokePaint.setAntiAlias(true);
 
         setBounds(transformModel.getCompBounds());
         setAnchorPoint(transformModel.getAnchor().getObservable());

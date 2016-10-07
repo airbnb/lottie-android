@@ -3,7 +3,6 @@ package com.airbnb.lotte.layers;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.PathEffect;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -23,9 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LotteRectShapeLayer extends LotteAnimatableLayer {
-
-    private final Paint paint = new Paint();
+class LotteRectShapeLayer extends LotteAnimatableLayer {
 
     private final LotteShapeTransform transformModel;
     private final LotteShapeStroke stroke;
@@ -35,7 +32,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     @Nullable private LotteRoundRectLayer fillLayer;
     @Nullable private LotteRoundRectLayer strokeLayer;
 
-    public LotteRectShapeLayer(LotteShapeRectangle rectShape, @Nullable LotteShapeFill fill,
+    LotteRectShapeLayer(LotteShapeRectangle rectShape, @Nullable LotteShapeFill fill,
             @Nullable LotteShapeStroke stroke, LotteShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
         this.rectShape = rectShape;
@@ -43,7 +40,6 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         this.stroke = stroke;
         this.transformModel = transform;
 
-        paint.setAntiAlias(true);
         setBounds(transform.getCompBounds());
         setAnchorPoint(transform.getAnchor().getObservable());
         setAlpha(transform.getOpacity().getObservable());
@@ -136,7 +132,6 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
     }
 
     private static class LotteRoundRectLayer extends LotteAnimatableLayer {
-        private static final String TAG = LotteRoundRectLayer.class.getSimpleName();
 
         private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
             @Override
@@ -184,8 +179,6 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         private Observable<PointF> rectPosition;
         private Observable<PointF> rectSize;
 
-        @Nullable private PathEffect dashPatternPathEffect;
-        @Nullable private PathEffect lineJoinPathEffect;
         @Nullable private List<LotteAnimatableNumberValue> lineDashPattern;
         @Nullable private LotteAnimatableNumberValue lineDashPatternOffset;
 
@@ -195,7 +188,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(Paint.Style.FILL);
         }
 
-        public void setShapeAlpha(Observable<Number> alpha) {
+        void setShapeAlpha(Observable<Number> alpha) {
             if (this.shapeAlpha != null) {
                 this.shapeAlpha.removeChangeListener(alphaChangedListener);
             }
@@ -204,7 +197,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             onAlphaChanged();
         }
 
-        public void setTransformAlpha(Observable<Number> alpha) {
+        void setTransformAlpha(Observable<Number> alpha) {
             if (this.transformAlpha != null) {
                 this.transformAlpha.removeChangeListener(alphaChangedListener);
             }
@@ -247,7 +240,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(style);
         }
 
-        public void setLineWidth(Observable<Number> lineWidth) {
+        void setLineWidth(Observable<Number> lineWidth) {
             if (this.lineWidth != null) {
                 this.lineWidth.removeChangeListener(lineWidthChangedListener);
             }
@@ -261,7 +254,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+        void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
             if (this.lineDashPattern != null) {
                 this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
                 this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
@@ -283,6 +276,9 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         private void onDashPatternChanged() {
+            if (lineDashPattern == null || lineDashPatternOffset == null) {
+                throw new IllegalStateException("LineDashPattern is null");
+            }
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
                 values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
@@ -291,7 +287,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
+        void setLineCapType(LotteShapeStroke.LineCapType lineCapType) {
             switch (lineCapType) {
                 case Round:
                     paint.setStrokeCap(Paint.Cap.ROUND);
@@ -302,7 +298,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        public void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
+        void setLineJoinType(LotteShapeStroke.LineJoinType lineJoinType) {
             switch (lineJoinType) {
                 case Bevel:
                     paint.setStrokeJoin(Paint.Join.BEVEL);
@@ -316,7 +312,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        public void setRectCornerRadius(Observable<Number> rectCornerRadius) {
+        void setRectCornerRadius(Observable<Number> rectCornerRadius) {
             if (this.rectCornerRadius != null) {
                 this.rectCornerRadius.removeChangeListener(changedListener);
             }
@@ -325,7 +321,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setRectPosition(Observable<PointF> rectPosition) {
+        void setRectPosition(Observable<PointF> rectPosition) {
             if (this.rectPosition != null) {
                 this.rectPosition.removeChangeListener(changedListener);
             }
@@ -334,7 +330,7 @@ public class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setRectSize(Observable<PointF> rectSize) {
+        void setRectSize(Observable<PointF> rectSize) {
             if (this.rectSize != null) {
                 this.rectSize.removeChangeListener(changedListener);
             }

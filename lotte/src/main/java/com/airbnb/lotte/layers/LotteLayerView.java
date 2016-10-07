@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.animation.Interpolator;
 
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
@@ -164,7 +165,8 @@ public class LotteLayerView extends LotteAnimatableLayer {
                     layerModel.getCompDuration(),
                     layerModel.getInOutKeyTimes(),
                     Float.class,
-                    layerModel.getInOutKeyFrames());
+                    layerModel.getInOutKeyFrames(),
+                    Collections.<Interpolator>emptyList());
             inOutAnimation.setIsDiscrete();
             inOutAnimation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Float>() {
                 @Override

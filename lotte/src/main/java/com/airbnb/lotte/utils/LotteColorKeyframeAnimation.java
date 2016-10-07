@@ -1,6 +1,7 @@
 package com.airbnb.lotte.utils;
 
 import android.animation.ArgbEvaluator;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -10,8 +11,8 @@ public class LotteColorKeyframeAnimation extends LotteKeyframeAnimation<Integer>
 
     private final List<Integer> values;
 
-    public LotteColorKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Integer> values) {
-        super(duration, compDuration, keyTimes);
+    public LotteColorKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Integer> values, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());
         }

@@ -22,7 +22,7 @@ public abstract class LotteKeyframeAnimation<T> {
 
     private long startDelay;
     boolean isDiscrete = false;
-    @Nullable protected List<Interpolator> interpolators;
+    protected final List<Interpolator> interpolators;
 
     protected float progress;
 
@@ -31,10 +31,14 @@ public abstract class LotteKeyframeAnimation<T> {
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    public LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes) {
+    public LotteKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
         this.duration = duration;
         this.compDuration = compDuration;
         this.keyTimes = keyTimes;
+        this.interpolators = interpolators;
+        if (!interpolators.isEmpty() && interpolators.size() != (keyTimes.size() - 1)) {
+            throw new IllegalArgumentException("There must be 1 fewer interpolator than keytime " + interpolators.size() + " vs " + keyTimes.size());
+        }
     }
 
     public LotteKeyframeAnimation setStartDelay(long startDelay) {
@@ -45,14 +49,6 @@ public abstract class LotteKeyframeAnimation<T> {
 
     public void setIsDiscrete() {
         isDiscrete = true;
-    }
-
-    public LotteKeyframeAnimation setInterpolators(@Nullable List<Interpolator> interpolators) {
-        if (interpolators != null && interpolators.size() != (keyTimes.size() - 1)) {
-            throw new IllegalArgumentException("There must be 1 fewer interpolator than keytime " + interpolators.size() + " vs " + keyTimes.size());
-        }
-        this.interpolators = interpolators;
-        return this;
     }
 
     public void addUpdateListener(AnimationListener<T> listener) {

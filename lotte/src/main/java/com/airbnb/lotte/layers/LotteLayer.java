@@ -73,7 +73,8 @@ public class LotteLayer {
                     }
                     Log.d(TAG, "\tParents=" + Arrays.toString(parentNames.toArray()));
                 }
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             layer.inFrame = json.getLong("ip");
             layer.outFrame = json.getLong("op");
             if (L.DBG) Log.d(TAG, "\tFrames=" + layer.inFrame + "->" + layer.outFrame);
@@ -94,7 +95,8 @@ public class LotteLayer {
             JSONObject opacity = null;
             try {
                 opacity = ks.getJSONObject("o");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (opacity != null) {
                 layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate, composition.getDuration());
                 layer.opacity.remapValues(0, 100, 0, 255);
@@ -104,7 +106,8 @@ public class LotteLayer {
             JSONObject rotation = null;
             try {
                 rotation = ks.getJSONObject("r");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (rotation != null) {
                 layer.rotation = new LotteAnimatableFloatValue(rotation, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
@@ -113,7 +116,8 @@ public class LotteLayer {
             JSONObject position = null;
             try {
                 position = ks.getJSONObject("p");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (position != null) {
                 layer.position = new LotteAnimatablePointValue(position, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().getInitialPoint());
@@ -122,10 +126,10 @@ public class LotteLayer {
             JSONObject anchor = null;
             try {
                 anchor = ks.getJSONObject("a");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (anchor != null) {
                 layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate, composition.getDuration());
-                layer.anchor.remapPointsFromBounds(composition.getBounds(), new Rect(0, 0, 1, 1));
                 layer.anchor.setUsePathAnimation(false);
                 if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.getInitialPoint());
             }
@@ -133,7 +137,8 @@ public class LotteLayer {
             JSONObject scale = null;
             try {
                 scale = ks.getJSONObject("s");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (scale != null) {
                 layer.scale = new LotteAnimatableScaleValue(scale, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.getInitialScale());
@@ -142,12 +147,14 @@ public class LotteLayer {
             try {
                 layer.matteType = MatteType.values()[json.getInt("tt")];
                 if (L.DBG) Log.d(TAG, "\tMatte=" + layer.matteType);
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
 
             JSONArray jsonMasks = null;
             try {
                 jsonMasks = json.getJSONArray("masksProperties");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (jsonMasks != null) {
                 for (int i = 0; i < jsonMasks.length(); i++) {
                     LotteMask mask = new LotteMask(jsonMasks.getJSONObject(i), layer.frameRate, composition.getDuration());
@@ -159,7 +166,8 @@ public class LotteLayer {
             JSONArray shapes = null;
             try {
                 shapes = json.getJSONArray("shapes");
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+            }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
                     Object shape = LotteShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition.getDuration(), layer.compBounds);
@@ -245,11 +253,11 @@ public class LotteLayer {
 
     private MatteType matteType;
 
-    public LotteAnimatablePointValue getAnchor() {
+    LotteAnimatablePointValue getAnchor() {
         return anchor;
     }
 
-    public Rect getCompBounds() {
+    Rect getCompBounds() {
         return compBounds;
     }
 
@@ -261,11 +269,11 @@ public class LotteLayer {
         return frameRate;
     }
 
-    public boolean hasInAnimation() {
+    boolean hasInAnimation() {
         return hasInAnimation;
     }
 
-    public boolean hasInOutAnimation() {
+    boolean hasInOutAnimation() {
         return hasInOutAnimation;
     }
 
@@ -278,12 +286,12 @@ public class LotteLayer {
     }
 
     @Nullable
-    public List<Float> getInOutKeyFrames() {
+    List<Float> getInOutKeyFrames() {
         return inOutKeyFrames;
     }
 
     @Nullable
-    public List<Float> getInOutKeyTimes() {
+    List<Float> getInOutKeyTimes() {
         return inOutKeyTimes;
     }
 
@@ -291,7 +299,7 @@ public class LotteLayer {
         return layerId;
     }
 
-    public String getLayerName() {
+    String getLayerName() {
         return layerName;
     }
 
@@ -315,7 +323,7 @@ public class LotteLayer {
         return outFrame;
     }
 
-    public long getParentId() {
+    long getParentId() {
         return parentId;
     }
 
@@ -323,11 +331,11 @@ public class LotteLayer {
         return position;
     }
 
-    public LotteAnimatableFloatValue getRotation() {
+    LotteAnimatableFloatValue getRotation() {
         return rotation;
     }
 
-    public LotteAnimatableScaleValue getScale() {
+    LotteAnimatableScaleValue getScale() {
         return scale;
     }
 
@@ -335,47 +343,46 @@ public class LotteLayer {
         return shapes;
     }
 
-    public int getSolidColor() {
+    int getSolidColor() {
         return solidColor;
     }
 
-    public int getSolidHeight() {
+    int getSolidHeight() {
         return solidHeight;
     }
 
-    public int getSolidWidth() {
+    int getSolidWidth() {
         return solidWidth;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("LotteLayer{");
-        sb.append("layerName='").append(layerName);
-        sb.append(", anchor=").append(anchor);
-        sb.append(", shapes=").append(shapes);
-        sb.append(", layerId=").append(layerId);
-        sb.append(", layerType=").append(layerType);
-        sb.append(", parentId=").append(parentId);
-        sb.append(", inFrame=").append(inFrame);
-        sb.append(", outFrame=").append(outFrame);
-        sb.append(", compBounds=").append(compBounds);
-        sb.append(", frameRate=").append(frameRate);
-        sb.append(", masks=").append(masks);
-        sb.append(", solidWidth=").append(solidWidth);
-        sb.append(", solidHeight=").append(solidHeight);
-        sb.append(", solidColor=").append(solidColor);
-        sb.append(", opacity=").append(opacity);
-        sb.append(", rotation=").append(rotation);
-        sb.append(", position=").append(position);
-        sb.append(", scale=").append(scale);
-        sb.append(", hasOutAnimation=").append(hasOutAnimation);
-        sb.append(", hasInAnimation=").append(hasInAnimation);
-        sb.append(", hasInOutAnimation=").append(hasInOutAnimation);
-        sb.append(", inOutKeyFrames=").append(inOutKeyFrames);
-        sb.append(", inOutKeyTimes=").append(inOutKeyTimes);
-        sb.append(", compDuration=").append(compDuration);
-        sb.append(", matteType=").append(matteType);
-        sb.append('}');
-        return sb.toString();
+        String sb = "LotteLayer{" + "layerName='" + layerName +
+                ", anchor=" + anchor +
+                ", shapes=" + shapes +
+                ", layerId=" + layerId +
+                ", layerType=" + layerType +
+                ", parentId=" + parentId +
+                ", inFrame=" + inFrame +
+                ", outFrame=" + outFrame +
+                ", compBounds=" + compBounds +
+                ", frameRate=" + frameRate +
+                ", masks=" + masks +
+                ", solidWidth=" + solidWidth +
+                ", solidHeight=" + solidHeight +
+                ", solidColor=" + solidColor +
+                ", opacity=" + opacity +
+                ", rotation=" + rotation +
+                ", position=" + position +
+                ", scale=" + scale +
+                ", hasOutAnimation=" + hasOutAnimation +
+                ", hasInAnimation=" + hasInAnimation +
+                ", hasInOutAnimation=" + hasInOutAnimation +
+                ", inOutKeyFrames=" + inOutKeyFrames +
+                ", inOutKeyTimes=" + inOutKeyTimes +
+                ", compDuration=" + compDuration +
+                ", matteType=" + matteType +
+                '}';
+        return sb;
     }
 }

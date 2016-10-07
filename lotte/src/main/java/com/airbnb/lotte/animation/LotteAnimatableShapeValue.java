@@ -224,12 +224,11 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
-        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(duration, compDuration, keyTimes, shapeKeyframes);
-        animation.setInterpolators(interpolators);
-        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+        LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(duration, compDuration, keyTimes, shapeKeyframes, interpolators);
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Path>() {
             @Override
-            public void onValueChanged(Object progress) {
-                observable.setValue((Path) progress);
+            public void onValueChanged(Path progress) {
+                observable.setValue(progress);
             }
         });
         return animation;

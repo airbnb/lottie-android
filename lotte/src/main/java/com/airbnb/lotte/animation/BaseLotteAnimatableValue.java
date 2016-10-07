@@ -22,7 +22,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
     protected final Observable<T> observable = new Observable<>();
     final List<T> keyValues = new ArrayList<>();
     protected final List<Float> keyTimes = new ArrayList<>();
-    final List<Interpolator> timingFunctions = new ArrayList<>();
+    final List<Interpolator> interpolators = new ArrayList<>();
     long delay;
     protected long duration;
 
@@ -88,7 +88,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
 
                 if (outValue != null) {
                     keyValues.add(outValue);
-                    timingFunctions.add(new LinearInterpolator());
+                    interpolators.add(new LinearInterpolator());
                     outValue = null;
                 }
 
@@ -101,8 +101,8 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                             observable.setValue(initialValue);
                         }
                         keyValues.add(startValue);
-                        if (!timingFunctions.isEmpty()) {
-                            timingFunctions.add(new LinearInterpolator());
+                        if (!interpolators.isEmpty()) {
+                            interpolators.add(new LinearInterpolator());
                         }
                     }
                     addStartValue = false;
@@ -132,7 +132,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                     } else {
                         timingFunction = new LinearInterpolator();
                     }
-                    timingFunctions.add(timingFunction);
+                    interpolators.add(timingFunction);
                 }
 
                 keyTimes.add(timePercentage);

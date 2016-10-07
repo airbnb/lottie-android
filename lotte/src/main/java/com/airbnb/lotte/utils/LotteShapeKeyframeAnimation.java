@@ -1,6 +1,7 @@
 package com.airbnb.lotte.utils;
 
 import android.graphics.Path;
+import android.view.animation.Interpolator;
 
 import com.airbnb.lotte.model.LotteShapeData;
 
@@ -11,8 +12,8 @@ public class LotteShapeKeyframeAnimation extends LotteKeyframeAnimation<Path> {
     private final LotteShapeData tempShapeData = new LotteShapeData();
     private final List<LotteShapeData> shapeData;
 
-    public LotteShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteShapeData> shapeData) {
-        super(duration, compDuration, keyTimes);
+    public LotteShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LotteShapeData> shapeData, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.shapeData = shapeData;
     }
 

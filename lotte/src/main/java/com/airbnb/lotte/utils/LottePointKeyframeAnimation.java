@@ -1,6 +1,7 @@
 package com.airbnb.lotte.utils;
 
 import android.graphics.PointF;
+import android.view.animation.Interpolator;
 
 import java.util.List;
 
@@ -8,8 +9,8 @@ public class LottePointKeyframeAnimation extends LotteKeyframeAnimation<PointF> 
     private final PointF point = new PointF();
     private final List<PointF> points;
 
-    public LottePointKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<PointF> points) {
-        super(duration, compDuration, keyTimes);
+    public LottePointKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<PointF> points, List<Interpolator> interpolators) {
+        super(duration, compDuration, keyTimes, interpolators);
         this.points = points;
     }
 

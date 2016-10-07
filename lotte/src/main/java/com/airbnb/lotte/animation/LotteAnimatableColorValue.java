@@ -43,13 +43,12 @@ public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer>
         if (!hasAnimation()) {
             return null;
         }
-        LotteKeyframeAnimation animation = new LotteColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues);
+        LotteColorKeyframeAnimation animation = new LotteColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.setInterpolators(timingFunctions);
-        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
+        animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Integer>() {
             @Override
-            public void onValueChanged(Object progress) {
-                observable.setValue((Integer) progress);
+            public void onValueChanged(Integer progress) {
+                observable.setValue(progress);
             }
         });
         return animation;

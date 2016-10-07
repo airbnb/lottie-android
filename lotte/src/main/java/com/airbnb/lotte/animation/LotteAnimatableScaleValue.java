@@ -157,8 +157,7 @@ public class LotteAnimatableScaleValue implements LotteAnimatableValue<LotteTran
 
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
-        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(duration, compDuration, keyTimes, scaleKeyframes);
-        animation.setInterpolators(interpolators);
+        LotteKeyframeAnimation animation = new LotteTransformKeyframeAnimation(duration, compDuration, keyTimes, scaleKeyframes, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener() {
             @Override
