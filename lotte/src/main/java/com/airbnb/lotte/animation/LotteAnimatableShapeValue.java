@@ -23,7 +23,7 @@ import java.util.List;
 
 import static com.airbnb.lotte.utils.MiscUtils.addPoints;
 
-@SuppressWarnings({"EmptyCatchBlock"})
+@SuppressWarnings({"EmptyCatchBlock", "unused", "FieldCanBeLocal", "WeakerAccess"})
 public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
 
     private final Observable<Path> observable = new Observable<>();
@@ -222,7 +222,7 @@ public class LotteAnimatableShapeValue implements LotteAnimatableValue<Path> {
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
         LotteShapeKeyframeAnimation animation = new LotteShapeKeyframeAnimation(duration, compDuration, keyTimes, shapeKeyframes, interpolators);
-        animation.setStartDelay(delay);
+//        animation.setStartDelay(delay);
         animation.addUpdateListener(new LotteKeyframeAnimation.AnimationListener<Path>() {
             @Override
             public void onValueChanged(Path progress) {
