@@ -34,5 +34,6 @@ class TestRobot {
                     .setName(String.format(Locale.US, "%s %d", nameWithoutExtension, (int) (p * 100)))
                     .record();
         }
+        view.recycleBitmaps();
     }
 }

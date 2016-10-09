@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
@@ -101,6 +102,13 @@ public class LotteAnimationView extends ImageView {
 
     @Override
     protected void onDetachedFromWindow() {
+        recycleBitmaps();
+
+        super.onDetachedFromWindow();
+    }
+
+    @VisibleForTesting
+    public void recycleBitmaps() {
         if (mainBitmap != null) {
             mainBitmap.recycle();
         }
@@ -116,8 +124,6 @@ public class LotteAnimationView extends ImageView {
         if (maskBitmapForMatte != null) {
             maskBitmapForMatte.recycle();
         }
-
-        super.onDetachedFromWindow();
     }
 
     public void setAnimation(String animationName) {

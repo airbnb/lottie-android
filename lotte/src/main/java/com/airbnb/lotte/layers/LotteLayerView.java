@@ -191,6 +191,9 @@ public class LotteLayerView extends LotteAnimatableLayer {
     @Override
     public void draw(@NonNull Canvas mainCanvas) {
         if (contentBitmap != null) {
+            if (contentBitmap.isRecycled()) {
+                return;
+            }
             contentBitmap.eraseColor(Color.TRANSPARENT);
         }
         if (maskBitmap != null) {

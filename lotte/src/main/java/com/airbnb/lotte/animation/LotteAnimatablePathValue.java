@@ -219,10 +219,6 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
         return observable;
     }
 
-    public PointF getInitialPoint() {
-        return initialPoint;
-    }
-
     @Override
     public LotteKeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
