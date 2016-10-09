@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LotteAnimatablePointValue extends BaseLotteAnimatableValue<PointF> {
+public class LotteAnimatablePointValue extends BaseLotteAnimatableValue<PointF, PointF> {
     public LotteAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
         super(pointValues, frameRate, compDuration);
     }

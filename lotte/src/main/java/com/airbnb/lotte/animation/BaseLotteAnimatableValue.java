@@ -2,6 +2,7 @@ package com.airbnb.lotte.animation;
 
 
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
@@ -17,10 +18,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValue<T> {
+public abstract class BaseLotteAnimatableValue<V, O> implements LotteAnimatableValue<O> {
 
-    final Observable<T> observable = new Observable<>();
-    final List<T> keyValues = new ArrayList<>();
+    final Observable<O> observable = new Observable<>();
+    final List<V> keyValues = new ArrayList<>();
     final List<Float> keyTimes = new ArrayList<>();
     final List<Interpolator> interpolators = new ArrayList<>();
     long delay;
@@ -31,12 +32,17 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
     private long durationFrames;
     private final int frameRate;
 
-    T initialValue;
+    V initialValue;
 
-    BaseLotteAnimatableValue(JSONObject json, int frameRate, long compDuration) {
+    BaseLotteAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration) {
         this.frameRate = frameRate;
         this.compDuration = compDuration;
+        if (json != null) {
+            init(json);
+        }
+    }
 
+    void init(JSONObject json) {
         try {
             Object value = json.get("k");
 
@@ -46,7 +52,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
                 initialValue = valueFromObject(value);
-                observable.setValue(initialValue);
+                observable.setValue(convertType(initialValue));
             }
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to parse json " + json, e);
@@ -79,7 +85,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
 
             boolean addStartValue = true;
             boolean addTimePadding =  false;
-            T outValue = null;
+            V outValue = null;
 
             for (int i = 0; i < keyframes.length(); i++) {
                 JSONObject keyframe = keyframes.getJSONObject(i);
@@ -92,13 +98,13 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                     outValue = null;
                 }
 
-                T startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s")) : null;
+                V startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s")) : null;
                 if (addStartValue) {
                     if (startValue != null) {
                         if (i == 0) {
                             //noinspection ResourceAsColor
                             initialValue = startValue;
-                            observable.setValue(initialValue);
+                            observable.setValue(convertType(initialValue));
                         }
                         keyValues.add(startValue);
                         if (!interpolators.isEmpty()) {
@@ -115,7 +121,7 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
                 }
 
                 if (keyframe.has("e")) {
-                    T endValue = valueFromObject(keyframe.getJSONArray("e"));
+                    V endValue = valueFromObject(keyframe.getJSONArray("e"));
                     keyValues.add(endValue);
                     /**
                      * Timing function for time interpolation between keyframes.
@@ -148,19 +154,24 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
         }
     }
 
+    O convertType(V value) {
+        //noinspection unchecked
+        return (O) value;
+    }
+
     public boolean hasAnimation() {
         return !keyValues.isEmpty();
     }
 
-    public T getInitialValue() {
-        return initialValue;
+    public O getInitialValue() {
+        return convertType(initialValue);
     }
 
-    public Observable<T> getObservable() {
+    public Observable<O> getObservable() {
         return observable;
     }
 
-    protected abstract T valueFromObject(Object object) throws JSONException;
+    protected abstract V valueFromObject(Object object) throws JSONException;
 
     public abstract LotteKeyframeAnimation animationForKeyPath();
 }

@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LotteAnimatableFloatValue extends BaseLotteAnimatableValue<Float> {
+public class LotteAnimatableFloatValue extends BaseLotteAnimatableValue<Float, Float> {
     public LotteAnimatableFloatValue(JSONObject json, int frameRate, long compDuration) {
         super(json, frameRate, compDuration);
     }

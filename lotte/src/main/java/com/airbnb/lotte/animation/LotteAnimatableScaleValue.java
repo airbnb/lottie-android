@@ -9,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class LotteAnimatableScaleValue extends BaseLotteAnimatableValue<LotteTransform3D> {
+public class LotteAnimatableScaleValue extends BaseLotteAnimatableValue<LotteTransform3D, LotteTransform3D> {
 
     public LotteAnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration) {
         super(scaleValues, frameRate, compDuration);

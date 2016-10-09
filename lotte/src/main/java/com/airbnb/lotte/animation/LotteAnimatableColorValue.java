@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer> {
+public class LotteAnimatableColorValue extends BaseLotteAnimatableValue<Integer, Integer> {
 
     public LotteAnimatableColorValue(JSONObject json, int frameRate, long compDuration) {
         super(json, frameRate, compDuration);
