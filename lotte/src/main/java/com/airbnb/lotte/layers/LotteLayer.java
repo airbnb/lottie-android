@@ -8,6 +8,7 @@ import android.util.Log;
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
 import com.airbnb.lotte.model.LotteComposition;
@@ -120,7 +121,7 @@ public class LotteLayer {
             }
             if (position != null) {
                 layer.position = new LotteAnimatablePointValue(position, layer.frameRate, composition.getDuration());
-                if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().getInitialPoint());
+                if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().toString());
             }
 
             JSONObject anchor = null;
@@ -129,9 +130,8 @@ public class LotteLayer {
             } catch (JSONException e) {
             }
             if (anchor != null) {
-                layer.anchor = new LotteAnimatablePointValue(anchor, layer.frameRate, composition.getDuration());
-                layer.anchor.setUsePathAnimation(false);
-                if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.getInitialPoint());
+                layer.anchor = new LotteAnimatablePathValue(anchor, layer.frameRate, composition.getDuration());
+                if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.toString());
             }
 
             JSONObject scale = null;
@@ -241,7 +241,7 @@ public class LotteLayer {
     private LotteAnimatableFloatValue rotation;
     private LotteAnimatablePointValue position;
 
-    private LotteAnimatablePointValue anchor;
+    private LotteAnimatablePathValue anchor;
     private LotteAnimatableScaleValue scale;
 
     private boolean hasOutAnimation;
@@ -253,7 +253,7 @@ public class LotteLayer {
 
     private MatteType matteType;
 
-    LotteAnimatablePointValue getAnchor() {
+    LotteAnimatablePathValue getAnchor() {
         return anchor;
     }
 

@@ -6,6 +6,7 @@ import android.util.Log;
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
 
@@ -17,7 +18,7 @@ public class LotteShapeTransform {
 
     private final Rect compBounds;
     private LotteAnimatablePointValue position;
-    private LotteAnimatablePointValue anchor;
+    private LotteAnimatablePathValue anchor;
     private LotteAnimatableScaleValue scale;
     private LotteAnimatableFloatValue rotation;
     private LotteAnimatableNumberValue opacity;
@@ -41,8 +42,7 @@ public class LotteShapeTransform {
         if (jsonAnchor == null) {
             throw new IllegalStateException("Transform has no anchor.");
         }
-        anchor = new LotteAnimatablePointValue(jsonAnchor, frameRate, compDuration);
-        anchor.setUsePathAnimation(false);
+        anchor = new LotteAnimatablePathValue(jsonAnchor, frameRate, compDuration);
 
         JSONObject jsonScale = null;
         try {
@@ -83,7 +83,7 @@ public class LotteShapeTransform {
         return position;
     }
 
-    public LotteAnimatablePointValue getAnchor() {
+    public LotteAnimatablePathValue getAnchor() {
         return anchor;
     }
 
@@ -101,9 +101,9 @@ public class LotteShapeTransform {
 
     @Override
     public String toString() {
-        return "LotteShapeTransform{" + "anchor=" + anchor.getInitialPoint() +
+        return "LotteShapeTransform{" + "anchor=" + anchor.toString() +
                 ", compBounds=" + compBounds +
-                ", position=" + position.getInitialPoint() +
+                ", position=" + position.toString() +
                 ", scale=" + scale.toString() +
                 ", rotation=" + rotation.getInitialValue() +
                 ", opacity=" + opacity.getInitialValue() +

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 
 import org.json.JSONException;
@@ -12,15 +13,14 @@ import org.json.JSONObject;
 public class LotteShapeRectangle {
     private static final String TAG = LotteShapeRectangle.class.getSimpleName();
 
-    private LotteAnimatablePointValue position;
+    private LotteAnimatablePathValue position;
     private LotteAnimatablePointValue size;
     private LotteAnimatableNumberValue cornerRadius;
 
     public LotteShapeRectangle(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject positionJson = json.getJSONObject("p");
-            position = new LotteAnimatablePointValue(positionJson, frameRate, compDuration);
-            position.setUsePathAnimation(false);
+            position = new LotteAnimatablePathValue(positionJson, frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle position.", e);
         }
@@ -50,15 +50,15 @@ public class LotteShapeRectangle {
         return size;
     }
 
-    public LotteAnimatablePointValue getPosition() {
+    public LotteAnimatablePathValue getPosition() {
         return position;
     }
 
     @Override
     public String toString() {
         return "LotteShapeRectangle{" + "cornerRadius=" + cornerRadius.getInitialValue() +
-                ", position=" + position.getInitialPoint() +
-                ", size=" + size.getInitialPoint() +
+                ", position=" + position +
+                ", size=" + size +
                 '}';
     }
 }

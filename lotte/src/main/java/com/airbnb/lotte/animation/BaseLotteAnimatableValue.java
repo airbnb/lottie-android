@@ -137,14 +137,14 @@ public abstract class BaseLotteAnimatableValue<T> implements LotteAnimatableValu
 
                 keyTimes.add(timePercentage);
 
-                if (keyframe.has("h") && keyframe.getBoolean("h")) {
+                if (keyframe.has("h") && keyframe.getInt("h") == 1) {
                     outValue = startValue;
                     addStartValue = true;
                     addTimePadding = true;
                 }
             }
         } catch (JSONException e) {
-            throw new IllegalArgumentException("Unable to parse color values.", e);
+            throw new IllegalArgumentException("Unable to parse values.", e);
         }
     }
 
