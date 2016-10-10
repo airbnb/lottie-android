@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.airbnb.lottie.LotteAnimationView;
+import com.airbnb.lottie.LottieAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,7 +61,7 @@ public class GridFragment extends Fragment {
     static final class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.name) TextView nameView;
-        @BindView(R.id.animation_view) LotteAnimationView animationView;
+        @BindView(R.id.animation_view) LottieAnimationView animationView;
 
         public ViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_grid_item, parent, false));

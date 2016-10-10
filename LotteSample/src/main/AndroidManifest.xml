@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name="com.airbnb.lottie.samples.LotteApplication">
+        android:name="com.airbnb.lottie.samples.LottieApplication">
         <activity android:name="com.airbnb.lottie.samples.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

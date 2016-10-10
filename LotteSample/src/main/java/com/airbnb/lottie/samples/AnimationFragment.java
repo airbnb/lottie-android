@@ -16,7 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.airbnb.lottie.LotteAnimationView;
+import com.airbnb.lottie.LottieAnimationView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,7 +36,7 @@ public class AnimationFragment extends Fragment {
         return frag;
     }
 
-    @BindView(R.id.animation_view) LotteAnimationView animationView;
+    @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
     @BindView(play) Button playButton;
     @BindView(R.id.loop_button) ToggleButton loopButton;
@@ -141,7 +141,7 @@ public class AnimationFragment extends Fragment {
         droppedFramesPerSecondView.setText(String.format("Dropped frames per second: %.0f", droppedFps));
     }
 
-    private ILotteApplication getApplication() {
-        return (ILotteApplication) getActivity().getApplication();
+    private ILottieApplication getApplication() {
+        return (ILottieApplication) getActivity().getApplication();
     }
 }

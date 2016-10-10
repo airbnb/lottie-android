@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples;
 
 import android.content.Context;
 
-import com.airbnb.lottie.LotteAnimationView;
+import com.airbnb.lottie.LottieAnimationView;
 import com.facebook.testing.screenshot.Screenshot;
 import com.facebook.testing.screenshot.ViewHelpers;
 
@@ -21,7 +21,7 @@ class TestRobot {
     }
 
     private static void testFile(Context context, String fileName, float[] progress) {
-        LotteAnimationView view = new LotteAnimationView(context);
+        LottieAnimationView view = new LottieAnimationView(context);
         view.setAnimationSync(fileName);
         ViewHelpers.setupView(view)
                 .layout();

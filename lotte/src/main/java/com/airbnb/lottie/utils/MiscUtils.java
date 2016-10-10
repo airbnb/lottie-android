@@ -4,8 +4,8 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 
-import com.airbnb.lottie.model.LotteCubicCurveData;
-import com.airbnb.lottie.model.LotteShapeData;
+import com.airbnb.lottie.model.LottieCubicCurveData;
+import com.airbnb.lottie.model.LottieShapeData;
 
 public class MiscUtils {
 
@@ -13,12 +13,12 @@ public class MiscUtils {
         return new PointF(p1.x + p2.x, p1.y + p2.y);
     }
 
-    public static void getPathFromData(LotteShapeData shapeData, Path outPath) {
+    public static void getPathFromData(LottieShapeData shapeData, Path outPath) {
         outPath.reset();
         PointF initialPoint = shapeData.getInitialPoint();
         outPath.moveTo(initialPoint.x, initialPoint.y);
         for (int i = 0; i < shapeData.getCurves().size(); i++) {
-            LotteCubicCurveData curveData = shapeData.getCurves().get(i);
+            LottieCubicCurveData curveData = shapeData.getCurves().get(i);
             outPath.cubicTo(curveData.getControlPoint1().x, curveData.getControlPoint1().y,
                     curveData.getControlPoint2().x, curveData.getControlPoint2().y,
                     curveData.getVertex().x, curveData.getVertex().y);
