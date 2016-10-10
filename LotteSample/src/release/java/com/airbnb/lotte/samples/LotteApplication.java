@@ -1,4 +1,4 @@
-package com.airbnb.lotte.samples;
+package com.airbnb.lottie.samples;
 
 import android.app.Application;
 import android.support.v4.util.Pair;

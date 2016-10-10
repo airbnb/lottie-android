@@ -6,7 +6,7 @@
     android:clipChildren="false"
     android:background="@android:color/white">
 
-    <com.airbnb.lotte.LotteAnimationView
+    <com.airbnb.lottie.LotteAnimationView
         android:id="@+id/animation_view"
         android:layout_gravity="center"
         android:layout_width="wrap_content"

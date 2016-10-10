@@ -13,7 +13,7 @@
         android:singleLine="true"
         android:maxLines="1"/>
 
-    <com.airbnb.lotte.LotteAnimationView
+    <com.airbnb.lottie.LotteAnimationView
         android:id="@+id/animation_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"
