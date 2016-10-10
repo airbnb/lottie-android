@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseLotteAnimatableValue<V, O> implements LotteAnimatableValue<O> {
+abstract class BaseLotteAnimatableValue<V, O> implements LotteAnimatableValue<O> {
 
     final Observable<O> observable = new Observable<>();
     final List<V> keyValues = new ArrayList<>();
