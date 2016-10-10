@@ -20,7 +20,6 @@ import java.util.List;
 public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
 
     private final Observable<PointF> observable = new Observable<>();
-    private final List<PointF> pointKeyframes = new ArrayList<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
     private final long compDuration;
@@ -102,7 +101,6 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
                 if (outPoint != null) {
                     PointF vertex = outPoint;
                     animationPath.lineTo(vertex.x, vertex.y);
-                    pointKeyframes.add(vertex);
                     interpolators.add(new LinearInterpolator());
                     outPoint = null;
                 }
@@ -110,13 +108,11 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
                 PointF startPoint = keyframe.has("s") ? pointFromValueArray(keyframe.getJSONArray("s")) : new PointF();
                 if (addStartValue) {
                     if (i == 0) {
-                        pointKeyframes.add(startPoint);
                         animationPath.moveTo(startPoint.x, startPoint.y);
                         initialPoint = startPoint;
                         observable.setValue(initialPoint);
                     } else {
                         animationPath.lineTo(startPoint.x, startPoint.y);
-                        pointKeyframes.add(startPoint);
                         interpolators.add(new LinearInterpolator());
                     }
                     addStartValue = false;
@@ -134,7 +130,6 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
                     cp1 = keyframe.has("to") ? pointFromValueArray(keyframe.getJSONArray("to")) : null;
                     cp2 = keyframe.has("ti") ? pointFromValueArray(keyframe.getJSONArray("ti")) : null;
                     PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
-                    pointKeyframes.add(vertex);
                     if (cp1 != null && cp2 != null) {
                         animationPath.cubicTo(
                                 startPoint.x + cp1.x, startPoint.y + cp1.y,
@@ -163,8 +158,6 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
                     addTimePadding = true;
                 }
             }
-
-            observable.setValue(pointKeyframes.get(0));
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse keyframes " + keyframes, e);
         }
@@ -238,7 +231,7 @@ public class LotteAnimatablePathValue implements LotteAnimatableValue<PointF> {
 
     @Override
     public boolean hasAnimation() {
-        return animationPath.hasSegments() || !pointKeyframes.isEmpty();
+        return animationPath.hasSegments();
     }
 
     @Override
