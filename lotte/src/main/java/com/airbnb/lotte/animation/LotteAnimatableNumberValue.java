@@ -25,7 +25,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
     private final Observable<Number> observable = new Observable<>();
     private final int frameRate;
     private final long compDuration;
-    @Nullable private RemapInterface remapInterface;
+    @Nullable private RemapInterface<Float> remapInterface;
     private float initialValue;
 
     private final List<Float> valueKeyframes = new ArrayList<>();
@@ -166,9 +166,9 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
     }
 
     public void remapValues(final float fromMin, final float fromMax, final float toMin, final float toMax) {
-        remapInterface = new RemapInterface() {
+        remapInterface = new RemapInterface<Float>() {
             @Override
-            public float remap(float inValue) {
+            public Float remap(Float inValue) {
                 if (inValue < fromMin) {
                     return toMin;
                 } else if (inValue > fromMax) {
@@ -183,7 +183,7 @@ public class LotteAnimatableNumberValue implements LotteAnimatableValue<Number> 
 
     public float getInitialValue() {
         if (remapInterface != null) {
-            return remapInterface.remap(initialValue);
+            return remapInterface.remap((float) initialValue);
         }
         return initialValue;
     }

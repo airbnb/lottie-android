@@ -108,11 +108,11 @@ public class LotteLayerView extends LotteAnimatableLayer {
         layerModel.getOpacity().getObservable().addChangeListener(new Observable.OnChangedListener() {
             @Override
             public void onChanged() {
-                mainCanvasPaint.setAlpha(Math.round((float) layerModel.getOpacity().getObservable().getValue()));
+                mainCanvasPaint.setAlpha(Math.round(layerModel.getOpacity().getObservable().getValue()));
                 invalidateSelf();
             }
         });
-        mainCanvasPaint.setAlpha(Math.round((float) layerModel.getOpacity().getObservable().getValue()));
+        mainCanvasPaint.setAlpha(Math.round(layerModel.getOpacity().getObservable().getValue()));
 
         setVisible(layerModel.hasInAnimation(), false);
 

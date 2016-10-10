@@ -1,6 +1,8 @@
 package com.airbnb.lotte.model;
 
 import com.airbnb.lotte.animation.LotteAnimatableColorValue;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
+import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
 import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 
 import org.json.JSONArray;
@@ -24,16 +26,16 @@ public class LotteShapeStroke {
         Bevel
     }
 
-    private LotteAnimatableNumberValue offset;
-    private final List<LotteAnimatableNumberValue> lineDashPattern = new ArrayList<>();
+    private LotteAnimatableFloatValue offset;
+    private final List<LotteAnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
     private LotteAnimatableColorValue color;
-    private LotteAnimatableNumberValue opacity;
+    private LotteAnimatableIntegerValue opacity;
     private LotteAnimatableNumberValue width;
     private LineCapType capType;
     private LineJoinType joinType;
 
-    public LotteShapeStroke(JSONObject json, int frameRate, long compDuration) {
+    LotteShapeStroke(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject colorJson = json.getJSONObject("c");
             color = new LotteAnimatableColorValue(colorJson, frameRate, compDuration);
@@ -42,7 +44,7 @@ public class LotteShapeStroke {
             width = new LotteAnimatableNumberValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
-            opacity = new LotteAnimatableNumberValue(opacityJson, frameRate, compDuration);
+            opacity = new LotteAnimatableIntegerValue(opacityJson, frameRate, compDuration);
             opacity.remapValues(0, 100, 0, 255);
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
@@ -55,11 +57,10 @@ public class LotteShapeStroke {
                     String n = dashJson.getString("n");
                     if (n.equals("o")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        offset = new LotteAnimatableNumberValue(value, frameRate, compDuration);
+                        offset = new LotteAnimatableFloatValue(value, frameRate, compDuration);
                     } else if (n.equals("d") || n.equals("g")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        LotteAnimatableNumberValue initialValue = new LotteAnimatableNumberValue(value, frameRate, compDuration);
-                        lineDashPattern.add(initialValue);
+                        lineDashPattern.add(new LotteAnimatableFloatValue(value, frameRate, compDuration));
                     }
                 }
                 if (lineDashPattern.size() == 1) {
@@ -76,7 +77,7 @@ public class LotteShapeStroke {
         return color;
     }
 
-    public LotteAnimatableNumberValue getOpacity() {
+    public LotteAnimatableIntegerValue getOpacity() {
         return opacity;
     }
 
@@ -84,11 +85,11 @@ public class LotteShapeStroke {
         return width;
     }
 
-    public List<LotteAnimatableNumberValue> getLineDashPattern() {
+    public List<LotteAnimatableFloatValue> getLineDashPattern() {
         return lineDashPattern;
     }
 
-    public LotteAnimatableNumberValue getDashOffset() {
+    public LotteAnimatableFloatValue getDashOffset() {
         return offset;
     }
 

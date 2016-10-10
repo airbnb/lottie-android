@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatableValue;
 import com.airbnb.lotte.animation.LotteAnimationGroup;
 import com.airbnb.lotte.model.LotteShapeFill;
@@ -168,14 +168,14 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
 
         private Observable<Integer> color;
         private Observable<Number> lineWidth;
-        private Observable<Number> shapeAlpha;
-        private Observable<Number> transformAlpha;
+        private Observable<Integer> shapeAlpha;
+        private Observable<Integer> transformAlpha;
         private Observable<Number> rectCornerRadius;
         private Observable<PointF> rectPosition;
         private Observable<PointF> rectSize;
 
-        @Nullable private List<LotteAnimatableNumberValue> lineDashPattern;
-        @Nullable private LotteAnimatableNumberValue lineDashPatternOffset;
+        @Nullable private List<LotteAnimatableFloatValue> lineDashPattern;
+        @Nullable private LotteAnimatableFloatValue lineDashPatternOffset;
 
         LotteRoundRectLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -183,7 +183,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             paint.setStyle(Paint.Style.FILL);
         }
 
-        void setShapeAlpha(Observable<Number> alpha) {
+        void setShapeAlpha(Observable<Integer> alpha) {
             if (this.shapeAlpha != null) {
                 this.shapeAlpha.removeChangeListener(alphaChangedListener);
             }
@@ -192,7 +192,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             onAlphaChanged();
         }
 
-        void setTransformAlpha(Observable<Number> alpha) {
+        void setTransformAlpha(Observable<Integer> alpha) {
             if (this.transformAlpha != null) {
                 this.transformAlpha.removeChangeListener(alphaChangedListener);
             }
@@ -202,9 +202,9 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         private void onAlphaChanged() {
-            Float shapeAlpha = this.shapeAlpha == null ? 1f : (Float) this.shapeAlpha.getValue();
-            Float transformAlpha = this.transformAlpha == null ? 1f : (Float) this.transformAlpha.getValue();
-            setAlpha((int) ((shapeAlpha * transformAlpha) * 255));
+            Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
+            Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
+            setAlpha((int) ((shapeAlpha / 255f * transformAlpha / 255f) * 255));
         }
 
         @Override
@@ -250,7 +250,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+        void setDashPattern(List<LotteAnimatableFloatValue> lineDashPattern, LotteAnimatableFloatValue offset) {
             if (this.lineDashPattern != null) {
                 this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
                 this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);

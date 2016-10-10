@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
 import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
@@ -21,7 +21,7 @@ public class LotteShapeTransform {
     private LotteAnimatablePathValue anchor;
     private LotteAnimatableScaleValue scale;
     private LotteAnimatableFloatValue rotation;
-    private LotteAnimatableNumberValue opacity;
+    private LotteAnimatableIntegerValue opacity;
 
     public LotteShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         this.compBounds = compBounds;
@@ -69,7 +69,7 @@ public class LotteShapeTransform {
         if (jsonOpacity == null) {
             throw new IllegalStateException("Transform has no opacity.");
         }
-        opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate, compDuration);
+        opacity = new LotteAnimatableIntegerValue(jsonOpacity, frameRate, compDuration);
         opacity.remapValues(0, 100, 0, 255);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
@@ -95,7 +95,7 @@ public class LotteShapeTransform {
         return rotation;
     }
 
-    public LotteAnimatableNumberValue getOpacity() {
+    public LotteAnimatableIntegerValue getOpacity() {
         return opacity;
     }
 

@@ -1,6 +1,6 @@
 package com.airbnb.lotte.model;
 
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
 import com.airbnb.lotte.animation.LotteAnimatableShapeValue;
 
 import org.json.JSONException;
@@ -37,7 +37,7 @@ public class LotteMask {
             }
 
             maskPath = new LotteAnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
-            LotteAnimatableNumberValue opacity = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate, compDuration);
+            LotteAnimatableIntegerValue opacity = new LotteAnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration);
             opacity.remapValues(0, 100, 0, 255);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);

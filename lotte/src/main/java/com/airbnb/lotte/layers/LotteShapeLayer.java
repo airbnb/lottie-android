@@ -14,7 +14,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.model.LotteShapeStroke;
 import com.airbnb.lotte.utils.LotteTransform3D;
 import com.airbnb.lotte.utils.Observable;
@@ -81,10 +81,10 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     @Nullable private Observable<Number> strokeStart;
     @Nullable private Observable<Number> strokeEnd;
 
-    private Observable<Number> shapeAlpha;
-    private Observable<Number> transformAlpha;
-    private List<LotteAnimatableNumberValue> lineDashPattern;
-    private LotteAnimatableNumberValue lineDashPatternOffset;
+    private Observable<Integer> shapeAlpha;
+    private Observable<Integer> transformAlpha;
+    private List<LotteAnimatableFloatValue> lineDashPattern;
+    private LotteAnimatableFloatValue lineDashPatternOffset;
 
     LotteShapeLayer(Drawable.Callback callback) {
         super(0, callback);
@@ -92,7 +92,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         paint.setAntiAlias(true);
     }
 
-    public void setIsStroke() {
+    void setIsStroke() {
         paint.setStyle(Paint.Style.STROKE);
         invalidateSelf();
     }
@@ -162,7 +162,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         return paint.getAlpha();
     }
 
-    void setShapeAlpha(Observable<Number> shapeAlpha) {
+    void setShapeAlpha(Observable<Integer> shapeAlpha) {
         if (this.shapeAlpha != null) {
             this.shapeAlpha.removeChangeListener(alphaChangedListener);
         }
@@ -171,7 +171,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         onAlphaChanged();
     }
 
-    void setTransformAlpha(Observable<Number> transformAlpha) {
+    void setTransformAlpha(Observable<Integer> transformAlpha) {
         if (this.transformAlpha != null) {
             this.transformAlpha.removeChangeListener(alphaChangedListener);
         }
@@ -181,9 +181,9 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     }
 
     private void onAlphaChanged() {
-        Float shapeAlpha = this.shapeAlpha == null ? 1f : (Float) this.shapeAlpha.getValue();
-        Float transformAlpha = this.transformAlpha == null ? 1f : (Float) this.transformAlpha.getValue();
-        setAlpha((int) ((shapeAlpha * transformAlpha) * 255));
+        Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
+        Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
+        setAlpha((int) ((shapeAlpha / 255f * transformAlpha / 255f) * 255));
     }
 
     @Override
@@ -217,7 +217,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         invalidateSelf();
     }
 
-    void setDashPattern(List<LotteAnimatableNumberValue> lineDashPattern, LotteAnimatableNumberValue offset) {
+    void setDashPattern(List<LotteAnimatableFloatValue> lineDashPattern, LotteAnimatableFloatValue offset) {
         if (this.lineDashPattern != null) {
             this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
             this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
@@ -241,12 +241,12 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     private void onDashPatternChanged() {
         float[] values = new float[lineDashPattern.size()];
         for (int i = 0; i < lineDashPattern.size(); i++) {
-            values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
+            values[i] = lineDashPattern.get(i).getObservable().getValue();
             if (values[i] == 0) {
                 values[i] = 0.01f;
             }
         }
-        paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
+        paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getObservable().getValue()));
         invalidateSelf();
     }
 

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
 import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 import com.airbnb.lotte.animation.LotteAnimatableScaleValue;
@@ -99,7 +99,7 @@ public class LotteLayer {
             } catch (JSONException e) {
             }
             if (opacity != null) {
-                layer.opacity = new LotteAnimatableNumberValue(opacity, layer.frameRate, composition.getDuration());
+                layer.opacity = new LotteAnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration());
                 layer.opacity.remapValues(0, 100, 0, 255);
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
@@ -237,7 +237,7 @@ public class LotteLayer {
     private int solidHeight;
     private int solidColor;
 
-    private LotteAnimatableNumberValue opacity;
+    private LotteAnimatableIntegerValue opacity;
     private LotteAnimatableFloatValue rotation;
     private LotteAnimatablePointValue position;
 
@@ -299,7 +299,7 @@ public class LotteLayer {
         return matteType;
     }
 
-    public LotteAnimatableNumberValue getOpacity() {
+    public LotteAnimatableIntegerValue getOpacity() {
         return opacity;
     }
 

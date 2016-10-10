@@ -35,7 +35,7 @@ public class LotteAnimatableLayer extends Drawable {
     /** This should mimic CALayer#transform */
     private Observable<LotteTransform3D> transform;
     /** This should mimic CALayer#sublayerTransform */
-    private Observable<Number> alpha;
+    private Observable<Integer> alpha;
     private Observable<Float> sublayerTransform;
     final long compDuration;
 
@@ -101,14 +101,14 @@ public class LotteAnimatableLayer extends Drawable {
         throw new IllegalArgumentException("This shouldn't be used.");
     }
 
-    void setAlpha(Observable<Number> alpha) {
+    void setAlpha(Observable<Integer> alpha) {
         this.alpha = alpha;
         invalidateSelf();
     }
 
     @Override
     public int getAlpha() {
-        return (int) alpha.getValue();
+        return alpha.getValue();
     }
 
     @Override

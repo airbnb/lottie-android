@@ -1,7 +1,7 @@
 package com.airbnb.lotte.model;
 
-public interface RemapInterface {
+public interface RemapInterface<T extends Number> {
 
-    float remap(float inValue);
+    T remap(T inValue);
 
 }

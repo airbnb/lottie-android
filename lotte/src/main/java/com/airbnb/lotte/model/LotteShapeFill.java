@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.airbnb.lotte.L;
 import com.airbnb.lotte.animation.LotteAnimatableColorValue;
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +15,7 @@ public class LotteShapeFill {
 
     private boolean fillEnabled;
     private LotteAnimatableColorValue color;
-    private LotteAnimatableNumberValue opacity;
+    private LotteAnimatableIntegerValue opacity;
 
     public LotteShapeFill(JSONObject json, int frameRate, long compDuration) {
         JSONObject jsonColor = null;
@@ -31,7 +31,7 @@ public class LotteShapeFill {
             jsonOpacity = json.getJSONObject("o");
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
-            opacity = new LotteAnimatableNumberValue(jsonOpacity, frameRate, compDuration);
+            opacity = new LotteAnimatableIntegerValue(jsonOpacity, frameRate, compDuration);
             opacity.remapValues(0, 100, 0, 255);
         }
 
@@ -45,7 +45,7 @@ public class LotteShapeFill {
         return color;
     }
 
-    public LotteAnimatableNumberValue getOpacity() {
+    public LotteAnimatableIntegerValue getOpacity() {
         return opacity;
     }
 
