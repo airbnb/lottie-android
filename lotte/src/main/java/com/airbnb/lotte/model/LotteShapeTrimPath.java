@@ -1,34 +1,34 @@
 package com.airbnb.lotte.model;
 
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LotteShapeTrimPath {
-    private LotteAnimatableNumberValue start;
-    private LotteAnimatableNumberValue end;
-    private LotteAnimatableNumberValue offset;
+    private LotteAnimatableFloatValue start;
+    private LotteAnimatableFloatValue end;
+    private LotteAnimatableFloatValue offset;
 
     public LotteShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
         try {
-            start = new LotteAnimatableNumberValue(json.getJSONObject("s"), frameRate, compDuration);
-            end = new LotteAnimatableNumberValue(json.getJSONObject("e"), frameRate, compDuration);
-            offset = new LotteAnimatableNumberValue(json.getJSONObject("o"), frameRate, compDuration);
+            start = new LotteAnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration);
+            end = new LotteAnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration);
+            offset = new LotteAnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse trim path " + json, e);
         }
     }
 
-    public LotteAnimatableNumberValue getEnd() {
+    public LotteAnimatableFloatValue getEnd() {
         return end;
     }
 
-    public LotteAnimatableNumberValue getOffset() {
+    public LotteAnimatableFloatValue getOffset() {
         return offset;
     }
 
-    public LotteAnimatableNumberValue getStart() {
+    public LotteAnimatableFloatValue getStart() {
         return start;
     }
 }

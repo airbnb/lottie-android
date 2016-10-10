@@ -3,7 +3,6 @@ package com.airbnb.lotte.model;
 import com.airbnb.lotte.animation.LotteAnimatableColorValue;
 import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatableIntegerValue;
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +30,7 @@ public class LotteShapeStroke {
 
     private LotteAnimatableColorValue color;
     private LotteAnimatableIntegerValue opacity;
-    private LotteAnimatableNumberValue width;
+    private LotteAnimatableFloatValue width;
     private LineCapType capType;
     private LineJoinType joinType;
 
@@ -41,7 +40,7 @@ public class LotteShapeStroke {
             color = new LotteAnimatableColorValue(colorJson, frameRate, compDuration);
 
             JSONObject widthJson = json.getJSONObject("w");
-            width = new LotteAnimatableNumberValue(widthJson, frameRate, compDuration);
+            width = new LotteAnimatableFloatValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
             opacity = new LotteAnimatableIntegerValue(opacityJson, frameRate, compDuration);
@@ -81,7 +80,7 @@ public class LotteShapeStroke {
         return opacity;
     }
 
-    public LotteAnimatableNumberValue getWidth() {
+    public LotteAnimatableFloatValue getWidth() {
         return width;
     }
 

@@ -3,7 +3,7 @@ package com.airbnb.lotte.model;
 import android.util.Log;
 
 import com.airbnb.lotte.L;
-import com.airbnb.lotte.animation.LotteAnimatableNumberValue;
+import com.airbnb.lotte.animation.LotteAnimatableFloatValue;
 import com.airbnb.lotte.animation.LotteAnimatablePathValue;
 import com.airbnb.lotte.animation.LotteAnimatablePointValue;
 
@@ -15,9 +15,9 @@ public class LotteShapeRectangle {
 
     private LotteAnimatablePathValue position;
     private LotteAnimatablePointValue size;
-    private LotteAnimatableNumberValue cornerRadius;
+    private LotteAnimatableFloatValue cornerRadius;
 
-    public LotteShapeRectangle(JSONObject json, int frameRate, long compDuration) {
+    LotteShapeRectangle(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject positionJson = json.getJSONObject("p");
             position = new LotteAnimatablePathValue(positionJson, frameRate, compDuration);
@@ -27,7 +27,7 @@ public class LotteShapeRectangle {
 
         try {
             JSONObject cornerRadiusJson = json.getJSONObject("r");
-            cornerRadius = new LotteAnimatableNumberValue(cornerRadiusJson, frameRate, compDuration);
+            cornerRadius = new LotteAnimatableFloatValue(cornerRadiusJson, frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle corner radius.", e);
         }
@@ -42,7 +42,7 @@ public class LotteShapeRectangle {
         if (L.DBG) Log.d(TAG, "Parsed new rectangle " + toString());
     }
 
-    public LotteAnimatableNumberValue getCornerRadius() {
+    public LotteAnimatableFloatValue getCornerRadius() {
         return cornerRadius;
     }
 

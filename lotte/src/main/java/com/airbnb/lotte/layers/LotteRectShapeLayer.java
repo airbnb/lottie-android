@@ -167,10 +167,10 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
         private final RectF fillRect = new RectF();
 
         private Observable<Integer> color;
-        private Observable<Number> lineWidth;
+        private Observable<Float> lineWidth;
         private Observable<Integer> shapeAlpha;
         private Observable<Integer> transformAlpha;
-        private Observable<Number> rectCornerRadius;
+        private Observable<Float> rectCornerRadius;
         private Observable<PointF> rectPosition;
         private Observable<PointF> rectSize;
 
@@ -231,12 +231,12 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             invalidateSelf();
         }
 
-        public void setIsStroke() {
+        private void setIsStroke() {
             paint.setStyle(Paint.Style.STROKE);
             invalidateSelf();
         }
 
-        void setLineWidth(Observable<Number> lineWidth) {
+        void setLineWidth(Observable<Float> lineWidth) {
             if (this.lineWidth != null) {
                 this.lineWidth.removeChangeListener(lineWidthChangedListener);
             }
@@ -246,7 +246,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
         }
 
         private void onLineWidthChanged() {
-            paint.setStrokeWidth((float) lineWidth.getValue());
+            paint.setStrokeWidth(lineWidth.getValue());
             invalidateSelf();
         }
 
@@ -277,9 +277,9 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
-                values[i] = (float) lineDashPattern.get(i).getObservable().getValue();
+                values[i] = lineDashPattern.get(i).getObservable().getValue();
             }
-            paint.setPathEffect(new DashPathEffect(values, (float) lineDashPatternOffset.getObservable().getValue()));
+            paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getObservable().getValue()));
             invalidateSelf();
         }
 
@@ -308,7 +308,7 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
             }
         }
 
-        void setRectCornerRadius(Observable<Number> rectCornerRadius) {
+        void setRectCornerRadius(Observable<Float> rectCornerRadius) {
             if (this.rectCornerRadius != null) {
                 this.rectCornerRadius.removeChangeListener(changedListener);
             }
@@ -348,10 +348,10 @@ class LotteRectShapeLayer extends LotteAnimatableLayer {
                     rectPosition.getValue().y - halfHeight,
                     rectPosition.getValue().x + halfWidth,
                     rectPosition.getValue().y + halfHeight);
-            if ((float) rectCornerRadius.getValue() == 0) {
+            if (rectCornerRadius.getValue() == 0) {
                 canvas.drawRect(fillRect, paint);
             } else {
-                canvas.drawRoundRect(fillRect, (float) rectCornerRadius.getValue(), (float) rectCornerRadius.getValue(), paint);
+                canvas.drawRoundRect(fillRect, rectCornerRadius.getValue(), rectCornerRadius.getValue(), paint);
             }
         }
     }

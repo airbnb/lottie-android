@@ -77,9 +77,9 @@ class LotteShapeLayer extends LotteAnimatableLayer {
 
     private Observable<Path> path;
     private Observable<Integer> color;
-    private Observable<Number> lineWidth;
-    @Nullable private Observable<Number> strokeStart;
-    @Nullable private Observable<Number> strokeEnd;
+    private Observable<Float> lineWidth;
+    @Nullable private Observable<Float> strokeStart;
+    @Nullable private Observable<Float> strokeEnd;
 
     private Observable<Integer> shapeAlpha;
     private Observable<Integer> transformAlpha;
@@ -202,7 +202,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         return PixelFormat.TRANSLUCENT;
     }
 
-    void setLineWidth(Observable<Number> lineWidth) {
+    void setLineWidth(Observable<Float> lineWidth) {
         if (this.lineWidth != null) {
             this.lineWidth.removeChangeListener(lineWidthChangedListener);
         }
@@ -212,7 +212,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
     }
 
     private void onLineWidthChanged() {
-        paint.setStrokeWidth((float) lineWidth.getValue());
+        paint.setStrokeWidth(lineWidth.getValue());
         updateBounds();
         invalidateSelf();
     }
@@ -276,7 +276,7 @@ class LotteShapeLayer extends LotteAnimatableLayer {
         }
     }
 
-    void setTrimPath(Observable<Number> strokeStart, Observable<Number> strokeEnd) {
+    void setTrimPath(Observable<Float> strokeStart, Observable<Float> strokeEnd) {
         if (this.strokeStart != null) {
             this.strokeStart.removeChangeListener(trimPathChangedListener);
         }
@@ -292,8 +292,8 @@ class LotteShapeLayer extends LotteAnimatableLayer {
 
     void onTrimPathChanged() {
         if (strokeStart != null && strokeEnd != null) {
-            float strokeStartVal = (float) strokeStart.getValue();
-            float strokeEndVal = (float) strokeEnd.getValue();
+            float strokeStartVal = strokeStart.getValue();
+            float strokeEndVal = strokeEnd.getValue();
             float length = pathMeasure.getLength();
             float start = length * strokeStartVal / 100f;
             float end = length * strokeEndVal / 100f;
