@@ -1,1 +1,1 @@
-include ':LotteSample', ':lotte'
+include ':LottieSample', ':lottie'
