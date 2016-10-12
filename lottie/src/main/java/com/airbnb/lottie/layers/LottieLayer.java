@@ -81,8 +81,8 @@ public class LottieLayer {
             if (L.DBG) Log.d(TAG, "\tFrames=" + layer.inFrame + "->" + layer.outFrame);
 
             if (layer.layerType == LottieLayerType.Solid) {
-                layer.solidWidth = json.getInt("sw");
-                layer.solidHeight = json.getInt("sh");
+                layer.solidWidth = (int) (json.getInt("sw") * L.SCALE);
+                layer.solidHeight = (int) (json.getInt("sh") * L.SCALE);
                 layer.compBounds = new Rect(0, 0, layer.solidWidth, layer.solidHeight);
                 layer.solidColor = Color.parseColor(json.getString("sc"));
                 if (L.DBG) {
@@ -99,7 +99,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (opacity != null) {
-                layer.opacity = new LottieAnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration());
+                layer.opacity = new LottieAnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false);
                 layer.opacity.remapValues(0, 100, 0, 255);
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
@@ -110,7 +110,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (rotation != null) {
-                layer.rotation = new LottieAnimatableFloatValue(rotation, layer.frameRate, composition.getDuration());
+                layer.rotation = new LottieAnimatableFloatValue(rotation, layer.frameRate, composition.getDuration(), false);
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
             }
 
@@ -140,7 +140,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (scale != null) {
-                layer.scale = new LottieAnimatableScaleValue(scale, layer.frameRate, composition.getDuration());
+                layer.scale = new LottieAnimatableScaleValue(scale, layer.frameRate, composition.getDuration(), false);
                 if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.toString());
             }
 

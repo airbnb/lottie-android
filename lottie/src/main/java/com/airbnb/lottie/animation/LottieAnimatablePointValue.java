@@ -10,24 +10,29 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LottieAnimatablePointValue extends BaseLottieAnimatableValue<PointF, PointF> {
+
     public LottieAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
-        super(pointValues, frameRate, compDuration);
+        this(pointValues, frameRate, compDuration, true);
+    }
+
+    private LottieAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration, boolean isDp) {
+        super(pointValues, frameRate, compDuration, isDp);
     }
 
     @Override
-    protected PointF valueFromObject(Object object) throws JSONException {
+    protected PointF valueFromObject(Object object, float scale) throws JSONException {
         if (object instanceof JSONArray) {
-            return pointFromJsonArray((JSONArray) object);
+            return pointFromJsonArray((JSONArray) object, scale);
         } else if (object instanceof JSONObject) {
-            return pointFromJsonObject((JSONObject) object);
+            return pointFromJsonObject((JSONObject) object, scale);
         }
         throw new IllegalArgumentException("Unable to parse point from " + object);
     }
 
-    private PointF pointFromJsonArray(JSONArray values) {
+    private PointF pointFromJsonArray(JSONArray values, float scale) {
         if (values.length() >= 2) {
             try {
-                return new PointF((float) values.getDouble(0), (float) values.getDouble(1));
+                return new PointF((float) values.getDouble(0) * scale, (float) values.getDouble(1) * scale);
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Unable to parse point for " + values, e);
             }
@@ -36,7 +41,7 @@ public class LottieAnimatablePointValue extends BaseLottieAnimatableValue<PointF
         return new PointF();
     }
 
-    private PointF pointFromJsonObject(JSONObject value) {
+    private PointF pointFromJsonObject(JSONObject value, float scale) {
         try {
             Object x = value.get("x");
             Object y = value.get("y");
@@ -62,6 +67,8 @@ public class LottieAnimatablePointValue extends BaseLottieAnimatableValue<PointF
                 }
             }
 
+            point.x *= scale;
+            point.y *= scale;
             return point;
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse point for " + value);

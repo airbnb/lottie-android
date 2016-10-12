@@ -12,9 +12,9 @@ public class LottieShapeTrimPath {
 
     public LottieShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
         try {
-            start = new LottieAnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration);
-            end = new LottieAnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration);
-            offset = new LottieAnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration);
+            start = new LottieAnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration, false);
+            end = new LottieAnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration, false);
+            offset = new LottieAnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration, false);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse trim path " + json, e);
         }

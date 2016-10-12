@@ -7,6 +7,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.Observable;
@@ -27,6 +28,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
     long delay;
     long duration;
     final long compDuration;
+    private final boolean isDp;
 
     private long startFrame;
     private long durationFrames;
@@ -34,9 +36,10 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
 
     V initialValue;
 
-    BaseLottieAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration) {
+    BaseLottieAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration, boolean isDp) {
         this.frameRate = frameRate;
         this.compDuration = compDuration;
+        this.isDp = isDp;
         if (json != null) {
             init(json);
         }
@@ -51,7 +54,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                     ((JSONArray) value).getJSONObject(0).has("t")) {
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
-                initialValue = valueFromObject(value);
+                initialValue = valueFromObject(value, isDp ? L.SCALE : 1f);
                 observable.setValue(convertType(initialValue));
             }
         } catch (JSONException e) {
@@ -98,7 +101,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                     outValue = null;
                 }
 
-                V startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s")) : null;
+                V startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s"), isDp ? L.SCALE : 1f) : null;
                 if (addStartValue) {
                     if (startValue != null) {
                         if (i == 0) {
@@ -121,7 +124,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                 }
 
                 if (keyframe.has("e")) {
-                    V endValue = valueFromObject(keyframe.getJSONArray("e"));
+                    V endValue = valueFromObject(keyframe.getJSONArray("e"), isDp ? L.SCALE : 1f);
                     keyValues.add(endValue);
                     /**
                      * Timing function for time interpolation between keyframes.
@@ -171,7 +174,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
         return observable;
     }
 
-    protected abstract V valueFromObject(Object object) throws JSONException;
+    protected abstract V valueFromObject(Object object, float scale) throws JSONException;
 
     public abstract LottieKeyframeAnimation animationForKeyPath();
 }

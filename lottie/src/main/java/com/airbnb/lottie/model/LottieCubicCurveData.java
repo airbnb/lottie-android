@@ -7,7 +7,7 @@ public class LottieCubicCurveData {
     private final PointF controlPoint2;
     private final PointF vertex;
 
-    public LottieCubicCurveData() {
+    LottieCubicCurveData() {
         controlPoint1 = new PointF();
         controlPoint2 = new PointF();
         vertex = new PointF();
@@ -19,7 +19,7 @@ public class LottieCubicCurveData {
         this.vertex = vertex;
     }
 
-    public void setControlPoint1(float x, float y) {
+    void setControlPoint1(float x, float y) {
         controlPoint1.set(x, y);
     }
 
@@ -27,7 +27,7 @@ public class LottieCubicCurveData {
         return controlPoint1;
     }
 
-    public void setControlPoint2(float x, float y) {
+    void setControlPoint2(float x, float y) {
         controlPoint2.set(x, y);
     }
 
@@ -35,7 +35,7 @@ public class LottieCubicCurveData {
         return controlPoint2;
     }
 
-    public void setVertex(float x, float y) {
+    void setVertex(float x, float y) {
         vertex.set(x, y);
     }
 

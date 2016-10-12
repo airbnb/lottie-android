@@ -43,7 +43,7 @@ public class LottieShapeStroke {
             width = new LottieAnimatableFloatValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
-            opacity = new LottieAnimatableIntegerValue(opacityJson, frameRate, compDuration);
+            opacity = new LottieAnimatableIntegerValue(opacityJson, frameRate, compDuration, false);
             opacity.remapValues(0, 100, 0, 255);
 
             capType = LineCapType.values()[json.getInt("lc") - 1];

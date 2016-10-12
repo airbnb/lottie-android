@@ -51,7 +51,7 @@ public class LottieShapeTransform {
         if (jsonScale == null) {
             throw new IllegalStateException("Transform has no scale.");
         }
-        scale = new LottieAnimatableScaleValue(jsonScale, frameRate, compDuration);
+        scale = new LottieAnimatableScaleValue(jsonScale, frameRate, compDuration, false);
 
         JSONObject jsonRotation = null;
         try {
@@ -60,7 +60,7 @@ public class LottieShapeTransform {
         if (jsonRotation == null) {
             throw new IllegalStateException("Transform has no rotation.");
         }
-        rotation = new LottieAnimatableFloatValue(jsonRotation, frameRate, compDuration);
+        rotation = new LottieAnimatableFloatValue(jsonRotation, frameRate, compDuration, false);
 
         JSONObject jsonOpacity = null;
         try {
@@ -69,7 +69,7 @@ public class LottieShapeTransform {
         if (jsonOpacity == null) {
             throw new IllegalStateException("Transform has no opacity.");
         }
-        opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration);
+        opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
         opacity.remapValues(0, 100, 0, 255);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());

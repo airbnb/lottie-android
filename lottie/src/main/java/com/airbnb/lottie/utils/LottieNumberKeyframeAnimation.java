@@ -44,6 +44,10 @@ public class LottieNumberKeyframeAnimation<T extends Number> extends LottieKeyfr
         Number startValue = values.get(keyframeIndex);
         Number endValue = values.get(keyframeIndex + 1);
 
-        return klass.cast(lerp(startValue.floatValue(), endValue.floatValue(), percentageIntoFrame));
+        if (klass.isAssignableFrom(Integer.class)) {
+            return klass.cast(lerp(startValue.intValue(), endValue.intValue(), percentageIntoFrame));
+        } else {
+            return klass.cast(lerp(startValue.floatValue(), endValue.floatValue(), percentageIntoFrame));
+        }
     }
 }

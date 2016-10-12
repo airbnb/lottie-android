@@ -15,15 +15,19 @@ public class LottieAnimatableIntegerValue extends BaseLottieAnimatableValue<Inte
     @Nullable private RemapInterface<Integer> remapInterface;
 
     public LottieAnimatableIntegerValue(JSONObject json, int frameRate, long compDuration) {
-        super(json, frameRate, compDuration);
+        this(json, frameRate, compDuration, true);
+    }
+
+    public LottieAnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
+        super(json, frameRate, compDuration, isDp);
     }
 
     @Override
-    protected Integer valueFromObject(Object object) throws JSONException {
+    protected Integer valueFromObject(Object object, float scale) throws JSONException {
         if (object instanceof Integer) {
-            return (Integer) object;
+            return Math.round((Integer) object * scale);
         } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Integer) {
-            return ((JSONArray) object).getInt(0);
+            return Math.round(((JSONArray) object).getInt(0) * scale);
         }
         return null;
     }

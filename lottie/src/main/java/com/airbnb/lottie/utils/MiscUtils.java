@@ -28,4 +28,8 @@ public class MiscUtils {
     public static float lerp(float a, float b, @FloatRange(from = 0f, to = 1f) float percentage) {
         return a + percentage * (b - a);
     }
+
+    public static int lerp(int a, int b, @FloatRange(from = 0f, to = 1f) float percentage) {
+        return (int) (a + percentage * (b - a));
+    }
 }

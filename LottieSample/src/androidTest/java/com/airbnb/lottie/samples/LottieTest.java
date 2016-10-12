@@ -21,9 +21,7 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
         TestRobot.testAnimatedFile(getActivity(), "CheckSwitch.json");
         TestRobot.testAnimatedFile(getActivity(), "Alarm.json");
         TestRobot.testAnimatedFile(getActivity(), "Stars.json");
-        TestRobot.testAnimatedFile(getActivity(), "Selfie.json");
         TestRobot.testAnimatedFile(getActivity(), "LoopPlayOnce.json");
         TestRobot.testAnimatedFile(getActivity(), "City.json");
-        TestRobot.testAnimatedFile(getActivity(), "House.json");
     }
 }

@@ -31,7 +31,7 @@ public class LottieShapeFill {
             jsonOpacity = json.getJSONObject("o");
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
-            opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration);
+            opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
             opacity.remapValues(0, 100, 0, 255);
         }
 

@@ -3,6 +3,7 @@ package com.airbnb.lottie.model;
 import android.graphics.Rect;
 import android.util.LongSparseArray;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.layers.LottieLayer;
 
 import org.json.JSONArray;
@@ -13,6 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LottieComposition {
+    /**
+     * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixell leaving ~2.3M pixels available.
+     * Reduce the number a little bit for safety.
+     *
+     * Hopefully this can be hardware accelerated someday.
+     */
+    private static final int MAX_PIXELS = 2000000;
 
     public static LottieComposition fromJson(JSONObject json) {
         LottieComposition composition = new LottieComposition();
@@ -26,7 +34,15 @@ public class LottieComposition {
             // ignore.
         }
         if (width != -1 && height != -1) {
-            composition.bounds = new Rect(0, 0, width, height);
+            int scaledWidth = (int) (width * L.SCALE);
+            int scaledHeight = (int) (height * L.SCALE);
+            if (scaledWidth * scaledHeight > MAX_PIXELS) {
+                float factor = (float) Math.sqrt(MAX_PIXELS / (float) (scaledWidth * scaledHeight));
+                scaledWidth *= factor;
+                scaledHeight *= factor;
+                L.SCALE *= factor;
+            }
+            composition.bounds = new Rect(0, 0, scaledWidth, scaledHeight);
         }
 
         try {

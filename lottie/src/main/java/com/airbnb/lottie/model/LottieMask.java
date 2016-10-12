@@ -37,7 +37,7 @@ public class LottieMask {
             }
 
             maskPath = new LottieAnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
-            LottieAnimatableIntegerValue opacity = new LottieAnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration);
+            LottieAnimatableIntegerValue opacity = new LottieAnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false);
             opacity.remapValues(0, 100, 0, 255);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);

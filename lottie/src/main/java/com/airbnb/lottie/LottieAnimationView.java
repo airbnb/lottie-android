@@ -59,6 +59,7 @@ public class LottieAnimationView extends ImageView {
     }
 
     private void init(@Nullable AttributeSet attrs) {
+        L.SCALE = getResources().getDisplayMetrics().density;
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
         String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
         if (fileName != null) {

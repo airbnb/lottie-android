@@ -15,20 +15,24 @@ public class LottieAnimatableFloatValue extends BaseLottieAnimatableValue<Float,
     @Nullable private RemapInterface<Float> remapInterface;
 
     public LottieAnimatableFloatValue(JSONObject json, int frameRate, long compDuration) {
-        super(json, frameRate, compDuration);
+        this(json, frameRate, compDuration, true);
+    }
+
+    public LottieAnimatableFloatValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
+        super(json, frameRate, compDuration, isDp);
     }
 
     @Override
-    protected Float valueFromObject(Object object) throws JSONException {
+    protected Float valueFromObject(Object object, float scale) throws JSONException {
         if (object instanceof JSONArray) {
             object = ((JSONArray) object).get(0);
         }
         if (object instanceof Float) {
-            return (Float) object;
+            return (Float) object * scale;
         } else if (object instanceof Double) {
-            return new Float((Double) object);
+            return (float) ((Double) object * scale);
         } else if (object instanceof Integer) {
-            return new Float((Integer) object);
+            return (Integer) object * scale;
         }
         return null;
     }

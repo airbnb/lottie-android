@@ -20,13 +20,17 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
     private final boolean closed;
 
     public LottieAnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
-        super(null, frameRate, compDuration);
+        this(json, frameRate, compDuration, closed, true);
+    }
+
+    private LottieAnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed, boolean isDp) {
+        super(null, frameRate, compDuration, isDp);
         this.closed = closed;
         init(json);
     }
 
     @Override
-    protected LottieShapeData valueFromObject(Object object) throws JSONException {
+    protected LottieShapeData valueFromObject(Object object, float scale) throws JSONException {
         JSONObject pointsData = null;
         if (object instanceof JSONArray) {
             try {
@@ -62,6 +66,8 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
         LottieShapeData shape = new LottieShapeData();
 
         PointF vertex = vertexAtIndex(0, pointsArray);
+        vertex.x *= scale;
+        vertex.y *= scale;
         shape.setInitialPoint(vertex);
 
         for (int i = 1; i < pointsArray.length(); i++) {
@@ -72,6 +78,14 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
 
             PointF shapeCp1 = addPoints(previousVertex, cp1);
             PointF shapeCp2 = addPoints(vertex, cp2);
+
+            shapeCp1.x *= scale;
+            shapeCp1.y *= scale;
+            shapeCp2.x *= scale;
+            shapeCp2.y *= scale;
+            vertex.x *= scale;
+            vertex.y *= scale;
+
             shape.addCurve(new LottieCubicCurveData(shapeCp1, shapeCp2, vertex));
         }
 
@@ -83,13 +97,21 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
 
             PointF shapeCp1 = addPoints(previousVertex, cp1);
             PointF shapeCp2 = addPoints(vertex, cp2);
+
+            if (scale != 1f) {
+                shapeCp1.x *= scale;
+                shapeCp1.y *= scale;
+                shapeCp2.x *= scale;
+                shapeCp2.y *= scale;
+                vertex.x *= scale;
+                vertex.y *= scale;
+            }
+
             shape.addCurve(new LottieCubicCurveData(shapeCp1, shapeCp2, vertex));
         }
-
         return shape;
 
     }
-
 
     private PointF vertexAtIndex(int idx, JSONArray points) {
         if (idx >= points.length()) {

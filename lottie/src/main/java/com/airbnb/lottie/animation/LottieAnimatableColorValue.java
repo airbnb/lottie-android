@@ -12,11 +12,11 @@ import org.json.JSONObject;
 public class LottieAnimatableColorValue extends BaseLottieAnimatableValue<Integer, Integer> {
 
     public LottieAnimatableColorValue(JSONObject json, int frameRate, long compDuration) {
-        super(json, frameRate, compDuration);
+        super(json, frameRate, compDuration, false);
     }
 
     @Override
-    protected Integer valueFromObject(Object object) throws JSONException {
+    protected Integer valueFromObject(Object object, float scale) throws JSONException {
         JSONArray colorArray = (JSONArray) object;
         if (colorArray.length() == 4) {
             boolean shouldUse255 = true;

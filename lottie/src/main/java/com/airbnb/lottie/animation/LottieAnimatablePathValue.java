@@ -5,6 +5,7 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottiePathKeyframeAnimation;
 import com.airbnb.lottie.utils.Observable;
@@ -24,6 +25,7 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private final List<Interpolator> interpolators = new ArrayList<>();
     private final long compDuration;
     private final int frameRate;
+    private final boolean isDp;
 
     private PointF initialPoint;
     private final SegmentedPath animationPath = new SegmentedPath();
@@ -32,10 +34,15 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private long startFrame;
     private long durationFrames;
 
-    @SuppressWarnings("EmptyCatchBlock")
     public LottieAnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration) {
+        this(pointValues, frameRate, compDuration, true);
+    }
+
+    @SuppressWarnings("EmptyCatchBlock")
+    public LottieAnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration, boolean isDp) {
         this.compDuration = compDuration;
         this.frameRate = frameRate;
+        this.isDp = isDp;
 
         Object value = null;
         try {
@@ -143,7 +150,8 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
                     if (keyframe.has("o") && keyframe.has("i")) {
                         cp1 = pointFromValueObject(keyframe.getJSONObject("o"));
                         cp2 = pointFromValueObject(keyframe.getJSONObject("i"));
-                        interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
+                        float unScale = isDp ? L.SCALE : 1f;
+                        interpolator = PathInterpolatorCompat.create(cp1.x / unScale, cp1.y / unScale, cp2.x / unScale, cp2.y / unScale);
                     } else {
                         interpolator = new LinearInterpolator();
                     }
@@ -166,7 +174,8 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private PointF pointFromValueArray(JSONArray values) {
         if (values.length() >= 2) {
             try {
-                return new PointF((float) values.getDouble(0), (float) values.getDouble(1));
+                float scale = isDp ? L.SCALE : 1;
+                return new PointF((float) values.getDouble(0) * scale, (float) values.getDouble(1) * scale);
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Unable to parse point for " + values, e);
             }
@@ -199,6 +208,11 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
                 } else {
                     point.y = new Float((Double) y);
                 }
+            }
+
+            if (isDp) {
+                point.y *= isDp ? L.SCALE : 1f;
+                point.x *= isDp ? L.SCALE : 1f;
             }
 
             return point;
