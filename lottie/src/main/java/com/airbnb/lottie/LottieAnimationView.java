@@ -60,14 +60,14 @@ public class LottieAnimationView extends ImageView {
 
     private void init(@Nullable AttributeSet attrs) {
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
-        String fileName = ta.getString(R.styleable.LottieAnimationView_lotte_fileName);
+        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
         if (fileName != null) {
             setAnimation(fileName);
         }
-        if (ta.getBoolean(R.styleable.LottieAnimationView_lotte_autoPlay, false)) {
+        if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
             rootAnimatableLayer.play();
         }
-        rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lotte_loop, false));
+        rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
         ta.recycle();
         setLayerType(LAYER_TYPE_SOFTWARE, null);
     }

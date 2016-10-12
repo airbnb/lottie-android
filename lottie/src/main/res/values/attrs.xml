@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LottieAnimationView">
-        <attr name="lotte_fileName" format="string"/>
-        <attr name="lotte_autoPlay" format="boolean" />
-        <attr name="lotte_loop" format="boolean" />
+        <attr name="lottie_fileName" format="string"/>
+        <attr name="lottie_autoPlay" format="boolean" />
+        <attr name="lottie_loop" format="boolean" />
     </declare-styleable>
 </resources>

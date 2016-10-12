@@ -19,6 +19,6 @@
         android:layout_height="200dp"
         android:background="@drawable/outline"
         android:orientation="vertical"
-        app:lotte_autoPlay="true"
-        app:lotte_loop="true"/>
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
 </LinearLayout>

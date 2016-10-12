@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/outline"
-        app:lotte_loop="true"/>
+        app:lottie_loop="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
