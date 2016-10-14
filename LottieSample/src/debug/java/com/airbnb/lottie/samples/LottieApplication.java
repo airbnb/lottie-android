@@ -2,6 +2,10 @@ package com.airbnb.lottie.samples;
 
 import android.app.Application;
 import android.support.v4.util.Pair;
+import android.view.Gravity;
+
+import com.codemonkeylabs.fpslibrary.FrameDataCallback;
+import com.codemonkeylabs.fpslibrary.TinyDancer;
 
 public class LottieApplication extends Application implements ILottieApplication {
 
@@ -12,18 +16,18 @@ public class LottieApplication extends Application implements ILottieApplication
     @Override
     public void onCreate() {
         super.onCreate();
-//        TinyDancer.create()
-//                .startingGravity(Gravity.TOP|Gravity.END)
-//                .startingXPosition(0)
-//                .startingYPosition(0)
-//                .addFrameDataCallback(new FrameDataCallback() {
-//                    @Override
-//                    public void doFrame(long previousFrameNs, long currentFrameNs, int droppedFrames) {
-//                        LottieApplication.this.droppedFrames += droppedFrames;
-//                        LottieApplication.this.currentFrameNs = currentFrameNs;
-//                    }
-//                })
-//                .show(this);
+        TinyDancer.create()
+                .startingGravity(Gravity.TOP|Gravity.END)
+                .startingXPosition(0)
+                .startingYPosition(0)
+                .addFrameDataCallback(new FrameDataCallback() {
+                    @Override
+                    public void doFrame(long previousFrameNs, long currentFrameNs, int droppedFrames) {
+                        LottieApplication.this.droppedFrames += droppedFrames;
+                        LottieApplication.this.currentFrameNs = currentFrameNs;
+                    }
+                })
+                .show(this);
     }
 
     @Override
