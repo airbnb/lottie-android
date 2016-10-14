@@ -133,8 +133,7 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
     @Override
     public LottieKeyframeAnimation animationForKeyPath() {
         LottieShapeKeyframeAnimation animation = new LottieShapeKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
-        // TODO: use this
-//        animation.setStartDelay(delay);
+        animation.setStartDelay(delay);
         animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Path>() {
             @Override
             public void onValueChanged(Path progress) {
