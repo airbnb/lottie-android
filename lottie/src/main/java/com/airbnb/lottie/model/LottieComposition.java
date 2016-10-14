@@ -15,12 +15,12 @@ import java.util.List;
 
 public class LottieComposition {
     /**
-     * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixell leaving ~2.3M pixels available.
+     * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel leaving ~2.3M pixels available.
      * Reduce the number a little bit for safety.
      *
      * Hopefully this can be hardware accelerated someday.
      */
-    private static final int MAX_PIXELS = 2000000;
+    private static final int MAX_PIXELS = 1000;
 
     public static LottieComposition fromJson(JSONObject json) {
         LottieComposition composition = new LottieComposition();
@@ -37,7 +37,7 @@ public class LottieComposition {
             int scaledWidth = (int) (width * L.SCALE);
             int scaledHeight = (int) (height * L.SCALE);
             if (scaledWidth * scaledHeight > MAX_PIXELS) {
-                float factor = (float) Math.sqrt(MAX_PIXELS / (float) (scaledWidth * scaledHeight));
+                float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
                 scaledWidth *= factor;
                 scaledHeight *= factor;
                 L.SCALE *= factor;
