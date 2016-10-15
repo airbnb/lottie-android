@@ -70,7 +70,6 @@ public class LottieAnimationView extends ImageView {
         }
         rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
         ta.recycle();
-        setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override
@@ -96,9 +95,19 @@ public class LottieAnimationView extends ImageView {
     }
 
     @Override
+    public void invalidate(int l, int t, int r, int b) {
+        super.invalidate(l, t, r, b);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         hasInvalidatedThisFrame = false;
         super.onDraw(canvas);
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
     }
 
     @Override
@@ -197,6 +206,9 @@ public class LottieAnimationView extends ImageView {
     }
 
     private void setComposition(@NonNull LottieComposition composition) {
+        if (getWindowToken() == null) {
+            return;
+        }
         this.composition = composition;
         rootAnimatableLayer.setCompDuration(composition.getDuration());
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
