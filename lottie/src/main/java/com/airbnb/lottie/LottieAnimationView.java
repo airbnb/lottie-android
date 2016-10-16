@@ -70,6 +70,7 @@ public class LottieAnimationView extends ImageView {
         }
         rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
         ta.recycle();
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override
