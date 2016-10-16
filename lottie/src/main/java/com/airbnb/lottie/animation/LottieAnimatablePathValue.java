@@ -6,6 +6,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.L;
+import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottiePathKeyframeAnimation;
 import com.airbnb.lottie.utils.Observable;
@@ -25,7 +26,6 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private final List<Interpolator> interpolators = new ArrayList<>();
     private final long compDuration;
     private final int frameRate;
-    private final boolean isDp;
 
     private PointF initialPoint;
     private final SegmentedPath animationPath = new SegmentedPath();
@@ -35,29 +35,21 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private long durationFrames;
 
     public LottieAnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration) {
-        this(pointValues, frameRate, compDuration, true);
-    }
-
-    @SuppressWarnings("EmptyCatchBlock")
-    public LottieAnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration, boolean isDp) {
         this.compDuration = compDuration;
         this.frameRate = frameRate;
-        this.isDp = isDp;
 
-        Object value = null;
+        Object value;
         try {
             value = pointValues.get("k");
-        } catch (JSONException e) { }
-        if (value == null) {
+        } catch (JSONException e) {
             throw new IllegalArgumentException("Point values have no keyframes.");
         }
 
         if (value instanceof JSONArray) {
-            Object firstObject = null;
+            Object firstObject;
             try {
                 firstObject = ((JSONArray) value).get(0);
-            } catch (JSONException e) { }
-            if (firstObject == null) {
+            } catch (JSONException e) {
                 throw new IllegalArgumentException("Unable to parse value.");
             }
 
@@ -66,12 +58,14 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
                 // Single Value, no animation
-                initialPoint = pointFromValueArray((JSONArray) value);
+                initialPoint = JsonUtils.pointFromJsonArray((JSONArray) value, L.SCALE);
                 observable.setValue(initialPoint);
             }
         }
+
     }
 
+    @SuppressWarnings("Duplicates")
     private void buildAnimationForKeyframes(JSONArray keyframes) {
         try {
             for (int i = 0; i < keyframes.length(); i++) {
@@ -112,7 +106,7 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
                     outPoint = null;
                 }
 
-                PointF startPoint = keyframe.has("s") ? pointFromValueArray(keyframe.getJSONArray("s")) : new PointF();
+                PointF startPoint = keyframe.has("s") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("s"), L.SCALE) : new PointF();
                 if (addStartValue) {
                     if (i == 0) {
                         animationPath.moveTo(startPoint.x, startPoint.y);
@@ -134,9 +128,9 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
                 PointF cp1;
                 PointF cp2;
                 if (keyframe.has("e")) {
-                    cp1 = keyframe.has("to") ? pointFromValueArray(keyframe.getJSONArray("to")) : null;
-                    cp2 = keyframe.has("ti") ? pointFromValueArray(keyframe.getJSONArray("ti")) : null;
-                    PointF vertex = pointFromValueArray(keyframe.getJSONArray("e"));
+                    cp1 = keyframe.has("to") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("to"), L.SCALE) : null;
+                    cp2 = keyframe.has("ti") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("ti"), L.SCALE) : null;
+                    PointF vertex = JsonUtils.pointFromJsonArray(keyframe.getJSONArray("e"), L.SCALE);
                     if (cp1 != null && cp2 != null) {
                         animationPath.cubicTo(
                                 startPoint.x + cp1.x, startPoint.y + cp1.y,
@@ -148,10 +142,9 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
 
                     Interpolator interpolator;
                     if (keyframe.has("o") && keyframe.has("i")) {
-                        cp1 = pointFromValueObject(keyframe.getJSONObject("o"));
-                        cp2 = pointFromValueObject(keyframe.getJSONObject("i"));
-                        float unScale = isDp ? L.SCALE : 1f;
-                        interpolator = PathInterpolatorCompat.create(cp1.x / unScale, cp1.y / unScale, cp2.x / unScale, cp2.y / unScale);
+                        cp1 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("o"), L.SCALE);
+                        cp2 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("i"), L.SCALE);
+                        interpolator = PathInterpolatorCompat.create(cp1.x / L.SCALE, cp1.y / L.SCALE, cp2.x / L.SCALE, cp2.y / L.SCALE);
                     } else {
                         interpolator = new LinearInterpolator();
                     }
@@ -168,56 +161,6 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
             }
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse keyframes " + keyframes, e);
-        }
-    }
-
-    private PointF pointFromValueArray(JSONArray values) {
-        if (values.length() >= 2) {
-            try {
-                float scale = isDp ? L.SCALE : 1;
-                return new PointF((float) values.getDouble(0) * scale, (float) values.getDouble(1) * scale);
-            } catch (JSONException e) {
-                throw new IllegalArgumentException("Unable to parse point for " + values, e);
-            }
-        }
-
-        return new PointF();
-    }
-
-    private PointF pointFromValueObject(JSONObject value) {
-        try {
-            Object x = value.get("x");
-            Object y = value.get("y");
-
-            PointF point = new PointF();
-            if (x instanceof JSONArray) {
-                point.x = (float) ((JSONArray) x).getDouble(0);
-            } else {
-                if (x instanceof Integer) {
-                    point.x = (Integer) x;
-                } else {
-                    point.x = new Float((Double) x);
-                }
-            }
-
-            if (y instanceof JSONArray) {
-                point.y = (float) ((JSONArray) y).getDouble(0);
-            } else {
-                if (y instanceof Integer) {
-                    point.y = (Integer) y;
-                } else {
-                    point.y = new Float((Double) y);
-                }
-            }
-
-            if (isDp) {
-                point.y *= isDp ? L.SCALE : 1f;
-                point.x *= isDp ? L.SCALE : 1f;
-            }
-
-            return point;
-        } catch (JSONException e) {
-            throw new IllegalArgumentException("Unable to parse point for " + value);
         }
     }
 

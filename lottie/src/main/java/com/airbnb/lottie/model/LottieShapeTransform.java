@@ -9,6 +9,7 @@ import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
 import com.airbnb.lottie.animation.LottieAnimatablePathValue;
 import com.airbnb.lottie.animation.LottieAnimatablePointValue;
 import com.airbnb.lottie.animation.LottieAnimatableScaleValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,54 +24,49 @@ public class LottieShapeTransform {
     private LottieAnimatableFloatValue rotation;
     private LottieAnimatableIntegerValue opacity;
 
-    public LottieShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    LottieShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         this.compBounds = compBounds;
 
-        JSONObject jsonPosition = null;
+        JSONObject jsonPosition;
         try {
             jsonPosition = json.getJSONObject("p");
-        } catch (JSONException e) { }
-        if (jsonPosition == null) {
+        } catch (JSONException e) {
             throw new IllegalStateException("Transform has no position.");
         }
         position = new LottieAnimatablePointValue(jsonPosition, frameRate, compDuration);
 
-        JSONObject jsonAnchor = null;
+        JSONObject jsonAnchor;
         try {
             jsonAnchor = json.getJSONObject("a");
-        } catch (JSONException e) { }
-        if (jsonAnchor == null) {
+        } catch (JSONException e) {
             throw new IllegalStateException("Transform has no anchor.");
         }
         anchor = new LottieAnimatablePathValue(jsonAnchor, frameRate, compDuration);
 
-        JSONObject jsonScale = null;
+        JSONObject jsonScale;
         try {
             jsonScale = json.getJSONObject("s");
-        } catch (JSONException e) { }
-        if (jsonScale == null) {
+        } catch (JSONException e) {
             throw new IllegalStateException("Transform has no scale.");
         }
         scale = new LottieAnimatableScaleValue(jsonScale, frameRate, compDuration, false);
 
-        JSONObject jsonRotation = null;
+        JSONObject jsonRotation;
         try {
             jsonRotation = json.getJSONObject("r");
-        } catch (JSONException e) { }
-        if (jsonRotation == null) {
+        } catch (JSONException e) {
             throw new IllegalStateException("Transform has no rotation.");
         }
         rotation = new LottieAnimatableFloatValue(jsonRotation, frameRate, compDuration, false);
 
-        JSONObject jsonOpacity = null;
+        JSONObject jsonOpacity;
         try {
             jsonOpacity = json.getJSONObject("o");
-        } catch (JSONException e) { }
-        if (jsonOpacity == null) {
+        } catch (JSONException e) {
             throw new IllegalStateException("Transform has no opacity.");
         }
         opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
-        opacity.remapValues(0, 100, 0, 255);
+        opacity.remap100To255();
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }
@@ -97,6 +93,10 @@ public class LottieShapeTransform {
 
     public LottieAnimatableIntegerValue getOpacity() {
         return opacity;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
     }
 
     @Override

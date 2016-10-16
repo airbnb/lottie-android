@@ -5,25 +5,30 @@ import android.support.annotation.FloatRange;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class LottieAnimationGroup {
 
-    private final List<LottieKeyframeAnimation> animations;
+    public static LottieAnimationGroup forAnimatableValues(LottieAnimatableValue... animatableValues) {
+        List<LottieKeyframeAnimation> animations = new ArrayList<>(animatableValues.length);
 
-    public LottieAnimationGroup(Set<LottieAnimatableValue> animations) {
-        this.animations = new ArrayList<>(animations.size());
-
-        for (LottieAnimatableValue animatableValue : animations) {
+        for (LottieAnimatableValue animatableValue : animatableValues) {
             if (animatableValue.hasAnimation()) {
                 LottieKeyframeAnimation animation = animatableValue.animationForKeyPath();
-                this.animations.add(animation);
+                animations.add(animation);
             }
         }
+        return new LottieAnimationGroup(animations);
     }
 
-    public LottieAnimationGroup(List<LottieKeyframeAnimation> animations) {
+    public static LottieAnimationGroup forKeyframeAnimations(LottieKeyframeAnimation... animations) {
+        return new LottieAnimationGroup(Arrays.asList(animations));
+    }
+
+    private final List<LottieKeyframeAnimation> animations;
+
+    private LottieAnimationGroup(List<LottieKeyframeAnimation> animations) {
         this.animations = animations;
     }
 

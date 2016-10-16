@@ -50,22 +50,6 @@ public class LottieAnimatableFloatValue extends BaseLottieAnimatableValue<Float,
         return animation;
     }
 
-    public void remapValues(final float fromMin, final float fromMax, final float toMin, final float toMax) {
-        remapInterface = new RemapInterface<Float>() {
-            @Override
-            public Float remap(Float inValue) {
-                if (inValue < fromMin) {
-                    return toMin;
-                } else if (inValue > fromMax) {
-                    return toMax;
-                } else {
-                    return toMin + (inValue / (fromMax - fromMin) * (toMax - toMin));
-                }
-            }
-        };
-        observable.setValue(remapInterface.remap(observable.getValue()));
-    }
-
     public Float getInitialValue() {
         if (remapInterface != null) {
             return remapInterface.remap(initialValue);

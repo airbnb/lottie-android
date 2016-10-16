@@ -6,6 +6,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
 import com.airbnb.lottie.animation.LottieAnimatablePathValue;
 import com.airbnb.lottie.animation.LottieAnimatablePointValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +53,10 @@ public class LottieShapeRectangle {
 
     public LottieAnimatablePathValue getPosition() {
         return position;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getCornerRadius(), getSize(), getPosition());
     }
 
     @Override

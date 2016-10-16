@@ -14,10 +14,6 @@ public class LottieAnimatableIntegerValue extends BaseLottieAnimatableValue<Inte
 
     @Nullable private RemapInterface<Integer> remapInterface;
 
-    public LottieAnimatableIntegerValue(JSONObject json, int frameRate, long compDuration) {
-        this(json, frameRate, compDuration, true);
-    }
-
     public LottieAnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
         super(json, frameRate, compDuration, isDp);
     }
@@ -45,7 +41,12 @@ public class LottieAnimatableIntegerValue extends BaseLottieAnimatableValue<Inte
         return animation;
     }
 
-    public void remapValues(final int fromMin, final int fromMax, final int toMin, final int toMax) {
+    public void remap100To255() {
+        remapValues(0, 100, 0, 255);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void remapValues(final int fromMin, final int fromMax, final int toMin, final int toMax) {
         remapInterface = new RemapInterface<Integer>() {
             @Override
             public Integer remap(Integer inValue) {

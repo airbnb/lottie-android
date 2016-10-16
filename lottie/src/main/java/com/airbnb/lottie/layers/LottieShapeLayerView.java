@@ -3,8 +3,6 @@ package com.airbnb.lottie.layers;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.LottieAnimatableValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
 import com.airbnb.lottie.model.LottieShapeFill;
 import com.airbnb.lottie.model.LottieShapePath;
 import com.airbnb.lottie.model.LottieShapeStroke;
@@ -12,9 +10,6 @@ import com.airbnb.lottie.model.LottieShapeTransform;
 import com.airbnb.lottie.model.LottieShapeTrimPath;
 import com.airbnb.lottie.utils.LottieTransform3D;
 import com.airbnb.lottie.utils.Observable;
-
-import java.util.HashSet;
-import java.util.Set;
 
 class LottieShapeLayerView extends LottieAnimatableLayer {
 
@@ -77,40 +72,20 @@ class LottieShapeLayerView extends LottieAnimatableLayer {
 
     private void buildAnimation() {
         if (transformModel != null) {
-            Set<LottieAnimatableValue> propertyAnimations = new HashSet<>();
-            propertyAnimations.add(transformModel.getOpacity());
-            propertyAnimations.add(transformModel.getPosition());
-            propertyAnimations.add(transformModel.getAnchor());
-            propertyAnimations.add(transformModel.getScale());
-            propertyAnimations.add(transformModel.getRotation());
-            addAnimation(new LottieAnimationGroup(propertyAnimations));
+            addAnimation(transformModel.createAnimation());
         }
 
         if (stroke != null && strokeLayer != null) {
-            Set<LottieAnimatableValue> propertyAnimations = new HashSet<>();
-            propertyAnimations.add(stroke.getColor());
-            propertyAnimations.add(stroke.getOpacity());
-            propertyAnimations.add(stroke.getWidth());
-            propertyAnimations.add(path.getShapePath());
-            if (!stroke.getLineDashPattern().isEmpty()) {
-                propertyAnimations.add(stroke.getLineDashPattern().get(0));
-                propertyAnimations.add(stroke.getLineDashPattern().get(1));
-                propertyAnimations.add(stroke.getDashOffset());
-            }
+            strokeLayer.addAnimation(stroke.createAnimation());
+            strokeLayer.addAnimation(path.createAnimation());
             if (trim != null) {
-                propertyAnimations.add(trim.getStart());
-                propertyAnimations.add(trim.getEnd());
-                propertyAnimations.add(trim.getOffset());
+                strokeLayer.addAnimation(trim.createAnimation());
             }
-            strokeLayer.addAnimation(new LottieAnimationGroup(propertyAnimations));
         }
 
         if (fill != null && fillLayer != null) {
-            Set<LottieAnimatableValue> propertyAnimations = new HashSet<>();
-            propertyAnimations.add(fill.getColor());
-            propertyAnimations.add(fill.getOpacity());
-            propertyAnimations.add(path.getShapePath());
-            fillLayer.addAnimation(new LottieAnimationGroup(propertyAnimations));
+            fillLayer.addAnimation(fill.createAnimation());
+            fillLayer.addAnimation(path.createAnimation());
         }
     }
 

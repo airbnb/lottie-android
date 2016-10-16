@@ -97,15 +97,6 @@ public class LottieAnimationView extends ImageView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (rootAnimatableLayer != null && MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY && MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
-            setMeasuredDimension(rootAnimatableLayer.getBounds().width(), rootAnimatableLayer.getBounds().height());
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-    }
-
-    @Override
     protected boolean verifyDrawable(@NonNull Drawable drawable) {
         return true;
     }
@@ -119,19 +110,9 @@ public class LottieAnimationView extends ImageView {
     }
 
     @Override
-    public void invalidate(int l, int t, int r, int b) {
-        super.invalidate(l, t, r, b);
-    }
-
-    @Override
     protected void onDraw(Canvas canvas) {
         hasInvalidatedThisFrame = false;
         super.onDraw(canvas);
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
     }
 
     @Override

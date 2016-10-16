@@ -3,8 +3,6 @@ package com.airbnb.lottie.layers;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.LottieAnimatableValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
 import com.airbnb.lottie.model.LottieShapeCircle;
 import com.airbnb.lottie.model.LottieShapeFill;
 import com.airbnb.lottie.model.LottieShapeGroup;
@@ -15,9 +13,7 @@ import com.airbnb.lottie.model.LottieShapeTransform;
 import com.airbnb.lottie.model.LottieShapeTrimPath;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 class LottieGroupLayerView extends LottieAnimatableLayer {
 
@@ -86,14 +82,8 @@ class LottieGroupLayerView extends LottieAnimatableLayer {
     }
 
     private void buildAnimation() {
-        Set<LottieAnimatableValue> propertyAnimations = new HashSet<>();
         if (shapeTransform != null) {
-            propertyAnimations.add(shapeTransform.getOpacity());
-            propertyAnimations.add(shapeTransform.getPosition());
-            propertyAnimations.add(shapeTransform.getAnchor());
-            propertyAnimations.add(shapeTransform.getScale());
-            propertyAnimations.add(shapeTransform.getRotation());
+            addAnimation(shapeTransform.createAnimation());
         }
-        addAnimation(new LottieAnimationGroup(propertyAnimations));
     }
 }

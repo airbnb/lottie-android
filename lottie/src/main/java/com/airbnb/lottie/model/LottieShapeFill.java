@@ -5,6 +5,7 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LottieAnimatableColorValue;
 import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +33,7 @@ public class LottieShapeFill {
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
             opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
-            opacity.remapValues(0, 100, 0, 255);
+            opacity.remap100To255();
         }
 
         try {
@@ -47,6 +48,10 @@ public class LottieShapeFill {
 
     public LottieAnimatableIntegerValue getOpacity() {
         return opacity;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity());
     }
 
     @Override

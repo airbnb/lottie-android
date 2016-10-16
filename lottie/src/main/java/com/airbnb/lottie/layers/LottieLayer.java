@@ -11,6 +11,7 @@ import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
 import com.airbnb.lottie.animation.LottieAnimatablePathValue;
 import com.airbnb.lottie.animation.LottieAnimatablePointValue;
 import com.airbnb.lottie.animation.LottieAnimatableScaleValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.LottieMask;
 import com.airbnb.lottie.model.LottieShapeGroup;
@@ -43,6 +44,7 @@ public class LottieLayer {
         Unknown
     }
 
+    @SuppressWarnings("UnusedAssignment")
     public static LottieLayer fromJson(JSONObject json, LottieComposition composition) {
         LottieLayer layer = new LottieLayer();
         try {
@@ -100,7 +102,7 @@ public class LottieLayer {
             }
             if (opacity != null) {
                 layer.opacity = new LottieAnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false);
-                layer.opacity.remapValues(0, 100, 0, 255);
+                layer.opacity.remap100To255();
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
 
@@ -321,6 +323,10 @@ public class LottieLayer {
 
     public List<Object> getShapes() {
         return shapes;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
     }
 
     int getSolidColor() {

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LottieAnimatableShapeValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,6 +49,10 @@ public class LottieShapePath {
 
     public LottieAnimatableShapeValue getShapePath() {
         return shapePath;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getShapePath());
     }
 
     @Override

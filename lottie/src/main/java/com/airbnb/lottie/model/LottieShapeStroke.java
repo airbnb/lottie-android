@@ -3,6 +3,7 @@ package com.airbnb.lottie.model;
 import com.airbnb.lottie.animation.LottieAnimatableColorValue;
 import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
 import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +45,7 @@ public class LottieShapeStroke {
 
             JSONObject opacityJson = json.getJSONObject("o");
             opacity = new LottieAnimatableIntegerValue(opacityJson, frameRate, compDuration, false);
-            opacity.remapValues(0, 100, 0, 255);
+            opacity.remap100To255();
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
             joinType = LineJoinType.values()[json.getInt("lj") - 1];
@@ -98,5 +99,14 @@ public class LottieShapeStroke {
 
     public LineJoinType getJoinType() {
         return joinType;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        if (getLineDashPattern().isEmpty()) {
+            return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth());
+        } else {
+            return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth(),
+                    getLineDashPattern().get(0), getLineDashPattern().get(1), getDashOffset());
+        }
     }
 }

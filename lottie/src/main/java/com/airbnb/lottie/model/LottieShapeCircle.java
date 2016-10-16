@@ -2,6 +2,7 @@ package com.airbnb.lottie.model;
 
 import com.airbnb.lottie.animation.LottieAnimatablePathValue;
 import com.airbnb.lottie.animation.LottieAnimatablePointValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,5 +26,9 @@ public class LottieShapeCircle {
 
     public LottieAnimatablePointValue getSize() {
         return size;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getPosition(), getSize());
     }
 }

@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model;
 
 import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
+import com.airbnb.lottie.animation.LottieAnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,5 +31,9 @@ public class LottieShapeTrimPath {
 
     public LottieAnimatableFloatValue getStart() {
         return start;
+    }
+
+    public LottieAnimationGroup createAnimation() {
+        return LottieAnimationGroup.forAnimatableValues(getStart(), getEnd(), getOffset());
     }
 }

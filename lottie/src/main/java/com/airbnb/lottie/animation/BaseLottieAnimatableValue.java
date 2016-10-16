@@ -54,7 +54,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                     ((JSONArray) value).getJSONObject(0).has("t")) {
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
-                initialValue = valueFromObject(value, isDp ? L.SCALE : 1f);
+                initialValue = valueFromObject(value, getScale());
                 observable.setValue(convertType(initialValue));
             }
         } catch (JSONException e) {
@@ -62,6 +62,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
         }
     }
 
+    @SuppressWarnings("Duplicates")
     private void buildAnimationForKeyframes(JSONArray keyframes) {
         try {
             for (int i = 0; i < keyframes.length(); i++) {
@@ -101,7 +102,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                     outValue = null;
                 }
 
-                V startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s"), isDp ? L.SCALE : 1f) : null;
+                V startValue = keyframe.has("s") ? valueFromObject(keyframe.getJSONArray("s"), getScale()) : null;
                 if (addStartValue) {
                     if (startValue != null) {
                         if (i == 0) {
@@ -124,18 +125,18 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
                 }
 
                 if (keyframe.has("e")) {
-                    V endValue = valueFromObject(keyframe.getJSONArray("e"), isDp ? L.SCALE : 1f);
+                    V endValue = valueFromObject(keyframe.getJSONArray("e"), getScale());
                     keyValues.add(endValue);
-                    /**
-                     * Timing function for time interpolation between keyframes.
-                     * Should be n - 1 where n is the number of keyframes.
+                    /*
+                      Timing function for time interpolation between keyframes.
+                      Should be n - 1 where n is the number of keyframes.
                      */
                     Interpolator timingFunction;
                     if (keyframe.has("o") && keyframe.has("i")) {
                         JSONObject timingControlPoint1 = keyframe.getJSONObject("o");
                         JSONObject timingControlPoint2 = keyframe.getJSONObject("i");
-                        PointF cp1 = JsonUtils.pointValueFromDict(timingControlPoint1);
-                        PointF cp2 = JsonUtils.pointValueFromDict(timingControlPoint2);
+                        PointF cp1 = JsonUtils.pointValueFromJsonObject(timingControlPoint1, 1);
+                        PointF cp2 = JsonUtils.pointValueFromJsonObject(timingControlPoint2, 1);
 
                         timingFunction = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
                     } else {
@@ -155,6 +156,10 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse values.", e);
         }
+    }
+
+    private float getScale() {
+        return isDp ? L.SCALE : 1f;
     }
 
     O convertType(V value) {

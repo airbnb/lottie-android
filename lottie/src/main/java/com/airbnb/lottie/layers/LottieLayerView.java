@@ -16,7 +16,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.animation.LottieAnimatableValue;
 import com.airbnb.lottie.animation.LottieAnimationGroup;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.LottieShapeFill;
@@ -28,11 +27,9 @@ import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieTransform3D;
 import com.airbnb.lottie.utils.Observable;
-import java.util.ArrayList;
+
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class LottieLayerView extends LottieAnimatableLayer {
 
@@ -149,13 +146,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
     }
 
     private void buildAnimations() {
-        Set<LottieAnimatableValue> propertyAnimations = new HashSet<>();
-        propertyAnimations.add(layerModel.getOpacity());
-        propertyAnimations.add(layerModel.getPosition());
-        propertyAnimations.add(layerModel.getAnchor());
-        propertyAnimations.add(layerModel.getScale());
-        propertyAnimations.add(layerModel.getRotation());
-        childContainerLayer.addAnimation(new LottieAnimationGroup(propertyAnimations));
+        childContainerLayer.addAnimation(layerModel.createAnimation());
 
         if (layerModel.hasInOutAnimation()) {
             LottieNumberKeyframeAnimation<Float> inOutAnimation = new LottieNumberKeyframeAnimation<>(
@@ -173,9 +164,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
                 }
             });
             setVisible(inOutAnimation.getValue() == 1f, false);
-            List<LottieKeyframeAnimation> animations = new ArrayList<>(1);
-            animations.add(inOutAnimation);
-            addAnimation(new LottieAnimationGroup(animations));
+            addAnimation(LottieAnimationGroup.forKeyframeAnimations(inOutAnimation));
         } else {
             setVisible(true, false);
         }

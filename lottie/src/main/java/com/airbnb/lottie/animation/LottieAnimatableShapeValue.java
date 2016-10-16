@@ -20,11 +20,7 @@ public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<Lottie
     private final boolean closed;
 
     public LottieAnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
-        this(json, frameRate, compDuration, closed, true);
-    }
-
-    private LottieAnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed, boolean isDp) {
-        super(null, frameRate, compDuration, isDp);
+        super(null, frameRate, compDuration, true);
         this.closed = closed;
         init(json);
     }
