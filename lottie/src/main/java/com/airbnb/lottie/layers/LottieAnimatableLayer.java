@@ -155,9 +155,6 @@ public class LottieAnimatableLayer extends Drawable {
 
     public void addLayer(LottieAnimatableLayer layer) {
         layers.add(layer);
-        int width = Math.max(getBounds().width(), layer.getBounds().width());
-        int height = Math.max(getBounds().height(), layer.getBounds().height());
-        setBounds(0, 0, width, height);
         invalidateSelf();
     }
 
