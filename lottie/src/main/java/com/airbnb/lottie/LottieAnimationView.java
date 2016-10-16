@@ -31,8 +31,21 @@ import java.util.Collections;
 import java.util.List;
 
 public class LottieAnimationView extends ImageView {
+
+    /**
+     * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
+     * Normally this isn't possible.
+     */
+    @VisibleForTesting
+    public static LottieAnimationView forScreenshotTest(Context context) {
+        LottieAnimationView view = new LottieAnimationView(context);
+        view.isScreenshotTest = true;
+        return view;
+    }
+
     private final LongSparseArray<LottieLayerView> layerMap = new LongSparseArray<>();
     private final RootLottieAnimatableLayer rootAnimatableLayer = new RootLottieAnimatableLayer(this);
+    private boolean isScreenshotTest;
 
     /** Can be null because it is created async */
     @Nullable private LottieComposition composition;
@@ -207,7 +220,7 @@ public class LottieAnimationView extends ImageView {
     }
 
     private void setComposition(@NonNull LottieComposition composition) {
-        if (getWindowToken() == null) {
+        if (getWindowToken() == null && !isScreenshotTest) {
             return;
         }
         this.composition = composition;

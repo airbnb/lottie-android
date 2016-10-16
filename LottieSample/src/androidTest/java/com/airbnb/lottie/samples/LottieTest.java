@@ -29,7 +29,7 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
         TestRobot.testAnimatedFile(getActivity(), "Identity_City.json");
         TestRobot.testAnimatedFile(getActivity(), "Identity_GovtID.json");
         TestRobot.testAnimatedFile(getActivity(), "Identity_Selfie.json");
-        TestRobot.testAnimatedFile(getActivity(), "Lightbulb.json");
+        TestRobot.testAnimatedFile(getActivity(), "LightBulb.json");
         TestRobot.testAnimatedFile(getActivity(), "Stars.json");
         TestRobot.testAnimatedFile(getActivity(), "LoopPlayOnce.json");
     }

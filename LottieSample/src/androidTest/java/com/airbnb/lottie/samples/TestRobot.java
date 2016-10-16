@@ -19,7 +19,7 @@ class TestRobot {
     }
 
     private static void testFile(MainActivity activity, String fileName, float[] progress) {
-        LottieAnimationView view = new LottieAnimationView(activity);
+        LottieAnimationView view = LottieAnimationView.forScreenshotTest(activity);
         view.setAnimationSync(fileName);
         ViewHelpers.setupView(view)
                 .layout();
