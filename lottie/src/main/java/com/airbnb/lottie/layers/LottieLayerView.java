@@ -65,6 +65,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
         this.maskBitmap = maskBitmap;
         this.matteBitmap = matteBitmap;
         this.contentBitmap = mainBitmap;
+        mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         setBounds(composition.getBounds());
         if (contentBitmap != null) {
             contentCanvas = new Canvas(contentBitmap);
@@ -242,7 +243,6 @@ public class LottieLayerView extends LottieAnimatableLayer {
 
         if (matteCanvas != null && matteBitmap != null && matte != null) {
             matte.draw(matteCanvas);
-            mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
             //noinspection ConstantConditions
             matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
             mainCanvas.drawBitmap(matteBitmap, 0, 0, mainCanvasPaint);
