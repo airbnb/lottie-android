@@ -30,6 +30,16 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * This view will load, deserialize, and display an After Effects animation exported with
+ * bodymovin (https://github.com/bodymovin/bodymovin).
+ *
+ * You may set the animation in one of two ways:
+ * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
+ * 2) Programatically: {@link #setAnimation(String)}
+ *
+ * You may manually set the progress of the animation with {@link #setProgress(float)}
+ */
 public class LottieAnimationView extends ImageView {
 
     /**
@@ -150,6 +160,10 @@ public class LottieAnimationView extends ImageView {
         }
     }
 
+    /**
+     * Sets the animation from a file in the assets directory.
+     * This will load and deserialize the file asynchronously.
+     */
     public void setAnimation(String animationName) {
         InputStream file;
         try {
@@ -171,6 +185,11 @@ public class LottieAnimationView extends ImageView {
         }.execute(file);
     }
 
+    /**
+     * Like {@link #setAnimation(String)} except it loads and deserializes the file
+     * synchronously. This should only be used for tests.
+     */
+    @VisibleForTesting
     public void setAnimationSync(String animationName) {
         InputStream file;
         try {
