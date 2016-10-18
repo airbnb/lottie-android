@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -9,6 +10,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -55,6 +58,7 @@ public class LottieAnimationView extends ImageView {
 
     private final LongSparseArray<LottieLayerView> layerMap = new LongSparseArray<>();
     private final RootLottieAnimatableLayer rootAnimatableLayer = new RootLottieAnimatableLayer(this);
+    private String animationName;
     private boolean isScreenshotTest;
 
     /** Can be null because it is created async */
@@ -96,6 +100,36 @@ public class LottieAnimationView extends ImageView {
         setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+        ss.animationName = animationName;
+        ss.progress = rootAnimatableLayer.getProgress();
+        ss.isAnimating = rootAnimatableLayer.isAnimating();
+        ss.isLooping = rootAnimatableLayer.isLooping();
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if(!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+        this.animationName = ss.animationName;
+        setAnimation(animationName);
+        setProgress(ss.progress);
+        loop(ss.isLooping);
+        if (ss.isAnimating) {
+            playAnimation();
+        }
+    }
+
+    @SuppressLint("MissingSuperCall")
     @Override
     protected boolean verifyDrawable(@NonNull Drawable drawable) {
         return true;
@@ -146,6 +180,7 @@ public class LottieAnimationView extends ImageView {
      * This will load and deserialize the file asynchronously.
      */
     public void setAnimation(String animationName) {
+        this.animationName = animationName;
         InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
@@ -314,5 +349,44 @@ public class LottieAnimationView extends ImageView {
 
     public long getDuration() {
         return composition != null ? composition.getDuration() : 0;
+    }
+
+    static class SavedState extends BaseSavedState {
+        String animationName;
+        float progress;
+        boolean isAnimating;
+        boolean isLooping;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            animationName = in.readString();
+            progress = in.readFloat();
+            isAnimating = in.readInt() == 1;
+            isLooping = in.readInt() == 1;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeString(animationName);
+            out.writeFloat(progress);
+            out.writeInt(isAnimating ? 1 : 0);
+            out.writeInt(isLooping ? 1 : 0);
+
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
     }
 }

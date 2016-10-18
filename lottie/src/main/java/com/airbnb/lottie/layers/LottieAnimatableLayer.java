@@ -41,6 +41,7 @@ public class LottieAnimatableLayer extends Drawable {
 
     private final Paint solidBackgroundPaint = new Paint();
     private final List<LottieAnimationGroup> animations = new ArrayList<>();
+    @FloatRange(from = 0f, to = 1f) private float progress;
 
     LottieAnimatableLayer(long compDuration, Drawable.Callback callback) {
         setCallback(callback);
@@ -155,10 +156,12 @@ public class LottieAnimatableLayer extends Drawable {
 
     public void addLayer(LottieAnimatableLayer layer) {
         layers.add(layer);
+        layer.setProgress(progress);
         invalidateSelf();
     }
 
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+        this.progress = progress;
         for (int i = 0; i < animations.size(); i++) {
             animations.get(i).setProgress(progress);
         }
@@ -166,5 +169,9 @@ public class LottieAnimatableLayer extends Drawable {
         for (int i = 0; i < layers.size(); i++) {
             layers.get(i).setProgress(progress);
         }
+    }
+
+    public float getProgress() {
+        return progress;
     }
 }

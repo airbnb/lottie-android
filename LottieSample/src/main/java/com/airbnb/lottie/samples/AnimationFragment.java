@@ -52,8 +52,6 @@ public class AnimationFragment extends Fragment {
 
         updatePlayButtonText();
         loopButton.setChecked(true);
-        String fileName = getArguments().getString(ARG_FILE_NAME);
-        animationView.setAnimation(fileName);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -93,6 +91,11 @@ public class AnimationFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+
+        if (savedInstanceState == null) {
+            String fileName = getArguments().getString(ARG_FILE_NAME);
+            animationView.setAnimation(fileName);
+        }
 
         return view;
     }

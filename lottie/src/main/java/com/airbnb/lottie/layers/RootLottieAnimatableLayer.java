@@ -37,11 +37,16 @@ public class RootLottieAnimatableLayer extends LottieAnimatableLayer {
         animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
     }
 
+    public boolean isLooping() {
+        return animator.getRepeatCount() == ValueAnimator.INFINITE;
+    }
+
     public boolean isAnimating() {
         return animator.isRunning();
     }
 
     public void play() {
+        animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
         animator.start();
     }
 
