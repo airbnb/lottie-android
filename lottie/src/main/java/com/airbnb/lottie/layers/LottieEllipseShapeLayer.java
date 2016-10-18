@@ -138,20 +138,15 @@ class LottieEllipseShapeLayer extends LottieAnimatableLayer {
             float halfHeight = circleSize.getValue().y / 2f;
             setBounds(0, 0, (int) halfWidth * 2, (int) halfHeight * 2);
 
-            PointF circleQ1 = new PointF(0, -halfHeight);
-            PointF circleQ2 = new PointF(halfWidth, 0);
-            PointF circleQ3 = new PointF(0, halfHeight);
-            PointF circleQ4 = new PointF(-halfWidth, 0);
-
             float cpW = halfWidth * ELLIPSE_CONTROL_POINT_PERCENTAGE;
             float cpH = halfHeight * ELLIPSE_CONTROL_POINT_PERCENTAGE;
 
             path.reset();
-            path.moveTo(circleQ1.x, circleQ1.y);
-            path.cubicTo(circleQ1.x + cpW, circleQ1.y, circleQ2.x, circleQ2.y - cpH, circleQ2.x, circleQ2.y);
-            path.cubicTo(circleQ2.x, circleQ2.y + cpH, circleQ3.x + cpW, circleQ3.y, circleQ3.x, circleQ3.y);
-            path.cubicTo(circleQ3.x - cpW, circleQ3.y, circleQ4.x, circleQ4.y + cpH, circleQ4.x, circleQ4.y);
-            path.cubicTo(circleQ4.x, circleQ4.y - cpH, circleQ1.x - cpW, circleQ1.y, circleQ1.x, circleQ1.y);
+            path.moveTo(0, -halfHeight);
+            path.cubicTo(0 + cpW, -halfHeight, halfWidth, 0 - cpH, halfWidth, 0);
+            path.cubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
+            path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
+            path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
             observable.setValue(path);
             onTrimPathChanged();
 
