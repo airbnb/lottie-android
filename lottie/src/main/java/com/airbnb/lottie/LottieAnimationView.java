@@ -16,6 +16,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
@@ -93,7 +94,7 @@ public class LottieAnimationView extends ImageView {
             setAnimation(fileName);
         }
         if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-            rootAnimatableLayer.play();
+            rootAnimatableLayer.playAnimation();
         }
         rootAnimatableLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
         ta.recycle();
@@ -121,7 +122,9 @@ public class LottieAnimationView extends ImageView {
         SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         this.animationName = ss.animationName;
-        setAnimation(animationName);
+        if (!TextUtils.isEmpty(animationName)) {
+            setAnimation(animationName);
+        }
         setProgress(ss.progress);
         loop(ss.isLooping);
         if (ss.isAnimating) {
@@ -336,7 +339,7 @@ public class LottieAnimationView extends ImageView {
     }
 
     public void playAnimation() {
-        rootAnimatableLayer.play();
+        rootAnimatableLayer.playAnimation();
     }
 
     public void cancelAnimation() {
