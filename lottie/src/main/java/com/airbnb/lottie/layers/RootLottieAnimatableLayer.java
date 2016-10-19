@@ -11,6 +11,8 @@ public class RootLottieAnimatableLayer extends LottieAnimatableLayer {
 
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
+    private boolean playAnimationWhenLayerAdded;
+
     public RootLottieAnimatableLayer(Drawable.Callback callback) {
         super(0, callback);
         animator.setRepeatCount(0);
@@ -45,13 +47,27 @@ public class RootLottieAnimatableLayer extends LottieAnimatableLayer {
         return animator.isRunning();
     }
 
-    public void play() {
+    public void playAnimation() {
+        if (layers.isEmpty()) {
+            playAnimationWhenLayerAdded = true;
+            return;
+        }
         animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
         animator.start();
     }
 
     public void cancelAnimation() {
+        playAnimationWhenLayerAdded = false;
         animator.cancel();
+    }
+
+    @Override
+    public void addLayer(LottieAnimatableLayer layer) {
+        super.addLayer(layer);
+        if (playAnimationWhenLayerAdded) {
+            playAnimationWhenLayerAdded = false;
+            playAnimation();
+        }
     }
 
     public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {

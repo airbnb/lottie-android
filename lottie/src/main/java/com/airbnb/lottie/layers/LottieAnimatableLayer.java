@@ -20,7 +20,7 @@ import java.util.List;
 
 public class LottieAnimatableLayer extends Drawable {
 
-    private final List<LottieAnimatableLayer> layers = new ArrayList<>();
+    protected final List<LottieAnimatableLayer> layers = new ArrayList<>();
     private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
