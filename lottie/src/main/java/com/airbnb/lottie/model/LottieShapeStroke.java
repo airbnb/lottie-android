@@ -1,9 +1,9 @@
 package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.animation.LottieAnimatableColorValue;
-import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
-import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatableColorValue;
+import com.airbnb.lottie.animation.AnimatableFloatValue;
+import com.airbnb.lottie.animation.AnimatableIntegerValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,25 +26,25 @@ public class LottieShapeStroke {
         Bevel
     }
 
-    private LottieAnimatableFloatValue offset;
-    private final List<LottieAnimatableFloatValue> lineDashPattern = new ArrayList<>();
+    private AnimatableFloatValue offset;
+    private final List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
-    private LottieAnimatableColorValue color;
-    private LottieAnimatableIntegerValue opacity;
-    private LottieAnimatableFloatValue width;
+    private AnimatableColorValue color;
+    private AnimatableIntegerValue opacity;
+    private AnimatableFloatValue width;
     private LineCapType capType;
     private LineJoinType joinType;
 
     LottieShapeStroke(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject colorJson = json.getJSONObject("c");
-            color = new LottieAnimatableColorValue(colorJson, frameRate, compDuration);
+            color = new AnimatableColorValue(colorJson, frameRate, compDuration);
 
             JSONObject widthJson = json.getJSONObject("w");
-            width = new LottieAnimatableFloatValue(widthJson, frameRate, compDuration);
+            width = new AnimatableFloatValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
-            opacity = new LottieAnimatableIntegerValue(opacityJson, frameRate, compDuration, false);
+            opacity = new AnimatableIntegerValue(opacityJson, frameRate, compDuration, false);
             opacity.remap100To255();
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
@@ -57,10 +57,10 @@ public class LottieShapeStroke {
                     String n = dashJson.getString("n");
                     if (n.equals("o")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        offset = new LottieAnimatableFloatValue(value, frameRate, compDuration);
+                        offset = new AnimatableFloatValue(value, frameRate, compDuration);
                     } else if (n.equals("d") || n.equals("g")) {
                         JSONObject value = dashJson.getJSONObject("v");
-                        lineDashPattern.add(new LottieAnimatableFloatValue(value, frameRate, compDuration));
+                        lineDashPattern.add(new AnimatableFloatValue(value, frameRate, compDuration));
                     }
                 }
                 if (lineDashPattern.size() == 1) {
@@ -73,23 +73,23 @@ public class LottieShapeStroke {
         }
     }
 
-    public LottieAnimatableColorValue getColor() {
+    public AnimatableColorValue getColor() {
         return color;
     }
 
-    public LottieAnimatableIntegerValue getOpacity() {
+    public AnimatableIntegerValue getOpacity() {
         return opacity;
     }
 
-    public LottieAnimatableFloatValue getWidth() {
+    public AnimatableFloatValue getWidth() {
         return width;
     }
 
-    public List<LottieAnimatableFloatValue> getLineDashPattern() {
+    public List<AnimatableFloatValue> getLineDashPattern() {
         return lineDashPattern;
     }
 
-    public LottieAnimatableFloatValue getDashOffset() {
+    public AnimatableFloatValue getDashOffset() {
         return offset;
     }
 
@@ -101,11 +101,11 @@ public class LottieShapeStroke {
         return joinType;
     }
 
-    public LottieAnimationGroup createAnimation() {
+    public AnimationGroup createAnimation() {
         if (getLineDashPattern().isEmpty()) {
-            return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth());
+            return AnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth());
         } else {
-            return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth(),
+            return AnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth(),
                     getLineDashPattern().get(0), getLineDashPattern().get(1), getDashOffset());
         }
     }

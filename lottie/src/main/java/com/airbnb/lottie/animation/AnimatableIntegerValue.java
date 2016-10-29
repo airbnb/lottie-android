@@ -10,11 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieAnimatableIntegerValue extends BaseLottieAnimatableValue<Integer, Integer> {
+public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
     @Nullable private RemapInterface<Integer> remapInterface;
 
-    public LottieAnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
+    public AnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
         super(json, frameRate, compDuration, isDp);
     }
 

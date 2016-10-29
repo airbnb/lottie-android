@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> {
+public class AnimatablePathValue implements AnimatableValue<PointF> {
 
     private final Observable<PointF> observable = new Observable<>();
     private final List<Float> keyTimes = new ArrayList<>();
@@ -34,7 +34,7 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
     private long startFrame;
     private long durationFrames;
 
-    public LottieAnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration) {
+    public AnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration) {
         this.compDuration = compDuration;
         this.frameRate = frameRate;
 
@@ -193,6 +193,6 @@ public class LottieAnimatablePathValue implements LottieAnimatableValue<PointF> 
 
     @Override
     public String toString() {
-        return "LottieAnimatablePathValue{" + "initialPoint=" + initialPoint + '}';
+        return "AnimatablePathValue{" + "initialPoint=" + initialPoint + '}';
     }
 }

@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<O> {
+abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
 
     final Observable<O> observable = new Observable<>();
     final List<V> keyValues = new ArrayList<>();
@@ -36,7 +36,7 @@ abstract class BaseLottieAnimatableValue<V, O> implements LottieAnimatableValue<
 
     V initialValue;
 
-    BaseLottieAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration, boolean isDp) {
+    BaseAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration, boolean isDp) {
         this.frameRate = frameRate;
         this.compDuration = compDuration;
         this.isDp = isDp;

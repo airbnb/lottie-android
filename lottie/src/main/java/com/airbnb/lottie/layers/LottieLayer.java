@@ -6,12 +6,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
-import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
-import com.airbnb.lottie.animation.LottieAnimatablePathValue;
-import com.airbnb.lottie.animation.LottieAnimatablePointValue;
-import com.airbnb.lottie.animation.LottieAnimatableScaleValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatableFloatValue;
+import com.airbnb.lottie.animation.AnimatableIntegerValue;
+import com.airbnb.lottie.animation.AnimatablePathValue;
+import com.airbnb.lottie.animation.AnimatablePointValue;
+import com.airbnb.lottie.animation.AnimatableScaleValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.LottieMask;
 import com.airbnb.lottie.model.LottieShapeGroup;
@@ -101,7 +101,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (opacity != null) {
-                layer.opacity = new LottieAnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false);
+                layer.opacity = new AnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false);
                 layer.opacity.remap100To255();
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
@@ -112,7 +112,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (rotation != null) {
-                layer.rotation = new LottieAnimatableFloatValue(rotation, layer.frameRate, composition.getDuration(), false);
+                layer.rotation = new AnimatableFloatValue(rotation, layer.frameRate, composition.getDuration(), false);
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
             }
 
@@ -122,7 +122,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (position != null) {
-                layer.position = new LottieAnimatablePointValue(position, layer.frameRate, composition.getDuration());
+                layer.position = new AnimatablePointValue(position, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().toString());
             }
 
@@ -132,7 +132,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (anchor != null) {
-                layer.anchor = new LottieAnimatablePathValue(anchor, layer.frameRate, composition.getDuration());
+                layer.anchor = new AnimatablePathValue(anchor, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.toString());
             }
 
@@ -142,7 +142,7 @@ public class LottieLayer {
             } catch (JSONException e) {
             }
             if (scale != null) {
-                layer.scale = new LottieAnimatableScaleValue(scale, layer.frameRate, composition.getDuration(), false);
+                layer.scale = new AnimatableScaleValue(scale, layer.frameRate, composition.getDuration(), false);
                 if (L.DBG) Log.d(TAG, "\tScale=" + layer.scale.toString());
             }
 
@@ -239,12 +239,12 @@ public class LottieLayer {
     private int solidHeight;
     private int solidColor;
 
-    private LottieAnimatableIntegerValue opacity;
-    private LottieAnimatableFloatValue rotation;
-    private LottieAnimatablePointValue position;
+    private AnimatableIntegerValue opacity;
+    private AnimatableFloatValue rotation;
+    private AnimatablePointValue position;
 
-    private LottieAnimatablePathValue anchor;
-    private LottieAnimatableScaleValue scale;
+    private AnimatablePathValue anchor;
+    private AnimatableScaleValue scale;
 
     private boolean hasOutAnimation;
     private boolean hasInAnimation;
@@ -255,7 +255,7 @@ public class LottieLayer {
 
     private MatteType matteType;
 
-    LottieAnimatablePathValue getAnchor() {
+    AnimatablePathValue getAnchor() {
         return anchor;
     }
 
@@ -301,7 +301,7 @@ public class LottieLayer {
         return matteType;
     }
 
-    public LottieAnimatableIntegerValue getOpacity() {
+    public AnimatableIntegerValue getOpacity() {
         return opacity;
     }
 
@@ -309,15 +309,15 @@ public class LottieLayer {
         return parentId;
     }
 
-    public LottieAnimatablePointValue getPosition() {
+    public AnimatablePointValue getPosition() {
         return position;
     }
 
-    LottieAnimatableFloatValue getRotation() {
+    AnimatableFloatValue getRotation() {
         return rotation;
     }
 
-    LottieAnimatableScaleValue getScale() {
+    AnimatableScaleValue getScale() {
         return scale;
     }
 
@@ -325,8 +325,8 @@ public class LottieLayer {
         return shapes;
     }
 
-    public LottieAnimationGroup createAnimation() {
-        return LottieAnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
+    public AnimationGroup createAnimation() {
+        return AnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
     }
 
     int getSolidColor() {

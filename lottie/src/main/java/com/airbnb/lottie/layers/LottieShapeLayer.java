@@ -14,7 +14,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
+import com.airbnb.lottie.animation.AnimatableFloatValue;
 import com.airbnb.lottie.model.LottieShapeStroke;
 import com.airbnb.lottie.utils.LottieTransform3D;
 import com.airbnb.lottie.utils.Observable;
@@ -83,8 +83,8 @@ class LottieShapeLayer extends LottieAnimatableLayer {
 
     private Observable<Integer> shapeAlpha;
     private Observable<Integer> transformAlpha;
-    private List<LottieAnimatableFloatValue> lineDashPattern;
-    private LottieAnimatableFloatValue lineDashPatternOffset;
+    private List<AnimatableFloatValue> lineDashPattern;
+    private AnimatableFloatValue lineDashPatternOffset;
 
     LottieShapeLayer(Drawable.Callback callback) {
         super(0, callback);
@@ -217,7 +217,7 @@ class LottieShapeLayer extends LottieAnimatableLayer {
         invalidateSelf();
     }
 
-    void setDashPattern(List<LottieAnimatableFloatValue> lineDashPattern, LottieAnimatableFloatValue offset) {
+    void setDashPattern(List<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue offset) {
         if (this.lineDashPattern != null) {
             this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
             this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);

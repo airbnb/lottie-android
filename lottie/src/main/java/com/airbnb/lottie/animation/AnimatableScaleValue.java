@@ -9,9 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class LottieAnimatableScaleValue extends BaseLottieAnimatableValue<LottieTransform3D, LottieTransform3D> {
+public class AnimatableScaleValue extends BaseAnimatableValue<LottieTransform3D, LottieTransform3D> {
 
-    public LottieAnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration, boolean isDp) {
+    public AnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration, boolean isDp) {
         super(scaleValues, frameRate, compDuration, isDp);
     }
 

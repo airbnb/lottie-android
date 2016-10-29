@@ -16,7 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimationGroup;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.LottieShapeFill;
 import com.airbnb.lottie.model.LottieShapeGroup;
@@ -164,7 +164,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
                 }
             });
             setVisible(inOutAnimation.getValue() == 1f, false);
-            addAnimation(LottieAnimationGroup.forKeyframeAnimations(inOutAnimation));
+            addAnimation(AnimationGroup.forKeyframeAnimations(inOutAnimation));
         } else {
             setVisible(true, false);
         }

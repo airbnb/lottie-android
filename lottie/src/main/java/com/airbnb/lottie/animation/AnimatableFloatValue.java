@@ -1,8 +1,5 @@
 package com.airbnb.lottie.animation;
 
-import android.support.annotation.Nullable;
-
-import com.airbnb.lottie.model.RemapInterface;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
 
@@ -10,15 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieAnimatableFloatValue extends BaseLottieAnimatableValue<Float, Float> {
+public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
-    @Nullable private RemapInterface<Float> remapInterface;
-
-    public LottieAnimatableFloatValue(JSONObject json, int frameRate, long compDuration) {
+    public AnimatableFloatValue(JSONObject json, int frameRate, long compDuration) {
         this(json, frameRate, compDuration, true);
     }
 
-    public LottieAnimatableFloatValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
+    public AnimatableFloatValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
         super(json, frameRate, compDuration, isDp);
     }
 
@@ -51,9 +46,6 @@ public class LottieAnimatableFloatValue extends BaseLottieAnimatableValue<Float,
     }
 
     public Float getInitialValue() {
-        if (remapInterface != null) {
-            return remapInterface.remap(initialValue);
-        }
         return initialValue;
     }
 }

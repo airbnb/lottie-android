@@ -8,27 +8,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LottieAnimationGroup {
+public class AnimationGroup {
 
-    public static LottieAnimationGroup forAnimatableValues(LottieAnimatableValue... animatableValues) {
+    public static AnimationGroup forAnimatableValues(AnimatableValue... animatableValues) {
         List<LottieKeyframeAnimation> animations = new ArrayList<>(animatableValues.length);
 
-        for (LottieAnimatableValue animatableValue : animatableValues) {
+        for (AnimatableValue animatableValue : animatableValues) {
             if (animatableValue.hasAnimation()) {
                 LottieKeyframeAnimation animation = animatableValue.animationForKeyPath();
                 animations.add(animation);
             }
         }
-        return new LottieAnimationGroup(animations);
+        return new AnimationGroup(animations);
     }
 
-    public static LottieAnimationGroup forKeyframeAnimations(LottieKeyframeAnimation... animations) {
-        return new LottieAnimationGroup(Arrays.asList(animations));
+    public static AnimationGroup forKeyframeAnimations(LottieKeyframeAnimation... animations) {
+        return new AnimationGroup(Arrays.asList(animations));
     }
 
     private final List<LottieKeyframeAnimation> animations;
 
-    private LottieAnimationGroup(List<LottieKeyframeAnimation> animations) {
+    private AnimationGroup(List<LottieKeyframeAnimation> animations) {
         this.animations = animations;
     }
 

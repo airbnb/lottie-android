@@ -3,8 +3,8 @@ package com.airbnb.lottie.model;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.animation.LottieAnimatableShapeValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatableShapeValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +15,7 @@ public class LottieShapePath {
     private String name;
     private boolean closed;
     private int index;
-    private LottieAnimatableShapeValue shapePath;
+    private AnimatableShapeValue shapePath;
 
     public LottieShapePath(JSONObject json, int frameRate, long compDuration) {
         try {
@@ -39,7 +39,7 @@ public class LottieShapePath {
         JSONObject shape;
         try {
             shape = json.getJSONObject("ks");
-            shapePath = new LottieAnimatableShapeValue(shape, frameRate, compDuration, closed);
+            shapePath = new AnimatableShapeValue(shape, frameRate, compDuration, closed);
         } catch (JSONException e) {
             // Ignore
         }
@@ -47,12 +47,12 @@ public class LottieShapePath {
         if (L.DBG) Log.d(TAG, "Parsed new shape path " + toString());
     }
 
-    public LottieAnimatableShapeValue getShapePath() {
+    public AnimatableShapeValue getShapePath() {
         return shapePath;
     }
 
-    public LottieAnimationGroup createAnimation() {
-        return LottieAnimationGroup.forAnimatableValues(getShapePath());
+    public AnimationGroup createAnimation() {
+        return AnimationGroup.forAnimatableValues(getShapePath());
     }
 
     @Override

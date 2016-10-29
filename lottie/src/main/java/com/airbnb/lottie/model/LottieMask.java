@@ -1,7 +1,7 @@
 package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
-import com.airbnb.lottie.animation.LottieAnimatableShapeValue;
+import com.airbnb.lottie.animation.AnimatableIntegerValue;
+import com.airbnb.lottie.animation.AnimatableShapeValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +16,7 @@ public class LottieMask {
     }
 
     private MaskMode maskMode;
-    private LottieAnimatableShapeValue maskPath;
+    private AnimatableShapeValue maskPath;
 
     public LottieMask(JSONObject json, int frameRate, long compDuration) {
         try {
@@ -36,8 +36,8 @@ public class LottieMask {
                         maskMode = MaskMode.MaskModeUnknown;
             }
 
-            maskPath = new LottieAnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
-            LottieAnimatableIntegerValue opacity = new LottieAnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false);
+            maskPath = new AnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
+            AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false);
             opacity.remap100To255();
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);
@@ -49,7 +49,7 @@ public class LottieMask {
         return maskMode;
     }
 
-    public LottieAnimatableShapeValue getMaskPath() {
+    public AnimatableShapeValue getMaskPath() {
         return maskPath;
     }
 }

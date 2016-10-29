@@ -1,34 +1,34 @@
 package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.animation.LottieAnimatablePathValue;
-import com.airbnb.lottie.animation.LottieAnimatablePointValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatablePathValue;
+import com.airbnb.lottie.animation.AnimatablePointValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LottieShapeCircle {
-    private LottieAnimatablePathValue position;
-    private LottieAnimatablePointValue size;
+    private AnimatablePathValue position;
+    private AnimatablePointValue size;
 
     LottieShapeCircle(JSONObject json, int frameRate, long compDuration) {
         try {
-            position = new LottieAnimatablePathValue(json.getJSONObject("p"), frameRate, compDuration);
-            size = new LottieAnimatablePointValue(json.getJSONObject("s"), frameRate, compDuration);
+            position = new AnimatablePathValue(json.getJSONObject("p"), frameRate, compDuration);
+            size = new AnimatablePointValue(json.getJSONObject("s"), frameRate, compDuration);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse circle " + json, e);
         }
     }
 
-    public LottieAnimatablePathValue getPosition() {
+    public AnimatablePathValue getPosition() {
         return position;
     }
 
-    public LottieAnimatablePointValue getSize() {
+    public AnimatablePointValue getSize() {
         return size;
     }
 
-    public LottieAnimationGroup createAnimation() {
-        return LottieAnimationGroup.forAnimatableValues(getPosition(), getSize());
+    public AnimationGroup createAnimation() {
+        return AnimationGroup.forAnimatableValues(getPosition(), getSize());
     }
 }

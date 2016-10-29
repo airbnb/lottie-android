@@ -9,9 +9,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieAnimatableColorValue extends BaseLottieAnimatableValue<Integer, Integer> {
+public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
 
-    public LottieAnimatableColorValue(JSONObject json, int frameRate, long compDuration) {
+    public AnimatableColorValue(JSONObject json, int frameRate, long compDuration) {
         super(json, frameRate, compDuration, false);
     }
 
@@ -56,6 +56,6 @@ public class LottieAnimatableColorValue extends BaseLottieAnimatableValue<Intege
 
     @Override
     public String toString() {
-        return "LottieAnimatableColorValue{" + "initialValue=" + initialValue + '}';
+        return "AnimatableColorValue{" + "initialValue=" + initialValue + '}';
     }
 }

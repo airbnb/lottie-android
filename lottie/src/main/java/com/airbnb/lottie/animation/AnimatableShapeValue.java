@@ -16,10 +16,10 @@ import org.json.JSONObject;
 import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class LottieAnimatableShapeValue extends BaseLottieAnimatableValue<LottieShapeData, Path> {
+public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, Path> {
     private final boolean closed;
 
-    public LottieAnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
+    public AnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
         super(null, frameRate, compDuration, true);
         this.closed = closed;
         init(json);

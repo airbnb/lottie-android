@@ -3,9 +3,9 @@ package com.airbnb.lottie.model;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.animation.LottieAnimatableColorValue;
-import com.airbnb.lottie.animation.LottieAnimatableIntegerValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatableColorValue;
+import com.airbnb.lottie.animation.AnimatableIntegerValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,8 +15,8 @@ public class LottieShapeFill {
     private static final String TAG = LottieShapeFill.class.getSimpleName();
 
     private boolean fillEnabled;
-    private LottieAnimatableColorValue color;
-    private LottieAnimatableIntegerValue opacity;
+    private AnimatableColorValue color;
+    private AnimatableIntegerValue opacity;
 
     public LottieShapeFill(JSONObject json, int frameRate, long compDuration) {
         JSONObject jsonColor = null;
@@ -24,7 +24,7 @@ public class LottieShapeFill {
             jsonColor = json.getJSONObject("c");
         } catch (JSONException e) { }
         if (jsonColor != null) {
-            color = new LottieAnimatableColorValue(jsonColor, frameRate, compDuration);
+            color = new AnimatableColorValue(jsonColor, frameRate, compDuration);
         }
 
         JSONObject jsonOpacity = null;
@@ -32,7 +32,7 @@ public class LottieShapeFill {
             jsonOpacity = json.getJSONObject("o");
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
-            opacity = new LottieAnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
+            opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
             opacity.remap100To255();
         }
 
@@ -42,16 +42,16 @@ public class LottieShapeFill {
         if (L.DBG) Log.d(TAG, "Parsed new shape fill " + toString());
     }
 
-    public LottieAnimatableColorValue getColor() {
+    public AnimatableColorValue getColor() {
         return color;
     }
 
-    public LottieAnimatableIntegerValue getOpacity() {
+    public AnimatableIntegerValue getOpacity() {
         return opacity;
     }
 
-    public LottieAnimationGroup createAnimation() {
-        return LottieAnimationGroup.forAnimatableValues(getColor(), getOpacity());
+    public AnimationGroup createAnimation() {
+        return AnimationGroup.forAnimatableValues(getColor(), getOpacity());
     }
 
     @Override

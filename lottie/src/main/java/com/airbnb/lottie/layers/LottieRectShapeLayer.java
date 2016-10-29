@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
+import com.airbnb.lottie.animation.AnimatableFloatValue;
 import com.airbnb.lottie.model.LottieShapeFill;
 import com.airbnb.lottie.model.LottieShapeRectangle;
 import com.airbnb.lottie.model.LottieShapeStroke;
@@ -148,8 +148,8 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
         private Observable<PointF> rectPosition;
         private Observable<PointF> rectSize;
 
-        @Nullable private List<LottieAnimatableFloatValue> lineDashPattern;
-        @Nullable private LottieAnimatableFloatValue lineDashPatternOffset;
+        @Nullable private List<AnimatableFloatValue> lineDashPattern;
+        @Nullable private AnimatableFloatValue lineDashPatternOffset;
 
         LottieRoundRectLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -224,7 +224,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
             invalidateSelf();
         }
 
-        void setDashPattern(List<LottieAnimatableFloatValue> lineDashPattern, LottieAnimatableFloatValue offset) {
+        void setDashPattern(List<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue offset) {
             if (this.lineDashPattern != null) {
                 this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
                 this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);

@@ -1,39 +1,39 @@
 package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.animation.LottieAnimatableFloatValue;
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimatableFloatValue;
+import com.airbnb.lottie.animation.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LottieShapeTrimPath {
-    private LottieAnimatableFloatValue start;
-    private LottieAnimatableFloatValue end;
-    private LottieAnimatableFloatValue offset;
+    private AnimatableFloatValue start;
+    private AnimatableFloatValue end;
+    private AnimatableFloatValue offset;
 
     public LottieShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
         try {
-            start = new LottieAnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration, false);
-            end = new LottieAnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration, false);
-            offset = new LottieAnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration, false);
+            start = new AnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration, false);
+            end = new AnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration, false);
+            offset = new AnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration, false);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse trim path " + json, e);
         }
     }
 
-    public LottieAnimatableFloatValue getEnd() {
+    public AnimatableFloatValue getEnd() {
         return end;
     }
 
-    public LottieAnimatableFloatValue getOffset() {
+    public AnimatableFloatValue getOffset() {
         return offset;
     }
 
-    public LottieAnimatableFloatValue getStart() {
+    public AnimatableFloatValue getStart() {
         return start;
     }
 
-    public LottieAnimationGroup createAnimation() {
-        return LottieAnimationGroup.forAnimatableValues(getStart(), getEnd(), getOffset());
+    public AnimationGroup createAnimation() {
+        return AnimationGroup.forAnimatableValues(getStart(), getEnd(), getOffset());
     }
 }

@@ -10,9 +10,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieAnimatablePointValue extends BaseLottieAnimatableValue<PointF, PointF> {
+public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
 
-    public LottieAnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
+    public AnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
         super(pointValues, frameRate, compDuration, true);
     }
 

@@ -11,7 +11,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 
-import com.airbnb.lottie.animation.LottieAnimationGroup;
+import com.airbnb.lottie.animation.AnimationGroup;
 import com.airbnb.lottie.utils.LottieTransform3D;
 import com.airbnb.lottie.utils.Observable;
 
@@ -40,7 +40,7 @@ public class LottieAnimatableLayer extends Drawable {
     final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
-    private final List<LottieAnimationGroup> animations = new ArrayList<>();
+    private final List<AnimationGroup> animations = new ArrayList<>();
     @FloatRange(from = 0f, to = 1f) private float progress;
 
     LottieAnimatableLayer(long compDuration, Drawable.Callback callback) {
@@ -57,7 +57,7 @@ public class LottieAnimatableLayer extends Drawable {
         invalidateSelf();
     }
 
-    void addAnimation(LottieAnimationGroup animation) {
+    void addAnimation(AnimationGroup animation) {
         animations.add(animation);
     }
 
