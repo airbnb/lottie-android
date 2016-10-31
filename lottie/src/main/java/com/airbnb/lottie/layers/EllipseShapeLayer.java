@@ -10,7 +10,7 @@ import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animatable.Observable;
 
 class EllipseShapeLayer extends AnimatableLayer {
 

@@ -4,12 +4,12 @@ import android.graphics.Rect;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.animation.AnimatableFloatValue;
-import com.airbnb.lottie.animation.AnimatablePathValue;
-import com.airbnb.lottie.animation.AnimatablePointValue;
-import com.airbnb.lottie.animation.AnimatableIntegerValue;
-import com.airbnb.lottie.animation.AnimatableScaleValue;
-import com.airbnb.lottie.animation.AnimationGroup;
+import com.airbnb.lottie.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.animatable.AnimatablePathValue;
+import com.airbnb.lottie.animatable.AnimatablePointValue;
+import com.airbnb.lottie.animatable.AnimatableIntegerValue;
+import com.airbnb.lottie.animatable.AnimatableScaleValue;
+import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;

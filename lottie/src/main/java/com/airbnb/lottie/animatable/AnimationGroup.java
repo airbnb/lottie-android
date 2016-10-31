@@ -1,8 +1,8 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 import android.support.annotation.FloatRange;
 
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,24 +11,24 @@ import java.util.List;
 public class AnimationGroup {
 
     public static AnimationGroup forAnimatableValues(AnimatableValue... animatableValues) {
-        List<LottieKeyframeAnimation> animations = new ArrayList<>(animatableValues.length);
+        List<KeyframeAnimation> animations = new ArrayList<>(animatableValues.length);
 
         for (AnimatableValue animatableValue : animatableValues) {
             if (animatableValue.hasAnimation()) {
-                LottieKeyframeAnimation animation = animatableValue.animationForKeyPath();
+                KeyframeAnimation animation = animatableValue.animationForKeyPath();
                 animations.add(animation);
             }
         }
         return new AnimationGroup(animations);
     }
 
-    public static AnimationGroup forKeyframeAnimations(LottieKeyframeAnimation... animations) {
+    public static AnimationGroup forKeyframeAnimations(KeyframeAnimation... animations) {
         return new AnimationGroup(Arrays.asList(animations));
     }
 
-    private final List<LottieKeyframeAnimation> animations;
+    private final List<KeyframeAnimation> animations;
 
-    private AnimationGroup(List<LottieKeyframeAnimation> animations) {
+    private AnimationGroup(List<KeyframeAnimation> animations) {
         this.animations = animations;
     }
 

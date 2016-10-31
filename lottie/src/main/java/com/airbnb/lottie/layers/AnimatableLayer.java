@@ -11,9 +11,9 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 
-import com.airbnb.lottie.animation.AnimationGroup;
+import com.airbnb.lottie.animatable.AnimationGroup;
 import com.airbnb.lottie.utils.LottieTransform3D;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animatable.Observable;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,18 +1,19 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.graphics.Path;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.ShapeData;
+import com.airbnb.lottie.utils.MiscUtils;
 
 import java.util.List;
 
-public class LottieShapeKeyframeAnimation extends LottieKeyframeAnimation<Path> {
+public class ShapeKeyframeAnimation extends KeyframeAnimation<Path> {
     private final Path tempPath = new Path();
     private final ShapeData tempShapeData = new ShapeData();
     private final List<ShapeData> shapeData;
 
-    public LottieShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<ShapeData> shapeData, List<Interpolator> interpolators) {
+    public ShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<ShapeData> shapeData, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         this.shapeData = shapeData;
     }

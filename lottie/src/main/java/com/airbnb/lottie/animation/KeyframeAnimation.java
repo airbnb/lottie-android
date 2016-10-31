@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.support.annotation.FloatRange;
 import android.view.animation.Interpolator;
@@ -6,7 +6,7 @@ import android.view.animation.Interpolator;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class LottieKeyframeAnimation<T> {
+public abstract class KeyframeAnimation<T> {
 
     public interface AnimationListener<T> {
         void onValueChanged(T progress);
@@ -28,7 +28,7 @@ public abstract class LottieKeyframeAnimation<T> {
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    LottieKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
+    KeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
         this.duration = duration;
         this.compDuration = compDuration;
         this.keyTimes = keyTimes;

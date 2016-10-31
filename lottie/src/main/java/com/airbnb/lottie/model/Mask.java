@@ -1,7 +1,7 @@
 package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.animation.AnimatableIntegerValue;
-import com.airbnb.lottie.animation.AnimatableShapeValue;
+import com.airbnb.lottie.animatable.AnimatableIntegerValue;
+import com.airbnb.lottie.animatable.AnimatableShapeValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;

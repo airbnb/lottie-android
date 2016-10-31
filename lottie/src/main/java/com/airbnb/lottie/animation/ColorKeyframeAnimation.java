@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.animation.ArgbEvaluator;
 import android.view.animation.Interpolator;
@@ -6,12 +6,12 @@ import android.view.animation.Interpolator;
 import java.util.List;
 
 
-public class LottieColorKeyframeAnimation extends LottieKeyframeAnimation<Integer> {
+public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
     private final List<Integer> values;
 
-    public LottieColorKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Integer> values, List<Interpolator> interpolators) {
+    public ColorKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Integer> values, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());

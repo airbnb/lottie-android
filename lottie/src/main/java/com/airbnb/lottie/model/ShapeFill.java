@@ -3,9 +3,9 @@ package com.airbnb.lottie.model;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.animation.AnimatableColorValue;
-import com.airbnb.lottie.animation.AnimatableIntegerValue;
-import com.airbnb.lottie.animation.AnimationGroup;
+import com.airbnb.lottie.animatable.AnimatableColorValue;
+import com.airbnb.lottie.animatable.AnimatableIntegerValue;
+import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;

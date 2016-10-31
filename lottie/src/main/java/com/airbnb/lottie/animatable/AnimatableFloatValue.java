@@ -1,7 +1,7 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,10 +33,10 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     }
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
-        LottieKeyframeAnimation<Float> animation = new LottieNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, keyValues, interpolators);
+    public KeyframeAnimation animationForKeyPath() {
+        KeyframeAnimation<Float> animation = new NumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Float>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
             @Override
             public void onValueChanged(Float progress) {
                 observable.setValue(progress);

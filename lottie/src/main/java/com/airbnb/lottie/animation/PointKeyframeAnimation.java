@@ -1,15 +1,15 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.graphics.PointF;
 import android.view.animation.Interpolator;
 
 import java.util.List;
 
-public class LottiePointKeyframeAnimation extends LottieKeyframeAnimation<PointF> {
+public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
     private final PointF point = new PointF();
     private final List<PointF> points;
 
-    public LottiePointKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<PointF> points, List<Interpolator> interpolators) {
+    public PointKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<PointF> points, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         this.points = points;
     }

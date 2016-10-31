@@ -16,7 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.animation.AnimationGroup;
+import com.airbnb.lottie.animatable.AnimationGroup;
 import com.airbnb.lottie.model.Composition;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.ShapeFill;
@@ -24,10 +24,10 @@ import com.airbnb.lottie.model.ShapeGroup;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieTransform3D;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animatable.Observable;
 
 import java.util.Collections;
 import java.util.List;
@@ -150,7 +150,7 @@ public class LayerView extends AnimatableLayer {
         childContainerLayer.addAnimation(layerModel.createAnimation());
 
         if (layerModel.hasInOutAnimation()) {
-            LottieNumberKeyframeAnimation<Float> inOutAnimation = new LottieNumberKeyframeAnimation<>(
+            NumberKeyframeAnimation<Float> inOutAnimation = new NumberKeyframeAnimation<>(
                     layerModel.getCompDuration(),
                     layerModel.getCompDuration(),
                     layerModel.getInOutKeyTimes(),
@@ -158,7 +158,7 @@ public class LayerView extends AnimatableLayer {
                     layerModel.getInOutKeyFrames(),
                     Collections.<Interpolator>emptyList());
             inOutAnimation.setIsDiscrete();
-            inOutAnimation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Float>() {
+            inOutAnimation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
                 @Override
                 public void onValueChanged(Float progress) {
                     setVisible(progress == 1f, false);

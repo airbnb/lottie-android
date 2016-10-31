@@ -1,4 +1,4 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 
 import android.graphics.PointF;
@@ -9,8 +9,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.utils.JsonUtils;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -181,5 +180,5 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
 
     protected abstract V valueFromObject(Object object, float scale) throws JSONException;
 
-    public abstract LottieKeyframeAnimation animationForKeyPath();
+    public abstract KeyframeAnimation animationForKeyPath();
 }

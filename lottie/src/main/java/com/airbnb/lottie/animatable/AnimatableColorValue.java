@@ -1,9 +1,9 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 import android.graphics.Color;
 
-import com.airbnb.lottie.utils.LottieColorKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
+import com.airbnb.lottie.animation.ColorKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,13 +39,13 @@ public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> 
 
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
-        LottieColorKeyframeAnimation animation = new LottieColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+        ColorKeyframeAnimation animation = new ColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Integer>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
             public void onValueChanged(Integer progress) {
                 observable.setValue(progress);

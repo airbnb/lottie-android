@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animatable;
 
 import java.util.ArrayList;
 import java.util.List;

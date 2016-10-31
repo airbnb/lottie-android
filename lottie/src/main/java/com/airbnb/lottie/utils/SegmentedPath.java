@@ -31,11 +31,11 @@ public class SegmentedPath {
         currentPoint.set(x3, y3);
     }
 
-    Path getSegment(int index) {
+    public Path getSegment(int index) {
         return segments.get(index);
     }
 
-    int getSegmentCount() {
+    public int getSegmentCount() {
         return segments.size();
     }
 

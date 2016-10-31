@@ -1,12 +1,12 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 import android.graphics.Path;
 import android.graphics.PointF;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.ShapeData;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieShapeKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.ShapeKeyframeAnimation;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import org.json.JSONArray;
@@ -127,10 +127,10 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     }
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
-        LottieShapeKeyframeAnimation animation = new LottieShapeKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+    public KeyframeAnimation animationForKeyPath() {
+        ShapeKeyframeAnimation animation = new ShapeKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Path>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Path>() {
             @Override
             public void onValueChanged(Path progress) {
                 observable.setValue(progress);

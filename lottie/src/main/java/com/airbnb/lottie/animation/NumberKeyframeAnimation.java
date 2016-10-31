@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.view.animation.Interpolator;
 
@@ -6,12 +6,12 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
-public class LottieNumberKeyframeAnimation<T extends Number> extends LottieKeyframeAnimation<T> {
+public class NumberKeyframeAnimation<T extends Number> extends KeyframeAnimation<T> {
 
     private final List<T> values;
     private final Class<T> klass;
 
-    public LottieNumberKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values, List<Interpolator> interpolators) {
+    public NumberKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         this.klass = klass;
         if (keyTimes.size() != values.size()) {

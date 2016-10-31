@@ -14,10 +14,10 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.AnimatableFloatValue;
+import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.utils.LottieTransform3D;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animatable.Observable;
 
 import java.util.List;
 

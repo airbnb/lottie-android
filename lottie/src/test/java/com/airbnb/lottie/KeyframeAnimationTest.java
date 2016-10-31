@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
+import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,14 +18,14 @@ import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LottieKeyframeAnimationTest {
+public class KeyframeAnimationTest {
   @Test
   public void simpleAnimation() {
 
     List<Float> keyTimes = Arrays.asList(0f, 0.5f, 1f);
     List<Float> values = Arrays.asList(0f, 1f, 10f);
 
-    LottieNumberKeyframeAnimation<Float> animation = new LottieNumberKeyframeAnimation<>(1000, 1000, keyTimes, Float.class, values, new ArrayList<Interpolator>(0));
+    NumberKeyframeAnimation<Float> animation = new NumberKeyframeAnimation<>(1000, 1000, keyTimes, Float.class, values, new ArrayList<Interpolator>(0));
 
     animation.setProgress(0f);
     assertEquals(animation.getValue(), 0f);

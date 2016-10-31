@@ -1,8 +1,8 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.utils.LottieTransform3D;
-import com.airbnb.lottie.utils.LottieTransformKeyframeAnimation;
+import com.airbnb.lottie.animation.TransformKeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,10 +28,10 @@ public class AnimatableScaleValue extends BaseAnimatableValue<LottieTransform3D,
     }
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
-        LottieTransformKeyframeAnimation animation = new LottieTransformKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+    public KeyframeAnimation animationForKeyPath() {
+        TransformKeyframeAnimation animation = new TransformKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<LottieTransform3D>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<LottieTransform3D>() {
             @Override
             public void onValueChanged(LottieTransform3D progress) {
                 observable.setValue(progress);

@@ -1,17 +1,19 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.animation;
 
 import android.view.animation.Interpolator;
+
+import com.airbnb.lottie.utils.LottieTransform3D;
 
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
-public class LottieTransformKeyframeAnimation extends LottieKeyframeAnimation<LottieTransform3D> {
+public class TransformKeyframeAnimation extends KeyframeAnimation<LottieTransform3D> {
     private final LottieTransform3D outTransform = new LottieTransform3D();
 
     private final List<LottieTransform3D> transforms;
 
-    public LottieTransformKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LottieTransform3D> transforms, List<Interpolator> interpolators) {
+    public TransformKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LottieTransform3D> transforms, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         this.transforms = transforms;
     }

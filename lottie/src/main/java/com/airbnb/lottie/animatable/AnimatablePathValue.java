@@ -1,4 +1,4 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 import android.graphics.PointF;
 import android.support.v4.view.animation.PathInterpolatorCompat;
@@ -7,9 +7,8 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.utils.JsonUtils;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.LottiePathKeyframeAnimation;
-import com.airbnb.lottie.utils.Observable;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.PathKeyframeAnimation;
 import com.airbnb.lottie.utils.SegmentedPath;
 
 import org.json.JSONArray;
@@ -170,14 +169,14 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
     }
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
 
-        LottieKeyframeAnimation<PointF> animation = new LottiePathKeyframeAnimation(duration, compDuration, keyTimes, animationPath, interpolators);
+        KeyframeAnimation<PointF> animation = new PathKeyframeAnimation(duration, compDuration, keyTimes, animationPath, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<PointF>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
             @Override
             public void onValueChanged(PointF progress) {
                 observable.setValue(progress);

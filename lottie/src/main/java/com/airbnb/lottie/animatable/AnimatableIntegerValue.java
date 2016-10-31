@@ -1,10 +1,10 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.animatable;
 
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.model.RemapInterface;
-import com.airbnb.lottie.utils.LottieKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,10 +29,10 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     }
 
     @Override
-    public LottieKeyframeAnimation animationForKeyPath() {
-        LottieKeyframeAnimation<Integer> animation = new LottieNumberKeyframeAnimation<>(duration, compDuration, keyTimes, Integer.class, keyValues, interpolators);
+    public KeyframeAnimation animationForKeyPath() {
+        KeyframeAnimation<Integer> animation = new NumberKeyframeAnimation<>(duration, compDuration, keyTimes, Integer.class, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new LottieKeyframeAnimation.AnimationListener<Integer>() {
+        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
             public void onValueChanged(Integer progress) {
                 observable.setValue(progress);
