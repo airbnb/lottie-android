@@ -11,14 +11,14 @@ import com.airbnb.lottie.animation.AnimationGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieShapeRectangle {
-    private static final String TAG = LottieShapeRectangle.class.getSimpleName();
+public class RectangleShape {
+    private static final String TAG = RectangleShape.class.getSimpleName();
 
     private AnimatablePathValue position;
     private AnimatablePointValue size;
     private AnimatableFloatValue cornerRadius;
 
-    LottieShapeRectangle(JSONObject json, int frameRate, long compDuration) {
+    RectangleShape(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject positionJson = json.getJSONObject("p");
             position = new AnimatablePathValue(positionJson, frameRate, compDuration);
@@ -61,7 +61,7 @@ public class LottieShapeRectangle {
 
     @Override
     public String toString() {
-        return "LottieShapeRectangle{" + "cornerRadius=" + cornerRadius.getInitialValue() +
+        return "RectangleShape{" + "cornerRadius=" + cornerRadius.getInitialValue() +
                 ", position=" + position +
                 ", size=" + size +
                 '}';

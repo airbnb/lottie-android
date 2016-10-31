@@ -7,11 +7,11 @@ import com.airbnb.lottie.animation.AnimationGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieShapeCircle {
+public class CircleShape {
     private AnimatablePathValue position;
     private AnimatablePointValue size;
 
-    LottieShapeCircle(JSONObject json, int frameRate, long compDuration) {
+    CircleShape(JSONObject json, int frameRate, long compDuration) {
         try {
             position = new AnimatablePathValue(json.getJSONObject("p"), frameRate, compDuration);
             size = new AnimatablePointValue(json.getJSONObject("s"), frameRate, compDuration);

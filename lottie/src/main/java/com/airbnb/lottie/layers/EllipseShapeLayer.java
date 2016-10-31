@@ -5,26 +5,26 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 
-import com.airbnb.lottie.model.LottieShapeCircle;
-import com.airbnb.lottie.model.LottieShapeFill;
-import com.airbnb.lottie.model.LottieShapeStroke;
-import com.airbnb.lottie.model.LottieShapeTransform;
-import com.airbnb.lottie.model.LottieShapeTrimPath;
+import com.airbnb.lottie.model.CircleShape;
+import com.airbnb.lottie.model.ShapeFill;
+import com.airbnb.lottie.model.ShapeStroke;
+import com.airbnb.lottie.model.ShapeTransform;
+import com.airbnb.lottie.model.ShapeTrimPath;
 import com.airbnb.lottie.utils.Observable;
 
-class LottieEllipseShapeLayer extends LottieAnimatableLayer {
+class EllipseShapeLayer extends AnimatableLayer {
 
-    private final LottieShapeCircle circleShape;
-    private final LottieShapeFill fill;
-    private final LottieShapeStroke stroke;
-    private final LottieShapeTrimPath trim;
-    private final LottieShapeTransform transformModel;
+    private final CircleShape circleShape;
+    private final ShapeFill fill;
+    private final ShapeStroke stroke;
+    private final ShapeTrimPath trim;
+    private final ShapeTransform transformModel;
 
-    private LottieCircleShapeLayer fillLayer;
-    private LottieCircleShapeLayer strokeLayer;
+    private CircleShapeLayer fillLayer;
+    private CircleShapeLayer strokeLayer;
 
-    LottieEllipseShapeLayer(LottieShapeCircle circleShape, LottieShapeFill fill, LottieShapeStroke stroke,
-            LottieShapeTrimPath trim, LottieShapeTransform transform, long duration, Drawable.Callback callback) {
+    EllipseShapeLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
+            ShapeTrimPath trim, ShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
         this.circleShape = circleShape;
         this.fill = fill;
@@ -40,7 +40,7 @@ class LottieEllipseShapeLayer extends LottieAnimatableLayer {
         setSublayerTransform(transform.getRotation().getObservable());
 
         if (fill != null) {
-            fillLayer = new LottieCircleShapeLayer(getCallback());
+            fillLayer = new CircleShapeLayer(getCallback());
             fillLayer.setColor(fill.getColor().getObservable());
             fillLayer.setAlpha(fill.getOpacity().getObservable());
             fillLayer.updateCircle(
@@ -50,7 +50,7 @@ class LottieEllipseShapeLayer extends LottieAnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new LottieCircleShapeLayer(getCallback());
+            strokeLayer = new CircleShapeLayer(getCallback());
             strokeLayer.setIsStroke();
             strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setAlpha(stroke.getOpacity().getObservable());
@@ -89,7 +89,7 @@ class LottieEllipseShapeLayer extends LottieAnimatableLayer {
         }
     }
 
-    private static final class LottieCircleShapeLayer extends LottieShapeLayer {
+    private static final class CircleShapeLayer extends ShapeLayer {
         private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
         private final Observable.OnChangedListener circleSizeChangedListener = new Observable.OnChangedListener() {
@@ -113,7 +113,7 @@ class LottieEllipseShapeLayer extends LottieAnimatableLayer {
         private Observable<PointF> circleSize;
         private Observable<PointF> circlePosition;
 
-        LottieCircleShapeLayer(Drawable.Callback callback) {
+        CircleShapeLayer(Drawable.Callback callback) {
             super(callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);

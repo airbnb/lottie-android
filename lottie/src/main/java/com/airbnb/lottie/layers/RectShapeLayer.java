@@ -10,26 +10,26 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.animation.AnimatableFloatValue;
-import com.airbnb.lottie.model.LottieShapeFill;
-import com.airbnb.lottie.model.LottieShapeRectangle;
-import com.airbnb.lottie.model.LottieShapeStroke;
-import com.airbnb.lottie.model.LottieShapeTransform;
+import com.airbnb.lottie.model.ShapeFill;
+import com.airbnb.lottie.model.RectangleShape;
+import com.airbnb.lottie.model.ShapeStroke;
+import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.utils.Observable;
 
 import java.util.List;
 
-class LottieRectShapeLayer extends LottieAnimatableLayer {
+class RectShapeLayer extends AnimatableLayer {
 
-    private final LottieShapeTransform transformModel;
-    private final LottieShapeStroke stroke;
-    private final LottieShapeFill fill;
-    private final LottieShapeRectangle rectShape;
+    private final ShapeTransform transformModel;
+    private final ShapeStroke stroke;
+    private final ShapeFill fill;
+    private final RectangleShape rectShape;
 
-    @Nullable private LottieRoundRectLayer fillLayer;
-    @Nullable private LottieRoundRectLayer strokeLayer;
+    @Nullable private RoundRectLayer fillLayer;
+    @Nullable private RoundRectLayer strokeLayer;
 
-    LottieRectShapeLayer(LottieShapeRectangle rectShape, @Nullable LottieShapeFill fill,
-            @Nullable LottieShapeStroke stroke, LottieShapeTransform transform, long duration, Drawable.Callback callback) {
+    RectShapeLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
+            @Nullable ShapeStroke stroke, ShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
         this.rectShape = rectShape;
         this.fill = fill;
@@ -44,7 +44,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
         setSublayerTransform(transform.getRotation().getObservable());
 
         if (fill != null) {
-            fillLayer = new LottieRoundRectLayer(duration, getCallback());
+            fillLayer = new RoundRectLayer(duration, getCallback());
             fillLayer.setColor(fill.getColor().getObservable());
             fillLayer.setShapeAlpha(fill.getOpacity().getObservable());
             fillLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
@@ -55,7 +55,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new LottieRoundRectLayer(duration, getCallback());
+            strokeLayer = new RoundRectLayer(duration, getCallback());
             strokeLayer.setIsStroke();
             strokeLayer.setColor(stroke.getColor().getObservable());
             strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
@@ -100,7 +100,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
         }
     }
 
-    private static class LottieRoundRectLayer extends LottieAnimatableLayer {
+    private static class RoundRectLayer extends AnimatableLayer {
 
         private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
             @Override
@@ -151,7 +151,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
         @Nullable private List<AnimatableFloatValue> lineDashPattern;
         @Nullable private AnimatableFloatValue lineDashPatternOffset;
 
-        LottieRoundRectLayer(long duration, Drawable.Callback callback) {
+        RoundRectLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
@@ -257,7 +257,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
             invalidateSelf();
         }
 
-        void setLineCapType(LottieShapeStroke.LineCapType lineCapType) {
+        void setLineCapType(ShapeStroke.LineCapType lineCapType) {
             switch (lineCapType) {
                 case Round:
                     paint.setStrokeCap(Paint.Cap.ROUND);
@@ -268,7 +268,7 @@ class LottieRectShapeLayer extends LottieAnimatableLayer {
             }
         }
 
-        void setLineJoinType(LottieShapeStroke.LineJoinType lineJoinType) {
+        void setLineJoinType(ShapeStroke.LineJoinType lineJoinType) {
             switch (lineJoinType) {
                 case Bevel:
                     paint.setStrokeJoin(Paint.Join.BEVEL);

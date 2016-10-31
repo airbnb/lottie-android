@@ -7,13 +7,13 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.view.animation.LinearInterpolator;
 
-public class RootLottieAnimatableLayer extends LottieAnimatableLayer {
+public class RootAnimatableLayer extends AnimatableLayer {
 
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
     private boolean playAnimationWhenLayerAdded;
 
-    public RootLottieAnimatableLayer(Drawable.Callback callback) {
+    public RootAnimatableLayer(Drawable.Callback callback) {
         super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
@@ -62,7 +62,7 @@ public class RootLottieAnimatableLayer extends LottieAnimatableLayer {
     }
 
     @Override
-    public void addLayer(LottieAnimatableLayer layer) {
+    public void addLayer(AnimatableLayer layer) {
         super.addLayer(layer);
         if (playAnimationWhenLayerAdded) {
             playAnimationWhenLayerAdded = false;

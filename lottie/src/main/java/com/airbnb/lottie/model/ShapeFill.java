@@ -11,14 +11,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressWarnings({"EmptyCatchBlock", "WeakerAccess", "FieldCanBeLocal"})
-public class LottieShapeFill {
-    private static final String TAG = LottieShapeFill.class.getSimpleName();
+public class ShapeFill {
+    private static final String TAG = ShapeFill.class.getSimpleName();
 
     private boolean fillEnabled;
     private AnimatableColorValue color;
     private AnimatableIntegerValue opacity;
 
-    public LottieShapeFill(JSONObject json, int frameRate, long compDuration) {
+    public ShapeFill(JSONObject json, int frameRate, long compDuration) {
         JSONObject jsonColor = null;
         try {
             jsonColor = json.getJSONObject("c");
@@ -56,7 +56,7 @@ public class LottieShapeFill {
 
     @Override
     public String toString() {
-        return "LottieShapeFill{" + "color=" + Integer.toHexString(color.getInitialValue()) +
+        return "ShapeFill{" + "color=" + Integer.toHexString(color.getInitialValue()) +
                 ", fillEnabled=" + fillEnabled +
                 ", opacity=" + opacity.getInitialValue() +
                 '}';

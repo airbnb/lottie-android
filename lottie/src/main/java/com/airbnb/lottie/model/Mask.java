@@ -6,7 +6,7 @@ import com.airbnb.lottie.animation.AnimatableShapeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieMask {
+public class Mask {
 
     private enum MaskMode {
         MaskModeAdd,
@@ -18,7 +18,7 @@ public class LottieMask {
     private MaskMode maskMode;
     private AnimatableShapeValue maskPath;
 
-    public LottieMask(JSONObject json, int frameRate, long compDuration) {
+    public Mask(JSONObject json, int frameRate, long compDuration) {
         try {
             boolean closed = json.getBoolean("cl");
             String mode = json.getString("mode");

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class LottieShapeGroup {
+public class ShapeGroup {
 
     @Nullable
     public static Object shapeItemWithJson(JSONObject json, int framerate, long compDuration, Rect compBounds) {
@@ -25,21 +25,21 @@ public class LottieShapeGroup {
 
         switch (type) {
             case "gr":
-                return new LottieShapeGroup(json, framerate, compDuration, compBounds);
+                return new ShapeGroup(json, framerate, compDuration, compBounds);
             case "st":
-                return new LottieShapeStroke(json, framerate, compDuration);
+                return new ShapeStroke(json, framerate, compDuration);
             case "fl":
-                return new LottieShapeFill(json, framerate, compDuration);
+                return new ShapeFill(json, framerate, compDuration);
             case "tr":
-                return new LottieShapeTransform(json, framerate, compDuration, compBounds);
+                return new ShapeTransform(json, framerate, compDuration, compBounds);
             case "sh":
-                return new LottieShapePath(json, framerate, compDuration);
+                return new ShapePath(json, framerate, compDuration);
             case "el":
-                return new LottieShapeCircle(json, framerate, compDuration);
+                return new CircleShape(json, framerate, compDuration);
             case "rc":
-                return new LottieShapeRectangle(json, framerate, compDuration);
+                return new RectangleShape(json, framerate, compDuration);
             case "tm":
-                return new LottieShapeTrimPath(json, framerate, compDuration);
+                return new ShapeTrimPath(json, framerate, compDuration);
         }
         return null;
     }
@@ -47,7 +47,7 @@ public class LottieShapeGroup {
     private String name;
     private final List<Object> items = new ArrayList<>();
 
-    private LottieShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    private ShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -85,6 +85,6 @@ public class LottieShapeGroup {
 
     @Override
     public String toString() {
-        return "LottieShapeGroup{" + "name='" + name + '\'' + '}';
+        return "ShapeGroup{" + "name='" + name + '\'' + '}';
     }
 }

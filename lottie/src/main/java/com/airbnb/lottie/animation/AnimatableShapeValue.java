@@ -3,8 +3,8 @@ package com.airbnb.lottie.animation;
 import android.graphics.Path;
 import android.graphics.PointF;
 
-import com.airbnb.lottie.model.LottieCubicCurveData;
-import com.airbnb.lottie.model.LottieShapeData;
+import com.airbnb.lottie.model.CubicCurveData;
+import com.airbnb.lottie.model.ShapeData;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieShapeKeyframeAnimation;
 import com.airbnb.lottie.utils.MiscUtils;
@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, Path> {
+public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     private final boolean closed;
 
     public AnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
@@ -26,7 +26,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, P
     }
 
     @Override
-    protected LottieShapeData valueFromObject(Object object, float scale) throws JSONException {
+    protected ShapeData valueFromObject(Object object, float scale) throws JSONException {
         JSONObject pointsData = null;
         if (object instanceof JSONArray) {
             try {
@@ -59,7 +59,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, P
             throw new IllegalStateException("Unable to process points array or tangents. " + pointsData);
         }
 
-        LottieShapeData shape = new LottieShapeData();
+        ShapeData shape = new ShapeData();
 
         PointF vertex = vertexAtIndex(0, pointsArray);
         vertex.x *= scale;
@@ -82,7 +82,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, P
             vertex.x *= scale;
             vertex.y *= scale;
 
-            shape.addCurve(new LottieCubicCurveData(shapeCp1, shapeCp2, vertex));
+            shape.addCurve(new CubicCurveData(shapeCp1, shapeCp2, vertex));
         }
 
         if (closed) {
@@ -103,7 +103,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, P
                 vertex.y *= scale;
             }
 
-            shape.addCurve(new LottieCubicCurveData(shapeCp1, shapeCp2, vertex));
+            shape.addCurve(new CubicCurveData(shapeCp1, shapeCp2, vertex));
         }
         return shape;
 
@@ -140,7 +140,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<LottieShapeData, P
     }
 
     @Override
-    Path convertType(LottieShapeData shapeData) {
+    Path convertType(ShapeData shapeData) {
         if (observable.getValue() == null) {
             observable.setValue(new Path());
         }

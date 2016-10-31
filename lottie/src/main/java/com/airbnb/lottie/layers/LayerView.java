@@ -17,12 +17,13 @@ import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.animation.AnimationGroup;
-import com.airbnb.lottie.model.LottieComposition;
-import com.airbnb.lottie.model.LottieShapeFill;
-import com.airbnb.lottie.model.LottieShapeGroup;
-import com.airbnb.lottie.model.LottieShapeStroke;
-import com.airbnb.lottie.model.LottieShapeTransform;
-import com.airbnb.lottie.model.LottieShapeTrimPath;
+import com.airbnb.lottie.model.Composition;
+import com.airbnb.lottie.model.Layer;
+import com.airbnb.lottie.model.ShapeFill;
+import com.airbnb.lottie.model.ShapeGroup;
+import com.airbnb.lottie.model.ShapeStroke;
+import com.airbnb.lottie.model.ShapeTransform;
+import com.airbnb.lottie.model.ShapeTrimPath;
 import com.airbnb.lottie.utils.LottieKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieNumberKeyframeAnimation;
 import com.airbnb.lottie.utils.LottieTransform3D;
@@ -31,11 +32,11 @@ import com.airbnb.lottie.utils.Observable;
 import java.util.Collections;
 import java.util.List;
 
-public class LottieLayerView extends LottieAnimatableLayer {
+public class LayerView extends AnimatableLayer {
 
     /** CALayer#mask */
-    private LottieMaskLayer mask;
-    private LottieLayerView matte;
+    private MaskLayer mask;
+    private LayerView matte;
 
     private final Paint mainCanvasPaint = new Paint();
     @Nullable private final Bitmap contentBitmap;
@@ -48,14 +49,14 @@ public class LottieLayerView extends LottieAnimatableLayer {
     private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private final LottieLayer layerModel;
-    private final LottieComposition composition;
+    private final Layer layerModel;
+    private final Composition composition;
 
     private long parentId = -1;
-    private LottieAnimatableLayer childContainerLayer;
+    private AnimatableLayer childContainerLayer;
 
 
-    public LottieLayerView(LottieLayer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
+    public LayerView(Layer layerModel, Composition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
         super(composition.getDuration(), callback);
         this.layerModel = layerModel;
         this.composition = composition;
@@ -79,19 +80,19 @@ public class LottieLayerView extends LottieAnimatableLayer {
         anchorPoint.setValue(new PointF());
         setAnchorPoint(anchorPoint);
 
-        childContainerLayer = new LottieAnimatableLayer(composition.getDuration(), getCallback());
+        childContainerLayer = new AnimatableLayer(composition.getDuration(), getCallback());
         childContainerLayer.setCallback(callback);
         childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
         childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
         long parentId = layerModel.getParentId();
-        LottieAnimatableLayer currentChild = childContainerLayer;
+        AnimatableLayer currentChild = childContainerLayer;
         while (parentId >= 0) {
             if (parentId >= 0) {
                 this.parentId = parentId;
             }
-            LottieLayer parentModel = composition.layerModelForId(parentId);
-            LottieParentLayer parentLayer = new LottieParentLayer(parentModel, composition, getCallback());
+            Layer parentModel = composition.layerModelForId(parentId);
+            ParentLayer parentLayer = new ParentLayer(parentModel, composition, getCallback());
             parentLayer.setCallback(callback);
             parentLayer.addLayer(currentChild);
             currentChild = parentLayer;
@@ -116,30 +117,30 @@ public class LottieLayerView extends LottieAnimatableLayer {
 
         List<Object> reversedItems = layerModel.getShapes();
         Collections.reverse(reversedItems);
-        LottieShapeTransform currentTransform = null;
-        LottieShapeTrimPath currentTrimPath = null;
-        LottieShapeFill currentFill = null;
-        LottieShapeStroke currentStroke = null;
+        ShapeTransform currentTransform = null;
+        ShapeTrimPath currentTrimPath = null;
+        ShapeFill currentFill = null;
+        ShapeStroke currentStroke = null;
 
         for (int i = 0; i < reversedItems.size(); i++) {
             Object item = reversedItems.get(i);
-            if (item instanceof LottieShapeGroup) {
-                LottieGroupLayerView groupLayer = new LottieGroupLayerView((LottieShapeGroup) item, currentFill,
+            if (item instanceof ShapeGroup) {
+                GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
                         currentStroke, currentTrimPath, currentTransform, compDuration, getCallback());
                 childContainerLayer.addLayer(groupLayer);
-            } else if (item instanceof LottieShapeTransform) {
-                currentTransform = (LottieShapeTransform) item;
-            } else if (item instanceof LottieShapeFill) {
-                currentFill = (LottieShapeFill) item;
-            } else if (item instanceof LottieShapeTrimPath) {
-                currentTrimPath = (LottieShapeTrimPath) item;
-            } else if (item instanceof LottieShapeStroke) {
-                currentStroke = (LottieShapeStroke) item;
+            } else if (item instanceof ShapeTransform) {
+                currentTransform = (ShapeTransform) item;
+            } else if (item instanceof ShapeFill) {
+                currentFill = (ShapeFill) item;
+            } else if (item instanceof ShapeTrimPath) {
+                currentTrimPath = (ShapeTrimPath) item;
+            } else if (item instanceof ShapeStroke) {
+                currentStroke = (ShapeStroke) item;
             }
         }
 
         if (maskBitmap != null && layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-            mask = new LottieMaskLayer(layerModel.getMasks(), composition, getCallback());
+            mask = new MaskLayer(layerModel.getMasks(), composition, getCallback());
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();
@@ -170,7 +171,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
         }
     }
 
-    public void setMatte(LottieLayerView matte) {
+    public void setMatte(LayerView matte) {
         if (matteBitmap == null) {
             throw new IllegalArgumentException("Cannot set a matte if no matte contentBitmap was given!");
         }
@@ -206,7 +207,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
             int maskSaveCount = maskCanvas.save();
             long parentId = this.parentId;
             while (parentId >= 0) {
-                LottieLayer parent = composition.layerModelForId(parentId);
+                Layer parent = composition.layerModelForId(parentId);
                 applyTransformForLayer(maskCanvas, parent);
                 parentId = parent.getParentId();
             }
@@ -238,7 +239,7 @@ public class LottieLayerView extends LottieAnimatableLayer {
         }
     }
 
-    private void applyTransformForLayer(Canvas canvas, LottieLayer layer) {
+    private void applyTransformForLayer(Canvas canvas, Layer layer) {
         PointF position = layer.getPosition().getObservable().getValue();
         if (position.x != 0 || position.y != 0) {
             canvas.translate(position.x, position.y);

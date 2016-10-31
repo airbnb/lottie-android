@@ -4,7 +4,6 @@ import android.graphics.Rect;
 import android.util.LongSparseArray;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.layers.LottieLayer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LottieComposition {
+public class Composition {
     /**
      * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel leaving ~2.3M pixels available.
      * Reduce the number a little bit for safety.
@@ -22,8 +21,8 @@ public class LottieComposition {
      */
     private static final int MAX_PIXELS = 1000;
 
-    public static LottieComposition fromJson(JSONObject json) {
-        LottieComposition composition = new LottieComposition();
+    public static Composition fromJson(JSONObject json) {
+        Composition composition = new Composition();
 
         int width = -1;
         int height = -1;
@@ -61,13 +60,13 @@ public class LottieComposition {
         try {
             JSONArray jsonLayers = json.getJSONArray("layers");
             for (int i = 0; i < jsonLayers.length(); i++) {
-                LottieLayer layer = LottieLayer.fromJson(jsonLayers.getJSONObject(i), composition);
+                Layer layer = Layer.fromJson(jsonLayers.getJSONObject(i), composition);
                 composition.layers.add(layer);
                 composition.layerMap.put(layer.getId(), layer);
                 if (!layer.getMasks().isEmpty()) {
                     composition.hasMasks = true;
                 }
-                if (layer.getMatteType() != null && layer.getMatteType() != LottieLayer.MatteType.None) {
+                if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
                     composition.hasMattes = true;
                 }
             }
@@ -79,8 +78,8 @@ public class LottieComposition {
         return composition;
     }
 
-    private final LongSparseArray<LottieLayer> layerMap = new LongSparseArray<>();
-    private final List<LottieLayer> layers = new ArrayList<>();
+    private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
+    private final List<Layer> layers = new ArrayList<>();
     private Rect bounds;
     private long startFrame;
     private long endFrame;
@@ -89,7 +88,7 @@ public class LottieComposition {
     private boolean hasMasks;
     private boolean hasMattes;
 
-    public LottieLayer layerModelForId(long id) {
+    public Layer layerModelForId(long id) {
         return layerMap.get(id);
     }
 
@@ -109,7 +108,7 @@ public class LottieComposition {
         return frameRate;
     }
 
-    public List<LottieLayer> getLayers() {
+    public List<Layer> getLayers() {
         return layers;
     }
 

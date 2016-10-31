@@ -2,18 +2,18 @@ package com.airbnb.lottie.model;
 
 import android.graphics.PointF;
 
-public class LottieCubicCurveData {
+public class CubicCurveData {
     private final PointF controlPoint1;
     private final PointF controlPoint2;
     private final PointF vertex;
 
-    LottieCubicCurveData() {
+    CubicCurveData() {
         controlPoint1 = new PointF();
         controlPoint2 = new PointF();
         vertex = new PointF();
     }
 
-    public LottieCubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex) {
+    public CubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex) {
         this.controlPoint1 = controlPoint1;
         this.controlPoint2 = controlPoint2;
         this.vertex = vertex;

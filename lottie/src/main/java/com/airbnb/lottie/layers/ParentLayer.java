@@ -4,14 +4,15 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.model.Composition;
+import com.airbnb.lottie.model.Layer;
 
-class LottieParentLayer extends LottieAnimatableLayer {
-    private static final String TAG = LottieParentLayer.class.getSimpleName();
+class ParentLayer extends AnimatableLayer {
+    private static final String TAG = ParentLayer.class.getSimpleName();
 
-    private final LottieLayer parentModel;
+    private final Layer parentModel;
 
-    LottieParentLayer(LottieLayer parent, LottieComposition composition, Drawable.Callback callback) {
+    ParentLayer(Layer parent, Composition composition, Drawable.Callback callback) {
         super(composition.getDuration(), callback);
         setBounds(parent.getCompBounds());
         this.parentModel = parent;

@@ -6,12 +6,12 @@ import com.airbnb.lottie.animation.AnimationGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieShapeTrimPath {
+public class ShapeTrimPath {
     private AnimatableFloatValue start;
     private AnimatableFloatValue end;
     private AnimatableFloatValue offset;
 
-    public LottieShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
+    public ShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
         try {
             start = new AnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration, false);
             end = new AnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration, false);

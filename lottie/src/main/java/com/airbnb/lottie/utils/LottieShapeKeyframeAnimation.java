@@ -3,16 +3,16 @@ package com.airbnb.lottie.utils;
 import android.graphics.Path;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.model.LottieShapeData;
+import com.airbnb.lottie.model.ShapeData;
 
 import java.util.List;
 
 public class LottieShapeKeyframeAnimation extends LottieKeyframeAnimation<Path> {
     private final Path tempPath = new Path();
-    private final LottieShapeData tempShapeData = new LottieShapeData();
-    private final List<LottieShapeData> shapeData;
+    private final ShapeData tempShapeData = new ShapeData();
+    private final List<ShapeData> shapeData;
 
-    public LottieShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<LottieShapeData> shapeData, List<Interpolator> interpolators) {
+    public LottieShapeKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<ShapeData> shapeData, List<Interpolator> interpolators) {
         super(duration, compDuration, keyTimes, interpolators);
         this.shapeData = shapeData;
     }
@@ -40,8 +40,8 @@ public class LottieShapeKeyframeAnimation extends LottieKeyframeAnimation<Path> 
             }
         }
 
-        LottieShapeData startShapeData = shapeData.get(keyframeIndex);
-        LottieShapeData endShapeData = shapeData.get(keyframeIndex + 1);
+        ShapeData startShapeData = shapeData.get(keyframeIndex);
+        ShapeData endShapeData = shapeData.get(keyframeIndex + 1);
 
         tempShapeData.interpolateBetween(startShapeData, endShapeData, percentageIntoFrame);
         MiscUtils.getPathFromData(tempShapeData, tempPath);

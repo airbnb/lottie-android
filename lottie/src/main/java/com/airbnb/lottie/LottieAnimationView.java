@@ -21,10 +21,10 @@ import android.util.AttributeSet;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
 
-import com.airbnb.lottie.layers.LottieLayer;
-import com.airbnb.lottie.layers.LottieLayerView;
-import com.airbnb.lottie.layers.RootLottieAnimatableLayer;
-import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.model.Layer;
+import com.airbnb.lottie.layers.LayerView;
+import com.airbnb.lottie.layers.RootAnimatableLayer;
+import com.airbnb.lottie.model.Composition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,13 +57,13 @@ public class LottieAnimationView extends ImageView {
         return view;
     }
 
-    private final LongSparseArray<LottieLayerView> layerMap = new LongSparseArray<>();
-    private final RootLottieAnimatableLayer rootAnimatableLayer = new RootLottieAnimatableLayer(this);
+    private final LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
+    private final RootAnimatableLayer rootAnimatableLayer = new RootAnimatableLayer(this);
     private String animationName;
     private boolean isScreenshotTest;
 
     /** Can be null because it is created async */
-    @Nullable private LottieComposition composition;
+    @Nullable private Composition composition;
     private boolean hasInvalidatedThisFrame;
     @Nullable private Bitmap mainBitmap = null;
     @Nullable private Bitmap maskBitmap = null;
@@ -238,26 +238,26 @@ public class LottieAnimationView extends ImageView {
 
     private void setJson(JSONObject json) {
         // TODO: cancel these if the iew gets detached.
-        new AsyncTask<JSONObject, Void, LottieComposition>() {
+        new AsyncTask<JSONObject, Void, Composition>() {
 
             @Override
-            protected LottieComposition doInBackground(JSONObject... params) {
-                return LottieComposition.fromJson(params[0]);
+            protected Composition doInBackground(JSONObject... params) {
+                return Composition.fromJson(params[0]);
             }
 
             @Override
-            protected void onPostExecute(LottieComposition model) {
+            protected void onPostExecute(Composition model) {
                 setComposition(model);
             }
         }.execute(json);
     }
 
     private void setJsonSync(JSONObject json) {
-        LottieComposition composition = LottieComposition.fromJson(json);
+        Composition composition = Composition.fromJson(json);
         setComposition(composition);
     }
 
-    private void setComposition(@NonNull LottieComposition composition) {
+    private void setComposition(@NonNull Composition composition) {
         if (getWindowToken() == null && !isScreenshotTest) {
             return;
         }
@@ -271,7 +271,7 @@ public class LottieAnimationView extends ImageView {
 
     private void buildSubviewsForComposition() {
         //noinspection ConstantConditions
-        List<LottieLayer> reversedLayers = composition.getLayers();
+        List<Layer> reversedLayers = composition.getLayers();
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();
@@ -284,12 +284,12 @@ public class LottieAnimationView extends ImageView {
         if (composition.hasMattes()) {
             matteBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
         }
-        LottieLayerView maskedLayer = null;
+        LayerView maskedLayer = null;
         for (int i = 0; i < reversedLayers.size(); i++) {
-            LottieLayer layer = reversedLayers.get(i);
-            LottieLayerView layerView;
+            Layer layer = reversedLayers.get(i);
+            LayerView layerView;
             if (maskedLayer == null) {
-                layerView = new LottieLayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
+                layerView = new LayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
             } else {
                 if (mainBitmapForMatte == null) {
                     mainBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
@@ -298,14 +298,14 @@ public class LottieAnimationView extends ImageView {
                     maskBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
                 }
 
-                layerView = new LottieLayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, null);
+                layerView = new LayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, null);
             }
             layerMap.put(layerView.getId(), layerView);
             if (maskedLayer != null) {
                 maskedLayer.setMatte(layerView);
                 maskedLayer = null;
             } else {
-                if (layer.getMatteType() == LottieLayer.MatteType.Add) {
+                if (layer.getMatteType() == Layer.MatteType.Add) {
                     maskedLayer = layerView;
                 }
                 rootAnimatableLayer.addLayer(layerView);

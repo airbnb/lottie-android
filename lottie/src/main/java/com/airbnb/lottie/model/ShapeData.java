@@ -8,9 +8,9 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
-public class LottieShapeData {
+public class ShapeData {
 
-    private final List<LottieCubicCurveData> curves = new ArrayList<>();
+    private final List<CubicCurveData> curves = new ArrayList<>();
     private PointF initialPoint;
 
     public void setInitialPoint(PointF initialPoint) {
@@ -28,15 +28,15 @@ public class LottieShapeData {
         return initialPoint;
     }
 
-    public void addCurve(LottieCubicCurveData curve) {
+    public void addCurve(CubicCurveData curve) {
         curves.add(curve);
     }
 
-    public List<LottieCubicCurveData> getCurves() {
+    public List<CubicCurveData> getCurves() {
         return curves;
     }
 
-    public void interpolateBetween(LottieShapeData shapeData1, LottieShapeData shapeData2, @FloatRange(from=0f, to=1f) float percentage) {
+    public void interpolateBetween(ShapeData shapeData1, ShapeData shapeData2, @FloatRange(from=0f, to=1f) float percentage) {
         if (initialPoint == null) {
             initialPoint = new PointF();
         }
@@ -45,7 +45,7 @@ public class LottieShapeData {
                     "\tShape 1: " + shapeData1.getCurves().size() + "\tShape 2: " + shapeData2.getCurves().size());
         } else if (curves.isEmpty()) {
             for (int i = shapeData1.getCurves().size() - 1; i >= 0; i--) {
-                curves.add(new LottieCubicCurveData());
+                curves.add(new CubicCurveData());
             }
         }
 
@@ -55,8 +55,8 @@ public class LottieShapeData {
         setInitialPoint(lerp(initialPoint1.x, initialPoint2.x, percentage), lerp(initialPoint1.y, initialPoint2.y, percentage));
 
         for (int i = curves.size() - 1; i >= 0 ; i--) {
-            LottieCubicCurveData curve1 = shapeData1.getCurves().get(i);
-            LottieCubicCurveData curve2 = shapeData2.getCurves().get(i);
+            CubicCurveData curve1 = shapeData1.getCurves().get(i);
+            CubicCurveData curve2 = shapeData2.getCurves().get(i);
 
             PointF cp11 = curve1.getControlPoint1();
             PointF cp21 = curve1.getControlPoint2();

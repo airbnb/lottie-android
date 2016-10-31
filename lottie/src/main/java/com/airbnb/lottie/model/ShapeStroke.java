@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LottieShapeStroke {
+public class ShapeStroke {
 
     public enum LineCapType {
         Butt,
@@ -35,7 +35,7 @@ public class LottieShapeStroke {
     private LineCapType capType;
     private LineJoinType joinType;
 
-    LottieShapeStroke(JSONObject json, int frameRate, long compDuration) {
+    ShapeStroke(JSONObject json, int frameRate, long compDuration) {
         try {
             JSONObject colorJson = json.getJSONObject("c");
             color = new AnimatableColorValue(colorJson, frameRate, compDuration);

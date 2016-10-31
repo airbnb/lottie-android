@@ -15,13 +15,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.animation.AnimatableFloatValue;
-import com.airbnb.lottie.model.LottieShapeStroke;
+import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.utils.LottieTransform3D;
 import com.airbnb.lottie.utils.Observable;
 
 import java.util.List;
 
-class LottieShapeLayer extends LottieAnimatableLayer {
+class ShapeLayer extends AnimatableLayer {
     private final Observable.OnChangedListener pathChangedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
@@ -86,7 +86,7 @@ class LottieShapeLayer extends LottieAnimatableLayer {
     private List<AnimatableFloatValue> lineDashPattern;
     private AnimatableFloatValue lineDashPatternOffset;
 
-    LottieShapeLayer(Drawable.Callback callback) {
+    ShapeLayer(Drawable.Callback callback) {
         super(0, callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
@@ -250,7 +250,7 @@ class LottieShapeLayer extends LottieAnimatableLayer {
         invalidateSelf();
     }
 
-    void setLineCapType(LottieShapeStroke.LineCapType lineCapType) {
+    void setLineCapType(ShapeStroke.LineCapType lineCapType) {
         switch (lineCapType) {
             case Round:
                 paint.setStrokeCap(Paint.Cap.ROUND);
@@ -262,7 +262,7 @@ class LottieShapeLayer extends LottieAnimatableLayer {
         invalidateSelf();
     }
 
-    void setLineJoinType(LottieShapeStroke.LineJoinType lineJoinType) {
+    void setLineJoinType(ShapeStroke.LineJoinType lineJoinType) {
         switch (lineJoinType) {
             case Bevel:
                 paint.setStrokeJoin(Paint.Join.BEVEL);

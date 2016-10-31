@@ -14,8 +14,8 @@ import com.airbnb.lottie.animation.AnimationGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieShapeTransform {
-    private static final String TAG = LottieShapeTransform.class.getSimpleName();
+public class ShapeTransform {
+    private static final String TAG = ShapeTransform.class.getSimpleName();
 
     private final Rect compBounds;
     private AnimatablePointValue position;
@@ -24,7 +24,7 @@ public class LottieShapeTransform {
     private AnimatableFloatValue rotation;
     private AnimatableIntegerValue opacity;
 
-    LottieShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    ShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
         this.compBounds = compBounds;
 
         JSONObject jsonPosition;
@@ -101,7 +101,7 @@ public class LottieShapeTransform {
 
     @Override
     public String toString() {
-        return "LottieShapeTransform{" + "anchor=" + anchor.toString() +
+        return "ShapeTransform{" + "anchor=" + anchor.toString() +
                 ", compBounds=" + compBounds +
                 ", position=" + position.toString() +
                 ", scale=" + scale.toString() +

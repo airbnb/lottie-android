@@ -1,4 +1,4 @@
-package com.airbnb.lottie.layers;
+package com.airbnb.lottie.model;
 
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -12,9 +12,6 @@ import com.airbnb.lottie.animation.AnimatablePathValue;
 import com.airbnb.lottie.animation.AnimatablePointValue;
 import com.airbnb.lottie.animation.AnimatableScaleValue;
 import com.airbnb.lottie.animation.AnimationGroup;
-import com.airbnb.lottie.model.LottieComposition;
-import com.airbnb.lottie.model.LottieMask;
-import com.airbnb.lottie.model.LottieShapeGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,8 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"EmptyCatchBlock"})
-public class LottieLayer {
-    private static final String TAG = LottieLayer.class.getSimpleName();
+public class Layer {
+    private static final String TAG = Layer.class.getSimpleName();
 
     @SuppressWarnings("WeakerAccess")
     public enum LottieLayerType {
@@ -45,8 +42,8 @@ public class LottieLayer {
     }
 
     @SuppressWarnings("UnusedAssignment")
-    public static LottieLayer fromJson(JSONObject json, LottieComposition composition) {
-        LottieLayer layer = new LottieLayer();
+    static Layer fromJson(JSONObject json, Composition composition) {
+        Layer layer = new Layer();
         try {
             if (L.DBG) Log.d(TAG, "Parsing new layer.");
             layer.layerName = json.getString("nm");
@@ -69,7 +66,7 @@ public class LottieLayer {
                 if (layer.parentId != -1 && L.DBG) {
                     long parentId = layer.parentId;
                     List<String> parentNames = new ArrayList<>();
-                    LottieLayer parent = composition.layerModelForId(parentId);
+                    Layer parent = composition.layerModelForId(parentId);
                     while (parent != null) {
                         parentNames.add(parent.getLayerName());
                         parent = composition.layerModelForId(parent.getParentId());
@@ -159,7 +156,7 @@ public class LottieLayer {
             }
             if (jsonMasks != null) {
                 for (int i = 0; i < jsonMasks.length(); i++) {
-                    LottieMask mask = new LottieMask(jsonMasks.getJSONObject(i), layer.frameRate, composition.getDuration());
+                    Mask mask = new Mask(jsonMasks.getJSONObject(i), layer.frameRate, composition.getDuration());
                     layer.masks.add(mask);
                     if (L.DBG) Log.d(TAG, "\tMask=" + mask.getMaskMode());
                 }
@@ -172,7 +169,7 @@ public class LottieLayer {
             }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
-                    Object shape = LottieShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition.getDuration(), layer.compBounds);
+                    Object shape = ShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition.getDuration(), layer.compBounds);
                     if (shape != null) {
                         layer.shapes.add(shape);
                         if (L.DBG) Log.d(TAG, "\tShapes+=" + shape.getClass().getSimpleName());
@@ -233,7 +230,7 @@ public class LottieLayer {
     private Rect compBounds;
     private int frameRate;
 
-    private final List<LottieMask> masks = new ArrayList<>();
+    private final List<Mask> masks = new ArrayList<>();
 
     private int solidWidth;
     private int solidHeight;
@@ -255,11 +252,11 @@ public class LottieLayer {
 
     private MatteType matteType;
 
-    AnimatablePathValue getAnchor() {
+    public AnimatablePathValue getAnchor() {
         return anchor;
     }
 
-    Rect getCompBounds() {
+    public Rect getCompBounds() {
         return compBounds;
     }
 
@@ -267,21 +264,21 @@ public class LottieLayer {
         return compDuration;
     }
 
-    boolean hasInAnimation() {
+    public boolean hasInAnimation() {
         return hasInAnimation;
     }
 
-    boolean hasInOutAnimation() {
+    public boolean hasInOutAnimation() {
         return hasInOutAnimation;
     }
 
     @Nullable
-    List<Float> getInOutKeyFrames() {
+    public List<Float> getInOutKeyFrames() {
         return inOutKeyFrames;
     }
 
     @Nullable
-    List<Float> getInOutKeyTimes() {
+    public List<Float> getInOutKeyTimes() {
         return inOutKeyTimes;
     }
 
@@ -289,11 +286,11 @@ public class LottieLayer {
         return layerId;
     }
 
-    String getLayerName() {
+    public String getLayerName() {
         return layerName;
     }
 
-    public List<LottieMask> getMasks() {
+    public List<Mask> getMasks() {
         return masks;
     }
 
@@ -305,7 +302,7 @@ public class LottieLayer {
         return opacity;
     }
 
-    long getParentId() {
+    public long getParentId() {
         return parentId;
     }
 
@@ -313,11 +310,11 @@ public class LottieLayer {
         return position;
     }
 
-    AnimatableFloatValue getRotation() {
+    public AnimatableFloatValue getRotation() {
         return rotation;
     }
 
-    AnimatableScaleValue getScale() {
+    public AnimatableScaleValue getScale() {
         return scale;
     }
 
@@ -329,21 +326,21 @@ public class LottieLayer {
         return AnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
     }
 
-    int getSolidColor() {
+    public int getSolidColor() {
         return solidColor;
     }
 
-    int getSolidHeight() {
+    public int getSolidHeight() {
         return solidHeight;
     }
 
-    int getSolidWidth() {
+    public int getSolidWidth() {
         return solidWidth;
     }
 
     @Override
     public String toString() {
-        return "LottieLayer{" + "layerName='" + layerName +
+        return "Layer{" + "layerName='" + layerName +
                 ", anchor=" + anchor +
                 ", shapes=" + shapes +
                 ", layerId=" + layerId +

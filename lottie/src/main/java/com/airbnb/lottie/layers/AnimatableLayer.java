@@ -18,9 +18,9 @@ import com.airbnb.lottie.utils.Observable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LottieAnimatableLayer extends Drawable {
+public class AnimatableLayer extends Drawable {
 
-    protected final List<LottieAnimatableLayer> layers = new ArrayList<>();
+    protected final List<AnimatableLayer> layers = new ArrayList<>();
     private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
@@ -43,7 +43,7 @@ public class LottieAnimatableLayer extends Drawable {
     private final List<AnimationGroup> animations = new ArrayList<>();
     @FloatRange(from = 0f, to = 1f) private float progress;
 
-    LottieAnimatableLayer(long compDuration, Drawable.Callback callback) {
+    AnimatableLayer(long compDuration, Drawable.Callback callback) {
         setCallback(callback);
         this.compDuration = compDuration;
 
@@ -154,7 +154,7 @@ public class LottieAnimatableLayer extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void addLayer(LottieAnimatableLayer layer) {
+    public void addLayer(AnimatableLayer layer) {
         layers.add(layer);
         layer.setProgress(progress);
         invalidateSelf();

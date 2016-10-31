@@ -9,15 +9,15 @@ import com.airbnb.lottie.animation.AnimationGroup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LottieShapePath {
-    private static final String TAG = LottieShapePath.class.getSimpleName();
+public class ShapePath {
+    private static final String TAG = ShapePath.class.getSimpleName();
 
     private String name;
     private boolean closed;
     private int index;
     private AnimatableShapeValue shapePath;
 
-    public LottieShapePath(JSONObject json, int frameRate, long compDuration) {
+    public ShapePath(JSONObject json, int frameRate, long compDuration) {
         try {
             index = json.getInt("ind");
         } catch (JSONException e) {
@@ -57,7 +57,7 @@ public class LottieShapePath {
 
     @Override
     public String toString() {
-        return "LottieShapePath{" + "name=" + name +
+        return "ShapePath{" + "name=" + name +
                 ", closed=" + closed +
                 ", index=" + index +
                 ", hasAnimation=" + shapePath.hasAnimation() +
