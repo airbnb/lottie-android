@@ -40,7 +40,7 @@ import java.util.List;
  *
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programatically: {@link #setAnimation(String)}
+ * 2) Programatically: {@link #setAnimation(String)} or {@link #setAnimation(JSONObject)}.
  *
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
@@ -204,6 +204,9 @@ public class LottieAnimationView extends ImageView {
         }.execute(file);
     }
 
+    /**
+     * Sets the animation using the raw JSON Object.
+     */
     public void setAnimation(JSONObject json) {
         // TODO: cancel these if the iew gets detached.
         new AsyncTask<JSONObject, Void, Composition>() {
