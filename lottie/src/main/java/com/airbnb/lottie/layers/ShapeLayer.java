@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.ShapeStroke;
-import com.airbnb.lottie.utils.LottieTransform3D;
+import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animatable.Observable;
 
 import java.util.List;
@@ -70,7 +70,7 @@ class ShapeLayer extends AnimatableLayer {
     private final Path trimPath = new Path();
     private final PathMeasure pathMeasure = new PathMeasure();
 
-    @Nullable private Observable<LottieTransform3D> scale;
+    @Nullable private Observable<ScaleXY> scale;
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
     private final Path scaledPath = new Path();
@@ -311,7 +311,7 @@ class ShapeLayer extends AnimatableLayer {
         invalidateSelf();
     }
 
-    void setScale(@SuppressWarnings("NullableProblems") Observable<LottieTransform3D> scale) {
+    void setScale(@SuppressWarnings("NullableProblems") Observable<ScaleXY> scale) {
         if (this.scale != null) {
             this.scale.removeChangeListener(pathChangedListener);
         }

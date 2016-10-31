@@ -12,7 +12,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.utils.LottieTransform3D;
+import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animatable.Observable;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class AnimatableLayer extends Drawable {
     private Observable<PointF> position;
     private Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
-    private Observable<LottieTransform3D> transform;
+    private Observable<ScaleXY> transform;
     private Observable<Integer> alpha;
     private Observable<Float> rotation;
     final long compDuration;
@@ -130,7 +130,7 @@ public class AnimatableLayer extends Drawable {
         position.addChangeListener(changedListener);
     }
 
-    void setTransform(Observable<LottieTransform3D> transform) {
+    void setTransform(Observable<ScaleXY> transform) {
         if (this.transform != null) {
             this.transform.removeChangeListener(changedListener);
         }

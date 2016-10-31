@@ -8,7 +8,7 @@ import com.airbnb.lottie.model.ShapePath;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.utils.LottieTransform3D;
+import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animatable.Observable;
 
 class ShapeLayerView extends AnimatableLayer {
@@ -37,7 +37,7 @@ class ShapeLayerView extends AnimatableLayer {
         setPosition(transformModel.getPosition().getObservable());
         setRotation(transformModel.getRotation().getObservable());
 
-        Observable<LottieTransform3D> scale = transformModel.getScale().getObservable();
+        Observable<ScaleXY> scale = transformModel.getScale().getObservable();
         setTransform(transformModel.getScale().getObservable());
         if (fill != null) {
             fillLayer = new ShapeLayer(getCallback());

@@ -26,7 +26,7 @@ import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
-import com.airbnb.lottie.utils.LottieTransform3D;
+import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animatable.Observable;
 
 import java.util.Collections;
@@ -245,7 +245,7 @@ public class LayerView extends AnimatableLayer {
             canvas.translate(position.x, position.y);
         }
 
-        LottieTransform3D scale = layer.getScale().getObservable().getValue();
+        ScaleXY scale = layer.getScale().getObservable().getValue();
         if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
             canvas.scale(scale.getScaleX(), scale.getScaleY());
         }
