@@ -199,9 +199,25 @@ public class LottieAnimationView extends ImageView {
 
             @Override
             protected void onPostExecute(JSONObject jsonObject) {
-                setJson(jsonObject);
+                setAnimation(jsonObject);
             }
         }.execute(file);
+    }
+
+    public void setAnimation(JSONObject json) {
+        // TODO: cancel these if the iew gets detached.
+        new AsyncTask<JSONObject, Void, Composition>() {
+
+            @Override
+            protected Composition doInBackground(JSONObject... params) {
+                return Composition.fromJson(params[0]);
+            }
+
+            @Override
+            protected void onPostExecute(Composition model) {
+                setComposition(model);
+            }
+        }.execute(json);
     }
 
     /**
@@ -234,22 +250,6 @@ public class LottieAnimationView extends ImageView {
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to load JSON.", e);
         }
-    }
-
-    private void setJson(JSONObject json) {
-        // TODO: cancel these if the iew gets detached.
-        new AsyncTask<JSONObject, Void, Composition>() {
-
-            @Override
-            protected Composition doInBackground(JSONObject... params) {
-                return Composition.fromJson(params[0]);
-            }
-
-            @Override
-            protected void onPostExecute(Composition model) {
-                setComposition(model);
-            }
-        }.execute(json);
     }
 
     private void setJsonSync(JSONObject json) {
