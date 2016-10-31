@@ -25,7 +25,7 @@ public class ShapeTrimPath {
         return end;
     }
 
-    public AnimatableFloatValue getOffset() {
+    private AnimatableFloatValue getOffset() {
         return offset;
     }
 

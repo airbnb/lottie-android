@@ -20,7 +20,7 @@ import java.util.List;
 
 public class AnimatableLayer extends Drawable {
 
-    protected final List<AnimatableLayer> layers = new ArrayList<>();
+    final List<AnimatableLayer> layers = new ArrayList<>();
     private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
@@ -151,7 +151,7 @@ public class AnimatableLayer extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public void addLayer(AnimatableLayer layer) {
+    void addLayer(AnimatableLayer layer) {
         layers.add(layer);
         layer.setProgress(progress);
         invalidateSelf();
