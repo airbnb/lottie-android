@@ -11,9 +11,10 @@ They say a picture is worth 1,000 words so here are 6,000
 ![Alarm](gifs/Alarm.gif)
 ![Diamond](gifs/Diamond.gif)
 ![Lightbulb](gifs/Lightbulb.gif)
-![Selfie](gifs/Selfie.gif)
 ![Business](gifs/Business.gif)
 ![AllSet](gifs/AllSet.gif)
+
+![Selfie](gifs/Selfie.gif)
 
 # Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
