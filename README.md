@@ -8,7 +8,12 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 They say a picture is worth 1,000 words so here are 6,000
 
-
+![Alarm](gifs/Alarm.gif)
+![Diamond](gifs/Diamond.gif)
+![Lightbulb](gifs/Lightbulb.gif)
+![Selfie](gifs/Selfie.gif)
+![Business](gifs/Business.gif)
+![AllSet](gifs/AllSet.gif)
 
 # Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
@@ -20,6 +25,10 @@ Using Lottie is as simple as adding an image to an ImageView. `LottieAnimationVi
 
 1. By specifying the JSON filename in the /assets directory of your app.
 2. By passing in the raw JSONObject. With this, you have the option of hosting your animations on your server and downloading them through a network request! This opens up the possibility of a/b testing animations or providing animations that are very specific to the user such as an animated Eifel Tower when an Airbnb traveler books a listing in Paris.
+
+# Why is it called Lottie?
+Lottie is named after a German film director and the foremost pioneer of silhouette animation. Her best known films are The Adventures of Prince Achmed (1926) – the oldest surviving feature-length animated film, preceding Walt Disney's feature-length Snow White and the Seven Dwarfs (1937) by over ten years
+[The art of Lotte Reineger](https://www.youtube.com/watch?v=LvU55CUw5Ck&feature=youtu.be)
 
 # Contributing
 Contributers are more than welcome. Just upload a PR with a description of your changes.
