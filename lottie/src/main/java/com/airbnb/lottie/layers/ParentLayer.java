@@ -24,7 +24,7 @@ class ParentLayer extends AnimatableLayer {
         setPosition(parentModel.getPosition().getObservable());
         setAnchorPoint(parentModel.getAnchor().getObservable());
         setTransform(parentModel.getScale().getObservable());
-        setSublayerTransform(parentModel.getRotation().getObservable());
+        setRotation(parentModel.getRotation().getObservable());
         buildAnimations();
     }
 

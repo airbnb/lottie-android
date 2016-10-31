@@ -28,15 +28,12 @@ public class AnimatableLayer extends Drawable {
         }
     };
 
-    /** This should mimic CALayer#position */
     private Observable<PointF> position;
-    /** This should mimic CALayer#anchorPoint */
     private Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
     private Observable<LottieTransform3D> transform;
-    /** This should mimic CALayer#sublayerTransform */
     private Observable<Integer> alpha;
-    private Observable<Float> sublayerTransform;
+    private Observable<Float> rotation;
     final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
@@ -75,8 +72,8 @@ public class AnimatableLayer extends Drawable {
             }
         }
 
-        if (sublayerTransform != null && sublayerTransform.getValue() != null) {
-            float rotation = sublayerTransform.getValue();
+        if (rotation != null && rotation.getValue() != null) {
+            float rotation = this.rotation.getValue();
             if (rotation != 0f) {
                 canvas.rotate(rotation);
             }
@@ -141,12 +138,12 @@ public class AnimatableLayer extends Drawable {
         transform.addChangeListener(changedListener);
     }
 
-    void setSublayerTransform(Observable<Float> sublayerTransform) {
-        if (this.sublayerTransform != null) {
-            this.sublayerTransform.removeChangeListener(changedListener);
+    void setRotation(Observable<Float> rotation) {
+        if (this.rotation != null) {
+            this.rotation.removeChangeListener(changedListener);
         }
-        this.sublayerTransform = sublayerTransform;
-        sublayerTransform.addChangeListener(changedListener);
+        this.rotation = rotation;
+        rotation.addChangeListener(changedListener);
     }
 
     @Override

@@ -37,7 +37,7 @@ class EllipseShapeLayer extends AnimatableLayer {
         setAlpha(transform.getOpacity().getObservable());
         setPosition(transform.getPosition().getObservable());
         setTransform(transform.getScale().getObservable());
-        setSublayerTransform(transform.getRotation().getObservable());
+        setRotation(transform.getRotation().getObservable());
 
         if (fill != null) {
             fillLayer = new CircleShapeLayer(getCallback());

@@ -37,7 +37,7 @@ class GroupLayerView extends AnimatableLayer {
             setPosition(shapeTransform.getPosition().getObservable());
             setAlpha(shapeTransform.getOpacity().getObservable());
             setTransform(shapeTransform.getScale().getObservable());
-            setSublayerTransform(shapeTransform.getRotation().getObservable());
+            setRotation(shapeTransform.getRotation().getObservable());
         }
 
         List<Object> reversedItems = shapeGroup.getItems();

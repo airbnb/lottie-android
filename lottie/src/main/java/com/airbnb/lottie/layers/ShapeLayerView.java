@@ -35,7 +35,7 @@ class ShapeLayerView extends AnimatableLayer {
         setBounds(transformModel.getCompBounds());
         setAnchorPoint(transformModel.getAnchor().getObservable());
         setPosition(transformModel.getPosition().getObservable());
-        setSublayerTransform(transformModel.getRotation().getObservable());
+        setRotation(transformModel.getRotation().getObservable());
 
         Observable<LottieTransform3D> scale = transformModel.getScale().getObservable();
         setTransform(transformModel.getScale().getObservable());
