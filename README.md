@@ -42,6 +42,9 @@ Using Lottie is as simple as adding an image to an ImageView. `LottieAnimationVi
 Lottie is named after a German film director and the foremost pioneer of silhouette animation. Her best known films are The Adventures of Prince Achmed (1926) – the oldest surviving feature-length animated film, preceding Walt Disney's feature-length Snow White and the Seven Dwarfs (1937) by over ten years
 [The art of Lotte Reineger](https://www.youtube.com/watch?v=LvU55CUw5Ck&feature=youtu.be)
 
+##Try it out
+Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets).
+
 ## Contributing
 Contributers are more than welcome. Just upload a PR with a description of your changes.
 Lottie uses [Facebook screenshot tests for Android](https://github.com/facebook/screenshot-tests-for-android) to identify pixel level changes/breakages. Please run `./gradlew --daemon recordMode screenshotTests` before uploading a PR to ensure that nothing has broken.
