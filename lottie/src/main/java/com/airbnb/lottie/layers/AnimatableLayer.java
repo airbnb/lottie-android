@@ -157,6 +157,11 @@ public class AnimatableLayer extends Drawable {
         invalidateSelf();
     }
 
+    public void clearLayers() {
+        layers.clear();
+        invalidateSelf();
+    }
+
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         this.progress = progress;
         for (int i = 0; i < animations.size(); i++) {

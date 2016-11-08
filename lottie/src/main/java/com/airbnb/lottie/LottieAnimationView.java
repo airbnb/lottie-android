@@ -61,6 +61,10 @@ public class LottieAnimationView extends ImageView {
     private final RootAnimatableLayer rootAnimatableLayer = new RootAnimatableLayer(this);
     private String animationName;
     private boolean isScreenshotTest;
+    private boolean isAnimationLoading;
+    private boolean playAnimationWhenCompositionSet;
+    @Nullable private AsyncTask fileToJsonTask;
+    @Nullable private AsyncTask jsonToCompositionTask;
 
     /** Can be null because it is created async */
     @Nullable private Composition composition;
@@ -163,18 +167,23 @@ public class LottieAnimationView extends ImageView {
     public void recycleBitmaps() {
         if (mainBitmap != null) {
             mainBitmap.recycle();
+            mainBitmap = null;
         }
         if (maskBitmap != null) {
             maskBitmap.recycle();
+            maskBitmap = null;
         }
         if (matteBitmap != null) {
             matteBitmap.recycle();
+            matteBitmap = null;
         }
         if (mainBitmapForMatte != null) {
             mainBitmapForMatte.recycle();
+            mainBitmapForMatte = null;
         }
         if (maskBitmapForMatte != null) {
             maskBitmapForMatte.recycle();
+            maskBitmapForMatte = null;
         }
     }
 
@@ -182,15 +191,30 @@ public class LottieAnimationView extends ImageView {
      * Sets the animation from a file in the assets directory.
      * This will load and deserialize the file asynchronously.
      */
-    public void setAnimation(String animationName) {
+    public void setAnimation(final String animationName) {
+        isAnimationLoading = true;
+
         this.animationName = animationName;
+
+        if (fileToJsonTask != null) {
+            fileToJsonTask.cancel(true);
+            fileToJsonTask = null;
+        }
+
+        if (jsonToCompositionTask != null) {
+            jsonToCompositionTask.cancel(true);
+            jsonToCompositionTask = null;
+        }
+
         InputStream file;
         try {
             file = getContext().getAssets().open(animationName);
         } catch (IOException e) {
+            onAnimationLoadingFail();
             throw new IllegalStateException("Unable to find file " + animationName, e);
         }
-        new AsyncTask<InputStream, Void, JSONObject>() {
+
+        fileToJsonTask = new AsyncTask<InputStream, Void, JSONObject>() {
             @Override
             protected JSONObject doInBackground(InputStream... params) {
                 //noinspection WrongThread
@@ -208,8 +232,14 @@ public class LottieAnimationView extends ImageView {
      * Sets the animation using the raw JSON Object.
      */
     public void setAnimation(JSONObject json) {
-        // TODO: cancel these if the iew gets detached.
-        new AsyncTask<JSONObject, Void, Composition>() {
+        this.animationName = null;
+
+        if (jsonToCompositionTask != null) {
+            jsonToCompositionTask.cancel(true);
+        }
+
+        // TODO: cancel these if the View gets detached.
+        jsonToCompositionTask = new AsyncTask<JSONObject, Void, Composition>() {
 
             @Override
             protected Composition doInBackground(JSONObject... params) {
@@ -233,6 +263,7 @@ public class LottieAnimationView extends ImageView {
         try {
             file = getContext().getAssets().open(animationName);
         } catch (IOException e) {
+            onAnimationLoadingFail();
             throw new IllegalStateException("Unable to find file " + animationName, e);
         }
         setJsonSync(setAnimationSync(file));
@@ -249,8 +280,10 @@ public class LottieAnimationView extends ImageView {
 
             return new JSONObject(json);
         } catch (IOException e) {
+            onAnimationLoadingFail();
             throw new IllegalStateException("Unable to find file.", e);
         } catch (JSONException e) {
+            onAnimationLoadingFail();
             throw new IllegalStateException("Unable to load JSON.", e);
         }
     }
@@ -260,16 +293,31 @@ public class LottieAnimationView extends ImageView {
         setComposition(composition);
     }
 
+    private void onAnimationLoadingFail() {
+        isAnimationLoading = false;
+        playAnimationWhenCompositionSet = false;
+    }
+
     private void setComposition(@NonNull Composition composition) {
         if (getWindowToken() == null && !isScreenshotTest) {
             return;
         }
+
+        clearComposition();
+        setProgress(0f);
+
         this.composition = composition;
         rootAnimatableLayer.setCompDuration(composition.getDuration());
         rootAnimatableLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
         buildSubviewsForComposition();
         requestLayout();
         setImageDrawable(rootAnimatableLayer);
+
+        isAnimationLoading = false;
+        if (playAnimationWhenCompositionSet) {
+            playAnimationWhenCompositionSet = false;
+            playAnimation();
+        }
     }
 
     private void buildSubviewsForComposition() {
@@ -316,6 +364,13 @@ public class LottieAnimationView extends ImageView {
         }
     }
 
+    private void clearComposition() {
+        composition = null;
+        recycleBitmaps();
+        rootAnimatableLayer.clearLayers();
+        layerMap.clear();
+    }
+
 
     public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
         rootAnimatableLayer.addAnimatorUpdateListener(updateListener);
@@ -342,10 +397,15 @@ public class LottieAnimationView extends ImageView {
     }
 
     public void playAnimation() {
+        if (isAnimationLoading) {
+            playAnimationWhenCompositionSet = true;
+            return;
+        }
         rootAnimatableLayer.playAnimation();
     }
 
     public void cancelAnimation() {
+        playAnimationWhenCompositionSet = false;
         rootAnimatableLayer.cancelAnimation();
     }
 

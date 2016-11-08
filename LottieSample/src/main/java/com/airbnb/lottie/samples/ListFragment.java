@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,9 +38,8 @@ public class ListFragment extends Fragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         recyclerView.setAdapter(adapter);
-        String[] files = null;
         try {
-            adapter.setFiles(getContext().getAssets().list(""));
+            adapter.setFiles(AssetUtils.getJsonAssets(getContext(), ""));
         } catch (IOException e) {
             //noinspection ConstantConditions
             Snackbar.make(container, R.string.invalid_assets, Snackbar.LENGTH_LONG).show();
@@ -66,13 +66,23 @@ public class ListFragment extends Fragment {
                 .commit();
     }
 
+    private void onCycleClicked() {
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
+                .remove(this)
+                .replace(R.id.content_2, CycleFragment.newInstance())
+                .commit();
+    }
+
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
         static final int VIEW_TYPE_GRID = 1;
-        static final int VIEW_TYPE_FILE = 2;
+        static final int VIEW_TYPE_CYCLE = 2;
+        static final int VIEW_TYPE_FILE = 3;
 
-        @Nullable private String[] files = null;
+        @Nullable private List<String> files = null;
 
-        void setFiles(@Nullable String[] files) {
+        void setFiles(@Nullable List<String> files) {
             this.files = files;
             notifyDataSetChanged();
         }
@@ -84,22 +94,34 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(StringViewHolder holder, int position) {
-            if (holder.getItemViewType() == VIEW_TYPE_GRID) {
-                holder.bind("Grid");
-            } else {
-                //noinspection ConstantConditions
-                holder.bind(files[position - 1]);
+            switch (holder.getItemViewType()) {
+                case VIEW_TYPE_GRID:
+                    holder.bind("Grid");
+                    break;
+                case VIEW_TYPE_CYCLE:
+                    holder.bind("Cycle");
+                    break;
+                default:
+                    //noinspection ConstantConditions
+                    holder.bind(files.get(position - 2));
             }
         }
 
         @Override
         public int getItemCount() {
-            return (files == null ? 0 : files.length) + 1;
+            return (files == null ? 0 : files.size()) + 2;
         }
 
         @Override
         public int getItemViewType(int position) {
-            return position == 0 ? VIEW_TYPE_GRID : VIEW_TYPE_FILE;
+            switch (position) {
+                case 0:
+                    return VIEW_TYPE_GRID;
+                case 1:
+                    return VIEW_TYPE_CYCLE;
+                default:
+                    return VIEW_TYPE_FILE;
+            }
         }
     }
 
@@ -117,10 +139,15 @@ public class ListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getItemViewType() == FileAdapter.VIEW_TYPE_GRID) {
-                        onGridClicked();
-                    } else {
-                        onFileClicked(name);
+                    switch (getItemViewType()) {
+                        case FileAdapter.VIEW_TYPE_GRID:
+                            onGridClicked();
+                            break;
+                        case FileAdapter.VIEW_TYPE_CYCLE:
+                            onCycleClicked();
+                            break;
+                        default:
+                            onFileClicked(name);
                     }
                 }
             });
