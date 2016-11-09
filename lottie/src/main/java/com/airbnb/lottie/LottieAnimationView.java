@@ -59,9 +59,11 @@ public class LottieAnimationView extends ImageView {
 
     private final LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
     private final RootAnimatableLayer rootAnimatableLayer = new RootAnimatableLayer(this);
+    @FloatRange(from=0f, to=1f) private float progress;
     private String animationName;
     private boolean isScreenshotTest;
     private boolean isAnimationLoading;
+    private boolean setProgressWhenCompositionSet;
     private boolean playAnimationWhenCompositionSet;
     @Nullable private AsyncTask fileToJsonTask;
     @Nullable private AsyncTask jsonToCompositionTask;
@@ -193,6 +195,8 @@ public class LottieAnimationView extends ImageView {
      */
     public void setAnimation(final String animationName) {
         isAnimationLoading = true;
+        setProgressWhenCompositionSet = false;
+        playAnimationWhenCompositionSet = false;
 
         this.animationName = animationName;
 
@@ -295,6 +299,7 @@ public class LottieAnimationView extends ImageView {
 
     private void onAnimationLoadingFail() {
         isAnimationLoading = false;
+        setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
     }
 
@@ -303,8 +308,16 @@ public class LottieAnimationView extends ImageView {
             return;
         }
 
+        isAnimationLoading = false;
+
         clearComposition();
-        setProgress(0f);
+
+        if (setProgressWhenCompositionSet) {
+            setProgressWhenCompositionSet = false;
+            setProgress(progress);
+        } else {
+            setProgress(0f);
+        }
 
         this.composition = composition;
         rootAnimatableLayer.setCompDuration(composition.getDuration());
@@ -313,7 +326,6 @@ public class LottieAnimationView extends ImageView {
         requestLayout();
         setImageDrawable(rootAnimatableLayer);
 
-        isAnimationLoading = false;
         if (playAnimationWhenCompositionSet) {
             playAnimationWhenCompositionSet = false;
             playAnimation();
@@ -405,11 +417,17 @@ public class LottieAnimationView extends ImageView {
     }
 
     public void cancelAnimation() {
+        setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
         rootAnimatableLayer.cancelAnimation();
     }
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
+        this.progress = progress;
+        if (isAnimationLoading) {
+            setProgressWhenCompositionSet = true;
+            return;
+        }
         rootAnimatableLayer.setProgress(progress);
     }
 
