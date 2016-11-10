@@ -146,7 +146,7 @@ public class LottieAnimationView extends ImageView {
 
     @Override
     public void invalidateDrawable(@NonNull Drawable dr) {
-        if (!hasInvalidatedThisFrame) {
+        if (!hasInvalidatedThisFrame && rootAnimatableLayer != null) {
             super.invalidateDrawable(rootAnimatableLayer);
             hasInvalidatedThisFrame = true;
         }
