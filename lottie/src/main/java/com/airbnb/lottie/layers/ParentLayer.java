@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.model.Composition;
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.Layer;
 
 class ParentLayer extends AnimatableLayer {
@@ -12,7 +12,7 @@ class ParentLayer extends AnimatableLayer {
 
     private final Layer parentModel;
 
-    ParentLayer(Layer parent, Composition composition, Drawable.Callback callback) {
+    ParentLayer(Layer parent, LottieComposition composition, Drawable.Callback callback) {
         super(composition.getDuration(), callback);
         setBounds(parent.getCompBounds());
         this.parentModel = parent;

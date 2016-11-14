@@ -42,7 +42,7 @@ public class Layer {
     }
 
     @SuppressWarnings("UnusedAssignment")
-    static Layer fromJson(JSONObject json, Composition composition) {
+    static Layer fromJson(JSONObject json, LottieComposition composition) {
         Layer layer = new Layer();
         try {
             if (L.DBG) Log.d(TAG, "Parsing new layer.");

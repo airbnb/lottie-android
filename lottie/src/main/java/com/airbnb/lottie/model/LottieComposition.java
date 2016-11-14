@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Composition {
+public class LottieComposition {
     /**
      * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel leaving ~2.3M pixels available.
      * Reduce the number a little bit for safety.
@@ -21,8 +21,8 @@ public class Composition {
      */
     private static final int MAX_PIXELS = 1000;
 
-    public static Composition fromJson(JSONObject json) {
-        Composition composition = new Composition();
+    public static LottieComposition fromJson(JSONObject json) {
+        LottieComposition composition = new LottieComposition();
 
         int width = -1;
         int height = -1;

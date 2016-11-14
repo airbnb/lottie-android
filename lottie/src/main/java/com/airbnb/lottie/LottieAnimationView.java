@@ -24,7 +24,7 @@ import android.widget.ImageView;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.layers.LayerView;
 import com.airbnb.lottie.layers.RootAnimatableLayer;
-import com.airbnb.lottie.model.Composition;
+import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +69,7 @@ public class LottieAnimationView extends ImageView {
     @Nullable private AsyncTask jsonToCompositionTask;
 
     /** Can be null because it is created async */
-    @Nullable private Composition composition;
+    @Nullable private LottieComposition composition;
     private boolean hasInvalidatedThisFrame;
     @Nullable private Bitmap mainBitmap = null;
     @Nullable private Bitmap maskBitmap = null;
@@ -243,15 +243,15 @@ public class LottieAnimationView extends ImageView {
         }
 
         // TODO: cancel these if the View gets detached.
-        jsonToCompositionTask = new AsyncTask<JSONObject, Void, Composition>() {
+        jsonToCompositionTask = new AsyncTask<JSONObject, Void, LottieComposition>() {
 
             @Override
-            protected Composition doInBackground(JSONObject... params) {
-                return Composition.fromJson(params[0]);
+            protected LottieComposition doInBackground(JSONObject... params) {
+                return LottieComposition.fromJson(params[0]);
             }
 
             @Override
-            protected void onPostExecute(Composition model) {
+            protected void onPostExecute(LottieComposition model) {
                 setComposition(model);
             }
         }.execute(json);
@@ -293,7 +293,7 @@ public class LottieAnimationView extends ImageView {
     }
 
     private void setJsonSync(JSONObject json) {
-        Composition composition = Composition.fromJson(json);
+        LottieComposition composition = LottieComposition.fromJson(json);
         setComposition(composition);
     }
 
@@ -303,7 +303,7 @@ public class LottieAnimationView extends ImageView {
         playAnimationWhenCompositionSet = false;
     }
 
-    private void setComposition(@NonNull Composition composition) {
+    private void setComposition(@NonNull LottieComposition composition) {
         if (getWindowToken() == null && !isScreenshotTest) {
             return;
         }

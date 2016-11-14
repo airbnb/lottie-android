@@ -17,7 +17,7 @@ import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.model.Composition;
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeGroup;
@@ -50,13 +50,13 @@ public class LayerView extends AnimatableLayer {
     private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private final Layer layerModel;
-    private final Composition composition;
+    private final LottieComposition composition;
 
     private long parentId = -1;
     private AnimatableLayer childContainerLayer;
 
 
-    public LayerView(Layer layerModel, Composition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
+    public LayerView(Layer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
         super(composition.getDuration(), callback);
         this.layerModel = layerModel;
         this.composition = composition;
