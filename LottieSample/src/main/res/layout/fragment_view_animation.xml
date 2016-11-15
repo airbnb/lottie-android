@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="64dp"
+        android:paddingBottom="64dp"
+        android:orientation="vertical"
+        android:clipToPadding="false">
+
+        <View
+            android:id="@+id/message_bubble"
+            android:layout_width="96dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="48dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bubble"/>
+
+        <View
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#777"/>
+
+    </LinearLayout>
+
+</LinearLayout>

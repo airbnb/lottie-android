@@ -33,7 +33,7 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     }
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<Float> animationForKeyPath() {
         KeyframeAnimation<Float> animation = new NumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {

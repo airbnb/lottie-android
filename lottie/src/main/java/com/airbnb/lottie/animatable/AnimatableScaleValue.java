@@ -28,7 +28,7 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
     }
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<ScaleXY> animationForKeyPath() {
         ScaleKeyframeAnimation animation = new ScaleKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {

@@ -75,10 +75,20 @@ public class ListFragment extends Fragment {
                 .commit();
     }
 
+    private void onViewTestClicked() {
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
+                .remove(this)
+                .replace(R.id.content_2, ViewAnimationFragment.newInstance())
+                .commit();
+    }
+
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
         static final int VIEW_TYPE_GRID = 1;
         static final int VIEW_TYPE_CYCLE = 2;
-        static final int VIEW_TYPE_FILE = 3;
+        static final int VIEW_TYPE_VIEW_TEST = 3;
+        static final int VIEW_TYPE_FILE = 4;
 
         @Nullable private List<String> files = null;
 
@@ -101,15 +111,18 @@ public class ListFragment extends Fragment {
                 case VIEW_TYPE_CYCLE:
                     holder.bind("Cycle");
                     break;
+                case VIEW_TYPE_VIEW_TEST:
+                    holder.bind("View Test");
+                    break;
                 default:
                     //noinspection ConstantConditions
-                    holder.bind(files.get(position - 2));
+                    holder.bind(files.get(position - VIEW_TYPE_FILE + 1));
             }
         }
 
         @Override
         public int getItemCount() {
-            return (files == null ? 0 : files.size()) + 2;
+            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 2;
         }
 
         @Override
@@ -119,6 +132,8 @@ public class ListFragment extends Fragment {
                     return VIEW_TYPE_GRID;
                 case 1:
                     return VIEW_TYPE_CYCLE;
+                case 2:
+                    return VIEW_TYPE_VIEW_TEST;
                 default:
                     return VIEW_TYPE_FILE;
             }
@@ -145,6 +160,9 @@ public class ListFragment extends Fragment {
                             break;
                         case FileAdapter.VIEW_TYPE_CYCLE:
                             onCycleClicked();
+                            break;
+                        case FileAdapter.VIEW_TYPE_VIEW_TEST:
+                            onViewTestClicked();
                             break;
                         default:
                             onFileClicked(name);

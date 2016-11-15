@@ -27,7 +27,7 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
     }
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<PointF> animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
