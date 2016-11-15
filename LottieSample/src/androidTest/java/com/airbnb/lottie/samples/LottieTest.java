@@ -7,6 +7,7 @@ import org.junit.Test;
 
 /**
  * Run these with: ./gradlew --daemon recordMode screenshotTests
+ * If you run that command, it completes successfully, and nothing shows up in git, then you haven't broken anything!
  */
 public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
 

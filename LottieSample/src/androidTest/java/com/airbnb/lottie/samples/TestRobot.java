@@ -1,6 +1,7 @@
 package com.airbnb.lottie.samples;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.model.LottieComposition;
 import com.facebook.testing.screenshot.Screenshot;
 import com.facebook.testing.screenshot.ViewHelpers;
 
@@ -20,7 +21,7 @@ class TestRobot {
 
     private static void testFile(MainActivity activity, String fileName, float[] progress) {
         LottieAnimationView view = LottieAnimationView.forScreenshotTest(activity);
-        view.setAnimationSync(fileName);
+        view.setComposition(LottieComposition.fromFileSync(activity, fileName));
         ViewHelpers.setupView(view)
                 .layout();
 

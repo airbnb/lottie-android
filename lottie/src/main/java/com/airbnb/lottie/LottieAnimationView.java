@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.FloatRange;
@@ -21,16 +20,11 @@ import android.util.AttributeSet;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
 
-import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.layers.LayerView;
 import com.airbnb.lottie.layers.RootAnimatableLayer;
+import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,11 +34,12 @@ import java.util.List;
  *
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programatically: {@link #setAnimation(String)} or {@link #setAnimation(JSONObject)}.
+ * 2) Programatically: {@link #setAnimation(String)} or {@link #setComposition(LottieComposition)} (JSONObject)}.
  *
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
 public class LottieAnimationView extends ImageView {
+
 
     /**
      * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
@@ -57,6 +52,13 @@ public class LottieAnimationView extends ImageView {
         return view;
     }
 
+    private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
+        @Override
+        public void onCompositionLoaded(LottieComposition composition) {
+            setComposition(composition);
+        }
+    };
+
     private final LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
     private final RootAnimatableLayer rootAnimatableLayer = new RootAnimatableLayer(this);
     @FloatRange(from=0f, to=1f) private float progress;
@@ -65,8 +67,6 @@ public class LottieAnimationView extends ImageView {
     private boolean isAnimationLoading;
     private boolean setProgressWhenCompositionSet;
     private boolean playAnimationWhenCompositionSet;
-    @Nullable private AsyncTask fileToJsonTask;
-    @Nullable private AsyncTask jsonToCompositionTask;
 
     /** Can be null because it is created async */
     @Nullable private LottieComposition composition;
@@ -199,111 +199,10 @@ public class LottieAnimationView extends ImageView {
         playAnimationWhenCompositionSet = false;
 
         this.animationName = animationName;
-
-        if (fileToJsonTask != null) {
-            fileToJsonTask.cancel(true);
-            fileToJsonTask = null;
-        }
-
-        if (jsonToCompositionTask != null) {
-            jsonToCompositionTask.cancel(true);
-            jsonToCompositionTask = null;
-        }
-
-        InputStream file;
-        try {
-            file = getContext().getAssets().open(animationName);
-        } catch (IOException e) {
-            onAnimationLoadingFail();
-            throw new IllegalStateException("Unable to find file " + animationName, e);
-        }
-
-        fileToJsonTask = new AsyncTask<InputStream, Void, JSONObject>() {
-            @Override
-            protected JSONObject doInBackground(InputStream... params) {
-                //noinspection WrongThread
-                return setAnimationSync(params[0]);
-            }
-
-            @Override
-            protected void onPostExecute(JSONObject jsonObject) {
-                setAnimation(jsonObject);
-            }
-        }.execute(file);
+        LottieComposition.fromFile(getContext(), animationName, loadedListener);
     }
 
-    /**
-     * Sets the animation using the raw JSON Object.
-     */
-    public void setAnimation(JSONObject json) {
-        this.animationName = null;
-
-        if (jsonToCompositionTask != null) {
-            jsonToCompositionTask.cancel(true);
-        }
-
-        // TODO: cancel these if the View gets detached.
-        jsonToCompositionTask = new AsyncTask<JSONObject, Void, LottieComposition>() {
-
-            @Override
-            protected LottieComposition doInBackground(JSONObject... params) {
-                return LottieComposition.fromJson(params[0]);
-            }
-
-            @Override
-            protected void onPostExecute(LottieComposition model) {
-                setComposition(model);
-            }
-        }.execute(json);
-    }
-
-    /**
-     * Like {@link #setAnimation(String)} except it loads and deserializes the file
-     * synchronously. This should only be used for tests.
-     */
-    @VisibleForTesting
-    public void setAnimationSync(String animationName) {
-        InputStream file;
-        try {
-            file = getContext().getAssets().open(animationName);
-        } catch (IOException e) {
-            onAnimationLoadingFail();
-            throw new IllegalStateException("Unable to find file " + animationName, e);
-        }
-        setJsonSync(setAnimationSync(file));
-    }
-
-    private JSONObject setAnimationSync(InputStream file) {
-        try {
-            int size = file.available();
-            byte[] buffer = new byte[size];
-            //noinspection ResultOfMethodCallIgnored
-            file.read(buffer);
-            file.close();
-            String json = new String(buffer, "UTF-8");
-
-            return new JSONObject(json);
-        } catch (IOException e) {
-            onAnimationLoadingFail();
-            throw new IllegalStateException("Unable to find file.", e);
-        } catch (JSONException e) {
-            onAnimationLoadingFail();
-            throw new IllegalStateException("Unable to load JSON.", e);
-        }
-    }
-
-    private void setJsonSync(JSONObject json) {
-        LottieComposition composition = LottieComposition.fromJson(json);
-        setComposition(composition);
-    }
-
-    private void onAnimationLoadingFail() {
-        isAnimationLoading = false;
-        setProgressWhenCompositionSet = false;
-        playAnimationWhenCompositionSet = false;
-    }
-
-    private void setComposition(@NonNull LottieComposition composition) {
+    public void setComposition(@NonNull LottieComposition composition) {
         if (getWindowToken() == null && !isScreenshotTest) {
             return;
         }
@@ -388,6 +287,7 @@ public class LottieAnimationView extends ImageView {
         rootAnimatableLayer.addAnimatorUpdateListener(updateListener);
     }
 
+    @SuppressWarnings("unused")
     public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
         rootAnimatableLayer.removeAnimatorUpdateListener(updateListener);
     }
@@ -396,6 +296,7 @@ public class LottieAnimationView extends ImageView {
         rootAnimatableLayer.addAnimatorListener(listener);
     }
 
+    @SuppressWarnings("unused")
     public void removeAnimatorListener(Animator.AnimatorListener listener) {
         rootAnimatableLayer.removeAnimatorListener(listener);
     }
@@ -435,7 +336,7 @@ public class LottieAnimationView extends ImageView {
         return composition != null ? composition.getDuration() : 0;
     }
 
-    static class SavedState extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
         String animationName;
         float progress;
         boolean isAnimating;
