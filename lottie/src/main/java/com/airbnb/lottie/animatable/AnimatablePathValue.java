@@ -190,6 +190,10 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
         return animationPath.hasSegments();
     }
 
+    public PointF getInitialPoint() {
+        return initialPoint;
+    }
+
     @Override
     public String toString() {
         return "AnimatablePathValue{" + "initialPoint=" + initialPoint + '}';

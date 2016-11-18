@@ -9,7 +9,6 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.animatable.AnimatablePathValue;
-import com.airbnb.lottie.animatable.AnimatablePointValue;
 import com.airbnb.lottie.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.animatable.AnimationGroup;
 
@@ -119,7 +118,7 @@ public class Layer {
             } catch (JSONException e) {
             }
             if (position != null) {
-                layer.position = new AnimatablePointValue(position, layer.frameRate, composition.getDuration());
+                layer.position = new AnimatablePathValue(position, layer.frameRate, composition.getDuration());
                 if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().toString());
             }
 
@@ -238,7 +237,7 @@ public class Layer {
 
     private AnimatableIntegerValue opacity;
     private AnimatableFloatValue rotation;
-    private AnimatablePointValue position;
+    private AnimatablePathValue position;
 
     private AnimatablePathValue anchor;
     private AnimatableScaleValue scale;
@@ -306,7 +305,7 @@ public class Layer {
         return parentId;
     }
 
-    public AnimatablePointValue getPosition() {
+    public AnimatablePathValue getPosition() {
         return position;
     }
 

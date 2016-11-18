@@ -77,7 +77,7 @@ public class LottieViewAnimator {
                 }
             });
             animatableValues.add(position);
-            PointF initialPosition = layer.getPosition().getInitialValue();
+            PointF initialPosition = layer.getPosition().getInitialPoint();
             view.setTranslationX(initialPosition.x);
             view.setTranslationY(initialPosition.y);
 
