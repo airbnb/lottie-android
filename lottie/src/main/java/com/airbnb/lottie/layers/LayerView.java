@@ -104,6 +104,7 @@ public class LayerView extends AnimatableLayer {
         childContainerLayer.setAnchorPoint(layerModel.getAnchor().getObservable());
         childContainerLayer.setTransform(layerModel.getScale().getObservable());
         childContainerLayer.setRotation(layerModel.getRotation().getObservable());
+        setAlpha(layerModel.getOpacity().getObservable());
         layerModel.getOpacity().getObservable().addChangeListener(new Observable.OnChangedListener() {
             @Override
             public void onChanged() {

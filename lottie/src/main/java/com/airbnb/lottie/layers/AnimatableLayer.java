@@ -12,8 +12,8 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 
 import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animatable.Observable;
+import com.airbnb.lottie.utils.ScaleXY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +32,12 @@ public class AnimatableLayer extends Drawable {
     private Observable<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
     private Observable<ScaleXY> transform;
-    private Observable<Integer> alpha;
+    private Observable<Integer> alpha = null;
     private Observable<Float> rotation;
     final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
+    @ColorInt private int backgroundColor;
     private final List<AnimationGroup> animations = new ArrayList<>();
     @FloatRange(from = 0f, to = 1f) private float progress;
 
@@ -49,8 +50,8 @@ public class AnimatableLayer extends Drawable {
     }
 
     void setBackgroundColor(@ColorInt int color) {
+        this.backgroundColor = color;
         solidBackgroundPaint.setColor(color);
-        solidBackgroundPaint.setAlpha(Color.alpha(color));
         invalidateSelf();
     }
 
@@ -85,7 +86,13 @@ public class AnimatableLayer extends Drawable {
             }
         }
 
-        if (solidBackgroundPaint.getAlpha() != 0) {
+        int backgroundAlpha = Color.alpha(backgroundColor);
+        if (backgroundAlpha != 0) {
+            int alpha = backgroundAlpha;
+            if (this.alpha != null) {
+                alpha = alpha * this.alpha.getValue() / 255;
+            }
+            solidBackgroundPaint.setAlpha(alpha);
             canvas.drawRect(getBounds(), solidBackgroundPaint);
         }
         for (int i = 0; i < layers.size(); i++) {
@@ -100,7 +107,15 @@ public class AnimatableLayer extends Drawable {
     }
 
     void setAlpha(Observable<Integer> alpha) {
+        if (this.alpha != null) {
+            this.alpha.removeChangeListener(changedListener);
+        }
         this.alpha = alpha;
+        alpha.addChangeListener(changedListener);
+        for (AnimatableLayer layer : layers) {
+            layer.setAlpha(alpha);
+        }
+
         invalidateSelf();
     }
 
@@ -154,6 +169,9 @@ public class AnimatableLayer extends Drawable {
     void addLayer(AnimatableLayer layer) {
         layers.add(layer);
         layer.setProgress(progress);
+        if (this.alpha != null) {
+            layer.setAlpha(this.alpha);
+        }
         invalidateSelf();
     }
 
