@@ -25,12 +25,8 @@ import com.airbnb.lottie.layers.RootAnimatableLayer;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -44,16 +40,6 @@ import java.util.Map;
  */
 public class LottieAnimationView extends ImageView {
 
-    /**
-     * Caching strategy for compositions that will be reused frequently.
-     * Weak or Strong indicates the GC reference strength of the composition in the cache.
-     */
-    public enum CacheStrategy {
-        None,
-        Weak,
-        Strong
-    }
-
 
     /**
      * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
@@ -66,8 +52,12 @@ public class LottieAnimationView extends ImageView {
         return view;
     }
 
-    @Nullable private static Map<String, LottieComposition> strongRefCache;
-    @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
+    private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
+        @Override
+        public void onCompositionLoaded(LottieComposition composition) {
+            setComposition(composition);
+        }
+    };
 
     private final LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
     private final RootAnimatableLayer rootAnimatableLayer = new RootAnimatableLayer(this);
@@ -199,50 +189,17 @@ public class LottieAnimationView extends ImageView {
         }
     }
 
-    public void setAnimation(String animationName) {
-        setAnimation(animationName, CacheStrategy.None);
-    }
-
     /**
      * Sets the animation from a file in the assets directory.
      * This will load and deserialize the file asynchronously.
      */
-    @SuppressWarnings("WeakerAccess")
-    public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
-        this.animationName = animationName;
-        if (weakRefCache != null && weakRefCache.containsKey(animationName)) {
-            WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
-            if (compRef.get() != null) {
-                setComposition(compRef.get());
-                return;
-            }
-        } else if (strongRefCache != null && strongRefCache.containsKey(animationName)) {
-            setComposition(strongRefCache.get(animationName));
-            return;
-        }
-
+    public void setAnimation(final String animationName) {
         isAnimationLoading = true;
         setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
 
-        LottieComposition.fromFile(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
-            @Override
-            public void onCompositionLoaded(LottieComposition composition) {
-                if (cacheStrategy == CacheStrategy.Strong) {
-                    if (strongRefCache == null) {
-                        strongRefCache = new HashMap<>();
-                    }
-                    strongRefCache.put(animationName, composition);
-                } else if (cacheStrategy == CacheStrategy.Weak) {
-                    if (weakRefCache == null) {
-                        weakRefCache = new HashMap<>();
-                    }
-                    weakRefCache.put(animationName, new WeakReference<>(composition));
-                }
-
-                setComposition(composition);
-            }
-        });
+        this.animationName = animationName;
+        LottieComposition.fromFile(getContext(), animationName, loadedListener);
     }
 
     public void setComposition(@NonNull LottieComposition composition) {
@@ -276,7 +233,7 @@ public class LottieAnimationView extends ImageView {
 
     private void buildSubviewsForComposition() {
         //noinspection ConstantConditions
-        List<Layer> reversedLayers = new ArrayList<>(composition.getLayers());
+        List<Layer> reversedLayers = composition.getLayers();
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();
