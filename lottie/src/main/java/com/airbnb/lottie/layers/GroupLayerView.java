@@ -12,6 +12,7 @@ import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,7 +41,7 @@ class GroupLayerView extends AnimatableLayer {
             setRotation(shapeTransform.getRotation().getObservable());
         }
 
-        List<Object> reversedItems = shapeGroup.getItems();
+        List<Object> reversedItems = new ArrayList<>(shapeGroup.getItems());
         Collections.reverse(reversedItems);
 
         ShapeFill currentFill = previousFill;

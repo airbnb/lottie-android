@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -174,22 +173,25 @@ public class LottieComposition {
 
     private static final class CompositionLoader extends AsyncTask<InputStream, Void, LottieComposition> {
 
-        private final WeakReference<OnCompositionLoadedListener> loadedListenerRef;
+        private final OnCompositionLoadedListener loadedListener;
 
         CompositionLoader(OnCompositionLoadedListener loadedListener) {
-            loadedListenerRef = new WeakReference<>(loadedListener);
+            this.loadedListener = loadedListener;
         }
 
         @Override
         protected LottieComposition doInBackground(InputStream... params) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return fromInputStream(params[0]);
         }
 
         @Override
         protected void onPostExecute(LottieComposition composition) {
-            if (loadedListenerRef.get() != null) {
-                loadedListenerRef.get().onCompositionLoaded(composition);
-            }
+            loadedListener.onCompositionLoaded(composition);
         }
     }
 }

@@ -26,6 +26,7 @@ import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -275,7 +276,7 @@ public class LottieAnimationView extends ImageView {
 
     private void buildSubviewsForComposition() {
         //noinspection ConstantConditions
-        List<Layer> reversedLayers = composition.getLayers();
+        List<Layer> reversedLayers = new ArrayList<>(composition.getLayers());
         Collections.reverse(reversedLayers);
 
         Rect bounds = composition.getBounds();

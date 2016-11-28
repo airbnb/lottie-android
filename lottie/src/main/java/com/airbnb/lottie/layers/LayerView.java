@@ -17,18 +17,19 @@ import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.animatable.Observable;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 import com.airbnb.lottie.model.Layer;
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeGroup;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.animation.KeyframeAnimation;
-import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 import com.airbnb.lottie.utils.ScaleXY;
-import com.airbnb.lottie.animatable.Observable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -116,7 +117,7 @@ public class LayerView extends AnimatableLayer {
 
         setVisible(layerModel.hasInAnimation(), false);
 
-        List<Object> reversedItems = layerModel.getShapes();
+        List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
         Collections.reverse(reversedItems);
         ShapeTransform currentTransform = null;
         ShapeTrimPath currentTrimPath = null;
