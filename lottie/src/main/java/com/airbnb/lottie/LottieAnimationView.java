@@ -25,6 +25,8 @@ import com.airbnb.lottie.layers.RootAnimatableLayer;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
 
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -200,6 +202,18 @@ public class LottieAnimationView extends ImageView {
 
         this.animationName = animationName;
         LottieComposition.fromFile(getContext(), animationName, loadedListener);
+    }
+
+    /**
+     * Sets the animation from a JSONObject.
+     * This will load and deserialize the file asynchronously.
+     */
+    public void setAnimation(final JSONObject json) {
+        isAnimationLoading = true;
+        setProgressWhenCompositionSet = false;
+        playAnimationWhenCompositionSet = false;
+
+        LottieComposition.fromJson(getContext(), json, loadedListener);
     }
 
     public void setComposition(@NonNull LottieComposition composition) {

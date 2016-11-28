@@ -37,7 +37,7 @@ public class LottieComposition {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
-        new CompositionLoader(loadedListener).execute(file);
+        new FileCompositionLoader(loadedListener).execute(file);
     }
 
     public static LottieComposition fromFileSync(Context context, String fileName) {
@@ -48,6 +48,10 @@ public class LottieComposition {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
         return fromInputStream(file);
+    }
+
+    public static void fromJson(Context context, JSONObject json, OnCompositionLoadedListener loadedListener) {
+        new JsonCompositionLoader(loadedListener).execute(json);
     }
 
     private static LottieComposition fromInputStream(InputStream file) {
@@ -171,22 +175,36 @@ public class LottieComposition {
         return hasMattes;
     }
 
-    private static final class CompositionLoader extends AsyncTask<InputStream, Void, LottieComposition> {
+    private static final class FileCompositionLoader extends AsyncTask<InputStream, Void, LottieComposition> {
 
         private final OnCompositionLoadedListener loadedListener;
 
-        CompositionLoader(OnCompositionLoadedListener loadedListener) {
+        FileCompositionLoader(OnCompositionLoadedListener loadedListener) {
             this.loadedListener = loadedListener;
         }
 
         @Override
         protected LottieComposition doInBackground(InputStream... params) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             return fromInputStream(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(LottieComposition composition) {
+            loadedListener.onCompositionLoaded(composition);
+        }
+    }
+
+    private static final class JsonCompositionLoader extends AsyncTask<JSONObject, Void, LottieComposition> {
+
+        private final OnCompositionLoadedListener loadedListener;
+
+        JsonCompositionLoader(OnCompositionLoadedListener loadedListener) {
+            this.loadedListener = loadedListener;
+        }
+
+        @Override
+        protected LottieComposition doInBackground(JSONObject... params) {
+            return fromJsonSync(params[0]);
         }
 
         @Override
