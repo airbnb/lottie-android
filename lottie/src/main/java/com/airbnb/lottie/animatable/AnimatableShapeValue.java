@@ -17,7 +17,7 @@ import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock"})
 public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
-    private final boolean closed;
+    private boolean closed;
 
     public AnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
         super(null, frameRate, compDuration, true);
@@ -52,6 +52,12 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
             pointsArray = pointsData.getJSONArray("v");
             inTangents = pointsData.getJSONArray("i");
             outTangents = pointsData.getJSONArray("o");
+
+            if (pointsData.has("c")) {
+                // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the constructor.
+                // Bodymovin 4.4+ has closed here.
+                closed = pointsData.getBoolean("c");
+            }
         } catch (JSONException e) { }
 
         if (pointsArray == null || inTangents == null || outTangents == null ||
