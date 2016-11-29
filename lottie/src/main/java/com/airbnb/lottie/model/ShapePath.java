@@ -33,7 +33,7 @@ public class ShapePath {
         try {
             closed = json.getBoolean("closed");
         } catch (JSONException e) {
-            throw new IllegalArgumentException("ShapePath index " + index + " has no value for 'closed'.", e);
+            closed = true;
         }
 
         JSONObject shape;
