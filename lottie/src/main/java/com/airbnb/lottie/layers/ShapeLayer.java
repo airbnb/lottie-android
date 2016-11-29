@@ -294,6 +294,9 @@ class ShapeLayer extends AnimatableLayer {
         if (strokeStart != null && strokeEnd != null) {
             float strokeStartVal = strokeStart.getValue();
             float strokeEndVal = strokeEnd.getValue();
+            if (strokeStartVal == 0 && strokeEndVal == 100 && trimPath.isEmpty()) {
+                return;
+            }
             float length = pathMeasure.getLength();
             float start = length * strokeStartVal / 100f;
             float end = length * strokeEndVal / 100f;
