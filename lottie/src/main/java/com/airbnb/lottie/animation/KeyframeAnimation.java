@@ -64,8 +64,9 @@ public abstract class KeyframeAnimation<T> {
         }
         this.progress = progress;
 
+        T value = getValue();
         for (int i = 0; i < listeners.size(); i++) {
-            listeners.get(i).onValueChanged(getValue());
+            listeners.get(i).onValueChanged(value);
         }
     }
 
