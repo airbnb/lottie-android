@@ -13,7 +13,6 @@ public class ShapePath {
     private static final String TAG = ShapePath.class.getSimpleName();
 
     private String name;
-    private boolean closed;
     private int index;
     private AnimatableShapeValue shapePath;
 
@@ -30,10 +29,11 @@ public class ShapePath {
             throw new IllegalArgumentException("Layer has no name.", e);
         }
 
+        boolean closed = false;
         try {
             closed = json.getBoolean("closed");
         } catch (JSONException e) {
-            closed = true;
+            // Do nothing. Bodymovin 4.4 moved "closed" to be "c" inside of the shape json itself.
         }
 
         JSONObject shape;
@@ -58,7 +58,6 @@ public class ShapePath {
     @Override
     public String toString() {
         return "ShapePath{" + "name=" + name +
-                ", closed=" + closed +
                 ", index=" + index +
                 ", hasAnimation=" + shapePath.hasAnimation() +
                 '}';
