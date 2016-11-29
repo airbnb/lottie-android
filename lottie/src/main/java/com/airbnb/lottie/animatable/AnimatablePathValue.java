@@ -130,7 +130,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
                     cp1 = keyframe.has("to") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("to"), L.SCALE) : null;
                     cp2 = keyframe.has("ti") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("ti"), L.SCALE) : null;
                     PointF vertex = JsonUtils.pointFromJsonArray(keyframe.getJSONArray("e"), L.SCALE);
-                    if (cp1 != null && cp2 != null) {
+                    if (cp1 != null && cp2 != null && cp1.length() != 0 && cp2.length() != 0) {
                         animationPath.cubicTo(
                                 startPoint.x + cp1.x, startPoint.y + cp1.y,
                                 vertex.x + cp2.x, vertex.y + cp2.y,

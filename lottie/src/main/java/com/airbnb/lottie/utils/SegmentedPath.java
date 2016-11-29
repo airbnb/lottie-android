@@ -17,6 +17,13 @@ public class SegmentedPath {
 
     public void lineTo(float x, float y) {
         Path path = new Path();
+        // This is a small hack that ensures that an actual path will get created.
+        // Without this, a lineTo call to the current point will end up creating an empty path
+        // which breaks animations.
+        if (currentPoint.x == x && currentPoint.y == y) {
+            x += 0.01f;
+            y += 0.01f;
+        }
         path.moveTo(currentPoint.x, currentPoint.y);
         path.lineTo(x, y);
         segments.add(path);

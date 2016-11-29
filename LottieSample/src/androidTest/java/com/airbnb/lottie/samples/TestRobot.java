@@ -8,7 +8,7 @@ import com.facebook.testing.screenshot.ViewHelpers;
 import java.util.Locale;
 
 class TestRobot {
-    private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.15f, 0.20f, 0.25f, 0.30f, 0.40f, 0.50f, 0.60f, 0.70f, 0.80f, 0.90f, 1f};
+    private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.5f, 1f};
     private static final float[] DEFAULT_STATIC_PROGRESS = {0f};
 
     static void testAnimatedFile(MainActivity activity, String fileName) {
