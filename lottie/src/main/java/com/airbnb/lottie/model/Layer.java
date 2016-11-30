@@ -97,8 +97,7 @@ public class Layer {
             } catch (JSONException e) {
             }
             if (opacity != null) {
-                layer.opacity = new AnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false);
-                layer.opacity.remap100To255();
+                layer.opacity = new AnimatableIntegerValue(opacity, layer.frameRate, composition.getDuration(), false, true);
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
 

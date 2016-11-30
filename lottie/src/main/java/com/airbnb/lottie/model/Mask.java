@@ -37,8 +37,7 @@ public class Mask {
             }
 
             maskPath = new AnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
-            AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false);
-            opacity.remap100To255();
+            AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false, true);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);
         }

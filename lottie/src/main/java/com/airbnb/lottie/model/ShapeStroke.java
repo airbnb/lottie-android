@@ -44,8 +44,7 @@ public class ShapeStroke {
             width = new AnimatableFloatValue(widthJson, frameRate, compDuration);
 
             JSONObject opacityJson = json.getJSONObject("o");
-            opacity = new AnimatableIntegerValue(opacityJson, frameRate, compDuration, false);
-            opacity.remap100To255();
+            opacity = new AnimatableIntegerValue(opacityJson, frameRate, compDuration, false, true);
 
             capType = LineCapType.values()[json.getInt("lc") - 1];
             joinType = LineJoinType.values()[json.getInt("lj") - 1];

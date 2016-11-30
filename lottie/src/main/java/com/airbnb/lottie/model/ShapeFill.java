@@ -32,8 +32,7 @@ public class ShapeFill {
             jsonOpacity = json.getJSONObject("o");
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
-            opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
-            opacity.remap100To255();
+            opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false, true);
         }
 
         try {

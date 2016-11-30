@@ -65,8 +65,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no opacity.");
         }
-        opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false);
-        opacity.remap100To255();
+        opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false, true);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }

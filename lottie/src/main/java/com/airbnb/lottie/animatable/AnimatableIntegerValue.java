@@ -1,8 +1,5 @@
 package com.airbnb.lottie.animatable;
 
-import android.support.annotation.Nullable;
-
-import com.airbnb.lottie.model.RemapInterface;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 
@@ -12,10 +9,16 @@ import org.json.JSONObject;
 
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
-    @Nullable private RemapInterface<Integer> remapInterface;
 
-    public AnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
+    public AnimatableIntegerValue(JSONObject json, int frameRate, long compDuration, boolean isDp, boolean remap100To255) {
         super(json, frameRate, compDuration, isDp);
+        if (remap100To255) {
+            initialValue = initialValue * 255 / 100;
+            getObservable().setValue(initialValue);
+            for (int i = 0; i < keyValues.size(); i++) {
+                keyValues.set(i, keyValues.get(i) * 255 / 100);
+            }
+        }
     }
 
     @Override
@@ -41,33 +44,7 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
         return animation;
     }
 
-    public void remap100To255() {
-        remapValues(0, 100, 0, 255);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void remapValues(final int fromMin, final int fromMax, final int toMin, final int toMax) {
-        remapInterface = new RemapInterface<Integer>() {
-            @Override
-            public Integer remap(Integer inValue) {
-                Integer remappedValue;
-                if (inValue < fromMin) {
-                    remappedValue = toMin;
-                } else if (inValue > fromMax) {
-                    remappedValue = toMax;
-                } else {
-                    remappedValue = (int) (toMin + (inValue / (float) (fromMax - fromMin) * (toMax - toMin)));
-                }
-                return remappedValue;
-            }
-        };
-        observable.setValue(remapInterface.remap(observable.getValue()));
-    }
-
     public Integer getInitialValue() {
-        if (remapInterface != null) {
-            return remapInterface.remap(initialValue);
-        }
         return initialValue;
     }
 }
