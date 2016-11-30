@@ -22,6 +22,10 @@ public class LottieComposition {
         void onCompositionLoaded(LottieComposition composition);
     }
 
+    public interface Cancellable {
+        void cancel();
+    }
+
     /**
      * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel leaving ~2.3M pixels available.
      * Reduce the number a little bit for safety.
@@ -30,14 +34,16 @@ public class LottieComposition {
      */
     private static final int MAX_PIXELS = 1000;
 
-    public static void fromFile(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
+    public static Cancellable fromFile(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
         InputStream file;
         try {
             file = context.getAssets().open(fileName);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
-        new FileCompositionLoader(loadedListener).execute(file);
+        FileCompositionLoader loader = new FileCompositionLoader(loadedListener);
+        loader.execute(file);
+        return loader;
     }
 
     public static LottieComposition fromFileSync(Context context, String fileName) {
@@ -50,8 +56,10 @@ public class LottieComposition {
         return fromInputStream(file);
     }
 
-    public static void fromJson(Context context, JSONObject json, OnCompositionLoadedListener loadedListener) {
-        new JsonCompositionLoader(loadedListener).execute(json);
+    public static Cancellable fromJson(Context context, JSONObject json, OnCompositionLoadedListener loadedListener) {
+        JsonCompositionLoader loader = new JsonCompositionLoader(loadedListener);
+        loader.execute(json);
+        return loader;
     }
 
     private static LottieComposition fromInputStream(InputStream file) {
@@ -175,7 +183,7 @@ public class LottieComposition {
         return hasMattes;
     }
 
-    private static final class FileCompositionLoader extends AsyncTask<InputStream, Void, LottieComposition> {
+    private static final class FileCompositionLoader extends CompositionLoader<InputStream> {
 
         private final OnCompositionLoadedListener loadedListener;
 
@@ -194,7 +202,7 @@ public class LottieComposition {
         }
     }
 
-    private static final class JsonCompositionLoader extends AsyncTask<JSONObject, Void, LottieComposition> {
+    private static final class JsonCompositionLoader extends CompositionLoader<JSONObject> {
 
         private final OnCompositionLoadedListener loadedListener;
 
@@ -210,6 +218,16 @@ public class LottieComposition {
         @Override
         protected void onPostExecute(LottieComposition composition) {
             loadedListener.onCompositionLoaded(composition);
+        }
+    }
+
+    private abstract static class CompositionLoader<Params>
+            extends AsyncTask<Params, Void, LottieComposition>
+            implements Cancellable {
+
+        @Override
+        public void cancel() {
+            cancel(true);
         }
     }
 }
