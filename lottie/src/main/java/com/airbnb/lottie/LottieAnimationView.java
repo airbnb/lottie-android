@@ -58,6 +58,7 @@ public class LottieAnimationView extends ImageView {
         @Override
         public void onCompositionLoaded(LottieComposition composition) {
             setComposition(composition);
+            compositionLoader = null;
         }
     };
 
@@ -70,6 +71,7 @@ public class LottieAnimationView extends ImageView {
     private boolean setProgressWhenCompositionSet;
     private boolean playAnimationWhenCompositionSet;
 
+    @Nullable private LottieComposition.Cancellable compositionLoader;
     /** Can be null because it is created async */
     @Nullable private LottieComposition composition;
     private boolean hasInvalidatedThisFrame;
@@ -201,7 +203,8 @@ public class LottieAnimationView extends ImageView {
         playAnimationWhenCompositionSet = false;
 
         this.animationName = animationName;
-        LottieComposition.fromFile(getContext(), animationName, loadedListener);
+        cancelLoaderTask();
+        compositionLoader = LottieComposition.fromFile(getContext(), animationName, loadedListener);
     }
 
     /**
@@ -213,7 +216,15 @@ public class LottieAnimationView extends ImageView {
         setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
 
-        LottieComposition.fromJson(getContext(), json, loadedListener);
+        cancelLoaderTask();
+        compositionLoader = LottieComposition.fromJson(getContext(), json, loadedListener);
+    }
+
+    private void cancelLoaderTask() {
+        if (compositionLoader != null) {
+            compositionLoader.cancel();
+            compositionLoader = null;
+        }
     }
 
     public void setComposition(@NonNull LottieComposition composition) {
