@@ -57,23 +57,28 @@ class ShapeLayer extends AnimatableLayer {
         }
     };
 
-    private final Observable.OnChangedListener trimPathChangedListener = new Observable.OnChangedListener() {
+    private final Observable.OnChangedListener pathPropertyChangedListener = new Observable.OnChangedListener() {
         @Override
         public void onChanged() {
-            onTrimPathChanged();
+            onPathPropertiesChanged();
         }
     };
 
 
     private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
-    private final Path trimPath = new Path();
+    private final Path tempPath = new Path();
+    private final Path currentPath = new Path();
     private final PathMeasure pathMeasure = new PathMeasure();
+
+    private float currentPathScaleX;
+    private float currentPathScaleY;
+    private float currentPathStrokeStart;
+    private float currentPathStrokeEnd = 100;
 
     @Nullable private Observable<ScaleXY> scale;
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
-    private final Path scaledPath = new Path();
 
     private Observable<Path> path;
     private Observable<Integer> color;
@@ -122,27 +127,53 @@ class ShapeLayer extends AnimatableLayer {
         onPathChanged();
     }
 
-    private void onPathChanged() {
-        if (path != null && path.getValue() != null && scale != null) {
-            path.getValue().computeBounds(scaleRect, true);
-            scaleMatrix.setScale(scale.getValue().getScaleX(), scale.getValue().getScaleY(), scaleRect.centerX(), scaleRect.centerY());
-            path.getValue().transform(scaleMatrix, scaledPath);
-        } else {
-            scaledPath.reset();
-            scaledPath.set(path.getValue());
-        }
-        pathMeasure.setPath(scaledPath, false);
+    void onPathChanged() {
+        currentPath.reset();
+        currentPath.set(path.getValue());
+        onPathPropertiesChanged();
         invalidateSelf();
-        updateBounds();
     }
 
-    private void updateBounds() {
-        scaledPath.computeBounds(bounds, true);
-        bounds.left -= paint.getStrokeWidth();
-        bounds.top -= paint.getStrokeWidth();
-        bounds.right += paint.getStrokeWidth();
-        bounds.bottom += paint.getStrokeWidth();
-        setBounds(0, 0, (int) bounds.width(), (int) bounds.height());
+    private void onPathPropertiesChanged() {
+        boolean needsStrokeStart = strokeStart != null && strokeStart.getValue() != currentPathStrokeStart;
+        boolean needsStrokeEnd = strokeEnd != null && strokeEnd.getValue() != currentPathStrokeEnd;
+        boolean needsScaleX = scale != null && scale.getValue().getScaleX() != currentPathScaleX;
+        boolean needsScaleY = scale != null && scale.getValue().getScaleY() != currentPathScaleY;
+
+        if (!needsStrokeStart && !needsStrokeEnd && !needsScaleX && !needsScaleY) {
+            return;
+        }
+        currentPath.set(path.getValue());
+
+        if (needsScaleX || needsScaleY) {
+            currentPath.computeBounds(scaleRect, true);
+            currentPathScaleX = scale.getValue().getScaleX();
+            currentPathScaleY = scale.getValue().getScaleY();
+            scaleMatrix.setScale(currentPathScaleX, currentPathScaleY, scaleRect.centerX(), scaleRect.centerY());
+            currentPath.transform(scaleMatrix, currentPath);
+        }
+
+        if (needsStrokeStart || needsStrokeEnd) {
+            tempPath.set(currentPath);
+            pathMeasure.setPath(tempPath, false);
+            float length = pathMeasure.getLength();
+            float start = length * strokeStart.getValue() / 100f;
+            float end = length * strokeEnd.getValue() / 100f;
+
+            currentPath.reset();
+            // Workaround to get hardware acceleration on KitKat
+            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
+            currentPath.rLineTo(0, 0);
+            currentPathStrokeStart = Math.min(start, end);
+            currentPathStrokeEnd = Math.max(start, end);
+            pathMeasure.getSegment(
+                    currentPathStrokeStart,
+                    currentPathStrokeEnd,
+                    currentPath,
+                    true);
+        }
+
+        invalidateSelf();
     }
 
     @Override
@@ -150,11 +181,7 @@ class ShapeLayer extends AnimatableLayer {
         if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
             return;
         }
-        if (!trimPath.isEmpty()) {
-            canvas.drawPath(trimPath, paint);
-        } else {
-            canvas.drawPath(scaledPath, paint);
-        }
+        canvas.drawPath(currentPath, paint);
     }
 
     @Override
@@ -213,7 +240,6 @@ class ShapeLayer extends AnimatableLayer {
 
     private void onLineWidthChanged() {
         paint.setStrokeWidth(lineWidth.getValue());
-        updateBounds();
         invalidateSelf();
     }
 
@@ -278,48 +304,24 @@ class ShapeLayer extends AnimatableLayer {
 
     void setTrimPath(Observable<Float> strokeStart, Observable<Float> strokeEnd) {
         if (this.strokeStart != null) {
-            this.strokeStart.removeChangeListener(trimPathChangedListener);
+            this.strokeStart.removeChangeListener(pathPropertyChangedListener);
         }
         if (this.strokeEnd != null) {
-            this.strokeEnd.removeChangeListener(trimPathChangedListener);
+            this.strokeEnd.removeChangeListener(pathPropertyChangedListener);
         }
         this.strokeStart = strokeStart;
         this.strokeEnd = strokeEnd;
-        strokeStart.addChangeListener(trimPathChangedListener);
-        strokeEnd.addChangeListener(trimPathChangedListener);
-        onTrimPathChanged();
-    }
-
-    void onTrimPathChanged() {
-        if (strokeStart != null && strokeEnd != null) {
-            float strokeStartVal = strokeStart.getValue();
-            float strokeEndVal = strokeEnd.getValue();
-            if (strokeStartVal == 0 && strokeEndVal == 100 && trimPath.isEmpty()) {
-                return;
-            }
-            float length = pathMeasure.getLength();
-            float start = length * strokeStartVal / 100f;
-            float end = length * strokeEndVal / 100f;
-
-            trimPath.reset();
-            // Workaround to get hardware acceleration on KitKat
-            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
-            trimPath.rLineTo(0, 0);
-            pathMeasure.getSegment(
-                    Math.min(start, end),
-                    Math.max(start, end),
-                    trimPath,
-                    true);
-        }
-        invalidateSelf();
+        strokeStart.addChangeListener(pathPropertyChangedListener);
+        strokeEnd.addChangeListener(pathPropertyChangedListener);
+        onPathPropertiesChanged();
     }
 
     void setScale(@SuppressWarnings("NullableProblems") Observable<ScaleXY> scale) {
         if (this.scale != null) {
-            this.scale.removeChangeListener(pathChangedListener);
+            this.scale.removeChangeListener(pathPropertyChangedListener);
         }
         this.scale = scale;
-        scale.addChangeListener(pathChangedListener);
-        onPathChanged();
+        scale.addChangeListener(pathPropertyChangedListener);
+        onPathPropertiesChanged();
     }
 }

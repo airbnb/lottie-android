@@ -148,7 +148,7 @@ class EllipseShapeLayer extends AnimatableLayer {
             path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
             path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
             observable.setValue(path);
-            onTrimPathChanged();
+            onPathChanged();
 
             invalidateSelf();
         }
