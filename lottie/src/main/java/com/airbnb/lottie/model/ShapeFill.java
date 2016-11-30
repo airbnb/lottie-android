@@ -5,7 +5,6 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animatable.AnimatableColorValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
-import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,10 +46,6 @@ public class ShapeFill {
 
     public AnimatableIntegerValue getOpacity() {
         return opacity;
-    }
-
-    public AnimationGroup createAnimation() {
-        return AnimationGroup.forAnimatableValues(getColor(), getOpacity());
     }
 
     @Override

@@ -2,10 +2,11 @@ package com.airbnb.lottie.animatable;
 
 import android.graphics.PointF;
 
-import com.airbnb.lottie.model.LottieComposition;
-import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.PointKeyframeAnimation;
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.utils.JsonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,19 +29,13 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
     }
 
     @Override
-    public KeyframeAnimation<PointF> animationForKeyPath() {
+    public KeyframeAnimation<PointF> createAnimation() {
         if (!hasAnimation()) {
-            return null;
+            return new StaticKeyframeAnimation<>(initialValue);
         }
 
         KeyframeAnimation<PointF> animation = new PointKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
-            @Override
-            public void onValueChanged(PointF progress) {
-                observable.setValue(progress);
-            }
-        });
         return animation;
     }
 

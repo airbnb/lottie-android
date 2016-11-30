@@ -192,6 +192,15 @@ public class LottieComposition {
         return scale;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("LottieComposition:\n");
+        for (Layer layer : layers) {
+            sb.append(layer.toString("\t"));
+        }
+        return sb.toString();
+    }
+
     private static final class FileCompositionLoader extends CompositionLoader<InputStream> {
 
         private final Resources res;

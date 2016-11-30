@@ -3,6 +3,7 @@ package com.airbnb.lottie.animatable;
 import android.graphics.Path;
 import android.graphics.PointF;
 
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.ShapeData;
@@ -18,6 +19,8 @@ import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 
 @SuppressWarnings({"EmptyCatchBlock"})
 public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
+    private final Path convertTypePath = new Path();
+
     private boolean closed;
 
     public AnimatableShapeValue(JSONObject json, int frameRate, LottieComposition composition, boolean closed) {
@@ -134,24 +137,20 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     }
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<Path> createAnimation() {
+        if (!hasAnimation()) {
+            return new StaticKeyframeAnimation<>(convertType(initialValue));
+        }
+
         ShapeKeyframeAnimation animation = new ShapeKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Path>() {
-            @Override
-            public void onValueChanged(Path progress) {
-                observable.setValue(progress);
-            }
-        });
         return animation;
     }
 
     @Override
     Path convertType(ShapeData shapeData) {
-        if (observable.getValue() == null) {
-            observable.setValue(new Path());
-        }
-        MiscUtils.getPathFromData(shapeData, observable.getValue());
-        return observable.getValue();
+        convertTypePath.reset();
+        MiscUtils.getPathFromData(shapeData, convertTypePath);
+        return convertTypePath;
     }
 }

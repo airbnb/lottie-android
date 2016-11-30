@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model;
 
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,15 +24,11 @@ public class ShapeTrimPath {
         return end;
     }
 
-    private AnimatableFloatValue getOffset() {
-        return offset;
-    }
-
     public AnimatableFloatValue getStart() {
         return start;
     }
 
-    public AnimationGroup createAnimation() {
-        return AnimationGroup.forAnimatableValues(getStart(), getEnd(), getOffset());
+    public AnimatableFloatValue getOffset() {
+        return offset;
     }
 }

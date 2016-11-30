@@ -18,9 +18,12 @@ public class ScaleXY {
         return scaleY;
     }
 
+    public boolean isDefault() {
+        return scaleX == 1f && scaleY == 1f;
+    }
+
     @Override
     public String toString() {
-        return "ScaleXY{" + "scale=" + getScaleX() + "x" + getScaleY() + '}';
-
+        return getScaleX() + "x" + getScaleY();
     }
 }

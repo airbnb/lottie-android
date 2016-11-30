@@ -1,9 +1,10 @@
 package com.airbnb.lottie.animatable;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.ScaleKeyframeAnimation;
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.ScaleXY;
-import com.airbnb.lottie.animation.ScaleKeyframeAnimation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,15 +30,13 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
     }
 
     @Override
-    public KeyframeAnimation<ScaleXY> animationForKeyPath() {
+    public KeyframeAnimation<ScaleXY> createAnimation() {
+        if (!hasAnimation()) {
+            return new StaticKeyframeAnimation<>(initialValue);
+        }
+
         ScaleKeyframeAnimation animation = new ScaleKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {
-            @Override
-            public void onValueChanged(ScaleXY progress) {
-                observable.setValue(progress);
-            }
-        });
         return animation;
     }
 }

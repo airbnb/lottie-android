@@ -53,6 +53,10 @@ public abstract class KeyframeAnimation<T> {
         listeners.add(listener);
     }
 
+    public void removeUpdateListener(AnimationListener<T> listener) {
+        listeners.remove(listener);
+    }
+
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         if (progress < getStartDelayProgress()) {
             progress = 0f;
@@ -109,5 +113,5 @@ public abstract class KeyframeAnimation<T> {
         return (float) duration / (float) composition.getDuration();
     }
 
-    protected abstract T getValue();
+    public abstract T getValue();
 }

@@ -2,9 +2,8 @@ package com.airbnb.lottie.animatable;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 
-public interface AnimatableValue<T> {
+interface AnimatableValue {
 
-    KeyframeAnimation animationForKeyPath();
+    KeyframeAnimation createAnimation();
     boolean hasAnimation();
-    Observable<T> getObservable();
 }

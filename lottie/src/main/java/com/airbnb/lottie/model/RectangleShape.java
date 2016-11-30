@@ -4,9 +4,8 @@ import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.animatable.AnimatablePointValue;
 import com.airbnb.lottie.animatable.AnimatablePathValue;
-import com.airbnb.lottie.animatable.AnimationGroup;
+import com.airbnb.lottie.animatable.AnimatablePointValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,10 +52,6 @@ public class RectangleShape {
 
     public AnimatablePathValue getPosition() {
         return position;
-    }
-
-    public AnimationGroup createAnimation() {
-        return AnimationGroup.forAnimatableValues(getCornerRadius(), getSize(), getPosition());
     }
 
     @Override
