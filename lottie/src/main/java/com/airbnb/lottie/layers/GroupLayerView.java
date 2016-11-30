@@ -65,7 +65,7 @@ class GroupLayerView extends AnimatableLayer {
                 addLayer(shapeLayer);
             } else if (item instanceof RectangleShape) {
                 RectangleShape shapeRect = (RectangleShape) item;
-                RectShapeLayer shapeLayer = new RectShapeLayer(shapeRect, currentFill, currentStroke, currentTransform, compDuration, getCallback());
+                RectLayer shapeLayer = new RectLayer(shapeRect, currentFill, currentStroke, currentTransform, compDuration, getCallback());
                 addLayer(shapeLayer);
             } else if (item instanceof CircleShape) {
                 CircleShape shapeCircle = (CircleShape) item;

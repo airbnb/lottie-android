@@ -18,7 +18,7 @@ import com.airbnb.lottie.animatable.Observable;
 
 import java.util.List;
 
-class RectShapeLayer extends AnimatableLayer {
+class RectLayer extends AnimatableLayer {
 
     private final ShapeTransform transformModel;
     private final ShapeStroke stroke;
@@ -28,7 +28,7 @@ class RectShapeLayer extends AnimatableLayer {
     @Nullable private RoundRectLayer fillLayer;
     @Nullable private RoundRectLayer strokeLayer;
 
-    RectShapeLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
+    RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
             @Nullable ShapeStroke stroke, ShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
         this.rectShape = rectShape;

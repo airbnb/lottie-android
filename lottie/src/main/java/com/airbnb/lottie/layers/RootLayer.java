@@ -7,13 +7,13 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.view.animation.LinearInterpolator;
 
-public class RootAnimatableLayer extends AnimatableLayer {
+public class RootLayer extends AnimatableLayer {
 
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
     private boolean playAnimationWhenLayerAdded;
 
-    public RootAnimatableLayer(Drawable.Callback callback) {
+    public RootLayer(Drawable.Callback callback) {
         super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
