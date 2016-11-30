@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
@@ -37,6 +38,7 @@ public class LottieViewAnimator {
     private boolean startWhenReady = false;
 
     private LottieViewAnimator(Context context, String fileName, View... views) {
+        L.SCALE = context.getResources().getDisplayMetrics().density;
         viewsMap = new HashMap<>(views.length);
 
         for (View view : views) {
@@ -62,47 +64,75 @@ public class LottieViewAnimator {
     private void setComposition(LottieComposition composition) {
         animator.setDuration(composition.getDuration());
 
-        for (Layer layer : composition.getLayers()) {
+        for (final Layer layer : composition.getLayers()) {
             final View view = viewsMap.get(layer.getLayerName());
             if (view == null) {
                 continue;
             }
 
-            KeyframeAnimation<PointF> position = layer.getPosition().animationForKeyPath();
-            position.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
-                @Override
-                public void onValueChanged(PointF progress) {
-                    view.setTranslationX(progress.x);
-                    view.setTranslationY(progress.y);
-                }
-            });
-            animatableValues.add(position);
+            if (layer.getPosition().hasAnimation()) {
+                KeyframeAnimation<PointF> position = layer.getPosition().animationForKeyPath();
+                position.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
+                    @Override
+                    public void onValueChanged(PointF progress) {
+                        view.setTranslationX(progress.x);
+                        view.setTranslationY(progress.y);
+                    }
+                });
+                animatableValues.add(position);
+            }
             PointF initialPosition = layer.getPosition().getInitialPoint();
             view.setTranslationX(initialPosition.x);
             view.setTranslationY(initialPosition.y);
 
-            KeyframeAnimation<ScaleXY> scale = layer.getScale().animationForKeyPath();
-            scale.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {
-                @Override
-                public void onValueChanged(ScaleXY scale) {
-                    view.setScaleX(scale.getScaleX());
-                    view.setScaleY(scale.getScaleY());
-                }
-            });
-            animatableValues.add(scale);
+            if (layer.getScale().hasAnimation()) {
+                KeyframeAnimation<ScaleXY> scale = layer.getScale().animationForKeyPath();
+                scale.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {
+                    @Override
+                    public void onValueChanged(ScaleXY scale) {
+                        view.setScaleX(scale.getScaleX());
+                        view.setScaleY(scale.getScaleY());
+                    }
+                });
+                animatableValues.add(scale);
+            }
             ScaleXY initialScale = layer.getScale().getInitialValue();
             view.setScaleX(initialScale.getScaleX());
             view.setScaleY(initialScale.getScaleY());
 
-            KeyframeAnimation<Float> rotation = layer.getRotation().animationForKeyPath();
-            rotation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
-                @Override
-                public void onValueChanged(Float rotation) {
-                    view.setRotation(rotation);
-                }
-            });
-            animatableValues.add(rotation);
+            if (layer.getRotation().hasAnimation()) {
+                KeyframeAnimation<Float> rotation = layer.getRotation().animationForKeyPath();
+                rotation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
+                    @Override
+                    public void onValueChanged(Float rotation) {
+                        view.setRotation(rotation);
+                    }
+                });
+                animatableValues.add(rotation);
+            }
             view.setRotation(layer.getRotation().getInitialValue());
+
+            if (layer.getAnchor().hasAnimation()) {
+                KeyframeAnimation<PointF> anchor = layer.getAnchor().animationForKeyPath();
+                anchor.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
+                    @Override
+                    public void onValueChanged(PointF anchor) {
+                        setViewAnchor(view, anchor);
+                    }
+                });
+            }
+            if (view.getWidth() > 0) {
+                setViewAnchor(view, layer.getAnchor().getInitialPoint());
+
+            } else {
+                view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        setViewAnchor(view, layer.getAnchor().getInitialPoint());
+                    }
+                });
+            }
         }
 
         if (startWhenReady) {
@@ -134,5 +164,10 @@ public class LottieViewAnimator {
     public LottieViewAnimator setProgress(float progress) {
         animator.setCurrentPlayTime((long) (progress * animator.getDuration()));
         return this;
+    }
+
+    private void setViewAnchor(View view, PointF anchor) {
+        view.setPivotX(anchor.x * view.getWidth() / (100f * L.SCALE));
+        view.setPivotY(anchor.y * view.getHeight() / (100f * L.SCALE));
     }
 }

@@ -169,7 +169,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
     }
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<PointF> animationForKeyPath() {
         if (!hasAnimation()) {
             return null;
         }
