@@ -20,7 +20,10 @@ public class Mask {
 
     public Mask(JSONObject json, int frameRate, long compDuration) {
         try {
-            boolean closed = json.getBoolean("cl");
+            boolean closed = false;
+            if (json.has("cl")) {
+                closed = json.getBoolean("cl");
+            }
             String mode = json.getString("mode");
             switch (mode) {
                 case "a":
@@ -38,6 +41,7 @@ public class Mask {
 
             maskPath = new AnimatableShapeValue(json.getJSONObject("pt"), frameRate, compDuration, closed);
             AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.getJSONObject("o"), frameRate, compDuration, false, true);
+            // TODO: use this.
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse mask. " + json, e);
         }
