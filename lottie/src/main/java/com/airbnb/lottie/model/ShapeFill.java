@@ -18,13 +18,13 @@ public class ShapeFill {
     private AnimatableColorValue color;
     private AnimatableIntegerValue opacity;
 
-    public ShapeFill(JSONObject json, int frameRate, long compDuration) {
+    public ShapeFill(JSONObject json, int frameRate, LottieComposition composition) {
         JSONObject jsonColor = null;
         try {
             jsonColor = json.getJSONObject("c");
         } catch (JSONException e) { }
         if (jsonColor != null) {
-            color = new AnimatableColorValue(jsonColor, frameRate, compDuration);
+            color = new AnimatableColorValue(jsonColor, frameRate, composition);
         }
 
         JSONObject jsonOpacity = null;
@@ -32,7 +32,7 @@ public class ShapeFill {
             jsonOpacity = json.getJSONObject("o");
         } catch (JSONException e) { }
         if (jsonOpacity != null) {
-            opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false, true);
+            opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
         }
 
         try {

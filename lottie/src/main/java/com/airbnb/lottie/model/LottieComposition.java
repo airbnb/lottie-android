@@ -1,11 +1,10 @@
 package com.airbnb.lottie.model;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.LongSparseArray;
-
-import com.airbnb.lottie.L;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +40,7 @@ public class LottieComposition {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
-        FileCompositionLoader loader = new FileCompositionLoader(loadedListener);
+        FileCompositionLoader loader = new FileCompositionLoader(context.getResources(), loadedListener);
         loader.execute(file);
         return loader;
     }
@@ -53,16 +52,16 @@ public class LottieComposition {
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
-        return fromInputStream(file);
+        return fromInputStream(context.getResources(), file);
     }
 
-    public static Cancellable fromJson(Context context, JSONObject json, OnCompositionLoadedListener loadedListener) {
-        JsonCompositionLoader loader = new JsonCompositionLoader(loadedListener);
+    public static Cancellable fromJson(Resources res, JSONObject json, OnCompositionLoadedListener loadedListener) {
+        JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
         loader.execute(json);
         return loader;
     }
 
-    private static LottieComposition fromInputStream(InputStream file) {
+    private static LottieComposition fromInputStream(Resources res, InputStream file) {
         try {
             int size = file.available();
             byte[] buffer = new byte[size];
@@ -72,7 +71,7 @@ public class LottieComposition {
             String json = new String(buffer, "UTF-8");
 
             JSONObject jsonObject = new JSONObject(json);
-            return LottieComposition.fromJsonSync(jsonObject);
+            return LottieComposition.fromJsonSync(res,jsonObject);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file.", e);
         } catch (JSONException e) {
@@ -80,8 +79,8 @@ public class LottieComposition {
         }
     }
 
-    private static LottieComposition fromJsonSync(JSONObject json) {
-        LottieComposition composition = new LottieComposition();
+    private static LottieComposition fromJsonSync(Resources res, JSONObject json) {
+        LottieComposition composition = new LottieComposition(res);
 
         int width = -1;
         int height = -1;
@@ -92,13 +91,13 @@ public class LottieComposition {
             // ignore.
         }
         if (width != -1 && height != -1) {
-            int scaledWidth = (int) (width * L.SCALE);
-            int scaledHeight = (int) (height * L.SCALE);
+            int scaledWidth = (int) (width * composition.scale);
+            int scaledHeight = (int) (height * composition.scale);
             if (scaledWidth * scaledHeight > MAX_PIXELS) {
                 float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
                 scaledWidth *= factor;
                 scaledHeight *= factor;
-                L.SCALE *= factor;
+                composition.scale *= factor;
             }
             composition.bounds = new Rect(0, 0, scaledWidth, scaledHeight);
         }
@@ -146,6 +145,12 @@ public class LottieComposition {
     private long duration;
     private boolean hasMasks;
     private boolean hasMattes;
+    private float scale;
+
+    private LottieComposition(Resources res) {
+        scale = res.getDisplayMetrics().density;
+    }
+
 
     public Layer layerModelForId(long id) {
         return layerMap.get(id);
@@ -183,17 +188,23 @@ public class LottieComposition {
         return hasMattes;
     }
 
+    public float getScale() {
+        return scale;
+    }
+
     private static final class FileCompositionLoader extends CompositionLoader<InputStream> {
 
+        private final Resources res;
         private final OnCompositionLoadedListener loadedListener;
 
-        FileCompositionLoader(OnCompositionLoadedListener loadedListener) {
+        FileCompositionLoader(Resources res, OnCompositionLoadedListener loadedListener) {
+            this.res = res;
             this.loadedListener = loadedListener;
         }
 
         @Override
         protected LottieComposition doInBackground(InputStream... params) {
-            return fromInputStream(params[0]);
+            return fromInputStream(res, params[0]);
         }
 
         @Override
@@ -204,15 +215,17 @@ public class LottieComposition {
 
     private static final class JsonCompositionLoader extends CompositionLoader<JSONObject> {
 
+        private final Resources res;
         private final OnCompositionLoadedListener loadedListener;
 
-        JsonCompositionLoader(OnCompositionLoadedListener loadedListener) {
+        JsonCompositionLoader(Resources res, OnCompositionLoadedListener loadedListener) {
+            this.res = res;
             this.loadedListener = loadedListener;
         }
 
         @Override
         protected LottieComposition doInBackground(JSONObject... params) {
-            return fromJsonSync(params[0]);
+            return fromJsonSync(res, params[0]);
         }
 
         @Override

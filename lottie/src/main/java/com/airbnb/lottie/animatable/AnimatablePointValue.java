@@ -2,6 +2,7 @@ package com.airbnb.lottie.animatable;
 
 import android.graphics.PointF;
 
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.PointKeyframeAnimation;
@@ -12,8 +13,8 @@ import org.json.JSONObject;
 
 public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
 
-    public AnimatablePointValue(JSONObject pointValues, int frameRate, long compDuration) {
-        super(pointValues, frameRate, compDuration, true);
+    public AnimatablePointValue(JSONObject pointValues, int frameRate, LottieComposition composition) {
+        super(pointValues, frameRate, composition, true);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
             return null;
         }
 
-        KeyframeAnimation<PointF> animation = new PointKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+        KeyframeAnimation<PointF> animation = new PointKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
             @Override

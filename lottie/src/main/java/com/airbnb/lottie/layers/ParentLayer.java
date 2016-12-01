@@ -14,7 +14,7 @@ class ParentLayer extends AnimatableLayer {
 
     ParentLayer(Layer parent, LottieComposition composition, Drawable.Callback callback) {
         super(composition.getDuration(), callback);
-        setBounds(parent.getCompBounds());
+        setBounds(parent.getComposition().getBounds());
         this.parentModel = parent;
         setupLayerFromModel();
         if (L.DBG) Log.d(TAG, "Creating parentModel layer for " + parent.getLayerName());

@@ -153,8 +153,8 @@ public class LayerView extends AnimatableLayer {
 
         if (layerModel.hasInOutAnimation()) {
             NumberKeyframeAnimation<Float> inOutAnimation = new NumberKeyframeAnimation<>(
-                    layerModel.getCompDuration(),
-                    layerModel.getCompDuration(),
+                    layerModel.getComposition().getDuration(),
+                    layerModel.getComposition(),
                     layerModel.getInOutKeyTimes(),
                     Float.class,
                     layerModel.getInOutKeyFrames(),

@@ -5,10 +5,10 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lottie.L;
-import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.PathKeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.SegmentedPath;
 
 import org.json.JSONArray;
@@ -23,8 +23,8 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
     private final Observable<PointF> observable = new Observable<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
-    private final long compDuration;
     private final int frameRate;
+    private final LottieComposition composition;
 
     private PointF initialPoint;
     private final SegmentedPath animationPath = new SegmentedPath();
@@ -33,9 +33,9 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
     private long startFrame;
     private long durationFrames;
 
-    public AnimatablePathValue(JSONObject pointValues, int frameRate, long compDuration) {
-        this.compDuration = compDuration;
+    public AnimatablePathValue(JSONObject pointValues, int frameRate, LottieComposition composition) {
         this.frameRate = frameRate;
+        this.composition = composition;
 
         Object value;
         try {
@@ -57,7 +57,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
                 // Single Value, no animation
-                initialPoint = JsonUtils.pointFromJsonArray((JSONArray) value, L.SCALE);
+                initialPoint = JsonUtils.pointFromJsonArray((JSONArray) value, composition.getScale());
                 observable.setValue(initialPoint);
             }
         }
@@ -105,7 +105,8 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
                     outPoint = null;
                 }
 
-                PointF startPoint = keyframe.has("s") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("s"), L.SCALE) : new PointF();
+                float scale = composition.getScale();
+                PointF startPoint = keyframe.has("s") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("s"), scale) : new PointF();
                 if (addStartValue) {
                     if (i == 0) {
                         animationPath.moveTo(startPoint.x, startPoint.y);
@@ -127,9 +128,9 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
                 PointF cp1;
                 PointF cp2;
                 if (keyframe.has("e")) {
-                    cp1 = keyframe.has("to") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("to"), L.SCALE) : null;
-                    cp2 = keyframe.has("ti") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("ti"), L.SCALE) : null;
-                    PointF vertex = JsonUtils.pointFromJsonArray(keyframe.getJSONArray("e"), L.SCALE);
+                    cp1 = keyframe.has("to") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("to"), scale) : null;
+                    cp2 = keyframe.has("ti") ? JsonUtils.pointFromJsonArray(keyframe.getJSONArray("ti"), scale) : null;
+                    PointF vertex = JsonUtils.pointFromJsonArray(keyframe.getJSONArray("e"), scale);
                     if (cp1 != null && cp2 != null && cp1.length() != 0 && cp2.length() != 0) {
                         animationPath.cubicTo(
                                 startPoint.x + cp1.x, startPoint.y + cp1.y,
@@ -141,9 +142,9 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
 
                     Interpolator interpolator;
                     if (keyframe.has("o") && keyframe.has("i")) {
-                        cp1 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("o"), L.SCALE);
-                        cp2 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("i"), L.SCALE);
-                        interpolator = PathInterpolatorCompat.create(cp1.x / L.SCALE, cp1.y / L.SCALE, cp2.x / L.SCALE, cp2.y / L.SCALE);
+                        cp1 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("o"), scale);
+                        cp2 = JsonUtils.pointValueFromJsonObject(keyframe.getJSONObject("i"), scale);
+                        interpolator = PathInterpolatorCompat.create(cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
                     } else {
                         interpolator = new LinearInterpolator();
                     }
@@ -174,7 +175,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
             return null;
         }
 
-        KeyframeAnimation<PointF> animation = new PathKeyframeAnimation(duration, compDuration, keyTimes, animationPath, interpolators);
+        KeyframeAnimation<PointF> animation = new PathKeyframeAnimation(duration, composition, keyTimes, animationPath, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
             @Override

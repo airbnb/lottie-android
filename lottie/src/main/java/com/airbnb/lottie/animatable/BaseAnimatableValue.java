@@ -7,9 +7,9 @@ import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lottie.L;
-import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.utils.JsonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +26,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
     final List<Interpolator> interpolators = new ArrayList<>();
     long delay;
     long duration;
-    final long compDuration;
+    final LottieComposition composition;
     private final boolean isDp;
 
     private long startFrame;
@@ -35,9 +35,9 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
 
     V initialValue;
 
-    BaseAnimatableValue(@Nullable JSONObject json, int frameRate, long compDuration, boolean isDp) {
+    BaseAnimatableValue(@Nullable JSONObject json, int frameRate, LottieComposition composition, boolean isDp) {
         this.frameRate = frameRate;
-        this.compDuration = compDuration;
+        this.composition = composition;
         this.isDp = isDp;
         if (json != null) {
             init(json);
@@ -158,7 +158,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
     }
 
     private float getScale() {
-        return isDp ? L.SCALE : 1f;
+        return isDp ? composition.getScale() : 1f;
     }
 
     O convertType(V value) {

@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation;
 
 import android.view.animation.Interpolator;
 
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.ScaleXY;
 
 import java.util.List;
@@ -13,8 +14,8 @@ public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
 
     private final List<ScaleXY> transforms;
 
-    public ScaleKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<ScaleXY> transforms, List<Interpolator> interpolators) {
-        super(duration, compDuration, keyTimes, interpolators);
+    public ScaleKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes, List<ScaleXY> transforms, List<Interpolator> interpolators) {
+        super(duration, composition, keyTimes, interpolators);
         this.transforms = transforms;
     }
 

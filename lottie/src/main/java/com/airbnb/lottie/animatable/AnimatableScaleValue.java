@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animatable;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.ScaleXY;
 import com.airbnb.lottie.animation.ScaleKeyframeAnimation;
 
@@ -11,8 +12,8 @@ import org.json.JSONObject;
 @SuppressWarnings({"EmptyCatchBlock"})
 public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
 
-    public AnimatableScaleValue(JSONObject scaleValues, int frameRate, long compDuration, boolean isDp) {
-        super(scaleValues, frameRate, compDuration, isDp);
+    public AnimatableScaleValue(JSONObject scaleValues, int frameRate, LottieComposition composition, boolean isDp) {
+        super(scaleValues, frameRate, composition, isDp);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
 
     @Override
     public KeyframeAnimation<ScaleXY> animationForKeyPath() {
-        ScaleKeyframeAnimation animation = new ScaleKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+        ScaleKeyframeAnimation animation = new ScaleKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {
             @Override

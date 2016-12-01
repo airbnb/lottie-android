@@ -3,6 +3,8 @@ package com.airbnb.lottie.animation;
 import android.animation.ArgbEvaluator;
 import android.view.animation.Interpolator;
 
+import com.airbnb.lottie.model.LottieComposition;
+
 import java.util.List;
 
 
@@ -11,8 +13,8 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
 
     private final List<Integer> values;
 
-    public ColorKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Integer> values, List<Interpolator> interpolators) {
-        super(duration, compDuration, keyTimes, interpolators);
+    public ColorKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes, List<Integer> values, List<Interpolator> interpolators) {
+        super(duration, composition, keyTimes, interpolators);
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes.size() + " vs " + values.size());
         }

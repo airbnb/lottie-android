@@ -11,10 +11,10 @@ public class CircleShape {
     private AnimatablePathValue position;
     private AnimatablePointValue size;
 
-    CircleShape(JSONObject json, int frameRate, long compDuration) {
+    CircleShape(JSONObject json, int frameRate, LottieComposition composition) {
         try {
-            position = new AnimatablePathValue(json.getJSONObject("p"), frameRate, compDuration);
-            size = new AnimatablePointValue(json.getJSONObject("s"), frameRate, compDuration);
+            position = new AnimatablePathValue(json.getJSONObject("p"), frameRate, composition);
+            size = new AnimatablePointValue(json.getJSONObject("s"), frameRate, composition);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse circle " + json, e);
         }

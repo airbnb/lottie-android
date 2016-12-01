@@ -4,6 +4,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 
 import com.airbnb.lottie.model.CubicCurveData;
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.ShapeData;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.ShapeKeyframeAnimation;
@@ -19,8 +20,8 @@ import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     private boolean closed;
 
-    public AnimatableShapeValue(JSONObject json, int frameRate, long compDuration, boolean closed) {
-        super(null, frameRate, compDuration, true);
+    public AnimatableShapeValue(JSONObject json, int frameRate, LottieComposition composition, boolean closed) {
+        super(null, frameRate, composition, true);
         this.closed = closed;
         init(json);
     }
@@ -134,7 +135,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
 
     @Override
     public KeyframeAnimation animationForKeyPath() {
-        ShapeKeyframeAnimation animation = new ShapeKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+        ShapeKeyframeAnimation animation = new ShapeKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Path>() {
             @Override

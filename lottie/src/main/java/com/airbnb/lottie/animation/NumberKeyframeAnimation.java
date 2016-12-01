@@ -2,6 +2,8 @@ package com.airbnb.lottie.animation;
 
 import android.view.animation.Interpolator;
 
+import com.airbnb.lottie.model.LottieComposition;
+
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
@@ -11,8 +13,8 @@ public class NumberKeyframeAnimation<T extends Number> extends KeyframeAnimation
     private final List<T> values;
     private final Class<T> klass;
 
-    public NumberKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, Class<T> klass, List<T> values, List<Interpolator> interpolators) {
-        super(duration, compDuration, keyTimes, interpolators);
+    public NumberKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes, Class<T> klass, List<T> values, List<Interpolator> interpolators) {
+        super(duration, composition, keyTimes, interpolators);
         this.klass = klass;
         if (keyTimes.size() != values.size()) {
             throw new IllegalArgumentException("Key times and values must be the same length " + keyTimes + " vs " + values);

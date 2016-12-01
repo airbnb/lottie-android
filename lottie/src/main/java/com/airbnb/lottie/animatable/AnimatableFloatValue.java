@@ -2,6 +2,7 @@ package com.airbnb.lottie.animatable;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,12 +10,12 @@ import org.json.JSONObject;
 
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
-    public AnimatableFloatValue(JSONObject json, int frameRate, long compDuration) {
-        this(json, frameRate, compDuration, true);
+    public AnimatableFloatValue(JSONObject json, int frameRate, LottieComposition composition) {
+        this(json, frameRate, composition, true);
     }
 
-    public AnimatableFloatValue(JSONObject json, int frameRate, long compDuration, boolean isDp) {
-        super(json, frameRate, compDuration, isDp);
+    public AnimatableFloatValue(JSONObject json, int frameRate, LottieComposition composition, boolean isDp) {
+        super(json, frameRate, composition, isDp);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
     @Override
     public KeyframeAnimation<Float> animationForKeyPath() {
-        KeyframeAnimation<Float> animation = new NumberKeyframeAnimation<>(duration, compDuration, keyTimes, Float.class, keyValues, interpolators);
+        KeyframeAnimation<Float> animation = new NumberKeyframeAnimation<>(duration, composition, keyTimes, Float.class, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
             @Override

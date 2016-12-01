@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.airbnb.lottie.animation.ColorKeyframeAnimation;
 import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,8 +12,8 @@ import org.json.JSONObject;
 
 public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
 
-    public AnimatableColorValue(JSONObject json, int frameRate, long compDuration) {
-        super(json, frameRate, compDuration, false);
+    public AnimatableColorValue(JSONObject json, int frameRate, LottieComposition composition) {
+        super(json, frameRate, composition, false);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> 
         if (!hasAnimation()) {
             return null;
         }
-        ColorKeyframeAnimation animation = new ColorKeyframeAnimation(duration, compDuration, keyTimes, keyValues, interpolators);
+        ColorKeyframeAnimation animation = new ColorKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
         animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
