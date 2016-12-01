@@ -35,10 +35,10 @@ public class LottieViewAnimator {
 
     private final List<KeyframeAnimation<?>> animatableValues = new ArrayList<>();
 
+    private LottieComposition composition;
     private boolean startWhenReady = false;
 
     private LottieViewAnimator(Context context, String fileName, View... views) {
-        L.SCALE = context.getResources().getDisplayMetrics().density;
         viewsMap = new HashMap<>(views.length);
 
         for (View view : views) {
@@ -62,6 +62,7 @@ public class LottieViewAnimator {
     }
 
     private void setComposition(LottieComposition composition) {
+        this.composition = composition;
         animator.setDuration(composition.getDuration());
 
         for (final Layer layer : composition.getLayers()) {
@@ -167,7 +168,7 @@ public class LottieViewAnimator {
     }
 
     private void setViewAnchor(View view, PointF anchor) {
-        view.setPivotX(anchor.x * view.getWidth() / (100f * L.SCALE));
-        view.setPivotY(anchor.y * view.getHeight() / (100f * L.SCALE));
+        view.setPivotX(anchor.x * view.getWidth() / (100f * composition.getScale()));
+        view.setPivotY(anchor.y * view.getHeight() / (100f * composition.getScale()));
     }
 }

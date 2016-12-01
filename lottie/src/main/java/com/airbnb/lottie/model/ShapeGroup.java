@@ -14,7 +14,7 @@ import java.util.List;
 public class ShapeGroup {
 
     @Nullable
-    public static Object shapeItemWithJson(JSONObject json, int framerate, long compDuration, Rect compBounds) {
+    public static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition, Rect compBounds) {
         String type = null;
         try {
             type = json.getString("ty");
@@ -25,21 +25,21 @@ public class ShapeGroup {
 
         switch (type) {
             case "gr":
-                return new ShapeGroup(json, framerate, compDuration, compBounds);
+                return new ShapeGroup(json, framerate, composition, compBounds);
             case "st":
-                return new ShapeStroke(json, framerate, compDuration);
+                return new ShapeStroke(json, framerate, composition);
             case "fl":
-                return new ShapeFill(json, framerate, compDuration);
+                return new ShapeFill(json, framerate, composition);
             case "tr":
-                return new ShapeTransform(json, framerate, compDuration, compBounds);
+                return new ShapeTransform(json, framerate, composition, compBounds);
             case "sh":
-                return new ShapePath(json, framerate, compDuration);
+                return new ShapePath(json, framerate, composition);
             case "el":
-                return new CircleShape(json, framerate, compDuration);
+                return new CircleShape(json, framerate, composition);
             case "rc":
-                return new RectangleShape(json, framerate, compDuration);
+                return new RectangleShape(json, framerate, composition);
             case "tm":
-                return new ShapeTrimPath(json, framerate, compDuration);
+                return new ShapeTrimPath(json, framerate, composition);
         }
         return null;
     }
@@ -47,7 +47,7 @@ public class ShapeGroup {
     private String name;
     private final List<Object> items = new ArrayList<>();
 
-    private ShapeGroup(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    private ShapeGroup(JSONObject json, int frameRate, LottieComposition composition, Rect compBounds) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -72,7 +72,7 @@ public class ShapeGroup {
             }
 
 
-            Object newItem = shapeItemWithJson(jsonItem, frameRate, compDuration, compBounds);
+            Object newItem = shapeItemWithJson(jsonItem, frameRate, composition, compBounds);
             if (newItem != null) {
                 items.add(newItem);
             }

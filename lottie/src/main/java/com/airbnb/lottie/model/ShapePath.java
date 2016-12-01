@@ -16,7 +16,7 @@ public class ShapePath {
     private int index;
     private AnimatableShapeValue shapePath;
 
-    public ShapePath(JSONObject json, int frameRate, long compDuration) {
+    public ShapePath(JSONObject json, int frameRate, LottieComposition composition) {
         try {
             index = json.getInt("ind");
         } catch (JSONException e) {
@@ -39,7 +39,7 @@ public class ShapePath {
         JSONObject shape;
         try {
             shape = json.getJSONObject("ks");
-            shapePath = new AnimatableShapeValue(shape, frameRate, compDuration, closed);
+            shapePath = new AnimatableShapeValue(shape, frameRate, composition, closed);
         } catch (JSONException e) {
             // Ignore
         }

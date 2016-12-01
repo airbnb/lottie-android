@@ -11,11 +11,11 @@ public class ShapeTrimPath {
     private AnimatableFloatValue end;
     private AnimatableFloatValue offset;
 
-    public ShapeTrimPath(JSONObject json, int frameRate, long compDuration) {
+    ShapeTrimPath(JSONObject json, int frameRate, LottieComposition composition) {
         try {
-            start = new AnimatableFloatValue(json.getJSONObject("s"), frameRate, compDuration, false);
-            end = new AnimatableFloatValue(json.getJSONObject("e"), frameRate, compDuration, false);
-            offset = new AnimatableFloatValue(json.getJSONObject("o"), frameRate, compDuration, false);
+            start = new AnimatableFloatValue(json.getJSONObject("s"), frameRate, composition, false);
+            end = new AnimatableFloatValue(json.getJSONObject("e"), frameRate, composition, false);
+            offset = new AnimatableFloatValue(json.getJSONObject("o"), frameRate, composition, false);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse trim path " + json, e);
         }

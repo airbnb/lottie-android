@@ -24,7 +24,7 @@ public class ShapeTransform {
     private AnimatableFloatValue rotation;
     private AnimatableIntegerValue opacity;
 
-    ShapeTransform(JSONObject json, int frameRate, long compDuration, Rect compBounds) {
+    ShapeTransform(JSONObject json, int frameRate, LottieComposition composition, Rect compBounds) {
         this.compBounds = compBounds;
 
         JSONObject jsonPosition;
@@ -33,7 +33,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no position.");
         }
-        position = new AnimatablePointValue(jsonPosition, frameRate, compDuration);
+        position = new AnimatablePointValue(jsonPosition, frameRate, composition);
 
         JSONObject jsonAnchor;
         try {
@@ -41,7 +41,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no anchor.");
         }
-        anchor = new AnimatablePathValue(jsonAnchor, frameRate, compDuration);
+        anchor = new AnimatablePathValue(jsonAnchor, frameRate, composition);
 
         JSONObject jsonScale;
         try {
@@ -49,7 +49,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no scale.");
         }
-        scale = new AnimatableScaleValue(jsonScale, frameRate, compDuration, false);
+        scale = new AnimatableScaleValue(jsonScale, frameRate, composition, false);
 
         JSONObject jsonRotation;
         try {
@@ -57,7 +57,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no rotation.");
         }
-        rotation = new AnimatableFloatValue(jsonRotation, frameRate, compDuration, false);
+        rotation = new AnimatableFloatValue(jsonRotation, frameRate, composition, false);
 
         JSONObject jsonOpacity;
         try {
@@ -65,7 +65,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no opacity.");
         }
-        opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, compDuration, false, true);
+        opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
 
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }

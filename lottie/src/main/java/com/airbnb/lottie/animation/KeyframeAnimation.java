@@ -3,6 +3,8 @@ package com.airbnb.lottie.animation;
 import android.support.annotation.FloatRange;
 import android.view.animation.Interpolator;
 
+import com.airbnb.lottie.model.LottieComposition;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +15,8 @@ public abstract class KeyframeAnimation<T> {
     }
 
     private final List<AnimationListener<T>> listeners = new ArrayList<>();
-    private final long compDuration;
     private final long duration;
+    private final LottieComposition composition;
     final List<Float> keyTimes;
 
     private long startDelay;
@@ -28,9 +30,9 @@ public abstract class KeyframeAnimation<T> {
     private float cachedKeyframeIndexEnd;
     private float cachedDurationEndProgress = Float.MIN_VALUE;
 
-    KeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, List<Interpolator> interpolators) {
+    KeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes, List<Interpolator> interpolators) {
         this.duration = duration;
-        this.compDuration = compDuration;
+        this.composition = composition;
         this.keyTimes = keyTimes;
         this.interpolators = interpolators;
         if (!interpolators.isEmpty() && interpolators.size() != (keyTimes.size() - 1)) {
@@ -90,7 +92,7 @@ public abstract class KeyframeAnimation<T> {
 
     @FloatRange(from=0f, to=1f)
     private float getStartDelayProgress() {
-        return (float) startDelay / (float) (compDuration);
+        return (float) startDelay / (float) (composition.getDuration());
     }
 
     @FloatRange(from=0f, to=1f)
@@ -104,7 +106,7 @@ public abstract class KeyframeAnimation<T> {
 
     @FloatRange(from=0f, to=1f)
     private float getDurationRangeProgress() {
-        return (float) duration / (float) compDuration;
+        return (float) duration / (float) composition.getDuration();
     }
 
     protected abstract T getValue();

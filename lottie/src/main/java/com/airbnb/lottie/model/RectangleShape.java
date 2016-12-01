@@ -18,24 +18,24 @@ public class RectangleShape {
     private AnimatablePointValue size;
     private AnimatableFloatValue cornerRadius;
 
-    RectangleShape(JSONObject json, int frameRate, long compDuration) {
+    RectangleShape(JSONObject json, int frameRate, LottieComposition composition) {
         try {
             JSONObject positionJson = json.getJSONObject("p");
-            position = new AnimatablePathValue(positionJson, frameRate, compDuration);
+            position = new AnimatablePathValue(positionJson, frameRate, composition);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle position.", e);
         }
 
         try {
             JSONObject cornerRadiusJson = json.getJSONObject("r");
-            cornerRadius = new AnimatableFloatValue(cornerRadiusJson, frameRate, compDuration);
+            cornerRadius = new AnimatableFloatValue(cornerRadiusJson, frameRate, composition);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle corner radius.", e);
         }
 
         try {
             JSONObject sizeJson = json.getJSONObject("s");
-            size = new AnimatablePointValue(sizeJson, frameRate, compDuration);
+            size = new AnimatablePointValue(sizeJson, frameRate, composition);
         } catch (JSONException e) {
             throw new IllegalArgumentException("Unable to parse rectangle size.", e);
         }

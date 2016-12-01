@@ -5,6 +5,7 @@ import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
+import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.SegmentedPath;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
     private int pathMeasureKeyframeIndex = -1;
     @Nullable private PathMeasure pathMeasure;
 
-    public PathKeyframeAnimation(long duration, long compDuration, List<Float> keyTimes, SegmentedPath segmentedPath, List<Interpolator> interpolators) {
-        super(duration, compDuration, keyTimes, interpolators);
+    public PathKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes, SegmentedPath segmentedPath, List<Interpolator> interpolators) {
+        super(duration, composition, keyTimes, interpolators);
         this.segmentedPath = segmentedPath;
     }
 
