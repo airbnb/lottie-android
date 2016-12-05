@@ -3,21 +3,19 @@ package com.airbnb.lottie.layers;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
+import com.airbnb.lottie.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.animatable.AnimatableScaleValue;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapePath;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.utils.ScaleXY;
-import com.airbnb.lottie.animatable.Observable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ShapeLayerView extends AnimatableLayer {
-
-    private final ShapePath path;
-    private final ShapeFill fill;
-    private final ShapeStroke stroke;
-    private final ShapeTrimPath trim;
-    private final ShapeTransform transformModel;
 
     @Nullable private ShapeLayer fillLayer;
     @Nullable private ShapeLayer strokeLayer;
@@ -26,66 +24,45 @@ class ShapeLayerView extends AnimatableLayer {
             @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim,
             ShapeTransform transformModel, long duration, Drawable.Callback callback) {
         super(duration, callback);
-        path = shape;
-        this.fill = fill;
-        this.stroke = stroke;
-        this.trim = trim;
-        this.transformModel = transformModel;
-
         setBounds(transformModel.getCompBounds());
-        setAnchorPoint(transformModel.getAnchor().getObservable());
-        setPosition(transformModel.getPosition().getObservable());
-        setRotation(transformModel.getRotation().getObservable());
+        setAnchorPoint(transformModel.getAnchor().createAnimation());
+        setPosition(transformModel.getPosition().createAnimation());
+        setRotation(transformModel.getRotation().createAnimation());
 
-        Observable<ScaleXY> scale = transformModel.getScale().getObservable();
-        setTransform(transformModel.getScale().getObservable());
+        AnimatableScaleValue scale = transformModel.getScale();
+        setTransform(transformModel.getScale().createAnimation());
         if (fill != null) {
             fillLayer = new ShapeLayer(getCallback());
-            fillLayer.setPath(path.getShapePath().getObservable());
-            fillLayer.setColor(fill.getColor().getObservable());
-            fillLayer.setShapeAlpha(fill.getOpacity().getObservable());
-            fillLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            fillLayer.setScale(scale);
+            fillLayer.setPath(shape.getShapePath().createAnimation());
+            fillLayer.setColor(fill.getColor().createAnimation());
+            fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
+            fillLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
+            fillLayer.setScale(scale.createAnimation());
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
             strokeLayer = new ShapeLayer(getCallback());
             strokeLayer.setIsStroke();
-            strokeLayer.setPath(path.getShapePath().getObservable());
-            strokeLayer.setColor(stroke.getColor().getObservable());
-            strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
-            strokeLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
-            strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
+            strokeLayer.setPath(shape.getShapePath().createAnimation());
+            strokeLayer.setColor(stroke.getColor().createAnimation());
+            strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
+            strokeLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
+            strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
+            if (!stroke.getLineDashPattern().isEmpty()) {
+                List<KeyframeAnimation<Float>> dashPatternAnimations = new ArrayList<>(stroke.getLineDashPattern().size());
+                for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
+                    dashPatternAnimations.add(dashPattern.createAnimation());
+                }
+                strokeLayer.setDashPattern(dashPatternAnimations, stroke.getDashOffset().createAnimation());
+            }
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.setLineJoinType(stroke.getJoinType());
-            strokeLayer.setScale(scale);
+            strokeLayer.setScale(scale.createAnimation());
             if (trim != null) {
-                strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
+                strokeLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(), trim.getOffset().createAnimation());
             }
             addLayer(strokeLayer);
-        }
-
-        buildAnimation();
-    }
-
-    private void buildAnimation() {
-        if (transformModel != null) {
-            addAnimation(transformModel.createAnimation());
-        }
-
-        if (stroke != null && strokeLayer != null) {
-            strokeLayer.addAnimation(stroke.createAnimation());
-            strokeLayer.addAnimation(path.createAnimation());
-            if (trim != null) {
-                strokeLayer.addAnimation(trim.createAnimation());
-            }
-        }
-
-        if (fill != null && fillLayer != null) {
-            fillLayer.addAnimation(fill.createAnimation());
-            fillLayer.addAnimation(path.createAnimation());
         }
     }
 

@@ -5,131 +5,112 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 
+import com.airbnb.lottie.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.CircleShape;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.animatable.Observable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class EllipseShapeLayer extends AnimatableLayer {
-
-    private final CircleShape circleShape;
-    private final ShapeFill fill;
-    private final ShapeStroke stroke;
-    private final ShapeTrimPath trim;
-    private final ShapeTransform transformModel;
-
-    private CircleShapeLayer fillLayer;
-    private CircleShapeLayer strokeLayer;
 
     EllipseShapeLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
             ShapeTrimPath trim, ShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
-        this.circleShape = circleShape;
-        this.fill = fill;
-        this.stroke = stroke;
-        this.trim = trim;
-        this.transformModel = transform;
 
         setBounds(transform.getCompBounds());
-        setAnchorPoint(transform.getAnchor().getObservable());
-        setAlpha(transform.getOpacity().getObservable());
-        setPosition(transform.getPosition().getObservable());
-        setTransform(transform.getScale().getObservable());
-        setRotation(transform.getRotation().getObservable());
+        setAnchorPoint(transform.getAnchor().createAnimation());
+        setAlpha(transform.getOpacity().createAnimation());
+        setPosition(transform.getPosition().createAnimation());
+        setTransform(transform.getScale().createAnimation());
+        setRotation(transform.getRotation().createAnimation());
 
         if (fill != null) {
-            fillLayer = new CircleShapeLayer(getCallback());
-            fillLayer.setColor(fill.getColor().getObservable());
-            fillLayer.setAlpha(fill.getOpacity().getObservable());
+            CircleShapeLayer fillLayer = new CircleShapeLayer(getCallback());
+            fillLayer.setColor(fill.getColor().createAnimation());
+            fillLayer.setAlpha(fill.getOpacity().createAnimation());
             fillLayer.updateCircle(
-                    circleShape.getPosition().getObservable(),
-                    circleShape.getSize().getObservable());
+                    circleShape.getPosition().createAnimation(),
+                    circleShape.getSize().createAnimation());
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
-            strokeLayer = new CircleShapeLayer(getCallback());
+            CircleShapeLayer strokeLayer = new CircleShapeLayer(getCallback());
             strokeLayer.setIsStroke();
-            strokeLayer.setColor(stroke.getColor().getObservable());
-            strokeLayer.setAlpha(stroke.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
-            strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
+            strokeLayer.setColor(stroke.getColor().createAnimation());
+            strokeLayer.setAlpha(stroke.getOpacity().createAnimation());
+            strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
+            if (!stroke.getLineDashPattern().isEmpty()) {
+                List<KeyframeAnimation<Float>> dashPatternAnimations = new ArrayList<>(stroke.getLineDashPattern().size());
+                for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
+                    dashPatternAnimations.add(dashPattern.createAnimation());
+                }
+                strokeLayer.setDashPattern(dashPatternAnimations, stroke.getDashOffset().createAnimation());
+            }
             strokeLayer.setLineCapType(stroke.getCapType());
             strokeLayer.updateCircle(
-                    circleShape.getPosition().getObservable(),
-                    circleShape.getSize().getObservable());
+                    circleShape.getPosition().createAnimation(),
+                    circleShape.getSize().createAnimation());
             if (trim != null) {
-                strokeLayer.setTrimPath(trim.getStart().getObservable(), trim.getEnd().getObservable());
+                strokeLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(), trim.getOffset().createAnimation());
             }
 
             addLayer(strokeLayer);
-        }
-
-        buildAnimation();
-    }
-
-    private void buildAnimation() {
-        if (transformModel != null) {
-            addAnimation(transformModel.createAnimation());
-        }
-
-        if (stroke != null && strokeLayer != null) {
-            strokeLayer.addAnimation(stroke.createAnimation());
-            strokeLayer.addAnimation(circleShape.createAnimation());
-            if (trim != null) {
-                strokeLayer.addAnimation(trim.createAnimation());
-            }
-        }
-
-        if (fill != null && fillLayer != null) {
-            fillLayer.addAnimation(fill.createAnimation());
-            fillLayer.addAnimation(circleShape.createAnimation());
         }
     }
 
     private static final class CircleShapeLayer extends ShapeLayer {
         private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
-        private final Observable.OnChangedListener circleSizeChangedListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<PointF> circleSizeChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
             @Override
-            public void onChanged() {
+            public void onValueChanged(PointF progress) {
                 onCircleSizeChanged();
             }
         };
 
-        private final Observable.OnChangedListener circlePositionListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<PointF> circlePositionChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
             @Override
-            public void onChanged() {
+            public void onValueChanged(PointF progress) {
                 invalidateSelf();
             }
         };
 
         private final Paint paint = new Paint();
         private final Path path = new Path();
-        private final Observable<Path> observable = new Observable<>(path);
 
-        private Observable<PointF> circleSize;
-        private Observable<PointF> circlePosition;
+        private KeyframeAnimation<PointF> circleSize;
+        private KeyframeAnimation<PointF> circlePosition;
 
         CircleShapeLayer(Drawable.Callback callback) {
             super(callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
-            setPath(observable);
+
+            setPath(new StaticKeyframeAnimation<>(path));
         }
 
-        void updateCircle(Observable<PointF> circlePosition, Observable<PointF> circleSize) {
+        void updateCircle(KeyframeAnimation<PointF> circlePosition, KeyframeAnimation<PointF> circleSize) {
             if (this.circleSize != null) {
-                this.circleSize.removeChangeListener(circleSizeChangedListener);
+                removeAnimation(this.circleSize);
+                this.circleSize.removeUpdateListener(circleSizeChangedListener);
             }
-            if (this.circlePosition != null)
-                this.circlePosition.removeChangeListener(circlePositionListener);
+            if (this.circlePosition != null) {
+                removeAnimation(this.circlePosition);
+                this.circlePosition.removeUpdateListener(circlePositionChangedListener);
+            }
             this.circleSize = circleSize;
             this.circlePosition = circlePosition;
-            circleSize.addChangeListener(circleSizeChangedListener);
-            circlePosition.addChangeListener(circlePositionListener);
+            addAnimation(circleSize);
+            circleSize.addUpdateListener(circleSizeChangedListener);
+            addAnimation(circlePosition);
+            circlePosition.addUpdateListener(circlePositionChangedListener);
             onCircleSizeChanged();
         }
 
@@ -147,7 +128,6 @@ class EllipseShapeLayer extends AnimatableLayer {
             path.cubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
             path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
             path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
-            observable.setValue(path);
             onPathChanged();
 
             invalidateSelf();

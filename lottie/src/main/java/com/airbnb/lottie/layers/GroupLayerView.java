@@ -34,11 +34,11 @@ class GroupLayerView extends AnimatableLayer {
             ShapeStroke previousStroke, ShapeTrimPath previousTrimPath) {
         if (shapeTransform != null) {
             setBounds(shapeTransform.getCompBounds());
-            setAnchorPoint(shapeTransform.getAnchor().getObservable());
-            setPosition(shapeTransform.getPosition().getObservable());
-            setAlpha(shapeTransform.getOpacity().getObservable());
-            setTransform(shapeTransform.getScale().getObservable());
-            setRotation(shapeTransform.getRotation().getObservable());
+            setAnchorPoint(shapeTransform.getAnchor().createAnimation());
+            setPosition(shapeTransform.getPosition().createAnimation());
+            setAlpha(shapeTransform.getOpacity().createAnimation());
+            setTransform(shapeTransform.getScale().createAnimation());
+            setRotation(shapeTransform.getRotation().createAnimation());
         }
 
         List<Object> reversedItems = new ArrayList<>(shapeGroup.getItems());
@@ -77,14 +77,6 @@ class GroupLayerView extends AnimatableLayer {
                 addLayer(groupLayer);
             }
 
-        }
-
-        buildAnimation();
-    }
-
-    private void buildAnimation() {
-        if (shapeTransform != null) {
-            addAnimation(shapeTransform.createAnimation());
         }
     }
 }

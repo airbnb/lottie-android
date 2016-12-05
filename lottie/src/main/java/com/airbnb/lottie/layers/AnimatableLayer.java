@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.animatable.Observable;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.utils.ScaleXY;
 
 import java.util.ArrayList;
@@ -20,25 +20,45 @@ import java.util.List;
 
 public class AnimatableLayer extends Drawable {
 
-    final List<AnimatableLayer> layers = new ArrayList<>();
-    private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Integer progress) {
+            invalidateSelf();
+        }
+    };
+    private final KeyframeAnimation.AnimationListener<Float> floatChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
+        @Override
+        public void onValueChanged(Float progress) {
+            invalidateSelf();
+        }
+    };
+    private final KeyframeAnimation.AnimationListener<ScaleXY> scaleChangedListener = new KeyframeAnimation.AnimationListener<ScaleXY>() {
+        @Override
+        public void onValueChanged(ScaleXY progress) {
+            invalidateSelf();
+        }
+    };
+    private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
+        @Override
+        public void onValueChanged(PointF progress) {
             invalidateSelf();
         }
     };
 
-    private Observable<PointF> position;
-    private Observable<PointF> anchorPoint;
+    final List<AnimatableLayer> layers = new ArrayList<>();
+
+
+    private KeyframeAnimation<PointF> position;
+    private KeyframeAnimation<PointF> anchorPoint;
     /** This should mimic CALayer#transform */
-    private Observable<ScaleXY> transform;
-    private Observable<Integer> alpha = null;
-    private Observable<Float> rotation;
+    private KeyframeAnimation<ScaleXY> transform;
+    private KeyframeAnimation<Integer> alpha = null;
+    private KeyframeAnimation<Float> rotation;
     final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
     @ColorInt private int backgroundColor;
-    private final List<AnimationGroup> animations = new ArrayList<>();
+    private final List<KeyframeAnimation<?>> animations = new ArrayList<>();
     @FloatRange(from = 0f, to = 1f) private float progress;
 
     AnimatableLayer(long compDuration, Drawable.Callback callback) {
@@ -55,36 +75,18 @@ public class AnimatableLayer extends Drawable {
         invalidateSelf();
     }
 
-    void addAnimation(AnimationGroup animation) {
-        animations.add(animation);
+    void addAnimation(KeyframeAnimation<?> newAnimation) {
+        animations.add(newAnimation);
+    }
+
+    void removeAnimation(KeyframeAnimation<?> animation) {
+        animations.remove(animation);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        canvas.save();
-        if (position != null && position.getValue() != null) {
-            if (position.getValue().x != 0 || position.getValue().y != 0) {
-                canvas.translate(position.getValue().x, position.getValue().y);
-            }
-        }
-        if (transform != null && transform.getValue() != null) {
-            if (transform.getValue().getScaleX() != 1f || transform.getValue().getScaleY() != 1f) {
-                canvas.scale(transform.getValue().getScaleX(), transform.getValue().getScaleY());
-            }
-        }
-
-        if (rotation != null && rotation.getValue() != null) {
-            float rotation = this.rotation.getValue();
-            if (rotation != 0f) {
-                canvas.rotate(rotation);
-            }
-        }
-
-        if (anchorPoint != null && anchorPoint.getValue() != null) {
-            if (anchorPoint.getValue().x != 0 || anchorPoint.getValue().y != 0) {
-                canvas.translate(-anchorPoint.getValue().x, -anchorPoint.getValue().y);
-            }
-        }
+        int saveCount = canvas.save();
+        applyTransformForLayer(canvas, this);
 
         int backgroundAlpha = Color.alpha(backgroundColor);
         if (backgroundAlpha != 0) {
@@ -98,20 +100,71 @@ public class AnimatableLayer extends Drawable {
         for (int i = 0; i < layers.size(); i++) {
             layers.get(i).draw(canvas);
         }
-        canvas.restore();
+        canvas.restoreToCount(saveCount);
     }
+
+    int saveCanvas(@Nullable Canvas canvas) {
+        if (canvas == null) {
+            return 0;
+        }
+        return canvas.save();
+    }
+
+    void restoreCanvas(@Nullable Canvas canvas, int count) {
+        if (canvas == null) {
+            return;
+        }
+        canvas.restoreToCount(count);
+    }
+
+    void applyTransformForLayer(@Nullable Canvas canvas, AnimatableLayer layer) {
+        if (canvas == null) {
+            return;
+        }
+        // TODO: Determine if these null checks are necessary.
+        if (layer.position != null) {
+            PointF position = layer.position.getValue();
+            if (position.x != 0 || position.y != 0) {
+                canvas.translate(position.x, position.y);
+            }
+        }
+
+        if (layer.transform != null) {
+            ScaleXY scale = layer.transform.getValue();
+            if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
+                canvas.scale(scale.getScaleX(), scale.getScaleY());
+            }
+        }
+
+        if (layer.rotation != null) {
+            float rotation = layer.rotation.getValue();
+            if (rotation != 0f) {
+                canvas.rotate(rotation);
+            }
+        }
+
+        if (layer.anchorPoint != null) {
+            PointF anchorPoint = layer.anchorPoint.getValue();
+            if (anchorPoint.x != 0 || anchorPoint.y != 0) {
+                canvas.translate(-anchorPoint.x, -anchorPoint.y);
+            }
+        }
+    }
+
 
     @Override
     public void setAlpha(int alpha) {
         throw new IllegalArgumentException("This shouldn't be used.");
     }
 
-    void setAlpha(Observable<Integer> alpha) {
+    void setAlpha(KeyframeAnimation<Integer> alpha) {
         if (this.alpha != null) {
-            this.alpha.removeChangeListener(changedListener);
+            removeAnimation(this.alpha);
+            this.alpha.removeUpdateListener(integerChangedListener);
         }
         this.alpha = alpha;
-        alpha.addChangeListener(changedListener);
+        addAnimation(alpha);
+        alpha.addUpdateListener(integerChangedListener);
         for (AnimatableLayer layer : layers) {
             layer.setAlpha(alpha);
         }
@@ -129,36 +182,44 @@ public class AnimatableLayer extends Drawable {
 
     }
 
-    void setAnchorPoint(Observable<PointF> anchorPoint) {
+    void setAnchorPoint(KeyframeAnimation<PointF> anchorPoint) {
         if (this.anchorPoint != null) {
-            this.anchorPoint.removeChangeListener(changedListener);
+            removeAnimation(this.anchorPoint);
+            this.anchorPoint.removeUpdateListener(pointChangedListener);
         }
         this.anchorPoint = anchorPoint;
-        anchorPoint.addChangeListener(changedListener);
+        addAnimation(anchorPoint);
+        anchorPoint.addUpdateListener(pointChangedListener);
     }
 
-    void setPosition(Observable<PointF> position) {
+    void setPosition(KeyframeAnimation<PointF> position) {
         if (this.position != null) {
-            this.position.removeChangeListener(changedListener);
+            removeAnimation(this.position);
+            this.position.removeUpdateListener(pointChangedListener);
         }
         this.position = position;
-        position.addChangeListener(changedListener);
+        addAnimation(position);
+        position.addUpdateListener(pointChangedListener);
     }
 
-    void setTransform(Observable<ScaleXY> transform) {
+    void setTransform(KeyframeAnimation<ScaleXY> transform) {
         if (this.transform != null) {
-            this.transform.removeChangeListener(changedListener);
+            removeAnimation(this.transform);
+            this.transform.removeUpdateListener(scaleChangedListener);
         }
         this.transform = transform;
-        transform.addChangeListener(changedListener);
+        addAnimation(this.transform);
+        transform.addUpdateListener(scaleChangedListener);
     }
 
-    void setRotation(Observable<Float> rotation) {
+    void setRotation(KeyframeAnimation<Float> rotation) {
         if (this.rotation != null) {
-            this.rotation.removeChangeListener(changedListener);
+            removeAnimation(this.rotation);
+            this.rotation.removeUpdateListener(floatChangedListener);
         }
         this.rotation = rotation;
-        rotation.addChangeListener(changedListener);
+        addAnimation(this.rotation);
+        rotation.addUpdateListener(floatChangedListener);
     }
 
     @Override

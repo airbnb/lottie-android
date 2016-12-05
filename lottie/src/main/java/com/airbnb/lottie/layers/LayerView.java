@@ -6,18 +6,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
-import com.airbnb.lottie.animatable.AnimationGroup;
-import com.airbnb.lottie.animatable.Observable;
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 import com.airbnb.lottie.model.Layer;
@@ -27,7 +23,6 @@ import com.airbnb.lottie.model.ShapeGroup;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
-import com.airbnb.lottie.utils.ScaleXY;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,10 +30,10 @@ import java.util.List;
 
 public class LayerView extends AnimatableLayer {
 
-    /** CALayer#mask */
     private MaskLayer mask;
-    private LayerView matte;
+    private LayerView matteLayer;
 
+    private final List<LayerView> transformLayers = new ArrayList<>();
     private final Paint mainCanvasPaint = new Paint();
     @Nullable private final Bitmap contentBitmap;
     @Nullable private final Bitmap maskBitmap;
@@ -53,8 +48,7 @@ public class LayerView extends AnimatableLayer {
     private final Layer layerModel;
     private final LottieComposition composition;
 
-    private long parentId = -1;
-    private AnimatableLayer childContainerLayer;
+    @Nullable private LayerView parentLayer;
 
 
     public LayerView(Layer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
@@ -73,47 +67,18 @@ public class LayerView extends AnimatableLayer {
             }
         }
 
-        setupForModel(callback);
+        setupForModel();
     }
 
-    private void setupForModel(Drawable.Callback callback) {
-        Observable<PointF> anchorPoint = new Observable<>();
-        anchorPoint.setValue(new PointF());
-        setAnchorPoint(anchorPoint);
+    private void setupForModel() {
+        setBackgroundColor(layerModel.getSolidColor());
+        setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
-        childContainerLayer = new AnimatableLayer(composition.getDuration(), getCallback());
-        childContainerLayer.setCallback(callback);
-        childContainerLayer.setBackgroundColor(layerModel.getSolidColor());
-        childContainerLayer.setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
-
-        long parentId = layerModel.getParentId();
-        AnimatableLayer currentChild = childContainerLayer;
-        while (parentId >= 0) {
-            if (parentId >= 0) {
-                this.parentId = parentId;
-            }
-            Layer parentModel = composition.layerModelForId(parentId);
-            ParentLayer parentLayer = new ParentLayer(parentModel, composition, getCallback());
-            parentLayer.setCallback(callback);
-            parentLayer.addLayer(currentChild);
-            currentChild = parentLayer;
-            parentId = parentModel.getParentId();
-        }
-        addLayer(currentChild);
-
-        childContainerLayer.setPosition(layerModel.getPosition().getObservable());
-        childContainerLayer.setAnchorPoint(layerModel.getAnchor().getObservable());
-        childContainerLayer.setTransform(layerModel.getScale().getObservable());
-        childContainerLayer.setRotation(layerModel.getRotation().getObservable());
-        setAlpha(layerModel.getOpacity().getObservable());
-        layerModel.getOpacity().getObservable().addChangeListener(new Observable.OnChangedListener() {
-            @Override
-            public void onChanged() {
-                mainCanvasPaint.setAlpha(Math.round(layerModel.getOpacity().getObservable().getValue()));
-                invalidateSelf();
-            }
-        });
-        mainCanvasPaint.setAlpha(Math.round(layerModel.getOpacity().getObservable().getValue()));
+        setPosition(layerModel.getPosition().createAnimation());
+        setAnchorPoint(layerModel.getAnchor().createAnimation());
+        setTransform(layerModel.getScale().createAnimation());
+        setRotation(layerModel.getRotation().createAnimation());
+        setAlpha(layerModel.getOpacity().createAnimation());
 
         setVisible(layerModel.hasInAnimation(), false);
 
@@ -129,7 +94,7 @@ public class LayerView extends AnimatableLayer {
             if (item instanceof ShapeGroup) {
                 GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
                         currentStroke, currentTrimPath, currentTransform, compDuration, getCallback());
-                childContainerLayer.addLayer(groupLayer);
+                addLayer(groupLayer);
             } else if (item instanceof ShapeTransform) {
                 currentTransform = (ShapeTransform) item;
             } else if (item instanceof ShapeFill) {
@@ -142,15 +107,13 @@ public class LayerView extends AnimatableLayer {
         }
 
         if (maskBitmap != null && layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-            mask = new MaskLayer(layerModel.getMasks(), composition, getCallback());
+            setMask(new MaskLayer(layerModel.getMasks(), composition, getCallback()));
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();
     }
 
     private void buildAnimations() {
-        childContainerLayer.addAnimation(layerModel.createAnimation());
-
         if (layerModel.hasInOutAnimation()) {
             NumberKeyframeAnimation<Float> inOutAnimation = new NumberKeyframeAnimation<>(
                     layerModel.getComposition().getDuration(),
@@ -167,17 +130,44 @@ public class LayerView extends AnimatableLayer {
                 }
             });
             setVisible(inOutAnimation.getValue() == 1f, false);
-            addAnimation(AnimationGroup.forKeyframeAnimations(inOutAnimation));
+            addAnimation(inOutAnimation);
         } else {
             setVisible(true, false);
         }
     }
 
-    public void setMatte(LayerView matte) {
-        if (matteBitmap == null) {
-            throw new IllegalArgumentException("Cannot set a matte if no matte contentBitmap was given!");
+    public Layer getLayerModel() {
+        return layerModel;
+    }
+
+    public void setParentLayer(@Nullable LayerView parentLayer) {
+        this.parentLayer = parentLayer;
+    }
+
+    @Nullable
+    private LayerView getParentLayer() {
+        return parentLayer;
+    }
+
+    private void setMask(MaskLayer mask) {
+        this.mask = mask;
+        // TODO: make this a field like other animation listeners and remove existing ones.
+        for (KeyframeAnimation<Path> animation : mask.getMasks()) {
+            addAnimation(animation);
+            animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Path>() {
+                @Override
+                public void onValueChanged(Path progress) {
+                    invalidateSelf();
+                }
+            });
         }
-        this.matte = matte;
+    }
+
+    public void setMatteLayer(LayerView matteLayer) {
+        if (matteBitmap == null) {
+            throw new IllegalArgumentException("Cannot set a matte if no matte bitmap was given!");
+        }
+        this.matteLayer = matteLayer;
         matteCanvas = new Canvas(matteBitmap);
     }
 
@@ -198,76 +188,80 @@ public class LayerView extends AnimatableLayer {
         if (!isVisible() || mainCanvasPaint.getAlpha() == 0) {
             return;
         }
+
+        // Make a list of all parent layers.
+        transformLayers.clear();
+        LayerView parent = parentLayer;
+        while (parent != null) {
+            transformLayers.add(parent);
+            parent = parent.getParentLayer();
+        }
+        Collections.reverse(transformLayers);
+
         if (contentCanvas == null || contentBitmap == null) {
+            int mainCanvasCount = saveCanvas(mainCanvas);
+            // Now apply the parent transformations from the top down.
+            for (LayerView layer : transformLayers) {
+                applyTransformForLayer(mainCanvas, layer);
+            }
             super.draw(mainCanvas);
+            mainCanvas.restoreToCount(mainCanvasCount);
             return;
         }
+
+        int contentCanvasCount = saveCanvas(contentCanvas);
+        int maskCanvasCount = saveCanvas(maskCanvas);
+        // Now apply the parent transformations from the top down.
+        for (LayerView layer : transformLayers) {
+            applyTransformForLayer(contentCanvas, layer);
+            applyTransformForLayer(maskCanvas, layer);
+        }
+        // We only have to apply the transformation to the mask because it's normally handed in AnimatableLayer#draw but masks don't go through that.
+        applyTransformForLayer(maskCanvas, this);
+
         super.draw(contentCanvas);
 
         Bitmap mainBitmap;
-        if (maskBitmap != null && maskCanvas != null && mask != null && !mask.getMasks().isEmpty()) {
-            int maskSaveCount = maskCanvas.save();
-            long parentId = this.parentId;
-            while (parentId >= 0) {
-                Layer parent = composition.layerModelForId(parentId);
-                applyTransformForLayer(maskCanvas, parent);
-                parentId = parent.getParentId();
-            }
-
-            applyTransformForLayer(maskCanvas, layerModel);
-
+        if (hasMasks()) {
             for (int i = 0; i < mask.getMasks().size(); i++) {
-                Path path = mask.getMasks().get(i).getMaskPath().getObservable().getValue();
+                Path path = mask.getMasks().get(i).getValue();
                 maskCanvas.drawPath(path, maskShapePaint);
             }
-            maskCanvas.restoreToCount(maskSaveCount);
-            if (matte == null) {
+            if (!hasMattes()) {
                 mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
             }
             mainBitmap = maskBitmap;
         } else {
-            if (matte == null) {
-                //noinspection ConstantConditions
+            if (!hasMattes()) {
                 mainCanvas.drawBitmap(contentBitmap, 0, 0, mainCanvasPaint);
             }
             mainBitmap = contentBitmap;
         }
 
-        if (matteCanvas != null && matteBitmap != null && matte != null) {
-            matte.draw(matteCanvas);
+        restoreCanvas(contentCanvas, contentCanvasCount);
+        restoreCanvas(maskCanvas, maskCanvasCount);
+
+        if (hasMattes()) {
             //noinspection ConstantConditions
+            matteLayer.draw(matteCanvas);
             matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
             mainCanvas.drawBitmap(matteBitmap, 0, 0, mainCanvasPaint);
         }
     }
 
-    private void applyTransformForLayer(Canvas canvas, Layer layer) {
-        PointF position = layer.getPosition().getObservable().getValue();
-        if (position.x != 0 || position.y != 0) {
-            canvas.translate(position.x, position.y);
-        }
+    private boolean hasMattes() {
+        return matteCanvas != null && matteBitmap != null && matteLayer != null;
+    }
 
-        ScaleXY scale = layer.getScale().getObservable().getValue();
-        if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
-            canvas.scale(scale.getScaleX(), scale.getScaleY());
-        }
-
-        float rotation = layer.getRotation().getObservable().getValue();
-        if (rotation != 0f) {
-            canvas.rotate(rotation);
-        }
-
-        PointF translation = layer.getAnchor().getObservable().getValue();
-        if (translation.x != 0 || translation.y != 0) {
-            canvas.translate(-translation.x, -translation.y);
-        }
+    private boolean hasMasks() {
+        return maskBitmap != null && maskCanvas != null && mask != null && !mask.getMasks().isEmpty();
     }
 
     @Override
     public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
         super.setProgress(progress);
-        if (matte != null) {
-            matte.setProgress(progress);
+        if (matteLayer != null) {
+            matteLayer.setProgress(progress);
         }
     }
 

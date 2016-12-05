@@ -16,11 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
-
-    final Observable<O> observable = new Observable<>();
+abstract class BaseAnimatableValue<V, O> implements AnimatableValue {
     final List<V> keyValues = new ArrayList<>();
     final List<Float> keyTimes = new ArrayList<>();
     final List<Interpolator> interpolators = new ArrayList<>();
@@ -54,7 +53,6 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
                 buildAnimationForKeyframes((JSONArray) value);
             } else {
                 initialValue = valueFromObject(value, getScale());
-                observable.setValue(convertType(initialValue));
             }
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to parse json " + json, e);
@@ -107,7 +105,6 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
                         if (i == 0) {
                             //noinspection ResourceAsColor
                             initialValue = startValue;
-                            observable.setValue(convertType(initialValue));
                         }
                         keyValues.add(startValue);
                         if (!interpolators.isEmpty()) {
@@ -174,11 +171,17 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
         return convertType(initialValue);
     }
 
-    public Observable<O> getObservable() {
-        return observable;
-    }
-
     protected abstract V valueFromObject(Object object, float scale) throws JSONException;
 
-    public abstract KeyframeAnimation animationForKeyPath();
+    public abstract KeyframeAnimation createAnimation();
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("initialValue=").append(initialValue);
+        if (!keyValues.isEmpty()) {
+            sb.append(", values=").append(Arrays.toString(keyTimes.toArray()));
+        }
+        return sb.toString();
+    }
 }

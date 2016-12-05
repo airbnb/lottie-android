@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"EmptyCatchBlock"})
@@ -85,6 +86,6 @@ public class ShapeGroup {
 
     @Override
     public String toString() {
-        return "ShapeGroup{" + "name='" + name + '\'' + '}';
+        return "ShapeGroup{" + "name='" + name + "\' Shapes: " + Arrays.toString(items.toArray()) + '}';
     }
 }

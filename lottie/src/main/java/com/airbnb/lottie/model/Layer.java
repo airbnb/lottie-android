@@ -9,7 +9,6 @@ import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.animatable.AnimatablePathValue;
 import com.airbnb.lottie.animatable.AnimatableScaleValue;
-import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +17,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings({"EmptyCatchBlock"})
 public class Layer {
@@ -65,7 +65,7 @@ public class Layer {
                     List<String> parentNames = new ArrayList<>();
                     Layer parent = composition.layerModelForId(parentId);
                     while (parent != null) {
-                        parentNames.add(parent.getLayerName());
+                        parentNames.add(parent.getName());
                         parent = composition.layerModelForId(parent.getParentId());
                     }
                     Log.d(TAG, "\tParents=" + Arrays.toString(parentNames.toArray()));
@@ -278,7 +278,7 @@ public class Layer {
         return layerId;
     }
 
-    public String getLayerName() {
+    public String getName() {
         return layerName;
     }
 
@@ -314,10 +314,6 @@ public class Layer {
         return shapes;
     }
 
-    public AnimationGroup createAnimation() {
-        return AnimationGroup.forAnimatableValues(getOpacity(), getPosition(), getAnchor(), getScale(), getRotation());
-    }
-
     public int getSolidColor() {
         return solidColor;
     }
@@ -332,30 +328,46 @@ public class Layer {
 
     @Override
     public String toString() {
-        return "Layer{" + "layerName='" + layerName +
-                ", anchor=" + anchor +
-                ", shapes=" + shapes +
-                ", layerId=" + layerId +
-                ", layerType=" + layerType +
-                ", parentId=" + parentId +
-                ", inFrame=" + inFrame +
-                ", outFrame=" + outFrame +
-                ", composition=" + composition +
-                ", frameRate=" + frameRate +
-                ", masks=" + masks +
-                ", solidWidth=" + solidWidth +
-                ", solidHeight=" + solidHeight +
-                ", solidColor=" + solidColor +
-                ", opacity=" + opacity +
-                ", rotation=" + rotation +
-                ", position=" + position +
-                ", scale=" + scale +
-                ", hasOutAnimation=" + hasOutAnimation +
-                ", hasInAnimation=" + hasInAnimation +
-                ", hasInOutAnimation=" + hasInOutAnimation +
-                ", inOutKeyFrames=" + inOutKeyFrames +
-                ", inOutKeyTimes=" + inOutKeyTimes +
-                ", matteType=" + matteType +
-                '}';
+        return toString("");
+    }
+
+    public String toString(String prefix) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(prefix).append(getName()).append("\n");
+        Layer parent = composition.layerModelForId(getParentId());
+        if (parent != null) {
+            sb.append("\t\tParents: ").append(parent.getName());
+            parent = composition.layerModelForId(parent.getParentId());
+            while (parent != null) {
+                sb.append("->").append(parent.getName());
+                parent = composition.layerModelForId(parent.getParentId());
+            }
+            sb.append(prefix).append("\n");
+        }
+        if (getPosition().hasAnimation() || getPosition().getInitialPoint().length() != 0) {
+            sb.append(prefix).append("\tPosition: ").append(getPosition()).append("\n");
+        }
+        if (getRotation().hasAnimation() || getRotation().getInitialValue() != 0f) {
+            sb.append(prefix).append("\tRotation: ").append(getRotation()).append("\n");
+        }
+        if (getScale().hasAnimation() || !getScale().getInitialValue().isDefault()) {
+            sb.append(prefix).append("\tScale: ").append(getScale()).append("\n");
+        }
+        if (getAnchor().hasAnimation() || getAnchor().getInitialPoint().length() != 0) {
+            sb.append(prefix).append("\tAnchor: ").append(getAnchor()).append("\n");
+        }
+        if (!getMasks().isEmpty()) {
+            sb.append(prefix).append("\tMasks: ").append(getMasks().size()).append("\n");
+        }
+        if (getSolidWidth() != 0 && getSolidHeight() != 0) {
+            sb.append(prefix).append("\tBackground: ").append(String.format(Locale.US, "%dx%d %X\n", getSolidWidth(), getSolidHeight(), getSolidColor()));
+        }
+        if (!shapes.isEmpty()) {
+            sb.append(prefix).append("\tShapes:\n");
+            for (Object shape : shapes) {
+                sb.append(prefix).append("\t\t").append(shape).append("\n");
+            }
+        }
+        return sb.toString();
     }
 }

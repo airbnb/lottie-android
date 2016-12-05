@@ -3,7 +3,6 @@ package com.airbnb.lottie.model;
 import com.airbnb.lottie.animatable.AnimatableColorValue;
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
-import com.airbnb.lottie.animatable.AnimationGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,14 +97,5 @@ public class ShapeStroke {
 
     public LineJoinType getJoinType() {
         return joinType;
-    }
-
-    public AnimationGroup createAnimation() {
-        if (getLineDashPattern().isEmpty()) {
-            return AnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth());
-        } else {
-            return AnimationGroup.forAnimatableValues(getColor(), getOpacity(), getWidth(),
-                    getLineDashPattern().get(0), getLineDashPattern().get(1), getDashOffset());
-        }
     }
 }

@@ -7,6 +7,7 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.PathKeyframeAnimation;
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.SegmentedPath;
@@ -18,9 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnimatablePathValue implements AnimatableValue<PointF> {
+public class AnimatablePathValue implements AnimatableValue {
 
-    private final Observable<PointF> observable = new Observable<>();
     private final List<Float> keyTimes = new ArrayList<>();
     private final List<Interpolator> interpolators = new ArrayList<>();
     private final int frameRate;
@@ -58,7 +58,6 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
             } else {
                 // Single Value, no animation
                 initialPoint = JsonUtils.pointFromJsonArray((JSONArray) value, composition.getScale());
-                observable.setValue(initialPoint);
             }
         }
 
@@ -111,7 +110,6 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
                     if (i == 0) {
                         animationPath.moveTo(startPoint.x, startPoint.y);
                         initialPoint = startPoint;
-                        observable.setValue(initialPoint);
                     } else {
                         animationPath.lineTo(startPoint.x, startPoint.y);
                         interpolators.add(new LinearInterpolator());
@@ -165,24 +163,13 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
     }
 
     @Override
-    public Observable<PointF> getObservable() {
-        return observable;
-    }
-
-    @Override
-    public KeyframeAnimation<PointF> animationForKeyPath() {
+    public KeyframeAnimation<PointF> createAnimation() {
         if (!hasAnimation()) {
-            return null;
+            return new StaticKeyframeAnimation<>(initialPoint);
         }
 
         KeyframeAnimation<PointF> animation = new PathKeyframeAnimation(duration, composition, keyTimes, animationPath, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
-            @Override
-            public void onValueChanged(PointF progress) {
-                observable.setValue(progress);
-            }
-        });
         return animation;
     }
 
@@ -197,6 +184,6 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
 
     @Override
     public String toString() {
-        return "AnimatablePathValue{" + "initialPoint=" + initialPoint + '}';
+        return "initialPoint=" + initialPoint;
     }
 }

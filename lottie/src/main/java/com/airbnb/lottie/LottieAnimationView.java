@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.widget.ImageView;
 
@@ -27,7 +28,7 @@ import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONObject;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ import java.util.List;
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
 public class LottieAnimationView extends ImageView {
-
+    private static final String TAG = LottieAnimationView.class.getSimpleName();
 
     /**
      * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
@@ -62,7 +63,6 @@ public class LottieAnimationView extends ImageView {
         }
     };
 
-    private final LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
     private final RootLayer rootLayer = new RootLayer(this);
     @FloatRange(from=0f, to=1f) private float progress;
     private String animationName;
@@ -231,6 +231,10 @@ public class LottieAnimationView extends ImageView {
             return;
         }
 
+        if (L.DBG) {
+            Log.v(TAG, "Set Composition \n" + composition);
+        }
+
         isAnimationLoading = false;
 
         clearComposition();
@@ -245,7 +249,7 @@ public class LottieAnimationView extends ImageView {
         this.composition = composition;
         rootLayer.setCompDuration(composition.getDuration());
         rootLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
-        buildSubviewsForComposition();
+        buildLayersForComposition();
         requestLayout();
         setImageDrawable(rootLayer);
 
@@ -255,11 +259,10 @@ public class LottieAnimationView extends ImageView {
         }
     }
 
-    private void buildSubviewsForComposition() {
-        //noinspection ConstantConditions
-        List<Layer> reversedLayers = composition.getLayers();
-        Collections.reverse(reversedLayers);
-
+    private void buildLayersForComposition() {
+        if (composition == null) {
+            throw new IllegalStateException("Composition is null");
+        }
         Rect bounds = composition.getBounds();
         if (composition.hasMasks() || composition.hasMattes()) {
             mainBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
@@ -270,9 +273,11 @@ public class LottieAnimationView extends ImageView {
         if (composition.hasMattes()) {
             matteBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
         }
+        LongSparseArray<LayerView> layerMap = new LongSparseArray<>(composition.getLayers().size());
+        List<LayerView> layers = new ArrayList<>(composition.getLayers().size());
         LayerView maskedLayer = null;
-        for (int i = 0; i < reversedLayers.size(); i++) {
-            Layer layer = reversedLayers.get(i);
+        for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
+            Layer layer = composition.getLayers().get(i);
             LayerView layerView;
             if (maskedLayer == null) {
                 layerView = new LayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
@@ -288,13 +293,27 @@ public class LottieAnimationView extends ImageView {
             }
             layerMap.put(layerView.getId(), layerView);
             if (maskedLayer != null) {
-                maskedLayer.setMatte(layerView);
+                maskedLayer.setMatteLayer(layerView);
                 maskedLayer = null;
             } else {
+                layers.add(layerView);
                 if (layer.getMatteType() == Layer.MatteType.Add) {
                     maskedLayer = layerView;
                 }
-                rootLayer.addLayer(layerView);
+            }
+        }
+
+        for (int i = 0; i < layers.size(); i++) {
+            LayerView layerView = layers.get(i);
+            rootLayer.addLayer(layerView);
+        }
+
+        for (int i = 0; i < layerMap.size(); i++) {
+            long key = layerMap.keyAt(i);
+            LayerView layerView = layerMap.get(key);
+            LayerView parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
+            if (parentLayer != null) {
+                layerView.setParentLayer(parentLayer);
             }
         }
     }
@@ -303,7 +322,6 @@ public class LottieAnimationView extends ImageView {
         composition = null;
         recycleBitmaps();
         rootLayer.clearLayers();
-        layerMap.clear();
     }
 
 

@@ -10,20 +10,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.model.ShapeFill;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.RectangleShape;
+import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
-import com.airbnb.lottie.animatable.Observable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class RectLayer extends AnimatableLayer {
-
-    private final ShapeTransform transformModel;
-    private final ShapeStroke stroke;
-    private final ShapeFill fill;
-    private final RectangleShape rectShape;
 
     @Nullable private RoundRectLayer fillLayer;
     @Nullable private RoundRectLayer strokeLayer;
@@ -31,61 +27,45 @@ class RectLayer extends AnimatableLayer {
     RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
             @Nullable ShapeStroke stroke, ShapeTransform transform, long duration, Drawable.Callback callback) {
         super(duration, callback);
-        this.rectShape = rectShape;
-        this.fill = fill;
-        this.stroke = stroke;
-        this.transformModel = transform;
 
         setBounds(transform.getCompBounds());
-        setAnchorPoint(transform.getAnchor().getObservable());
-        setAlpha(transform.getOpacity().getObservable());
-        setPosition(transform.getPosition().getObservable());
-        setTransform(transform.getScale().getObservable());
-        setRotation(transform.getRotation().getObservable());
+        setAnchorPoint(transform.getAnchor().createAnimation());
+        setAlpha(transform.getOpacity().createAnimation());
+        setPosition(transform.getPosition().createAnimation());
+        setTransform(transform.getScale().createAnimation());
+        setRotation(transform.getRotation().createAnimation());
 
         if (fill != null) {
             fillLayer = new RoundRectLayer(duration, getCallback());
-            fillLayer.setColor(fill.getColor().getObservable());
-            fillLayer.setShapeAlpha(fill.getOpacity().getObservable());
-            fillLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            fillLayer.setRectCornerRadius(rectShape.getCornerRadius().getObservable());
-            fillLayer.setRectSize(rectShape.getSize().getObservable());
-            fillLayer.setRectPosition(rectShape.getPosition().getObservable());
+            fillLayer.setColor(fill.getColor().createAnimation());
+            fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
+            fillLayer.setTransformAlpha(transform.getOpacity().createAnimation());
+            fillLayer.setRectCornerRadius(rectShape.getCornerRadius().createAnimation());
+            fillLayer.setRectSize(rectShape.getSize().createAnimation());
+            fillLayer.setRectPosition(rectShape.getPosition().createAnimation());
             addLayer(fillLayer);
         }
 
         if (stroke != null) {
             strokeLayer = new RoundRectLayer(duration, getCallback());
             strokeLayer.setIsStroke();
-            strokeLayer.setColor(stroke.getColor().getObservable());
-            strokeLayer.setShapeAlpha(stroke.getOpacity().getObservable());
-            strokeLayer.setTransformAlpha(transformModel.getOpacity().getObservable());
-            strokeLayer.setLineWidth(stroke.getWidth().getObservable());
-            strokeLayer.setDashPattern(stroke.getLineDashPattern(), stroke.getDashOffset());
+            strokeLayer.setColor(stroke.getColor().createAnimation());
+            strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
+            strokeLayer.setTransformAlpha(transform.getOpacity().createAnimation());
+            strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
+            if (!stroke.getLineDashPattern().isEmpty()) {
+                List<KeyframeAnimation<Float>> dashPatternAnimations = new ArrayList<>(stroke.getLineDashPattern().size());
+                for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
+                    dashPatternAnimations.add(dashPattern.createAnimation());
+                }
+                strokeLayer.setDashPattern(dashPatternAnimations, stroke.getDashOffset().createAnimation());
+            }
             strokeLayer.setLineCapType(stroke.getCapType());
-            strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().getObservable());
-            strokeLayer.setRectSize(rectShape.getSize().getObservable());
-            strokeLayer.setRectPosition(rectShape.getPosition().getObservable());
+            strokeLayer.setRectCornerRadius(rectShape.getCornerRadius().createAnimation());
+            strokeLayer.setRectSize(rectShape.getSize().createAnimation());
+            strokeLayer.setRectPosition(rectShape.getPosition().createAnimation());
             strokeLayer.setLineJoinType(stroke.getJoinType());
             addLayer(strokeLayer);
-        }
-
-        buildAnimation();
-    }
-
-    private void buildAnimation() {
-        if (transformModel != null) {
-            addAnimation(transformModel.createAnimation());
-        }
-
-        if (stroke != null && strokeLayer != null) {
-            strokeLayer.addAnimation(stroke.createAnimation());
-            strokeLayer.addAnimation(rectShape.createAnimation());
-        }
-
-        if (fill != null && fillLayer != null) {
-            fillLayer.addAnimation(fill.createAnimation());
-            fillLayer.addAnimation(rectShape.createAnimation());
         }
     }
 
@@ -101,55 +81,68 @@ class RectLayer extends AnimatableLayer {
     }
 
     private static class RoundRectLayer extends AnimatableLayer {
-
-        private final Observable.OnChangedListener changedListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<Integer> alphaChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
-            public void onChanged() {
-                invalidateSelf();
-            }
-        };
-
-        private final Observable.OnChangedListener alphaChangedListener = new Observable.OnChangedListener() {
-            @Override
-            public void onChanged() {
+            public void onValueChanged(Integer value) {
                 onAlphaChanged();
             }
         };
 
-        private final Observable.OnChangedListener colorChangedListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<Integer> colorChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
-            public void onChanged() {
+            public void onValueChanged(Integer value) {
                 onColorChanged();
             }
         };
 
-        private final Observable.OnChangedListener lineWidthChangedListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<Float> lineWidthChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
             @Override
-            public void onChanged() {
+            public void onValueChanged(Float value) {
                 onLineWidthChanged();
             }
         };
 
-        private final Observable.OnChangedListener dashPatternChangedListener = new Observable.OnChangedListener() {
+        private final KeyframeAnimation.AnimationListener<Float> dashPatternChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
             @Override
-            public void onChanged() {
+            public void onValueChanged(Float value) {
                 onDashPatternChanged();
+            }
+        };
+
+        private final KeyframeAnimation.AnimationListener<Float> cornerRadiusChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
+            @Override
+            public void onValueChanged(Float value) {
+                invalidateSelf();
+            }
+        };
+
+        private final KeyframeAnimation.AnimationListener<PointF> rectPositionChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
+            @Override
+            public void onValueChanged(PointF value) {
+                invalidateSelf();
+            }
+        };
+
+        private final KeyframeAnimation.AnimationListener<PointF> rectSizeChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
+            @Override
+            public void onValueChanged(PointF value) {
+                invalidateSelf();
             }
         };
 
         private final Paint paint = new Paint();
         private final RectF fillRect = new RectF();
 
-        private Observable<Integer> color;
-        private Observable<Float> lineWidth;
-        private Observable<Integer> shapeAlpha;
-        private Observable<Integer> transformAlpha;
-        private Observable<Float> rectCornerRadius;
-        private Observable<PointF> rectPosition;
-        private Observable<PointF> rectSize;
+        private KeyframeAnimation<Integer> color;
+        private KeyframeAnimation<Float> lineWidth;
+        private KeyframeAnimation<Integer> shapeAlpha;
+        private KeyframeAnimation<Integer> transformAlpha;
+        private KeyframeAnimation<Float> rectCornerRadius;
+        private KeyframeAnimation<PointF> rectPosition;
+        private KeyframeAnimation<PointF> rectSize;
 
-        @Nullable private List<AnimatableFloatValue> lineDashPattern;
-        @Nullable private AnimatableFloatValue lineDashPatternOffset;
+        @Nullable private List<KeyframeAnimation<Float>> lineDashPattern;
+        @Nullable private KeyframeAnimation<Float> lineDashPatternOffset;
 
         RoundRectLayer(long duration, Drawable.Callback callback) {
             super(duration, callback);
@@ -157,21 +150,25 @@ class RectLayer extends AnimatableLayer {
             paint.setStyle(Paint.Style.FILL);
         }
 
-        void setShapeAlpha(Observable<Integer> alpha) {
+        void setShapeAlpha(KeyframeAnimation<Integer> shapeAlpha) {
             if (this.shapeAlpha != null) {
-                this.shapeAlpha.removeChangeListener(alphaChangedListener);
+                removeAnimation(this.shapeAlpha);
+                this.shapeAlpha.removeUpdateListener(alphaChangedListener);
             }
-            this.shapeAlpha = alpha;
-            alpha.addChangeListener(alphaChangedListener);
+            this.shapeAlpha = shapeAlpha;
+            addAnimation(shapeAlpha);
+            shapeAlpha.addUpdateListener(alphaChangedListener);
             onAlphaChanged();
         }
 
-        void setTransformAlpha(Observable<Integer> alpha) {
+        void setTransformAlpha(KeyframeAnimation<Integer> transformAlpha) {
             if (this.transformAlpha != null) {
-                this.transformAlpha.removeChangeListener(alphaChangedListener);
+                removeAnimation(this.transformAlpha);
+                this.transformAlpha.removeUpdateListener(alphaChangedListener);
             }
-            transformAlpha = alpha;
-            alpha.addChangeListener(alphaChangedListener);
+            this.transformAlpha = transformAlpha;
+            addAnimation(transformAlpha);
+            transformAlpha.addUpdateListener(alphaChangedListener);
             onAlphaChanged();
         }
 
@@ -191,12 +188,14 @@ class RectLayer extends AnimatableLayer {
             return paint.getAlpha();
         }
 
-        public void setColor(Observable<Integer> color) {
+        public void setColor(KeyframeAnimation<Integer> color) {
             if (this.color != null) {
-                this.color.removeChangeListener(colorChangedListener);
+                removeAnimation(this.color);
+                this.color.removeUpdateListener(colorChangedListener);
             }
             this.color = color;
-            color.addChangeListener(colorChangedListener);
+            addAnimation(color);
+            color.addUpdateListener(colorChangedListener);
             onColorChanged();
         }
 
@@ -210,12 +209,14 @@ class RectLayer extends AnimatableLayer {
             invalidateSelf();
         }
 
-        void setLineWidth(Observable<Float> lineWidth) {
+        void setLineWidth(KeyframeAnimation<Float> lineWidth) {
             if (this.lineWidth != null) {
-                this.lineWidth.removeChangeListener(lineWidthChangedListener);
+                removeAnimation(this.lineWidth);
+                this.lineWidth.removeUpdateListener(lineWidthChangedListener);
             }
             this.lineWidth = lineWidth;
-            lineWidth.addChangeListener(lineWidthChangedListener);
+            addAnimation(lineWidth);
+            lineWidth.addUpdateListener(lineWidthChangedListener);
             onLineWidthChanged();
         }
 
@@ -224,24 +225,30 @@ class RectLayer extends AnimatableLayer {
             invalidateSelf();
         }
 
-        void setDashPattern(List<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue offset) {
+        void setDashPattern(List<KeyframeAnimation<Float>> lineDashPattern, KeyframeAnimation<Float> offset) {
             if (this.lineDashPattern != null) {
-                this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
-                this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
+                removeAnimation(this.lineDashPattern.get(0));
+                this.lineDashPattern.get(0).removeUpdateListener(dashPatternChangedListener);
+                removeAnimation(this.lineDashPattern.get(1));
+                this.lineDashPattern.get(1).removeUpdateListener(dashPatternChangedListener);
             }
             if (this.lineDashPatternOffset != null) {
-                this.lineDashPatternOffset.getObservable().removeChangeListener(dashPatternChangedListener);
+                removeAnimation(this.lineDashPatternOffset);
+                this.lineDashPatternOffset.removeUpdateListener(dashPatternChangedListener);
             }
             if (lineDashPattern.isEmpty()) {
                 return;
             }
             this.lineDashPattern = lineDashPattern;
             this.lineDashPatternOffset = offset;
-            lineDashPattern.get(0).getObservable().addChangeListener(dashPatternChangedListener);
+            addAnimation(lineDashPattern.get(0));
+            addAnimation(lineDashPattern.get(1));
+            lineDashPattern.get(0).addUpdateListener(dashPatternChangedListener);
             if (!lineDashPattern.get(1).equals(lineDashPattern.get(1))) {
-                lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+                lineDashPattern.get(1).addUpdateListener(dashPatternChangedListener);
             }
-            offset.getObservable().addChangeListener(dashPatternChangedListener);
+            addAnimation(offset);
+            offset.addUpdateListener(dashPatternChangedListener);
             onDashPatternChanged();
         }
 
@@ -251,9 +258,9 @@ class RectLayer extends AnimatableLayer {
             }
             float[] values = new float[lineDashPattern.size()];
             for (int i = 0; i < lineDashPattern.size(); i++) {
-                values[i] = lineDashPattern.get(i).getObservable().getValue();
+                values[i] = lineDashPattern.get(i).getValue();
             }
-            paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getObservable().getValue()));
+            paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
             invalidateSelf();
         }
 
@@ -282,30 +289,36 @@ class RectLayer extends AnimatableLayer {
             }
         }
 
-        void setRectCornerRadius(Observable<Float> rectCornerRadius) {
+        void setRectCornerRadius(KeyframeAnimation<Float> rectCornerRadius) {
             if (this.rectCornerRadius != null) {
-                this.rectCornerRadius.removeChangeListener(changedListener);
+                removeAnimation(rectCornerRadius);
+                this.rectCornerRadius.removeUpdateListener(cornerRadiusChangedListener);
             }
             this.rectCornerRadius = rectCornerRadius;
-            rectCornerRadius.addChangeListener(changedListener);
+            addAnimation(rectCornerRadius);
+            rectCornerRadius.addUpdateListener(cornerRadiusChangedListener);
             invalidateSelf();
         }
 
-        void setRectPosition(Observable<PointF> rectPosition) {
+        void setRectPosition(KeyframeAnimation<PointF> rectPosition) {
             if (this.rectPosition != null) {
-                this.rectPosition.removeChangeListener(changedListener);
+                removeAnimation(this.rectPosition);
+                this.rectPosition.removeUpdateListener(rectPositionChangedListener);
             }
             this.rectPosition = rectPosition;
-            rectPosition.addChangeListener(changedListener);
+            addAnimation(rectPosition);
+            rectPosition.addUpdateListener(rectPositionChangedListener);
             invalidateSelf();
         }
 
-        void setRectSize(Observable<PointF> rectSize) {
+        void setRectSize(KeyframeAnimation<PointF> rectSize) {
             if (this.rectSize != null) {
-                this.rectSize.removeChangeListener(changedListener);
+                removeAnimation(this.rectSize);
+                this.rectSize.removeUpdateListener(rectSizeChangedListener);
             }
             this.rectSize = rectSize;
-            this.rectSize.addChangeListener(changedListener);
+            addAnimation(rectSize);
+            rectSize.addUpdateListener(rectSizeChangedListener);
             invalidateSelf();
         }
 
@@ -314,7 +327,6 @@ class RectLayer extends AnimatableLayer {
             if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
                 return;
             }
-            super.draw(canvas);
             float halfWidth = rectSize.getValue().x / 2f;
             float halfHeight = rectSize.getValue().y / 2f;
 

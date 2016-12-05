@@ -13,59 +13,65 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.airbnb.lottie.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.utils.ScaleXY;
-import com.airbnb.lottie.animatable.Observable;
 
 import java.util.List;
 
 class ShapeLayer extends AnimatableLayer {
-    private final Observable.OnChangedListener pathChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Path> pathChangedListener = new KeyframeAnimation.AnimationListener<Path>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Path value) {
             onPathChanged();
         }
     };
 
-    private final Observable.OnChangedListener alphaChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Integer> alphaChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Integer value) {
             onAlphaChanged();
         }
     };
 
-    private final Observable.OnChangedListener colorChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Integer> colorChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Integer value) {
             onColorChanged();
         }
     };
 
-    private final Observable.OnChangedListener lineWidthChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Float> lineWidthChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Float value) {
             onLineWidthChanged();
         }
     };
 
-    private final Observable.OnChangedListener dashPatternChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Float> dashPatternChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Float value) {
             onDashPatternChanged();
         }
     };
 
-    private final Observable.OnChangedListener pathPropertyChangedListener = new Observable.OnChangedListener() {
+    private final KeyframeAnimation.AnimationListener<Float> strokeChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
         @Override
-        public void onChanged() {
+        public void onValueChanged(Float value) {
+            onPathPropertiesChanged();
+        }
+    };
+
+    private final KeyframeAnimation.AnimationListener<ScaleXY> scaleChangedListener = new KeyframeAnimation.AnimationListener<ScaleXY>() {
+        @Override
+        public void onValueChanged(ScaleXY value) {
             onPathPropertiesChanged();
         }
     };
 
 
-    private final RectF bounds = new RectF();
     private final Paint paint = new Paint();
     private final Path tempPath = new Path();
     private final Path currentPath = new Path();
@@ -75,21 +81,23 @@ class ShapeLayer extends AnimatableLayer {
     private float currentPathScaleY;
     private float currentPathStrokeStart;
     private float currentPathStrokeEnd = 100;
+    private float currentPathStrokeOffset = 0;
 
-    @Nullable private Observable<ScaleXY> scale;
+    @Nullable private KeyframeAnimation<ScaleXY> scale;
     private final RectF scaleRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
 
-    private Observable<Path> path;
-    private Observable<Integer> color;
-    private Observable<Float> lineWidth;
-    @Nullable private Observable<Float> strokeStart;
-    @Nullable private Observable<Float> strokeEnd;
+    private KeyframeAnimation<Path> path;
+    private KeyframeAnimation<Integer> color;
+    private KeyframeAnimation<Float> lineWidth;
+    @Nullable private KeyframeAnimation<Float> strokeStart;
+    @Nullable private KeyframeAnimation<Float> strokeEnd;
+    @Nullable private KeyframeAnimation<Float> strokeOffset;
 
-    private Observable<Integer> shapeAlpha;
-    private Observable<Integer> transformAlpha;
-    private List<AnimatableFloatValue> lineDashPattern;
-    private AnimatableFloatValue lineDashPatternOffset;
+    private KeyframeAnimation<Integer> shapeAlpha;
+    private KeyframeAnimation<Integer> transformAlpha;
+    private List<KeyframeAnimation<Float>> lineDashPattern;
+    private KeyframeAnimation<Float> lineDashPatternOffset;
 
     ShapeLayer(Drawable.Callback callback) {
         super(0, callback);
@@ -102,12 +110,14 @@ class ShapeLayer extends AnimatableLayer {
         invalidateSelf();
     }
 
-    public void setColor(Observable<Integer> color) {
+    public void setColor(KeyframeAnimation<Integer> color) {
         if (this.color != null) {
-            this.color.removeChangeListener(colorChangedListener);
+            removeAnimation(this.color);
+            this.color.removeUpdateListener(colorChangedListener);
         }
         this.color = color;
-        color.addChangeListener(colorChangedListener);
+        addAnimation(color);
+        color.addUpdateListener(colorChangedListener);
         onColorChanged();
     }
 
@@ -116,14 +126,16 @@ class ShapeLayer extends AnimatableLayer {
         invalidateSelf();
     }
 
-    public void setPath(Observable<Path> path) {
+    public void setPath(KeyframeAnimation<Path> path) {
         if (this.path != null) {
-            this.path.removeChangeListener(pathChangedListener);
+            removeAnimation(this.path);
+            this.path.removeUpdateListener(pathChangedListener);
         }
 
         this.path = path;
+        addAnimation(path);
         // TODO: When the path changes, we probably have to scale it again.
-        path.addChangeListener(pathChangedListener);
+        path.addUpdateListener(pathChangedListener);
         onPathChanged();
     }
 
@@ -137,10 +149,11 @@ class ShapeLayer extends AnimatableLayer {
     private void onPathPropertiesChanged() {
         boolean needsStrokeStart = strokeStart != null && strokeStart.getValue() != currentPathStrokeStart;
         boolean needsStrokeEnd = strokeEnd != null && strokeEnd.getValue() != currentPathStrokeEnd;
+        boolean needsStrokeOffset = strokeOffset != null && strokeOffset.getValue() != currentPathStrokeOffset;
         boolean needsScaleX = scale != null && scale.getValue().getScaleX() != currentPathScaleX;
         boolean needsScaleY = scale != null && scale.getValue().getScaleY() != currentPathScaleY;
 
-        if (!needsStrokeStart && !needsStrokeEnd && !needsScaleX && !needsScaleY) {
+        if (!needsStrokeStart && !needsStrokeEnd && !needsScaleX && !needsScaleY && !needsStrokeOffset) {
             return;
         }
         currentPath.set(path.getValue());
@@ -153,24 +166,28 @@ class ShapeLayer extends AnimatableLayer {
             currentPath.transform(scaleMatrix, currentPath);
         }
 
-        if (needsStrokeStart || needsStrokeEnd) {
+        if (needsStrokeStart || needsStrokeEnd || needsStrokeOffset) {
             tempPath.set(currentPath);
             pathMeasure.setPath(tempPath, false);
+            currentPathStrokeOffset = strokeOffset.getValue();
+            currentPathStrokeStart = strokeStart.getValue();
+            currentPathStrokeEnd = strokeEnd.getValue();
             float length = pathMeasure.getLength();
-            float start = length * strokeStart.getValue() / 100f;
-            float end = length * strokeEnd.getValue() / 100f;
+            if (length > 0) {
+                float offset = length * currentPathStrokeOffset / 100f;
+                float start = (length * currentPathStrokeStart / 100f + offset);
+                float end = (length * currentPathStrokeEnd / 100f + offset);
 
-            currentPath.reset();
-            // Workaround to get hardware acceleration on KitKat
-            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
-            currentPath.rLineTo(0, 0);
-            currentPathStrokeStart = Math.min(start, end);
-            currentPathStrokeEnd = Math.max(start, end);
-            pathMeasure.getSegment(
-                    currentPathStrokeStart,
-                    currentPathStrokeEnd,
-                    currentPath,
-                    true);
+                currentPath.reset();
+                // Workaround to get hardware acceleration on KitKat
+                // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
+                currentPath.rLineTo(0, 0);
+                pathMeasure.getSegment(
+                        Math.min(start, end),
+                        Math.max(start, end),
+                        currentPath,
+                        true);
+            }
         }
 
         invalidateSelf();
@@ -189,21 +206,25 @@ class ShapeLayer extends AnimatableLayer {
         return paint.getAlpha();
     }
 
-    void setShapeAlpha(Observable<Integer> shapeAlpha) {
+    void setShapeAlpha(KeyframeAnimation<Integer> shapeAlpha) {
         if (this.shapeAlpha != null) {
-            this.shapeAlpha.removeChangeListener(alphaChangedListener);
+            removeAnimation(this.shapeAlpha);
+            this.shapeAlpha.removeUpdateListener(alphaChangedListener);
         }
         this.shapeAlpha = shapeAlpha;
-        shapeAlpha.addChangeListener(alphaChangedListener);
+        addAnimation(shapeAlpha);
+        shapeAlpha.addUpdateListener(alphaChangedListener);
         onAlphaChanged();
     }
 
-    void setTransformAlpha(Observable<Integer> transformAlpha) {
+    void setTransformAlpha(KeyframeAnimation<Integer> transformAlpha) {
         if (this.transformAlpha != null) {
-            this.transformAlpha.removeChangeListener(alphaChangedListener);
+            removeAnimation(this.transformAlpha);
+            this.transformAlpha.removeUpdateListener(alphaChangedListener);
         }
         this.transformAlpha = transformAlpha;
-        transformAlpha.addChangeListener(alphaChangedListener);
+        addAnimation(transformAlpha);
+        transformAlpha.addUpdateListener(alphaChangedListener);
         onAlphaChanged();
     }
 
@@ -229,12 +250,14 @@ class ShapeLayer extends AnimatableLayer {
         return PixelFormat.TRANSLUCENT;
     }
 
-    void setLineWidth(Observable<Float> lineWidth) {
+    void setLineWidth(KeyframeAnimation<Float> lineWidth) {
         if (this.lineWidth != null) {
-            this.lineWidth.removeChangeListener(lineWidthChangedListener);
+            removeAnimation(this.lineWidth);
+            this.lineWidth.removeUpdateListener(lineWidthChangedListener);
         }
         this.lineWidth = lineWidth;
-        lineWidth.addChangeListener(lineWidthChangedListener);
+        addAnimation(lineWidth);
+        lineWidth.addUpdateListener(lineWidthChangedListener);
         onLineWidthChanged();
     }
 
@@ -243,36 +266,42 @@ class ShapeLayer extends AnimatableLayer {
         invalidateSelf();
     }
 
-    void setDashPattern(List<AnimatableFloatValue> lineDashPattern, AnimatableFloatValue offset) {
+    void setDashPattern(List<KeyframeAnimation<Float>> lineDashPattern, KeyframeAnimation<Float> offset) {
         if (this.lineDashPattern != null) {
-            this.lineDashPattern.get(0).getObservable().removeChangeListener(dashPatternChangedListener);
-            this.lineDashPattern.get(1).getObservable().removeChangeListener(dashPatternChangedListener);
+            removeAnimation(this.lineDashPattern.get(0));
+            this.lineDashPattern.get(0).removeUpdateListener(dashPatternChangedListener);
+            removeAnimation(this.lineDashPattern.get(1));
+            this.lineDashPattern.get(1).removeUpdateListener(dashPatternChangedListener);
         }
         if (this.lineDashPatternOffset != null) {
-            this.lineDashPatternOffset.getObservable().removeChangeListener(dashPatternChangedListener);
+            removeAnimation(this.lineDashPatternOffset);
+            this.lineDashPatternOffset.removeUpdateListener(dashPatternChangedListener);
         }
         if (lineDashPattern.isEmpty()) {
             return;
         }
         this.lineDashPattern = lineDashPattern;
         this.lineDashPatternOffset = offset;
-        lineDashPattern.get(0).getObservable().addChangeListener(dashPatternChangedListener);
+        addAnimation(lineDashPattern.get(0));
+        lineDashPattern.get(0).addUpdateListener(dashPatternChangedListener);
         if (!lineDashPattern.get(1).equals(lineDashPattern.get(1))) {
-            lineDashPattern.get(1).getObservable().addChangeListener(dashPatternChangedListener);
+            addAnimation(lineDashPattern.get(1));
+            lineDashPattern.get(1).addUpdateListener(dashPatternChangedListener);
         }
-        offset.getObservable().addChangeListener(dashPatternChangedListener);
+        addAnimation(offset);
+        offset.addUpdateListener(dashPatternChangedListener);
         onDashPatternChanged();
     }
 
     private void onDashPatternChanged() {
         float[] values = new float[lineDashPattern.size()];
         for (int i = 0; i < lineDashPattern.size(); i++) {
-            values[i] = lineDashPattern.get(i).getObservable().getValue();
+            values[i] = lineDashPattern.get(i).getValue();
             if (values[i] == 0) {
                 values[i] = 0.01f;
             }
         }
-        paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getObservable().getValue()));
+        paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
         invalidateSelf();
     }
 
@@ -302,26 +331,39 @@ class ShapeLayer extends AnimatableLayer {
         }
     }
 
-    void setTrimPath(Observable<Float> strokeStart, Observable<Float> strokeEnd) {
+    void setTrimPath(KeyframeAnimation<Float> strokeStart, KeyframeAnimation<Float> strokeEnd, KeyframeAnimation<Float> strokeOffset) {
         if (this.strokeStart != null) {
-            this.strokeStart.removeChangeListener(pathPropertyChangedListener);
+            removeAnimation(this.strokeStart);
+            this.strokeStart.removeUpdateListener(strokeChangedListener);
         }
         if (this.strokeEnd != null) {
-            this.strokeEnd.removeChangeListener(pathPropertyChangedListener);
+            removeAnimation(this.strokeEnd);
+            this.strokeEnd.removeUpdateListener(strokeChangedListener);
+        }
+        if (this.strokeOffset != null) {
+            removeAnimation(this.strokeOffset);
+            this.strokeOffset.removeUpdateListener(strokeChangedListener);
         }
         this.strokeStart = strokeStart;
         this.strokeEnd = strokeEnd;
-        strokeStart.addChangeListener(pathPropertyChangedListener);
-        strokeEnd.addChangeListener(pathPropertyChangedListener);
+        this.strokeOffset = strokeOffset;
+        addAnimation(strokeStart);
+        strokeStart.addUpdateListener(strokeChangedListener);
+        addAnimation(strokeEnd);
+        strokeEnd.addUpdateListener(strokeChangedListener);
+        addAnimation(strokeOffset);
+        strokeOffset.addUpdateListener(strokeChangedListener);
         onPathPropertiesChanged();
     }
 
-    void setScale(@SuppressWarnings("NullableProblems") Observable<ScaleXY> scale) {
+    void setScale(@SuppressWarnings("NullableProblems") KeyframeAnimation<ScaleXY> scale) {
         if (this.scale != null) {
-            this.scale.removeChangeListener(pathPropertyChangedListener);
+            removeAnimation(this.scale);
+            this.scale.removeUpdateListener(scaleChangedListener);
         }
         this.scale = scale;
-        scale.addChangeListener(pathPropertyChangedListener);
+        addAnimation(scale);
+        scale.addUpdateListener(scaleChangedListener);
         onPathPropertiesChanged();
     }
 }

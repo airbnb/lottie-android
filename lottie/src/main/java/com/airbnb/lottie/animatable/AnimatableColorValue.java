@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.airbnb.lottie.animation.ColorKeyframeAnimation;
 import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONArray;
@@ -40,18 +41,12 @@ public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> 
 
 
     @Override
-    public KeyframeAnimation animationForKeyPath() {
+    public KeyframeAnimation<Integer> createAnimation() {
         if (!hasAnimation()) {
-            return null;
+            return new StaticKeyframeAnimation<>(initialValue);
         }
         ColorKeyframeAnimation animation = new ColorKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
         animation.setStartDelay(delay);
-        animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Integer>() {
-            @Override
-            public void onValueChanged(Integer progress) {
-                observable.setValue(progress);
-            }
-        });
         return animation;
     }
 

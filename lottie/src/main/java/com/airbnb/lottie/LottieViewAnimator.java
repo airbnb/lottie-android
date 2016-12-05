@@ -23,6 +23,7 @@ public class LottieViewAnimator {
         return new LottieViewAnimator(context, fileName, views);
     }
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
         @Override
         public void onCompositionLoaded(LottieComposition composition) {
@@ -66,13 +67,13 @@ public class LottieViewAnimator {
         animator.setDuration(composition.getDuration());
 
         for (final Layer layer : composition.getLayers()) {
-            final View view = viewsMap.get(layer.getLayerName());
+            final View view = viewsMap.get(layer.getName());
             if (view == null) {
                 continue;
             }
 
             if (layer.getPosition().hasAnimation()) {
-                KeyframeAnimation<PointF> position = layer.getPosition().animationForKeyPath();
+                KeyframeAnimation<PointF> position = layer.getPosition().createAnimation();
                 position.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
                     @Override
                     public void onValueChanged(PointF progress) {
@@ -87,7 +88,7 @@ public class LottieViewAnimator {
             view.setTranslationY(initialPosition.y);
 
             if (layer.getScale().hasAnimation()) {
-                KeyframeAnimation<ScaleXY> scale = layer.getScale().animationForKeyPath();
+                KeyframeAnimation<ScaleXY> scale = layer.getScale().createAnimation();
                 scale.addUpdateListener(new KeyframeAnimation.AnimationListener<ScaleXY>() {
                     @Override
                     public void onValueChanged(ScaleXY scale) {
@@ -102,7 +103,7 @@ public class LottieViewAnimator {
             view.setScaleY(initialScale.getScaleY());
 
             if (layer.getRotation().hasAnimation()) {
-                KeyframeAnimation<Float> rotation = layer.getRotation().animationForKeyPath();
+                KeyframeAnimation<Float> rotation = layer.getRotation().createAnimation();
                 rotation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
                     @Override
                     public void onValueChanged(Float rotation) {
@@ -114,7 +115,7 @@ public class LottieViewAnimator {
             view.setRotation(layer.getRotation().getInitialValue());
 
             if (layer.getAnchor().hasAnimation()) {
-                KeyframeAnimation<PointF> anchor = layer.getAnchor().animationForKeyPath();
+                KeyframeAnimation<PointF> anchor = layer.getAnchor().createAnimation();
                 anchor.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
                     @Override
                     public void onValueChanged(PointF anchor) {
