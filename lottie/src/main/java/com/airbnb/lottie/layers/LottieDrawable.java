@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -20,6 +19,8 @@ import java.util.List;
 
 public class LottieDrawable extends AnimatableLayer {
 
+    private LottieComposition composition;
+
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
     @Nullable private Bitmap mainBitmap = null;
@@ -29,7 +30,11 @@ public class LottieDrawable extends AnimatableLayer {
     @Nullable private Bitmap maskBitmapForMatte = null;
     private boolean playAnimationWhenLayerAdded;
 
-    public LottieDrawable(Drawable.Callback callback) {
+    public LottieDrawable(Callback callback) {
+        this(null, callback);
+    }
+
+    public LottieDrawable(@Nullable LottieComposition composition, Callback callback) {
         super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
@@ -39,18 +44,23 @@ public class LottieDrawable extends AnimatableLayer {
                 setProgress(animation.getAnimatedFraction());
             }
         });
+
+        if (composition != null) {
+            setComposition(composition);
+        }
+    }
+
+    public void setComposition(LottieComposition composition) {
+        this.composition = composition;
+        animator.setDuration(composition.getDuration());
+        clearComposition();
+        setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
+        buildLayersForComposition(composition);
     }
 
     private void clearComposition() {
         recycleBitmaps();
         clearLayers();
-    }
-
-    public void setComposition(@NonNull LottieComposition composition) {
-        clearComposition();
-        setCompDuration(composition.getDuration());
-        setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
-        buildLayersForComposition(composition);
     }
 
     private void buildLayersForComposition(LottieComposition composition) {
@@ -112,14 +122,23 @@ public class LottieDrawable extends AnimatableLayer {
         }
     }
 
-    public void setCompDuration(long duration) {
-        animator.setDuration(duration);
-    }
-
     @Override
     public void draw(@NonNull Canvas canvas) {
+        if (composition == null) {
+            return;
+        }
+        Rect bounds = getBounds();
+        Rect compBounds = composition.getBounds();
+        int saveCount = canvas.save();
+        if (!bounds.equals(compBounds)) {
+            float scaleX = bounds.width() / (float) compBounds.width();
+            float scaleY = bounds.height() / (float) compBounds.height();
+            canvas.scale(scaleX, scaleY);
+        }
         super.draw(canvas);
         canvas.clipRect(getBounds());
+        canvas.restoreToCount(saveCount);
+
     }
 
     public void loop(boolean loop) {

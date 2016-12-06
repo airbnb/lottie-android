@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -86,11 +87,16 @@ public class ListFragment extends Fragment {
                 .commit();
     }
 
+    private void onFontClicked() {
+        startActivity(new Intent(getContext(), FontActivity.class));
+    }
+
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
         static final int VIEW_TYPE_GRID = 1;
         static final int VIEW_TYPE_CYCLE = 2;
         static final int VIEW_TYPE_VIEW_TEST = 3;
-        static final int VIEW_TYPE_FILE = 4;
+        static final int VIEW_TYPE_FONT = 4;
+        static final int VIEW_TYPE_FILE = 5;
 
         @Nullable private List<String> files = null;
 
@@ -116,6 +122,9 @@ public class ListFragment extends Fragment {
                 case VIEW_TYPE_VIEW_TEST:
                     holder.bind("View Test");
                     break;
+                case VIEW_TYPE_FONT:
+                    holder.bind("Animated Typography Demo", "Amelie/A.json");
+                    break;
                 default:
                     //noinspection ConstantConditions
                     String fileName = files.get(position - VIEW_TYPE_FILE + 1);
@@ -137,6 +146,8 @@ public class ListFragment extends Fragment {
                     return VIEW_TYPE_CYCLE;
                 case 2:
                     return VIEW_TYPE_VIEW_TEST;
+                case 3:
+                    return VIEW_TYPE_FONT;
                 default:
                     return VIEW_TYPE_FILE;
             }
@@ -153,10 +164,14 @@ public class ListFragment extends Fragment {
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(final String name) {
-            fileNameView.setText(name);
-            if (name.contains(".json")) {
-                animationView.setAnimation(name, LottieAnimationView.CacheStrategy.Strong);
+        void bind(String fileName) {
+            bind(fileName, fileName);
+        }
+
+        void bind(String title, final String fileName) {
+            fileNameView.setText(title);
+            if (fileName.contains(".json")) {
+                animationView.setAnimation(fileName, LottieAnimationView.CacheStrategy.Strong);
                 animationView.setProgress(1f);
             }
 
@@ -173,8 +188,11 @@ public class ListFragment extends Fragment {
                         case FileAdapter.VIEW_TYPE_VIEW_TEST:
                             onViewTestClicked();
                             break;
+                        case FileAdapter.VIEW_TYPE_FONT:
+                            onFontClicked();
+                            break;
                         default:
-                            onFileClicked(name);
+                            onFileClicked(fileName);
                     }
                 }
             });
