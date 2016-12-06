@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
@@ -50,7 +51,7 @@ public class AnimationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_animation, container, false);
         ButterKnife.bind(this, view);
 
-        updatePlayButtonText();
+        postUpdatePlayButtonText();
         loopButton.setChecked(true);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
@@ -61,10 +62,13 @@ public class AnimationFragment extends Fragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 recordDroppedFrames();
+                postUpdatePlayButtonText();
             }
 
             @Override
-            public void onAnimationCancel(Animator animation) {}
+            public void onAnimationCancel(Animator animation) {
+                postUpdatePlayButtonText();
+            }
 
             @Override
             public void onAnimationRepeat(Animator animation) {
@@ -110,11 +114,20 @@ public class AnimationFragment extends Fragment {
     public void onPlayClicked() {
         if (animationView.isAnimating()) {
             animationView.cancelAnimation();
-            updatePlayButtonText();
+            postUpdatePlayButtonText();
         } else {
             animationView.playAnimation();
-            updatePlayButtonText();
+            postUpdatePlayButtonText();
         }
+    }
+
+    private void postUpdatePlayButtonText() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                updatePlayButtonText();
+            }
+        });
     }
 
     private void updatePlayButtonText() {
@@ -124,9 +137,6 @@ public class AnimationFragment extends Fragment {
     @OnCheckedChanged(R.id.loop_button)
     public void onLoopChanged(boolean loop) {
         animationView.loop(loop);
-        if (!loop) {
-            animationView.cancelAnimation();
-        }
     }
 
     private void startRecordingDroppedFrames() {
