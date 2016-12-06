@@ -5,9 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,20 +16,15 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.LongSparseArray;
 import android.widget.ImageView;
 
-import com.airbnb.lottie.layers.LayerView;
 import com.airbnb.lottie.layers.RootLayer;
-import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,11 +84,6 @@ public class LottieAnimationView extends ImageView {
     /** Can be null because it is created async */
     @Nullable private LottieComposition composition;
     private boolean hasInvalidatedThisFrame;
-    @Nullable private Bitmap mainBitmap = null;
-    @Nullable private Bitmap maskBitmap = null;
-    @Nullable private Bitmap matteBitmap = null;
-    @Nullable private Bitmap mainBitmapForMatte = null;
-    @Nullable private Bitmap maskBitmapForMatte = null;
 
     public LottieAnimationView(Context context) {
         super(context);
@@ -186,27 +174,9 @@ public class LottieAnimationView extends ImageView {
 
     @VisibleForTesting
     public void recycleBitmaps() {
-        if (mainBitmap != null) {
-            mainBitmap.recycle();
-            mainBitmap = null;
-        }
-        if (maskBitmap != null) {
-            maskBitmap.recycle();
-            maskBitmap = null;
-        }
-        if (matteBitmap != null) {
-            matteBitmap.recycle();
-            matteBitmap = null;
-        }
-        if (mainBitmapForMatte != null) {
-            mainBitmapForMatte.recycle();
-            mainBitmapForMatte = null;
-        }
-        if (maskBitmapForMatte != null) {
-            maskBitmapForMatte.recycle();
-            maskBitmapForMatte = null;
-        }
+        rootLayer.recycleBitmaps();
     }
+
     /**
      * Sets the animation from a file in the assets directory.
      * This will load and deserialize the file asynchronously.
@@ -285,9 +255,9 @@ public class LottieAnimationView extends ImageView {
             Log.v(TAG, "Set Composition \n" + composition);
         }
 
-        isAnimationLoading = false;
+        rootLayer.setComposition(composition);
 
-        clearComposition();
+        isAnimationLoading = false;
 
         if (setProgressWhenCompositionSet) {
             setProgressWhenCompositionSet = false;
@@ -297,81 +267,14 @@ public class LottieAnimationView extends ImageView {
         }
 
         this.composition = composition;
-        rootLayer.setCompDuration(composition.getDuration());
-        rootLayer.setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
-        buildLayersForComposition();
-        requestLayout();
         setImageDrawable(rootLayer);
 
         if (playAnimationWhenCompositionSet) {
             playAnimationWhenCompositionSet = false;
             playAnimation();
         }
-    }
 
-    private void buildLayersForComposition() {
-        if (composition == null) {
-            throw new IllegalStateException("Composition is null");
-        }
-        Rect bounds = composition.getBounds();
-        if (composition.hasMasks() || composition.hasMattes()) {
-            mainBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
-        }
-        if (composition.hasMasks()) {
-            maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-        }
-        if (composition.hasMattes()) {
-            matteBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
-        }
-        LongSparseArray<LayerView> layerMap = new LongSparseArray<>(composition.getLayers().size());
-        List<LayerView> layers = new ArrayList<>(composition.getLayers().size());
-        LayerView maskedLayer = null;
-        for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
-            Layer layer = composition.getLayers().get(i);
-            LayerView layerView;
-            if (maskedLayer == null) {
-                layerView = new LayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
-            } else {
-                if (mainBitmapForMatte == null) {
-                    mainBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-                }
-                if (maskBitmapForMatte == null && !layer.getMasks().isEmpty()) {
-                    maskBitmapForMatte = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-                }
-
-                layerView = new LayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte, null);
-            }
-            layerMap.put(layerView.getId(), layerView);
-            if (maskedLayer != null) {
-                maskedLayer.setMatteLayer(layerView);
-                maskedLayer = null;
-            } else {
-                layers.add(layerView);
-                if (layer.getMatteType() == Layer.MatteType.Add) {
-                    maskedLayer = layerView;
-                }
-            }
-        }
-
-        for (int i = 0; i < layers.size(); i++) {
-            LayerView layerView = layers.get(i);
-            rootLayer.addLayer(layerView);
-        }
-
-        for (int i = 0; i < layerMap.size(); i++) {
-            long key = layerMap.keyAt(i);
-            LayerView layerView = layerMap.get(key);
-            LayerView parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
-            if (parentLayer != null) {
-                layerView.setParentLayer(parentLayer);
-            }
-        }
-    }
-
-    private void clearComposition() {
-        composition = null;
-        recycleBitmaps();
-        rootLayer.clearLayers();
+        requestLayout();
     }
 
 
