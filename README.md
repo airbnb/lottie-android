@@ -8,8 +8,8 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 They say a picture is worth 1,000 words so here are 6,000
 
-![Alarm](gifs/Alarm.gif)
-![Diamond](gifs/Diamond.gif)
+![P2](gifs/P2.gif)
+![P3](gifs/P3.gif)
 ![Lightbulb](gifs/Lightbulb.gif)
 ![Business](gifs/Business.gif)
 ![AllSet](gifs/AllSet.gif)
