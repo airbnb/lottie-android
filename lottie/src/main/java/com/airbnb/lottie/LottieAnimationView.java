@@ -28,8 +28,11 @@ import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -45,6 +48,16 @@ public class LottieAnimationView extends ImageView {
     private static final String TAG = LottieAnimationView.class.getSimpleName();
 
     /**
+     * Caching strategy for compositions that will be reused frequently.
+     * Weak or Strong indicates the GC reference strength of the composition in the cache.
+     */
+    public enum CacheStrategy {
+        None,
+        Weak,
+        Strong
+    }
+
+    /**
      * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
      * Normally this isn't possible.
      */
@@ -54,6 +67,9 @@ public class LottieAnimationView extends ImageView {
         view.isScreenshotTest = true;
         return view;
     }
+
+    @Nullable private static Map<String, LottieComposition> strongRefCache;
+    @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
 
     private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
         @Override
@@ -191,19 +207,57 @@ public class LottieAnimationView extends ImageView {
             maskBitmapForMatte = null;
         }
     }
+    /**
+     * Sets the animation from a file in the assets directory.
+     * This will load and deserialize the file asynchronously.
+     *
+     * Will not cache the composition once loaded.
+     */
+    public void setAnimation(String animationName) {
+        setAnimation(animationName, CacheStrategy.None);
+    }
 
     /**
      * Sets the animation from a file in the assets directory.
      * This will load and deserialize the file asynchronously.
      */
-    public void setAnimation(final String animationName) {
+    @SuppressWarnings("WeakerAccess")
+    public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
+        this.animationName = animationName;
+        if (weakRefCache != null && weakRefCache.containsKey(animationName)) {
+            WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
+            if (compRef.get() != null) {
+                setComposition(compRef.get());
+                return;
+            }
+        } else if (strongRefCache != null && strongRefCache.containsKey(animationName)) {
+            setComposition(strongRefCache.get(animationName));
+            return;
+        }
         isAnimationLoading = true;
         setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
 
         this.animationName = animationName;
         cancelLoaderTask();
-        compositionLoader = LottieComposition.fromFile(getContext(), animationName, loadedListener);
+        compositionLoader = LottieComposition.fromFile(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+                if (cacheStrategy == CacheStrategy.Strong) {
+                    if (strongRefCache == null) {
+                        strongRefCache = new HashMap<>();
+                    }
+                    strongRefCache.put(animationName, composition);
+                } else if (cacheStrategy == CacheStrategy.Weak) {
+                    if (weakRefCache == null) {
+                        weakRefCache = new HashMap<>();
+                    }
+                    weakRefCache.put(animationName, new WeakReference<>(composition));
+                }
+
+                setComposition(composition);
+            }
+        });
     }
 
     /**
@@ -227,10 +281,6 @@ public class LottieAnimationView extends ImageView {
     }
 
     public void setComposition(@NonNull LottieComposition composition) {
-        if (getWindowToken() == null && !isScreenshotTest) {
-            return;
-        }
-
         if (L.DBG) {
             Log.v(TAG, "Set Composition \n" + composition);
         }

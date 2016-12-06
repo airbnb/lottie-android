@@ -156,7 +156,7 @@ public class ListFragment extends Fragment {
         void bind(final String name) {
             fileNameView.setText(name);
             if (name.contains(".json")) {
-                animationView.setAnimation(name);
+                animationView.setAnimation(name, LottieAnimationView.CacheStrategy.Strong);
                 animationView.setProgress(1f);
             }
 
