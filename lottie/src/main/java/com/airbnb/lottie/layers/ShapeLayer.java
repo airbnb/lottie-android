@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.ShapeStroke;
@@ -166,28 +165,25 @@ class ShapeLayer extends AnimatableLayer {
             currentPath.transform(scaleMatrix, currentPath);
         }
 
-        if (needsStrokeStart || needsStrokeEnd || needsStrokeOffset) {
+        if (needsStrokeStart || needsStrokeEnd) {
             tempPath.set(currentPath);
             pathMeasure.setPath(tempPath, false);
-            currentPathStrokeOffset = strokeOffset.getValue();
-            currentPathStrokeStart = strokeStart.getValue();
-            currentPathStrokeEnd = strokeEnd.getValue();
             float length = pathMeasure.getLength();
-            if (length > 0) {
-                float offset = length * currentPathStrokeOffset / 100f;
-                float start = (length * currentPathStrokeStart / 100f + offset);
-                float end = (length * currentPathStrokeEnd / 100f + offset);
+            float start = length * strokeStart.getValue() / 100f;
+            float end = length * strokeEnd.getValue() / 100f;
+            // TODO: use offset.
 
-                currentPath.reset();
-                // Workaround to get hardware acceleration on KitKat
-                // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
-                currentPath.rLineTo(0, 0);
-                pathMeasure.getSegment(
-                        Math.min(start, end),
-                        Math.max(start, end),
-                        currentPath,
-                        true);
-            }
+            currentPath.reset();
+            // Workaround to get hardware acceleration on KitKat
+            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
+            currentPath.rLineTo(0, 0);
+            currentPathStrokeStart = Math.min(start, end);
+            currentPathStrokeEnd = Math.max(start, end);
+            pathMeasure.getSegment(
+                    currentPathStrokeStart,
+                    currentPathStrokeEnd,
+                    currentPath,
+                    true);
         }
 
         invalidateSelf();
