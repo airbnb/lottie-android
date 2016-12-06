@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -116,7 +118,8 @@ public class ListFragment extends Fragment {
                     break;
                 default:
                     //noinspection ConstantConditions
-                    holder.bind(files.get(position - VIEW_TYPE_FILE + 1));
+                    String fileName = files.get(position - VIEW_TYPE_FILE + 1);
+                    holder.bind(fileName);
             }
         }
 
@@ -143,6 +146,7 @@ public class ListFragment extends Fragment {
     final class StringViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.file_name) TextView fileNameView;
+        @BindView(R.id.animation_view) LottieAnimationView animationView;
 
         StringViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_file, parent, false));
@@ -151,6 +155,11 @@ public class ListFragment extends Fragment {
 
         void bind(final String name) {
             fileNameView.setText(name);
+            if (name.contains(".json")) {
+                animationView.setAnimation(name);
+                animationView.setProgress(1f);
+            }
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
