@@ -18,7 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.airbnb.lottie.layers.RootLayer;
+import com.airbnb.lottie.layers.LottieDrawable;
 import com.airbnb.lottie.model.LottieComposition;
 
 import org.json.JSONObject;
@@ -72,7 +72,7 @@ public class LottieAnimationView extends ImageView {
         }
     };
 
-    private final RootLayer rootLayer = new RootLayer(this);
+    private final LottieDrawable lottieDrawable = new LottieDrawable(this);
     @FloatRange(from=0f, to=1f) private float progress;
     private String animationName;
     private boolean isScreenshotTest;
@@ -107,9 +107,9 @@ public class LottieAnimationView extends ImageView {
             setAnimation(fileName);
         }
         if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-            rootLayer.playAnimation();
+            lottieDrawable.playAnimation();
         }
-        rootLayer.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
+        lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
         ta.recycle();
         setLayerType(LAYER_TYPE_SOFTWARE, null);
     }
@@ -119,9 +119,9 @@ public class LottieAnimationView extends ImageView {
         Parcelable superState = super.onSaveInstanceState();
         SavedState ss = new SavedState(superState);
         ss.animationName = animationName;
-        ss.progress = rootLayer.getProgress();
-        ss.isAnimating = rootLayer.isAnimating();
-        ss.isLooping = rootLayer.isLooping();
+        ss.progress = lottieDrawable.getProgress();
+        ss.isAnimating = lottieDrawable.isAnimating();
+        ss.isLooping = lottieDrawable.isLooping();
         return ss;
     }
 
@@ -153,8 +153,8 @@ public class LottieAnimationView extends ImageView {
 
     @Override
     public void invalidateDrawable(@NonNull Drawable dr) {
-        if (!hasInvalidatedThisFrame && rootLayer != null) {
-            super.invalidateDrawable(rootLayer);
+        if (!hasInvalidatedThisFrame && lottieDrawable != null) {
+            super.invalidateDrawable(lottieDrawable);
             hasInvalidatedThisFrame = true;
         }
     }
@@ -174,7 +174,7 @@ public class LottieAnimationView extends ImageView {
 
     @VisibleForTesting
     public void recycleBitmaps() {
-        rootLayer.recycleBitmaps();
+        lottieDrawable.recycleBitmaps();
     }
 
     /**
@@ -255,7 +255,7 @@ public class LottieAnimationView extends ImageView {
             Log.v(TAG, "Set Composition \n" + composition);
         }
 
-        rootLayer.setComposition(composition);
+        lottieDrawable.setComposition(composition);
 
         isAnimationLoading = false;
 
@@ -267,7 +267,7 @@ public class LottieAnimationView extends ImageView {
         }
 
         this.composition = composition;
-        setImageDrawable(rootLayer);
+        setImageDrawable(lottieDrawable);
 
         if (playAnimationWhenCompositionSet) {
             playAnimationWhenCompositionSet = false;
@@ -279,29 +279,29 @@ public class LottieAnimationView extends ImageView {
 
 
     public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-        rootLayer.addAnimatorUpdateListener(updateListener);
+        lottieDrawable.addAnimatorUpdateListener(updateListener);
     }
 
     @SuppressWarnings("unused")
     public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-        rootLayer.removeAnimatorUpdateListener(updateListener);
+        lottieDrawable.removeAnimatorUpdateListener(updateListener);
     }
 
     public void addAnimatorListener(Animator.AnimatorListener listener) {
-        rootLayer.addAnimatorListener(listener);
+        lottieDrawable.addAnimatorListener(listener);
     }
 
     @SuppressWarnings("unused")
     public void removeAnimatorListener(Animator.AnimatorListener listener) {
-        rootLayer.removeAnimatorListener(listener);
+        lottieDrawable.removeAnimatorListener(listener);
     }
 
     public void loop(boolean loop) {
-        rootLayer.loop(loop);
+        lottieDrawable.loop(loop);
     }
 
     public boolean isAnimating() {
-        return rootLayer.isAnimating();
+        return lottieDrawable.isAnimating();
     }
 
     public void playAnimation() {
@@ -309,13 +309,13 @@ public class LottieAnimationView extends ImageView {
             playAnimationWhenCompositionSet = true;
             return;
         }
-        rootLayer.playAnimation();
+        lottieDrawable.playAnimation();
     }
 
     public void cancelAnimation() {
         setProgressWhenCompositionSet = false;
         playAnimationWhenCompositionSet = false;
-        rootLayer.cancelAnimation();
+        lottieDrawable.cancelAnimation();
     }
 
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
@@ -324,7 +324,7 @@ public class LottieAnimationView extends ImageView {
             setProgressWhenCompositionSet = true;
             return;
         }
-        rootLayer.setProgress(progress);
+        lottieDrawable.setProgress(progress);
     }
 
     public long getDuration() {

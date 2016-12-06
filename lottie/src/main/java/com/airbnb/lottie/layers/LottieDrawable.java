@@ -18,7 +18,7 @@ import com.airbnb.lottie.model.LottieComposition;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RootLayer extends AnimatableLayer {
+public class LottieDrawable extends AnimatableLayer {
 
     private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
@@ -29,7 +29,7 @@ public class RootLayer extends AnimatableLayer {
     @Nullable private Bitmap maskBitmapForMatte = null;
     private boolean playAnimationWhenLayerAdded;
 
-    public RootLayer(Drawable.Callback callback) {
+    public LottieDrawable(Drawable.Callback callback) {
         super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
