@@ -5,6 +5,7 @@ Lottie is a mobile library for Andorid and iOS that parses [Adobe After Effects]
 For the first time, designers can create **and ship** beautiful animations without an enginineer painstakingly recreating it be hand.
 * [Painstaking example 1](http://jeremie-martinez.com//2016/09/15/train-animations/)
 * [Painstaking example 2](https://blog.twitter.com/2015/hearts-on-twitter)
+* [Painstaking example 3](https://medium.com/@crafty/animation-jump-through-861f4f5b3de4#.lvq6k8lb5)
 
 They say a picture is worth 1,000 words so here are 6,000
 
