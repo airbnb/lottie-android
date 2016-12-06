@@ -29,14 +29,33 @@ dependencies {
 
 ## Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
+2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, it only supports a small subset of the features suppoted by Lottie such as masks, mattes, trim paths, dash patterns, and more.
 2. Gifs. Gifs are more than double the size of a bodymovin JSON and are rendered at a fixed size that can't be scaled up to match large and high density screens.
 3. Png sequences. Png sequences are even worse than gifs in that their file sizes are often 30-50x the size of the bodymovin json and also can't be scaled up.
 
 ## Using Lottie
-Using Lottie is as simple as adding an image to an ImageView. `LottieAnimationView` can consume JSON stored in one of two ways:
+Lottie animations are rendered by `LottieAnimationView`. `LottieAnimationView` animations are defined by a `LottieComposition`.
+You can load a composition directly with `LottieComposition.fromFile(...)` which will look in `src/main/assets` or `LottieComposition.fromJson(...)` if you have a raw JSONObject (useful for loading animations from the newtork).
 
-1. By specifying the JSON filename in the /assets directory of your app.
-2. By passing in the raw JSONObject. With this, you have the option of hosting your animations on your server and downloading them through a network request! This opens up the possibility of a/b testing animations or providing animations that are very specific to the user such as an animated Eifel Tower when an Airbnb traveler books a listing in Paris.
+However, the simplest way to use it is with an xml attribute or to let LottieAnimationView load the composition:
+
+```
+<com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lottie_fileName="hello-world.json"
+        app:lottie_loop="true"/>
+```
+
+Or you can load it programatically:
+```
+LottieAnimationView animationView = findViewById(R.id.animation_view);
+animationView.setAnimation("hello-world.json");
+animationView.loop(true);
+animationView.playAnimation();
+
+```
 
 ## Why is it called Lottie?
 Lottie is named after a German film director and the foremost pioneer of silhouette animation. Her best known films are The Adventures of Prince Achmed (1926) – the oldest surviving feature-length animated film, preceding Walt Disney's feature-length Snow White and the Seven Dwarfs (1937) by over ten years
