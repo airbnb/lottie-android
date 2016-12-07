@@ -97,7 +97,7 @@ public class LottieComposition {
         if (width != -1 && height != -1) {
             int scaledWidth = (int) (width * composition.scale);
             int scaledHeight = (int) (height * composition.scale);
-            if (scaledWidth * scaledHeight > MAX_PIXELS) {
+            if (Math.max(scaledWidth, scaledHeight) > MAX_PIXELS) {
                 float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
                 scaledWidth *= factor;
                 scaledHeight *= factor;
