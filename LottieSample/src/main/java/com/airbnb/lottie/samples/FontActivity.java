@@ -57,7 +57,7 @@ public class FontActivity extends AppCompatActivity {
             addComposition(compositionMap.get(letter));
         } else {
             String fileName = "Amelie/" + letter + ".json";
-            LottieComposition.fromFile(this, fileName, new LottieComposition.OnCompositionLoadedListener() {
+            LottieComposition.fromAssetFileName(this, fileName, new LottieComposition.OnCompositionLoadedListener() {
                 @Override
                 public void onCompositionLoaded(LottieComposition composition) {
                     compositionMap.put(letter, composition);

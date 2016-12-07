@@ -33,15 +33,19 @@ public class LottieComposition {
      */
     private static final int MAX_PIXELS = 1000;
 
-    public static Cancellable fromFile(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
-        InputStream file;
+    public static Cancellable fromAssetFileName(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
+        InputStream stream;
         try {
-            file = context.getAssets().open(fileName);
+            stream = context.getAssets().open(fileName);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
+        return fromInputStream(context, stream, loadedListener);
+    }
+
+    public static Cancellable fromInputStream(Context context, InputStream stream, OnCompositionLoadedListener loadedListener) {
         FileCompositionLoader loader = new FileCompositionLoader(context.getResources(), loadedListener);
-        loader.execute(file);
+        loader.execute(stream);
         return loader;
     }
 

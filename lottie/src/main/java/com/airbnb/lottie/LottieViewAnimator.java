@@ -59,7 +59,7 @@ public class LottieViewAnimator {
             }
         });
 
-        LottieComposition.fromFile(context, fileName, loadedListener);
+        LottieComposition.fromAssetFileName(context, fileName, loadedListener);
     }
 
     private void setComposition(LottieComposition composition) {

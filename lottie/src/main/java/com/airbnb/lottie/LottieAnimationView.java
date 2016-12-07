@@ -210,7 +210,7 @@ public class LottieAnimationView extends ImageView {
 
         this.animationName = animationName;
         cancelLoaderTask();
-        compositionLoader = LottieComposition.fromFile(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
+        compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
             @Override
             public void onCompositionLoaded(LottieComposition composition) {
                 if (cacheStrategy == CacheStrategy.Strong) {

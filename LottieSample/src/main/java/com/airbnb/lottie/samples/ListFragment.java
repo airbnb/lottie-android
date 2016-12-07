@@ -55,6 +55,10 @@ public class ListFragment extends Fragment {
         showFragment(NetworkFragment.newInstance());
     }
 
+    private void onLocalFileClicked() {
+        showFragment(LocalFileFragment.newInstance());
+    }
+
     private void onFileClicked(String fileName) {
         showFragment(AnimationFragment.newInstance(fileName));
     }
@@ -78,8 +82,9 @@ public class ListFragment extends Fragment {
 
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
         static final int VIEW_TYPE_NETWORK = 0;
-        static final int VIEW_TYPE_VIEW_TEST = 1;
-        static final int VIEW_TYPE_FONT = 2;
+        static final int VIEW_TYPE_LOCAL_FILE = 1;
+        static final int VIEW_TYPE_VIEW_TEST = 2;
+        static final int VIEW_TYPE_FONT = 3;
         static final int VIEW_TYPE_FILE = 4;
 
         @Nullable private List<String> files = null;
@@ -99,6 +104,9 @@ public class ListFragment extends Fragment {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_NETWORK:
                     holder.bind("Demo: Load from network");
+                    break;
+                case VIEW_TYPE_LOCAL_FILE:
+                    holder.bind("Demo: Load from local file");
                     break;
                 case VIEW_TYPE_VIEW_TEST:
                     holder.bind("Demo: Animate View");
@@ -151,6 +159,9 @@ public class ListFragment extends Fragment {
                     switch (getItemViewType()) {
                         case FileAdapter.VIEW_TYPE_NETWORK:
                             onNetworkClicked();
+                            break;
+                        case FileAdapter.VIEW_TYPE_LOCAL_FILE:
+                            onLocalFileClicked();
                             break;
                         case FileAdapter.VIEW_TYPE_VIEW_TEST:
                             onViewTestClicked();
