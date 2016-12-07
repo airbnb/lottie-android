@@ -53,6 +53,16 @@ animationView.playAnimation();
 
 You can also load the composition directly using `LottieComposition` and pass it to a `LottieAnimationView` or `LottieDrawable`.
 
+## Performance
+1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
+2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn
+3. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations doesn't have to be deserialized every time.
+
+## Try it out
+Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets).
+
+The sample app can also load json files at a given url or locally on your device (like Downloads or on your sdcard).
+
 ## Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
 2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, it only supports a small subset of the features suppoted by Lottie such as masks, mattes, trim paths, dash patterns, and more.
@@ -62,9 +72,6 @@ You can also load the composition directly using `LottieComposition` and pass it
 ## Why is it called Lottie?
 Lottie is named after a German film director and the foremost pioneer of silhouette animation. Her best known films are The Adventures of Prince Achmed (1926) – the oldest surviving feature-length animated film, preceding Walt Disney's feature-length Snow White and the Seven Dwarfs (1937) by over ten years
 [The art of Lotte Reineger](https://www.youtube.com/watch?v=LvU55CUw5Ck&feature=youtu.be)
-
-##Try it out
-Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets).
 
 ## Contributing
 Contributers are more than welcome. Just upload a PR with a description of your changes.
