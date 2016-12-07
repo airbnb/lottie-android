@@ -2,7 +2,6 @@ package com.airbnb.lottie.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.airbnb.lottie.LottieAnimationView;
 
 import java.io.IOException;
 import java.util.List;
@@ -104,16 +101,16 @@ public class ListFragment extends Fragment {
         public void onBindViewHolder(StringViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_NETWORK:
-                    holder.bind("Demo: Load from network", R.drawable.ic_network);
+                    holder.bind("Demo: Load from network");
                     break;
                 case VIEW_TYPE_LOCAL_FILE:
-                    holder.bind("Demo: Load from local file", R.drawable.ic_local_file);
+                    holder.bind("Demo: Load from local file");
                     break;
                 case VIEW_TYPE_VIEW_TEST:
-                    holder.bind("Demo: Animate View", R.drawable.ic_view);
+                    holder.bind("Demo: Animate View");
                     break;
                 case VIEW_TYPE_FONT:
-                    holder.bind("Demo: Animated Typography", "Amelie/A.json");
+                    holder.bind("Demo: Animated Typography");
                     break;
                 default:
                     //noinspection ConstantConditions
@@ -135,35 +132,19 @@ public class ListFragment extends Fragment {
 
     final class StringViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.file_name) TextView fileNameView;
-        @BindView(R.id.animation_view) LottieAnimationView animationView;
+        @BindView(R.id.title) TextView titleView;
 
         StringViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_file, parent, false));
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(String fileName) {
-            bind(fileName, fileName, 0);
+        void bind(String title) {
+            bind(title, title);
         }
 
-        void bind(String fileName, @DrawableRes int icon) {
-            bind(fileName, fileName, icon);
-        }
-
-        void bind(String fileName, String title) {
-            bind(fileName, title, 0);
-        }
-
-        void bind(String title, final String fileName, @DrawableRes int icon) {
-            fileNameView.setText(title);
-            if (fileName.contains(".json")) {
-                animationView.setAnimation(fileName, LottieAnimationView.CacheStrategy.Strong);
-                animationView.setProgress(1f);
-            } else if (icon > 0) {
-                // animationView.setScaleType(ImageView.ScaleType.CENTER);
-                animationView.setImageResource(icon);
-            }
+        void bind(String title, final String fileName) {
+            titleView.setText(title);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
