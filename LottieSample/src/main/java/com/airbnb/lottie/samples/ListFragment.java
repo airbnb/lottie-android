@@ -117,14 +117,14 @@ public class ListFragment extends Fragment {
                     break;
                 default:
                     //noinspection ConstantConditions
-                    String fileName = files.get(position - VIEW_TYPE_FILE + 1);
+                    String fileName = files.get(position - VIEW_TYPE_FILE);
                     holder.bind(fileName);
             }
         }
 
         @Override
         public int getItemCount() {
-            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 2;
+            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 1;
         }
 
         @Override

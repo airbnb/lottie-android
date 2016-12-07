@@ -98,12 +98,7 @@ public class AnimationFragment extends Fragment {
 
         if (savedInstanceState == null) {
             String fileName = getArguments().getString(ARG_FILE_NAME);
-            try {
-                animationView.setAnimation(fileName);
-            } catch (OutOfMemoryError error) {
-                // The ListFragment can cause a ton of memory churn because there are many samples with masks and/or mattes.
-                // Because of the churn, we may hit an OOM here.
-            }
+            animationView.setAnimation(fileName);
         }
 
         return view;

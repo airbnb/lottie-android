@@ -93,7 +93,7 @@ public class FontActivity extends AppCompatActivity {
             }
         });
         drawable.playAnimation();
-        drawable.setBounds(0, 0, 100, 100);
+        // drawable.setBounds(0, 0, 100, 100);
         ImageSpan span = new ImageSpan(drawable);
         ssb.append("_");
         ssb.setSpan(span, ssb.length() - 1, ssb.length(), 0);
