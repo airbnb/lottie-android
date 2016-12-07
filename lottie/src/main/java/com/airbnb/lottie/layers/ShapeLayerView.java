@@ -22,8 +22,8 @@ class ShapeLayerView extends AnimatableLayer {
 
     ShapeLayerView(ShapePath shape, @Nullable ShapeFill fill,
             @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim,
-            ShapeTransform transformModel, long duration, Drawable.Callback callback) {
-        super(duration, callback);
+            ShapeTransform transformModel, Drawable.Callback callback) {
+        super(callback);
         setBounds(transformModel.getCompBounds());
         setAnchorPoint(transformModel.getAnchor().createAnimation());
         setPosition(transformModel.getPosition().createAnimation());

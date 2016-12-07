@@ -15,7 +15,7 @@ class MaskLayer extends AnimatableLayer {
     private final List<KeyframeAnimation<Path>> masks;
 
     MaskLayer(List<Mask> masks, LottieComposition composition, Drawable.Callback callback) {
-        super(composition.getDuration(), callback);
+        super(callback);
         this.masks = new ArrayList<>(masks.size());
         for (int i = 0; i < masks.size(); i++) {
             this.masks.add(masks.get(i).getMaskPath().createAnimation());

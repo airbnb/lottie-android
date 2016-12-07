@@ -20,8 +20,8 @@ import java.util.List;
 class EllipseShapeLayer extends AnimatableLayer {
 
     EllipseShapeLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
-            ShapeTrimPath trim, ShapeTransform transform, long duration, Drawable.Callback callback) {
-        super(duration, callback);
+            ShapeTrimPath trim, ShapeTransform transform, Drawable.Callback callback) {
+        super(callback);
 
         setBounds(transform.getCompBounds());
         setAnchorPoint(transform.getAnchor().createAnimation());

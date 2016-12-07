@@ -15,6 +15,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * After Effects/Bodymovin composition model. This is the serialized model from which the animation will be created.
+ * It can be used with a {@link com.airbnb.lottie.LottieAnimationView} or {@link com.airbnb.lottie.layers.LottieDrawable}.
+ */
+@SuppressWarnings("WeakerAccess")
 public class LottieComposition {
 
     public interface OnCompositionLoadedListener {
@@ -33,6 +38,9 @@ public class LottieComposition {
      */
     private static final int MAX_PIXELS = 1000;
 
+    /**
+     * Loads a composition from a file stored in /assets.
+     */
     public static Cancellable fromAssetFileName(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
         InputStream stream;
         try {
@@ -43,6 +51,11 @@ public class LottieComposition {
         return fromInputStream(context, stream, loadedListener);
     }
 
+    /**
+     * Loads a composition from an arbitrary input stream.
+     *
+     * ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
+     */
     public static Cancellable fromInputStream(Context context, InputStream stream, OnCompositionLoadedListener loadedListener) {
         FileCompositionLoader loader = new FileCompositionLoader(context.getResources(), loadedListener);
         loader.execute(stream);
@@ -59,13 +72,16 @@ public class LottieComposition {
         return fromInputStream(context.getResources(), file);
     }
 
+    /**
+     * Loads a composition from a raw json object. This is useful for animations loaded from the network.
+     */
     public static Cancellable fromJson(Resources res, JSONObject json, OnCompositionLoadedListener loadedListener) {
         JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
         loader.execute(json);
         return loader;
     }
 
-    private static LottieComposition fromInputStream(Resources res, InputStream file) {
+    public static LottieComposition fromInputStream(Resources res, InputStream file) {
         try {
             int size = file.available();
             byte[] buffer = new byte[size];
@@ -83,7 +99,7 @@ public class LottieComposition {
         }
     }
 
-    private static LottieComposition fromJsonSync(Resources res, JSONObject json) {
+    public static LottieComposition fromJsonSync(Resources res, JSONObject json) {
         LottieComposition composition = new LottieComposition(res);
 
         int width = -1;

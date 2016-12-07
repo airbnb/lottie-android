@@ -54,16 +54,14 @@ public class AnimatableLayer extends Drawable {
     private KeyframeAnimation<ScaleXY> transform;
     private KeyframeAnimation<Integer> alpha = null;
     private KeyframeAnimation<Float> rotation;
-    final long compDuration;
 
     private final Paint solidBackgroundPaint = new Paint();
     @ColorInt private int backgroundColor;
     private final List<KeyframeAnimation<?>> animations = new ArrayList<>();
     @FloatRange(from = 0f, to = 1f) private float progress;
 
-    AnimatableLayer(long compDuration, Drawable.Callback callback) {
+    AnimatableLayer(Drawable.Callback callback) {
         setCallback(callback);
-        this.compDuration = compDuration;
 
         solidBackgroundPaint.setAlpha(0);
         solidBackgroundPaint.setStyle(Paint.Style.FILL);

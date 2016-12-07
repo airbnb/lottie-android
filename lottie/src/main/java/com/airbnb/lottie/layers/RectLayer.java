@@ -25,8 +25,8 @@ class RectLayer extends AnimatableLayer {
     @Nullable private RoundRectLayer strokeLayer;
 
     RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
-            @Nullable ShapeStroke stroke, ShapeTransform transform, long duration, Drawable.Callback callback) {
-        super(duration, callback);
+            @Nullable ShapeStroke stroke, ShapeTransform transform, Drawable.Callback callback) {
+        super(callback);
 
         setBounds(transform.getCompBounds());
         setAnchorPoint(transform.getAnchor().createAnimation());
@@ -36,7 +36,7 @@ class RectLayer extends AnimatableLayer {
         setRotation(transform.getRotation().createAnimation());
 
         if (fill != null) {
-            fillLayer = new RoundRectLayer(duration, getCallback());
+            fillLayer = new RoundRectLayer(getCallback());
             fillLayer.setColor(fill.getColor().createAnimation());
             fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
             fillLayer.setTransformAlpha(transform.getOpacity().createAnimation());
@@ -47,7 +47,7 @@ class RectLayer extends AnimatableLayer {
         }
 
         if (stroke != null) {
-            strokeLayer = new RoundRectLayer(duration, getCallback());
+            strokeLayer = new RoundRectLayer(getCallback());
             strokeLayer.setIsStroke();
             strokeLayer.setColor(stroke.getColor().createAnimation());
             strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
@@ -144,8 +144,8 @@ class RectLayer extends AnimatableLayer {
         @Nullable private List<KeyframeAnimation<Float>> lineDashPattern;
         @Nullable private KeyframeAnimation<Float> lineDashPatternOffset;
 
-        RoundRectLayer(long duration, Drawable.Callback callback) {
-            super(duration, callback);
+        RoundRectLayer(Drawable.Callback callback) {
+            super(callback);
             paint.setAntiAlias(true);
             paint.setStyle(Paint.Style.FILL);
         }

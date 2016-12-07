@@ -23,8 +23,8 @@ class GroupLayerView extends AnimatableLayer {
 
     GroupLayerView(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
             @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
-            @Nullable ShapeTransform previousTransform, long compDuration, Drawable.Callback callback) {
-        super(compDuration, callback);
+            @Nullable ShapeTransform previousTransform, Drawable.Callback callback) {
+        super(callback);
         this.shapeGroup = shapeGroup;
         shapeTransform = previousTransform;
         setupShapeGroupWithFill(previousFill, previousStroke, previousTrimPath);
@@ -61,19 +61,19 @@ class GroupLayerView extends AnimatableLayer {
                 currentTrim = (ShapeTrimPath) item;
             } else if (item instanceof ShapePath) {
                 ShapePath shapePath = (ShapePath) item;
-                ShapeLayerView shapeLayer = new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
+                ShapeLayerView shapeLayer = new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim, currentTransform, getCallback());
                 addLayer(shapeLayer);
             } else if (item instanceof RectangleShape) {
                 RectangleShape shapeRect = (RectangleShape) item;
-                RectLayer shapeLayer = new RectLayer(shapeRect, currentFill, currentStroke, currentTransform, compDuration, getCallback());
+                RectLayer shapeLayer = new RectLayer(shapeRect, currentFill, currentStroke, currentTransform, getCallback());
                 addLayer(shapeLayer);
             } else if (item instanceof CircleShape) {
                 CircleShape shapeCircle = (CircleShape) item;
-                EllipseShapeLayer shapeLayer = new EllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
+                EllipseShapeLayer shapeLayer = new EllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, getCallback());
                 addLayer(shapeLayer);
             } else if (item instanceof ShapeGroup) {
                 ShapeGroup shapeGroup = (ShapeGroup) item;
-                GroupLayerView groupLayer = new GroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, compDuration, getCallback());
+                GroupLayerView groupLayer = new GroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, getCallback());
                 addLayer(groupLayer);
             }
 

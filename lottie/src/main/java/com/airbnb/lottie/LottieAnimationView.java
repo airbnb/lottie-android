@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programatically: {@link #setAnimation(String)} or {@link #setComposition(LottieComposition)} (JSONObject)}.
+ * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)}, or {@link #setAnimation(JSONObject)}.
  *
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
@@ -50,17 +50,6 @@ public class LottieAnimationView extends ImageView {
         Strong
     }
 
-    /**
-     * Returns a {@link LottieAnimationView} that will allow it to be used without being attached to a window.
-     * Normally this isn't possible.
-     */
-    @VisibleForTesting
-    public static LottieAnimationView forScreenshotTest(Context context) {
-        LottieAnimationView view = new LottieAnimationView(context);
-        view.isScreenshotTest = true;
-        return view;
-    }
-
     @Nullable private static Map<String, LottieComposition> strongRefCache;
     @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
 
@@ -72,10 +61,9 @@ public class LottieAnimationView extends ImageView {
         }
     };
 
-    private final LottieDrawable lottieDrawable = new LottieDrawable(this);
+    private final LottieDrawable lottieDrawable = new LottieDrawable();
     @FloatRange(from=0f, to=1f) private float progress;
     private String animationName;
-    private boolean isScreenshotTest;
     private boolean isAnimationLoading;
     private boolean setProgressWhenCompositionSet;
     private boolean playAnimationWhenCompositionSet;
@@ -83,7 +71,6 @@ public class LottieAnimationView extends ImageView {
     @Nullable private LottieComposition.Cancellable compositionLoader;
     /** Can be null because it is created async */
     @Nullable private LottieComposition composition;
-    private boolean hasInvalidatedThisFrame;
 
     public LottieAnimationView(Context context) {
         super(context);
@@ -145,6 +132,11 @@ public class LottieAnimationView extends ImageView {
         }
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     @SuppressLint("MissingSuperCall")
     @Override
     protected boolean verifyDrawable(@NonNull Drawable drawable) {
@@ -152,16 +144,7 @@ public class LottieAnimationView extends ImageView {
     }
 
     @Override
-    public void invalidateDrawable(@NonNull Drawable dr) {
-        if (!hasInvalidatedThisFrame && lottieDrawable != null) {
-            super.invalidateDrawable(lottieDrawable);
-            hasInvalidatedThisFrame = true;
-        }
-    }
-
-    @Override
     protected void onDraw(Canvas canvas) {
-        hasInvalidatedThisFrame = false;
         super.onDraw(canvas);
     }
 
@@ -190,6 +173,9 @@ public class LottieAnimationView extends ImageView {
     /**
      * Sets the animation from a file in the assets directory.
      * This will load and deserialize the file asynchronously.
+     *
+     * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a strong reference to the composition once it is loaded
+     * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
      */
     @SuppressWarnings("WeakerAccess")
     public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
@@ -233,6 +219,8 @@ public class LottieAnimationView extends ImageView {
     /**
      * Sets the animation from a JSONObject.
      * This will load and deserialize the file asynchronously.
+     *
+     * This is particularly useful for animations loaded from the network. You can fetch the bodymovin json from the network and pass it directly here.
      */
     public void setAnimation(final JSONObject json) {
         isAnimationLoading = true;
@@ -254,7 +242,7 @@ public class LottieAnimationView extends ImageView {
         if (L.DBG) {
             Log.v(TAG, "Set Composition \n" + composition);
         }
-
+        setImageDrawable(lottieDrawable);
         lottieDrawable.setComposition(composition);
 
         isAnimationLoading = false;
@@ -267,7 +255,6 @@ public class LottieAnimationView extends ImageView {
         }
 
         this.composition = composition;
-        setImageDrawable(lottieDrawable);
 
         if (playAnimationWhenCompositionSet) {
             playAnimationWhenCompositionSet = false;

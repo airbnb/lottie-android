@@ -99,7 +99,7 @@ class ShapeLayer extends AnimatableLayer {
     private KeyframeAnimation<Float> lineDashPatternOffset;
 
     ShapeLayer(Drawable.Callback callback) {
-        super(0, callback);
+        super(callback);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
     }

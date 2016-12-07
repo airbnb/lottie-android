@@ -52,7 +52,7 @@ public class LayerView extends AnimatableLayer {
 
 
     public LayerView(Layer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
-        super(composition.getDuration(), callback);
+        super(callback);
         this.layerModel = layerModel;
         this.composition = composition;
         this.maskBitmap = maskBitmap;
@@ -93,7 +93,7 @@ public class LayerView extends AnimatableLayer {
             Object item = reversedItems.get(i);
             if (item instanceof ShapeGroup) {
                 GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
-                        currentStroke, currentTrimPath, currentTransform, compDuration, getCallback());
+                        currentStroke, currentTrimPath, currentTransform, getCallback());
                 addLayer(groupLayer);
             } else if (item instanceof ShapeTransform) {
                 currentTransform = (ShapeTransform) item;

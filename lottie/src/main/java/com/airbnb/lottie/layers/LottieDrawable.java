@@ -17,6 +17,13 @@ import com.airbnb.lottie.model.LottieComposition;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This can be used to show an lottie animation in any place that would normally take a drawable.
+ * If there are masks or mattes, then you MUST call {@link #recycleBitmaps()} when you are done or else you will leak bitmaps.
+ *
+ * It is preferable to use {@link com.airbnb.lottie.LottieAnimationView} when possible because it handles bitmap recycling and asynchronous loading
+ * of compositions.
+ */
 public class LottieDrawable extends AnimatableLayer {
 
     private LottieComposition composition;
@@ -30,12 +37,9 @@ public class LottieDrawable extends AnimatableLayer {
     @Nullable private Bitmap maskBitmapForMatte = null;
     private boolean playAnimationWhenLayerAdded;
 
-    public LottieDrawable(Callback callback) {
-        this(null, callback);
-    }
+    public LottieDrawable() {
+        super(null);
 
-    public LottieDrawable(@Nullable LottieComposition composition, Callback callback) {
-        super(0, callback);
         animator.setRepeatCount(0);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -44,18 +48,20 @@ public class LottieDrawable extends AnimatableLayer {
                 setProgress(animation.getAnimatedFraction());
             }
         });
-
-        if (composition != null) {
-            setComposition(composition);
-        }
     }
 
     public void setComposition(LottieComposition composition) {
+        if (getCallback() == null) {
+            throw new IllegalStateException("You or your view must set a Drawable.Callback before setting the composition. This gets done automatically when added to an ImageView. " +
+                    "Either call ImageView.setImageDrawable() before setComposition() or call setCallback(yourView.getCallback()) first.");
+        }
+        clearComposition();
         this.composition = composition;
         animator.setDuration(composition.getDuration());
-        clearComposition();
         setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
         buildLayersForComposition(composition);
+
+        getCallback().invalidateDrawable(this);
     }
 
     private void clearComposition() {
@@ -194,12 +200,12 @@ public class LottieDrawable extends AnimatableLayer {
 
     @Override
     public int getIntrinsicWidth() {
-        return getBounds().width();
+        return composition == null ? -1 : composition.getBounds().width();
     }
 
     @Override
     public int getIntrinsicHeight() {
-        return getBounds().height();
+        return composition == null ? -1 : composition.getBounds().height();
     }
 
     @VisibleForTesting
