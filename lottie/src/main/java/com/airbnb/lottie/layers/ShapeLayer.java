@@ -83,7 +83,7 @@ class ShapeLayer extends AnimatableLayer {
     private float currentPathStrokeOffset = 0;
 
     @Nullable private KeyframeAnimation<ScaleXY> scale;
-    private final RectF scaleRect = new RectF();
+    private final RectF tempRect = new RectF();
     private final Matrix scaleMatrix = new Matrix();
 
     private KeyframeAnimation<Path> path;
@@ -158,10 +158,10 @@ class ShapeLayer extends AnimatableLayer {
         currentPath.set(path.getValue());
 
         if (needsScaleX || needsScaleY) {
-            currentPath.computeBounds(scaleRect, true);
+            currentPath.computeBounds(tempRect, false);
             currentPathScaleX = scale.getValue().getScaleX();
             currentPathScaleY = scale.getValue().getScaleY();
-            scaleMatrix.setScale(currentPathScaleX, currentPathScaleY, scaleRect.centerX(), scaleRect.centerY());
+            scaleMatrix.setScale(currentPathScaleX, currentPathScaleY, tempRect.centerX(), tempRect.centerY());
             currentPath.transform(scaleMatrix, currentPath);
         }
 
@@ -185,7 +185,7 @@ class ShapeLayer extends AnimatableLayer {
                     currentPath,
                     true);
         }
-
+        
         invalidateSelf();
     }
 

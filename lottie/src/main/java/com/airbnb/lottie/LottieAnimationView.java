@@ -102,6 +102,13 @@ public class LottieAnimationView extends ImageView {
     }
 
     @Override
+    public void invalidateDrawable(Drawable dr) {
+        // We always want to invalidate the root drawable to it redraws the whole drawable.
+        // Eventually it would be great to be able to invalidate just the changed region.
+        super.invalidateDrawable(lottieDrawable);
+    }
+
+    @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState ss = new SavedState(superState);
@@ -242,8 +249,9 @@ public class LottieAnimationView extends ImageView {
         if (L.DBG) {
             Log.v(TAG, "Set Composition \n" + composition);
         }
-        setImageDrawable(lottieDrawable);
+        lottieDrawable.setCallback(this);
         lottieDrawable.setComposition(composition);
+        setImageDrawable(lottieDrawable);
 
         isAnimationLoading = false;
 

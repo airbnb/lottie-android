@@ -25,7 +25,7 @@ public class LottieFontViewGroup extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void addSpace() {
+    void addSpace() {
         addView(createSpaceView());
     }
 
@@ -35,7 +35,7 @@ public class LottieFontViewGroup extends FrameLayout {
         views.add(child);
     }
 
-    public void removeLastView() {
+    void removeLastView() {
         if (!views.isEmpty()) {
             int position = views.size() - 1;
             removeView(views.get(position));

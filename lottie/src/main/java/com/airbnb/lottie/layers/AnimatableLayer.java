@@ -234,7 +234,7 @@ public class AnimatableLayer extends Drawable {
         invalidateSelf();
     }
 
-    public void clearLayers() {
+    void clearLayers() {
         layers.clear();
         invalidateSelf();
     }

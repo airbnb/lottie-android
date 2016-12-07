@@ -129,6 +129,11 @@ public class LottieDrawable extends AnimatableLayer {
     }
 
     @Override
+    public void invalidateSelf() {
+        super.invalidateSelf();
+    }
+
+    @Override
     public void draw(@NonNull Canvas canvas) {
         if (composition == null) {
             return;
