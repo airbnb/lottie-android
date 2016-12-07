@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -103,13 +104,13 @@ public class ListFragment extends Fragment {
         public void onBindViewHolder(StringViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_NETWORK:
-                    holder.bind("Demo: Load from network");
+                    holder.bind("Demo: Load from network", R.drawable.ic_network);
                     break;
                 case VIEW_TYPE_LOCAL_FILE:
-                    holder.bind("Demo: Load from local file");
+                    holder.bind("Demo: Load from local file", R.drawable.ic_local_file);
                     break;
                 case VIEW_TYPE_VIEW_TEST:
-                    holder.bind("Demo: Animate View");
+                    holder.bind("Demo: Animate View", R.drawable.ic_view);
                     break;
                 case VIEW_TYPE_FONT:
                     holder.bind("Demo: Animated Typography", "Amelie/A.json");
@@ -143,14 +144,25 @@ public class ListFragment extends Fragment {
         }
 
         void bind(String fileName) {
-            bind(fileName, fileName);
+            bind(fileName, fileName, 0);
         }
 
-        void bind(String title, final String fileName) {
+        void bind(String fileName, @DrawableRes int icon) {
+            bind(fileName, fileName, icon);
+        }
+
+        void bind(String fileName, String title) {
+            bind(fileName, title, 0);
+        }
+
+        void bind(String title, final String fileName, @DrawableRes int icon) {
             fileNameView.setText(title);
             if (fileName.contains(".json")) {
                 animationView.setAnimation(fileName, LottieAnimationView.CacheStrategy.Strong);
                 animationView.setProgress(1f);
+            } else if (icon > 0) {
+                // animationView.setScaleType(ImageView.ScaleType.CENTER);
+                animationView.setImageResource(icon);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {
