@@ -48,7 +48,7 @@ public class FontActivity extends AppCompatActivity {
         }
 
         if (event.getKeyCode() < KeyEvent.KEYCODE_A || event.getKeyCode() > KeyEvent.KEYCODE_Z) {
-            return false;
+            return super.onKeyDown(keyCode, event);
         }
 
 

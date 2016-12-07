@@ -60,24 +60,6 @@ public class ListFragment extends Fragment {
                 .commit();
     }
 
-    private void onGridClicked() {
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
-                .remove(this)
-                .replace(R.id.content_2, GridFragment.newInstance())
-                .commit();
-    }
-
-    private void onCycleClicked() {
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
-                .remove(this)
-                .replace(R.id.content_2, CycleFragment.newInstance())
-                .commit();
-    }
-
     private void onViewTestClicked() {
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
@@ -92,11 +74,9 @@ public class ListFragment extends Fragment {
     }
 
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
-        static final int VIEW_TYPE_GRID = 1;
-        static final int VIEW_TYPE_CYCLE = 2;
-        static final int VIEW_TYPE_VIEW_TEST = 3;
-        static final int VIEW_TYPE_FONT = 4;
-        static final int VIEW_TYPE_FILE = 5;
+        static final int VIEW_TYPE_VIEW_TEST = 1;
+        static final int VIEW_TYPE_FONT = 2;
+        static final int VIEW_TYPE_FILE = 3;
 
         @Nullable private List<String> files = null;
 
@@ -113,12 +93,6 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(StringViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
-                case VIEW_TYPE_GRID:
-                    holder.bind("Grid");
-                    break;
-                case VIEW_TYPE_CYCLE:
-                    holder.bind("Cycle");
-                    break;
                 case VIEW_TYPE_VIEW_TEST:
                     holder.bind("View Test");
                     break;
@@ -141,12 +115,8 @@ public class ListFragment extends Fragment {
         public int getItemViewType(int position) {
             switch (position) {
                 case 0:
-                    return VIEW_TYPE_GRID;
-                case 1:
-                    return VIEW_TYPE_CYCLE;
-                case 2:
                     return VIEW_TYPE_VIEW_TEST;
-                case 3:
+                case 1:
                     return VIEW_TYPE_FONT;
                 default:
                     return VIEW_TYPE_FILE;
@@ -179,12 +149,6 @@ public class ListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     switch (getItemViewType()) {
-                        case FileAdapter.VIEW_TYPE_GRID:
-                            onGridClicked();
-                            break;
-                        case FileAdapter.VIEW_TYPE_CYCLE:
-                            onCycleClicked();
-                            break;
                         case FileAdapter.VIEW_TYPE_VIEW_TEST:
                             onViewTestClicked();
                             break;
