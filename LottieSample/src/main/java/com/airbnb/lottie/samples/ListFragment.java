@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -51,21 +52,28 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+    private void onNetworkClicked() {
+        showFragment(NetworkFragment.newInstance());
+    }
+
+    private void onLocalFileClicked() {
+        showFragment(LocalFileFragment.newInstance());
+    }
+
     private void onFileClicked(String fileName) {
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
-                .remove(this)
-                .replace(R.id.content_2, AnimationFragment.newInstance(fileName))
-                .commit();
+        showFragment(AnimationFragment.newInstance(fileName));
     }
 
     private void onViewTestClicked() {
+        showFragment(ViewAnimationFragment.newInstance());
+    }
+
+    private void showFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
                 .remove(this)
-                .replace(R.id.content_2, ViewAnimationFragment.newInstance())
+                .replace(R.id.content_2, fragment)
                 .commit();
     }
 
@@ -74,9 +82,11 @@ public class ListFragment extends Fragment {
     }
 
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
-        static final int VIEW_TYPE_VIEW_TEST = 1;
-        static final int VIEW_TYPE_FONT = 2;
-        static final int VIEW_TYPE_FILE = 3;
+        static final int VIEW_TYPE_NETWORK = 0;
+        static final int VIEW_TYPE_LOCAL_FILE = 1;
+        static final int VIEW_TYPE_VIEW_TEST = 2;
+        static final int VIEW_TYPE_FONT = 3;
+        static final int VIEW_TYPE_FILE = 4;
 
         @Nullable private List<String> files = null;
 
@@ -93,34 +103,33 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(StringViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
+                case VIEW_TYPE_NETWORK:
+                    holder.bind("Demo: Load from network", R.drawable.ic_network);
+                    break;
+                case VIEW_TYPE_LOCAL_FILE:
+                    holder.bind("Demo: Load from local file", R.drawable.ic_local_file);
+                    break;
                 case VIEW_TYPE_VIEW_TEST:
-                    holder.bind("View Test");
+                    holder.bind("Demo: Animate View", R.drawable.ic_view);
                     break;
                 case VIEW_TYPE_FONT:
-                    holder.bind("Animated Typography Demo", "Amelie/A.json");
+                    holder.bind("Demo: Animated Typography", "Amelie/A.json");
                     break;
                 default:
                     //noinspection ConstantConditions
-                    String fileName = files.get(position - VIEW_TYPE_FILE + 1);
+                    String fileName = files.get(position - VIEW_TYPE_FILE);
                     holder.bind(fileName);
             }
         }
 
         @Override
         public int getItemCount() {
-            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 2;
+            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 1;
         }
 
         @Override
         public int getItemViewType(int position) {
-            switch (position) {
-                case 0:
-                    return VIEW_TYPE_VIEW_TEST;
-                case 1:
-                    return VIEW_TYPE_FONT;
-                default:
-                    return VIEW_TYPE_FILE;
-            }
+            return Math.min(position, VIEW_TYPE_FILE);
         }
     }
 
@@ -135,20 +144,37 @@ public class ListFragment extends Fragment {
         }
 
         void bind(String fileName) {
-            bind(fileName, fileName);
+            bind(fileName, fileName, 0);
         }
 
-        void bind(String title, final String fileName) {
+        void bind(String fileName, @DrawableRes int icon) {
+            bind(fileName, fileName, icon);
+        }
+
+        void bind(String fileName, String title) {
+            bind(fileName, title, 0);
+        }
+
+        void bind(String title, final String fileName, @DrawableRes int icon) {
             fileNameView.setText(title);
             if (fileName.contains(".json")) {
                 animationView.setAnimation(fileName, LottieAnimationView.CacheStrategy.Strong);
                 animationView.setProgress(1f);
+            } else if (icon > 0) {
+                // animationView.setScaleType(ImageView.ScaleType.CENTER);
+                animationView.setImageResource(icon);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     switch (getItemViewType()) {
+                        case FileAdapter.VIEW_TYPE_NETWORK:
+                            onNetworkClicked();
+                            break;
+                        case FileAdapter.VIEW_TYPE_LOCAL_FILE:
+                            onLocalFileClicked();
+                            break;
                         case FileAdapter.VIEW_TYPE_VIEW_TEST:
                             onViewTestClicked();
                             break;

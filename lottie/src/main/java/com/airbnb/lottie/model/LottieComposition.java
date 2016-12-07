@@ -33,15 +33,19 @@ public class LottieComposition {
      */
     private static final int MAX_PIXELS = 1000;
 
-    public static Cancellable fromFile(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
-        InputStream file;
+    public static Cancellable fromAssetFileName(Context context, String fileName, OnCompositionLoadedListener loadedListener) {
+        InputStream stream;
         try {
-            file = context.getAssets().open(fileName);
+            stream = context.getAssets().open(fileName);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to find file " + fileName, e);
         }
+        return fromInputStream(context, stream, loadedListener);
+    }
+
+    public static Cancellable fromInputStream(Context context, InputStream stream, OnCompositionLoadedListener loadedListener) {
         FileCompositionLoader loader = new FileCompositionLoader(context.getResources(), loadedListener);
-        loader.execute(file);
+        loader.execute(stream);
         return loader;
     }
 
@@ -93,7 +97,7 @@ public class LottieComposition {
         if (width != -1 && height != -1) {
             int scaledWidth = (int) (width * composition.scale);
             int scaledHeight = (int) (height * composition.scale);
-            if (scaledWidth * scaledHeight > MAX_PIXELS) {
+            if (Math.max(scaledWidth, scaledHeight) > MAX_PIXELS) {
                 float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
                 scaledWidth *= factor;
                 scaledHeight *= factor;
