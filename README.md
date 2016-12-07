@@ -31,6 +31,7 @@ dependencies {
 ```
 
 ## Using Lottie
+Lottie supports Jellybean (API 16) and above.
 The simplest way to use it is with LottieAnimationView:
 
 ```
@@ -55,8 +56,9 @@ You can also load the composition directly using `LottieComposition` and pass it
 
 ## Performance
 1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
-2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn
-3. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations doesn't have to be deserialized every time.
+2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn.
+3. In addition to memory churn, additional bitmap.eraseColor() and canvas.drawBitmap() calls are necessary which will slow down the performance of the animation. For small animations, the performance hit shouldn't be large enough to be obvious when actually used.
+4. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations doesn't have to be deserialized every time.
 
 ## Try it out
 Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets).
