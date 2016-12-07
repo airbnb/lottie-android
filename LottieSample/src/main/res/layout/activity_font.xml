@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         android:text="Start typing!"/>
 
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="wrap_content"
+    <com.airbnb.lottie.samples.LottieFontViewGroup
+        android:id="@+id/font_view"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 

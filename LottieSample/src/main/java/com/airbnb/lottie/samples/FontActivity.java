@@ -1,15 +1,12 @@
 package com.airbnb.lottie.samples;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.view.KeyEvent;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
-import com.airbnb.lottie.layers.LottieDrawable;
+import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.model.LottieComposition;
 
 import java.util.HashMap;
@@ -22,9 +19,7 @@ public class FontActivity extends AppCompatActivity {
 
     private Map<Character, LottieComposition> compositionMap = new HashMap<>();
 
-    @BindView(R.id.text_view) TextView textView;
-
-    private final SpannableStringBuilder ssb = new SpannableStringBuilder();
+    @BindView(R.id.font_view) LottieFontViewGroup fontView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,14 +31,12 @@ public class FontActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_SPACE) {
-            ssb.append("    ");
-            textView.setText(ssb);
+            fontView.addSpace();
             return true;
         }
 
-        if (keyCode == KeyEvent.KEYCODE_DEL && ssb.length() > 0) {
-            ssb.delete(ssb.length() - 1, ssb.length());
-            textView.setText(ssb);
+        if (keyCode == KeyEvent.KEYCODE_DEL) {
+            fontView.removeLastView();
             return true;
         }
 
@@ -70,33 +63,13 @@ public class FontActivity extends AppCompatActivity {
     }
 
     private void addComposition(LottieComposition composition) {
-        LottieDrawable drawable = new LottieDrawable(composition, new Drawable.Callback() {
-            @Override
-            public void invalidateDrawable(Drawable who) {
-                textView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // This may not render the last frame if we don't post this.
-                        textView.setText(ssb);
-                    }
-                });
-            }
-
-            @Override
-            public void scheduleDrawable(Drawable who, Runnable what, long when) {
-
-            }
-
-            @Override
-            public void unscheduleDrawable(Drawable who, Runnable what) {
-
-            }
-        });
-        drawable.playAnimation();
-        // drawable.setBounds(0, 0, 100, 100);
-        ImageSpan span = new ImageSpan(drawable);
-        ssb.append("_");
-        ssb.setSpan(span, ssb.length() - 1, ssb.length(), 0);
-        textView.setText(ssb);
+        LottieAnimationView lottieAnimationView = new LottieAnimationView(this);
+        lottieAnimationView.setLayoutParams(new LottieFontViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        lottieAnimationView.setComposition(composition);
+        lottieAnimationView.playAnimation();
+        fontView.addView(lottieAnimationView);
     }
 }
