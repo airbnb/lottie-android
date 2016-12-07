@@ -30,18 +30,8 @@ dependencies {
 }
 ```
 
-
-## Alternatives
-1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
-2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, it only supports a small subset of the features suppoted by Lottie such as masks, mattes, trim paths, dash patterns, and more.
-2. Gifs. Gifs are more than double the size of a bodymovin JSON and are rendered at a fixed size that can't be scaled up to match large and high density screens.
-3. Png sequences. Png sequences are even worse than gifs in that their file sizes are often 30-50x the size of the bodymovin json and also can't be scaled up.
-
 ## Using Lottie
-Lottie animations are rendered by `LottieAnimationView`. `LottieAnimationView` animations are defined by a `LottieComposition`.
-You can load a composition directly with `LottieComposition.fromFile(...)` which will look in `src/main/assets` or `LottieComposition.fromJson(...)` if you have a raw JSONObject (useful for loading animations from the newtork).
-
-However, the simplest way to use it is with an xml attribute or to let LottieAnimationView load the composition:
+The simplest way to use it is with LottieAnimationView:
 
 ```
 <com.airbnb.lottie.LottieAnimationView
@@ -60,6 +50,14 @@ animationView.loop(true);
 animationView.playAnimation();
 
 ```
+
+You can also load the composition directly using `LottieComposition` and pass it to a `LottieAnimationView` or `LottieDrawable`.
+
+## Alternatives
+1. Build animations by hand. Building animations by hand is a huge time commitment for design and engingeering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
+2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, it only supports a small subset of the features suppoted by Lottie such as masks, mattes, trim paths, dash patterns, and more.
+2. Gifs. Gifs are more than double the size of a bodymovin JSON and are rendered at a fixed size that can't be scaled up to match large and high density screens.
+3. Png sequences. Png sequences are even worse than gifs in that their file sizes are often 30-50x the size of the bodymovin json and also can't be scaled up.
 
 ## Why is it called Lottie?
 Lottie is named after a German film director and the foremost pioneer of silhouette animation. Her best known films are The Adventures of Prince Achmed (1926) – the oldest surviving feature-length animated film, preceding Walt Disney's feature-length Snow White and the Seven Dwarfs (1937) by over ten years
