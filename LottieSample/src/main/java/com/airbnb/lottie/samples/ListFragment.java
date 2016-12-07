@@ -109,6 +109,9 @@ public class ListFragment extends Fragment {
                 case VIEW_TYPE_LOCAL_FILE:
                     holder.bind("Demo: Load from local file", R.drawable.ic_local_file);
                     break;
+                case VIEW_TYPE_LOCAL_FILE:
+                    holder.bind("Demo: Load from local file");
+                    break;
                 case VIEW_TYPE_VIEW_TEST:
                     holder.bind("Demo: Animate View", R.drawable.ic_view);
                     break;
