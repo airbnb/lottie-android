@@ -51,21 +51,24 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+    private void onNetworkClicked() {
+        showFragment(NetworkFragment.newInstance());
+    }
+
     private void onFileClicked(String fileName) {
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
-                .remove(this)
-                .replace(R.id.content_2, AnimationFragment.newInstance(fileName))
-                .commit();
+        showFragment(AnimationFragment.newInstance(fileName));
     }
 
     private void onViewTestClicked() {
+        showFragment(ViewAnimationFragment.newInstance());
+    }
+
+    private void showFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
                 .remove(this)
-                .replace(R.id.content_2, ViewAnimationFragment.newInstance())
+                .replace(R.id.content_2, fragment)
                 .commit();
     }
 
@@ -74,9 +77,10 @@ public class ListFragment extends Fragment {
     }
 
     final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
+        static final int VIEW_TYPE_NETWORK = 0;
         static final int VIEW_TYPE_VIEW_TEST = 1;
         static final int VIEW_TYPE_FONT = 2;
-        static final int VIEW_TYPE_FILE = 3;
+        static final int VIEW_TYPE_FILE = 4;
 
         @Nullable private List<String> files = null;
 
@@ -93,11 +97,14 @@ public class ListFragment extends Fragment {
         @Override
         public void onBindViewHolder(StringViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
+                case VIEW_TYPE_NETWORK:
+                    holder.bind("Demo: Load from network");
+                    break;
                 case VIEW_TYPE_VIEW_TEST:
-                    holder.bind("View Test");
+                    holder.bind("Demo: Animate View");
                     break;
                 case VIEW_TYPE_FONT:
-                    holder.bind("Animated Typography Demo", "Amelie/A.json");
+                    holder.bind("Demo: Animated Typography", "Amelie/A.json");
                     break;
                 default:
                     //noinspection ConstantConditions
@@ -113,14 +120,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public int getItemViewType(int position) {
-            switch (position) {
-                case 0:
-                    return VIEW_TYPE_VIEW_TEST;
-                case 1:
-                    return VIEW_TYPE_FONT;
-                default:
-                    return VIEW_TYPE_FILE;
-            }
+            return Math.min(position, VIEW_TYPE_FILE);
         }
     }
 
@@ -149,6 +149,9 @@ public class ListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     switch (getItemViewType()) {
+                        case FileAdapter.VIEW_TYPE_NETWORK:
+                            onNetworkClicked();
+                            break;
                         case FileAdapter.VIEW_TYPE_VIEW_TEST:
                             onViewTestClicked();
                             break;
