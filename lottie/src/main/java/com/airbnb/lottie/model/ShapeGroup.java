@@ -1,6 +1,5 @@
 package com.airbnb.lottie.model;
 
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class ShapeGroup {
 
     @Nullable
-    static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition, Rect compBounds) {
+    static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition) {
         String type = null;
         try {
             type = json.getString("ty");
@@ -29,13 +28,13 @@ public class ShapeGroup {
 
         switch (type) {
             case "gr":
-                return new ShapeGroup(json, framerate, composition, compBounds);
+                return new ShapeGroup(json, framerate, composition);
             case "st":
                 return new ShapeStroke(json, framerate, composition);
             case "fl":
                 return new ShapeFill(json, framerate, composition);
             case "tr":
-                return new ShapeTransform(json, framerate, composition, compBounds);
+                return new ShapeTransform(json, framerate, composition);
             case "sh":
                 return new ShapePath(json, framerate, composition);
             case "el":
@@ -51,7 +50,7 @@ public class ShapeGroup {
     private String name;
     private final List<Object> items = new ArrayList<>();
 
-    private ShapeGroup(JSONObject json, int frameRate, LottieComposition composition, Rect compBounds) {
+    private ShapeGroup(JSONObject json, int frameRate, LottieComposition composition) {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
@@ -82,7 +81,7 @@ public class ShapeGroup {
             }
 
 
-            Object newItem = shapeItemWithJson(jsonItem, frameRate, composition, compBounds);
+            Object newItem = shapeItemWithJson(jsonItem, frameRate, composition);
             if (newItem != null) {
                 items.add(newItem);
             }

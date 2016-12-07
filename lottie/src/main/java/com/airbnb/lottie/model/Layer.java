@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.util.Log;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestrictTo(RestrictTo.Scope.GROUP_ID)
-public class Layer {
+public class Layer implements Transform {
     private static final String TAG = Layer.class.getSimpleName();
     private final LottieComposition composition;
 
@@ -161,7 +162,7 @@ public class Layer {
             }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {
-                    Object shape = ShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition, composition.getBounds());
+                    Object shape = ShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), layer.frameRate, composition);
                     if (shape != null) {
                         layer.shapes.add(shape);
                         if (L.DBG) Log.d(TAG, "\tShapes+=" + shape.getClass().getSimpleName());
@@ -245,6 +246,12 @@ public class Layer {
         this.composition = composition;
     }
 
+    @Override
+    public Rect getBounds() {
+        return composition.getBounds();
+    }
+
+    @Override
     public AnimatablePathValue getAnchor() {
         return anchor;
     }
@@ -287,6 +294,7 @@ public class Layer {
         return matteType;
     }
 
+    @Override
     public AnimatableIntegerValue getOpacity() {
         return opacity;
     }
@@ -295,14 +303,17 @@ public class Layer {
         return parentId;
     }
 
+    @Override
     public AnimatablePathValue getPosition() {
         return position;
     }
 
+    @Override
     public AnimatableFloatValue getRotation() {
         return rotation;
     }
 
+    @Override
     public AnimatableScaleValue getScale() {
         return scale;
     }

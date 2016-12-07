@@ -9,8 +9,8 @@ import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapePath;
 import com.airbnb.lottie.model.ShapeStroke;
-import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
+import com.airbnb.lottie.model.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ class ShapeLayerView extends AnimatableLayer {
 
     ShapeLayerView(ShapePath shape, @Nullable ShapeFill fill,
             @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim,
-            ShapeTransform transformModel, Drawable.Callback callback) {
+            Transform transformModel, Drawable.Callback callback) {
         super(callback);
-        setBounds(transformModel.getCompBounds());
+        setBounds(transformModel.getBounds());
         setAnchorPoint(transformModel.getAnchor().createAnimation());
         setPosition(transformModel.getPosition().createAnimation());
         setRotation(transformModel.getRotation().createAnimation());

@@ -35,6 +35,15 @@ public class AnimatablePathValue implements AnimatableValue {
     private long startFrame;
     private long durationFrames;
 
+    /**
+     * Create a default static animatable path.
+     */
+    public AnimatablePathValue(LottieComposition composition) {
+        frameRate = 0;
+        this.composition = composition;
+        this.initialPoint = new PointF(0, 0);
+    }
+
     public AnimatablePathValue(JSONObject pointValues, int frameRate, LottieComposition composition) {
         this.frameRate = frameRate;
         this.composition = composition;

@@ -17,13 +17,17 @@ import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
+import com.airbnb.lottie.model.CircleShape;
 import com.airbnb.lottie.model.Layer;
 import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.model.RectangleShape;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeGroup;
+import com.airbnb.lottie.model.ShapePath;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
+import com.airbnb.lottie.model.Transform;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +90,7 @@ public class LayerView extends AnimatableLayer {
 
         List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
         Collections.reverse(reversedItems);
-        ShapeTransform currentTransform = null;
+        Transform currentTransform = null;
         ShapeTrimPath currentTrimPath = null;
         ShapeFill currentFill = null;
         ShapeStroke currentStroke = null;
@@ -105,6 +109,18 @@ public class LayerView extends AnimatableLayer {
                 currentTrimPath = (ShapeTrimPath) item;
             } else if (item instanceof ShapeStroke) {
                 currentStroke = (ShapeStroke) item;
+            } else if (item instanceof ShapePath) {
+                ShapePath shapePath = (ShapePath) item;
+                ShapeLayerView shapeLayer = new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrimPath, new ShapeTransform(composition), getCallback());
+                addLayer(shapeLayer);
+            } else if (item instanceof RectangleShape) {
+                RectangleShape shapeRect = (RectangleShape) item;
+                RectLayer shapeLayer = new RectLayer(shapeRect, currentFill, currentStroke, new ShapeTransform(composition), getCallback());
+                addLayer(shapeLayer);
+            } else if (item instanceof CircleShape) {
+                CircleShape shapeCircle = (CircleShape) item;
+                EllipseShapeLayer shapeLayer = new EllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrimPath, new ShapeTransform(composition), getCallback());
+                addLayer(shapeLayer);
             }
         }
 

@@ -11,8 +11,8 @@ import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.CircleShape;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeStroke;
-import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
+import com.airbnb.lottie.model.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +20,10 @@ import java.util.List;
 class EllipseShapeLayer extends AnimatableLayer {
 
     EllipseShapeLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
-            ShapeTrimPath trim, ShapeTransform transform, Drawable.Callback callback) {
+            ShapeTrimPath trim, Transform transform, Drawable.Callback callback) {
         super(callback);
 
-        setBounds(transform.getCompBounds());
+        setBounds(transform.getBounds());
         setAnchorPoint(transform.getAnchor().createAnimation());
         setAlpha(transform.getOpacity().createAnimation());
         setPosition(transform.getPosition().createAnimation());
@@ -128,6 +128,9 @@ class EllipseShapeLayer extends AnimatableLayer {
             path.cubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
             path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
             path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
+
+            path.offset(circlePosition.getValue().x, circlePosition.getValue().y);
+
             onPathChanged();
 
             invalidateSelf();

@@ -8,25 +8,33 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.animatable.AnimatablePathValue;
-import com.airbnb.lottie.animatable.AnimatablePointValue;
 import com.airbnb.lottie.animatable.AnimatableScaleValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 @RestrictTo(RestrictTo.Scope.GROUP_ID)
-public class ShapeTransform {
+public class ShapeTransform implements Transform {
     private static final String TAG = ShapeTransform.class.getSimpleName();
 
     private final Rect compBounds;
-    private AnimatablePointValue position;
+    private AnimatablePathValue position;
     private AnimatablePathValue anchor;
     private AnimatableScaleValue scale;
     private AnimatableFloatValue rotation;
     private AnimatableIntegerValue opacity;
 
-    ShapeTransform(JSONObject json, int frameRate, LottieComposition composition, Rect compBounds) {
-        this.compBounds = compBounds;
+    public ShapeTransform(LottieComposition composition) {
+        this.compBounds = composition.getBounds();
+        this.position = new AnimatablePathValue(composition);
+        this.anchor = new AnimatablePathValue(composition);
+        this.scale = new AnimatableScaleValue(composition);
+        this.rotation = new AnimatableFloatValue(composition, 0f);
+        this.opacity = new AnimatableIntegerValue(composition, 255);
+    }
+
+    ShapeTransform(JSONObject json, int frameRate, LottieComposition composition) {
+        this.compBounds = composition.getBounds();
 
         JSONObject jsonPosition;
         try {
@@ -34,7 +42,7 @@ public class ShapeTransform {
         } catch (JSONException e) {
             throw new IllegalStateException("Transform has no position.");
         }
-        position = new AnimatablePointValue(jsonPosition, frameRate, composition);
+        position = new AnimatablePathValue(jsonPosition, frameRate, composition);
 
         JSONObject jsonAnchor;
         try {
@@ -71,11 +79,11 @@ public class ShapeTransform {
         if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
     }
 
-    public Rect getCompBounds() {
+    public Rect getBounds() {
         return compBounds;
     }
 
-    public AnimatablePointValue getPosition() {
+    public AnimatablePathValue getPosition() {
         return position;
     }
 

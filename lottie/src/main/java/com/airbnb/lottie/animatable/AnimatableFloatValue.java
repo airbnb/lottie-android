@@ -14,6 +14,11 @@ import org.json.JSONObject;
 @RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
+    public AnimatableFloatValue(LottieComposition composition, Float initialValue) {
+        super(composition);
+        this.initialValue = initialValue;
+    }
+
     public AnimatableFloatValue(JSONObject json, int frameRate, LottieComposition composition) {
         this(json, frameRate, composition, true);
     }

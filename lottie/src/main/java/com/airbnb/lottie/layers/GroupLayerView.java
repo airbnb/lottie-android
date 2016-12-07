@@ -11,6 +11,7 @@ import com.airbnb.lottie.model.ShapePath;
 import com.airbnb.lottie.model.ShapeStroke;
 import com.airbnb.lottie.model.ShapeTransform;
 import com.airbnb.lottie.model.ShapeTrimPath;
+import com.airbnb.lottie.model.Transform;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,11 +20,11 @@ import java.util.List;
 class GroupLayerView extends AnimatableLayer {
 
     private final ShapeGroup shapeGroup;
-    @Nullable private final ShapeTransform shapeTransform;
+    @Nullable private final Transform shapeTransform;
 
     GroupLayerView(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
             @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
-            @Nullable ShapeTransform previousTransform, Drawable.Callback callback) {
+            @Nullable Transform previousTransform, Drawable.Callback callback) {
         super(callback);
         this.shapeGroup = shapeGroup;
         shapeTransform = previousTransform;
@@ -33,7 +34,7 @@ class GroupLayerView extends AnimatableLayer {
     private void setupShapeGroupWithFill(ShapeFill previousFill,
             ShapeStroke previousStroke, ShapeTrimPath previousTrimPath) {
         if (shapeTransform != null) {
-            setBounds(shapeTransform.getCompBounds());
+            setBounds(shapeTransform.getBounds());
             setAnchorPoint(shapeTransform.getAnchor().createAnimation());
             setPosition(shapeTransform.getPosition().createAnimation());
             setAlpha(shapeTransform.getOpacity().createAnimation());
@@ -46,7 +47,7 @@ class GroupLayerView extends AnimatableLayer {
 
         ShapeFill currentFill = previousFill;
         ShapeStroke currentStroke = previousStroke;
-        ShapeTransform currentTransform = null;
+        Transform currentTransform = null;
         ShapeTrimPath currentTrim = previousTrimPath;
 
         for (int i = 0; i < reversedItems.size(); i++) {

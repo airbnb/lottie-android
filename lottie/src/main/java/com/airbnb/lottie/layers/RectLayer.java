@@ -14,7 +14,7 @@ import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.model.RectangleShape;
 import com.airbnb.lottie.model.ShapeFill;
 import com.airbnb.lottie.model.ShapeStroke;
-import com.airbnb.lottie.model.ShapeTransform;
+import com.airbnb.lottie.model.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +25,10 @@ class RectLayer extends AnimatableLayer {
     @Nullable private RoundRectLayer strokeLayer;
 
     RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
-            @Nullable ShapeStroke stroke, ShapeTransform transform, Drawable.Callback callback) {
+            @Nullable ShapeStroke stroke, Transform transform, Drawable.Callback callback) {
         super(callback);
 
-        setBounds(transform.getCompBounds());
+        setBounds(transform.getBounds());
         setAnchorPoint(transform.getAnchor().createAnimation());
         setAlpha(transform.getOpacity().createAnimation());
         setPosition(transform.getPosition().createAnimation());

@@ -185,7 +185,10 @@ class ShapeLayer extends AnimatableLayer {
                     currentPath,
                     true);
         }
-        
+
+        currentPath.computeBounds(tempRect, false);
+        setBounds((int) tempRect.left, (int) tempRect.top, (int) tempRect.right, (int) tempRect.bottom);
+
         invalidateSelf();
     }
 

@@ -14,6 +14,10 @@ import org.json.JSONObject;
 @RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
+    public AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
+        super(composition);
+        this.initialValue = initialValue;
+    }
 
     public AnimatableIntegerValue(JSONObject json, int frameRate, LottieComposition composition, boolean isDp, boolean remap100To255) {
         super(json, frameRate, composition, isDp);

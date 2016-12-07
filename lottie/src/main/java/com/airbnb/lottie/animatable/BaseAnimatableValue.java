@@ -34,6 +34,15 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue {
 
     V initialValue;
 
+    /**
+     * Create a default static animatable path.
+     */
+    BaseAnimatableValue(LottieComposition composition) {
+        this.composition = composition;
+        isDp = false;
+        frameRate = 0;
+    }
+
     BaseAnimatableValue(@Nullable JSONObject json, int frameRate, LottieComposition composition, boolean isDp) {
         this.frameRate = frameRate;
         this.composition = composition;

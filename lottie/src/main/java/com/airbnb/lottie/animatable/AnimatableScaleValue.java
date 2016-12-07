@@ -15,6 +15,11 @@ import org.json.JSONObject;
 @RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
 
+    public AnimatableScaleValue(LottieComposition composition) {
+        super(composition);
+        initialValue = new ScaleXY();
+    }
+
     public AnimatableScaleValue(JSONObject scaleValues, int frameRate, LottieComposition composition, boolean isDp) {
         super(scaleValues, frameRate, composition, isDp);
     }
