@@ -2,6 +2,7 @@ package com.airbnb.lottie.model;
 
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,15 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings({"EmptyCatchBlock"})
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeGroup {
 
     @Nullable
-    public static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition, Rect compBounds) {
+    static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition, Rect compBounds) {
         String type = null;
         try {
             type = json.getString("ty");
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
         if (type == null) {
             throw new IllegalStateException("Shape has no type.");
         }
@@ -52,7 +55,9 @@ public class ShapeGroup {
         JSONArray jsonItems = null;
         try {
             jsonItems = json.getJSONArray("it");
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+            // Do nothing.
+        }
         if (jsonItems == null) {
             // Thought this was necessary but maybe not?
             // throw new IllegalStateException("There are no items.");
@@ -61,13 +66,17 @@ public class ShapeGroup {
 
         try {
             name = json.getString("nm");
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+            // Do nothing.
+        }
 
         for (int i = 0; i < jsonItems.length(); i++) {
             JSONObject jsonItem = null;
             try {
                 jsonItem = jsonItems.getJSONObject(i);
-            } catch (JSONException e) { }
+            } catch (JSONException e) {
+                // Do nothing.
+            }
             if (jsonItem == null) {
                 throw new IllegalStateException("Unable to get jsonItem");
             }

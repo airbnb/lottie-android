@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -8,6 +9,7 @@ import com.airbnb.lottie.animatable.AnimatableShapeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapePath {
     private static final String TAG = ShapePath.class.getSimpleName();
 
@@ -15,7 +17,7 @@ public class ShapePath {
     private int index;
     private AnimatableShapeValue shapePath;
 
-    public ShapePath(JSONObject json, int frameRate, LottieComposition composition) {
+    ShapePath(JSONObject json, int frameRate, LottieComposition composition) {
         try {
             index = json.getInt("ind");
         } catch (JSONException e) {

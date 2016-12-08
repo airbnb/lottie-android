@@ -12,6 +12,7 @@ import android.graphics.Shader;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class LayerView extends AnimatableLayer {
 
     private MaskLayer mask;

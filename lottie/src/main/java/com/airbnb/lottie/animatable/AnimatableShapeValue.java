@@ -2,13 +2,14 @@ package com.airbnb.lottie.animatable;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 
+import com.airbnb.lottie.animation.KeyframeAnimation;
+import com.airbnb.lottie.animation.ShapeKeyframeAnimation;
 import com.airbnb.lottie.animation.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.ShapeData;
-import com.airbnb.lottie.animation.KeyframeAnimation;
-import com.airbnb.lottie.animation.ShapeKeyframeAnimation;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import org.json.JSONArray;
@@ -17,7 +18,7 @@ import org.json.JSONObject;
 
 import static com.airbnb.lottie.utils.MiscUtils.addPoints;
 
-@SuppressWarnings({"EmptyCatchBlock"})
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     private final Path convertTypePath = new Path();
 
@@ -62,7 +63,9 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
                 // Bodymovin 4.4+ has closed here.
                 closed = pointsData.getBoolean("c");
             }
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
 
         if (pointsArray == null || inTangents == null || outTangents == null ||
                 pointsArray.length() != inTangents.length() || pointsArray.length() != outTangents.length()) {

@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animatable;
 
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatablePathValue implements AnimatableValue {
 
     private final List<Float> keyTimes = new ArrayList<>();

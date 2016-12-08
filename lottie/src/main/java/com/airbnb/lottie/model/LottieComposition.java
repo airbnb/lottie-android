@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.support.annotation.RestrictTo;
 import android.util.LongSparseArray;
 
 import org.json.JSONArray;
@@ -19,7 +20,7 @@ import java.util.List;
  * After Effects/Bodymovin composition model. This is the serialized model from which the animation will be created.
  * It can be used with a {@link com.airbnb.lottie.LottieAnimationView} or {@link com.airbnb.lottie.layers.LottieDrawable}.
  */
-@SuppressWarnings("WeakerAccess")
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class LottieComposition {
 
     public interface OnCompositionLoadedListener {
@@ -81,6 +82,7 @@ public class LottieComposition {
         return loader;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static LottieComposition fromInputStream(Resources res, InputStream file) {
         try {
             int size = file.available();
@@ -99,6 +101,7 @@ public class LottieComposition {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static LottieComposition fromJsonSync(Resources res, JSONObject json) {
         LottieComposition composition = new LottieComposition(res);
 
@@ -172,7 +175,7 @@ public class LottieComposition {
     }
 
 
-    public Layer layerModelForId(long id) {
+    Layer layerModelForId(long id) {
         return layerMap.get(id);
     }
 

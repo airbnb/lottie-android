@@ -1,5 +1,7 @@
 package com.airbnb.lottie.animatable;
 
+import android.support.annotation.RestrictTo;
+
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.ScaleKeyframeAnimation;
 import com.airbnb.lottie.animation.StaticKeyframeAnimation;
@@ -10,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@SuppressWarnings({"EmptyCatchBlock"})
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
 
     public AnimatableScaleValue(JSONObject scaleValues, int frameRate, LottieComposition composition, boolean isDp) {
@@ -24,7 +26,9 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
             if (array.length() >= 2) {
                 return new ScaleXY().scale((float) array.getDouble(0) / 100f * scale, (float) array.getDouble(1) / 100f * scale);
             }
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
 
         return new ScaleXY();
     }

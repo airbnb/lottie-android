@@ -1,5 +1,7 @@
 package com.airbnb.lottie.animatable;
 
+import android.support.annotation.RestrictTo;
+
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.NumberKeyframeAnimation;
 import com.airbnb.lottie.animation.StaticKeyframeAnimation;
@@ -9,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
     public AnimatableFloatValue(JSONObject json, int frameRate, LottieComposition composition) {

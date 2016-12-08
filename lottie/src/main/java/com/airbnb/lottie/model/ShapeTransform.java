@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model;
 
 import android.graphics.Rect;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -13,6 +14,7 @@ import com.airbnb.lottie.animatable.AnimatableScaleValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeTransform {
     private static final String TAG = ShapeTransform.class.getSimpleName();
 

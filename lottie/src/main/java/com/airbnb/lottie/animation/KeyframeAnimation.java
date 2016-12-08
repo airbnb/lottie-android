@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animation;
 
 import android.support.annotation.FloatRange;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
@@ -8,6 +9,7 @@ import com.airbnb.lottie.model.LottieComposition;
 import java.util.ArrayList;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public abstract class KeyframeAnimation<T> {
 
     public interface AnimationListener<T> {

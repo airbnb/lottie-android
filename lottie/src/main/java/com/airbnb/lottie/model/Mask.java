@@ -1,11 +1,14 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
+
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.animatable.AnimatableShapeValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class Mask {
 
     private enum MaskMode {
@@ -18,7 +21,7 @@ public class Mask {
     private MaskMode maskMode;
     private AnimatableShapeValue maskPath;
 
-    public Mask(JSONObject json, int frameRate, LottieComposition composition) {
+    Mask(JSONObject json, int frameRate, LottieComposition composition) {
         try {
             boolean closed = false;
             if (json.has("cl")) {
@@ -40,6 +43,7 @@ public class Mask {
             }
 
             maskPath = new AnimatableShapeValue(json.getJSONObject("pt"), frameRate, composition, closed);
+            //noinspection unused
             AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.getJSONObject("o"), frameRate, composition, false, true);
             // TODO: use this.
         } catch (JSONException e) {
@@ -48,7 +52,7 @@ public class Mask {
     }
 
 
-    public MaskMode getMaskMode() {
+    MaskMode getMaskMode() {
         return maskMode;
     }
 

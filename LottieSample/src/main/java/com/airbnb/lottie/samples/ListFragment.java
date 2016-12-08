@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.airbnb.lottie.animatable.AnimatableColorValue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class ListFragment extends Fragment {
             //noinspection ConstantConditions
             Snackbar.make(container, R.string.invalid_assets, Snackbar.LENGTH_LONG).show();
         }
+        AnimatableColorValue colorValue = new AnimatableColorValue(null, 0, null);
 
         return view;
     }

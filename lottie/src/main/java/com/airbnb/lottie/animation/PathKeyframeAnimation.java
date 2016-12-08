@@ -3,6 +3,7 @@ package com.airbnb.lottie.animation;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
@@ -10,7 +11,7 @@ import com.airbnb.lottie.utils.SegmentedPath;
 
 import java.util.List;
 
-
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
     private final PointF point = new PointF();
     private final float[] pos = new float[2];

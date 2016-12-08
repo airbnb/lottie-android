@@ -2,12 +2,14 @@ package com.airbnb.lottie.model;
 
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeData {
 
     private final List<CubicCurveData> curves = new ArrayList<>();

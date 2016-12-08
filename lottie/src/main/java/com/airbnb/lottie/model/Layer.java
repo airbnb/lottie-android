@@ -2,6 +2,7 @@ package com.airbnb.lottie.model;
 
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -15,16 +16,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-@SuppressWarnings({"EmptyCatchBlock"})
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class Layer {
     private static final String TAG = Layer.class.getSimpleName();
     private final LottieComposition composition;
 
-    @SuppressWarnings("WeakerAccess")
     public enum LottieLayerType {
         None,
         Solid,
@@ -40,7 +39,6 @@ public class Layer {
         Unknown
     }
 
-    @SuppressWarnings("UnusedAssignment")
     static Layer fromJson(JSONObject json, LottieComposition composition) {
         Layer layer = new Layer(composition);
         try {
@@ -60,17 +58,8 @@ public class Layer {
 
             try {
                 layer.parentId = json.getLong("parent");
-                if (layer.parentId != -1 && L.DBG) {
-                    long parentId = layer.parentId;
-                    List<String> parentNames = new ArrayList<>();
-                    Layer parent = composition.layerModelForId(parentId);
-                    while (parent != null) {
-                        parentNames.add(parent.getName());
-                        parent = composition.layerModelForId(parent.getParentId());
-                    }
-                    Log.d(TAG, "\tParents=" + Arrays.toString(parentNames.toArray()));
-                }
             } catch (JSONException e) {
+                // Do nothing.
             }
             layer.inFrame = json.getLong("ip");
             layer.outFrame = json.getLong("op");
@@ -92,6 +81,7 @@ public class Layer {
             try {
                 opacity = ks.getJSONObject("o");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (opacity != null) {
                 layer.opacity = new AnimatableIntegerValue(opacity, layer.frameRate, composition, false, true);
@@ -102,6 +92,7 @@ public class Layer {
             try {
                 rotation = ks.getJSONObject("r");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (rotation != null) {
                 layer.rotation = new AnimatableFloatValue(rotation, layer.frameRate, composition, false);
@@ -112,6 +103,7 @@ public class Layer {
             try {
                 position = ks.getJSONObject("p");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (position != null) {
                 layer.position = new AnimatablePathValue(position, layer.frameRate, composition);
@@ -122,6 +114,7 @@ public class Layer {
             try {
                 anchor = ks.getJSONObject("a");
             } catch (JSONException e) {
+                // DO nothing.
             }
             if (anchor != null) {
                 layer.anchor = new AnimatablePathValue(anchor, layer.frameRate, composition);
@@ -132,6 +125,7 @@ public class Layer {
             try {
                 scale = ks.getJSONObject("s");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (scale != null) {
                 layer.scale = new AnimatableScaleValue(scale, layer.frameRate, composition, false);
@@ -142,12 +136,14 @@ public class Layer {
                 layer.matteType = MatteType.values()[json.getInt("tt")];
                 if (L.DBG) Log.d(TAG, "\tMatte=" + layer.matteType);
             } catch (JSONException e) {
+                // Do nothing.
             }
 
             JSONArray jsonMasks = null;
             try {
                 jsonMasks = json.getJSONArray("masksProperties");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (jsonMasks != null) {
                 for (int i = 0; i < jsonMasks.length(); i++) {
@@ -161,6 +157,7 @@ public class Layer {
             try {
                 shapes = json.getJSONArray("shapes");
             } catch (JSONException e) {
+                // Do nothing.
             }
             if (shapes != null) {
                 for (int i = 0; i < shapes.length(); i++) {

@@ -2,10 +2,12 @@ package com.airbnb.lottie.utils;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class SegmentedPath {
 
     private final List<Path> segments = new ArrayList<>();

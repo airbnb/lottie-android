@@ -3,10 +3,12 @@ package com.airbnb.lottie.utils;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
+import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.ShapeData;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class MiscUtils {
 
     public static PointF addPoints(PointF p1, PointF p2) {

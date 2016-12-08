@@ -3,12 +3,12 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'com.facebook.testing.screenshot'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.airbnb.lottie"
         minSdkVersion 16
-        targetSdkVersion 24
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }
@@ -22,9 +22,9 @@ android {
 
 dependencies {
     compile project(':lottie')
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'

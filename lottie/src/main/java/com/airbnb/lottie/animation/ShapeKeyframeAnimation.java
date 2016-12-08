@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animation;
 
 import android.graphics.Path;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
@@ -9,6 +10,7 @@ import com.airbnb.lottie.utils.MiscUtils;
 
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeKeyframeAnimation extends KeyframeAnimation<Path> {
     private final Path tempPath = new Path();
     private final ShapeData tempShapeData = new ShapeData();

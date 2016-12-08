@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -10,6 +11,7 @@ import com.airbnb.lottie.animatable.AnimatablePointValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class RectangleShape {
     private static final String TAG = RectangleShape.class.getSimpleName();
 

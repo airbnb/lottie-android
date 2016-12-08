@@ -11,6 +11,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.utils.ScaleXY;
@@ -18,6 +19,7 @@ import com.airbnb.lottie.utils.ScaleXY;
 import java.util.ArrayList;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatableLayer extends Drawable {
 
     private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {

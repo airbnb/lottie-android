@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -9,7 +10,7 @@ import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@SuppressWarnings({"EmptyCatchBlock", "WeakerAccess", "FieldCanBeLocal"})
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeFill {
     private static final String TAG = ShapeFill.class.getSimpleName();
 
@@ -17,11 +18,13 @@ public class ShapeFill {
     private AnimatableColorValue color;
     private AnimatableIntegerValue opacity;
 
-    public ShapeFill(JSONObject json, int frameRate, LottieComposition composition) {
+    ShapeFill(JSONObject json, int frameRate, LottieComposition composition) {
         JSONObject jsonColor = null;
         try {
             jsonColor = json.getJSONObject("c");
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
         if (jsonColor != null) {
             color = new AnimatableColorValue(jsonColor, frameRate, composition);
         }
@@ -29,14 +32,18 @@ public class ShapeFill {
         JSONObject jsonOpacity = null;
         try {
             jsonOpacity = json.getJSONObject("o");
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
         if (jsonOpacity != null) {
             opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
         }
 
         try {
             fillEnabled = json.getBoolean("fillEnabled");
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
         if (L.DBG) Log.d(TAG, "Parsed new shape fill " + toString());
     }
 

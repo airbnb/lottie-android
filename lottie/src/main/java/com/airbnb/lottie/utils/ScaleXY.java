@@ -1,5 +1,8 @@
 package com.airbnb.lottie.utils;
 
+import android.support.annotation.RestrictTo;
+
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ScaleXY {
     private float scaleX = 1f;
     private float scaleY = 1f;

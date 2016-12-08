@@ -1,10 +1,13 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
+
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeTrimPath {
     private AnimatableFloatValue start;
     private AnimatableFloatValue end;

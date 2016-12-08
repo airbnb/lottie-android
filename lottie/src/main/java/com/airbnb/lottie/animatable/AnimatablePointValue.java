@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animatable;
 
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
 import com.airbnb.lottie.animation.PointKeyframeAnimation;
@@ -12,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
 
     public AnimatablePointValue(JSONObject pointValues, int frameRate, LottieComposition composition) {

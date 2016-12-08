@@ -1,13 +1,14 @@
 package com.airbnb.lottie.animation;
 
 import android.animation.ArgbEvaluator;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
 
 import java.util.List;
 
-
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 

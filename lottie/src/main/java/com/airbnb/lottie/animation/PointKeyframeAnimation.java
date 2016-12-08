@@ -1,12 +1,14 @@
 package com.airbnb.lottie.animation;
 
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
 
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
     private final PointF point = new PointF();
     private final List<PointF> points;

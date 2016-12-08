@@ -1,11 +1,13 @@
 package com.airbnb.lottie.utils;
 
 import android.graphics.PointF;
+import android.support.annotation.RestrictTo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class JsonUtils {
 
 

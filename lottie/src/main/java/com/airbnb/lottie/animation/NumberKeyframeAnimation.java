@@ -1,5 +1,6 @@
 package com.airbnb.lottie.animation;
 
+import android.support.annotation.RestrictTo;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.model.LottieComposition;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class NumberKeyframeAnimation<T extends Number> extends KeyframeAnimation<T> {
 
     private final List<T> values;

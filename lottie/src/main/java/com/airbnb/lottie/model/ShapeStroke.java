@@ -1,5 +1,7 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.RestrictTo;
+
 import com.airbnb.lottie.animatable.AnimatableColorValue;
 import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.animatable.AnimatableIntegerValue;
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+@RestrictTo(RestrictTo.Scope.GROUP_ID)
 public class ShapeStroke {
 
     public enum LineCapType {
