@@ -142,21 +142,39 @@ public class LottieComposition {
             JSONArray jsonLayers = json.getJSONArray("layers");
             for (int i = 0; i < jsonLayers.length(); i++) {
                 Layer layer = Layer.fromJson(jsonLayers.getJSONObject(i), composition);
-                composition.layers.add(layer);
-                composition.layerMap.put(layer.getId(), layer);
-                if (!layer.getMasks().isEmpty()) {
-                    composition.hasMasks = true;
-                }
-                if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
-                    composition.hasMattes = true;
-                }
+                addLayer(composition, layer);
             }
         } catch (JSONException e) {
             throw new IllegalStateException("Unable to find layers.", e);
         }
 
+        try {
+            JSONArray assets = json.getJSONArray("assets");
+            for (int i = 0; i < assets.length(); i++) {
+                JSONObject asset = assets.getJSONObject(i);
+                JSONArray layers = asset.getJSONArray("layers");
+                for (int j = 0; j < layers.length(); j++) {
+                    Layer layer = Layer.fromJson(layers.getJSONObject(j), composition);
+                    addLayer(composition, layer);
+                }
+            }
+        } catch (JSONException e) {
+            // Do nothing.
+        }
+
 
         return composition;
+    }
+
+    private static void addLayer(LottieComposition composition, Layer layer) {
+        composition.layers.add(layer);
+        composition.layerMap.put(layer.getId(), layer);
+        if (!layer.getMasks().isEmpty()) {
+            composition.hasMasks = true;
+        }
+        if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
+            composition.hasMattes = true;
+        }
     }
 
     private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
