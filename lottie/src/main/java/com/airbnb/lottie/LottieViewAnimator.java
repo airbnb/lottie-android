@@ -17,6 +17,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Animated a view based on a null layer. To use this, set a tag on your view with the key {@link R.id#lottie_layer_name}
+ * and the value as the null layer name from After Effects.
+ *
+ * This supports position, scale, rotation, and anchor point (pivot)
+ *
+ * Positions will all be relative to the initial point. This is for the ease of use of the animator.
+ * Without subtracting the initial position, animators would have to work with the animation in the
+ * top left corner of the composition.
+ *
+ * Anchor points affect the pivot point of the animation and should be set between 0 and 1.
+ * Those values will be multiplied by the laid out width and height of the view.
+ * For example, setting the anchor to (1, 1) would set the pivot to the bottom right.
+ */
 public class LottieViewAnimator {
 
     public static LottieViewAnimator of(Context context, String fileName, View... views) {
@@ -77,15 +91,13 @@ public class LottieViewAnimator {
                 position.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
                     @Override
                     public void onValueChanged(PointF progress) {
-                        view.setTranslationX(progress.x);
-                        view.setTranslationY(progress.y);
+                        PointF initialPoint = layer.getPosition().getInitialPoint();
+                        view.setTranslationX(progress.x - initialPoint.x);
+                        view.setTranslationY(progress.y - initialPoint.y);
                     }
                 });
                 animatableValues.add(position);
             }
-            PointF initialPosition = layer.getPosition().getInitialPoint();
-            view.setTranslationX(initialPosition.x);
-            view.setTranslationY(initialPosition.y);
 
             if (layer.getScale().hasAnimation()) {
                 KeyframeAnimation<ScaleXY> scale = layer.getScale().createAnimation();
