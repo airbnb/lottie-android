@@ -148,6 +148,8 @@ public class LottieComposition {
             throw new IllegalStateException("Unable to find layers.", e);
         }
 
+        // These are precomps. This naively adds the precomp layers to the main composition.
+        // TODO: Significant work will have to be done to properly support them.
         try {
             JSONArray assets = json.getJSONArray("assets");
             for (int i = 0; i < assets.length(); i++) {

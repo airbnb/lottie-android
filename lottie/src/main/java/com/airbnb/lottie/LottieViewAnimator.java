@@ -126,6 +126,18 @@ public class LottieViewAnimator {
             }
             view.setRotation(layer.getRotation().getInitialValue());
 
+            if (layer.getOpacity().hasAnimation()) {
+                KeyframeAnimation<Integer> opacity = layer.getOpacity().createAnimation();
+                opacity.addUpdateListener(new KeyframeAnimation.AnimationListener<Integer>() {
+                    @Override
+                    public void onValueChanged(Integer progress) {
+                        view.setAlpha(progress / 255f);
+                    }
+                });
+                animatableValues.add(opacity);
+            }
+            view.setAlpha(layer.getOpacity().getInitialValue() / 255f);
+
             if (layer.getAnchor().hasAnimation()) {
                 KeyframeAnimation<PointF> anchor = layer.getAnchor().createAnimation();
                 anchor.addUpdateListener(new KeyframeAnimation.AnimationListener<PointF>() {
