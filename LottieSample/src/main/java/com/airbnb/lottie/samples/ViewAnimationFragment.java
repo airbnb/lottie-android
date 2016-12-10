@@ -27,7 +27,7 @@ public class ViewAnimationFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         messageBubble.setTag(R.id.lottie_layer_name, "Tip");
-        LottieViewAnimator.of(getContext(), "Tip_04.json", messageBubble)
+        LottieViewAnimator.of(getContext(), "Tip.json", messageBubble)
                 .loop(true)
                 .start();
 
