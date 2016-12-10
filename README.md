@@ -54,6 +54,10 @@ animationView.playAnimation();
 
 You can also load the composition directly using `LottieComposition` and pass it to a `LottieAnimationView` or `LottieDrawable`.
 
+
+In addition, `LottieViewAnimator` allows you to define a view animation with After Effects.
+Check the docs for `LottieViewAnimator` to learn more.
+
 ## Performance
 1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
 2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn.
@@ -77,6 +81,9 @@ Lottie is named after a German film director and the foremost pioneer of silhoue
 
 ## Contributing
 Contributers are more than welcome. Just upload a PR with a description of your changes.
-Lottie uses [Facebook screenshot tests for Android](https://github.com/facebook/screenshot-tests-for-android) to identify pixel level changes/breakages. Please run `./gradlew --daemon recordMode screenshotTests` before uploading a PR to ensure that nothing has broken.
+Lottie uses [Facebook screenshot tests for Android](https://github.com/facebook/screenshot-tests-for-android) to identify pixel level changes/breakages. Please run `./gradlew --daemon recordMode screenshotTests` before uploading a PR to ensure that nothing has broken. Changed screenshots will show up in your git diff if you have.
 
 If you would like to add more JSON files and screenshot tests, feel free to do so and add the test to `LottieTest`.
+
+## Issues?
+File github issues for anything that is unexpectedly broken. If an After Effects file is not working, please attach it to your issue. Debugging without the original file is much more difficult.

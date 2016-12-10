@@ -57,7 +57,7 @@ public class LayerView extends AnimatableLayer {
     @Nullable private LayerView parentLayer;
 
 
-    public LayerView(Layer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
+    LayerView(Layer layerModel, LottieComposition composition, Callback callback, @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
         super(callback);
         this.layerModel = layerModel;
         this.composition = composition;
@@ -154,11 +154,11 @@ public class LayerView extends AnimatableLayer {
         }
     }
 
-    public Layer getLayerModel() {
+    Layer getLayerModel() {
         return layerModel;
     }
 
-    public void setParentLayer(@Nullable LayerView parentLayer) {
+    void setParentLayer(@Nullable LayerView parentLayer) {
         this.parentLayer = parentLayer;
     }
 
@@ -181,7 +181,7 @@ public class LayerView extends AnimatableLayer {
         }
     }
 
-    public void setMatteLayer(LayerView matteLayer) {
+    void setMatteLayer(LayerView matteLayer) {
         if (matteBitmap == null) {
             throw new IllegalArgumentException("Cannot set a matte if no matte bitmap was given!");
         }
@@ -243,6 +243,7 @@ public class LayerView extends AnimatableLayer {
         if (hasMasks()) {
             for (int i = 0; i < mask.getMasks().size(); i++) {
                 Path path = mask.getMasks().get(i).getValue();
+                //noinspection ConstantConditions
                 maskCanvas.drawPath(path, maskShapePaint);
             }
             if (!hasMattes()) {

@@ -43,7 +43,6 @@ public class AnimationFragment extends Fragment {
     @BindView(R.id.loop_button) ToggleButton loopButton;
     @BindView(R.id.frames_per_second) TextView fpsView;
     @BindView(R.id.dropped_frames) TextView droppedFramesView;
-    @BindView(R.id.dropped_frames_per_second) TextView droppedFramesPerSecondView;
 
     @Nullable
     @Override
@@ -150,8 +149,6 @@ public class AnimationFragment extends Fragment {
         int actualFrames = targetFrames - droppedFrames.first;
         fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
         droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
-        float droppedFps = droppedFrames.first / (droppedFrames.second / 1000000000f);
-        droppedFramesPerSecondView.setText(String.format("Dropped frames per second: %.0f", droppedFps));
     }
 
     private ILottieApplication getApplication() {
