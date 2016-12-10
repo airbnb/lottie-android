@@ -74,6 +74,8 @@ class ShapeLayer extends AnimatableLayer {
     private final Paint paint = new Paint();
     private final Path tempPath = new Path();
     private final Path currentPath = new Path();
+    /** Path for the trim path when it loops around the end back to the start */
+    private final Path extraTrimPath = new Path();
     private final PathMeasure pathMeasure = new PathMeasure();
 
     private float currentPathScaleX;
@@ -165,25 +167,39 @@ class ShapeLayer extends AnimatableLayer {
             currentPath.transform(scaleMatrix, currentPath);
         }
 
-        if (needsStrokeStart || needsStrokeEnd) {
+        if (needsStrokeStart || needsStrokeEnd || needsStrokeOffset) {
             tempPath.set(currentPath);
             pathMeasure.setPath(tempPath, false);
+            currentPathStrokeStart = strokeStart.getValue();
+            currentPathStrokeEnd = strokeEnd.getValue();
             float length = pathMeasure.getLength();
-            float start = length * strokeStart.getValue() / 100f;
-            float end = length * strokeEnd.getValue() / 100f;
-            // TODO: use offset.
+            float start = length * currentPathStrokeStart / 100f;
+            float end = length * currentPathStrokeEnd / 100f;
+            float newStart = Math.min(start, end);
+            float newEnd = Math.max(start, end);
 
             currentPath.reset();
             // Workaround to get hardware acceleration on KitKat
             // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
             currentPath.rLineTo(0, 0);
-            currentPathStrokeStart = Math.min(start, end);
-            currentPathStrokeEnd = Math.max(start, end);
+            currentPathStrokeOffset = strokeOffset.getValue() / 360f * length;
+            newStart += currentPathStrokeOffset;
+            newEnd += currentPathStrokeOffset;
+
             pathMeasure.getSegment(
-                    currentPathStrokeStart,
-                    currentPathStrokeEnd,
+                    newStart,
+                    newEnd,
                     currentPath,
                     true);
+
+            extraTrimPath.reset();
+            if (newEnd > length) {
+                pathMeasure.getSegment(
+                        0,
+                        newEnd % length,
+                        extraTrimPath,
+                        true);
+            }
         }
 
         currentPath.computeBounds(tempRect, false);
@@ -198,6 +214,9 @@ class ShapeLayer extends AnimatableLayer {
             return;
         }
         canvas.drawPath(currentPath, paint);
+        if (!extraTrimPath.isEmpty()) {
+            canvas.drawPath(extraTrimPath, paint);
+        }
     }
 
     @Override
