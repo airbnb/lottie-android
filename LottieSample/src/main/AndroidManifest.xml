@@ -20,7 +20,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.airbnb.lottie.samples.FontActivity" />
+        <activity
+            android:name="com.airbnb.lottie.samples.FontActivity"
+            android:windowSoftInputMode="stateVisible"/>
     </application>
 
 </manifest>
