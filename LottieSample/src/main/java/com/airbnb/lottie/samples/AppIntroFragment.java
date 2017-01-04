@@ -17,17 +17,14 @@ import com.airbnb.lottie.LottieAnimationView;
 import java.lang.reflect.Field;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 public class AppIntroFragment extends Fragment {
     private static int PAGES = 3;
 
-    public static AppIntroFragment newInstance() {
+    static AppIntroFragment newInstance() {
         return new AppIntroFragment();
     }
 
-    private Unbinder unbinder;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.view_pager) ViewPager viewPager;
 
@@ -35,7 +32,6 @@ public class AppIntroFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_app_intro, container, false);
-        unbinder = ButterKnife.bind(this, view);
 
         setViewPagerScroller();
         viewPager.setAdapter(new PagerAdapter() {
