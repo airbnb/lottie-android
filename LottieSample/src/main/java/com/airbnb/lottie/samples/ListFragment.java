@@ -68,6 +68,10 @@ public class ListFragment extends Fragment {
         showFragment(ViewAnimationFragment.newInstance());
     }
 
+    private void onAppIntroPagerClicked() {
+        showFragment(AppIntroFragment.newInstance());
+    }
+
     private void showFragment(Fragment fragment) {
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
@@ -86,7 +90,8 @@ public class ListFragment extends Fragment {
         static final int VIEW_TYPE_LOCAL_FILE = 1;
         static final int VIEW_TYPE_VIEW_TEST = 2;
         static final int VIEW_TYPE_FONT = 3;
-        static final int VIEW_TYPE_FILE = 4;
+        static final int VIEW_TYPE_APP_INTRO = 4;
+        static final int VIEW_TYPE_FILE = 5;
 
         @Nullable private List<String> files = null;
 
@@ -114,6 +119,9 @@ public class ListFragment extends Fragment {
                     break;
                 case VIEW_TYPE_FONT:
                     holder.bind("Demo: Animated Typography");
+                    break;
+                case VIEW_TYPE_APP_INTRO:
+                    holder.bind("Demo: App Intro Pager");
                     break;
                 default:
                     //noinspection ConstantConditions
@@ -164,6 +172,9 @@ public class ListFragment extends Fragment {
                             break;
                         case FileAdapter.VIEW_TYPE_FONT:
                             onFontClicked();
+                            break;
+                        case FileAdapter.VIEW_TYPE_APP_INTRO:
+                            onAppIntroPagerClicked();
                             break;
                         default:
                             onFileClicked(fileName);
