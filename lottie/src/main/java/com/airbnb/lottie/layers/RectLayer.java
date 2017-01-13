@@ -84,7 +84,7 @@ class RectLayer extends AnimatableLayer {
         private final KeyframeAnimation.AnimationListener<Integer> alphaChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
             @Override
             public void onValueChanged(Integer value) {
-                onAlphaChanged();
+                invalidateSelf();
             }
         };
 
@@ -158,7 +158,7 @@ class RectLayer extends AnimatableLayer {
             this.shapeAlpha = shapeAlpha;
             addAnimation(shapeAlpha);
             shapeAlpha.addUpdateListener(alphaChangedListener);
-            onAlphaChanged();
+            invalidateSelf();
         }
 
         void setTransformAlpha(KeyframeAnimation<Integer> transformAlpha) {
@@ -169,14 +169,9 @@ class RectLayer extends AnimatableLayer {
             this.transformAlpha = transformAlpha;
             addAnimation(transformAlpha);
             transformAlpha.addUpdateListener(alphaChangedListener);
-            onAlphaChanged();
+            invalidateSelf();
         }
 
-        private void onAlphaChanged() {
-            Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
-            Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
-            setAlpha((int) ((shapeAlpha / 255f * transformAlpha / 255f) * 255));
-        }
 
         @Override
         public void setAlpha(int alpha) {
@@ -185,7 +180,10 @@ class RectLayer extends AnimatableLayer {
 
         @Override
         public int getAlpha() {
-            return paint.getAlpha();
+            Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
+            Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
+            int layerAlpha = super.getAlpha();
+            return (int) ((shapeAlpha / 255f * transformAlpha / 255f * layerAlpha / 255f) * 255);
         }
 
         public void setColor(KeyframeAnimation<Integer> color) {
@@ -327,6 +325,7 @@ class RectLayer extends AnimatableLayer {
             if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
                 return;
             }
+            paint.setAlpha(getAlpha());
             float halfWidth = rectSize.getValue().x / 2f;
             float halfHeight = rectSize.getValue().y / 2f;
 

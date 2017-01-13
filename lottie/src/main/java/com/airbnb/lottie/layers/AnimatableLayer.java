@@ -48,6 +48,7 @@ public class AnimatableLayer extends Drawable {
     };
 
     final List<AnimatableLayer> layers = new ArrayList<>();
+    @Nullable AnimatableLayer parentLayer;
 
 
     private KeyframeAnimation<PointF> position;
@@ -165,16 +166,13 @@ public class AnimatableLayer extends Drawable {
         this.alpha = alpha;
         addAnimation(alpha);
         alpha.addUpdateListener(integerChangedListener);
-        for (AnimatableLayer layer : layers) {
-            layer.setAlpha(alpha);
-        }
 
         invalidateSelf();
     }
 
     @Override
     public int getAlpha() {
-        return alpha.getValue();
+        return (int) (alpha == null ? 255 : alpha.getValue() * (parentLayer == null ? 1f : parentLayer.getAlpha() / 255f));
     }
 
     @Override
@@ -228,6 +226,7 @@ public class AnimatableLayer extends Drawable {
     }
 
     void addLayer(AnimatableLayer layer) {
+        layer.parentLayer = this;
         layers.add(layer);
         layer.setProgress(progress);
         if (this.alpha != null) {

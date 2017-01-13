@@ -53,6 +53,7 @@ public class LottieFontViewGroup extends FrameLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 ));
                 cursorView.setComposition(composition);
+                cursorView.loop(true);
                 cursorView.playAnimation();
                 addView(cursorView);
                 views.add(cursorView);
