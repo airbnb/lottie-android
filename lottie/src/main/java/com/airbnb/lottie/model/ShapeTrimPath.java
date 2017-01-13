@@ -34,4 +34,9 @@ public class ShapeTrimPath {
     public AnimatableFloatValue getOffset() {
         return offset;
     }
+
+    @Override
+    public String toString() {
+        return "Trim Path: {start: " + start + ", end: " + end + ", offset: " + offset + "}";
+    }
 }

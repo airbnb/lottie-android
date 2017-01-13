@@ -179,9 +179,6 @@ class ShapeLayer extends AnimatableLayer {
             float newEnd = Math.max(start, end);
 
             currentPath.reset();
-            // Workaround to get hardware acceleration on KitKat
-            // https://developer.android.com/reference/android/graphics/PathMeasure.html#getSegment(float, float, android.graphics.Path, boolean)
-            currentPath.rLineTo(0, 0);
             currentPathStrokeOffset = strokeOffset.getValue() / 360f * length;
             newStart += currentPathStrokeOffset;
             newEnd += currentPathStrokeOffset;
