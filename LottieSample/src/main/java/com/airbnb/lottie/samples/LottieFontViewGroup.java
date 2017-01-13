@@ -1,6 +1,7 @@
 package com.airbnb.lottie.samples;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -24,6 +25,8 @@ public class LottieFontViewGroup extends FrameLayout {
     private final Map<Character, LottieComposition> compositionMap = new HashMap<>();
     private final List<View> views = new ArrayList<>();
 
+    @Nullable private LottieAnimationView cursorView;
+
     public LottieFontViewGroup(Context context) {
         super(context);
         init();
@@ -41,21 +44,39 @@ public class LottieFontViewGroup extends FrameLayout {
 
     private void init() {
         setFocusableInTouchMode(true);
+        LottieComposition.fromAssetFileName(getContext(), "Amelie/BlinkingCursor.json", new LottieComposition.OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+                cursorView = new LottieAnimationView(getContext());
+                cursorView.setLayoutParams(new LottieFontViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                ));
+                cursorView.setComposition(composition);
+                cursorView.playAnimation();
+                addView(cursorView);
+                views.add(cursorView);
+            }
+        });
     }
 
-    void addSpace() {
+    private void addSpace() {
         addView(createSpaceView());
     }
 
     @Override
-    public void addView(View child) {
-        super.addView(child);
-        views.add(child);
+    public void addView(View child, int index) {
+        super.addView(child, index);
+        if (index == -1) {
+            views.add(child);
+        } else {
+            views.add(index, child);
+        }
     }
 
-    void removeLastView() {
+    private void removeLastView() {
         if (!views.isEmpty()) {
-            int position = views.size() - 1;
+            int position = views.size() - 2;
             removeView(views.get(position));
             views.remove(position);
         }
@@ -139,7 +160,12 @@ public class LottieFontViewGroup extends FrameLayout {
         ));
         lottieAnimationView.setComposition(composition);
         lottieAnimationView.playAnimation();
-        addView(lottieAnimationView);
+        if (cursorView == null) {
+            addView(lottieAnimationView);
+        } else {
+            int index = indexOfChild(cursorView);
+            addView(lottieAnimationView, index);
+        }
     }
 
     private boolean fitsOnCurrentLine(int currentX, View view) {
