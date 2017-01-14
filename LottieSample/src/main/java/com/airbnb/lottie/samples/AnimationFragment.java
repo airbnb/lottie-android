@@ -17,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
 
 import butterknife.BindView;
@@ -50,6 +51,10 @@ public class AnimationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_animation, container, false);
         ButterKnife.bind(this, view);
 
+        //noinspection ConstantConditions
+        fpsView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
+        //noinspection ConstantConditions
+        droppedFramesView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
         postUpdatePlayButtonText();
         loopButton.setChecked(true);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
