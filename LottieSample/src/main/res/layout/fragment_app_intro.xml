@@ -9,7 +9,7 @@
         android:id="@+id/animation_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:lottie_fileName="AppIntro.json"/>
+        app:lottie_fileName="Walkthrough.json"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"

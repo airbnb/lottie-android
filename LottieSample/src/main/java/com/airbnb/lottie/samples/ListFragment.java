@@ -132,7 +132,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE - 1;
+            return (files == null ? 0 : files.size()) + VIEW_TYPE_FILE;
         }
 
         @Override
