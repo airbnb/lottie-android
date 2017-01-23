@@ -172,7 +172,8 @@ public class AnimatableLayer extends Drawable {
 
     @Override
     public int getAlpha() {
-        return (int) (alpha == null ? 255 : alpha.getValue() * (parentLayer == null ? 1f : parentLayer.getAlpha() / 255f));
+        return (int) ((int) (alpha == null ? 1f : alpha.getValue()) *
+                (parentLayer == null ? 1f : parentLayer.getAlpha() / 255f) * 255);
     }
 
     @Override
