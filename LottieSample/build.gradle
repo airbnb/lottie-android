@@ -28,6 +28,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
 
     debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
 

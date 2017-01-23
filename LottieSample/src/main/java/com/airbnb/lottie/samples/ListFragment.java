@@ -69,7 +69,7 @@ public class ListFragment extends Fragment {
     }
 
     private void onAppIntroPagerClicked() {
-        showFragment(AppIntroFragment.newInstance());
+        startActivity(new Intent(getContext(), AppIntroActivity.class));
     }
 
     private void showFragment(Fragment fragment) {

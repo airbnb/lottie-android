@@ -23,6 +23,9 @@
         <activity
             android:name="com.airbnb.lottie.samples.FontActivity"
             android:windowSoftInputMode="stateVisible"/>
+
+        <activity
+            android:name="com.airbnb.lottie.samples.AppIntroActivity" />
     </application>
 
 </manifest>
