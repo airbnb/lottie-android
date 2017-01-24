@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
@@ -9,20 +9,23 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animation_view"
-        android:layout_gravity="center"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/outline"
         app:lottie_loop="true"/>
 
     <LinearLayout
+        android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <Button
                 android:id="@+id/play"
                 android:layout_width="wrap_content"
@@ -34,6 +37,23 @@
                 android:layout_height="wrap_content"
                 android:textOn="Loop"
                 android:textOff="Single"/>
+
+            <Button
+                android:id="@+id/load_asset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load Asset"/>
+
+            <Button
+                android:id="@+id/load_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load File"/>
+            <Button
+                android:id="@+id/load_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load Url"/>
         </LinearLayout>
 
 
@@ -45,13 +65,21 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/animation_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/controls"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="8dp"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/frames_per_second"
             android:layout_width="wrap_content"
@@ -65,4 +93,4 @@
             android:layout_marginBottom="8dp"/>
     </LinearLayout>
 
-</FrameLayout>
+</RelativeLayout>

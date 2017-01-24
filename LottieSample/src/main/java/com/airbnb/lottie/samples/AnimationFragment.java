@@ -3,9 +3,16 @@ package com.airbnb.lottie.samples;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -13,37 +20,55 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.model.LottieComposition;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static com.airbnb.lottie.samples.R.id.play;
 
 public class AnimationFragment extends Fragment {
-    private static final String ARG_FILE_NAME = "file_name";
+    private static final int RC_ASSET = 1337;
+    private static final int RC_FILE = 1338;
+    private static final int RC_URL = 1339;
+    static final String EXTRA_ANIMATION_NAME = "animation_name";
 
-    static AnimationFragment newInstance(String fileName) {
-        AnimationFragment frag = new AnimationFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_FILE_NAME, fileName);
-        frag.setArguments(args);
-        return frag;
+    static AnimationFragment newInstance() {
+        return new AnimationFragment();
     }
+
+    private OkHttpClient client;
 
     @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
-    @BindView(play) Button playButton;
+    @BindView(R.id.play) Button playButton;
     @BindView(R.id.loop_button) ToggleButton loopButton;
     @BindView(R.id.frames_per_second) TextView fpsView;
     @BindView(R.id.dropped_frames) TextView droppedFramesView;
+    @BindView(R.id.animation_name) TextView animationNameView;
 
     @Nullable
     @Override
@@ -100,11 +125,6 @@ public class AnimationFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        if (savedInstanceState == null) {
-            String fileName = getArguments().getString(ARG_FILE_NAME);
-            animationView.setAnimation(fileName);
-        }
-
         return view;
     }
 
@@ -114,8 +134,44 @@ public class AnimationFragment extends Fragment {
         super.onStop();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        switch (requestCode) {
+            case RC_ASSET:
+                final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
+                LottieComposition.fromAssetFileName(getContext(), assetName, new LottieComposition.OnCompositionLoadedListener() {
+                    @Override
+                    public void onCompositionLoaded(LottieComposition composition) {
+                        setComposition(composition, assetName);
+                    }
+                });
+                break;
+            case RC_FILE:
+                Uri uri = data.getData();
+                try {
+                    String path = getPath(uri);
+                    onFileLoaded(path);
+                } catch (URISyntaxException e) {
+                    onLoadError();
+                }
+                break;
+            case RC_URL:
+
+                break;
+        }
+    }
+
+    private void setComposition(LottieComposition composition, String name) {
+        animationView.setComposition(composition);
+        animationNameView.setText(name);
+    }
+
     @OnClick(play)
-    public void onPlayClicked() {
+    void onPlayClicked() {
         if (animationView.isAnimating()) {
             animationView.cancelAnimation();
             postUpdatePlayButtonText();
@@ -123,6 +179,53 @@ public class AnimationFragment extends Fragment {
             animationView.playAnimation();
             postUpdatePlayButtonText();
         }
+    }
+
+    @OnCheckedChanged(R.id.loop_button)
+    void onLoopChanged(boolean loop) {
+        animationView.loop(loop);
+    }
+
+    @OnClick(R.id.load_asset)
+    void onLoadAssetClicked() {
+        android.support.v4.app.DialogFragment assetFragment = ChooseAssetDialogFragment.newInstance();
+        assetFragment.setTargetFragment(this, RC_ASSET);
+        assetFragment.show(getFragmentManager(), "assets");
+    }
+
+    @OnClick(R.id.load_file)
+    void onLoadFileClicked() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*.json");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        try {
+            startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), RC_FILE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            // Potentially direct the user to the Market with a Dialog
+            Toast.makeText(getContext(), "Please install a File Manager.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @OnClick(R.id.load_url)
+    void onLoadUrlClicked() {
+        final EditText urlView = new EditText(getContext());
+        new AlertDialog.Builder(getContext())
+                .setTitle("Enter a URL")
+                .setView(urlView)
+                .setPositiveButton("Load", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        loadUrl(urlView.getText().toString());
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     private void postUpdatePlayButtonText() {
@@ -138,9 +241,94 @@ public class AnimationFragment extends Fragment {
         playButton.setText(animationView.isAnimating() ? "Cancel" : "Play");
     }
 
-    @OnCheckedChanged(R.id.loop_button)
-    public void onLoopChanged(boolean loop) {
-        animationView.loop(loop);
+    private String getPath(Uri uri) throws URISyntaxException {
+        if ("content".equalsIgnoreCase(uri.getScheme())) {
+            String[] projection = { "_data" };
+            Cursor cursor = null;
+
+            try {
+                cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
+                int column_index = cursor.getColumnIndexOrThrow("_data");
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(column_index);
+                }
+            } catch (Exception e) {
+                // Eat it
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
+    private void onFileLoaded(final String fileName) {
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(fileName);
+        } catch (FileNotFoundException e) {
+            onLoadError();
+            return;
+        }
+
+        LottieComposition.fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+                setComposition(composition, fileName);
+            }
+        });
+    }
+
+    private void loadUrl(String url) {
+        Request request;
+        try {
+            request = new Request.Builder()
+                    .url(url)
+                    .build();
+        } catch (IllegalArgumentException e) {
+            onLoadError();
+            return;
+        }
+
+
+        if (client == null) {
+            client = new OkHttpClient();
+        }
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                onLoadError();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    onLoadError();
+                }
+
+                try {
+                    JSONObject json = new JSONObject(response.body().string());
+                    LottieComposition.fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
+                        @Override
+                        public void onCompositionLoaded(LottieComposition composition) {
+                            setComposition(composition, "Network Animation");
+                        }
+                    });
+                } catch (JSONException e) {
+                    onLoadError();
+                }
+            }
+        });
+    }
+
+    private void onLoadError() {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), "Failed to load animation", Snackbar.LENGTH_LONG).show();
     }
 
     private void startRecordingDroppedFrames() {

@@ -251,6 +251,9 @@ public class LottieAnimationView extends ImageView {
         }
         lottieDrawable.setCallback(this);
         lottieDrawable.setComposition(composition);
+        // If you set a different composition on the view, the bounds will not update unless
+        // the drawable is different than the original.
+        setImageDrawable(null);
         setImageDrawable(lottieDrawable);
 
         isAnimationLoading = false;
