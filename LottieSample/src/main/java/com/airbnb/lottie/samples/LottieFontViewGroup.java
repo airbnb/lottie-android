@@ -56,7 +56,6 @@ public class LottieFontViewGroup extends FrameLayout {
                 cursorView.loop(true);
                 cursorView.playAnimation();
                 addView(cursorView);
-                views.add(cursorView);
             }
         });
     }
@@ -76,7 +75,7 @@ public class LottieFontViewGroup extends FrameLayout {
     }
 
     private void removeLastView() {
-        if (!views.isEmpty()) {
+        if (views.size() > 1) {
             int position = views.size() - 2;
             removeView(views.get(position));
             views.remove(position);
