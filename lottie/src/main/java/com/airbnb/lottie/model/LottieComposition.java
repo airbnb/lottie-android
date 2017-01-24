@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.RestrictTo;
+import android.support.annotation.VisibleForTesting;
 import android.util.LongSparseArray;
 
 import org.json.JSONArray;
@@ -192,6 +193,12 @@ public class LottieComposition {
 
     private LottieComposition(Resources res) {
         scale = res.getDisplayMetrics().density;
+    }
+
+    @VisibleForTesting
+    public LottieComposition(long duration) {
+        scale = 1f;
+        this.duration = duration;
     }
 
 
