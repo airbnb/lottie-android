@@ -130,17 +130,17 @@ public class AnimatableLayer extends Drawable {
             }
         }
 
-        if (layer.transform != null) {
-            ScaleXY scale = layer.transform.getValue();
-            if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
-                canvas.scale(scale.getScaleX(), scale.getScaleY());
-            }
-        }
-
         if (layer.rotation != null) {
             float rotation = layer.rotation.getValue();
             if (rotation != 0f) {
                 canvas.rotate(rotation);
+            }
+        }
+
+        if (layer.transform != null) {
+            ScaleXY scale = layer.transform.getValue();
+            if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
+                canvas.scale(scale.getScaleX(), scale.getScaleY());
             }
         }
 
