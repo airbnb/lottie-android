@@ -8,23 +8,22 @@ android {
     defaultConfig {
         applicationId "com.airbnb.lottie"
         minSdkVersion 16
-        targetSdkVersion 20
+        targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "0.9.0"
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
     compile project(':lottie')
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:recyclerview-v7:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
