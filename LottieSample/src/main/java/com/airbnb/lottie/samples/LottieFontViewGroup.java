@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class LottieFontViewGroup extends FrameLayout {
 
-    private final Map<Character, LottieComposition> compositionMap = new HashMap<>();
+    private final Map<String, LottieComposition> compositionMap = new HashMap<>();
     private final List<View> views = new ArrayList<>();
 
     @Nullable private LottieAnimationView cursorView;
@@ -44,7 +44,7 @@ public class LottieFontViewGroup extends FrameLayout {
 
     private void init() {
         setFocusableInTouchMode(true);
-        LottieComposition.fromAssetFileName(getContext(), "Amelie/BlinkingCursor.json", new LottieComposition.OnCompositionLoadedListener() {
+        LottieComposition.fromAssetFileName(getContext(), "Mobilo/BlinkingCursor.json", new LottieComposition.OnCompositionLoadedListener() {
             @Override
             public void onCompositionLoaded(LottieComposition composition) {
                 cursorView = new LottieAnimationView(getContext());
@@ -61,7 +61,8 @@ public class LottieFontViewGroup extends FrameLayout {
     }
 
     private void addSpace() {
-        addView(createSpaceView());
+        int index = indexOfChild(cursorView);
+        addView(createSpaceView(), index);
     }
 
     @Override
@@ -80,6 +81,31 @@ public class LottieFontViewGroup extends FrameLayout {
             removeView(views.get(position));
             views.remove(position);
         }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (views.isEmpty()) {
+            return;
+        }
+        int currentX = getPaddingTop();
+        int currentY = getPaddingLeft();
+
+        for (int i = 0; i < views.size(); i++) {
+            View view = views.get(i);
+            if (!fitsOnCurrentLine(currentX, view)) {
+                if (view.getTag() != null && view.getTag().equals("Space")) {
+                    continue;
+                }
+                currentX = getPaddingLeft();
+                currentY += view.getMeasuredHeight();
+            }
+            currentX += view.getWidth();
+        }
+
+        setMeasuredDimension(getMeasuredWidth(), currentY + views.get(views.size() - 1).getMeasuredHeight() * 2);
     }
 
     @Override
@@ -130,26 +156,52 @@ public class LottieFontViewGroup extends FrameLayout {
             return true;
         }
 
-        if (event.getKeyCode() < KeyEvent.KEYCODE_A || event.getKeyCode() > KeyEvent.KEYCODE_Z) {
-            return super.onKeyDown(keyCode, event);
+        if (!isValidKey(keyCode)) {
+            return super.onKeyUp(keyCode, event);
         }
 
 
-        final char letter = Character.toUpperCase((char) event.getUnicodeChar());
-        if (compositionMap.containsKey(letter)) {
-            addComposition(compositionMap.get(letter));
+        String letter = "" + Character.toUpperCase((char) event.getUnicodeChar());
+        switch (letter) {
+            case ",":
+                letter = "Comma";
+                break;
+            case "'":
+                letter = "Apostrophe";
+                break;
+            case ";":
+            case ":":
+                letter = "Colon";
+                break;
+        }
+        final String fileName = "Mobilo/" + letter + ".json";
+        if (compositionMap.containsKey(fileName)) {
+            addComposition(compositionMap.get(fileName));
         } else {
-            String fileName = "Amelie/" + letter + ".json";
             LottieComposition.fromAssetFileName(getContext(), fileName, new LottieComposition.OnCompositionLoadedListener() {
                 @Override
                 public void onCompositionLoaded(LottieComposition composition) {
-                    compositionMap.put(letter, composition);
+                    compositionMap.put(fileName, composition);
                     addComposition(composition);
                 }
             });
         }
 
         return true;
+    }
+
+    private boolean isValidKey(int keyCode) {
+        if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
+            return true;
+        }
+
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_COMMA:
+            case KeyEvent.KEYCODE_APOSTROPHE:
+            case KeyEvent.KEYCODE_SEMICOLON:
+                return true;
+        }
+        return false;
     }
 
     private void addComposition(LottieComposition composition) {
