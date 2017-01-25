@@ -1,4 +1,4 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="true" android:drawable="@drawable/ic_loop_enabled"/>
+    <item android:state_activated="true" android:drawable="@drawable/ic_loop_enabled"/>
     <item android:drawable="@drawable/ic_loop_disabled"/>
 </selector>
