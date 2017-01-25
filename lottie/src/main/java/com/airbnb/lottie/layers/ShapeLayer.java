@@ -143,6 +143,10 @@ class ShapeLayer extends AnimatableLayer {
     void onPathChanged() {
         currentPath.reset();
         currentPath.set(path.getValue());
+        currentPathStrokeStart = Float.NaN;
+        currentPathStrokeEnd = Float.NaN;
+        currentPathScaleX = Float.NaN;
+        currentPathScaleY = Float.NaN;
         onPathPropertiesChanged();
         invalidateSelf();
     }
