@@ -11,11 +11,12 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
@@ -24,14 +25,55 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/inverted_background">
+
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/outline"
-            android:duplicateParentState="true"
-            app:lottie_loop="true"/>
+            android:duplicateParentState="true"/>
+
+        <LinearLayout
+            android:id="@+id/instructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:textColor="@android:color/black"
+                android:text="Choose an option below"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_assets"
+                android:drawablePadding="4dp"
+                android:textColor="@android:color/black"
+                android:text="Sample animations"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_file"
+                android:drawablePadding="4dp"
+                android:textColor="@android:color/black"
+                android:text="Load animation file"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_network"
+                android:drawablePadding="4dp"
+                android:textColor="@android:color/black"
+                android:text="Load animation from json url"/>
+        </LinearLayout>
     </FrameLayout>
 
     <View

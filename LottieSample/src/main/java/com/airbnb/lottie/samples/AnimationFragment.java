@@ -60,9 +60,11 @@ public class AnimationFragment extends Fragment {
     private OkHttpClient client;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.instructions) ViewGroup instructionsContainer;
     @BindView(R.id.animation_container) ViewGroup animationContainer;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
+    @BindView(R.id.invert_colors) ImageButton invertButton;
     @BindView(R.id.play_button) ImageButton playButton;
     @BindView(R.id.loop) ImageButton loopButton;
     // @BindView(R.id.frames_per_second) TextView fpsView;
@@ -77,6 +79,12 @@ public class AnimationFragment extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
 
         //noinspection ConstantConditions
         // fpsView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
@@ -167,6 +175,7 @@ public class AnimationFragment extends Fragment {
     }
 
     private void setComposition(LottieComposition composition, String name) {
+        instructionsContainer.setVisibility(View.GONE);
         seekBar.setProgress(0);
         animationView.setComposition(composition);
         animationNameView.setText(name);
@@ -204,7 +213,8 @@ public class AnimationFragment extends Fragment {
 
     @OnClick(R.id.invert_colors)
     void onInvertClicked() {
-        animationContainer.setEnabled(!animationContainer.isEnabled());
+        animationContainer.setActivated(!animationContainer.isActivated());
+        invertButton.setActivated(animationContainer.isActivated());
     }
 
     @OnClick(R.id.load_asset)

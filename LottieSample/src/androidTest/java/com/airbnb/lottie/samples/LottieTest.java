@@ -17,15 +17,18 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     @Test
     public void testAll() {
-        TestRobot.testAnimatedFile(getActivity(), "Alarm.json");
-        TestRobot.testAnimatedFile(getActivity(), "BusinessTravel01.json");
-        TestRobot.testAnimatedFile(getActivity(), "BusinessTravel03.json");
-        TestRobot.testAnimatedFile(getActivity(), "CheckSwitch.json");
-        TestRobot.testAnimatedFile(getActivity(), "Diamond.json");
-        TestRobot.testAnimatedFile(getActivity(), "Heart.json");
-        TestRobot.testAnimatedFile(getActivity(), "Hosts.json");
-        TestRobot.testAnimatedFile(getActivity(), "LightBulb.json");
-        TestRobot.testAnimatedFile(getActivity(), "Stars.json");
-        TestRobot.testAnimatedFile(getActivity(), "LoopPlayOnce.json");
+        TestRobot.testAnimation(getActivity(), "9squares-AlBoardman.json");
+        TestRobot.testAnimation(getActivity(), "EmptyState.json");
+        TestRobot.testAnimation(getActivity(), "HamburgerArrow.json");
+        TestRobot.testAnimation(getActivity(), "LottieLogo1.json");
+        TestRobot.testAnimation(getActivity(), "LottieLogo2.json");
+        TestRobot.testAnimation(getActivity(), "MotionCorpse-Jrcanest.json");
+        TestRobot.testAnimation(getActivity(), "PinJump.json");
+        TestRobot.testAnimation(getActivity(), "TwitterHeart.json");
+        TestRobot.testAnimation(getActivity(), "Tests/Hosts.json");
+        TestRobot.testAnimation(getActivity(), "Tests/LightBulb.json", new float[] {0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f, 0.5f, 1f});
+        TestRobot.testAnimation(getActivity(), "Tests/LoopPlayOnce.json");
+        TestRobot.testAnimation(getActivity(), "Tests/Alarm.json");
+        TestRobot.testAnimation(getActivity(), "Tests/CheckSwitch.json");
     }
 }
