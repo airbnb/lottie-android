@@ -96,7 +96,9 @@ public class AnimatableLayer extends Drawable {
                 alpha = alpha * this.alpha.getValue() / 255;
             }
             solidBackgroundPaint.setAlpha(alpha);
-            canvas.drawRect(getBounds(), solidBackgroundPaint);
+            if (alpha > 0) {
+                canvas.drawRect(getBounds(), solidBackgroundPaint);
+            }
         }
         for (int i = 0; i < layers.size(); i++) {
             layers.get(i).draw(canvas);

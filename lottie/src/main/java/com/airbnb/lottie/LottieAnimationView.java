@@ -316,6 +316,14 @@ public class LottieAnimationView extends ImageView {
         lottieDrawable.cancelAnimation();
     }
 
+    public void pauseAnimation() {
+        setProgressWhenCompositionSet = false;
+        playAnimationWhenCompositionSet = false;
+        float progress = getProgress();
+        lottieDrawable.cancelAnimation();
+        setProgress(progress);
+    }
+
     public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
         this.progress = progress;
         if (isAnimationLoading) {
@@ -323,6 +331,11 @@ public class LottieAnimationView extends ImageView {
             return;
         }
         lottieDrawable.setProgress(progress);
+    }
+
+    @FloatRange(from=0.0f, to=1.0f)
+    public float getProgress() {
+        return progress;
     }
 
     public long getDuration() {

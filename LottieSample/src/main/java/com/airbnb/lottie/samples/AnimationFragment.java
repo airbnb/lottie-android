@@ -15,18 +15,18 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.model.LottieComposition;
 
@@ -40,15 +40,12 @@ import java.net.URISyntaxException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.airbnb.lottie.samples.R.id.play;
 
 public class AnimationFragment extends Fragment {
     private static final int RC_ASSET = 1337;
@@ -62,12 +59,14 @@ public class AnimationFragment extends Fragment {
 
     private OkHttpClient client;
 
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.animation_container) ViewGroup animationContainer;
     @BindView(R.id.animation_view) LottieAnimationView animationView;
     @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
-    @BindView(R.id.play) Button playButton;
-    @BindView(R.id.loop_button) ToggleButton loopButton;
-    @BindView(R.id.frames_per_second) TextView fpsView;
-    @BindView(R.id.dropped_frames) TextView droppedFramesView;
+    @BindView(R.id.play_button) ImageButton playButton;
+    @BindView(R.id.loop) ImageButton loopButton;
+    // @BindView(R.id.frames_per_second) TextView fpsView;
+    // @BindView(R.id.dropped_frames) TextView droppedFramesView;
     @BindView(R.id.animation_name) TextView animationNameView;
 
     @Nullable
@@ -76,12 +75,14 @@ public class AnimationFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_animation, container, false);
         ButterKnife.bind(this, view);
 
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_back);
+
         //noinspection ConstantConditions
-        fpsView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
+        // fpsView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
         //noinspection ConstantConditions
-        droppedFramesView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
+        // droppedFramesView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
         postUpdatePlayButtonText();
-        loopButton.setChecked(true);
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -166,28 +167,49 @@ public class AnimationFragment extends Fragment {
     }
 
     private void setComposition(LottieComposition composition, String name) {
+        seekBar.setProgress(0);
         animationView.setComposition(composition);
         animationNameView.setText(name);
     }
 
-    @OnClick(play)
+    @OnClick(R.id.play_button)
     void onPlayClicked() {
         if (animationView.isAnimating()) {
-            animationView.cancelAnimation();
+            animationView.pauseAnimation();
             postUpdatePlayButtonText();
         } else {
+            if (animationView.getProgress() == 1f) {
+                animationView.setProgress(0f);
+            }
             animationView.playAnimation();
             postUpdatePlayButtonText();
         }
     }
 
-    @OnCheckedChanged(R.id.loop_button)
-    void onLoopChanged(boolean loop) {
-        animationView.loop(loop);
+    @OnClick(R.id.loop)
+    void onLoopChanged() {
+        loopButton.setEnabled(!loopButton.isEnabled());
+        animationView.loop(loopButton.isEnabled());
+    }
+
+    @OnClick(R.id.restart)
+    void onRestartClicked() {
+        boolean restart = animationView.isAnimating();
+        animationView.cancelAnimation();
+        animationView.setProgress(0f);
+        if (restart) {
+            animationView.playAnimation();
+        }
+    }
+
+    @OnClick(R.id.invert_colors)
+    void onInvertClicked() {
+        animationContainer.setEnabled(!animationContainer.isEnabled());
     }
 
     @OnClick(R.id.load_asset)
     void onLoadAssetClicked() {
+        animationView.cancelAnimation();
         android.support.v4.app.DialogFragment assetFragment = ChooseAssetDialogFragment.newInstance();
         assetFragment.setTargetFragment(this, RC_ASSET);
         assetFragment.show(getFragmentManager(), "assets");
@@ -195,6 +217,7 @@ public class AnimationFragment extends Fragment {
 
     @OnClick(R.id.load_file)
     void onLoadFileClicked() {
+        animationView.cancelAnimation();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*.json");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -209,6 +232,7 @@ public class AnimationFragment extends Fragment {
 
     @OnClick(R.id.load_url)
     void onLoadUrlClicked() {
+        animationView.cancelAnimation();
         final EditText urlView = new EditText(getContext());
         new AlertDialog.Builder(getContext())
                 .setTitle("Enter a URL")
@@ -238,7 +262,7 @@ public class AnimationFragment extends Fragment {
     }
 
     private void updatePlayButtonText() {
-        playButton.setText(animationView.isAnimating() ? "Cancel" : "Play");
+        playButton.setActivated(animationView.isAnimating());
     }
 
     private String getPath(Uri uri) throws URISyntaxException {
@@ -335,13 +359,14 @@ public class AnimationFragment extends Fragment {
         getApplication().startRecordingDroppedFrames();
     }
 
+    @SuppressWarnings("unused")
     @SuppressLint({"SetTextI18n", "DefaultLocale"})
     private void recordDroppedFrames() {
         Pair<Integer, Long> droppedFrames = getApplication().stopRecordingDroppedFrames();
         int targetFrames = (int) ((droppedFrames.second / 1000000000f) * 60);
         int actualFrames = targetFrames - droppedFrames.first;
-        fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
-        droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
+        // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
+        // droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
     }
 
     private ILottieApplication getApplication() {
