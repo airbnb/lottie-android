@@ -9,16 +9,16 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 They say a picture is worth 1,000 words so here are 7,000
 
-![P2](gifs/P2.gif)
-![P3](gifs/P3.gif)
+![Example1](gifs/Example1.gif)
 
-![Lightbulb](gifs/Lightbulb.gif)
-![Business](gifs/Business.gif)
 
-![AllSet](gifs/AllSet.gif)
-![Selfie](gifs/Selfie.gif)
+![Example2](gifs/Example2.gif)
 
-![Abcs](gifs/abcs.gif)
+
+![Example3](gifs/Example3.gif)
+
+
+![Example4](gifs/Example4.gif)
 
 ## Download
 
