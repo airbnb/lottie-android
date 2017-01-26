@@ -65,7 +65,7 @@ If you want to reuse an animation such as in each item of a list or load it from
  });
  ```
 
-You can then control the animation or add listeners:L
+You can then control the animation or add listeners:
 ```
 animationView.addAnimatorUpdateListener((animation) -> {
     // Do something.
