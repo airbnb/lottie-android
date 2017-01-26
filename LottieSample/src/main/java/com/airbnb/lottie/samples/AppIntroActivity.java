@@ -22,10 +22,10 @@ import java.util.Collection;
 public class AppIntroActivity extends IntroActivity {
     private static final float[] ANIMATION_TIMES = new float[] {
             0f,
-            0.2795f,
-            0.5488f,
-            0.7650f,
+            0.3333f,
+            0.6666f,
             1f,
+            1f
 
     };
     private LottieAnimationView animationView;
@@ -49,8 +49,6 @@ public class AppIntroActivity extends IntroActivity {
         viewPager = (LockableViewPager) findViewById(com.matthewtamlin.sliding_intro_screen_library.R.id.intro_activity_viewPager);
         getRootView().addView(animationView, 0);
         setViewPagerScroller();
-
-        viewPager.setCurrentItem(1, true);
 
         addPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -117,7 +115,7 @@ public class AppIntroActivity extends IntroActivity {
             Scroller scroller = new Scroller(this, (Interpolator) interpolator.get(null)) {
                 @Override
                 public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-                    super.startScroll(startX, startY, dx, dy, duration * 10);
+                    super.startScroll(startX, startY, dx, dy, duration * 7);
                 }
             };
             scrollerField.set(viewPager, scroller);

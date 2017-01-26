@@ -80,7 +80,7 @@ public class ListFragment extends Fragment {
                     holder.bind("Animated Typography", TAG_TYPOGRAPHY);
                     break;
                 case 2:
-                    holder.bind("Animated app intro", TAG_APP_INTRO);
+                    holder.bind("Animated App Tutorial", TAG_APP_INTRO);
                     break;
             }
         }
