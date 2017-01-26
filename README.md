@@ -26,7 +26,9 @@ Gradle is the only supported build configuration, so just add the dependency to 
 
 ```groovy
 dependencies {
-  compile 'com.airbnb.android:lottie-android:1.0.0'
+  
+  
+  'com.airbnb.android:lottie:1.0.0'
 }
 ```
 
