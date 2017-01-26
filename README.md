@@ -1,4 +1,4 @@
-# Lottie for Android (and [iOS](https://github.com/airbnb/lottie-ios) and [React Native](https://github.com/airbnb/lottie-react-native))
+# Lottie for Android, [iOS](https://github.com/airbnb/lottie-ios), [React Native](https://github.com/airbnb/lottie-react-native)
 
 Lottie is a mobile library for Andorid and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [bodymovin](https://github.com/bodymovin/bodymovin) and renders them natively on mobile!
 
