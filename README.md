@@ -100,9 +100,9 @@ LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (compositi
 
 If your animation will be frequently reused, `LottieAnimationView` has an optional caching strategy built in. Use `LottieAnimationView#setAnimation(String, CacheStrategy)`. `CacheStrategy` can be `Strong`, `Weak`, or `None` to have `LottieAnimationView` hold a strong or weak reference to the loaded and parsed animation. 
 
-## Supported After Effects Features 📝
+## Supported After Effects Features
 
-### Interpolators 
+### Keyframe Interpolation
 
 ---
 
@@ -112,7 +112,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 
 * Hold Interpolation
 
-* Rove across time
+* Rove Across Time
 
 * Spatial Bezier
 
@@ -138,7 +138,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 
 * Opacity
 
-* Multiple masks (additive)
+* Multiple Masks (additive)
 
 ### Track Mattes
 
@@ -150,7 +150,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 
 ---
 
-* Multiple parenting
+* Multiple Parenting
 
 * Nulls
 
