@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -21,6 +23,7 @@ public class ListFragment extends Fragment {
 
     @BindView(R.id.container) ViewGroup container;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.animation_view) LottieAnimationView animationView;
 
     private final FileAdapter adapter = new FileAdapter();
 
@@ -33,6 +36,18 @@ public class ListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        animationView.playAnimation();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        animationView.cancelAnimation();
     }
 
     private void onViewerClicked() {
