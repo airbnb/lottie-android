@@ -97,6 +97,116 @@ LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (compositi
 
 If your animation will be frequently reused, `LottieAnimationView` has an optional caching strategy built in. Use `LottieAnimationView#setAnimation(String, CacheStrategy)`. `CacheStrategy` can be `Strong`, `Weak`, or `None` to have `LottieAnimationView` hold a strong or weak reference to the loaded and parsed animation. 
 
+## Supported After Effects Features 📝
+
+### Interpolators 
+
+---
+
+* Linear Interpolation
+
+* Bezier Interpolation
+
+* Hold Interpolation
+
+* Rove across time
+
+* Spatial Bezier
+
+### Solids
+
+---
+
+* Transform Anchor Point
+
+* Transform Position
+
+* Transform Scale
+
+* Transform Rotation
+
+* Transform Opacity
+
+### Masks
+
+---
+
+* Path
+
+* Opacity
+
+* Multiple masks (additive)
+
+### Track Mattes
+
+---
+
+* Alpha Matte
+
+### Parenting
+
+---
+
+* Multiple parenting
+
+* Nulls
+
+### Shape Layers
+
+---
+
+* Anchor Point
+
+* Position
+
+* Scale
+
+* Rotation
+
+* Opacity
+
+* Path
+
+* Group Transforms (Anchor point, position, scale etc)
+
+* Rectangle (All properties)
+
+* Elipse (All properties)
+
+* Multiple paths in one group
+
+#### Stroke (shape layer)
+
+---
+
+* Stroke Color
+
+* Stroke Opacity
+
+* Stroke Width
+
+* Line Cap
+
+* Dashes
+
+#### Fill (shape layer)
+
+---
+
+* Fill Color
+
+* Fill Opacity
+
+#### Trim Paths (shape layer)
+
+---
+
+* Trim Paths Start
+
+* Trim Paths End
+
+* Trim Paths Offset
+
 ## Performance and Memory
 1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
 2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn. In addition to memory churn, additional bitmap.eraseColor() and canvas.drawBitmap() calls are necessary for masks and mattes which will slow down the performance of the animation. For small animations, the performance hit should not be large enough to be obvious when actually used.
