@@ -41,6 +41,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        animationView.setProgress(0f);
         animationView.playAnimation();
     }
 
