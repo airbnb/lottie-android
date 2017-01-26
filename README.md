@@ -39,7 +39,8 @@ The simplest way to use it is with LottieAnimationView:
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:lottie_fileName="hello-world.json"
-        app:lottie_loop="true"/>
+        app:lottie_loop="true"
+        app:lottie_autoPlay="true" />
 ```
 
 Or you can load it programatically in multiple ways.
@@ -57,7 +58,7 @@ If you want to reuse an animation such as in each item of a list or load it from
  ...
  LottieComposition composition = LottieComposition.fromJson(getResources(), jsonObject, (composition) -> {
      animationView.setComposition(composition);
-     animationView.playAnimation();````
+     animationView.playAnimation();
  });
  ```
 
