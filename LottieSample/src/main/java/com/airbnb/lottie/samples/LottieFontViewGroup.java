@@ -162,18 +162,18 @@ public class LottieFontViewGroup extends FrameLayout {
 
 
         String letter = "" + Character.toUpperCase((char) event.getUnicodeChar());
-        switch (letter) {
-            case ",":
-                letter = "Comma";
-                break;
-            case "'":
-                letter = "Apostrophe";
-                break;
-            case ";":
-            case ":":
-                letter = "Colon";
-                break;
-        }
+        // switch (letter) {
+        //     case ",":
+        //         letter = "Comma";
+        //         break;
+        //     case "'":
+        //         letter = "Apostrophe";
+        //         break;
+        //     case ";":
+        //     case ":":
+        //         letter = "Colon";
+        //         break;
+        // }
         final String fileName = "Mobilo/" + letter + ".json";
         if (compositionMap.containsKey(fileName)) {
             addComposition(compositionMap.get(fileName));
@@ -195,12 +195,12 @@ public class LottieFontViewGroup extends FrameLayout {
             return true;
         }
 
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_COMMA:
-            case KeyEvent.KEYCODE_APOSTROPHE:
-            case KeyEvent.KEYCODE_SEMICOLON:
-                return true;
-        }
+        // switch (keyCode) {
+        //     case KeyEvent.KEYCODE_COMMA:
+        //     case KeyEvent.KEYCODE_APOSTROPHE:
+        //     case KeyEvent.KEYCODE_SEMICOLON:
+        //         return true;
+        // }
         return false;
     }
 
