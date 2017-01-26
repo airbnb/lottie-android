@@ -91,6 +91,7 @@ public class AnimationFragment extends Fragment {
         //noinspection ConstantConditions
         // droppedFramesView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
         postUpdatePlayButtonText();
+        onLoopChanged();
         animationView.addAnimatorListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
