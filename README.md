@@ -2,7 +2,7 @@
 
 Lottie is a mobile library for Andorid and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [bodymovin](https://github.com/bodymovin/bodymovin) and renders them natively on mobile!
 
-For the first time, designers can create **and ship** beautiful animations without an enginineer painstakingly recreating it be hand. They say a picture is worth 1,000 words so here are 4,000:
+For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it be hand. They say a picture is worth 1,000 words so here are 13,000:
 
 ![Example1](gifs/Example1.gif)
 
@@ -14,6 +14,9 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 
 ![Example4](gifs/Example4.gif)
+
+
+![Community](gifs/Community 2_3.gif)
 
 
 All of these animations were created in After Effects, exported with bodymovin, and rendered natively with no additional engineering effort.
