@@ -21,6 +21,8 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 All of these animations were created in After Effects, exported with bodymovin, and rendered natively with no additional engineering effort.
 
+Read more about it on our [blog post](http://airbnb.design/introducing-lottie/)
+
 ## Sample App
 
 You can build the sample app yourself or download it from the [Play Store](https://play.google.com/store/apps/details?id=com.airbnb.lottie). The sample app includes some built in animations but also allows you to load an animation from internal storage or from a url.
