@@ -1,6 +1,6 @@
 # Lottie for Android, [iOS](https://github.com/airbnb/lottie-ios), and [React Native](https://github.com/airbnb/lottie-react-native)
 
-Lottie is a mobile library for Andorid and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [bodymovin](https://github.com/bodymovin/bodymovin) and renders them natively on mobile!
+Lottie is a mobile library for Andorid and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/bodymovin/bodymovin) and renders them natively on mobile!
 
 For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it be hand. They say a picture is worth 1,000 words so here are 13,000:
 
@@ -19,7 +19,9 @@ For the first time, designers can create **and ship** beautiful animations witho
 ![Example4](gifs/Example4.gif)
 
 
-All of these animations were created in After Effects, exported with bodymovin, and rendered natively with no additional engineering effort.
+All of these animations were created in After Effects, exported with Bodymovin, and rendered natively with no additional engineering effort.
+
+[Bodymovin](https://github.com/bodymovin/bodymovin) is an After Effects plugin created by Hernan Torrisi that exports After effects files as json and includes a javascript web player. We've built on top of his great work to extend its usage to Android, iOS, and React Native.
 
 Read more about it on our [blog post](http://airbnb.design/introducing-lottie/)
 
