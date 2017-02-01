@@ -8,7 +8,7 @@ import android.support.annotation.RestrictTo;
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.ShapeData;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class MiscUtils {
 
     public static PointF addPoints(PointF p1, PointF p2) {

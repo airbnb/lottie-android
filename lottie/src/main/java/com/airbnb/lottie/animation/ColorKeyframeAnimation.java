@@ -8,7 +8,7 @@ import com.airbnb.lottie.model.LottieComposition;
 
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 

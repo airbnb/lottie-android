@@ -13,16 +13,16 @@ import com.airbnb.lottie.animatable.AnimatableScaleValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapeTransform implements Transform {
     private static final String TAG = ShapeTransform.class.getSimpleName();
 
     private final Rect compBounds;
-    private AnimatablePathValue position;
-    private AnimatablePathValue anchor;
-    private AnimatableScaleValue scale;
-    private AnimatableFloatValue rotation;
-    private AnimatableIntegerValue opacity;
+    private final AnimatablePathValue position;
+    private final AnimatablePathValue anchor;
+    private final AnimatableScaleValue scale;
+    private final AnimatableFloatValue rotation;
+    private final AnimatableIntegerValue opacity;
 
     public ShapeTransform(LottieComposition composition) {
         this.compBounds = composition.getBounds();

@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
     private final ScaleXY outTransform = new ScaleXY();
 

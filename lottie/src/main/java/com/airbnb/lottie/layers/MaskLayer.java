@@ -4,7 +4,6 @@ import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 
 import com.airbnb.lottie.animation.KeyframeAnimation;
-import com.airbnb.lottie.model.LottieComposition;
 import com.airbnb.lottie.model.Mask;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ class MaskLayer extends AnimatableLayer {
 
     private final List<KeyframeAnimation<Path>> masks;
 
-    MaskLayer(List<Mask> masks, LottieComposition composition, Drawable.Callback callback) {
+    MaskLayer(List<Mask> masks, Drawable.Callback callback) {
         super(callback);
         this.masks = new ArrayList<>(masks.size());
         for (int i = 0; i < masks.size(); i++) {

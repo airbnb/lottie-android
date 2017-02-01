@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class LayerView extends AnimatableLayer {
 
     private MaskLayer mask;
@@ -125,7 +125,7 @@ public class LayerView extends AnimatableLayer {
         }
 
         if (maskBitmap != null && layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-            setMask(new MaskLayer(layerModel.getMasks(), composition, getCallback()));
+            setMask(new MaskLayer(layerModel.getMasks(), getCallback()));
             maskCanvas = new Canvas(maskBitmap);
         }
         buildAnimations();

@@ -11,7 +11,7 @@ import com.airbnb.lottie.utils.SegmentedPath;
 
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
     private final PointF point = new PointF();
     private final float[] pos = new float[2];

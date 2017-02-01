@@ -3,7 +3,7 @@ package com.airbnb.lottie.model;
 import android.graphics.PointF;
 import android.support.annotation.RestrictTo;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class CubicCurveData {
     private final PointF controlPoint1;
     private final PointF controlPoint2;

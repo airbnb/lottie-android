@@ -12,7 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
 
     public AnimatableColorValue(JSONObject json, int frameRate, LottieComposition composition) {

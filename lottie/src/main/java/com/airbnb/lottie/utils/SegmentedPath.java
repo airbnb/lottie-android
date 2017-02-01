@@ -7,7 +7,7 @@ import android.support.annotation.RestrictTo;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class SegmentedPath {
 
     private final List<Path> segments = new ArrayList<>();

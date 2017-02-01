@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
     public AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {

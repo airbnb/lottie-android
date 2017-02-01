@@ -8,7 +8,7 @@ import com.airbnb.lottie.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.animatable.AnimatablePathValue;
 import com.airbnb.lottie.animatable.AnimatableScaleValue;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public interface Transform {
     Rect getBounds();
 
