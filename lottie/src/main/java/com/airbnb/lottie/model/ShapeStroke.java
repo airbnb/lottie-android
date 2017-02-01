@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapeStroke {
 
     public enum LineCapType {
@@ -31,11 +31,11 @@ public class ShapeStroke {
     private AnimatableFloatValue offset;
     private final List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
-    private AnimatableColorValue color;
-    private AnimatableIntegerValue opacity;
-    private AnimatableFloatValue width;
-    private LineCapType capType;
-    private LineJoinType joinType;
+    private final AnimatableColorValue color;
+    private final AnimatableIntegerValue opacity;
+    private final AnimatableFloatValue width;
+    private final LineCapType capType;
+    private final LineJoinType joinType;
 
     ShapeStroke(JSONObject json, int frameRate, LottieComposition composition) {
         try {

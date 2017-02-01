@@ -11,13 +11,13 @@ import com.airbnb.lottie.animatable.AnimatablePointValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class RectangleShape {
     private static final String TAG = RectangleShape.class.getSimpleName();
 
-    private AnimatablePathValue position;
-    private AnimatablePointValue size;
-    private AnimatableFloatValue cornerRadius;
+    private final AnimatablePathValue position;
+    private final AnimatablePointValue size;
+    private final AnimatableFloatValue cornerRadius;
 
     RectangleShape(JSONObject json, int frameRate, LottieComposition composition) {
         try {

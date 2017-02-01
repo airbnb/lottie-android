@@ -9,7 +9,7 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.lerp;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class NumberKeyframeAnimation<T extends Number> extends KeyframeAnimation<T> {
 
     private final List<T> values;

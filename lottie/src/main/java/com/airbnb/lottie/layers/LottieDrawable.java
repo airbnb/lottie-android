@@ -25,7 +25,7 @@ import java.util.List;
  * It is preferable to use {@link com.airbnb.lottie.LottieAnimationView} when possible because it handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class LottieDrawable extends AnimatableLayer {
 
     private LottieComposition composition;

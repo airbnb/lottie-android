@@ -7,11 +7,11 @@ import com.airbnb.lottie.animatable.AnimatableFloatValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapeTrimPath {
-    private AnimatableFloatValue start;
-    private AnimatableFloatValue end;
-    private AnimatableFloatValue offset;
+    private final AnimatableFloatValue start;
+    private final AnimatableFloatValue end;
+    private final AnimatableFloatValue offset;
 
     ShapeTrimPath(JSONObject json, int frameRate, LottieComposition composition) {
         try {

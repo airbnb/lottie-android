@@ -8,7 +8,7 @@ import com.airbnb.lottie.animatable.AnimatableShapeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class Mask {
 
     private enum MaskMode {
@@ -18,8 +18,8 @@ public class Mask {
         MaskModeUnknown
     }
 
-    private MaskMode maskMode;
-    private AnimatableShapeValue maskPath;
+    private final MaskMode maskMode;
+    private final AnimatableShapeValue maskPath;
 
     Mask(JSONObject json, int frameRate, LottieComposition composition) {
         try {

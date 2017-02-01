@@ -6,7 +6,7 @@ import android.view.animation.Interpolator;
 
 import java.util.Collections;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
 
 

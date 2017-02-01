@@ -10,7 +10,7 @@ import com.airbnb.lottie.utils.MiscUtils;
 
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapeKeyframeAnimation extends KeyframeAnimation<Path> {
     private final Path tempPath = new Path();
     private final ShapeData tempShapeData = new ShapeData();

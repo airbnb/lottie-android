@@ -9,12 +9,12 @@ import com.airbnb.lottie.animatable.AnimatableShapeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapePath {
     private static final String TAG = ShapePath.class.getSimpleName();
 
-    private String name;
-    private int index;
+    private final String name;
+    private final int index;
     private AnimatableShapeValue shapePath;
 
     ShapePath(JSONObject json, int frameRate, LottieComposition composition) {

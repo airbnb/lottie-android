@@ -21,7 +21,7 @@ import java.util.List;
  * After Effects/Bodymovin composition model. This is the serialized model from which the animation will be created.
  * It can be used with a {@link com.airbnb.lottie.LottieAnimationView} or {@link com.airbnb.lottie.layers.LottieDrawable}.
  */
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class LottieComposition {
 
     public interface OnCompositionLoadedListener {

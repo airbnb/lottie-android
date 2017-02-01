@@ -8,10 +8,10 @@ import com.airbnb.lottie.animatable.AnimatablePointValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class CircleShape {
-    private AnimatablePathValue position;
-    private AnimatablePointValue size;
+    private final AnimatablePathValue position;
+    private final AnimatablePointValue size;
 
     CircleShape(JSONObject json, int frameRate, LottieComposition composition) {
         try {
