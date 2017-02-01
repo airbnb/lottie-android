@@ -1,5 +1,6 @@
 package com.airbnb.lottie.layers;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
@@ -209,6 +210,7 @@ class ShapeLayer extends AnimatableLayer {
         invalidateSelf();
     }
 
+    @SuppressLint("NewApi")
     @Override
     public void draw(@NonNull Canvas canvas) {
         if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {

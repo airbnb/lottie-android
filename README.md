@@ -56,7 +56,7 @@ The simplest way to use it is with LottieAnimationView:
 
 Or you can load it programatically in multiple ways.
 From a json asset in res/assets:
-```
+```java
 LottieAnimationView animationView = findViewById(R.id.animation_view);
 animationView.setAnimation("hello-world.json");
 animationView.loop(true);
@@ -64,17 +64,17 @@ animationView.loop(true);
 This method will load the file and parse the animation in the background and asynchronously start rendering once completed.
 
 If you want to reuse an animation such as in each item of a list or load it from a network request JSONObject:
- ```
+```java
  LottieAnimationView animationView = findViewById(R.id.animation_view);
  ...
  LottieComposition composition = LottieComposition.fromJson(getResources(), jsonObject, (composition) -> {
      animationView.setComposition(composition);
      animationView.playAnimation();
  });
- ```
+```
 
 You can then control the animation or add listeners:
-```
+```java
 animationView.addAnimatorUpdateListener((animation) -> {
     // Do something.
 });
@@ -99,7 +99,7 @@ animationView.cancelAnimation();
 
 
 Under the hood, `LottieAnimationView` uses `LottieDrawable` to render its animations. If you need to, you can use the the drawable form directly:
-```
+```java
 LottieDrawable drawable = new LottieDrawable();
 LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (composition) -> {
     drawable.setComposition(composition);

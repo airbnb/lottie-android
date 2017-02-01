@@ -19,7 +19,7 @@ import com.airbnb.lottie.utils.ScaleXY;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.GROUP_ID)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class AnimatableLayer extends Drawable {
 
     private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
@@ -48,8 +48,7 @@ public class AnimatableLayer extends Drawable {
     };
 
     final List<AnimatableLayer> layers = new ArrayList<>();
-    @Nullable AnimatableLayer parentLayer;
-
+    @Nullable private AnimatableLayer parentLayer;
 
     private KeyframeAnimation<PointF> position;
     private KeyframeAnimation<PointF> anchorPoint;
