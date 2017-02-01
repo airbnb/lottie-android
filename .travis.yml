@@ -6,9 +6,7 @@ android:
     - platform-tools
     - build-tools-25.0.2
     - android-25
-    - extra-google-google_play_services
     - extra-android-m2repository
-    - extra-android-support
 
 after_success:
   - .buildscript/deploy_snapshot.sh
