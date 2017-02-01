@@ -9,7 +9,6 @@ android:
     - extra-google-google_play_services
     - extra-android-m2repository
     - extra-android-support
-    - extra-google-m2repository
 
 after_success:
   - .buildscript/deploy_snapshot.sh
