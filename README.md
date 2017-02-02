@@ -55,7 +55,7 @@ The simplest way to use it is with LottieAnimationView:
 ```
 
 Or you can load it programatically in multiple ways.
-From a json asset in res/assets:
+From a json asset in app/src/main/assets:
 ```java
 LottieAnimationView animationView = findViewById(R.id.animation_view);
 animationView.setAnimation("hello-world.json");
