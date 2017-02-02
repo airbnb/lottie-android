@@ -132,7 +132,10 @@ public class LottieDrawable extends AnimatableLayer {
 
     @Override
     public void invalidateSelf() {
-        super.invalidateSelf();
+        final Callback callback = getCallback();
+        if (callback != null) {
+            callback.invalidateDrawable(this);
+        }
     }
 
     @Override
