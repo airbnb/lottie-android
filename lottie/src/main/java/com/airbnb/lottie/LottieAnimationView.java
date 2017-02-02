@@ -90,7 +90,7 @@ public class LottieAnimationView extends AppCompatImageView {
     private void init(@Nullable AttributeSet attrs) {
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
         String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
-        if (fileName != null) {
+        if (!isInEditMode() && fileName != null) {
             setAnimation(fileName);
         }
         if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
