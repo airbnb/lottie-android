@@ -233,9 +233,6 @@ public class AnimatableLayer extends Drawable {
         layer.parentLayer = this;
         layers.add(layer);
         layer.setProgress(progress);
-        if (this.alpha != null) {
-            layer.setAlpha(this.alpha);
-        }
         invalidateSelf();
     }
 
