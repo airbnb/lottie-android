@@ -228,6 +228,10 @@ Clone this repository and run the LottieSample module to see a bunch of sample a
 
 The sample app can also load json files at a given url or locally on your device (like Downloads or on your sdcard).
 
+## Community Contributions
+ * [Xamarin bindings](https://github.com/airbnb/lottie-android/issues/44)
+ * [NativeScript bindings](https://github.com/bradmartin/nativescript-lottie)
+
 ## Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engineering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
 2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, Keyframes doesn't support some of Lottie's features such as masks, mattes, trim paths, dash patterns, and more.
