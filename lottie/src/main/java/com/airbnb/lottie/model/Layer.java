@@ -89,12 +89,13 @@ public class Layer implements Transform {
                 if (L.DBG) Log.d(TAG, "\tOpacity=" + layer.opacity.getInitialValue());
             }
 
-            JSONObject rotation = null;
+            JSONObject rotation;
             try {
                 rotation = ks.getJSONObject("r");
             } catch (JSONException e) {
-                // Do nothing.
+                rotation = ks.getJSONObject("rz");
             }
+
             if (rotation != null) {
                 layer.rotation = new AnimatableFloatValue(rotation, layer.frameRate, composition, false);
                 if (L.DBG) Log.d(TAG, "\tRotation=" + layer.rotation.getInitialValue());
