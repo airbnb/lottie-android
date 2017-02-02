@@ -1,10 +1,5 @@
 package com.airbnb.lottie;
 
-import com.airbnb.lottie.layers.LottieDrawable;
-import com.airbnb.lottie.model.LottieComposition;
-
-import org.json.JSONObject;
-
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -22,6 +17,11 @@ import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+
+import com.airbnb.lottie.layers.LottieDrawable;
+import com.airbnb.lottie.model.LottieComposition;
+
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
