@@ -229,7 +229,7 @@ Clone this repository and run the LottieSample module to see a bunch of sample a
 The sample app can also load json files at a given url or locally on your device (like Downloads or on your sdcard).
 
 ## Community Contributions
- * [Xamarin bindings](https://github.com/airbnb/lottie-android/issues/44)
+ * [Xamarin bindings](https://github.com/martijn00/LottieXamarin)
  * [NativeScript bindings](https://github.com/bradmartin/nativescript-lottie)
 
 ## Alternatives
