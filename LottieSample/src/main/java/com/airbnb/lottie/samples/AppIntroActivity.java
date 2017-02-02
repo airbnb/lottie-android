@@ -68,7 +68,7 @@ public class AppIntroActivity extends IntroActivity {
     protected IntroButton.Behaviour generateFinalButtonBehaviour() {
         return new IntroButton.Behaviour() {
             @Override
-            public void setActivity(IntroActivity activity) { }
+            public void setActivity(IntroActivity activity) { finish();}
 
             @Override
             public IntroActivity getActivity() {
