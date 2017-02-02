@@ -105,6 +105,13 @@ public class AnimatableLayer extends Drawable {
         canvas.restoreToCount(saveCount);
     }
 
+    @Override
+    public void invalidateSelf() {
+        if (parentLayer != null) {
+            parentLayer.invalidateSelf();
+        }
+    }
+
     int saveCanvas(@Nullable Canvas canvas) {
         if (canvas == null) {
             return 0;
