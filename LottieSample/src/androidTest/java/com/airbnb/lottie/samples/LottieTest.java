@@ -30,5 +30,6 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
         TestRobot.testAnimation(getActivity(), "Tests/LoopPlayOnce.json");
         TestRobot.testAnimation(getActivity(), "Tests/Alarm.json");
         TestRobot.testAnimation(getActivity(), "Tests/CheckSwitch.json");
+        TestRobot.testAnimation(getActivity(), "Tests/EllipseTrimPath.json");
     }
 }

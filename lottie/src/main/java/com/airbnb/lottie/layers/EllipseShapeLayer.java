@@ -1,6 +1,5 @@
 package com.airbnb.lottie.layers;
 
-import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
@@ -82,7 +81,6 @@ class EllipseShapeLayer extends AnimatableLayer {
             }
         };
 
-        private final Paint paint = new Paint();
         private final Path path = new Path();
 
         private KeyframeAnimation<PointF> circleSize;
@@ -90,9 +88,6 @@ class EllipseShapeLayer extends AnimatableLayer {
 
         CircleShapeLayer(Drawable.Callback callback) {
             super(callback);
-            paint.setAntiAlias(true);
-            paint.setStyle(Paint.Style.FILL);
-
             setPath(new StaticKeyframeAnimation<>(path));
         }
 
