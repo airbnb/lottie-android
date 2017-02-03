@@ -4,5 +4,5 @@ import android.support.annotation.RestrictTo;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class L {
-    public static final boolean DBG = false;
+  public static final boolean DBG = false;
 }

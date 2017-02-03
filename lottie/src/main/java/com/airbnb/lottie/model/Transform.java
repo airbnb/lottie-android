@@ -10,15 +10,15 @@ import com.airbnb.lottie.animatable.AnimatableScaleValue;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public interface Transform {
-    Rect getBounds();
+  Rect getBounds();
 
-    AnimatablePathValue getPosition();
+  AnimatablePathValue getPosition();
 
-    AnimatablePathValue getAnchor();
+  AnimatablePathValue getAnchor();
 
-    AnimatableScaleValue getScale();
+  AnimatableScaleValue getScale();
 
-    AnimatableFloatValue getRotation();
+  AnimatableFloatValue getRotation();
 
-    AnimatableIntegerValue getOpacity();
+  AnimatableIntegerValue getOpacity();
 }

@@ -5,43 +5,43 @@ import android.support.annotation.RestrictTo;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class CubicCurveData {
-    private final PointF controlPoint1;
-    private final PointF controlPoint2;
-    private final PointF vertex;
+  private final PointF controlPoint1;
+  private final PointF controlPoint2;
+  private final PointF vertex;
 
-    CubicCurveData() {
-        controlPoint1 = new PointF();
-        controlPoint2 = new PointF();
-        vertex = new PointF();
-    }
+  CubicCurveData() {
+    controlPoint1 = new PointF();
+    controlPoint2 = new PointF();
+    vertex = new PointF();
+  }
 
-    public CubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex) {
-        this.controlPoint1 = controlPoint1;
-        this.controlPoint2 = controlPoint2;
-        this.vertex = vertex;
-    }
+  public CubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex) {
+    this.controlPoint1 = controlPoint1;
+    this.controlPoint2 = controlPoint2;
+    this.vertex = vertex;
+  }
 
-    void setControlPoint1(float x, float y) {
-        controlPoint1.set(x, y);
-    }
+  void setControlPoint1(float x, float y) {
+    controlPoint1.set(x, y);
+  }
 
-    public PointF getControlPoint1() {
-        return controlPoint1;
-    }
+  public PointF getControlPoint1() {
+    return controlPoint1;
+  }
 
-    void setControlPoint2(float x, float y) {
-        controlPoint2.set(x, y);
-    }
+  void setControlPoint2(float x, float y) {
+    controlPoint2.set(x, y);
+  }
 
-    public PointF getControlPoint2() {
-        return controlPoint2;
-    }
+  public PointF getControlPoint2() {
+    return controlPoint2;
+  }
 
-    void setVertex(float x, float y) {
-        vertex.set(x, y);
-    }
+  void setVertex(float x, float y) {
+    vertex.set(x, y);
+  }
 
-    public PointF getVertex() {
-        return vertex;
-    }
+  public PointF getVertex() {
+    return vertex;
+  }
 }

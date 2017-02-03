@@ -4,6 +4,7 @@ import com.airbnb.lottie.animation.KeyframeAnimation;
 
 interface AnimatableValue {
 
-    KeyframeAnimation createAnimation();
-    boolean hasAnimation();
+  KeyframeAnimation createAnimation();
+
+  boolean hasAnimation();
 }

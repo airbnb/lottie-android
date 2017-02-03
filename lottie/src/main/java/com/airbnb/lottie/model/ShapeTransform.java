@@ -15,102 +15,102 @@ import org.json.JSONObject;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ShapeTransform implements Transform {
-    private static final String TAG = ShapeTransform.class.getSimpleName();
+  private static final String TAG = ShapeTransform.class.getSimpleName();
 
-    private final Rect compBounds;
-    private final AnimatablePathValue position;
-    private final AnimatablePathValue anchor;
-    private final AnimatableScaleValue scale;
-    private final AnimatableFloatValue rotation;
-    private final AnimatableIntegerValue opacity;
+  private final Rect compBounds;
+  private final AnimatablePathValue position;
+  private final AnimatablePathValue anchor;
+  private final AnimatableScaleValue scale;
+  private final AnimatableFloatValue rotation;
+  private final AnimatableIntegerValue opacity;
 
-    public ShapeTransform(LottieComposition composition) {
-        this.compBounds = composition.getBounds();
-        this.position = new AnimatablePathValue(composition);
-        this.anchor = new AnimatablePathValue(composition);
-        this.scale = new AnimatableScaleValue(composition);
-        this.rotation = new AnimatableFloatValue(composition, 0f);
-        this.opacity = new AnimatableIntegerValue(composition, 255);
+  public ShapeTransform(LottieComposition composition) {
+    this.compBounds = composition.getBounds();
+    this.position = new AnimatablePathValue(composition);
+    this.anchor = new AnimatablePathValue(composition);
+    this.scale = new AnimatableScaleValue(composition);
+    this.rotation = new AnimatableFloatValue(composition, 0f);
+    this.opacity = new AnimatableIntegerValue(composition, 255);
+  }
+
+  ShapeTransform(JSONObject json, int frameRate, LottieComposition composition) {
+    this.compBounds = composition.getBounds();
+
+    JSONObject jsonPosition;
+    try {
+      jsonPosition = json.getJSONObject("p");
+    } catch (JSONException e) {
+      throw new IllegalStateException("Transform has no position.");
     }
+    position = new AnimatablePathValue(jsonPosition, frameRate, composition);
 
-    ShapeTransform(JSONObject json, int frameRate, LottieComposition composition) {
-        this.compBounds = composition.getBounds();
-
-        JSONObject jsonPosition;
-        try {
-            jsonPosition = json.getJSONObject("p");
-        } catch (JSONException e) {
-            throw new IllegalStateException("Transform has no position.");
-        }
-        position = new AnimatablePathValue(jsonPosition, frameRate, composition);
-
-        JSONObject jsonAnchor;
-        try {
-            jsonAnchor = json.getJSONObject("a");
-        } catch (JSONException e) {
-            throw new IllegalStateException("Transform has no anchor.");
-        }
-        anchor = new AnimatablePathValue(jsonAnchor, frameRate, composition);
-
-        JSONObject jsonScale;
-        try {
-            jsonScale = json.getJSONObject("s");
-        } catch (JSONException e) {
-            throw new IllegalStateException("Transform has no scale.");
-        }
-        scale = new AnimatableScaleValue(jsonScale, frameRate, composition, false);
-
-        JSONObject jsonRotation;
-        try {
-            jsonRotation = json.getJSONObject("r");
-        } catch (JSONException e) {
-            throw new IllegalStateException("Transform has no rotation.");
-        }
-        rotation = new AnimatableFloatValue(jsonRotation, frameRate, composition, false);
-
-        JSONObject jsonOpacity;
-        try {
-            jsonOpacity = json.getJSONObject("o");
-        } catch (JSONException e) {
-            throw new IllegalStateException("Transform has no opacity.");
-        }
-        opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
-
-        if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
+    JSONObject jsonAnchor;
+    try {
+      jsonAnchor = json.getJSONObject("a");
+    } catch (JSONException e) {
+      throw new IllegalStateException("Transform has no anchor.");
     }
+    anchor = new AnimatablePathValue(jsonAnchor, frameRate, composition);
 
-    public Rect getBounds() {
-        return compBounds;
+    JSONObject jsonScale;
+    try {
+      jsonScale = json.getJSONObject("s");
+    } catch (JSONException e) {
+      throw new IllegalStateException("Transform has no scale.");
     }
+    scale = new AnimatableScaleValue(jsonScale, frameRate, composition, false);
 
-    public AnimatablePathValue getPosition() {
-        return position;
+    JSONObject jsonRotation;
+    try {
+      jsonRotation = json.getJSONObject("r");
+    } catch (JSONException e) {
+      throw new IllegalStateException("Transform has no rotation.");
     }
+    rotation = new AnimatableFloatValue(jsonRotation, frameRate, composition, false);
 
-    public AnimatablePathValue getAnchor() {
-        return anchor;
+    JSONObject jsonOpacity;
+    try {
+      jsonOpacity = json.getJSONObject("o");
+    } catch (JSONException e) {
+      throw new IllegalStateException("Transform has no opacity.");
     }
+    opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
 
-    public AnimatableScaleValue getScale() {
-        return scale;
-    }
+    if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
+  }
 
-    public AnimatableFloatValue getRotation() {
-        return rotation;
-    }
+  public Rect getBounds() {
+    return compBounds;
+  }
 
-    public AnimatableIntegerValue getOpacity() {
-        return opacity;
-    }
+  public AnimatablePathValue getPosition() {
+    return position;
+  }
 
-    @Override
-    public String toString() {
-        return "ShapeTransform{" + "anchor=" + anchor.toString() +
-                ", compBounds=" + compBounds +
-                ", position=" + position.toString() +
-                ", scale=" + scale.toString() +
-                ", rotation=" + rotation.getInitialValue() +
-                ", opacity=" + opacity.getInitialValue() +
-                '}';
-    }
+  public AnimatablePathValue getAnchor() {
+    return anchor;
+  }
+
+  public AnimatableScaleValue getScale() {
+    return scale;
+  }
+
+  public AnimatableFloatValue getRotation() {
+    return rotation;
+  }
+
+  public AnimatableIntegerValue getOpacity() {
+    return opacity;
+  }
+
+  @Override
+  public String toString() {
+    return "ShapeTransform{" + "anchor=" + anchor.toString() +
+        ", compBounds=" + compBounds +
+        ", position=" + position.toString() +
+        ", scale=" + scale.toString() +
+        ", rotation=" + rotation.getInitialValue() +
+        ", opacity=" + opacity.getInitialValue() +
+        '}';
+  }
 }
