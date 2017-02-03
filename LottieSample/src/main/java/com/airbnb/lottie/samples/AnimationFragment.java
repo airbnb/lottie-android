@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +35,7 @@ import org.json.JSONObject;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -161,13 +160,7 @@ public class AnimationFragment extends Fragment {
                 });
                 break;
             case RC_FILE:
-                Uri uri = data.getData();
-                try {
-                    String path = getPath(uri);
-                    onFileLoaded(path);
-                } catch (URISyntaxException e) {
-                    onLoadError();
-                }
+                onFileLoaded(data.getData());
                 break;
             case RC_URL:
 
@@ -230,7 +223,7 @@ public class AnimationFragment extends Fragment {
     void onLoadFileClicked() {
         animationView.cancelAnimation();
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*.json");
+        intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         try {
@@ -276,36 +269,21 @@ public class AnimationFragment extends Fragment {
         playButton.setActivated(animationView.isAnimating());
     }
 
-    private String getPath(Uri uri) throws URISyntaxException {
-        if ("content".equalsIgnoreCase(uri.getScheme())) {
-            String[] projection = { "_data" };
-            Cursor cursor = null;
+    private void onFileLoaded(final Uri uri) {
+        InputStream fis;
 
-            try {
-                cursor = getContext().getContentResolver().query(uri, projection, null, null, null);
-                int column_index = cursor.getColumnIndexOrThrow("_data");
-                if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
-            } catch (Exception e) {
-                // Eat it
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
-        }
-
-        return null;
-    }
-
-    private void onFileLoaded(final String fileName) {
-        FileInputStream fis;
         try {
-            fis = new FileInputStream(fileName);
+            switch (uri.getScheme()) {
+                case "file":
+                    fis = new FileInputStream(uri.getPath());
+                    break;
+                case "content":
+                    fis = getContext().getContentResolver().openInputStream(uri);
+                    break;
+                default:
+                    onLoadError();
+                    return;
+            }
         } catch (FileNotFoundException e) {
             onLoadError();
             return;
@@ -314,7 +292,7 @@ public class AnimationFragment extends Fragment {
         LottieComposition.fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
             @Override
             public void onCompositionLoaded(LottieComposition composition) {
-                setComposition(composition, fileName);
+                setComposition(composition, uri.getPath());
             }
         });
     }
