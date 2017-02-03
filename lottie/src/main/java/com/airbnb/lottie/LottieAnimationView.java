@@ -30,354 +30,357 @@ import java.util.Map;
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
  * bodymovin (https://github.com/bodymovin/bodymovin).
- *
+ * <p>
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)}, or {@link #setAnimation(JSONObject)}.
- *
+ * <p>
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
 public class LottieAnimationView extends AppCompatImageView {
-    private static final String TAG = LottieAnimationView.class.getSimpleName();
+  private static final String TAG = LottieAnimationView.class.getSimpleName();
 
-    /**
-     * Caching strategy for compositions that will be reused frequently.
-     * Weak or Strong indicates the GC reference strength of the composition in the cache.
-     */
-    public enum CacheStrategy {
-        None,
-        Weak,
-        Strong
+  /**
+   * Caching strategy for compositions that will be reused frequently.
+   * Weak or Strong indicates the GC reference strength of the composition in the cache.
+   */
+  public enum CacheStrategy {
+    None,
+    Weak,
+    Strong
+  }
+
+  @Nullable private static Map<String, LottieComposition> strongRefCache;
+  @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
+
+  private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
+    @Override
+    public void onCompositionLoaded(LottieComposition composition) {
+      setComposition(composition);
+      compositionLoader = null;
+    }
+  };
+
+  private final LottieDrawable lottieDrawable = new LottieDrawable();
+  @FloatRange(from = 0f, to = 1f) private float progress;
+  private String animationName;
+  private boolean isAnimationLoading;
+  private boolean setProgressWhenCompositionSet;
+  private boolean playAnimationWhenCompositionSet;
+
+  @Nullable private LottieComposition.Cancellable compositionLoader;
+  /**
+   * Can be null because it is created async
+   */
+  @Nullable private LottieComposition composition;
+
+  public LottieAnimationView(Context context) {
+    super(context);
+    init(null);
+  }
+
+  public LottieAnimationView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    init(attrs);
+  }
+
+  public LottieAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+    init(attrs);
+  }
+
+  private void init(@Nullable AttributeSet attrs) {
+    TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
+    String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
+    if (!isInEditMode() && fileName != null) {
+      setAnimation(fileName);
+    }
+    if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
+      lottieDrawable.playAnimation();
+    }
+    lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
+    ta.recycle();
+    setLayerType(LAYER_TYPE_SOFTWARE, null);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable dr) {
+    // We always want to invalidate the root drawable to it redraws the whole drawable.
+    // Eventually it would be great to be able to invalidate just the changed region.
+    super.invalidateDrawable(lottieDrawable);
+  }
+
+  @Override
+  protected Parcelable onSaveInstanceState() {
+    Parcelable superState = super.onSaveInstanceState();
+    SavedState ss = new SavedState(superState);
+    ss.animationName = animationName;
+    ss.progress = lottieDrawable.getProgress();
+    ss.isAnimating = lottieDrawable.isAnimating();
+    ss.isLooping = lottieDrawable.isLooping();
+    return ss;
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Parcelable state) {
+    if (!(state instanceof SavedState)) {
+      super.onRestoreInstanceState(state);
+      return;
     }
 
-    @Nullable private static Map<String, LottieComposition> strongRefCache;
-    @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
+    SavedState ss = (SavedState) state;
+    super.onRestoreInstanceState(ss.getSuperState());
+    this.animationName = ss.animationName;
+    if (!TextUtils.isEmpty(animationName)) {
+      setAnimation(animationName);
+    }
+    setProgress(ss.progress);
+    loop(ss.isLooping);
+    if (ss.isAnimating) {
+      playAnimation();
+    }
+  }
 
-    private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
-        @Override
-        public void onCompositionLoaded(LottieComposition composition) {
-            setComposition(composition);
-            compositionLoader = null;
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
+
+  @SuppressLint("MissingSuperCall")
+  @Override
+  protected boolean verifyDrawable(@NonNull Drawable drawable) {
+    return true;
+  }
+
+  @Override
+  protected void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+  }
+
+  @Override
+  protected void onDetachedFromWindow() {
+    recycleBitmaps();
+
+    super.onDetachedFromWindow();
+  }
+
+  @VisibleForTesting
+  public void recycleBitmaps() {
+    lottieDrawable.recycleBitmaps();
+  }
+
+  /**
+   * Sets the animation from a file in the assets directory.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * Will not cache the composition once loaded.
+   */
+  public void setAnimation(String animationName) {
+    setAnimation(animationName, CacheStrategy.None);
+  }
+
+  /**
+   * Sets the animation from a file in the assets directory.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a strong reference to the composition once it is loaded
+   * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
+   */
+  @SuppressWarnings("WeakerAccess")
+  public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
+    this.animationName = animationName;
+    if (weakRefCache != null && weakRefCache.containsKey(animationName)) {
+      WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
+      if (compRef.get() != null) {
+        setComposition(compRef.get());
+        return;
+      }
+    } else if (strongRefCache != null && strongRefCache.containsKey(animationName)) {
+      setComposition(strongRefCache.get(animationName));
+      return;
+    }
+    isAnimationLoading = true;
+    setProgressWhenCompositionSet = false;
+    playAnimationWhenCompositionSet = false;
+
+    this.animationName = animationName;
+    cancelLoaderTask();
+    compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
+      @Override
+      public void onCompositionLoaded(LottieComposition composition) {
+        if (cacheStrategy == CacheStrategy.Strong) {
+          if (strongRefCache == null) {
+            strongRefCache = new HashMap<>();
+          }
+          strongRefCache.put(animationName, composition);
+        } else if (cacheStrategy == CacheStrategy.Weak) {
+          if (weakRefCache == null) {
+            weakRefCache = new HashMap<>();
+          }
+          weakRefCache.put(animationName, new WeakReference<>(composition));
         }
-    };
 
-    private final LottieDrawable lottieDrawable = new LottieDrawable();
-    @FloatRange(from=0f, to=1f) private float progress;
-    private String animationName;
-    private boolean isAnimationLoading;
-    private boolean setProgressWhenCompositionSet;
-    private boolean playAnimationWhenCompositionSet;
+        setComposition(composition);
+      }
+    });
+  }
 
-    @Nullable private LottieComposition.Cancellable compositionLoader;
-    /** Can be null because it is created async */
-    @Nullable private LottieComposition composition;
+  /**
+   * Sets the animation from a JSONObject.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * This is particularly useful for animations loaded from the network. You can fetch the bodymovin json from the network and pass it directly here.
+   */
+  public void setAnimation(final JSONObject json) {
+    isAnimationLoading = true;
+    setProgressWhenCompositionSet = false;
+    playAnimationWhenCompositionSet = false;
 
-    public LottieAnimationView(Context context) {
-        super(context);
-        init(null);
+    cancelLoaderTask();
+    compositionLoader = LottieComposition.fromJson(getResources(), json, loadedListener);
+  }
+
+  private void cancelLoaderTask() {
+    if (compositionLoader != null) {
+      compositionLoader.cancel();
+      compositionLoader = null;
+    }
+  }
+
+  public void setComposition(@NonNull LottieComposition composition) {
+    if (L.DBG) {
+      Log.v(TAG, "Set Composition \n" + composition);
+    }
+    lottieDrawable.setCallback(this);
+    lottieDrawable.setComposition(composition);
+    // If you set a different composition on the view, the bounds will not update unless
+    // the drawable is different than the original.
+    setImageDrawable(null);
+    setImageDrawable(lottieDrawable);
+
+    isAnimationLoading = false;
+
+    if (setProgressWhenCompositionSet) {
+      setProgressWhenCompositionSet = false;
+      setProgress(progress);
+    } else {
+      setProgress(0f);
     }
 
-    public LottieAnimationView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(attrs);
+    this.composition = composition;
+
+    if (playAnimationWhenCompositionSet) {
+      playAnimationWhenCompositionSet = false;
+      playAnimation();
     }
 
-    public LottieAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(attrs);
+    requestLayout();
+  }
+
+
+  public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+    lottieDrawable.addAnimatorUpdateListener(updateListener);
+  }
+
+  @SuppressWarnings("unused")
+  public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+    lottieDrawable.removeAnimatorUpdateListener(updateListener);
+  }
+
+  public void addAnimatorListener(Animator.AnimatorListener listener) {
+    lottieDrawable.addAnimatorListener(listener);
+  }
+
+  @SuppressWarnings("unused")
+  public void removeAnimatorListener(Animator.AnimatorListener listener) {
+    lottieDrawable.removeAnimatorListener(listener);
+  }
+
+  public void loop(boolean loop) {
+    lottieDrawable.loop(loop);
+  }
+
+  public boolean isAnimating() {
+    return lottieDrawable.isAnimating();
+  }
+
+  public void playAnimation() {
+    if (isAnimationLoading) {
+      playAnimationWhenCompositionSet = true;
+      return;
+    }
+    lottieDrawable.playAnimation();
+  }
+
+  public void cancelAnimation() {
+    setProgressWhenCompositionSet = false;
+    playAnimationWhenCompositionSet = false;
+    lottieDrawable.cancelAnimation();
+  }
+
+  public void pauseAnimation() {
+    setProgressWhenCompositionSet = false;
+    playAnimationWhenCompositionSet = false;
+    float progress = getProgress();
+    lottieDrawable.cancelAnimation();
+    setProgress(progress);
+  }
+
+  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    this.progress = progress;
+    if (isAnimationLoading) {
+      setProgressWhenCompositionSet = true;
+      return;
+    }
+    lottieDrawable.setProgress(progress);
+  }
+
+  @FloatRange(from = 0.0f, to = 1.0f)
+  public float getProgress() {
+    return progress;
+  }
+
+  public long getDuration() {
+    return composition != null ? composition.getDuration() : 0;
+  }
+
+  private static class SavedState extends BaseSavedState {
+    String animationName;
+    float progress;
+    boolean isAnimating;
+    boolean isLooping;
+
+    SavedState(Parcelable superState) {
+      super(superState);
     }
 
-    private void init(@Nullable AttributeSet attrs) {
-        TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
-        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
-        if (!isInEditMode() && fileName != null) {
-            setAnimation(fileName);
-        }
-        if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-            lottieDrawable.playAnimation();
-        }
-        lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
-        ta.recycle();
-        setLayerType(LAYER_TYPE_SOFTWARE, null);
+    private SavedState(Parcel in) {
+      super(in);
+      animationName = in.readString();
+      progress = in.readFloat();
+      isAnimating = in.readInt() == 1;
+      isLooping = in.readInt() == 1;
     }
 
     @Override
-    public void invalidateDrawable(Drawable dr) {
-        // We always want to invalidate the root drawable to it redraws the whole drawable.
-        // Eventually it would be great to be able to invalidate just the changed region.
-        super.invalidateDrawable(lottieDrawable);
+    public void writeToParcel(Parcel out, int flags) {
+      super.writeToParcel(out, flags);
+      out.writeString(animationName);
+      out.writeFloat(progress);
+      out.writeInt(isAnimating ? 1 : 0);
+      out.writeInt(isLooping ? 1 : 0);
+
     }
 
-    @Override
-    protected Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState ss = new SavedState(superState);
-        ss.animationName = animationName;
-        ss.progress = lottieDrawable.getProgress();
-        ss.isAnimating = lottieDrawable.isAnimating();
-        ss.isLooping = lottieDrawable.isLooping();
-        return ss;
-    }
+    public static final Parcelable.Creator<SavedState> CREATOR =
+        new Parcelable.Creator<SavedState>() {
+          public SavedState createFromParcel(Parcel in) {
+            return new SavedState(in);
+          }
 
-    @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        if(!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        this.animationName = ss.animationName;
-        if (!TextUtils.isEmpty(animationName)) {
-            setAnimation(animationName);
-        }
-        setProgress(ss.progress);
-        loop(ss.isLooping);
-        if (ss.isAnimating) {
-            playAnimation();
-        }
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    @SuppressLint("MissingSuperCall")
-    @Override
-    protected boolean verifyDrawable(@NonNull Drawable drawable) {
-        return true;
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        recycleBitmaps();
-
-        super.onDetachedFromWindow();
-    }
-
-    @VisibleForTesting
-    public void recycleBitmaps() {
-        lottieDrawable.recycleBitmaps();
-    }
-
-    /**
-     * Sets the animation from a file in the assets directory.
-     * This will load and deserialize the file asynchronously.
-     *
-     * Will not cache the composition once loaded.
-     */
-    public void setAnimation(String animationName) {
-        setAnimation(animationName, CacheStrategy.None);
-    }
-
-    /**
-     * Sets the animation from a file in the assets directory.
-     * This will load and deserialize the file asynchronously.
-     *
-     * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a strong reference to the composition once it is loaded
-     * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
-        this.animationName = animationName;
-        if (weakRefCache != null && weakRefCache.containsKey(animationName)) {
-            WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
-            if (compRef.get() != null) {
-                setComposition(compRef.get());
-                return;
-            }
-        } else if (strongRefCache != null && strongRefCache.containsKey(animationName)) {
-            setComposition(strongRefCache.get(animationName));
-            return;
-        }
-        isAnimationLoading = true;
-        setProgressWhenCompositionSet = false;
-        playAnimationWhenCompositionSet = false;
-
-        this.animationName = animationName;
-        cancelLoaderTask();
-        compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
-            @Override
-            public void onCompositionLoaded(LottieComposition composition) {
-                if (cacheStrategy == CacheStrategy.Strong) {
-                    if (strongRefCache == null) {
-                        strongRefCache = new HashMap<>();
-                    }
-                    strongRefCache.put(animationName, composition);
-                } else if (cacheStrategy == CacheStrategy.Weak) {
-                    if (weakRefCache == null) {
-                        weakRefCache = new HashMap<>();
-                    }
-                    weakRefCache.put(animationName, new WeakReference<>(composition));
-                }
-
-                setComposition(composition);
-            }
-        });
-    }
-
-    /**
-     * Sets the animation from a JSONObject.
-     * This will load and deserialize the file asynchronously.
-     *
-     * This is particularly useful for animations loaded from the network. You can fetch the bodymovin json from the network and pass it directly here.
-     */
-    public void setAnimation(final JSONObject json) {
-        isAnimationLoading = true;
-        setProgressWhenCompositionSet = false;
-        playAnimationWhenCompositionSet = false;
-
-        cancelLoaderTask();
-        compositionLoader = LottieComposition.fromJson(getResources(), json, loadedListener);
-    }
-
-    private void cancelLoaderTask() {
-        if (compositionLoader != null) {
-            compositionLoader.cancel();
-            compositionLoader = null;
-        }
-    }
-
-    public void setComposition(@NonNull LottieComposition composition) {
-        if (L.DBG) {
-            Log.v(TAG, "Set Composition \n" + composition);
-        }
-        lottieDrawable.setCallback(this);
-        lottieDrawable.setComposition(composition);
-        // If you set a different composition on the view, the bounds will not update unless
-        // the drawable is different than the original.
-        setImageDrawable(null);
-        setImageDrawable(lottieDrawable);
-
-        isAnimationLoading = false;
-
-        if (setProgressWhenCompositionSet) {
-            setProgressWhenCompositionSet = false;
-            setProgress(progress);
-        } else {
-            setProgress(0f);
-        }
-
-        this.composition = composition;
-
-        if (playAnimationWhenCompositionSet) {
-            playAnimationWhenCompositionSet = false;
-            playAnimation();
-        }
-
-        requestLayout();
-    }
-
-
-    public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-        lottieDrawable.addAnimatorUpdateListener(updateListener);
-    }
-
-    @SuppressWarnings("unused")
-    public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-        lottieDrawable.removeAnimatorUpdateListener(updateListener);
-    }
-
-    public void addAnimatorListener(Animator.AnimatorListener listener) {
-        lottieDrawable.addAnimatorListener(listener);
-    }
-
-    @SuppressWarnings("unused")
-    public void removeAnimatorListener(Animator.AnimatorListener listener) {
-        lottieDrawable.removeAnimatorListener(listener);
-    }
-
-    public void loop(boolean loop) {
-        lottieDrawable.loop(loop);
-    }
-
-    public boolean isAnimating() {
-        return lottieDrawable.isAnimating();
-    }
-
-    public void playAnimation() {
-        if (isAnimationLoading) {
-            playAnimationWhenCompositionSet = true;
-            return;
-        }
-        lottieDrawable.playAnimation();
-    }
-
-    public void cancelAnimation() {
-        setProgressWhenCompositionSet = false;
-        playAnimationWhenCompositionSet = false;
-        lottieDrawable.cancelAnimation();
-    }
-
-    public void pauseAnimation() {
-        setProgressWhenCompositionSet = false;
-        playAnimationWhenCompositionSet = false;
-        float progress = getProgress();
-        lottieDrawable.cancelAnimation();
-        setProgress(progress);
-    }
-
-    public void setProgress(@FloatRange(from=0f, to=1f) float progress) {
-        this.progress = progress;
-        if (isAnimationLoading) {
-            setProgressWhenCompositionSet = true;
-            return;
-        }
-        lottieDrawable.setProgress(progress);
-    }
-
-    @FloatRange(from=0.0f, to=1.0f)
-    public float getProgress() {
-        return progress;
-    }
-
-    public long getDuration() {
-        return composition != null ? composition.getDuration() : 0;
-    }
-
-    private static class SavedState extends BaseSavedState {
-        String animationName;
-        float progress;
-        boolean isAnimating;
-        boolean isLooping;
-
-        SavedState(Parcelable superState) {
-            super(superState);
-        }
-
-        private SavedState(Parcel in) {
-            super(in);
-            animationName = in.readString();
-            progress = in.readFloat();
-            isAnimating = in.readInt() == 1;
-            isLooping = in.readInt() == 1;
-        }
-
-        @Override
-        public void writeToParcel(Parcel out, int flags) {
-            super.writeToParcel(out, flags);
-            out.writeString(animationName);
-            out.writeFloat(progress);
-            out.writeInt(isAnimating ? 1 : 0);
-            out.writeInt(isLooping ? 1 : 0);
-
-        }
-
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-                    public SavedState createFromParcel(Parcel in) {
-                        return new SavedState(in);
-                    }
-                    public SavedState[] newArray(int size) {
-                        return new SavedState[size];
-                    }
-                };
-    }
+          public SavedState[] newArray(int size) {
+            return new SavedState[size];
+          }
+        };
+  }
 }

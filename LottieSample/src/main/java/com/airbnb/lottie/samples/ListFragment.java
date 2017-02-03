@@ -17,121 +17,121 @@ import butterknife.ButterKnife;
 
 public class ListFragment extends Fragment {
 
-    static ListFragment newInstance() {
-        return new ListFragment();
-    }
+  static ListFragment newInstance() {
+    return new ListFragment();
+  }
 
-    @BindView(R.id.container) ViewGroup container;
-    @BindView(R.id.recycler_view) RecyclerView recyclerView;
-    @BindView(R.id.animation_view) LottieAnimationView animationView;
+  @BindView(R.id.container) ViewGroup container;
+  @BindView(R.id.recycler_view) RecyclerView recyclerView;
+  @BindView(R.id.animation_view) LottieAnimationView animationView;
 
-    private final FileAdapter adapter = new FileAdapter();
+  private final FileAdapter adapter = new FileAdapter();
 
-    @Nullable
+  @Nullable
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.fragment_list, container, false);
+    ButterKnife.bind(this, view);
+
+    recyclerView.setAdapter(adapter);
+
+    return view;
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    animationView.setProgress(0f);
+    animationView.playAnimation();
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    animationView.cancelAnimation();
+  }
+
+  private void onViewerClicked() {
+    showFragment(AnimationFragment.newInstance());
+  }
+
+  private void onTypographyClicked() {
+    startActivity(new Intent(getContext(), FontActivity.class));
+  }
+
+  private void onAppIntroPagerClicked() {
+    startActivity(new Intent(getContext(), AppIntroActivity.class));
+  }
+
+  private void showFragment(Fragment fragment) {
+    getFragmentManager().beginTransaction()
+        .addToBackStack(null)
+        .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
+        .remove(this)
+        .replace(R.id.content_2, fragment)
+        .commit();
+  }
+
+  private void onFontClicked() {
+    startActivity(new Intent(getContext(), FontActivity.class));
+  }
+
+  final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
+    private static final String TAG_VIEWER = "viewer";
+    private static final String TAG_TYPOGRAPHY = "typography";
+    private static final String TAG_APP_INTRO = "app_intro";
+
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ButterKnife.bind(this, view);
-
-        recyclerView.setAdapter(adapter);
-
-        return view;
+    public StringViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return new StringViewHolder(parent);
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        animationView.setProgress(0f);
-        animationView.playAnimation();
+    public void onBindViewHolder(StringViewHolder holder, int position) {
+      switch (position) {
+        case 0:
+          holder.bind("Animation Viewer", TAG_VIEWER);
+          break;
+        case 1:
+          holder.bind("Animated Typography", TAG_TYPOGRAPHY);
+          break;
+        case 2:
+          holder.bind("Animated App Tutorial", TAG_APP_INTRO);
+          break;
+      }
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        animationView.cancelAnimation();
+    public int getItemCount() {
+      return 3;
+    }
+  }
+
+  final class StringViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.title) TextView titleView;
+
+    StringViewHolder(ViewGroup parent) {
+      super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_file, parent, false));
+      ButterKnife.bind(this, itemView);
     }
 
-    private void onViewerClicked() {
-        showFragment(AnimationFragment.newInstance());
-    }
+    void bind(String title, String tag) {
+      titleView.setText(title);
+      itemView.setTag(tag);
 
-    private void onTypographyClicked() {
-        startActivity(new Intent(getContext(), FontActivity.class));
-    }
-
-    private void onAppIntroPagerClicked() {
-        startActivity(new Intent(getContext(), AppIntroActivity.class));
-    }
-
-    private void showFragment(Fragment fragment) {
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
-                .remove(this)
-                .replace(R.id.content_2, fragment)
-                .commit();
-    }
-
-    private void onFontClicked() {
-        startActivity(new Intent(getContext(), FontActivity.class));
-    }
-
-    final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
-        private static final String TAG_VIEWER = "viewer";
-        private static final String TAG_TYPOGRAPHY = "typography";
-        private static final String TAG_APP_INTRO = "app_intro";
-
+      itemView.setOnClickListener(new View.OnClickListener() {
         @Override
-        public StringViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new StringViewHolder(parent);
+        public void onClick(View v) {
+          if (FileAdapter.TAG_VIEWER.equals(v.getTag())) {
+            onViewerClicked();
+          } else if (FileAdapter.TAG_TYPOGRAPHY.equals(v.getTag())) {
+            onTypographyClicked();
+          } else if (FileAdapter.TAG_APP_INTRO.equals(v.getTag())) {
+            onAppIntroPagerClicked();
+          }
         }
-
-        @Override
-        public void onBindViewHolder(StringViewHolder holder, int position) {
-            switch (position) {
-                case 0:
-                    holder.bind("Animation Viewer", TAG_VIEWER);
-                    break;
-                case 1:
-                    holder.bind("Animated Typography", TAG_TYPOGRAPHY);
-                    break;
-                case 2:
-                    holder.bind("Animated App Tutorial", TAG_APP_INTRO);
-                    break;
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return 3;
-        }
+      });
     }
-
-    final class StringViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.title) TextView titleView;
-
-        StringViewHolder(ViewGroup parent) {
-            super(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_holder_file, parent, false));
-            ButterKnife.bind(this, itemView);
-        }
-
-        void bind(String title, String tag) {
-            titleView.setText(title);
-            itemView.setTag(tag);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (FileAdapter.TAG_VIEWER.equals(v.getTag())) {
-                        onViewerClicked();
-                    } else if (FileAdapter.TAG_TYPOGRAPHY.equals(v.getTag())) {
-                        onTypographyClicked();
-                    } else if (FileAdapter.TAG_APP_INTRO.equals(v.getTag())) {
-                        onAppIntroPagerClicked();
-                    }
-                }
-            });
-        }
-    }
+  }
 }

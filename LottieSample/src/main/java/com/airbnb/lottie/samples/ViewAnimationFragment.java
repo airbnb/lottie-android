@@ -14,23 +14,23 @@ import butterknife.ButterKnife;
 
 public class ViewAnimationFragment extends Fragment {
 
-    static Fragment newInstance() {
-        return new ViewAnimationFragment();
-    }
+  static Fragment newInstance() {
+    return new ViewAnimationFragment();
+  }
 
-    @BindView(R.id.message_bubble) View messageBubble;
+  @BindView(R.id.message_bubble) View messageBubble;
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_view_animation, container, false);
-        ButterKnife.bind(this, view);
+  @Nullable
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.fragment_view_animation, container, false);
+    ButterKnife.bind(this, view);
 
-        messageBubble.setTag(R.id.lottie_layer_name, "Tip");
-        LottieViewAnimator.of(getContext(), "Tip.json", messageBubble)
-                .loop(true)
-                .start();
+    messageBubble.setTag(R.id.lottie_layer_name, "Tip");
+    LottieViewAnimator.of(getContext(), "Tip.json", messageBubble)
+        .loop(true)
+        .start();
 
-        return view;
-    }
+    return view;
+  }
 }

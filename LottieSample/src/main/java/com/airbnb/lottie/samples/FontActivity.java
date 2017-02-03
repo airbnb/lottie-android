@@ -12,29 +12,29 @@ import butterknife.ButterKnife;
 
 public class FontActivity extends AppCompatActivity {
 
-    @BindView(R.id.scroll_view) ScrollView scrollView;
-    @BindView(R.id.font_view) LottieFontViewGroup fontView;
+  @BindView(R.id.scroll_view) ScrollView scrollView;
+  @BindView(R.id.font_view) LottieFontViewGroup fontView;
 
-    private final ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            scrollView.fullScroll(View.FOCUS_DOWN);
-        }
-    };
-
+  private final ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_font);
-        ButterKnife.bind(this);
-
-        fontView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+    public void onGlobalLayout() {
+      scrollView.fullScroll(View.FOCUS_DOWN);
     }
+  };
+
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_font);
+    ButterKnife.bind(this);
+
+    fontView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+  }
 
 
-    @Override
-    protected void onDestroy() {
-        fontView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
-        super.onDestroy();
-    }
+  @Override
+  protected void onDestroy() {
+    fontView.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
+    super.onDestroy();
+  }
 }
