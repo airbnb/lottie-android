@@ -7,18 +7,14 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 
-import com.airbnb.lottie.animation.KeyframeAnimation;
-import com.airbnb.lottie.model.Layer;
-import com.airbnb.lottie.model.LottieComposition;
-import com.airbnb.lottie.utils.ScaleXY;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Animated a view based on a null layer. To use this, set a tag on your view with the key {@link R.id#lottie_layer_name}
+ * Animated a view based on a null layer. To use this, set a tag on your view with the key
+ * {@link R.id#lottie_layer_name}
  * and the value as the null layer name from After Effects.
  * <p>
  * This supports position, scale, rotation, and anchor point (pivot)
@@ -32,18 +28,17 @@ import java.util.Map;
  * For example, setting the anchor to (1, 1) would set the pivot to the bottom right.
  */
 public class LottieViewAnimator {
-
   public static LottieViewAnimator of(Context context, String fileName, View... views) {
     return new LottieViewAnimator(context, fileName, views);
   }
 
   @SuppressWarnings("FieldCanBeLocal")
-  private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
-    @Override
-    public void onCompositionLoaded(LottieComposition composition) {
-      setComposition(composition);
-    }
-  };
+  private final LottieComposition.OnCompositionLoadedListener loadedListener =
+      new LottieComposition.OnCompositionLoadedListener() {
+        @Override public void onCompositionLoaded(LottieComposition composition) {
+          setComposition(composition);
+        }
+      };
 
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private final Map<String, View> viewsMap;
@@ -151,13 +146,14 @@ public class LottieViewAnimator {
         setViewAnchor(view, layer.getAnchor().getInitialPoint());
 
       } else {
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override
-          public void onGlobalLayout() {
-            view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            setViewAnchor(view, layer.getAnchor().getInitialPoint());
-          }
-        });
+        view.getViewTreeObserver()
+            .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override
+              public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                setViewAnchor(view, layer.getAnchor().getInitialPoint());
+              }
+            });
       }
     }
 

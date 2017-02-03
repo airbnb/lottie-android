@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.LottieComposition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,8 +71,8 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.animation_name) TextView animationNameView;
 
   @Nullable
-  @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+  @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_animation, container, false);
     ButterKnife.bind(this, view);
 
@@ -154,12 +154,13 @@ public class AnimationFragment extends Fragment {
     switch (requestCode) {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
-        LottieComposition.fromAssetFileName(getContext(), assetName, new LottieComposition.OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            setComposition(composition, assetName);
-          }
-        });
+        LottieComposition.fromAssetFileName(getContext(), assetName,
+            new LottieComposition.OnCompositionLoadedListener() {
+              @Override
+              public void onCompositionLoaded(LottieComposition composition) {
+                setComposition(composition, assetName);
+              }
+            });
         break;
       case RC_FILE:
         onFileLoaded(data.getData());
@@ -291,12 +292,13 @@ public class AnimationFragment extends Fragment {
       return;
     }
 
-    LottieComposition.fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
-      @Override
-      public void onCompositionLoaded(LottieComposition composition) {
-        setComposition(composition, uri.getPath());
-      }
-    });
+    LottieComposition
+        .fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
+          @Override
+          public void onCompositionLoaded(LottieComposition composition) {
+            setComposition(composition, uri.getPath());
+          }
+        });
   }
 
   private void loadUrl(String url) {
@@ -328,12 +330,13 @@ public class AnimationFragment extends Fragment {
 
         try {
           JSONObject json = new JSONObject(response.body().string());
-          LottieComposition.fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
-            @Override
-            public void onCompositionLoaded(LottieComposition composition) {
-              setComposition(composition, "Network Animation");
-            }
-          });
+          LottieComposition
+              .fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
+                @Override
+                public void onCompositionLoaded(LottieComposition composition) {
+                  setComposition(composition, "Network Animation");
+                }
+              });
         } catch (JSONException e) {
           onLoadError();
         }
@@ -356,7 +359,8 @@ public class AnimationFragment extends Fragment {
     Pair<Integer, Long> droppedFrames = getApplication().stopRecordingDroppedFrames();
     int targetFrames = (int) ((droppedFrames.second / 1000000000f) * 60);
     int actualFrames = targetFrames - droppedFrames.first;
-    // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
+    // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() /
+    // 1000f)));
     // droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
   }
 

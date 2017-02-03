@@ -18,9 +18,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.airbnb.lottie.layers.LottieDrawable;
-import com.airbnb.lottie.model.LottieComposition;
-
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -33,7 +30,8 @@ import java.util.Map;
  * <p>
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)}, or {@link #setAnimation(JSONObject)}.
+ * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
+ * or {@link #setAnimation(JSONObject)}.
  * <p>
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
@@ -53,13 +51,14 @@ public class LottieAnimationView extends AppCompatImageView {
   @Nullable private static Map<String, LottieComposition> strongRefCache;
   @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
 
-  private final LottieComposition.OnCompositionLoadedListener loadedListener = new LottieComposition.OnCompositionLoadedListener() {
-    @Override
-    public void onCompositionLoaded(LottieComposition composition) {
-      setComposition(composition);
-      compositionLoader = null;
-    }
-  };
+  private final LottieComposition.OnCompositionLoadedListener loadedListener =
+      new LottieComposition.OnCompositionLoadedListener() {
+        @Override
+        public void onCompositionLoaded(LottieComposition composition) {
+          setComposition(composition);
+          compositionLoader = null;
+        }
+      };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   @FloatRange(from = 0f, to = 1f) private float progress;
@@ -103,15 +102,13 @@ public class LottieAnimationView extends AppCompatImageView {
     setLayerType(LAYER_TYPE_SOFTWARE, null);
   }
 
-  @Override
-  public void invalidateDrawable(Drawable dr) {
+  @Override public void invalidateDrawable(Drawable dr) {
     // We always want to invalidate the root drawable to it redraws the whole drawable.
     // Eventually it would be great to be able to invalidate just the changed region.
     super.invalidateDrawable(lottieDrawable);
   }
 
-  @Override
-  protected Parcelable onSaveInstanceState() {
+  @Override protected Parcelable onSaveInstanceState() {
     Parcelable superState = super.onSaveInstanceState();
     SavedState ss = new SavedState(superState);
     ss.animationName = animationName;
@@ -121,8 +118,7 @@ public class LottieAnimationView extends AppCompatImageView {
     return ss;
   }
 
-  @Override
-  protected void onRestoreInstanceState(Parcelable state) {
+  @Override protected void onRestoreInstanceState(Parcelable state) {
     if (!(state instanceof SavedState)) {
       super.onRestoreInstanceState(state);
       return;
@@ -183,7 +179,8 @@ public class LottieAnimationView extends AppCompatImageView {
    * Sets the animation from a file in the assets directory.
    * This will load and deserialize the file asynchronously.
    * <p>
-   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a strong reference to the composition once it is loaded
+   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a
+   * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
   @SuppressWarnings("WeakerAccess")
@@ -205,31 +202,33 @@ public class LottieAnimationView extends AppCompatImageView {
 
     this.animationName = animationName;
     cancelLoaderTask();
-    compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName, new LottieComposition.OnCompositionLoadedListener() {
-      @Override
-      public void onCompositionLoaded(LottieComposition composition) {
-        if (cacheStrategy == CacheStrategy.Strong) {
-          if (strongRefCache == null) {
-            strongRefCache = new HashMap<>();
-          }
-          strongRefCache.put(animationName, composition);
-        } else if (cacheStrategy == CacheStrategy.Weak) {
-          if (weakRefCache == null) {
-            weakRefCache = new HashMap<>();
-          }
-          weakRefCache.put(animationName, new WeakReference<>(composition));
-        }
+    compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName,
+        new LottieComposition.OnCompositionLoadedListener() {
+          @Override
+          public void onCompositionLoaded(LottieComposition composition) {
+            if (cacheStrategy == CacheStrategy.Strong) {
+              if (strongRefCache == null) {
+                strongRefCache = new HashMap<>();
+              }
+              strongRefCache.put(animationName, composition);
+            } else if (cacheStrategy == CacheStrategy.Weak) {
+              if (weakRefCache == null) {
+                weakRefCache = new HashMap<>();
+              }
+              weakRefCache.put(animationName, new WeakReference<>(composition));
+            }
 
-        setComposition(composition);
-      }
-    });
+            setComposition(composition);
+          }
+        });
   }
 
   /**
    * Sets the animation from a JSONObject.
    * This will load and deserialize the file asynchronously.
    * <p>
-   * This is particularly useful for animations loaded from the network. You can fetch the bodymovin json from the network and pass it directly here.
+   * This is particularly useful for animations loaded from the network. You can fetch the
+   * bodymovin json from the network and pass it directly here.
    */
   public void setAnimation(final JSONObject json) {
     isAnimationLoading = true;
