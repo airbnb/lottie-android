@@ -232,8 +232,7 @@ class ShapeLayer extends AnimatableLayer {
     }
   }
 
-  @Override
-  public int getAlpha() {
+  @Override public int getAlpha() {
     Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
     Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
     int layerAlpha = super.getAlpha();
@@ -262,19 +261,16 @@ class ShapeLayer extends AnimatableLayer {
     invalidateSelf();
   }
 
-  @Override
-  public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
+  @Override public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
     paint.setAlpha(alpha);
     invalidateSelf();
   }
 
-  @Override
-  public void setColorFilter(ColorFilter colorFilter) {
+  @Override public void setColorFilter(ColorFilter colorFilter) {
 
   }
 
-  @Override
-  public int getOpacity() {
+  @Override public int getOpacity() {
     return PixelFormat.TRANSLUCENT;
   }
 

@@ -71,7 +71,8 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.animation_name) TextView animationNameView;
 
   @Nullable
-  @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_animation, container, false);
     ButterKnife.bind(this, view);
@@ -92,24 +93,20 @@ public class AnimationFragment extends Fragment {
     postUpdatePlayButtonText();
     onLoopChanged();
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
-      @Override
-      public void onAnimationStart(Animator animation) {
+      @Override public void onAnimationStart(Animator animation) {
         startRecordingDroppedFrames();
       }
 
-      @Override
-      public void onAnimationEnd(Animator animation) {
+      @Override public void onAnimationEnd(Animator animation) {
         recordDroppedFrames();
         postUpdatePlayButtonText();
       }
 
-      @Override
-      public void onAnimationCancel(Animator animation) {
+      @Override public void onAnimationCancel(Animator animation) {
         postUpdatePlayButtonText();
       }
 
-      @Override
-      public void onAnimationRepeat(Animator animation) {
+      @Override public void onAnimationRepeat(Animator animation) {
         recordDroppedFrames();
         startRecordingDroppedFrames();
       }
@@ -122,31 +119,26 @@ public class AnimationFragment extends Fragment {
     });
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-      @Override
-      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         animationView.setProgress(progress / 100f);
       }
 
-      @Override
-      public void onStartTrackingTouch(SeekBar seekBar) {
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
       }
 
-      @Override
-      public void onStopTrackingTouch(SeekBar seekBar) {
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
       }
     });
 
     return view;
   }
 
-  @Override
-  public void onStop() {
+  @Override public void onStop() {
     animationView.cancelAnimation();
     super.onStop();
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK) {
       return;
     }
@@ -317,13 +309,11 @@ public class AnimationFragment extends Fragment {
       client = new OkHttpClient();
     }
     client.newCall(request).enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
+      @Override public void onFailure(Call call, IOException e) {
         onLoadError();
       }
 
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
+      @Override public void onResponse(Call call, Response response) throws IOException {
         if (!response.isSuccessful()) {
           onLoadError();
         }
