@@ -9,13 +9,11 @@ import com.codemonkeylabs.fpslibrary.FrameDataCallback;
 import com.codemonkeylabs.fpslibrary.TinyDancer;
 
 public class LottieApplication extends Application implements ILottieApplication {
-
   private int droppedFrames;
   private long droppedFramesStartingNs;
   private long currentFrameNs;
 
-  @Override
-  public void onCreate() {
+  @Override public void onCreate() {
     super.onCreate();
     if (L.DBG) {
       TinyDancer.create()
@@ -31,17 +29,14 @@ public class LottieApplication extends Application implements ILottieApplication
           })
           .show(this);
     }
-
   }
 
-  @Override
-  public void startRecordingDroppedFrames() {
+  @Override public void startRecordingDroppedFrames() {
     droppedFrames = 0;
     droppedFramesStartingNs = currentFrameNs;
   }
 
-  @Override
-  public Pair<Integer, Long> stopRecordingDroppedFrames() {
+  @Override public Pair<Integer, Long> stopRecordingDroppedFrames() {
     long duration = currentFrameNs - droppedFramesStartingNs;
     Pair<Integer, Long> ret = new Pair<>(droppedFrames, duration);
     droppedFrames = 0;

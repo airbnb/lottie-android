@@ -1,11 +1,7 @@
 package com.airbnb.lottie;
 
-
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-
-import com.airbnb.lottie.animation.NumberKeyframeAnimation;
-import com.airbnb.lottie.model.LottieComposition;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +18,7 @@ import static junit.framework.Assert.assertEquals;
 @Config(manifest = Config.NONE)
 public class KeyframeAnimationTest {
 
-  @Test
-  public void simpleAnimation() {
+  @Test public void simpleAnimation() {
     List<Float> keyTimes = Arrays.asList(0f, 0.5f, 1f);
     List<Float> values = Arrays.asList(0f, 1f, 10f);
 

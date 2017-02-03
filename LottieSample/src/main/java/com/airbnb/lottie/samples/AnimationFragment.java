@@ -27,7 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.model.LottieComposition;
+import com.airbnb.lottie.LottieComposition;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,7 +72,8 @@ public class AnimationFragment extends Fragment {
 
   @Nullable
   @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_animation, container, false);
     ButterKnife.bind(this, view);
 
@@ -92,24 +93,20 @@ public class AnimationFragment extends Fragment {
     postUpdatePlayButtonText();
     onLoopChanged();
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
-      @Override
-      public void onAnimationStart(Animator animation) {
+      @Override public void onAnimationStart(Animator animation) {
         startRecordingDroppedFrames();
       }
 
-      @Override
-      public void onAnimationEnd(Animator animation) {
+      @Override public void onAnimationEnd(Animator animation) {
         recordDroppedFrames();
         postUpdatePlayButtonText();
       }
 
-      @Override
-      public void onAnimationCancel(Animator animation) {
+      @Override public void onAnimationCancel(Animator animation) {
         postUpdatePlayButtonText();
       }
 
-      @Override
-      public void onAnimationRepeat(Animator animation) {
+      @Override public void onAnimationRepeat(Animator animation) {
         recordDroppedFrames();
         startRecordingDroppedFrames();
       }
@@ -122,31 +119,26 @@ public class AnimationFragment extends Fragment {
     });
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-      @Override
-      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         animationView.setProgress(progress / 100f);
       }
 
-      @Override
-      public void onStartTrackingTouch(SeekBar seekBar) {
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
       }
 
-      @Override
-      public void onStopTrackingTouch(SeekBar seekBar) {
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
       }
     });
 
     return view;
   }
 
-  @Override
-  public void onStop() {
+  @Override public void onStop() {
     animationView.cancelAnimation();
     super.onStop();
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+  @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {
     if (resultCode != Activity.RESULT_OK) {
       return;
     }
@@ -154,12 +146,13 @@ public class AnimationFragment extends Fragment {
     switch (requestCode) {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
-        LottieComposition.fromAssetFileName(getContext(), assetName, new LottieComposition.OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            setComposition(composition, assetName);
-          }
-        });
+        LottieComposition.fromAssetFileName(getContext(), assetName,
+            new LottieComposition.OnCompositionLoadedListener() {
+              @Override
+              public void onCompositionLoaded(LottieComposition composition) {
+                setComposition(composition, assetName);
+              }
+            });
         break;
       case RC_FILE:
         onFileLoaded(data.getData());
@@ -291,12 +284,13 @@ public class AnimationFragment extends Fragment {
       return;
     }
 
-    LottieComposition.fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
-      @Override
-      public void onCompositionLoaded(LottieComposition composition) {
-        setComposition(composition, uri.getPath());
-      }
-    });
+    LottieComposition
+        .fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
+          @Override
+          public void onCompositionLoaded(LottieComposition composition) {
+            setComposition(composition, uri.getPath());
+          }
+        });
   }
 
   private void loadUrl(String url) {
@@ -315,25 +309,24 @@ public class AnimationFragment extends Fragment {
       client = new OkHttpClient();
     }
     client.newCall(request).enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
+      @Override public void onFailure(Call call, IOException e) {
         onLoadError();
       }
 
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
+      @Override public void onResponse(Call call, Response response) throws IOException {
         if (!response.isSuccessful()) {
           onLoadError();
         }
 
         try {
           JSONObject json = new JSONObject(response.body().string());
-          LottieComposition.fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
-            @Override
-            public void onCompositionLoaded(LottieComposition composition) {
-              setComposition(composition, "Network Animation");
-            }
-          });
+          LottieComposition
+              .fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
+                @Override
+                public void onCompositionLoaded(LottieComposition composition) {
+                  setComposition(composition, "Network Animation");
+                }
+              });
         } catch (JSONException e) {
           onLoadError();
         }
@@ -356,7 +349,8 @@ public class AnimationFragment extends Fragment {
     Pair<Integer, Long> droppedFrames = getApplication().stopRecordingDroppedFrames();
     int targetFrames = (int) ((droppedFrames.second / 1000000000f) * 60);
     int actualFrames = targetFrames - droppedFrames.first;
-    // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() / 1000f)));
+    // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() /
+    // 1000f)));
     // droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
   }
 
