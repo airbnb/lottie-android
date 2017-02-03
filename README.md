@@ -57,7 +57,7 @@ The simplest way to use it is with LottieAnimationView:
 Or you can load it programatically in multiple ways.
 From a json asset in app/src/main/assets:
 ```java
-LottieAnimationView animationView = findViewById(R.id.animation_view);
+LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
 animationView.setAnimation("hello-world.json");
 animationView.loop(true);
 ```
@@ -65,7 +65,7 @@ This method will load the file and parse the animation in the background and asy
 
 If you want to reuse an animation such as in each item of a list or load it from a network request JSONObject:
 ```java
- LottieAnimationView animationView = findViewById(R.id.animation_view);
+ LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
  ...
  LottieComposition composition = LottieComposition.fromJson(getResources(), jsonObject, (composition) -> {
      animationView.setComposition(composition);
