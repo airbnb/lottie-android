@@ -35,6 +35,7 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
     TestRobot.testAnimation(getActivity(), "Tests/EllipseTrimPath.json");
     TestRobot.testAnimation(getActivity(), "Tests/SplitDimensions.json");
     TestRobot.testAnimation(getActivity(), "Tests/TrimPathsFull.json");
+    TestRobot.testAnimation(getActivity(), "Tests/Laugh4.json");
     TestRobot.testStatic(getActivity(), "Tests/TrimPathFill.json");
   }
 }
