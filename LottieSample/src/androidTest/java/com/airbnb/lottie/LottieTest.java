@@ -1,7 +1,10 @@
-package com.airbnb.lottie.samples;
+package com.airbnb.lottie;
 
 
 import android.test.ActivityInstrumentationTestCase2;
+
+import com.airbnb.lottie.TestRobot;
+import com.airbnb.lottie.samples.MainActivity;
 
 import org.junit.Test;
 
@@ -31,5 +34,6 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
     TestRobot.testAnimation(getActivity(), "Tests/Alarm.json");
     TestRobot.testAnimation(getActivity(), "Tests/CheckSwitch.json");
     TestRobot.testAnimation(getActivity(), "Tests/EllipseTrimPath.json");
+    TestRobot.testAnimation(getActivity(), "Tests/SplitDimensions.json");
   }
 }

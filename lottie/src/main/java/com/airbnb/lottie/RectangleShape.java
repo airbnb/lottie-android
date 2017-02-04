@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.graphics.PointF;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -8,14 +9,14 @@ import org.json.JSONObject;
 class RectangleShape {
   private static final String TAG = RectangleShape.class.getSimpleName();
 
-  private final AnimatablePathValue position;
+  private final IAnimatablePathValue position;
   private final AnimatablePointValue size;
   private final AnimatableFloatValue cornerRadius;
 
   RectangleShape(JSONObject json, int frameRate, LottieComposition composition) {
     try {
       JSONObject positionJson = json.getJSONObject("p");
-      position = new AnimatablePathValue(positionJson, frameRate, composition);
+      position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(positionJson, composition);
     } catch (JSONException e) {
       throw new IllegalArgumentException("Unable to parse rectangle position.", e);
     }
@@ -45,7 +46,7 @@ class RectangleShape {
     return size;
   }
 
-  AnimatablePathValue getPosition() {
+  IAnimatablePathValue getPosition() {
     return position;
   }
 

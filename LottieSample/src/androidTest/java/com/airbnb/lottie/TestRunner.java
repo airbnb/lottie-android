@@ -1,4 +1,4 @@
-package com.airbnb.lottie.samples;
+package com.airbnb.lottie;
 
 import android.support.test.runner.AndroidJUnitRunner;
 

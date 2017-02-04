@@ -11,7 +11,7 @@ abstract class KeyframeAnimation<T> {
     void onValueChanged(T progress);
   }
 
-  private final List<AnimationListener<T>> listeners = new ArrayList<>();
+  final List<AnimationListener<T>> listeners = new ArrayList<>();
   private final long duration;
   private final LottieComposition composition;
   final List<Float> keyTimes;

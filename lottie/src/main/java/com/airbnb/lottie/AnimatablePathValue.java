@@ -12,10 +12,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class AnimatablePathValue implements AnimatableValue {
+class AnimatablePathValue implements IAnimatablePathValue {
+
+  static IAnimatablePathValue createAnimatablePathOrSplitDimensionPath(
+      JSONObject pointValues, LottieComposition composition) {
+    if (pointValues.has("k")) {
+      return new AnimatablePathValue(pointValues, composition);
+    } else {
+      return new AnimatableSplitDimensionPathValue(pointValues, composition);
+    }
+  }
+
   private final List<Float> keyTimes = new ArrayList<>();
   private final List<Interpolator> interpolators = new ArrayList<>();
-  private final int frameRate;
   private final LottieComposition composition;
 
   private PointF initialPoint;
@@ -29,22 +38,29 @@ class AnimatablePathValue implements AnimatableValue {
    * Create a default static animatable path.
    */
   AnimatablePathValue(LottieComposition composition) {
-    frameRate = 0;
     this.composition = composition;
     this.initialPoint = new PointF(0, 0);
   }
 
-  AnimatablePathValue(JSONObject pointValues, int frameRate, LottieComposition composition) {
-    this.frameRate = frameRate;
+  AnimatablePathValue(JSONObject pointValues, LottieComposition composition) {
+    this(pointValues, composition, "k");
+  }
+
+  AnimatablePathValue(JSONObject pointValues, LottieComposition composition,
+      String jsonKey) {
     this.composition = composition;
 
     Object value;
     try {
-      value = pointValues.get("k");
+      value = pointValues.get(jsonKey);
     } catch (JSONException e) {
       throw new IllegalArgumentException("Point values have no keyframes.");
     }
 
+    setupAnimationForValue(value);
+  }
+
+  private void setupAnimationForValue(Object value) {
     if (value instanceof JSONArray) {
       Object firstObject;
       try {
@@ -61,7 +77,6 @@ class AnimatablePathValue implements AnimatableValue {
         initialPoint = JsonUtils.pointFromJsonArray((JSONArray) value, composition.getScale());
       }
     }
-
   }
 
   @SuppressWarnings("Duplicates")
@@ -84,8 +99,8 @@ class AnimatablePathValue implements AnimatableValue {
                 "Invalid frame compDuration " + startFrame + "->" + endFrame);
           }
           durationFrames = endFrame - startFrame;
-          duration = (long) (durationFrames / (float) frameRate * 1000);
-          delay = (long) (startFrame / (float) frameRate * 1000);
+          duration = (long) (durationFrames / (float) composition.getFrameRate() * 1000);
+          delay = (long) (startFrame / (float) composition.getFrameRate() * 1000);
           break;
         }
       }
@@ -186,7 +201,8 @@ class AnimatablePathValue implements AnimatableValue {
     return animationPath.hasSegments();
   }
 
-  PointF getInitialPoint() {
+  @Override
+  public PointF getInitialPoint() {
     return initialPoint;
   }
 
