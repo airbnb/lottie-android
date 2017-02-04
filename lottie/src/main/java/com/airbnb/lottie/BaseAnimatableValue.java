@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-abstract class BaseAnimatableValue<V, O> implements AnimatableValue {
+abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
   final List<V> keyValues = new ArrayList<>();
   final List<Float> keyTimes = new ArrayList<>();
   final List<Interpolator> interpolators = new ArrayList<>();
@@ -178,7 +178,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue {
 
   protected abstract V valueFromObject(Object object, float scale) throws JSONException;
 
-  public abstract KeyframeAnimation createAnimation();
+  public abstract KeyframeAnimation<O> createAnimation();
 
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder();

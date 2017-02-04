@@ -10,7 +10,7 @@ class ShapeTransform implements Transform {
   private static final String TAG = ShapeTransform.class.getSimpleName();
 
   private Rect compBounds;
-  private AnimatablePathValue position;
+  private IAnimatablePathValue position;
   private AnimatablePathValue anchor;
   private AnimatableScaleValue scale;
   private AnimatableFloatValue rotation;
@@ -34,7 +34,7 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no position.");
     }
-    position = new AnimatablePathValue(jsonPosition, frameRate, composition);
+    position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(jsonPosition, composition);
 
     JSONObject jsonAnchor;
     try {
@@ -42,7 +42,7 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no anchor.");
     }
-    anchor = new AnimatablePathValue(jsonAnchor, frameRate, composition);
+    anchor = new AnimatablePathValue(jsonAnchor, composition);
 
     JSONObject jsonScale;
     try {
@@ -75,7 +75,7 @@ class ShapeTransform implements Transform {
     return compBounds;
   }
 
-  @Override public AnimatablePathValue getPosition() {
+  @Override public IAnimatablePathValue getPosition() {
     return position;
   }
 

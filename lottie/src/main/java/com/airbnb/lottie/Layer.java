@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -100,7 +101,7 @@ class Layer implements Transform {
         // Do nothing.
       }
       if (position != null) {
-        layer.position = new AnimatablePathValue(position, layer.frameRate, composition);
+        layer.position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(position, composition);
         if (L.DBG) Log.d(TAG, "\tPosition=" + layer.getPosition().toString());
       }
 
@@ -111,7 +112,7 @@ class Layer implements Transform {
         // DO nothing.
       }
       if (anchor != null) {
-        layer.anchor = new AnimatablePathValue(anchor, layer.frameRate, composition);
+        layer.anchor = new AnimatablePathValue(anchor, composition);
         if (L.DBG) Log.d(TAG, "\tAnchor=" + layer.anchor.toString());
       }
 
@@ -222,7 +223,7 @@ class Layer implements Transform {
 
   private AnimatableIntegerValue opacity;
   private AnimatableFloatValue rotation;
-  private AnimatablePathValue position;
+  private IAnimatablePathValue position;
 
   private AnimatablePathValue anchor;
   private AnimatableScaleValue scale;
@@ -293,7 +294,7 @@ class Layer implements Transform {
     return parentId;
   }
 
-  @Override public AnimatablePathValue getPosition() {
+  @Override public IAnimatablePathValue getPosition() {
     return position;
   }
 
