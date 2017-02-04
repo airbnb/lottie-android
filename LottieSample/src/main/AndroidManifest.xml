@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name="com.airbnb.lottie.samples.LottieApplication">
-        <activity android:name="com.airbnb.lottie.samples.MainActivity">
+        <activity
+            android:name="com.airbnb.lottie.samples.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -22,10 +24,12 @@
 
         <activity
             android:name="com.airbnb.lottie.samples.FontActivity"
-            android:windowSoftInputMode="stateVisible"/>
+            android:windowSoftInputMode="stateVisible"
+            android:screenOrientation="portrait"/>
 
         <activity
-            android:name="com.airbnb.lottie.samples.AppIntroActivity" />
+            android:name="com.airbnb.lottie.samples.AppIntroActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
