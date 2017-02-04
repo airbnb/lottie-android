@@ -158,7 +158,7 @@ public class LottieFontViewGroup extends FrameLayout {
       return true;
     }
 
-    if (!isValidKey(keyCode)) {
+    if (!isValidKey(event)) {
       return super.onKeyUp(keyCode, event);
     }
 
@@ -193,8 +193,11 @@ public class LottieFontViewGroup extends FrameLayout {
     return true;
   }
 
-  private boolean isValidKey(int keyCode) {
-    if (keyCode >= KeyEvent.KEYCODE_A && keyCode <= KeyEvent.KEYCODE_Z) {
+  private boolean isValidKey(KeyEvent event) {
+    if (!event.hasNoModifiers()) {
+      return false;
+    }
+    if (event.getKeyCode() >= KeyEvent.KEYCODE_A && event.getKeyCode() <= KeyEvent.KEYCODE_Z) {
       return true;
     }
 
