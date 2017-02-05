@@ -54,7 +54,7 @@ The simplest way to use it is with LottieAnimationView:
         app:lottie_autoPlay="true" />
 ```
 
-Or you can load it programatically in multiple ways.
+Or you can load it programmatically in multiple ways.
 From a json asset in app/src/main/assets:
 ```java
 LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
@@ -98,7 +98,7 @@ animationView.cancelAnimation();
 ```
 
 
-Under the hood, `LottieAnimationView` uses `LottieDrawable` to render its animations. If you need to, you can use the the drawable form directly:
+Under the hood, `LottieAnimationView` uses `LottieDrawable` to render its animations. If you need to, you can use the drawable form directly:
 ```java
 LottieDrawable drawable = new LottieDrawable();
 LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (composition) -> {
@@ -182,7 +182,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 
 * Rectangle (All properties)
 
-* Elipse (All properties)
+* Eclipse (All properties)
 
 * Multiple paths in one group
 
@@ -224,7 +224,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 4. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not have to be deserialized every time.
 
 ## Try it out
-Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [LottieSample/src/main/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets) and the orignal After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
+Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [LottieSample/src/main/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets) and the original After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
 
 The sample app can also load json files at a given url or locally on your device (like Downloads or on your sdcard).
 
