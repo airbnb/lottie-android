@@ -24,6 +24,7 @@ All of these animations were created in After Effects, exported with Bodymovin, 
 [Bodymovin](https://github.com/bodymovin/bodymovin) is an After Effects plugin created by Hernan Torrisi that exports After effects files as json and includes a javascript web player. We've built on top of his great work to extend its usage to Android, iOS, and React Native.
 
 Read more about it on our [blog post](http://airbnb.design/introducing-lottie/)
+Or get in touch on Twitter ([gpeal8](https://twitter.com/gpeal8)) or via lottie@airbnb.com
 
 ## Sample App
 
