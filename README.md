@@ -182,7 +182,7 @@ If your animation will be frequently reused, `LottieAnimationView` has an option
 
 * Rectangle (All properties)
 
-* Eclipse (All properties)
+* Ellipse (All properties)
 
 * Multiple paths in one group
 
