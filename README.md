@@ -24,6 +24,7 @@ All of these animations were created in After Effects, exported with Bodymovin, 
 [Bodymovin](https://github.com/bodymovin/bodymovin) is an After Effects plugin created by Hernan Torrisi that exports After effects files as json and includes a javascript web player. We've built on top of his great work to extend its usage to Android, iOS, and React Native.
 
 Read more about it on our [blog post](http://airbnb.design/introducing-lottie/)
+Or get in touch on Twitter ([gpeal8](https://twitter.com/gpeal8)) or via lottie@airbnb.com
 
 ## Sample App
 
@@ -231,7 +232,8 @@ The sample app can also load json files at a given url or locally on your device
 ## Community Contributions
  * [Xamarin bindings](https://github.com/martijn00/LottieXamarin)
  * [NativeScript bindings](https://github.com/bradmartin/nativescript-lottie)
-
+ * [Appcelerator Titanium bindings](https://github.com/m1ga/ti.animation)
+ 
 ## Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engineering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
 2. [Facebook Keyframes](https://github.com/facebookincubator/Keyframes). Keyframes is a wonderful new library from Facebook that they built for reactions. However, Keyframes doesn't support some of Lottie's features such as masks, mattes, trim paths, dash patterns, and more.
