@@ -55,7 +55,7 @@ The simplest way to use it is with LottieAnimationView:
         app:lottie_autoPlay="true" />
 ```
 
-Or you can load it programatically in multiple ways.
+Or you can load it programmatically in multiple ways.
 From a json asset in app/src/main/assets:
 ```java
 LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
