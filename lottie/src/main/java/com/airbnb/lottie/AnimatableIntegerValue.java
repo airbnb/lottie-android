@@ -22,7 +22,11 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
   }
 
   @Override protected Integer valueFromObject(Object object, float scale) throws JSONException {
-    if (object instanceof Integer) {
+    if (object instanceof Float) {
+      return Math.round((Float) object * scale);
+    } else if (object instanceof Double) {
+      return (int) Math.round((Double) object * scale);
+    } else if (object instanceof Integer) {
       return Math.round((Integer) object * scale);
     } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Integer) {
       return Math.round(((JSONArray) object).getInt(0) * scale);
