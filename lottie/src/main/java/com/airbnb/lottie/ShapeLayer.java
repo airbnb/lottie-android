@@ -197,6 +197,15 @@ class ShapeLayer extends AnimatableLayer {
       newStart += currentPathStrokeOffset;
       newEnd += currentPathStrokeOffset;
 
+      // If the trim path has rotated around the path, we need to shift it back.
+      if (newStart > length && newEnd > length) {
+        newStart %= length;
+        newEnd %= length;
+      }
+      if (newStart > newEnd) {
+        newStart -= length;
+      }
+
       pathMeasure.getSegment(
           newStart,
           newEnd,
@@ -208,6 +217,12 @@ class ShapeLayer extends AnimatableLayer {
         pathMeasure.getSegment(
             0,
             newEnd % length,
+            extraTrimPath,
+            true);
+      } else if (newStart < 0) {
+        pathMeasure.getSegment(
+            length + newStart,
+            length,
             extraTrimPath,
             true);
       }
