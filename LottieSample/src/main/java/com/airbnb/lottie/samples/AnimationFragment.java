@@ -187,7 +187,7 @@ public class AnimationFragment extends Fragment {
   @OnClick(R.id.loop)
   void onLoopChanged() {
     loopButton.setActivated(!loopButton.isActivated());
-    animationView.loop(loopButton.isEnabled());
+    animationView.loop(loopButton.isActivated());
   }
 
   @OnClick(R.id.restart)
