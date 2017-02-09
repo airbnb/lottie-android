@@ -30,6 +30,8 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
       return Math.round((Integer) object * scale);
     } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Integer) {
       return Math.round(((JSONArray) object).getInt(0) * scale);
+    } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Double) {
+      return (int) Math.round(((JSONArray) object).getDouble(0) * scale);
     }
     return null;
   }
