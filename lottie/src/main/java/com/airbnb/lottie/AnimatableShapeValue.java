@@ -106,6 +106,7 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
       }
 
       shape.addCurve(new CubicCurveData(shapeCp1, shapeCp2, vertex));
+      shape.setClosed(true);
     }
     return shape;
 

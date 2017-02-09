@@ -19,6 +19,9 @@ class MiscUtils {
           curveData.getControlPoint2().x, curveData.getControlPoint2().y,
           curveData.getVertex().x, curveData.getVertex().y);
     }
+    if (shapeData.isClosed()) {
+      outPath.close();
+    }
   }
 
   static float lerp(float a, float b, @FloatRange(from = 0f, to = 1f) float percentage) {

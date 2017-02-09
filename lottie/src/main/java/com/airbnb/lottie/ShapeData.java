@@ -9,6 +9,7 @@ import java.util.List;
 class ShapeData {
   private final List<CubicCurveData> curves = new ArrayList<>();
   private PointF initialPoint;
+  private boolean closed;
 
   void setInitialPoint(PointF initialPoint) {
     this.initialPoint = initialPoint;
@@ -29,6 +30,14 @@ class ShapeData {
     curves.add(curve);
   }
 
+  public boolean isClosed() {
+    return closed;
+  }
+
+  public void setClosed(boolean closed) {
+    this.closed = closed;
+  }
+
   List<CubicCurveData> getCurves() {
     return curves;
   }
@@ -38,6 +47,8 @@ class ShapeData {
     if (initialPoint == null) {
       initialPoint = new PointF();
     }
+    setClosed(shapeData1.isClosed() || shapeData2.isClosed());
+
     if (!curves.isEmpty() && curves.size() != shapeData1.getCurves().size()
         && curves.size() != shapeData2.getCurves().size()) {
       throw new IllegalStateException("Curves must have the same number of control points. This: "
