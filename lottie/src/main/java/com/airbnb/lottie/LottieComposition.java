@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.VisibleForTesting;
-import android.util.LongSparseArray;
+import android.support.v4.util.LongSparseArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;

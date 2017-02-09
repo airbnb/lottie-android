@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
@@ -150,7 +151,12 @@ public class LottieViewAnimator {
             .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
               @Override
               public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                  view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } else {
+                  //noinspection deprecation
+                  view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }
                 setViewAnchor(view, layer.getAnchor().getInitialPoint());
               }
             });
@@ -173,7 +179,7 @@ public class LottieViewAnimator {
     return this;
   }
 
-  public LottieViewAnimator cancel() {
+  @SuppressWarnings("unused") public LottieViewAnimator cancel() {
     animator.cancel();
     return this;
   }
