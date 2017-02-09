@@ -50,8 +50,9 @@ public class LottieAnimationView extends AppCompatImageView {
     Strong
   }
 
-  @Nullable private static Map<String, LottieComposition> strongRefCache;
-  @Nullable private static Map<String, WeakReference<LottieComposition>> weakRefCache;
+  private static final Map<String, LottieComposition> strongRefCache = new HashMap<>();
+  private static final Map<String, WeakReference<LottieComposition>> weakRefCache =
+      new HashMap<>();
 
   private final LottieComposition.OnCompositionLoadedListener loadedListener =
       new LottieComposition.OnCompositionLoadedListener() {
@@ -216,14 +217,8 @@ public class LottieAnimationView extends AppCompatImageView {
           @Override
           public void onCompositionLoaded(LottieComposition composition) {
             if (cacheStrategy == CacheStrategy.Strong) {
-              if (strongRefCache == null) {
-                strongRefCache = new HashMap<>();
-              }
               strongRefCache.put(animationName, composition);
             } else if (cacheStrategy == CacheStrategy.Weak) {
-              if (weakRefCache == null) {
-                weakRefCache = new HashMap<>();
-              }
               weakRefCache.put(animationName, new WeakReference<>(composition));
             }
 
