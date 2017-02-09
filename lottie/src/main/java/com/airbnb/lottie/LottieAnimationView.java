@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -100,6 +102,14 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     ta.recycle();
     setLayerType(LAYER_TYPE_SOFTWARE, null);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
+        Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+      if (systemAnimationScale == 0f) {
+        lottieDrawable.systemAnimationsAreDisabled();
+      }
+    }
   }
 
   @Override public void invalidateDrawable(Drawable dr) {
@@ -160,8 +170,7 @@ public class LottieAnimationView extends AppCompatImageView {
     super.onDetachedFromWindow();
   }
 
-  @VisibleForTesting
-  public void recycleBitmaps() {
+  @VisibleForTesting void recycleBitmaps() {
     lottieDrawable.recycleBitmaps();
   }
 

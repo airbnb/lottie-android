@@ -160,7 +160,6 @@ class AnimatableLayer extends Drawable {
     }
   }
 
-
   @Override
   public void setAlpha(int alpha) {
     throw new IllegalArgumentException("This shouldn't be used.");

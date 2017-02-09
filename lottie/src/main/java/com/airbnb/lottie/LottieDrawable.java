@@ -33,6 +33,7 @@ class LottieDrawable extends AnimatableLayer {
   @Nullable private Bitmap mainBitmapForMatte = null;
   @Nullable private Bitmap maskBitmapForMatte = null;
   private boolean playAnimationWhenLayerAdded;
+  private boolean systemAnimationsAreDisabled;
 
   LottieDrawable() {
     super(null);
@@ -41,7 +42,12 @@ class LottieDrawable extends AnimatableLayer {
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        setProgress(animation.getAnimatedFraction());
+        if (systemAnimationsAreDisabled) {
+          animator.cancel();
+          setProgress(1f);
+        } else {
+          setProgress(animation.getAnimatedFraction());
+        }
       }
     });
   }
@@ -155,6 +161,10 @@ class LottieDrawable extends AnimatableLayer {
     canvas.clipRect(getBounds());
     canvas.restoreToCount(saveCount);
 
+  }
+
+  void systemAnimationsAreDisabled() {
+    systemAnimationsAreDisabled = true;
   }
 
   void loop(boolean loop) {
