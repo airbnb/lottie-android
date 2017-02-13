@@ -40,6 +40,9 @@ class ShapeGroup {
         return new RectangleShape(json, framerate, composition);
       case "tm":
         return new ShapeTrimPath(json, framerate, composition);
+      case "sr":
+        throw new IllegalArgumentException("Lottie doesn't yet support polystars. Convert your " +
+            "layer to a shape first.");
     }
     return null;
   }
