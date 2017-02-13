@@ -23,7 +23,7 @@ import java.util.List;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-class LottieDrawable extends AnimatableLayer {
+public class LottieDrawable extends AnimatableLayer {
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 
