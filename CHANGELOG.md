@@ -1,3 +1,8 @@
+# 1.0.3
+* Make `LottieDrawable` public again.
+* Apply trim paths to shape fills.
+* Expose reverseAnimation in addition to playAnimation.
+
 # 1.0.2
 * Added support for split dimension positions.
 * Fixed a crash with decimal opacity values.
