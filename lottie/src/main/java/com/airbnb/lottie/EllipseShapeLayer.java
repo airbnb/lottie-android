@@ -26,6 +26,10 @@ class EllipseShapeLayer extends AnimatableLayer {
       fillLayer.updateCircle(
           circleShape.getPosition().createAnimation(),
           circleShape.getSize().createAnimation());
+      if (trim != null) {
+        fillLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
+            trim.getOffset().createAnimation());
+      }
       addLayer(fillLayer);
     }
 

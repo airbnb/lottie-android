@@ -28,6 +28,10 @@ class ShapeLayerView extends AnimatableLayer {
       fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
       fillLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
       fillLayer.setScale(scale.createAnimation());
+      if (trim != null) {
+        fillLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
+            trim.getOffset().createAnimation());
+      }
       addLayer(fillLayer);
     }
 
