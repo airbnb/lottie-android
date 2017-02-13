@@ -69,6 +69,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private boolean isAnimationLoading;
   private boolean setProgressWhenCompositionSet;
   private boolean playAnimationWhenCompositionSet;
+  private boolean reverseAnimationWhenCompositionSet;
 
   @Nullable private LottieComposition.Cancellable compositionLoader;
   /**
@@ -209,6 +210,7 @@ public class LottieAnimationView extends AppCompatImageView {
     isAnimationLoading = true;
     setProgressWhenCompositionSet = false;
     playAnimationWhenCompositionSet = false;
+    reverseAnimationWhenCompositionSet = false;
 
     this.animationName = animationName;
     cancelLoaderTask();
@@ -238,6 +240,7 @@ public class LottieAnimationView extends AppCompatImageView {
     isAnimationLoading = true;
     setProgressWhenCompositionSet = false;
     playAnimationWhenCompositionSet = false;
+    reverseAnimationWhenCompositionSet = false;
 
     cancelLoaderTask();
     compositionLoader = LottieComposition.fromJson(getResources(), json, loadedListener);
@@ -276,6 +279,10 @@ public class LottieAnimationView extends AppCompatImageView {
       playAnimationWhenCompositionSet = false;
       playAnimation();
     }
+    if (reverseAnimationWhenCompositionSet) {
+      reverseAnimationWhenCompositionSet = false;
+      reverseAnimation();
+    }
 
     requestLayout();
   }
@@ -310,20 +317,32 @@ public class LottieAnimationView extends AppCompatImageView {
   public void playAnimation() {
     if (isAnimationLoading) {
       playAnimationWhenCompositionSet = true;
+      reverseAnimationWhenCompositionSet = false;
       return;
     }
     lottieDrawable.playAnimation();
   }
 
+  public void reverseAnimation() {
+    if (isAnimationLoading) {
+      playAnimationWhenCompositionSet = false;
+      reverseAnimationWhenCompositionSet = true;
+      return;
+    }
+    lottieDrawable.reverseAnimation();
+  }
+
   public void cancelAnimation() {
     setProgressWhenCompositionSet = false;
     playAnimationWhenCompositionSet = false;
+    reverseAnimationWhenCompositionSet = false;
     lottieDrawable.cancelAnimation();
   }
 
   public void pauseAnimation() {
     setProgressWhenCompositionSet = false;
     playAnimationWhenCompositionSet = false;
+    reverseAnimationWhenCompositionSet = false;
     float progress = getProgress();
     lottieDrawable.cancelAnimation();
     setProgress(progress);

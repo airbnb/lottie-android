@@ -33,6 +33,7 @@ class LottieDrawable extends AnimatableLayer {
   @Nullable private Bitmap mainBitmapForMatte = null;
   @Nullable private Bitmap maskBitmapForMatte = null;
   private boolean playAnimationWhenLayerAdded;
+  private boolean reverseAnimationWhenLayerAdded;
   private boolean systemAnimationsAreDisabled;
 
   LottieDrawable() {
@@ -182,14 +183,26 @@ class LottieDrawable extends AnimatableLayer {
   void playAnimation() {
     if (layers.isEmpty()) {
       playAnimationWhenLayerAdded = true;
+      reverseAnimationWhenLayerAdded = false;
       return;
     }
     animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
     animator.start();
   }
 
+  void reverseAnimation() {
+    if (layers.isEmpty()) {
+      playAnimationWhenLayerAdded = false;
+      reverseAnimationWhenLayerAdded = true;
+      return;
+    }
+    animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+    animator.reverse();
+  }
+
   void cancelAnimation() {
     playAnimationWhenLayerAdded = false;
+    reverseAnimationWhenLayerAdded = false;
     animator.cancel();
   }
 
@@ -199,6 +212,10 @@ class LottieDrawable extends AnimatableLayer {
     if (playAnimationWhenLayerAdded) {
       playAnimationWhenLayerAdded = false;
       playAnimation();
+    }
+    if (reverseAnimationWhenLayerAdded) {
+      reverseAnimationWhenLayerAdded = false;
+      reverseAnimation();
     }
   }
 
