@@ -120,7 +120,9 @@ public class AnimationFragment extends Fragment {
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        animationView.setProgress(progress / 100f);
+        if (!animationView.isAnimating()) {
+          animationView.setProgress(progress / 100f);
+        }
       }
 
       @Override public void onStartTrackingTouch(SeekBar seekBar) {
