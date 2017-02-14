@@ -1,13 +1,14 @@
 package com.airbnb.lottie;
 
-import java.io.IOException;
-import java.io.InputStream;
+import android.graphics.PointF;
 
-public final class Utils {
-  public static void closeQuietly(InputStream stream) {
-    try {
-      stream.close();
-    } catch (IOException ignored) {
+final class Utils {
+  private static PointF emptyPoint;
+
+  static PointF emptyPoint() {
+    if (emptyPoint == null) {
+      emptyPoint = new PointF();
     }
+    return emptyPoint;
   }
 }

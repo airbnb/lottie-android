@@ -7,8 +7,8 @@ import android.graphics.drawable.Drawable;
 import java.util.ArrayList;
 import java.util.List;
 
-class EllipseShapeLayer extends AnimatableLayer {
-  EllipseShapeLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
+class EllipseLayer extends AnimatableLayer {
+  EllipseLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
       ShapeTrimPath trim, Transform transform, Drawable.Callback callback) {
     super(callback);
 
@@ -20,7 +20,7 @@ class EllipseShapeLayer extends AnimatableLayer {
     setRotation(transform.getRotation().createAnimation());
 
     if (fill != null) {
-      CircleShapeLayer fillLayer = new CircleShapeLayer(getCallback());
+      EllipseShapeLayer fillLayer = new EllipseShapeLayer(getCallback());
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setAlpha(fill.getOpacity().createAnimation());
       fillLayer.updateCircle(
@@ -34,7 +34,7 @@ class EllipseShapeLayer extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      CircleShapeLayer strokeLayer = new CircleShapeLayer(getCallback());
+      EllipseShapeLayer strokeLayer = new EllipseShapeLayer(getCallback());
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setAlpha(stroke.getOpacity().createAnimation());
@@ -60,7 +60,7 @@ class EllipseShapeLayer extends AnimatableLayer {
     }
   }
 
-  private static final class CircleShapeLayer extends ShapeLayer {
+  private static final class EllipseShapeLayer extends ShapeLayer {
     private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
     private final KeyframeAnimation.AnimationListener<PointF> circleSizeChangedListener =
@@ -84,7 +84,7 @@ class EllipseShapeLayer extends AnimatableLayer {
     private KeyframeAnimation<PointF> circleSize;
     private KeyframeAnimation<PointF> circlePosition;
 
-    CircleShapeLayer(Drawable.Callback callback) {
+    EllipseShapeLayer(Drawable.Callback callback) {
       super(callback);
       setPath(new StaticKeyframeAnimation<>(path));
     }
@@ -126,8 +126,6 @@ class EllipseShapeLayer extends AnimatableLayer {
       path.offset(circlePosition.getValue().x, circlePosition.getValue().y);
 
       onPathChanged();
-
-      invalidateSelf();
     }
   }
 }

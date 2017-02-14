@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
 import android.util.Log;
 
 import org.json.JSONException;
