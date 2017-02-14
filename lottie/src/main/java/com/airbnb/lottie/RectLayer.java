@@ -1,9 +1,7 @@
 package com.airbnb.lottie;
 
-import android.annotation.SuppressLint;
 import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -14,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 class RectLayer extends AnimatableLayer {
-  @Nullable private RoundRectLayer fillLayer;
-  @Nullable private RoundRectLayer strokeLayer;
+  @Nullable private RectShapeLayer fillLayer;
+  @Nullable private RectShapeLayer strokeLayer;
 
-  RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill,
-      @Nullable ShapeStroke stroke, Transform transform, Drawable.Callback callback) {
+  RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill, @Nullable ShapeStroke stroke,
+      @Nullable ShapeTrimPath trim, Transform transform, Drawable.Callback callback) {
     super(callback);
 
     setBounds(transform.getBounds());
@@ -29,18 +27,22 @@ class RectLayer extends AnimatableLayer {
     setRotation(transform.getRotation().createAnimation());
 
     if (fill != null) {
-      fillLayer = new RoundRectLayer(getCallback());
+      fillLayer = new RectShapeLayer(getCallback());
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
       fillLayer.setTransformAlpha(transform.getOpacity().createAnimation());
       fillLayer.setRectCornerRadius(rectShape.getCornerRadius().createAnimation());
       fillLayer.setRectSize(rectShape.getSize().createAnimation());
       fillLayer.setRectPosition(rectShape.getPosition().createAnimation());
+      if (trim != null) {
+        fillLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
+            trim.getOffset().createAnimation());
+      }
       addLayer(fillLayer);
     }
 
     if (stroke != null) {
-      strokeLayer = new RoundRectLayer(getCallback());
+      strokeLayer = new RectShapeLayer(getCallback());
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
@@ -58,6 +60,10 @@ class RectLayer extends AnimatableLayer {
       strokeLayer.setRectSize(rectShape.getSize().createAnimation());
       strokeLayer.setRectPosition(rectShape.getPosition().createAnimation());
       strokeLayer.setLineJoinType(stroke.getJoinType());
+      if (trim != null) {
+        strokeLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
+            trim.getOffset().createAnimation());
+      }
       addLayer(strokeLayer);
     }
   }
@@ -73,211 +79,44 @@ class RectLayer extends AnimatableLayer {
     }
   }
 
-  private static class RoundRectLayer extends AnimatableLayer {
-    private final KeyframeAnimation.AnimationListener<Integer> alphaChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
-      @Override
-      public void onValueChanged(Integer value) {
-        invalidateSelf();
-      }
-    };
+  private static class RectShapeLayer extends ShapeLayer {
 
-    private final KeyframeAnimation.AnimationListener<Integer> colorChangedListener = new KeyframeAnimation.AnimationListener<Integer>() {
-      @Override
-      public void onValueChanged(Integer value) {
-        onColorChanged();
-      }
-    };
+    private final KeyframeAnimation.AnimationListener<PointF> sizeChangedListener =
+        new KeyframeAnimation.AnimationListener<PointF>() {
+          @Override
+          public void onValueChanged(PointF progress) {
+            onRectChanged();
+          }
+        };
 
-    private final KeyframeAnimation.AnimationListener<Float> lineWidthChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
-      @Override
-      public void onValueChanged(Float value) {
-        onLineWidthChanged();
-      }
-    };
+    private final KeyframeAnimation.AnimationListener<Float> cornerRadiusChangedListener =
+        new KeyframeAnimation.AnimationListener<Float>() {
+          @Override
+          public void onValueChanged(Float progress) {
+            onRectChanged();
+          }
+        };
 
-    private final KeyframeAnimation.AnimationListener<Float> dashPatternChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
-      @Override
-      public void onValueChanged(Float value) {
-        onDashPatternChanged();
-      }
-    };
+    private final KeyframeAnimation.AnimationListener<PointF> positionChangedListener =
+        new KeyframeAnimation.AnimationListener<PointF>() {
+          @Override
+          public void onValueChanged(PointF progress) {
+            onRectChanged();
+          }
+        };
 
-    private final KeyframeAnimation.AnimationListener<Float> cornerRadiusChangedListener = new KeyframeAnimation.AnimationListener<Float>() {
-      @Override
-      public void onValueChanged(Float value) {
-        invalidateSelf();
-      }
-    };
-
-    private final KeyframeAnimation.AnimationListener<PointF> rectPositionChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
-      @Override
-      public void onValueChanged(PointF value) {
-        invalidateSelf();
-      }
-    };
-
-    private final KeyframeAnimation.AnimationListener<PointF> rectSizeChangedListener = new KeyframeAnimation.AnimationListener<PointF>() {
-      @Override
-      public void onValueChanged(PointF value) {
-        invalidateSelf();
-      }
-    };
-
-    private final Paint paint = new Paint();
-    private final RectF fillRect = new RectF();
-
-    private KeyframeAnimation<Integer> color;
-    private KeyframeAnimation<Float> lineWidth;
-    private KeyframeAnimation<Integer> shapeAlpha;
-    private KeyframeAnimation<Integer> transformAlpha;
+    private final Path path = new Path();
+    private final RectF positionRect = new RectF();
+    private final RectF rect = new RectF();
     private KeyframeAnimation<Float> rectCornerRadius;
     private KeyframeAnimation<PointF> rectPosition;
     private KeyframeAnimation<PointF> rectSize;
 
-    @Nullable private List<KeyframeAnimation<Float>> lineDashPattern;
-    @Nullable private KeyframeAnimation<Float> lineDashPatternOffset;
+    private boolean updateRectOnNextDraw;
 
-    RoundRectLayer(Drawable.Callback callback) {
+    RectShapeLayer(Drawable.Callback callback) {
       super(callback);
-      paint.setAntiAlias(true);
-      paint.setStyle(Paint.Style.FILL);
-    }
-
-    void setShapeAlpha(KeyframeAnimation<Integer> shapeAlpha) {
-      if (this.shapeAlpha != null) {
-        removeAnimation(this.shapeAlpha);
-        this.shapeAlpha.removeUpdateListener(alphaChangedListener);
-      }
-      this.shapeAlpha = shapeAlpha;
-      addAnimation(shapeAlpha);
-      shapeAlpha.addUpdateListener(alphaChangedListener);
-      invalidateSelf();
-    }
-
-    void setTransformAlpha(KeyframeAnimation<Integer> transformAlpha) {
-      if (this.transformAlpha != null) {
-        removeAnimation(this.transformAlpha);
-        this.transformAlpha.removeUpdateListener(alphaChangedListener);
-      }
-      this.transformAlpha = transformAlpha;
-      addAnimation(transformAlpha);
-      transformAlpha.addUpdateListener(alphaChangedListener);
-      invalidateSelf();
-    }
-
-
-    @Override
-    public void setAlpha(int alpha) {
-      paint.setAlpha(alpha);
-    }
-
-    @Override
-    public int getAlpha() {
-      Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
-      Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
-      int layerAlpha = super.getAlpha();
-      return (int) ((shapeAlpha / 255f * transformAlpha / 255f * layerAlpha / 255f) * 255);
-    }
-
-    public void setColor(KeyframeAnimation<Integer> color) {
-      if (this.color != null) {
-        removeAnimation(this.color);
-        this.color.removeUpdateListener(colorChangedListener);
-      }
-      this.color = color;
-      addAnimation(color);
-      color.addUpdateListener(colorChangedListener);
-      onColorChanged();
-    }
-
-    private void onColorChanged() {
-      paint.setColor(color.getValue());
-      invalidateSelf();
-    }
-
-    private void setIsStroke() {
-      paint.setStyle(Paint.Style.STROKE);
-      invalidateSelf();
-    }
-
-    void setLineWidth(KeyframeAnimation<Float> lineWidth) {
-      if (this.lineWidth != null) {
-        removeAnimation(this.lineWidth);
-        this.lineWidth.removeUpdateListener(lineWidthChangedListener);
-      }
-      this.lineWidth = lineWidth;
-      addAnimation(lineWidth);
-      lineWidth.addUpdateListener(lineWidthChangedListener);
-      onLineWidthChanged();
-    }
-
-    private void onLineWidthChanged() {
-      paint.setStrokeWidth(lineWidth.getValue());
-      invalidateSelf();
-    }
-
-    void setDashPattern(List<KeyframeAnimation<Float>> lineDashPattern, KeyframeAnimation<Float> offset) {
-      if (this.lineDashPattern != null) {
-        removeAnimation(this.lineDashPattern.get(0));
-        this.lineDashPattern.get(0).removeUpdateListener(dashPatternChangedListener);
-        removeAnimation(this.lineDashPattern.get(1));
-        this.lineDashPattern.get(1).removeUpdateListener(dashPatternChangedListener);
-      }
-      if (this.lineDashPatternOffset != null) {
-        removeAnimation(this.lineDashPatternOffset);
-        this.lineDashPatternOffset.removeUpdateListener(dashPatternChangedListener);
-      }
-      if (lineDashPattern.isEmpty()) {
-        return;
-      }
-      this.lineDashPattern = lineDashPattern;
-      this.lineDashPatternOffset = offset;
-      addAnimation(lineDashPattern.get(0));
-      addAnimation(lineDashPattern.get(1));
-      lineDashPattern.get(0).addUpdateListener(dashPatternChangedListener);
-      if (!lineDashPattern.get(1).equals(lineDashPattern.get(1))) {
-        lineDashPattern.get(1).addUpdateListener(dashPatternChangedListener);
-      }
-      addAnimation(offset);
-      offset.addUpdateListener(dashPatternChangedListener);
-      onDashPatternChanged();
-    }
-
-    private void onDashPatternChanged() {
-      if (lineDashPattern == null || lineDashPatternOffset == null) {
-        throw new IllegalStateException("LineDashPattern is null");
-      }
-      float[] values = new float[lineDashPattern.size()];
-      for (int i = 0; i < lineDashPattern.size(); i++) {
-        values[i] = lineDashPattern.get(i).getValue();
-      }
-      paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
-      invalidateSelf();
-    }
-
-    void setLineCapType(ShapeStroke.LineCapType lineCapType) {
-      switch (lineCapType) {
-        case Round:
-          paint.setStrokeCap(Paint.Cap.ROUND);
-          break;
-        case Butt:
-          paint.setStrokeCap(Paint.Cap.BUTT);
-        default:
-      }
-    }
-
-    void setLineJoinType(ShapeStroke.LineJoinType lineJoinType) {
-      switch (lineJoinType) {
-        case Bevel:
-          paint.setStrokeJoin(Paint.Join.BEVEL);
-          break;
-        case Miter:
-          paint.setStrokeJoin(Paint.Join.MITER);
-          break;
-        case Round:
-          paint.setStrokeJoin(Paint.Join.ROUND);
-          break;
-      }
+      setPath(new StaticKeyframeAnimation<>(path));
     }
 
     void setRectCornerRadius(KeyframeAnimation<Float> rectCornerRadius) {
@@ -288,51 +127,102 @@ class RectLayer extends AnimatableLayer {
       this.rectCornerRadius = rectCornerRadius;
       addAnimation(rectCornerRadius);
       rectCornerRadius.addUpdateListener(cornerRadiusChangedListener);
-      invalidateSelf();
-    }
-
-    void setRectPosition(KeyframeAnimation<PointF> rectPosition) {
-      if (this.rectPosition != null) {
-        removeAnimation(this.rectPosition);
-        this.rectPosition.removeUpdateListener(rectPositionChangedListener);
-      }
-      this.rectPosition = rectPosition;
-      addAnimation(rectPosition);
-      rectPosition.addUpdateListener(rectPositionChangedListener);
-      invalidateSelf();
+      onRectChanged();
     }
 
     void setRectSize(KeyframeAnimation<PointF> rectSize) {
       if (this.rectSize != null) {
         removeAnimation(this.rectSize);
-        this.rectSize.removeUpdateListener(rectSizeChangedListener);
+        this.rectSize.removeUpdateListener(sizeChangedListener);
       }
       this.rectSize = rectSize;
       addAnimation(rectSize);
-      rectSize.addUpdateListener(rectSizeChangedListener);
+      rectSize.addUpdateListener(sizeChangedListener);
+      onRectChanged();
+    }
+
+    void setRectPosition(KeyframeAnimation<PointF> rectPosition) {
+      if (this.rectPosition != null) {
+        removeAnimation(this.rectPosition);
+        this.rectPosition.removeUpdateListener(positionChangedListener);
+      }
+      this.rectPosition = rectPosition;
+      addAnimation(rectPosition);
+      rectPosition.addUpdateListener(positionChangedListener);
+      onRectChanged();
+    }
+
+    private void onRectChanged() {
+      updateRectOnNextDraw = true;
       invalidateSelf();
     }
 
-    @SuppressLint("NewApi")
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-      if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
+    private void updateRect() {
+      path.reset();
+
+      if (rectSize == null) {
         return;
       }
-      paint.setAlpha(getAlpha());
-      float halfWidth = rectSize.getValue().x / 2f;
-      float halfHeight = rectSize.getValue().y / 2f;
 
-      fillRect.set(rectPosition.getValue().x - halfWidth,
-          rectPosition.getValue().y - halfHeight,
-          rectPosition.getValue().x + halfWidth,
-          rectPosition.getValue().y + halfHeight);
-      if (rectCornerRadius.getValue() == 0) {
-        canvas.drawRect(fillRect, paint);
-      } else {
-        canvas.drawRoundRect(fillRect, rectCornerRadius.getValue(), rectCornerRadius.getValue(), paint);
+      PointF size = rectSize.getValue();
+      float halfWidth = size.x / 2f;
+      float halfHeight = size.y / 2f;
+      float radius = rectCornerRadius == null ? 0f : rectCornerRadius.getValue();
+
+      // Draw the rectangle top right to bottom left.
+      PointF position = rectPosition == null ? Utils.emptyPoint() : rectPosition.getValue();
+
+      path.moveTo(position.x + halfWidth, position.y - halfHeight + radius);
+
+      path.lineTo(position.x + halfWidth, position.y + halfHeight - radius);
+
+      if (radius > 0) {
+        rect.set(position.x + halfWidth - 2 * radius,
+            position.y + halfHeight - 2 * radius,
+            position.x + halfWidth,
+            position.y + halfHeight);
+        path.arcTo(rect, 0, 90, false);
       }
+
+      path.lineTo(position.x - halfWidth + radius, position.y + halfHeight);
+
+      if (radius > 0) {
+        rect.set(position.x - halfWidth,
+            position.y + halfHeight - 2 * radius,
+            position.x - halfWidth + 2 * radius,
+            position.y + halfHeight);
+        path.arcTo(rect, 90, 90, false);
+      }
+
+      path.lineTo(position.x - halfWidth, position.y - halfHeight + 2 * radius);
+
+      if (radius > 0) {
+        rect.set(position.x - halfWidth,
+            position.y - halfHeight,
+            position.x - halfWidth + 2 * radius,
+            position.y - halfHeight + 2 * radius);
+        path.arcTo(rect, 180, 90, false);
+      }
+
+      path.lineTo(position.x + halfWidth - 2 * radius, position.y - halfHeight);
+
+      if (radius > 0) {
+        rect.set(position.x + halfWidth - 2 * radius,
+            position.y - halfHeight,
+            position.x + halfWidth,
+            position.y - halfHeight + 2 * radius);
+        path.arcTo(rect, 270, 90, false);
+      }
+
+      onPathChanged();
+    }
+
+    @Override public void draw(@NonNull Canvas canvas) {
+      if (updateRectOnNextDraw) {
+        updateRectOnNextDraw = false;
+        updateRect();
+      }
+      super.draw(canvas);
     }
   }
-
 }

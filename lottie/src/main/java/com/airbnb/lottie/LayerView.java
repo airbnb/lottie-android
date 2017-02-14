@@ -102,13 +102,13 @@ class LayerView extends AnimatableLayer {
       } else if (item instanceof RectangleShape) {
         RectangleShape shapeRect = (RectangleShape) item;
         RectLayer shapeLayer =
-            new RectLayer(shapeRect, currentFill, currentStroke, new ShapeTransform(composition),
-                getCallback());
+            new RectLayer(shapeRect, currentFill, currentStroke, currentTrimPath,
+                new ShapeTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof CircleShape) {
         CircleShape shapeCircle = (CircleShape) item;
-        EllipseShapeLayer shapeLayer =
-            new EllipseShapeLayer(shapeCircle, currentFill, currentStroke, currentTrimPath,
+        EllipseLayer shapeLayer =
+            new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrimPath,
                 new ShapeTransform(composition), getCallback());
         addLayer(shapeLayer);
       }
