@@ -213,6 +213,7 @@ class RectLayer extends AnimatableLayer {
             position.y - halfHeight + 2 * radius);
         path.arcTo(rect, 270, 90, false);
       }
+      path.close();
 
       onPathChanged();
     }
