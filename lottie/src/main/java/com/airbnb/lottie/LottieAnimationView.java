@@ -64,12 +64,7 @@ public class LottieAnimationView extends AppCompatImageView {
       };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
-  @FloatRange(from = 0f, to = 1f) private float progress;
   private String animationName;
-  private boolean isAnimationLoading;
-  private boolean setProgressWhenCompositionSet;
-  private boolean playAnimationWhenCompositionSet;
-  private boolean reverseAnimationWhenCompositionSet;
 
   @Nullable private LottieComposition.Cancellable compositionLoader;
   /**
@@ -197,22 +192,19 @@ public class LottieAnimationView extends AppCompatImageView {
   @SuppressWarnings("WeakerAccess")
   public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
-    if (weakRefCache != null && weakRefCache.containsKey(animationName)) {
+    if (weakRefCache.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
       if (compRef.get() != null) {
         setComposition(compRef.get());
         return;
       }
-    } else if (strongRefCache != null && strongRefCache.containsKey(animationName)) {
+    } else if (strongRefCache.containsKey(animationName)) {
       setComposition(strongRefCache.get(animationName));
       return;
     }
-    isAnimationLoading = true;
-    setProgressWhenCompositionSet = false;
-    playAnimationWhenCompositionSet = false;
-    reverseAnimationWhenCompositionSet = false;
 
     this.animationName = animationName;
+    lottieDrawable.cancelAnimation();
     cancelLoaderTask();
     compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName,
         new LottieComposition.OnCompositionLoadedListener() {
@@ -237,11 +229,6 @@ public class LottieAnimationView extends AppCompatImageView {
    * bodymovin json from the network and pass it directly here.
    */
   public void setAnimation(final JSONObject json) {
-    isAnimationLoading = true;
-    setProgressWhenCompositionSet = false;
-    playAnimationWhenCompositionSet = false;
-    reverseAnimationWhenCompositionSet = false;
-
     cancelLoaderTask();
     compositionLoader = LottieComposition.fromJson(getResources(), json, loadedListener);
   }
@@ -264,25 +251,7 @@ public class LottieAnimationView extends AppCompatImageView {
     setImageDrawable(null);
     setImageDrawable(lottieDrawable);
 
-    isAnimationLoading = false;
-
-    if (setProgressWhenCompositionSet) {
-      setProgressWhenCompositionSet = false;
-      setProgress(progress);
-    } else {
-      setProgress(0f);
-    }
-
     this.composition = composition;
-
-    if (playAnimationWhenCompositionSet) {
-      playAnimationWhenCompositionSet = false;
-      playAnimation();
-    }
-    if (reverseAnimationWhenCompositionSet) {
-      reverseAnimationWhenCompositionSet = false;
-      reverseAnimation();
-    }
 
     requestLayout();
   }
@@ -315,51 +284,30 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   public void playAnimation() {
-    if (isAnimationLoading) {
-      playAnimationWhenCompositionSet = true;
-      reverseAnimationWhenCompositionSet = false;
-      return;
-    }
     lottieDrawable.playAnimation();
   }
 
-  public void reverseAnimation() {
-    if (isAnimationLoading) {
-      playAnimationWhenCompositionSet = false;
-      reverseAnimationWhenCompositionSet = true;
-      return;
-    }
+  @SuppressWarnings("unused") public void reverseAnimation() {
     lottieDrawable.reverseAnimation();
   }
 
   public void cancelAnimation() {
-    setProgressWhenCompositionSet = false;
-    playAnimationWhenCompositionSet = false;
-    reverseAnimationWhenCompositionSet = false;
     lottieDrawable.cancelAnimation();
   }
 
   public void pauseAnimation() {
-    setProgressWhenCompositionSet = false;
-    playAnimationWhenCompositionSet = false;
-    reverseAnimationWhenCompositionSet = false;
     float progress = getProgress();
     lottieDrawable.cancelAnimation();
     setProgress(progress);
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    this.progress = progress;
-    if (isAnimationLoading) {
-      setProgressWhenCompositionSet = true;
-      return;
-    }
     lottieDrawable.setProgress(progress);
   }
 
   @FloatRange(from = 0.0f, to = 1.0f)
   public float getProgress() {
-    return progress;
+    return lottieDrawable.getProgress();
   }
 
   public long getDuration() {

@@ -67,7 +67,7 @@ public class LottieDrawable extends AnimatableLayer {
     setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
     buildLayersForComposition(composition);
 
-    getCallback().invalidateDrawable(this);
+    setProgress(getProgress());
   }
 
   private void clearComposition() {
