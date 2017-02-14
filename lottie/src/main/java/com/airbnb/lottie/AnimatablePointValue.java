@@ -7,15 +7,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
-  AnimatablePointValue(JSONObject pointValues, int frameRate, LottieComposition composition) {
-    super(pointValues, frameRate, composition, true);
+  AnimatablePointValue(JSONObject pointValues, LottieComposition composition) throws JSONException {
+    super(pointValues, composition, true);
   }
 
-  @Override protected PointF valueFromObject(Object object, float scale) throws JSONException {
+  @Override public PointF valueFromObject(Object object, float scale) throws JSONException {
     if (object instanceof JSONArray) {
       return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
     } else if (object instanceof JSONObject) {
-      return JsonUtils.pointValueFromJsonObject((JSONObject) object, scale);
+      return JsonUtils.pointFromJsonObject((JSONObject) object, scale);
     }
     throw new IllegalArgumentException("Unable to parse point from " + object);
   }
@@ -25,13 +25,6 @@ class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
       return new StaticKeyframeAnimation<>(initialValue);
     }
 
-    KeyframeAnimation<PointF> animation =
-        new PointKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
-    animation.setStartDelay(delay);
-    return animation;
-  }
-
-  @Override public boolean hasAnimation() {
-    return !keyValues.isEmpty();
+    return new PointKeyframeAnimation(keyframes);
   }
 }

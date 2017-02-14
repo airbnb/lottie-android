@@ -3,7 +3,6 @@ package com.airbnb.lottie;
 import android.graphics.PointF;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
   private final PointF point = new PointF();
@@ -11,15 +10,15 @@ class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
   private final AnimatableFloatValue animatableXDimension;
   private final AnimatableFloatValue animatableYDimension;
 
-  AnimatableSplitDimensionPathValue(JSONObject pointValue, LottieComposition composition) {
-    try {
-      animatableXDimension = new AnimatableFloatValue(pointValue.getJSONObject("x"),
-          composition.getFrameRate(), composition);
-      animatableYDimension = new AnimatableFloatValue(pointValue.getJSONObject("y"),
-          composition.getFrameRate(), composition);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse split dimension path.");
-    }
+  AnimatableSplitDimensionPathValue(
+      AnimatableFloatValue animatableXDimension,
+      AnimatableFloatValue animatableYDimension) {
+    this.animatableXDimension = animatableXDimension;
+    this.animatableYDimension = animatableYDimension;
+  }
+
+  @Override public PointF valueFromObject(Object object, float scale) throws JSONException {
+    return null;
   }
 
   @Override public KeyframeAnimation<PointF> createAnimation() {

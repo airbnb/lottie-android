@@ -9,16 +9,13 @@ import org.json.JSONObject;
 
 class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
   private final Path convertTypePath = new Path();
-  private boolean closed;
 
-  AnimatableShapeValue(JSONObject json, int frameRate, LottieComposition composition,
-      boolean closed) {
-    super(null, frameRate, composition, true);
-    this.closed = closed;
-    init(json);
+  AnimatableShapeValue(JSONObject json, LottieComposition composition)
+      throws JSONException {
+    super(json, composition, true);
   }
 
-  @Override protected ShapeData valueFromObject(Object object, float scale) throws JSONException {
+  @Override public ShapeData valueFromObject(Object object, float scale) throws JSONException {
     JSONObject pointsData = null;
     if (object instanceof JSONArray) {
       try {
@@ -40,19 +37,22 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     JSONArray pointsArray = null;
     JSONArray inTangents = null;
     JSONArray outTangents = null;
-    try {
+    boolean closed = false;
+    if (pointsData.has("v")) {
       pointsArray = pointsData.getJSONArray("v");
+    }
+    if (pointsData.has("i")) {
       inTangents = pointsData.getJSONArray("i");
+    }
+    if (pointsData.has("o")) {
       outTangents = pointsData.getJSONArray("o");
+    }
 
-      if (pointsData.has("c")) {
-        // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the
-        // constructor.
-        // Bodymovin 4.4+ has closed here.
-        closed = pointsData.getBoolean("c");
-      }
-    } catch (JSONException e) {
-      // Do nothing.
+    if (pointsData.has("c")) {
+      // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the
+      // constructor.
+      // Bodymovin 4.4+ has closed here.
+      closed = pointsData.getBoolean("c");
     }
 
     if (pointsArray == null || inTangents == null || outTangents == null ||
@@ -130,15 +130,12 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     }
   }
 
-  @Override public KeyframeAnimation<Path> createAnimation() {
+  @Override public BaseKeyframeAnimation<?, Path> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(convertType(initialValue));
     }
 
-    ShapeKeyframeAnimation animation =
-        new ShapeKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
-    animation.setStartDelay(delay);
-    return animation;
+    return new ShapeKeyframeAnimation(keyframes);
   }
 
   @Override Path convertType(ShapeData shapeData) {

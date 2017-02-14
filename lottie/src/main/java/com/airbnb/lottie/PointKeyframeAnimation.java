@@ -1,46 +1,22 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
-import android.view.animation.Interpolator;
 
 import java.util.List;
 
 class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
   private final PointF point = new PointF();
-  private final List<PointF> points;
 
-  PointKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes,
-      List<PointF> points, List<Interpolator> interpolators) {
-    super(duration, composition, keyTimes, interpolators);
-    this.points = points;
+  PointKeyframeAnimation(List<Keyframe<PointF>> keyframes) {
+    super(keyframes);
   }
 
-  @Override public PointF getValue() {
-    if (progress <= 0f) {
-      return points.get(0);
-    } else if (progress > 1f) {
-      return points.get(points.size() - 1);
-    }
+  @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
+    PointF startPoint = keyframe.startValue;
+    PointF endPoint = keyframe.endValue;
 
-    int keyframeIndex = getKeyframeIndex();
-
-    float startKeytime = keyTimes.get(keyframeIndex);
-    float endKeytime = keyTimes.get(keyframeIndex + 1);
-
-    float percentageIntoFrame = 0;
-    if (!isDiscrete) {
-      percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
-      if (interpolators != null) {
-        percentageIntoFrame =
-            interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
-      }
-    }
-
-    PointF startPoint = points.get(keyframeIndex);
-    PointF endPoint = points.get(keyframeIndex + 1);
-
-    point.set(startPoint.x + percentageIntoFrame * (endPoint.x - startPoint.x),
-        startPoint.y + percentageIntoFrame * (endPoint.y - startPoint.y));
+    point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
+        startPoint.y + keyframeProgress * (endPoint.y - startPoint.y));
     return point;
   }
 }

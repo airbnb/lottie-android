@@ -1,6 +1,9 @@
 package com.airbnb.lottie;
 
-interface AnimatableValue<T> {
-  KeyframeAnimation<T> createAnimation();
+import org.json.JSONException;
+
+interface AnimatableValue<V, O> {
+  V valueFromObject(Object object, float scale) throws JSONException;
+  BaseKeyframeAnimation<?, O> createAnimation();
   boolean hasAnimation();
 }

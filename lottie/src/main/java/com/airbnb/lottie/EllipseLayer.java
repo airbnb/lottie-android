@@ -40,7 +40,7 @@ class EllipseLayer extends AnimatableLayer {
       strokeLayer.setAlpha(stroke.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
-        List<KeyframeAnimation<Float>> dashPatternAnimations =
+        List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations =
             new ArrayList<>(stroke.getLineDashPattern().size());
         for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
           dashPatternAnimations.add(dashPattern.createAnimation());
@@ -66,7 +66,7 @@ class EllipseLayer extends AnimatableLayer {
     private final KeyframeAnimation.AnimationListener<PointF> circleSizeChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
-          public void onValueChanged(PointF progress) {
+          public void onValueChanged(PointF value) {
             onCircleSizeChanged();
           }
         };
@@ -74,23 +74,23 @@ class EllipseLayer extends AnimatableLayer {
     private final KeyframeAnimation.AnimationListener<PointF> circlePositionChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
-          public void onValueChanged(PointF progress) {
+          public void onValueChanged(PointF value) {
             invalidateSelf();
           }
         };
 
     private final Path path = new Path();
 
-    private KeyframeAnimation<PointF> circleSize;
-    private KeyframeAnimation<PointF> circlePosition;
+    private BaseKeyframeAnimation<?, PointF> circleSize;
+    private BaseKeyframeAnimation<?, PointF> circlePosition;
 
     EllipseShapeLayer(Drawable.Callback callback) {
       super(callback);
       setPath(new StaticKeyframeAnimation<>(path));
     }
 
-    void updateCircle(KeyframeAnimation<PointF> circlePosition,
-        KeyframeAnimation<PointF> circleSize) {
+    void updateCircle(BaseKeyframeAnimation<?, PointF> circlePosition,
+        BaseKeyframeAnimation<?, PointF> circleSize) {
       if (this.circleSize != null) {
         removeAnimation(this.circleSize);
         this.circleSize.removeUpdateListener(circleSizeChangedListener);
@@ -124,6 +124,8 @@ class EllipseLayer extends AnimatableLayer {
       path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
 
       path.offset(circlePosition.getValue().x, circlePosition.getValue().y);
+
+      path.close();
 
       onPathChanged();
     }

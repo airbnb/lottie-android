@@ -12,7 +12,7 @@ class ShapePath {
   private final int index;
   private AnimatableShapeValue shapePath;
 
-  ShapePath(JSONObject json, int frameRate, LottieComposition composition) {
+  ShapePath(JSONObject json, LottieComposition composition) {
     try {
       index = json.getInt("ind");
     } catch (JSONException e) {
@@ -25,17 +25,10 @@ class ShapePath {
       throw new IllegalArgumentException("Layer has no name.", e);
     }
 
-    boolean closed = false;
-    try {
-      closed = json.getBoolean("closed");
-    } catch (JSONException e) {
-      // Do nothing. Bodymovin 4.4 moved "closed" to be "c" inside of the shape json itself.
-    }
-
     JSONObject shape;
     try {
       shape = json.getJSONObject("ks");
-      shapePath = new AnimatableShapeValue(shape, frameRate, composition, closed);
+      shapePath = new AnimatableShapeValue(shape, composition);
     } catch (JSONException e) {
       // Ignore
     }

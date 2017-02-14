@@ -1,48 +1,22 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.view.animation.Interpolator;
 
 import java.util.List;
 
-class ShapeKeyframeAnimation extends KeyframeAnimation<Path> {
-  private final Path tempPath = new Path();
+class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Path> {
   private final ShapeData tempShapeData = new ShapeData();
-  private final List<ShapeData> shapeData;
+  private final Path tempPath = new Path();
 
-  ShapeKeyframeAnimation(long duration, LottieComposition composition, List<Float> keyTimes,
-      List<ShapeData> shapeData, List<Interpolator> interpolators) {
-    super(duration, composition, keyTimes, interpolators);
-    this.shapeData = shapeData;
+  ShapeKeyframeAnimation(List<Keyframe<ShapeData>> keyframes) {
+    super(keyframes);
   }
 
-  @Override public Path getValue() {
-    if (progress <= 0f) {
-      MiscUtils.getPathFromData(shapeData.get(0), tempPath);
-      return tempPath;
-    } else if (progress >= 1f) {
-      MiscUtils.getPathFromData(shapeData.get(shapeData.size() - 1), tempPath);
-      return tempPath;
-    }
+  @Override public Path getValue(Keyframe<ShapeData> keyframe, float keyframeProgress) {
+    ShapeData startShapeData = keyframe.startValue;
+    ShapeData endShapeData = keyframe.endValue;
 
-    int keyframeIndex = getKeyframeIndex();
-
-    float startKeytime = keyTimes.get(keyframeIndex);
-    float endKeytime = keyTimes.get(keyframeIndex + 1);
-
-    float percentageIntoFrame = 0;
-    if (!isDiscrete) {
-      percentageIntoFrame = (progress - startKeytime) / (endKeytime - startKeytime);
-      if (interpolators != null) {
-        percentageIntoFrame =
-            interpolators.get(keyframeIndex).getInterpolation(percentageIntoFrame);
-      }
-    }
-
-    ShapeData startShapeData = shapeData.get(keyframeIndex);
-    ShapeData endShapeData = shapeData.get(keyframeIndex + 1);
-
-    tempShapeData.interpolateBetween(startShapeData, endShapeData, percentageIntoFrame);
+    tempShapeData.interpolateBetween(startShapeData, endShapeData, keyframeProgress);
     MiscUtils.getPathFromData(tempShapeData, tempPath);
     return tempPath;
   }

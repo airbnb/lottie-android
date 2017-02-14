@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.FloatRange;
-import android.view.animation.Interpolator;
 
 import java.util.Collections;
 
@@ -9,7 +8,7 @@ class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
   private final T initialValue;
 
   StaticKeyframeAnimation(T initialValue) {
-    super(0, null, Collections.<Float>emptyList(), Collections.<Interpolator>emptyList());
+    super(Collections.<Keyframe<T>>emptyList());
     this.initialValue = initialValue;
   }
 
@@ -18,6 +17,10 @@ class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
   }
 
   @Override public T getValue() {
+    return initialValue;
+  }
+
+  @Override public T getValue(Keyframe<T> keyframe, float keyframeProgress) {
     return initialValue;
   }
 }

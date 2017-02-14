@@ -9,7 +9,7 @@ import org.json.JSONObject;
 class ShapeTransform implements Transform {
   private static final String TAG = ShapeTransform.class.getSimpleName();
 
-  private Rect compBounds;
+  private LottieComposition composition;
   private IAnimatablePathValue position;
   private AnimatablePathValue anchor;
   private AnimatableScaleValue scale;
@@ -17,7 +17,7 @@ class ShapeTransform implements Transform {
   private AnimatableIntegerValue opacity;
 
   ShapeTransform(LottieComposition composition) {
-    this.compBounds = composition.getBounds();
+    this.composition = composition;
     this.position = new AnimatablePathValue(composition);
     this.anchor = new AnimatablePathValue(composition);
     this.scale = new AnimatableScaleValue(composition);
@@ -25,8 +25,8 @@ class ShapeTransform implements Transform {
     this.opacity = new AnimatableIntegerValue(composition, 255);
   }
 
-  ShapeTransform(JSONObject json, int frameRate, LottieComposition composition) {
-    this.compBounds = composition.getBounds();
+  ShapeTransform(JSONObject json, LottieComposition composition) throws JSONException {
+    this.composition = composition;
 
     JSONObject jsonPosition;
     try {
@@ -34,7 +34,8 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no position.");
     }
-    position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(jsonPosition, composition);
+    position =
+        AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(jsonPosition, composition);
 
     JSONObject jsonAnchor;
     try {
@@ -42,7 +43,7 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no anchor.");
     }
-    anchor = new AnimatablePathValue(jsonAnchor, composition);
+    anchor = new AnimatablePathValue(jsonAnchor.get("k"), composition);
 
     JSONObject jsonScale;
     try {
@@ -50,7 +51,7 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no scale.");
     }
-    scale = new AnimatableScaleValue(jsonScale, frameRate, composition, false);
+    scale = new AnimatableScaleValue(jsonScale, composition, false);
 
     JSONObject jsonRotation;
     try {
@@ -58,7 +59,7 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no rotation.");
     }
-    rotation = new AnimatableFloatValue(jsonRotation, frameRate, composition, false);
+    rotation = new AnimatableFloatValue(jsonRotation, composition, false);
 
     JSONObject jsonOpacity;
     try {
@@ -66,13 +67,13 @@ class ShapeTransform implements Transform {
     } catch (JSONException e) {
       throw new IllegalStateException("Transform has no opacity.");
     }
-    opacity = new AnimatableIntegerValue(jsonOpacity, frameRate, composition, false, true);
+    opacity = new AnimatableIntegerValue(jsonOpacity, composition, false, true);
 
     if (L.DBG) Log.d(TAG, "Parsed new shape transform " + toString());
   }
 
   @Override public Rect getBounds() {
-    return compBounds;
+    return composition.getBounds();
   }
 
   @Override public IAnimatablePathValue getPosition() {
@@ -97,7 +98,6 @@ class ShapeTransform implements Transform {
 
   @Override public String toString() {
     return "ShapeTransform{" + "anchor=" + anchor.toString() +
-        ", compBounds=" + compBounds +
         ", position=" + position.toString() +
         ", scale=" + scale.toString() +
         ", rotation=" + rotation.getInitialValue() +

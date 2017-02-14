@@ -12,7 +12,7 @@ class RectangleShape {
   private final AnimatablePointValue size;
   private final AnimatableFloatValue cornerRadius;
 
-  RectangleShape(JSONObject json, int frameRate, LottieComposition composition) {
+  RectangleShape(JSONObject json, LottieComposition composition) {
     try {
       JSONObject positionJson = json.getJSONObject("p");
       position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(positionJson, composition);
@@ -22,14 +22,14 @@ class RectangleShape {
 
     try {
       JSONObject cornerRadiusJson = json.getJSONObject("r");
-      cornerRadius = new AnimatableFloatValue(cornerRadiusJson, frameRate, composition);
+      cornerRadius = new AnimatableFloatValue(cornerRadiusJson, composition);
     } catch (JSONException e) {
       throw new IllegalArgumentException("Unable to parse rectangle corner radius.", e);
     }
 
     try {
       JSONObject sizeJson = json.getJSONObject("s");
-      size = new AnimatablePointValue(sizeJson, frameRate, composition);
+      size = new AnimatablePointValue(sizeJson, composition);
     } catch (JSONException e) {
       throw new IllegalArgumentException("Unable to parse rectangle size.", e);
     }

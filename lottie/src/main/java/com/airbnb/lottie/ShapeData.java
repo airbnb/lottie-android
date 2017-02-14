@@ -30,11 +30,11 @@ class ShapeData {
     curves.add(curve);
   }
 
-  public boolean isClosed() {
+  boolean isClosed() {
     return closed;
   }
 
-  public void setClosed(boolean closed) {
+  void setClosed(boolean closed) {
     this.closed = closed;
   }
 
@@ -89,5 +89,11 @@ class ShapeData {
           MiscUtils.lerp(vertex1.x, vertex2.x, percentage), MiscUtils.lerp(vertex1.y, vertex2.y,
           percentage));
     }
+  }
+
+  @Override public String toString() {
+    return "ShapeData{" + "numCurves=" + curves.size() +
+        "closed=" + closed +
+        '}';
   }
 }
