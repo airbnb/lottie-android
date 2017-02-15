@@ -26,6 +26,7 @@ import java.util.List;
 public class LottieDrawable extends AnimatableLayer {
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+  private float speed = 1f;
 
   @Nullable private Bitmap mainBitmap = null;
   @Nullable private Bitmap maskBitmap = null;
@@ -47,7 +48,7 @@ public class LottieDrawable extends AnimatableLayer {
           animator.cancel();
           setProgress(1f);
         } else {
-          setProgress(animation.getAnimatedFraction());
+          setProgress((float) animation.getAnimatedValue());
         }
       }
     });
@@ -63,7 +64,7 @@ public class LottieDrawable extends AnimatableLayer {
     }
     clearComposition();
     this.composition = composition;
-    animator.setDuration(composition.getDuration());
+    setSpeed(speed);
     setBounds(0, 0, composition.getBounds().width(), composition.getBounds().height());
     buildLayersForComposition(composition);
 
@@ -198,6 +199,19 @@ public class LottieDrawable extends AnimatableLayer {
     }
     animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
     animator.reverse();
+  }
+
+  void setSpeed(float speed) {
+    this.speed = speed;
+    if (speed < 0) {
+      animator.setFloatValues(1f, 0f);
+    } else {
+      animator.setFloatValues(0f, 1f);
+    }
+
+    if (composition != null) {
+      animator.setDuration((long) (composition.getDuration() / Math.abs(speed)));
+    }
   }
 
   void cancelAnimation() {

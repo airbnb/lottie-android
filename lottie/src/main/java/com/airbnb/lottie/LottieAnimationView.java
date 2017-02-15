@@ -291,6 +291,10 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.reverseAnimation();
   }
 
+  public void setSpeed(float speed) {
+    lottieDrawable.setSpeed(speed);
+  }
+
   public void cancelAnimation() {
     lottieDrawable.cancelAnimation();
   }
