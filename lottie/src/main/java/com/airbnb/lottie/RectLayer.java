@@ -49,7 +49,8 @@ class RectLayer extends AnimatableLayer {
       strokeLayer.setTransformAlpha(transform.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
-        List<KeyframeAnimation<Float>> dashPatternAnimations = new ArrayList<>(stroke.getLineDashPattern().size());
+        List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations = new ArrayList<>(stroke
+            .getLineDashPattern().size());
         for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
           dashPatternAnimations.add(dashPattern.createAnimation());
         }
@@ -84,7 +85,7 @@ class RectLayer extends AnimatableLayer {
     private final KeyframeAnimation.AnimationListener<PointF> sizeChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
-          public void onValueChanged(PointF progress) {
+          public void onValueChanged(PointF value) {
             onRectChanged();
           }
         };
@@ -92,7 +93,7 @@ class RectLayer extends AnimatableLayer {
     private final KeyframeAnimation.AnimationListener<Float> cornerRadiusChangedListener =
         new KeyframeAnimation.AnimationListener<Float>() {
           @Override
-          public void onValueChanged(Float progress) {
+          public void onValueChanged(Float value) {
             onRectChanged();
           }
         };
@@ -100,17 +101,16 @@ class RectLayer extends AnimatableLayer {
     private final KeyframeAnimation.AnimationListener<PointF> positionChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
-          public void onValueChanged(PointF progress) {
+          public void onValueChanged(PointF value) {
             onRectChanged();
           }
         };
 
     private final Path path = new Path();
-    private final RectF positionRect = new RectF();
     private final RectF rect = new RectF();
-    private KeyframeAnimation<Float> rectCornerRadius;
-    private KeyframeAnimation<PointF> rectPosition;
-    private KeyframeAnimation<PointF> rectSize;
+    private BaseKeyframeAnimation<?, Float> rectCornerRadius;
+    private BaseKeyframeAnimation<?, PointF> rectPosition;
+    private BaseKeyframeAnimation<?, PointF> rectSize;
 
     private boolean updateRectOnNextDraw;
 
@@ -141,7 +141,7 @@ class RectLayer extends AnimatableLayer {
       onRectChanged();
     }
 
-    void setRectPosition(KeyframeAnimation<PointF> rectPosition) {
+    void setRectPosition(BaseKeyframeAnimation<?, PointF> rectPosition) {
       if (this.rectPosition != null) {
         removeAnimation(this.rectPosition);
         this.rectPosition.removeUpdateListener(positionChangedListener);

@@ -291,7 +291,7 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.reverseAnimation();
   }
 
-  public void setSpeed(float speed) {
+  @SuppressWarnings("unused") public void setSpeed(float speed) {
     lottieDrawable.setSpeed(speed);
   }
 
@@ -314,7 +314,7 @@ public class LottieAnimationView extends AppCompatImageView {
     return lottieDrawable.getProgress();
   }
 
-  public long getDuration() {
+  @SuppressWarnings("unused") public long getDuration() {
     return composition != null ? composition.getDuration() : 0;
   }
 

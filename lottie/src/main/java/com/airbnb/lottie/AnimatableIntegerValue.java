@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,30 +9,21 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     this.initialValue = initialValue;
   }
 
-  AnimatableIntegerValue(JSONObject json, int frameRate, LottieComposition composition,
-      boolean isDp, boolean remap100To255) {
-    super(json, frameRate, composition, isDp);
+  AnimatableIntegerValue(JSONObject json, LottieComposition composition,
+      boolean isDp, boolean remap100To255) throws JSONException {
+    super(json, composition, isDp);
     if (remap100To255) {
       initialValue = initialValue * 255 / 100;
-      for (int i = 0; i < keyValues.size(); i++) {
-        keyValues.set(i, keyValues.get(i) * 255 / 100);
+      for (int i = 0; i < keyframes.size(); i++) {
+        Keyframe<Integer> keyframe = keyframes.get(i);
+        keyframe.startValue = keyframe.startValue * 255 / 100;
+        keyframe.endValue = keyframe.endValue * 255 / 100;
       }
     }
   }
 
-  @Override protected Integer valueFromObject(Object object, float scale) throws JSONException {
-    if (object instanceof Float) {
-      return Math.round((Float) object * scale);
-    } else if (object instanceof Double) {
-      return (int) Math.round((Double) object * scale);
-    } else if (object instanceof Integer) {
-      return Math.round((Integer) object * scale);
-    } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Integer) {
-      return Math.round(((JSONArray) object).getInt(0) * scale);
-    } else if (object instanceof JSONArray && ((JSONArray) object).get(0) instanceof Double) {
-      return (int) Math.round(((JSONArray) object).getDouble(0) * scale);
-    }
-    return null;
+  @Override public Integer valueFromObject(Object object, float scale) throws JSONException {
+    return Math.round(JsonUtils.valueFromObject(object) * scale);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -41,11 +31,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
       return new StaticKeyframeAnimation<>(initialValue);
     }
 
-    KeyframeAnimation<Integer> animation =
-        new NumberKeyframeAnimation<>(duration, composition, keyTimes, Integer.class, keyValues,
-            interpolators);
-    animation.setStartDelay(delay);
-    return animation;
+    return new NumberKeyframeAnimation<>(keyframes, Integer.class);
   }
 
   public Integer getInitialValue() {

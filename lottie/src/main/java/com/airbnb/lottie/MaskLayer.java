@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class MaskLayer extends AnimatableLayer {
-  private final List<KeyframeAnimation<Path>> masks;
+  private final List<BaseKeyframeAnimation<?, Path>> masks;
 
   MaskLayer(List<Mask> masks, Drawable.Callback callback) {
     super(callback);
@@ -17,7 +17,7 @@ class MaskLayer extends AnimatableLayer {
     }
   }
 
-  List<KeyframeAnimation<Path>> getMasks() {
+  List<BaseKeyframeAnimation<?, Path>> getMasks() {
     return masks;
   }
 }

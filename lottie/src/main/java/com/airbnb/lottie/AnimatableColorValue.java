@@ -7,11 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
-  AnimatableColorValue(JSONObject json, int frameRate, LottieComposition composition) {
-    super(json, frameRate, composition, false);
+  AnimatableColorValue(JSONObject json, LottieComposition composition) throws JSONException {
+    super(json, composition, false);
   }
 
-  @Override protected Integer valueFromObject(Object object, float scale) throws JSONException {
+  @Override public Integer valueFromObject(Object object, float scale) throws JSONException {
     JSONArray colorArray = (JSONArray) object;
     if (colorArray.length() == 4) {
       boolean shouldUse255 = true;
@@ -37,10 +37,7 @@ class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
     }
-    ColorKeyframeAnimation animation =
-        new ColorKeyframeAnimation(duration, composition, keyTimes, keyValues, interpolators);
-    animation.setStartDelay(delay);
-    return animation;
+    return new ColorKeyframeAnimation(keyframes);
   }
 
   @Override public String toString() {

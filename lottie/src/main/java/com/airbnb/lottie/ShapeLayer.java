@@ -94,17 +94,17 @@ class ShapeLayer extends AnimatableLayer {
   private final RectF tempRect = new RectF();
   private final Matrix scaleMatrix = new Matrix();
 
-  private KeyframeAnimation<Path> path;
-  private KeyframeAnimation<Integer> color;
-  private KeyframeAnimation<Float> lineWidth;
-  @Nullable private KeyframeAnimation<Float> strokeStart;
-  @Nullable private KeyframeAnimation<Float> strokeEnd;
-  @Nullable private KeyframeAnimation<Float> strokeOffset;
+  private BaseKeyframeAnimation<?, Path> path;
+  private BaseKeyframeAnimation<?, Integer> color;
+  private BaseKeyframeAnimation<?, Float> lineWidth;
+  @Nullable private BaseKeyframeAnimation<?, Float> strokeStart;
+  @Nullable private BaseKeyframeAnimation<?, Float> strokeEnd;
+  @Nullable private BaseKeyframeAnimation<?, Float> strokeOffset;
 
-  private KeyframeAnimation<Integer> shapeAlpha;
-  private KeyframeAnimation<Integer> transformAlpha;
-  private List<KeyframeAnimation<Float>> lineDashPattern;
-  private KeyframeAnimation<Float> lineDashPatternOffset;
+  private BaseKeyframeAnimation<?, Integer> shapeAlpha;
+  private BaseKeyframeAnimation<?, Integer> transformAlpha;
+  private List<BaseKeyframeAnimation<?, Float>> lineDashPattern;
+  private BaseKeyframeAnimation<?, Float> lineDashPatternOffset;
 
   ShapeLayer(Drawable.Callback callback) {
     super(callback);
@@ -133,7 +133,7 @@ class ShapeLayer extends AnimatableLayer {
     invalidateSelf();
   }
 
-  public void setPath(KeyframeAnimation<Path> path) {
+  public void setPath(BaseKeyframeAnimation<?, Path> path) {
     if (this.path != null) {
       removeAnimation(this.path);
       this.path.removeUpdateListener(pathChangedListener);
@@ -305,8 +305,8 @@ class ShapeLayer extends AnimatableLayer {
     invalidateSelf();
   }
 
-  void setDashPattern(List<KeyframeAnimation<Float>> lineDashPattern,
-      KeyframeAnimation<Float> offset) {
+  void setDashPattern(List<BaseKeyframeAnimation<?, Float>> lineDashPattern,
+      BaseKeyframeAnimation<?, Float> offset) {
     if (this.lineDashPattern != null) {
       removeAnimation(this.lineDashPattern.get(0));
       this.lineDashPattern.get(0).removeUpdateListener(dashPatternChangedListener);

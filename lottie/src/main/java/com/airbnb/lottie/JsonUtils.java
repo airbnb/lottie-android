@@ -10,36 +10,15 @@ class JsonUtils {
   private JsonUtils() {
   }
 
-  static PointF pointValueFromJsonObject(JSONObject values, float scale) {
-    PointF point = new PointF();
+  static PointF pointFromJsonObject(JSONObject values, float scale) {
     try {
-      Object x = values.get("x");
-      if (x instanceof Float) {
-        point.x = (float) x;
-      } else if (x instanceof Integer) {
-        point.x = (Integer) x;
-      } else if (x instanceof Double) {
-        point.x = (float) (double) x;
-      } else if (x instanceof JSONArray) {
-        point.x = (float) ((JSONArray) x).getDouble(0);
-      }
-
-      Object y = values.get("y");
-      if (y instanceof Float) {
-        point.y = (float) y;
-      } else if (y instanceof Integer) {
-        point.y = (Integer) y;
-      } else if (y instanceof Double) {
-        point.y = (float) (double) y;
-      } else if (y instanceof JSONArray) {
-        point.y = (float) ((JSONArray) y).getDouble(0);
-      }
+      return new PointF(
+          valueFromObject(values.get("x")) * scale,
+          valueFromObject(values.get("y")) * scale
+      );
     } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse point " + values, e);
+      return new PointF();
     }
-    point.x *= scale;
-    point.y *= scale;
-    return point;
   }
 
   static PointF pointFromJsonArray(JSONArray values, float scale) {
@@ -51,5 +30,22 @@ class JsonUtils {
     } catch (JSONException e) {
       throw new IllegalArgumentException("Unable to parse point for " + values, e);
     }
+  }
+
+  static float valueFromObject(Object object) {
+    if (object instanceof Float) {
+      return (float) object;
+    } else if (object instanceof Integer) {
+      return (Integer) object;
+    } else if (object instanceof Double) {
+      return (float) (double) object;
+    } else if (object instanceof JSONArray) {
+      try {
+        return (float) ((JSONArray) object).getDouble(0);
+      } catch (JSONException e) {
+        return 0;
+      }
+    }
+    return 0;
   }
 }

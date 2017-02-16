@@ -44,7 +44,7 @@ class ShapeLayerView extends AnimatableLayer {
       strokeLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
-        List<KeyframeAnimation<Float>> dashPatternAnimations =
+        List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations =
             new ArrayList<>(stroke.getLineDashPattern().size());
         for (AnimatableFloatValue dashPattern : stroke.getLineDashPattern()) {
           dashPatternAnimations.add(dashPattern.createAnimation());

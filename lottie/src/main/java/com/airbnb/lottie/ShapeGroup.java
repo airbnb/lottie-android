@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,8 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 class ShapeGroup {
+  private static final String TAG = ShapeGroup.class.getSimpleName();
+
   @Nullable
-  static Object shapeItemWithJson(JSONObject json, int framerate, LottieComposition composition) {
+  static Object shapeItemWithJson(JSONObject json, LottieComposition composition)
+      throws JSONException {
     String type = null;
     try {
       type = json.getString("ty");
@@ -25,24 +29,23 @@ class ShapeGroup {
 
     switch (type) {
       case "gr":
-        return new ShapeGroup(json, framerate, composition);
+        return new ShapeGroup(json, composition);
       case "st":
-        return new ShapeStroke(json, framerate, composition);
+        return new ShapeStroke(json, composition);
       case "fl":
-        return new ShapeFill(json, framerate, composition);
+        return new ShapeFill(json, composition);
       case "tr":
-        return new ShapeTransform(json, framerate, composition);
+        return new ShapeTransform(json, composition);
       case "sh":
-        return new ShapePath(json, framerate, composition);
+        return new ShapePath(json, composition);
       case "el":
-        return new CircleShape(json, framerate, composition);
+        return new CircleShape(json, composition);
       case "rc":
-        return new RectangleShape(json, framerate, composition);
+        return new RectangleShape(json, composition);
       case "tm":
-        return new ShapeTrimPath(json, framerate, composition);
+        return new ShapeTrimPath(json, composition);
       case "sr":
-        throw new IllegalArgumentException("Lottie doesn't yet support polystars. Convert your " +
-            "layer to a shape first.");
+        Log.w(TAG, "Lottie doesn't yet support polystars. Convert your layer to a shape first.");
     }
     return null;
   }
@@ -50,7 +53,7 @@ class ShapeGroup {
   private String name;
   private final List<Object> items = new ArrayList<>();
 
-  private ShapeGroup(JSONObject json, int frameRate, LottieComposition composition) {
+  private ShapeGroup(JSONObject json, LottieComposition composition) throws JSONException {
     JSONArray jsonItems = null;
     try {
       jsonItems = json.getJSONArray("it");
@@ -81,7 +84,7 @@ class ShapeGroup {
       }
 
 
-      Object newItem = shapeItemWithJson(jsonItem, frameRate, composition);
+      Object newItem = shapeItemWithJson(jsonItem, composition);
       if (newItem != null) {
         items.add(newItem);
       }

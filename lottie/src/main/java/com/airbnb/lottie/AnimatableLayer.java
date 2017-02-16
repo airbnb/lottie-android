@@ -19,28 +19,28 @@ class AnimatableLayer extends Drawable {
   private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener =
       new KeyframeAnimation.AnimationListener<Integer>() {
         @Override
-        public void onValueChanged(Integer progress) {
+        public void onValueChanged(Integer value) {
           invalidateSelf();
         }
       };
   private final KeyframeAnimation.AnimationListener<Float> floatChangedListener =
       new KeyframeAnimation.AnimationListener<Float>() {
         @Override
-        public void onValueChanged(Float progress) {
+        public void onValueChanged(Float value) {
           invalidateSelf();
         }
       };
   private final KeyframeAnimation.AnimationListener<ScaleXY> scaleChangedListener =
       new KeyframeAnimation.AnimationListener<ScaleXY>() {
         @Override
-        public void onValueChanged(ScaleXY progress) {
+        public void onValueChanged(ScaleXY value) {
           invalidateSelf();
         }
       };
   private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
       new KeyframeAnimation.AnimationListener<PointF>() {
         @Override
-        public void onValueChanged(PointF progress) {
+        public void onValueChanged(PointF value) {
           invalidateSelf();
         }
       };
@@ -48,19 +48,19 @@ class AnimatableLayer extends Drawable {
   final List<AnimatableLayer> layers = new ArrayList<>();
   @Nullable private AnimatableLayer parentLayer;
 
-  private KeyframeAnimation<PointF> position;
-  private KeyframeAnimation<PointF> anchorPoint;
+  private BaseKeyframeAnimation<?, PointF> position;
+  private BaseKeyframeAnimation<?, PointF> anchorPoint;
   /**
    * This should mimic CALayer#transform
    */
-  private KeyframeAnimation<ScaleXY> transform;
-  private KeyframeAnimation<Integer> alpha = null;
-  private KeyframeAnimation<Float> rotation;
+  private BaseKeyframeAnimation<?, ScaleXY> transform;
+  private BaseKeyframeAnimation<?, Integer> alpha = null;
+  private BaseKeyframeAnimation<?, Float> rotation;
 
   private final Paint solidBackgroundPaint = new Paint();
   @ColorInt private int backgroundColor;
-  private final List<KeyframeAnimation<?>> animations = new ArrayList<>();
-  @FloatRange(from = 0f, to = 1f) private float progress;
+  private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
+  @FloatRange(from = 0f, to = 1f) private float progress = 0f;
 
   AnimatableLayer(Drawable.Callback callback) {
     setCallback(callback);
@@ -75,11 +75,11 @@ class AnimatableLayer extends Drawable {
     invalidateSelf();
   }
 
-  void addAnimation(KeyframeAnimation<?> newAnimation) {
+  void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
     animations.add(newAnimation);
   }
 
-  void removeAnimation(KeyframeAnimation<?> animation) {
+  void removeAnimation(BaseKeyframeAnimation<?, ?> animation) {
     animations.remove(animation);
   }
 
@@ -189,7 +189,7 @@ class AnimatableLayer extends Drawable {
 
   }
 
-  void setAnchorPoint(KeyframeAnimation<PointF> anchorPoint) {
+  void setAnchorPoint(BaseKeyframeAnimation<?, PointF> anchorPoint) {
     if (this.anchorPoint != null) {
       removeAnimation(this.anchorPoint);
       this.anchorPoint.removeUpdateListener(pointChangedListener);
@@ -199,7 +199,7 @@ class AnimatableLayer extends Drawable {
     anchorPoint.addUpdateListener(pointChangedListener);
   }
 
-  void setPosition(KeyframeAnimation<PointF> position) {
+  void setPosition(BaseKeyframeAnimation<?, PointF> position) {
     if (this.position != null) {
       removeAnimation(this.position);
       this.position.removeUpdateListener(pointChangedListener);
