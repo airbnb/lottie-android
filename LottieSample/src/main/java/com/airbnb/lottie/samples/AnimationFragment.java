@@ -68,8 +68,6 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.invert_colors) ImageButton invertButton;
   @BindView(R.id.play_button) ImageButton playButton;
   @BindView(R.id.loop) ImageButton loopButton;
-  // @BindView(R.id.frames_per_second) TextView fpsView;
-  // @BindView(R.id.dropped_frames) TextView droppedFramesView;
   @BindView(R.id.animation_name) TextView animationNameView;
 
   @Nullable
@@ -87,11 +85,6 @@ public class AnimationFragment extends Fragment {
         getFragmentManager().popBackStack();
       }
     });
-
-    //noinspection ConstantConditions
-    // fpsView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
-    //noinspection ConstantConditions
-    // droppedFramesView.setVisibility(L.DBG ? View.VISIBLE : View.GONE);
     postUpdatePlayButtonText();
     onLoopChanged();
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
