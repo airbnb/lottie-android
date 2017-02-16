@@ -33,16 +33,21 @@ public class Keyframe<T> {
     return keyframes;
   }
 
-  static <T> void setEndFrames(List<? extends Keyframe<T>> keyframes) {
-    if (keyframes.size() > 1) {
-      for (int i = 0; i < keyframes.size() - 1; i++) {
-        keyframes.get(i).endFrame = keyframes.get(i + 1).startFrame;
-      }
-      Keyframe<?> lastKeyframe = keyframes.get(keyframes.size() - 1);
-      if (lastKeyframe.startValue == null) {
-        //noinspection SuspiciousMethodCalls
-        keyframes.remove(lastKeyframe);
-      }
+  /**
+   * The json doesn't include end frames. The data can be taken from the start frame of the next
+   * keyframe though.
+   */
+  static void setEndFrames(List<? extends Keyframe<?>> keyframes) {
+    for (int i = 0; i < keyframes.size() - 1; i++) {
+      // In the json, the keyframes only contain their starting frame.
+      keyframes.get(i).endFrame = keyframes.get(i + 1).startFrame;
+    }
+    Keyframe<?> lastKeyframe = keyframes.get(keyframes.size() - 1);
+    if (lastKeyframe.startValue == null) {
+      // The only purpose the last keyframe has is to provide the end frame of the previous
+      // keyframe.
+      //noinspection SuspiciousMethodCalls
+      keyframes.remove(lastKeyframe);
     }
   }
 

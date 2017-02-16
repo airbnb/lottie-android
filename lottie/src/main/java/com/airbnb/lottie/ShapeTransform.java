@@ -18,8 +18,8 @@ class ShapeTransform implements Transform {
 
   ShapeTransform(LottieComposition composition) {
     this.composition = composition;
-    this.position = new AnimatablePathValue(composition);
-    this.anchor = new AnimatablePathValue(composition);
+    this.position = new AnimatablePathValue();
+    this.anchor = new AnimatablePathValue();
     this.scale = new AnimatableScaleValue(composition);
     this.rotation = new AnimatableFloatValue(composition, 0f);
     this.opacity = new AnimatableIntegerValue(composition, 255);

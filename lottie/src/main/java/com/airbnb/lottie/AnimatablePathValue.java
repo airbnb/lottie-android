@@ -25,21 +25,24 @@ class AnimatablePathValue implements IAnimatablePathValue {
 
   private final List<PathKeyframe> keyframes = new ArrayList<>();
   private PointF initialPoint;
-  private final LottieComposition composition;
 
   /**
    * Create a default static animatable path.
    */
-  AnimatablePathValue(LottieComposition composition) {
-    this.composition = composition;
+  AnimatablePathValue() {
     this.initialPoint = new PointF(0, 0);
   }
 
   AnimatablePathValue(Object json, LottieComposition composition) throws JSONException {
-    this.composition = composition;
 
     if (hasKeyframes(json)) {
-      buildAnimationForKeyframes((JSONArray) json);
+      JSONArray jsonArray = (JSONArray) json;
+      for (int i = 0; i < jsonArray.length(); i++) {
+        JSONObject jsonKeyframe = jsonArray.getJSONObject(i);
+        PathKeyframe keyframe = new PathKeyframe(jsonKeyframe, composition, this);
+        keyframes.add(keyframe);
+      }
+      Keyframe.setEndFrames(keyframes);
     } else {
       initialPoint = JsonUtils.pointFromJsonArray((JSONArray) json, composition.getScale());
     }
@@ -52,15 +55,6 @@ class AnimatablePathValue implements IAnimatablePathValue {
 
     Object firstObject = ((JSONArray) json).get(0);
     return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
-  }
-
-  private void buildAnimationForKeyframes(JSONArray jsonKeyframes) throws JSONException {
-    for (int i = 0; i < jsonKeyframes.length(); i++) {
-      JSONObject jsonKeyframe = jsonKeyframes.getJSONObject(i);
-      PathKeyframe keyframe = new PathKeyframe(jsonKeyframe, composition, this);
-      keyframes.add(keyframe);
-    }
-    Keyframe.setEndFrames(keyframes);
   }
 
   @Override public PointF valueFromObject(Object object, float scale) throws JSONException {
