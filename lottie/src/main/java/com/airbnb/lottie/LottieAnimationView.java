@@ -2,7 +2,6 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -147,12 +146,6 @@ public class LottieAnimationView extends AppCompatImageView {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-  }
-
-  @SuppressLint("MissingSuperCall")
-  @Override
-  protected boolean verifyDrawable(@NonNull Drawable drawable) {
-    return true;
   }
 
   @Override

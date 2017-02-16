@@ -2,7 +2,6 @@ package com.airbnb.lottie.samples;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,6 +16,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +47,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class AnimationFragment extends Fragment {
+  private static final String TAG = AnimationFragment.class.getSimpleName();
+
   private static final int RC_ASSET = 1337;
   private static final int RC_FILE = 1338;
   private static final int RC_URL = 1339;
@@ -345,15 +347,9 @@ public class AnimationFragment extends Fragment {
     getApplication().startRecordingDroppedFrames();
   }
 
-  @SuppressWarnings("unused")
-  @SuppressLint({"SetTextI18n", "DefaultLocale"})
   private void recordDroppedFrames() {
     Pair<Integer, Long> droppedFrames = getApplication().stopRecordingDroppedFrames();
-    int targetFrames = (int) ((droppedFrames.second / 1000000000f) * 60);
-    int actualFrames = targetFrames - droppedFrames.first;
-    // fpsView.setText(String.format("Fps: %.0f", actualFrames / (animationView.getDuration() /
-    // 1000f)));
-    // droppedFramesView.setText("Dropped frames: " + droppedFrames.first);
+    Log.d(TAG, "Dropped frames: " + droppedFrames.first);
   }
 
   private ILottieApplication getApplication() {

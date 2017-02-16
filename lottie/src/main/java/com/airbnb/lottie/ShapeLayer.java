@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
@@ -105,6 +104,7 @@ class ShapeLayer extends AnimatableLayer {
   private BaseKeyframeAnimation<?, Integer> transformAlpha;
   private List<BaseKeyframeAnimation<?, Float>> lineDashPattern;
   private BaseKeyframeAnimation<?, Float> lineDashPatternOffset;
+  private boolean pathPropertiesChanged = true;
 
   ShapeLayer(Drawable.Callback callback) {
     super(callback);
@@ -158,6 +158,27 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   private void onPathPropertiesChanged() {
+    pathPropertiesChanged = true;
+    invalidateSelf();
+  }
+
+  @Override
+  public void draw(@NonNull Canvas canvas) {
+    if (pathPropertiesChanged) {
+      updateTrimPathPath();
+    }
+    if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
+      return;
+    }
+    paint.setAlpha(getAlpha());
+    canvas.drawPath(currentPath, paint);
+    if (!extraTrimPath.isEmpty()) {
+      canvas.drawPath(extraTrimPath, paint);
+    }
+  }
+
+  private void updateTrimPathPath() {
+    pathPropertiesChanged = false;
     boolean needsStrokeStart =
         strokeStart != null && strokeStart.getValue() != currentPathStrokeStart;
     boolean needsStrokeEnd = strokeEnd != null && strokeEnd.getValue() != currentPathStrokeEnd;
@@ -226,24 +247,6 @@ class ShapeLayer extends AnimatableLayer {
             extraTrimPath,
             true);
       }
-    }
-
-    currentPath.computeBounds(tempRect, false);
-    setBounds((int) tempRect.left, (int) tempRect.top, (int) tempRect.right, (int) tempRect.bottom);
-
-    invalidateSelf();
-  }
-
-  @SuppressLint("NewApi")
-  @Override
-  public void draw(@NonNull Canvas canvas) {
-    if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
-      return;
-    }
-    paint.setAlpha(getAlpha());
-    canvas.drawPath(currentPath, paint);
-    if (!extraTrimPath.isEmpty()) {
-      canvas.drawPath(extraTrimPath, paint);
     }
   }
 
