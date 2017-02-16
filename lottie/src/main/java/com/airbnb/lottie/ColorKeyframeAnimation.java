@@ -1,11 +1,8 @@
 package com.airbnb.lottie;
 
-import android.animation.ArgbEvaluator;
-
 import java.util.List;
 
 class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
-  private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
   ColorKeyframeAnimation(List<Keyframe<Integer>> keyframes) {
     super(keyframes);
@@ -15,6 +12,6 @@ class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     int startColor = keyframe.startValue;
     int endColor = keyframe.endValue;
 
-    return (Integer) argbEvaluator.evaluate(keyframeProgress, startColor, endColor);
+    return GammaEvaluator.evaluate(keyframeProgress, startColor, endColor);
   }
 }
