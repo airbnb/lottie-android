@@ -75,7 +75,7 @@ class LayerView extends AnimatableLayer {
     List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
     Collections.reverse(reversedItems);
     Transform currentTransform = null;
-    ShapeTrimPath currentTrimPath = null;
+    ShapeTrimPath currentTrim = null;
     ShapeFill currentFill = null;
     ShapeStroke currentStroke = null;
 
@@ -83,33 +83,38 @@ class LayerView extends AnimatableLayer {
       Object item = reversedItems.get(i);
       if (item instanceof ShapeGroup) {
         GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
-            currentStroke, currentTrimPath, currentTransform, getCallback());
+            currentStroke, currentTrim, currentTransform, getCallback());
         addLayer(groupLayer);
       } else if (item instanceof ShapeTransform) {
         currentTransform = (ShapeTransform) item;
       } else if (item instanceof ShapeFill) {
         currentFill = (ShapeFill) item;
       } else if (item instanceof ShapeTrimPath) {
-        currentTrimPath = (ShapeTrimPath) item;
+        currentTrim = (ShapeTrimPath) item;
       } else if (item instanceof ShapeStroke) {
         currentStroke = (ShapeStroke) item;
       } else if (item instanceof ShapePath) {
         ShapePath shapePath = (ShapePath) item;
         ShapeLayerView shapeLayer =
-            new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrimPath,
+            new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim,
                 new ShapeTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof RectangleShape) {
         RectangleShape shapeRect = (RectangleShape) item;
         RectLayer shapeLayer =
-            new RectLayer(shapeRect, currentFill, currentStroke, currentTrimPath,
+            new RectLayer(shapeRect, currentFill, currentStroke, currentTrim,
                 new ShapeTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof CircleShape) {
         CircleShape shapeCircle = (CircleShape) item;
         EllipseLayer shapeLayer =
-            new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrimPath,
+            new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrim,
                 new ShapeTransform(composition), getCallback());
+        addLayer(shapeLayer);
+      } else if (item instanceof PolystarShape) {
+        PolystarShape polystarShape = (PolystarShape) item;
+        PolystarLayer shapeLayer = new PolystarLayer(polystarShape, currentFill, currentStroke,
+            currentTrim, new ShapeTransform(composition), getCallback());
         addLayer(shapeLayer);
       }
     }

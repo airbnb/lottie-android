@@ -67,6 +67,11 @@ class GroupLayerView extends AnimatableLayer {
             new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrim,
                 currentTransform, getCallback());
         addLayer(shapeLayer);
+      } else if (item instanceof PolystarShape) {
+        PolystarShape polystarShape = (PolystarShape) item;
+        PolystarLayer shapeLayer = new PolystarLayer(polystarShape, currentFill, currentStroke,
+            currentTrim, currentTransform, getCallback());
+        addLayer(shapeLayer);
       } else if (item instanceof ShapeGroup) {
         ShapeGroup shapeGroup = (ShapeGroup) item;
         GroupLayerView groupLayer =
