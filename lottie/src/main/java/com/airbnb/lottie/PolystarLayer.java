@@ -174,9 +174,9 @@ class PolystarLayer extends AnimatableLayer {
       float anglePerPoint = (float) (2 * Math.PI / points);
       float halfAnglePerPoint = anglePerPoint / 2.0f;
       float partialPointAmount = points - (int) points;
-      if (partialPointAmount != 0) {
-        currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
-      }
+      // if (partialPointAmount != 0) {
+      //   currentAngle += halfAnglePerPoint * (1f - partialPointAmount) / 2f;
+      // }
 
       float outerRadius = outerRadiusAnimation.getValue();
       float innerRadius = innerRadiusAnimation.getValue();
@@ -203,7 +203,7 @@ class PolystarLayer extends AnimatableLayer {
         x = (float) (partialPointRadius * Math.cos(currentAngle));
         y = (float) (partialPointRadius * Math.sin(currentAngle));
         path.moveTo(x, y);
-        currentAngle += halfAnglePerPoint * partialPointAmount;
+        currentAngle += anglePerPoint * partialPointAmount / 2f;
       } else {
         x = (float) (outerRadius * Math.cos(currentAngle));
         y = (float) (outerRadius * Math.sin(currentAngle));
