@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
@@ -14,7 +15,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
@@ -157,14 +160,19 @@ public class LottieComposition {
     // These are precomps. This naively adds the precomp layers to the main composition.
     // TODO: Significant work will have to be done to properly support them.
     try {
-      JSONArray assets = json.getJSONArray("assets");
-      for (int i = 0; i < assets.length(); i++) {
-        JSONObject asset = assets.getJSONObject(i);
-        JSONArray layers = asset.getJSONArray("layers");
-        for (int j = 0; j < layers.length(); j++) {
-          Layer layer = Layer.fromJson(layers.getJSONObject(j), composition);
-          addLayer(composition, layer);
+      JSONArray precomps = json.getJSONArray("assets");
+      for (int i = 0; i < precomps.length(); i++) {
+        JSONObject precomp = precomps.getJSONObject(i);
+        JSONArray layersJson = precomp.getJSONArray("layers");
+        List<Layer> layers = new ArrayList<>(layersJson.length());
+        LongSparseArray<Layer> layerMap = new LongSparseArray<>();
+        for (int j = 0; j < layersJson.length(); j++) {
+          Layer layer = Layer.fromJson(layersJson.getJSONObject(j), composition);
+          layerMap.put(layer.getId(), layer);
+          layers.add(layer);
         }
+        String id = precomp.getString("id");
+        composition.precomps.put(id, layers);
       }
     } catch (JSONException e) {
       // Do nothing.
@@ -184,6 +192,7 @@ public class LottieComposition {
     }
   }
 
+  private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
   private Rect bounds;
@@ -224,6 +233,11 @@ public class LottieComposition {
 
   List<Layer> getLayers() {
     return layers;
+  }
+
+  @Nullable
+  List<Layer> getPrecomps(String id) {
+    return precomps.get(id);
   }
 
   float getDurationFrames() {

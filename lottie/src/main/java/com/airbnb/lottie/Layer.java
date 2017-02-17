@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -35,6 +36,9 @@ class Layer implements Transform {
     Layer layer = new Layer(composition);
     layer.layerName = json.getString("nm");
     layer.layerId = json.getLong("ind");
+    if (json.has("refId")) {
+      layer.precompId = json.getString("refId");
+    }
 
     int layerType = json.getInt("ty");
     if (layerType <= LottieLayerType.Shape.ordinal()) {
@@ -89,7 +93,8 @@ class Layer implements Transform {
       // Do nothing.
     }
     if (position != null) {
-      layer.position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(position, composition);
+      layer.position =
+          AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(position, composition);
     }
 
     JSONObject anchor = null;
@@ -182,6 +187,7 @@ class Layer implements Transform {
   private long layerId;
   private LottieLayerType layerType;
   private long parentId = -1;
+  @Nullable private String precompId;
 
   private final List<Mask> masks = new ArrayList<>();
 
@@ -226,6 +232,10 @@ class Layer implements Transform {
 
   String getName() {
     return layerName;
+  }
+
+  @Nullable String getPrecompId() {
+    return precompId;
   }
 
   List<Mask> getMasks() {
@@ -305,7 +315,8 @@ class Layer implements Transform {
       sb.append(prefix).append("\tMasks: ").append(getMasks().size()).append("\n");
     }
     if (getSolidWidth() != 0 && getSolidHeight() != 0) {
-      sb.append(prefix).append("\tBackground: ").append(String.format(Locale.US, "%dx%d %X\n", getSolidWidth(), getSolidHeight(), getSolidColor()));
+      sb.append(prefix).append("\tBackground: ").append(String
+          .format(Locale.US, "%dx%d %X\n", getSolidWidth(), getSolidHeight(), getSolidColor()));
     }
     if (!shapes.isEmpty()) {
       sb.append(prefix).append("\tShapes:\n");

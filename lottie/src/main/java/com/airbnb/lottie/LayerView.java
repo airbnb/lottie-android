@@ -12,6 +12,7 @@ import android.graphics.Shader;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +55,32 @@ class LayerView extends AnimatableLayer {
         maskPaint.setShader(
             new BitmapShader(contentBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
       }
+    }
+
+    List<Layer> precomps = composition.getPrecomps(layerModel.getPrecompId());
+    LongSparseArray<LayerView> precompMap = new LongSparseArray<>();
+    if (precomps != null) {
+      for (int i = precomps.size() - 1; i >= 0; i--) {
+        LayerView precompLayerView = new LayerView(
+            precomps.get(i), composition, callback, mainBitmap, maskBitmap, matteBitmap);
+        addLayer(precompLayerView);
+        precompMap.put(precompLayerView.getId(), precompLayerView);
+      }
+    }
+
+    for (AnimatableLayer layer : layers) {
+      if (!(layer instanceof LayerView)) {
+        continue;
+      }
+      long parentId = ((LayerView) layer).getLayerModel().getParentId();
+      if (parentId == -1) {
+        continue;
+      }
+      LayerView parentLayer = precompMap.get(parentId);
+      if (parentLayer == null) {
+        continue;
+      }
+      ((LayerView) layer).setParentLayer(parentLayer);
     }
 
     setupForModel();
