@@ -166,12 +166,12 @@ class PolystarLayer extends AnimatableLayer {
       // convert to radians
       currentAngle = Math.toRadians(currentAngle);
       // adjust current angle for partial points
-      double anglePerPoint = 2 * Math.PI / (double) points;
-      double halfAnglePerPoint = anglePerPoint / 2.0;
+      float anglePerPoint = (float) (2 * Math.PI / points);
+      float halfAnglePerPoint = anglePerPoint / 2.0f;
       float partialPointAmount = points - (int) points;
-      if (partialPointAmount != 0) {
-        currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
-      }
+      // if (partialPointAmount != 0) {
+      //   currentAngle += halfAnglePerPoint * (1f - partialPointAmount) / 2f;
+      // }
 
       float outerRadius = outerRadiusAnimation.getValue();
       float innerRadius = innerRadiusAnimation.getValue();
@@ -192,13 +192,13 @@ class PolystarLayer extends AnimatableLayer {
       float y;
       float previousX;
       float previousY;
-      double partialPointRadius = 0;
+      float partialPointRadius = 0;
       if (partialPointAmount != 0) {
         partialPointRadius = innerRadius + partialPointAmount * (outerRadius - innerRadius);
         x = (float) (partialPointRadius * Math.cos(currentAngle));
         y = (float) (partialPointRadius * Math.sin(currentAngle));
         path.moveTo(x, y);
-        currentAngle += halfAnglePerPoint * partialPointAmount;
+        currentAngle += anglePerPoint * partialPointAmount / 2f;
       } else {
         x = (float) (outerRadius * Math.cos(currentAngle));
         y = (float) (outerRadius * Math.sin(currentAngle));
@@ -206,10 +206,18 @@ class PolystarLayer extends AnimatableLayer {
         currentAngle += halfAnglePerPoint;
       }
 
-      // true means the line will go to outer radius. False means inner radius.
+      // True means the line will go to outer radius. False means inner radius.
       boolean longSegment = false;
-      for (int i = 0; i < Math.ceil(points) * 2; i++) {
+      double numPoints = Math.ceil(points) * 2;
+      for (int i = 0; i < numPoints; i++) {
         float radius = longSegment ? outerRadius : innerRadius;
+        float dTheta = halfAnglePerPoint;
+        if (partialPointRadius != 0 && i == numPoints - 2) {
+          dTheta = anglePerPoint * partialPointAmount / 2f;
+        }
+        if (partialPointRadius != 0 && i == numPoints - 1) {
+          radius = partialPointRadius;
+        }
         previousX = x;
         previousY = y;
         x = (float) (radius * Math.cos(currentAngle));
@@ -238,7 +246,7 @@ class PolystarLayer extends AnimatableLayer {
           path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
         }
 
-        currentAngle += halfAnglePerPoint;
+        currentAngle += dTheta;
         longSegment = !longSegment;
       }
 
