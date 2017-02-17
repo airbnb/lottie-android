@@ -203,7 +203,7 @@ class PolystarLayer extends AnimatableLayer {
         x = (float) (partialPointRadius * Math.cos(currentAngle));
         y = (float) (partialPointRadius * Math.sin(currentAngle));
         path.moveTo(x, y);
-        currentAngle += anglePerPoint * partialPointAmount / 2f;
+        currentAngle += halfAnglePerPoint * partialPointAmount;
       } else {
         x = (float) (outerRadius * Math.cos(currentAngle));
         y = (float) (outerRadius * Math.sin(currentAngle));
