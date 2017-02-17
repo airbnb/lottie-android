@@ -58,6 +58,11 @@ class PolystarLayer extends AnimatableLayer {
 
   private static final class PolystarShapeLayer extends ShapeLayer {
 
+    /**
+     * This was empirically derived by creating polystars, converting them to
+     * curves, and calculating a scale factor.
+     */
+    private static final float POLYSTAR_MAGIC_NUMBER = .47829f;
     private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
@@ -169,9 +174,9 @@ class PolystarLayer extends AnimatableLayer {
       float anglePerPoint = (float) (2 * Math.PI / points);
       float halfAnglePerPoint = anglePerPoint / 2.0f;
       float partialPointAmount = points - (int) points;
-      // if (partialPointAmount != 0) {
-      //   currentAngle += halfAnglePerPoint * (1f - partialPointAmount) / 2f;
-      // }
+      if (partialPointAmount != 0) {
+        currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
+      }
 
       float outerRadius = outerRadiusAnimation.getValue();
       float innerRadius = innerRadiusAnimation.getValue();
@@ -239,10 +244,20 @@ class PolystarLayer extends AnimatableLayer {
           float cp1Radius = longSegment ? innerRadius : outerRadius;
           float cp2Radius = longSegment ? outerRadius : innerRadius;
 
-          float cp1x = cp1Radius * cp1Roundedness * .47829f * cp1Dx;
-          float cp1y = cp1Radius * cp1Roundedness * .47829f * cp1Dy;
-          float cp2x = cp2Radius * cp2Roundedness * .47829f * cp2Dx;
-          float cp2y = cp2Radius * cp2Roundedness * .47829f * cp2Dy;
+          float cp1x = cp1Radius * cp1Roundedness * POLYSTAR_MAGIC_NUMBER * cp1Dx;
+          float cp1y = cp1Radius * cp1Roundedness * POLYSTAR_MAGIC_NUMBER * cp1Dy;
+          float cp2x = cp2Radius * cp2Roundedness * POLYSTAR_MAGIC_NUMBER * cp2Dx;
+          float cp2y = cp2Radius * cp2Roundedness * POLYSTAR_MAGIC_NUMBER * cp2Dy;
+          if (partialPointAmount != 0) {
+            if (i == 0) {
+              cp1x *= partialPointAmount;
+              cp1y *= partialPointAmount;
+            } else if (i == numPoints - 1) {
+              cp2x *= partialPointAmount;
+              cp2y *= partialPointAmount;
+            }
+          }
+
           path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
         }
 
