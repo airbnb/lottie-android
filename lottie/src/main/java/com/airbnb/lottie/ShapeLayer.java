@@ -106,6 +106,7 @@ class ShapeLayer extends AnimatableLayer {
   private List<BaseKeyframeAnimation<?, Float>> lineDashPattern;
   private BaseKeyframeAnimation<?, Float> lineDashPatternOffset;
   private boolean pathPropertiesChanged = true;
+  private boolean dashPatternChanged;
 
   ShapeLayer(Drawable.Callback callback) {
     super(callback);
@@ -168,6 +169,9 @@ class ShapeLayer extends AnimatableLayer {
   public void draw(@NonNull Canvas canvas) {
     if (pathPropertiesChanged) {
       updateTrimPathPath();
+    }
+    if (dashPatternChanged) {
+      updateDashPattern();
     }
     if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
       return;
@@ -252,6 +256,27 @@ class ShapeLayer extends AnimatableLayer {
     }
   }
 
+  private void updateDashPattern() {
+    float[] values = new float[lineDashPattern.size()];
+    for (int i = 0; i < lineDashPattern.size(); i++) {
+      values[i] = lineDashPattern.get(i).getValue();
+      // If the value of the dash pattern or gap is too small, the number of individual sections
+      // approaches infinity as the value approaches 0.
+      // To mitigate this, we essentially put a minimum value on the dash pattern size of 1px
+      // and a minimum gap size of 0.01.
+      if (i % 2 == 0) {
+        if (values[i] < 1f) {
+          values[i] = 1f;
+        }
+      } else {
+        if (values[i] < 0.1f) {
+          values[i] = 0.1f;
+        }
+      }
+    }
+    paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
+  }
+
   @Override public int getAlpha() {
     Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
     Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
@@ -327,11 +352,10 @@ class ShapeLayer extends AnimatableLayer {
     }
     this.lineDashPattern = lineDashPattern;
     this.lineDashPatternOffset = offset;
-    addAnimation(lineDashPattern.get(0));
-    lineDashPattern.get(0).addUpdateListener(dashPatternChangedListener);
-    if (!lineDashPattern.get(1).equals(lineDashPattern.get(1))) {
-      addAnimation(lineDashPattern.get(1));
-      lineDashPattern.get(1).addUpdateListener(dashPatternChangedListener);
+    for (int i = 0; i < lineDashPattern.size(); i++) {
+      BaseKeyframeAnimation<?, Float> dashPattern = lineDashPattern.get(i);
+      addAnimation(dashPattern);
+      dashPattern.addUpdateListener(dashPatternChangedListener);
     }
     addAnimation(offset);
     offset.addUpdateListener(dashPatternChangedListener);
@@ -339,14 +363,7 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   private void onDashPatternChanged() {
-    float[] values = new float[lineDashPattern.size()];
-    for (int i = 0; i < lineDashPattern.size(); i++) {
-      values[i] = lineDashPattern.get(i).getValue();
-      if (values[i] == 0) {
-        values[i] = 0.01f;
-      }
-    }
-    paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
+    dashPatternChanged = true;
     invalidateSelf();
   }
 
