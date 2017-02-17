@@ -23,7 +23,7 @@ class PolystarLayer extends AnimatableLayer {
       PolystarShapeLayer fillLayer = new PolystarShapeLayer(getCallback());
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setAlpha(fill.getOpacity().createAnimation());
-      fillLayer.updateCircle(polystarShape);
+      fillLayer.setShape(polystarShape);
       if (trim != null) {
         fillLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
             trim.getOffset().createAnimation());
@@ -46,7 +46,7 @@ class PolystarLayer extends AnimatableLayer {
         strokeLayer.setDashPattern(dashPatternAnimations, stroke.getDashOffset().createAnimation());
       }
       strokeLayer.setLineCapType(stroke.getCapType());
-      strokeLayer.updateCircle(polystarShape);
+      strokeLayer.setShape(polystarShape);
       if (trim != null) {
         strokeLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
             trim.getOffset().createAnimation());
@@ -61,8 +61,11 @@ class PolystarLayer extends AnimatableLayer {
     /**
      * This was empirically derived by creating polystars, converting them to
      * curves, and calculating a scale factor.
+     * It works best for polygons and stars with 3 points and needs more
+     * work otherwise.
      */
     private static final float POLYSTAR_MAGIC_NUMBER = .47829f;
+    private static final float POLYGON_MAGIC_NUMBER = .25f;
     private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
           @Override
@@ -95,7 +98,7 @@ class PolystarLayer extends AnimatableLayer {
       setPath(new StaticKeyframeAnimation<>(path));
     }
 
-    void updateCircle(PolystarShape polystarShape) {
+    void setShape(PolystarShape polystarShape) {
       type = polystarShape.getType();
 
       if (pointsAnimation != null) {
@@ -130,24 +133,37 @@ class PolystarLayer extends AnimatableLayer {
       rotationAnimation = polystarShape.getRotation().createAnimation();
       outerRadiusAnimation = polystarShape.getOuterRadius().createAnimation();
       outerRoundednessAnimation = polystarShape.getOuterRoundedness().createAnimation();
-      innerRadiusAnimation = polystarShape.getInnerRadius().createAnimation();
-      innerRoundednessAnimation = polystarShape.getInnerRoundedness().createAnimation();
+      // Not used for polygons.
+      if (polystarShape.getInnerRadius() != null) {
+        innerRadiusAnimation = polystarShape.getInnerRadius().createAnimation();
+      }
+      if (polystarShape.getInnerRoundedness() != null) {
+        innerRoundednessAnimation = polystarShape.getInnerRoundedness().createAnimation();
+      }
 
       pointsAnimation.addUpdateListener(floatChangedListener);
       positionAnimation.addUpdateListener(pointChangedListener);
       rotationAnimation.addUpdateListener(floatChangedListener);
       outerRadiusAnimation.addUpdateListener(floatChangedListener);
       outerRoundednessAnimation.addUpdateListener(floatChangedListener);
-      innerRadiusAnimation.addUpdateListener(floatChangedListener);
-      innerRoundednessAnimation.addUpdateListener(floatChangedListener);
+      if (innerRadiusAnimation != null) {
+        innerRadiusAnimation.addUpdateListener(floatChangedListener);
+      }
+      if (innerRoundednessAnimation != null) {
+        innerRoundednessAnimation.addUpdateListener(floatChangedListener);
+      }
 
       addAnimation(pointsAnimation);
       addAnimation(positionAnimation);
       addAnimation(rotationAnimation);
       addAnimation(outerRadiusAnimation);
       addAnimation(outerRoundednessAnimation);
-      addAnimation(innerRadiusAnimation);
-      addAnimation(innerRoundednessAnimation);
+      if (innerRadiusAnimation != null) {
+        addAnimation(innerRadiusAnimation);
+      }
+      if (innerRoundednessAnimation != null) {
+        addAnimation(innerRoundednessAnimation) ;
+      }
       onPolystarChanged();
     }
 
@@ -174,9 +190,9 @@ class PolystarLayer extends AnimatableLayer {
       float anglePerPoint = (float) (2 * Math.PI / points);
       float halfAnglePerPoint = anglePerPoint / 2.0f;
       float partialPointAmount = points - (int) points;
-      // if (partialPointAmount != 0) {
-      //   currentAngle += halfAnglePerPoint * (1f - partialPointAmount) / 2f;
-      // }
+      if (partialPointAmount != 0) {
+        currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
+      }
 
       float outerRadius = outerRadiusAnimation.getValue();
       float innerRadius = innerRadiusAnimation.getValue();
@@ -272,7 +288,60 @@ class PolystarLayer extends AnimatableLayer {
     }
 
     private void createPolygonPath() {
+      int points = (int) Math.floor(pointsAnimation.getValue());
+      double currentAngle = rotationAnimation == null ? 0f : rotationAnimation.getValue();
+      // Start at +y instead of +x
+      currentAngle -= 90;
+      // convert to radians
+      currentAngle = Math.toRadians(currentAngle);
+      // adjust current angle for partial points
+      float anglePerPoint = (float) (2 * Math.PI / points);
 
+      path.reset();
+
+      float roundedness = outerRoundednessAnimation.getValue() / 100f;
+      float radius = outerRadiusAnimation.getValue();
+      float x;
+      float y;
+      float previousX;
+      float previousY;
+      x = (float) (radius * Math.cos(currentAngle));
+      y = (float) (radius * Math.sin(currentAngle));
+      path.moveTo(x, y);
+      currentAngle += anglePerPoint;
+
+      double numPoints = Math.ceil(points);
+      for (int i = 0; i < numPoints; i++) {
+        previousX = x;
+        previousY = y;
+        x = (float) (radius * Math.cos(currentAngle));
+        y = (float) (radius * Math.sin(currentAngle));
+
+        if (roundedness != 0) {
+          float cp1Theta = (float) (Math.atan2(previousY, previousX) - Math.PI / 2f);
+          float cp1Dx = (float) Math.cos(cp1Theta);
+          float cp1Dy = (float) Math.sin(cp1Theta);
+
+          float cp2Theta = (float) (Math.atan2(y, x) - Math.PI / 2f);
+          float cp2Dx = (float) Math.cos(cp2Theta);
+          float cp2Dy = (float) Math.sin(cp2Theta);
+
+          float cp1x = radius * roundedness * POLYGON_MAGIC_NUMBER * cp1Dx;
+          float cp1y = radius * roundedness * POLYGON_MAGIC_NUMBER * cp1Dy;
+          float cp2x = radius * roundedness * POLYGON_MAGIC_NUMBER * cp2Dx;
+          float cp2y = radius * roundedness * POLYGON_MAGIC_NUMBER * cp2Dy;
+          path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
+        } else {
+          path.lineTo(x, y);
+        }
+
+        currentAngle += anglePerPoint;
+      }
+
+
+      PointF position = positionAnimation.getValue();
+      path.offset(position.x, position.y);
+      path.close();
     }
   }
 }
