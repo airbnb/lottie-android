@@ -161,7 +161,7 @@ class PolystarLayer extends AnimatableLayer {
     private void createStarPath() {
       float points = pointsAnimation.getValue();
       double currentAngle = rotationAnimation == null ? 0f : rotationAnimation.getValue();
-      // Start at +y instead of +9
+      // Start at +y instead of +x
       currentAngle -= 90;
       // convert to radians
       currentAngle = Math.toRadians(currentAngle);
@@ -173,40 +173,73 @@ class PolystarLayer extends AnimatableLayer {
         currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
       }
 
-      double outerRadius = outerRadiusAnimation.getValue();
-      double innerRadius = innerRadiusAnimation.getValue();
+      float outerRadius = outerRadiusAnimation.getValue();
+      float innerRadius = innerRadiusAnimation.getValue();
+
+      float innerRoundedness = 0f;
+      if (innerRoundednessAnimation != null) {
+        innerRoundedness = innerRoundednessAnimation.getValue() / 100f;
+      }
+      float outerRoundedness = 0f;
+      if (outerRoundednessAnimation != null) {
+        outerRoundedness = outerRoundednessAnimation.getValue() / 100f;
+      }
 
       path.reset();
 
 
+      float x;
+      float y;
+      float previousX;
+      float previousY;
       double partialPointRadius = 0;
       if (partialPointAmount != 0) {
         partialPointRadius = innerRadius + partialPointAmount * (outerRadius - innerRadius);
-        path.moveTo((float) (partialPointRadius * Math.cos(currentAngle)),
-            (float) (partialPointRadius * Math.sin(currentAngle)));
+        x = (float) (partialPointRadius * Math.cos(currentAngle));
+        y = (float) (partialPointRadius * Math.sin(currentAngle));
+        path.moveTo(x, y);
         currentAngle += halfAnglePerPoint * partialPointAmount;
       } else {
-        path.moveTo((float) (outerRadius * Math.cos(currentAngle)),
-            (float) (outerRadius * Math.sin(currentAngle)));
+        x = (float) (outerRadius * Math.cos(currentAngle));
+        y = (float) (outerRadius * Math.sin(currentAngle));
+        path.moveTo(x, y);
         currentAngle += halfAnglePerPoint;
       }
 
-      for (int i = 0; i < Math.floor(points); i++) {
-        path.lineTo((float) (innerRadius * Math.cos(currentAngle)),
-            (float) (innerRadius * Math.sin(currentAngle)));
-        currentAngle += halfAnglePerPoint;
-        path.lineTo((float) (outerRadius * Math.cos(currentAngle)),
-            (float) (outerRadius * Math.sin(currentAngle)));
-        currentAngle += halfAnglePerPoint;
-      }
+      // true means the line will go to outer radius. False means inner radius.
+      boolean longSegment = false;
+      for (int i = 0; i < Math.ceil(points) * 2; i++) {
+        float radius = longSegment ? outerRadius : innerRadius;
+        previousX = x;
+        previousY = y;
+        x = (float) (radius * Math.cos(currentAngle));
+        y = (float) (radius * Math.sin(currentAngle));
 
-      if (partialPointAmount != 0) {
-        // currentAngle -= halfAnglePerPoint;
-        path.lineTo((float) (innerRadius * Math.cos(currentAngle)),
-            (float) (innerRadius * Math.sin(currentAngle)));
-        currentAngle += halfAnglePerPoint * partialPointAmount;
-        path.lineTo((float) (partialPointRadius * Math.cos(currentAngle)),
-            (float) (partialPointRadius * Math.sin(currentAngle)));
+        if (innerRoundedness == 0 && outerRoundedness == 0) {
+          path.lineTo(x, y);
+        } else {
+          float cp1Theta = (float) (Math.atan2(previousY, previousX) - Math.PI / 2f);
+          float cp1Dx = (float) Math.cos(cp1Theta);
+          float cp1Dy = (float) Math.sin(cp1Theta);
+
+          float cp2Theta = (float) (Math.atan2(y, x) - Math.PI / 2f);
+          float cp2Dx = (float) Math.cos(cp2Theta);
+          float cp2Dy = (float) Math.sin(cp2Theta);
+
+          float cp1Roundedness = longSegment ? innerRoundedness : outerRoundedness;
+          float cp2Roundedness = longSegment ? outerRoundedness : innerRoundedness;
+          float cp1Radius = longSegment ? innerRadius : outerRadius;
+          float cp2Radius = longSegment ? outerRadius : innerRadius;
+
+          float cp1x = cp1Radius * cp1Roundedness * .47829f * cp1Dx;
+          float cp1y = cp1Radius * cp1Roundedness * .47829f * cp1Dy;
+          float cp2x = cp2Radius * cp2Roundedness * .47829f * cp2Dx;
+          float cp2y = cp2Radius * cp2Roundedness * .47829f * cp2Dy;
+          path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
+        }
+
+        currentAngle += halfAnglePerPoint;
+        longSegment = !longSegment;
       }
 
 
