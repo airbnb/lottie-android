@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +44,7 @@ class ShapeGroup {
       case "tm":
         return new ShapeTrimPath(json, composition);
       case "sr":
-        Log.w(TAG, "Lottie doesn't yet support polystars. Convert your layer to a shape first.");
+        return new PolystarShape(json, composition);
     }
     return null;
   }
