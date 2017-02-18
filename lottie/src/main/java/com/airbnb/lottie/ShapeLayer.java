@@ -278,8 +278,8 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   @Override public int getAlpha() {
-    Integer shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
-    Integer transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
+    int shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
+    int transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
     int layerAlpha = super.getAlpha();
     return (int) ((shapeAlpha / 255f * transformAlpha / 255f * layerAlpha / 255f) * 255);
   }

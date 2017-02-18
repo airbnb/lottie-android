@@ -27,7 +27,7 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
       return new StaticKeyframeAnimation<>(initialValue);
     }
 
-    return new NumberKeyframeAnimation<>(keyframes, Float.class);
+    return new FloatKeyframeAnimation(keyframes);
   }
 
   public Float getInitialValue() {
