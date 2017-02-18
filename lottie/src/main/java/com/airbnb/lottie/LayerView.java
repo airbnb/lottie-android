@@ -155,8 +155,8 @@ class LayerView extends AnimatableLayer {
 
   private void buildAnimations() {
     if (!layerModel.getInOutKeyframes().isEmpty()) {
-      NumberKeyframeAnimation<Float> inOutAnimation = new NumberKeyframeAnimation<>(
-          layerModel.getInOutKeyframes(), Float.class);
+      FloatKeyframeAnimation inOutAnimation =
+          new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
         @Override public void onValueChanged(Float value) {
@@ -228,12 +228,12 @@ class LayerView extends AnimatableLayer {
       transformLayers.add(parent);
       parent = parent.getParentLayer();
     }
-    Collections.reverse(transformLayers);
 
     if (contentCanvas == null || contentBitmap == null) {
       int mainCanvasCount = saveCanvas(mainCanvas);
       // Now apply the parent transformations from the top down.
-      for (LayerView layer : transformLayers) {
+      for (int i = 0; i < transformLayers.size(); i++) {
+        LayerView layer = transformLayers.get(i);
         applyTransformForLayer(mainCanvas, layer);
       }
       super.draw(mainCanvas);
@@ -244,7 +244,8 @@ class LayerView extends AnimatableLayer {
     int contentCanvasCount = saveCanvas(contentCanvas);
     int maskCanvasCount = saveCanvas(maskCanvas);
     // Now apply the parent transformations from the top down.
-    for (LayerView layer : transformLayers) {
+    for (int i = transformLayers.size() - 1; i >= 0 ; i--) {
+      LayerView layer = transformLayers.get(i);
       applyTransformForLayer(contentCanvas, layer);
       applyTransformForLayer(maskCanvas, layer);
     }

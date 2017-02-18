@@ -31,7 +31,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
       return new StaticKeyframeAnimation<>(initialValue);
     }
 
-    return new NumberKeyframeAnimation<>(keyframes, Integer.class);
+    return new IntegerKeyframeAnimation(keyframes);
   }
 
   public Integer getInitialValue() {
