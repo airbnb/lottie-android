@@ -232,7 +232,7 @@ class LayerView extends AnimatableLayer {
     if (contentCanvas == null || contentBitmap == null) {
       int mainCanvasCount = saveCanvas(mainCanvas);
       // Now apply the parent transformations from the top down.
-      for (int i = 0; i < transformLayers.size(); i++) {
+      for (int i = transformLayers.size() - 1; i >= 0; i--) {
         LayerView layer = transformLayers.get(i);
         applyTransformForLayer(mainCanvas, layer);
       }
