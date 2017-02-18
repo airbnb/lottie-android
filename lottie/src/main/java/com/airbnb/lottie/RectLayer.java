@@ -168,6 +168,10 @@ class RectLayer extends AnimatableLayer {
       float halfWidth = size.x / 2f;
       float halfHeight = size.y / 2f;
       float radius = rectCornerRadius == null ? 0f : rectCornerRadius.getValue();
+      float maxRadius = Math.min(halfWidth, halfHeight);
+      if (radius > maxRadius) {
+        radius = maxRadius;
+      }
 
       // Draw the rectangle top right to bottom left.
       PointF position = rectPosition == null ? Utils.emptyPoint() : rectPosition.getValue();
