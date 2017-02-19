@@ -164,11 +164,23 @@ class AnimatableLayer extends Drawable {
 
   void setTransform(TransformKeyframeAnimation transform) {
     this.transform = transform;
-    addAnimation(transform.getAnchorPoint());
-    addAnimation(transform.getPosition());
-    addAnimation(transform.getScale());
-    addAnimation(transform.getRotation());
-    addAnimation(transform.getOpacity());
+    BaseKeyframeAnimation<?, PointF> anchorPoint = transform.getAnchorPoint();
+    BaseKeyframeAnimation<?, PointF> position = transform.getPosition();
+    BaseKeyframeAnimation<?, ScaleXY> scale = transform.getScale();
+    BaseKeyframeAnimation<?, Float> rotation = transform.getRotation();
+    BaseKeyframeAnimation<?, Integer> opacity = transform.getOpacity();
+
+    anchorPoint.addUpdateListener(pointChangedListener);
+    position.addUpdateListener(pointChangedListener);
+    scale.addUpdateListener(scaleChangedListener);
+    rotation.addUpdateListener(floatChangedListener);
+    opacity.addUpdateListener(integerChangedListener);
+
+    addAnimation(anchorPoint);
+    addAnimation(position);
+    addAnimation(scale);
+    addAnimation(rotation);
+    addAnimation(opacity);
     invalidateSelf();
   }
 
