@@ -12,22 +12,16 @@ class ShapeLayerView extends AnimatableLayer {
 
   ShapeLayerView(ShapePath shape, @Nullable ShapeFill fill,
       @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim,
-      Transform transformModel, Drawable.Callback callback) {
+      AnimatableTransform transformModel, Drawable.Callback callback) {
     super(callback);
-    setBounds(transformModel.getBounds());
-    setAnchorPoint(transformModel.getAnchor().createAnimation());
-    setPosition(transformModel.getPosition().createAnimation());
-    setRotation(transformModel.getRotation().createAnimation());
-
-    AnimatableScaleValue scale = transformModel.getScale();
-    setTransform(transformModel.getScale().createAnimation());
+    setTransform(transformModel.createAnimation());
     if (fill != null) {
       fillLayer = new ShapeLayer(getCallback());
       fillLayer.setPath(shape.getShapePath().createAnimation());
       fillLayer.setColor(fill.getColor().createAnimation());
-      fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
-      fillLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
-      fillLayer.setScale(scale.createAnimation());
+      fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
+      fillLayer.setTransformOpacity(transformModel.getOpacity().createAnimation());
+      fillLayer.setScale(transformModel.getScale().createAnimation());
       if (trim != null) {
         fillLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
             trim.getOffset().createAnimation());
@@ -40,8 +34,8 @@ class ShapeLayerView extends AnimatableLayer {
       strokeLayer.setIsStroke();
       strokeLayer.setPath(shape.getShapePath().createAnimation());
       strokeLayer.setColor(stroke.getColor().createAnimation());
-      strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
-      strokeLayer.setTransformAlpha(transformModel.getOpacity().createAnimation());
+      strokeLayer.setShapeOpacity(stroke.getOpacity().createAnimation());
+      strokeLayer.setTransformOpacity(transformModel.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
         List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations =
@@ -53,7 +47,7 @@ class ShapeLayerView extends AnimatableLayer {
       }
       strokeLayer.setLineCapType(stroke.getCapType());
       strokeLayer.setLineJoinType(stroke.getJoinType());
-      strokeLayer.setScale(scale.createAnimation());
+      strokeLayer.setScale(transformModel.getScale().createAnimation());
       if (trim != null) {
         strokeLayer.setTrimPath(trim.getStart().createAnimation(), trim.getEnd().createAnimation(),
             trim.getOffset().createAnimation());

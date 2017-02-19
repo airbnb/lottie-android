@@ -16,21 +16,16 @@ class RectLayer extends AnimatableLayer {
   @Nullable private RectShapeLayer strokeLayer;
 
   RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill, @Nullable ShapeStroke stroke,
-      @Nullable ShapeTrimPath trim, Transform transform, Drawable.Callback callback) {
+      @Nullable ShapeTrimPath trim, AnimatableTransform transform, Drawable.Callback callback) {
     super(callback);
 
-    setBounds(transform.getBounds());
-    setAnchorPoint(transform.getAnchor().createAnimation());
-    setAlpha(transform.getOpacity().createAnimation());
-    setPosition(transform.getPosition().createAnimation());
-    setTransform(transform.getScale().createAnimation());
-    setRotation(transform.getRotation().createAnimation());
+    setTransform(transform.createAnimation());
 
     if (fill != null) {
       fillLayer = new RectShapeLayer(getCallback());
       fillLayer.setColor(fill.getColor().createAnimation());
-      fillLayer.setShapeAlpha(fill.getOpacity().createAnimation());
-      fillLayer.setTransformAlpha(transform.getOpacity().createAnimation());
+      fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
+      fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
       fillLayer.setRectCornerRadius(rectShape.getCornerRadius().createAnimation());
       fillLayer.setRectSize(rectShape.getSize().createAnimation());
       fillLayer.setRectPosition(rectShape.getPosition().createAnimation());
@@ -45,8 +40,8 @@ class RectLayer extends AnimatableLayer {
       strokeLayer = new RectShapeLayer(getCallback());
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
-      strokeLayer.setShapeAlpha(stroke.getOpacity().createAnimation());
-      strokeLayer.setTransformAlpha(transform.getOpacity().createAnimation());
+      strokeLayer.setShapeOpacity(stroke.getOpacity().createAnimation());
+      strokeLayer.setTransformOpacity(transform.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
         List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations = new ArrayList<>(stroke

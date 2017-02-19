@@ -34,7 +34,7 @@ class ShapeGroup {
       case "fl":
         return new ShapeFill(json, composition);
       case "tr":
-        return new ShapeTransform(json, composition);
+        return new AnimatableTransform(json, composition);
       case "sh":
         return new ShapePath(json, composition);
       case "el":

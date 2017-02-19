@@ -9,26 +9,21 @@ import java.util.List;
 
 class GroupLayerView extends AnimatableLayer {
   private final ShapeGroup shapeGroup;
-  @Nullable private final Transform shapeTransform;
+  @Nullable private final AnimatableTransform transform;
 
   GroupLayerView(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
       @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
-      @Nullable Transform previousTransform, Drawable.Callback callback) {
+      @Nullable AnimatableTransform transform, Drawable.Callback callback) {
     super(callback);
     this.shapeGroup = shapeGroup;
-    shapeTransform = previousTransform;
+    this.transform = transform;
     setupShapeGroupWithFill(previousFill, previousStroke, previousTrimPath);
   }
 
   private void setupShapeGroupWithFill(ShapeFill previousFill,
       ShapeStroke previousStroke, ShapeTrimPath previousTrimPath) {
-    if (shapeTransform != null) {
-      setBounds(shapeTransform.getBounds());
-      setAnchorPoint(shapeTransform.getAnchor().createAnimation());
-      setPosition(shapeTransform.getPosition().createAnimation());
-      setAlpha(shapeTransform.getOpacity().createAnimation());
-      setTransform(shapeTransform.getScale().createAnimation());
-      setRotation(shapeTransform.getRotation().createAnimation());
+    if (transform != null) {
+      setTransform(transform.createAnimation());
     }
 
     List<Object> reversedItems = new ArrayList<>(shapeGroup.getItems());
@@ -36,13 +31,13 @@ class GroupLayerView extends AnimatableLayer {
 
     ShapeFill currentFill = previousFill;
     ShapeStroke currentStroke = previousStroke;
-    Transform currentTransform = null;
+    AnimatableTransform currentTransform = null;
     ShapeTrimPath currentTrim = previousTrimPath;
 
     for (int i = 0; i < reversedItems.size(); i++) {
       Object item = reversedItems.get(i);
-      if (item instanceof ShapeTransform) {
-        currentTransform = (ShapeTransform) item;
+      if (item instanceof AnimatableTransform) {
+        currentTransform = (AnimatableTransform) item;
       } else if (item instanceof ShapeStroke) {
         currentStroke = (ShapeStroke) item;
       } else if (item instanceof ShapeFill) {

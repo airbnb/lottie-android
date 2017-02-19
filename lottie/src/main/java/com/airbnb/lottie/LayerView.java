@@ -90,18 +90,11 @@ class LayerView extends AnimatableLayer {
     setBackgroundColor(layerModel.getSolidColor());
     setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
-    setPosition(layerModel.getPosition().createAnimation());
-    setAnchorPoint(layerModel.getAnchor().createAnimation());
-    setTransform(layerModel.getScale().createAnimation());
-    setRotation(layerModel.getRotation().createAnimation());
-    setAlpha(layerModel.getOpacity().createAnimation());
-
-    // TODO: determine if this is necessary
-    // setVisible(layerModel.getInOutKeyframes() != null, false);
+    setTransform(layerModel.getTransform().createAnimation());
 
     List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
     Collections.reverse(reversedItems);
-    Transform currentTransform = null;
+    AnimatableTransform currentTransform = null;
     ShapeTrimPath currentTrim = null;
     ShapeFill currentFill = null;
     ShapeStroke currentStroke = null;
@@ -112,8 +105,8 @@ class LayerView extends AnimatableLayer {
         GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
             currentStroke, currentTrim, currentTransform, getCallback());
         addLayer(groupLayer);
-      } else if (item instanceof ShapeTransform) {
-        currentTransform = (ShapeTransform) item;
+      } else if (item instanceof AnimatableTransform) {
+        currentTransform = (AnimatableTransform) item;
       } else if (item instanceof ShapeFill) {
         currentFill = (ShapeFill) item;
       } else if (item instanceof ShapeTrimPath) {
@@ -124,24 +117,24 @@ class LayerView extends AnimatableLayer {
         ShapePath shapePath = (ShapePath) item;
         ShapeLayerView shapeLayer =
             new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim,
-                new ShapeTransform(composition), getCallback());
+                new AnimatableTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof RectangleShape) {
         RectangleShape shapeRect = (RectangleShape) item;
         RectLayer shapeLayer =
             new RectLayer(shapeRect, currentFill, currentStroke, currentTrim,
-                new ShapeTransform(composition), getCallback());
+                new AnimatableTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof CircleShape) {
         CircleShape shapeCircle = (CircleShape) item;
         EllipseLayer shapeLayer =
             new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrim,
-                new ShapeTransform(composition), getCallback());
+                new AnimatableTransform(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof PolystarShape) {
         PolystarShape polystarShape = (PolystarShape) item;
         PolystarLayer shapeLayer = new PolystarLayer(polystarShape, currentFill, currentStroke,
-            currentTrim, new ShapeTransform(composition), getCallback());
+            currentTrim, new AnimatableTransform(composition), getCallback());
         addLayer(shapeLayer);
       }
     }
