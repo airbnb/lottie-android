@@ -34,6 +34,13 @@ class LayerView extends AnimatableLayer {
   private final CanvasPool canvasPool;
 
   @Nullable private LayerView parentLayer;
+  /**
+   * The width and height of the precomp that this was added to.
+   * This differs from the LayerModel precompWidth and height which will be set if this is
+   * the precomp layer itself.
+   */
+  private int precompWidth;
+  private int precompHeight;
 
   LayerView(Layer layerModel, LottieComposition composition, Callback callback, CanvasPool canvasPool) {
     super(callback);
@@ -42,14 +49,34 @@ class LayerView extends AnimatableLayer {
     this.canvasPool = canvasPool;
     setBounds(composition.getBounds());
 
-    List<Layer> precomps = composition.getPrecomps(layerModel.getPrecompId());
-    LongSparseArray<LayerView> precompMap = new LongSparseArray<>();
-    if (precomps != null) {
-      for (int i = precomps.size() - 1; i >= 0; i--) {
-        LayerView precompLayerView =
-            new LayerView(precomps.get(i), composition, callback, canvasPool);
-        addLayer(precompLayerView);
-        precompMap.put(precompLayerView.getId(), precompLayerView);
+    setupForModel();
+  }
+
+  private void setupForModel() {
+    setBackgroundColor(layerModel.getSolidColor());
+    setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
+
+    setTransform(layerModel.getTransform().createAnimation());
+    setupInOutAnimations();
+
+    switch (layerModel.getLayerType()) {
+      case Shape:
+        setupShapeLayer();
+        break;
+      case PreComp:
+        setupPreComp();
+        break;
+    }
+
+    if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
+      setMask(new MaskKeyframeAnimation(layerModel.getMasks()));
+    }
+
+    LongSparseArray<LayerView> layerMap = new LongSparseArray<>();
+
+    for (AnimatableLayer layer : layers) {
+      if (layer instanceof LayerView) {
+        layerMap.put(((LayerView) layer).getId(), ((LayerView) layer));
       }
     }
 
@@ -61,22 +88,15 @@ class LayerView extends AnimatableLayer {
       if (parentId == -1) {
         continue;
       }
-      LayerView parentLayer = precompMap.get(parentId);
+      LayerView parentLayer = layerMap.get(parentId);
       if (parentLayer == null) {
         continue;
       }
       ((LayerView) layer).setParentLayer(parentLayer);
     }
-
-    setupForModel();
   }
 
-  private void setupForModel() {
-    setBackgroundColor(layerModel.getSolidColor());
-    setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
-
-    setTransform(layerModel.getTransform().createAnimation());
-
+  private void setupShapeLayer() {
     List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
     Collections.reverse(reversedItems);
     AnimatableTransform currentTransform = null;
@@ -123,14 +143,23 @@ class LayerView extends AnimatableLayer {
         addLayer(shapeLayer);
       }
     }
-
-    if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-      setMask(new MaskKeyframeAnimation(layerModel.getMasks()));
-    }
-    buildAnimations();
   }
 
-  private void buildAnimations() {
+  private void setupPreComp() {
+    List<Layer> precompLayers = composition.getPrecomps(layerModel.getPrecompId());
+    if (precompLayers == null) {
+      return;
+    }
+    for (int i = precompLayers.size() - 1; i >= 0; i--) {
+      Layer layer = precompLayers.get(i);
+      LayerView layerView =
+          new LayerView(layer, composition, getCallback(), canvasPool);
+      layerView.setPrecompSize(layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
+      addLayer(layerView);
+    }
+  }
+
+  private void setupInOutAnimations() {
     if (!layerModel.getInOutKeyframes().isEmpty()) {
       FloatKeyframeAnimation inOutAnimation =
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
@@ -160,6 +189,11 @@ class LayerView extends AnimatableLayer {
     return parentLayer;
   }
 
+  private void setPrecompSize(int width, int height) {
+    precompWidth = width;
+    precompHeight = height;
+  }
+
   private void setMask(MaskKeyframeAnimation mask) {
     this.mask = mask;
     for (BaseKeyframeAnimation<?, Path> animation : mask.getMasks()) {
@@ -187,6 +221,9 @@ class LayerView extends AnimatableLayer {
 
     if (!hasMasks() && !hasMatte()) {
       int mainCanvasCount = saveCanvas(canvas);
+      if (precompWidth != 0 || precompHeight != 0) {
+        canvas.clipRect(0, 0, precompWidth, precompHeight);
+      }
       // Now apply the parent transformations from the top down.
       for (int i = transformLayers.size() - 1; i >= 0; i--) {
         LayerView layer = transformLayers.get(i);
@@ -228,6 +265,9 @@ class LayerView extends AnimatableLayer {
       bitmapCanvas.restore();
     }
 
+    if (precompWidth != 0 || precompHeight != 0) {
+      canvas.clipRect(0, 0, precompWidth, precompHeight);
+    }
     canvas.drawBitmap(bitmapCanvas.getBitmap(), 0, 0, null);
     canvasPool.release(bitmapCanvas);
   }
@@ -241,6 +281,11 @@ class LayerView extends AnimatableLayer {
   }
 
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    // TODO: use this.
+    // progress -= layerModel.getStartProgress();
+    progress *= layerModel.getTimeStretch();
+
+
     super.setProgress(progress);
     if (matteLayer != null) {
       matteLayer.setProgress(progress);

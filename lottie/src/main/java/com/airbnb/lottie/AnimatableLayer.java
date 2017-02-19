@@ -113,13 +113,6 @@ class AnimatableLayer extends Drawable {
     return canvas.save();
   }
 
-  void restoreCanvas(@Nullable Canvas canvas, int count) {
-    if (canvas == null) {
-      return;
-    }
-    canvas.restoreToCount(count);
-  }
-
   void applyTransformForLayer(@Nullable Canvas canvas, AnimatableLayer layer) {
     if (canvas == null || transform == null) {
       return;
@@ -128,17 +121,17 @@ class AnimatableLayer extends Drawable {
     PointF position = layer.transform.getPosition().getValue();
     if (position.x != 0 || position.y != 0) {
       canvas.translate(position.x, position.y);
-      }
+    }
 
     float rotation = layer.transform.getRotation().getValue();
     if (rotation != 0f) {
       canvas.rotate(rotation);
-      }
+    }
 
     ScaleXY scale = layer.transform.getScale().getValue();
     if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
       canvas.scale(scale.getScaleX(), scale.getScaleY());
-      }
+    }
 
     PointF anchorPoint = layer.transform.getAnchorPoint().getValue();
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
@@ -214,7 +207,7 @@ class AnimatableLayer extends Drawable {
     }
   }
 
-  public float getProgress() {
+  float getProgress() {
     return progress;
   }
 }

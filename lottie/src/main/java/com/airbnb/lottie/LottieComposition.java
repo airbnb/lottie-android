@@ -133,7 +133,7 @@ public class LottieComposition {
 
     JSONArray jsonLayers = json.optJSONArray("layers");
     for (int i = 0; i < jsonLayers.length(); i++) {
-      Layer layer = Layer.fromJson(jsonLayers.optJSONObject(i), composition);
+      Layer layer = new Layer(jsonLayers.optJSONObject(i), composition);
       addLayer(composition, layer);
     }
 
@@ -144,9 +144,15 @@ public class LottieComposition {
       List<Layer> layers = new ArrayList<>(layersJson.length());
       LongSparseArray<Layer> layerMap = new LongSparseArray<>();
       for (int j = 0; j < layersJson.length(); j++) {
-        Layer layer = Layer.fromJson(layersJson.optJSONObject(j), composition);
+        Layer layer = new Layer(layersJson.optJSONObject(j), composition);
         layerMap.put(layer.getId(), layer);
         layers.add(layer);
+        if (!layer.getMasks().isEmpty()) {
+          composition.hasMasks = true;
+        }
+        if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
+          composition.hasMattes = true;
+        }
       }
       String id = precomp.optString("id");
       composition.precomps.put(id, layers);
