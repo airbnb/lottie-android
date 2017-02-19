@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,75 +30,55 @@ class Layer {
     Unknown
   }
 
-  static Layer fromJson(JSONObject json, LottieComposition composition) throws JSONException {
+  static Layer fromJson(JSONObject json, LottieComposition composition) {
     Layer layer = new Layer(composition);
-    layer.layerName = json.getString("nm");
-    layer.layerId = json.getLong("ind");
-    if (json.has("refId")) {
-      layer.precompId = json.getString("refId");
-    }
+    layer.layerName = json.optString("nm");
+    layer.layerId = json.optLong("ind");
+    layer.precompId = json.optString("refId");
 
-    int layerType = json.getInt("ty");
+    int layerType = json.optInt("ty", -1);
     if (layerType <= LottieLayerType.Shape.ordinal()) {
       layer.layerType = LottieLayerType.values()[layerType];
     } else {
       layer.layerType = LottieLayerType.Unknown;
     }
 
-    try {
-      layer.parentId = json.getLong("parent");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
+    layer.parentId = json.optLong("parent", -1);
 
     if (layer.layerType == LottieLayerType.Solid) {
-      layer.solidWidth = (int) (json.getInt("sw") * composition.getScale());
-      layer.solidHeight = (int) (json.getInt("sh") * composition.getScale());
-      layer.solidColor = Color.parseColor(json.getString("sc"));
+      layer.solidWidth = (int) (json.optInt("sw") * composition.getScale());
+      layer.solidHeight = (int) (json.optInt("sh") * composition.getScale());
+      layer.solidColor = Color.parseColor(json.optString("sc"));
       if (L.DBG) {
         Log.d(TAG, "\tSolid=" + Integer.toHexString(layer.solidColor) + " " +
             layer.solidWidth + "x" + layer.solidHeight + " " + composition.getBounds());
       }
     }
 
-    layer.transform = new AnimatableTransform(json.getJSONObject("ks"), composition);
+    layer.transform = new AnimatableTransform(json.optJSONObject("ks"), composition);
 
-    try {
-      layer.matteType = MatteType.values()[json.getInt("tt")];
-    } catch (JSONException e) {
-      // Do nothing.
-    }
+    layer.matteType = MatteType.values()[json.optInt("tt")];
 
-    JSONArray jsonMasks = null;
-    try {
-      jsonMasks = json.getJSONArray("masksProperties");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
+    JSONArray jsonMasks = json.optJSONArray("masksProperties");
     if (jsonMasks != null) {
       for (int i = 0; i < jsonMasks.length(); i++) {
-        Mask mask = new Mask(jsonMasks.getJSONObject(i), composition);
+        Mask mask = new Mask(jsonMasks.optJSONObject(i), composition);
         layer.masks.add(mask);
       }
     }
 
-    JSONArray shapes = null;
-    try {
-      shapes = json.getJSONArray("shapes");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
+    JSONArray shapes = json.optJSONArray("shapes");
     if (shapes != null) {
       for (int i = 0; i < shapes.length(); i++) {
-        Object shape = ShapeGroup.shapeItemWithJson(shapes.getJSONObject(i), composition);
+        Object shape = ShapeGroup.shapeItemWithJson(shapes.optJSONObject(i), composition);
         if (shape != null) {
           layer.shapes.add(shape);
         }
       }
     }
 
-    long inFrame = json.getLong("ip");
-    long outFrame = json.getLong("op");
+    long inFrame = json.optLong("ip");
+    long outFrame = json.optLong("op");
 
     // Before the in frame
     if (inFrame > 0) {
@@ -133,7 +112,7 @@ class Layer {
   private String layerName;
   private long layerId;
   private LottieLayerType layerType;
-  private long parentId = -1;
+  private long parentId;
   @Nullable private String precompId;
 
   private final List<Mask> masks = new ArrayList<>();

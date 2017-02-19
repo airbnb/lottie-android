@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
@@ -10,7 +9,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
   }
 
   AnimatableIntegerValue(JSONObject json, LottieComposition composition,
-      boolean isDp, boolean remap100To255) throws JSONException {
+      boolean isDp, boolean remap100To255) {
     super(json, composition, isDp);
     if (remap100To255) {
       initialValue = initialValue * 255 / 100;
@@ -22,7 +21,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     }
   }
 
-  @Override public Integer valueFromObject(Object object, float scale) throws JSONException {
+  @Override public Integer valueFromObject(Object object, float scale) {
     return Math.round(JsonUtils.valueFromObject(object) * scale);
   }
 

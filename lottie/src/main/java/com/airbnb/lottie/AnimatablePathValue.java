@@ -3,7 +3,6 @@ package com.airbnb.lottie;
 import android.graphics.PointF;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -12,13 +11,13 @@ import java.util.List;
 class AnimatablePathValue implements IAnimatablePathValue {
 
   static IAnimatablePathValue createAnimatablePathOrSplitDimensionPath(
-      JSONObject json, LottieComposition composition) throws JSONException {
+      JSONObject json, LottieComposition composition) {
     if (json.has("k")) {
-      return new AnimatablePathValue(json.get("k"), composition);
+      return new AnimatablePathValue(json.opt("k"), composition);
     } else {
       return new AnimatableSplitDimensionPathValue(
-          new AnimatableFloatValue(json.getJSONObject("x"), composition),
-          new AnimatableFloatValue(json.getJSONObject("y"), composition)
+          new AnimatableFloatValue(json.optJSONObject("x"), composition),
+          new AnimatableFloatValue(json.optJSONObject("y"), composition)
       );
     }
   }
@@ -33,12 +32,12 @@ class AnimatablePathValue implements IAnimatablePathValue {
     this.initialPoint = new PointF(0, 0);
   }
 
-  AnimatablePathValue(Object json, LottieComposition composition) throws JSONException {
+  AnimatablePathValue(Object json, LottieComposition composition) {
 
     if (hasKeyframes(json)) {
       JSONArray jsonArray = (JSONArray) json;
       for (int i = 0; i < jsonArray.length(); i++) {
-        JSONObject jsonKeyframe = jsonArray.getJSONObject(i);
+        JSONObject jsonKeyframe = jsonArray.optJSONObject(i);
         PathKeyframe keyframe = new PathKeyframe(jsonKeyframe, composition, this);
         keyframes.add(keyframe);
       }
@@ -48,16 +47,16 @@ class AnimatablePathValue implements IAnimatablePathValue {
     }
   }
 
-  private boolean hasKeyframes(Object json) throws JSONException {
+  private boolean hasKeyframes(Object json) {
     if (!(json instanceof JSONArray)) {
       return false;
     }
 
-    Object firstObject = ((JSONArray) json).get(0);
+    Object firstObject = ((JSONArray) json).opt(0);
     return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
   }
 
-  @Override public PointF valueFromObject(Object object, float scale) throws JSONException {
+  @Override public PointF valueFromObject(Object object, float scale) {
     return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
   }
 

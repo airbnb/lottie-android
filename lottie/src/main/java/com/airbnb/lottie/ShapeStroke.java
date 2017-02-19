@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -30,39 +29,32 @@ class ShapeStroke {
   private final LineJoinType joinType;
 
   ShapeStroke(JSONObject json, LottieComposition composition) {
-    try {
-      JSONObject colorJson = json.getJSONObject("c");
-      color = new AnimatableColorValue(colorJson, composition);
+    color = new AnimatableColorValue(json.optJSONObject("c"), composition);
 
-      JSONObject widthJson = json.getJSONObject("w");
-      width = new AnimatableFloatValue(widthJson, composition);
+    width = new AnimatableFloatValue(json.optJSONObject("w"), composition);
 
-      JSONObject opacityJson = json.getJSONObject("o");
-      opacity = new AnimatableIntegerValue(opacityJson, composition, false, true);
+    opacity = new AnimatableIntegerValue(json.optJSONObject("o"), composition, false, true);
 
-      capType = LineCapType.values()[json.getInt("lc") - 1];
-      joinType = LineJoinType.values()[json.getInt("lj") - 1];
+    capType = LineCapType.values()[json.optInt("lc") - 1];
+    joinType = LineJoinType.values()[json.optInt("lj") - 1];
 
-      if (json.has("d")) {
-        JSONArray dashesJson = json.getJSONArray("d");
-        for (int i = 0; i < dashesJson.length(); i++) {
-          JSONObject dashJson = dashesJson.getJSONObject(i);
-          String n = dashJson.getString("n");
-          if (n.equals("o")) {
-            JSONObject value = dashJson.getJSONObject("v");
-            offset = new AnimatableFloatValue(value, composition);
-          } else if (n.equals("d") || n.equals("g")) {
-            JSONObject value = dashJson.getJSONObject("v");
-            lineDashPattern.add(new AnimatableFloatValue(value, composition));
-          }
-        }
-        if (lineDashPattern.size() == 1) {
-          // If there is only 1 value then it is assumed to be equal parts on and off.
-          lineDashPattern.add(lineDashPattern.get(0));
+    if (json.has("d")) {
+      JSONArray dashesJson = json.optJSONArray("d");
+      for (int i = 0; i < dashesJson.length(); i++) {
+        JSONObject dashJson = dashesJson.optJSONObject(i);
+        String n = dashJson.optString("n");
+        if (n.equals("o")) {
+          JSONObject value = dashJson.optJSONObject("v");
+          offset = new AnimatableFloatValue(value, composition);
+        } else if (n.equals("d") || n.equals("g")) {
+          JSONObject value = dashJson.optJSONObject("v");
+          lineDashPattern.add(new AnimatableFloatValue(value, composition));
         }
       }
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse stroke " + json, e);
+      if (lineDashPattern.size() == 1) {
+        // If there is only 1 value then it is assumed to be equal parts on and off.
+        lineDashPattern.add(lineDashPattern.get(0));
+      }
     }
   }
 

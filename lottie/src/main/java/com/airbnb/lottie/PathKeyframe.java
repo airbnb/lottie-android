@@ -4,7 +4,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
-import org.json.JSONException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 class PathKeyframe extends Keyframe<PointF> {
@@ -13,15 +13,15 @@ class PathKeyframe extends Keyframe<PointF> {
 
 
   PathKeyframe(JSONObject json, LottieComposition composition,
-      AnimatableValue<PointF, ?> animatableValue) throws JSONException {
+      AnimatableValue<PointF, ?> animatableValue) {
     super(json, composition, composition.getScale(), animatableValue);
     PointF cp1 = null;
     PointF cp2 = null;
-    if (json.has("to") && json.has("ti")) {
-      cp1 =
-          JsonUtils.pointFromJsonArray(json.getJSONArray("to"), composition.getScale());
-      cp2 =
-          JsonUtils.pointFromJsonArray(json.getJSONArray("ti"), composition.getScale());
+    JSONArray tiJson = json.optJSONArray("ti");
+    JSONArray toJson = json.optJSONArray("to");
+    if (tiJson != null && toJson != null) {
+      cp1 = JsonUtils.pointFromJsonArray(toJson, composition.getScale());
+      cp2 = JsonUtils.pointFromJsonArray(tiJson, composition.getScale());
     }
 
     if (endValue != null && !startValue.equals(endValue)) {

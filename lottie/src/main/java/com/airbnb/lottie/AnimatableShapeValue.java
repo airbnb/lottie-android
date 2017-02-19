@@ -4,27 +4,21 @@ import android.graphics.Path;
 import android.graphics.PointF;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
   private final Path convertTypePath = new Path();
 
-  AnimatableShapeValue(JSONObject json, LottieComposition composition)
-      throws JSONException {
+  AnimatableShapeValue(JSONObject json, LottieComposition composition) {
     super(json, composition, true);
   }
 
-  @Override public ShapeData valueFromObject(Object object, float scale) throws JSONException {
+  @Override public ShapeData valueFromObject(Object object, float scale) {
     JSONObject pointsData = null;
     if (object instanceof JSONArray) {
-      try {
-        Object firstObject = ((JSONArray) object).get(0);
-        if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("v")) {
-          pointsData = (JSONObject) firstObject;
-        }
-      } catch (JSONException e) {
-        throw new IllegalStateException("Unable to get shape. " + object);
+      Object firstObject = ((JSONArray) object).opt(0);
+      if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("v")) {
+        pointsData = (JSONObject) firstObject;
       }
     } else if (object instanceof JSONObject && ((JSONObject) object).has("v")) {
       pointsData = (JSONObject) object;
@@ -34,26 +28,14 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
       return null;
     }
 
-    JSONArray pointsArray = null;
-    JSONArray inTangents = null;
-    JSONArray outTangents = null;
-    boolean closed = false;
-    if (pointsData.has("v")) {
-      pointsArray = pointsData.getJSONArray("v");
-    }
-    if (pointsData.has("i")) {
-      inTangents = pointsData.getJSONArray("i");
-    }
-    if (pointsData.has("o")) {
-      outTangents = pointsData.getJSONArray("o");
-    }
-
-    if (pointsData.has("c")) {
-      // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the
-      // constructor.
-      // Bodymovin 4.4+ has closed here.
-      closed = pointsData.getBoolean("c");
-    }
+    JSONArray pointsArray = pointsData.optJSONArray("v");
+    JSONArray inTangents = pointsData.optJSONArray("i");
+    JSONArray outTangents = pointsData.optJSONArray("o");
+    // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the
+    // constructor.
+    // Bodymovin 4.4+ has closed here.
+    // TODO: stop supporting bodymovin < 4.4
+    boolean closed = pointsData.optBoolean("c", false);
 
     if (pointsArray == null || inTangents == null || outTangents == null ||
         pointsArray.length() != inTangents.length() ||
@@ -118,16 +100,12 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
           "Invalid index " + idx + ". There are only " + points.length() + " points.");
     }
 
-    try {
-      JSONArray pointArray = points.getJSONArray(idx);
-      Object x = pointArray.get(0);
-      Object y = pointArray.get(1);
-      return new PointF(
-          x instanceof Double ? new Float((Double) x) : (int) x,
-          y instanceof Double ? new Float((Double) y) : (int) y);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to get point.", e);
-    }
+    JSONArray pointArray = points.optJSONArray(idx);
+    Object x = pointArray.opt(0);
+    Object y = pointArray.opt(1);
+    return new PointF(
+        x instanceof Double ? new Float((Double) x) : (int) x,
+        y instanceof Double ? new Float((Double) y) : (int) y);
   }
 
   @Override public BaseKeyframeAnimation<?, Path> createAnimation() {

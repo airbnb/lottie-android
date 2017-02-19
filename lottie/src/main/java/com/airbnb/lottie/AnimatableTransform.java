@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatableTransform {
@@ -18,10 +17,10 @@ class AnimatableTransform {
     this.opacity = new AnimatableIntegerValue(composition, 255);
   }
 
-  AnimatableTransform(JSONObject json, LottieComposition composition) throws JSONException {
+  AnimatableTransform(JSONObject json, LottieComposition composition) {
     JSONObject anchorJson = json.optJSONObject("a");
     if (anchorJson != null) {
-      anchorPoint = new AnimatablePathValue(anchorJson.get("k"), composition);
+      anchorPoint = new AnimatablePathValue(anchorJson.opt("k"), composition);
     } else {
       throwMissingTransform("anchor");
     }

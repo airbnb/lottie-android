@@ -2,8 +2,6 @@ package com.airbnb.lottie;
 
 import android.graphics.PointF;
 
-import org.json.JSONException;
-
 class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
   private final PointF point = new PointF();
 
@@ -17,7 +15,7 @@ class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
     this.animatableYDimension = animatableYDimension;
   }
 
-  @Override public PointF valueFromObject(Object object, float scale) throws JSONException {
+  @Override public PointF valueFromObject(Object object, float scale) {
     return null;
   }
 

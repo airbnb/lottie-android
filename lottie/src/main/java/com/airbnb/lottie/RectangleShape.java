@@ -1,8 +1,5 @@
 package com.airbnb.lottie;
 
-import android.util.Log;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class RectangleShape {
@@ -13,28 +10,10 @@ class RectangleShape {
   private final AnimatableFloatValue cornerRadius;
 
   RectangleShape(JSONObject json, LottieComposition composition) {
-    try {
-      JSONObject positionJson = json.getJSONObject("p");
-      position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(positionJson, composition);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse rectangle position.", e);
-    }
-
-    try {
-      JSONObject cornerRadiusJson = json.getJSONObject("r");
-      cornerRadius = new AnimatableFloatValue(cornerRadiusJson, composition);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse rectangle corner radius.", e);
-    }
-
-    try {
-      JSONObject sizeJson = json.getJSONObject("s");
-      size = new AnimatablePointValue(sizeJson, composition);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse rectangle size.", e);
-    }
-
-    if (L.DBG) Log.d(TAG, "Parsed new rectangle " + toString());
+    position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
+        json.optJSONObject("p"), composition);
+    cornerRadius = new AnimatableFloatValue(json.optJSONObject("r"), composition);
+    size = new AnimatablePointValue(json.optJSONObject("s"), composition);
   }
 
   AnimatableFloatValue getCornerRadius() {

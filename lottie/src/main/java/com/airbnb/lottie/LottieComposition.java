@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
 import org.json.JSONArray;
@@ -114,14 +113,8 @@ public class LottieComposition {
   static LottieComposition fromJsonSync(Resources res, JSONObject json) {
     LottieComposition composition = new LottieComposition(res);
 
-    int width = -1;
-    int height = -1;
-    try {
-      width = json.getInt("w");
-      height = json.getInt("h");
-    } catch (JSONException e) {
-      // ignore.
-    }
+    int width = json.optInt("w", -1);
+    int height = json.optInt("h", -1);
     if (width != -1 && height != -1) {
       int scaledWidth = (int) (width * composition.scale);
       int scaledHeight = (int) (height * composition.scale);
@@ -134,48 +127,29 @@ public class LottieComposition {
       composition.bounds = new Rect(0, 0, scaledWidth, scaledHeight);
     }
 
-    try {
-      composition.startFrame = json.getLong("ip");
-      composition.endFrame = json.getLong("op");
-      composition.frameRate = json.getInt("fr");
-    } catch (JSONException e) {
-      //
+    composition.startFrame = json.optLong("ip", 0);
+    composition.endFrame = json.optLong("op", 0);
+    composition.frameRate = json.optInt("fr", 0);
+
+    JSONArray jsonLayers = json.optJSONArray("layers");
+    for (int i = 0; i < jsonLayers.length(); i++) {
+      Layer layer = Layer.fromJson(jsonLayers.optJSONObject(i), composition);
+      addLayer(composition, layer);
     }
 
-    if (composition.endFrame != 0 && composition.frameRate != 0) {
-      long frameDuration = composition.endFrame - composition.startFrame;
-      composition.duration = (long) (frameDuration / (float) composition.frameRate * 1000);
-    }
-
-    try {
-      JSONArray jsonLayers = json.getJSONArray("layers");
-      for (int i = 0; i < jsonLayers.length(); i++) {
-        Layer layer = Layer.fromJson(jsonLayers.getJSONObject(i), composition);
-        addLayer(composition, layer);
+    JSONArray precompsJson = json.optJSONArray("assets");
+    for (int i = 0; i < precompsJson.length(); i++) {
+      JSONObject precomp = precompsJson.optJSONObject(i);
+      JSONArray layersJson = precomp.optJSONArray("layers");
+      List<Layer> layers = new ArrayList<>(layersJson.length());
+      LongSparseArray<Layer> layerMap = new LongSparseArray<>();
+      for (int j = 0; j < layersJson.length(); j++) {
+        Layer layer = Layer.fromJson(layersJson.optJSONObject(j), composition);
+        layerMap.put(layer.getId(), layer);
+        layers.add(layer);
       }
-    } catch (JSONException e) {
-      throw new IllegalStateException("Unable to find layers.", e);
-    }
-
-    // These are precomps. This naively adds the precomp layers to the main composition.
-    // TODO: Significant work will have to be done to properly support them.
-    try {
-      JSONArray precomps = json.getJSONArray("assets");
-      for (int i = 0; i < precomps.length(); i++) {
-        JSONObject precomp = precomps.getJSONObject(i);
-        JSONArray layersJson = precomp.getJSONArray("layers");
-        List<Layer> layers = new ArrayList<>(layersJson.length());
-        LongSparseArray<Layer> layerMap = new LongSparseArray<>();
-        for (int j = 0; j < layersJson.length(); j++) {
-          Layer layer = Layer.fromJson(layersJson.getJSONObject(j), composition);
-          layerMap.put(layer.getId(), layer);
-          layers.add(layer);
-        }
-        String id = precomp.getString("id");
-        composition.precomps.put(id, layers);
-      }
-    } catch (JSONException e) {
-      // Do nothing.
+      String id = precomp.optString("id");
+      composition.precomps.put(id, layers);
     }
 
     return composition;
@@ -199,19 +173,12 @@ public class LottieComposition {
   private long startFrame;
   private long endFrame;
   private int frameRate;
-  private long duration;
   private boolean hasMasks;
   private boolean hasMattes;
   private float scale;
 
   private LottieComposition(Resources res) {
     scale = res.getDisplayMetrics().density;
-  }
-
-  @VisibleForTesting
-  LottieComposition(long duration) {
-    scale = 1f;
-    this.duration = duration;
   }
 
 
@@ -224,7 +191,8 @@ public class LottieComposition {
   }
 
   long getDuration() {
-    return duration;
+    long frameDuration = endFrame - startFrame;
+    return (long) (frameDuration / (float) frameRate * 1000);
   }
 
   long getEndFrame() {
