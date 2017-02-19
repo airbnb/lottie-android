@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class Mask {
@@ -14,31 +13,29 @@ class Mask {
   private final MaskMode maskMode;
   private final AnimatableShapeValue maskPath;
 
-  Mask(JSONObject json, LottieComposition composition) throws JSONException {
-    try {
-      String mode = json.getString("mode");
-      switch (mode) {
-        case "a":
-          maskMode = MaskMode.MaskModeAdd;
-          break;
-        case "s":
-          maskMode = MaskMode.MaskModeSubtract;
-          break;
-        case "i":
-          maskMode = MaskMode.MaskModeIntersect;
-          break;
-        default:
-          maskMode = MaskMode.MaskModeUnknown;
-      }
-
-      maskPath = new AnimatableShapeValue(json.getJSONObject("pt"), composition);
-      //noinspection unused
-      AnimatableIntegerValue opacity =
-          new AnimatableIntegerValue(json.getJSONObject("o"), composition, false, true);
-      // TODO: use this.
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse mask. " + json, e);
+  Mask(JSONObject json, LottieComposition composition) {
+    String mode = json.optString("mode");
+    switch (mode) {
+      case "a":
+        maskMode = MaskMode.MaskModeAdd;
+        break;
+      case "s":
+        maskMode = MaskMode.MaskModeSubtract;
+        break;
+      case "i":
+        maskMode = MaskMode.MaskModeIntersect;
+        break;
+      default:
+        maskMode = MaskMode.MaskModeUnknown;
     }
+
+    maskPath = new AnimatableShapeValue(json.optJSONObject("pt"), composition);
+    // TODO: use this
+    // JSONObject opacityJson = json.optJSONObject("o");
+    // if (opacityJson != null) {
+    //   AnimatableIntegerValue opacity =
+    //       new AnimatableIntegerValue(opacityJson, composition, false, true);
+    // }
   }
 
 

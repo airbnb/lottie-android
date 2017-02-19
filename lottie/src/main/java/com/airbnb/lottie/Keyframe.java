@@ -8,7 +8,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,13 +18,13 @@ public class Keyframe<T> {
   private static Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
 
   static <T> List<Keyframe<T>> parseKeyframes(JSONArray json, LottieComposition composition,
-      float scale, AnimatableValue<T, ?> animatableValue) throws JSONException {
+      float scale, AnimatableValue<T, ?> animatableValue) {
     if (json.length() == 0) {
       return Collections.emptyList();
     }
     List<Keyframe<T>> keyframes = new ArrayList<>();
     for (int i = 0; i < json.length(); i++) {
-      keyframes.add(new Keyframe<>(json.getJSONObject(i), composition, scale, animatableValue));
+      keyframes.add(new Keyframe<>(json.optJSONObject(i), composition, scale, animatableValue));
     }
 
     setEndFrames(keyframes);
@@ -66,29 +65,32 @@ public class Keyframe<T> {
   }
 
   Keyframe(JSONObject json, LottieComposition composition, float scale,
-      AnimatableValue<T, ?> animatableValue) throws JSONException {
+      AnimatableValue<T, ?> animatableValue) {
     this.composition = composition;
 
     PointF cp1 = null;
     PointF cp2 = null;
-    boolean hold = false;
 
     if (json.has("t")) {
-      startFrame = (float) json.getDouble("t");
-      if (json.has("s")) {
-        startValue = animatableValue.valueFromObject(json.get("s"), scale);
-      }
-      if (json.has("e")) {
-        endValue = animatableValue.valueFromObject(json.get("e"), scale);
-      }
-      if (json.has("o") && json.has("i")) {
-        cp1 = JsonUtils.pointFromJsonObject(json.getJSONObject("o"), scale);
-        cp2 = JsonUtils.pointFromJsonObject(json.getJSONObject("i"), scale);
+      startFrame = (float) json.optDouble("t", 0);
+      Object startValueJson = json.opt("s");
+      if (startValueJson != null) {
+        startValue = animatableValue.valueFromObject(startValueJson, scale);
       }
 
-      if (json.has("h")) {
-        hold = json.getInt("h") == 1;
+      Object endValueJson = json.opt("e");
+      if (endValueJson != null) {
+        endValue = animatableValue.valueFromObject(endValueJson, scale);
       }
+
+      JSONObject cp1Json = json.optJSONObject("o");
+      JSONObject cp2Json = json.optJSONObject("i");
+      if (cp1Json != null && cp2Json != null) {
+        cp1 = JsonUtils.pointFromJsonObject(cp1Json, scale);
+        cp2 = JsonUtils.pointFromJsonObject(cp2Json, scale);
+      }
+
+      boolean hold = json.optInt("h", 0) == 1;
 
       if (hold) {
         endValue = startValue;

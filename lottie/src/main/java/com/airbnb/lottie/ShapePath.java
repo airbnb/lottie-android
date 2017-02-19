@@ -2,7 +2,6 @@ package com.airbnb.lottie;
 
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class ShapePath {
@@ -13,29 +12,9 @@ class ShapePath {
   private AnimatableShapeValue shapePath;
 
   ShapePath(JSONObject json, LottieComposition composition) {
-    try {
-      index = json.getInt("ind");
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("ShapePath has no index.", e);
-    }
-
-    try {
-      name = json.getString("nm");
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Layer has no name.", e);
-    }
-
-    JSONObject shape;
-    try {
-      shape = json.getJSONObject("ks");
-      shapePath = new AnimatableShapeValue(shape, composition);
-    } catch (JSONException e) {
-      // Ignore
-    }
-
-    if (L.DBG) {
-      Log.d(TAG, "Parsed new shape path " + toString());
-    }
+    index = json.optInt("ind");
+    name = json.optString("nm");
+    shapePath = new AnimatableShapeValue(json.optJSONObject("ks"), composition);
   }
 
   AnimatableShapeValue getShapePath() {

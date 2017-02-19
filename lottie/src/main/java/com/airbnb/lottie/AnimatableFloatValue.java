@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
@@ -9,16 +8,15 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     this.initialValue = initialValue;
   }
 
-  AnimatableFloatValue(JSONObject json, LottieComposition composition) throws JSONException {
+  AnimatableFloatValue(JSONObject json, LottieComposition composition) {
     this(json, composition, true);
   }
 
-  AnimatableFloatValue(JSONObject json, LottieComposition composition,
-      boolean isDp) throws JSONException {
+  AnimatableFloatValue(JSONObject json, LottieComposition composition, boolean isDp) {
     super(json, composition, isDp);
   }
 
-  @Override public Float valueFromObject(Object object, float scale) throws JSONException {
+  @Override public Float valueFromObject(Object object, float scale) {
     return JsonUtils.valueFromObject(object) * scale;
   }
 

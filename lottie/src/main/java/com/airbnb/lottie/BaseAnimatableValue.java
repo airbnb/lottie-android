@@ -3,7 +3,6 @@ package com.airbnb.lottie;
 import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -23,12 +22,11 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
     isDp = false;
   }
 
-  BaseAnimatableValue(@Nullable JSONObject json, LottieComposition composition, boolean isDp)
-      throws JSONException {
+  BaseAnimatableValue(@Nullable JSONObject json, LottieComposition composition, boolean isDp) {
     this.composition = composition;
     this.isDp = isDp;
     if (json != null) {
-      Object k = json.get("k");
+      Object k = json.opt("k");
       if (hasKeyframes(k)) {
         keyframes = Keyframe.parseKeyframes((JSONArray) k, composition, getScale(), this);
         if (!keyframes.isEmpty()) {
@@ -43,12 +41,12 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
     }
   }
 
-  private boolean hasKeyframes(Object json) throws JSONException {
+  private boolean hasKeyframes(Object json) {
     if (!(json instanceof JSONArray)) {
       return false;
     }
 
-    Object firstObject = ((JSONArray) json).get(0);
+    Object firstObject = ((JSONArray) json).opt(0);
     return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
   }
 

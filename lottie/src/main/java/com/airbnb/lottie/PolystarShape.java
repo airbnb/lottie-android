@@ -1,11 +1,8 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class PolystarShape {
-  private static final String TAG = PolystarShape.class.getSimpleName();
-
   enum Type {
     Star(1),
     Polygon(2);
@@ -35,19 +32,19 @@ class PolystarShape {
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
 
-  PolystarShape(JSONObject json, LottieComposition composition) throws JSONException {
-    type = Type.forValue(json.getInt("sy"));
-    points = new AnimatableFloatValue(json.getJSONObject("pt"), composition, false);
+  PolystarShape(JSONObject json, LottieComposition composition) {
+    type = Type.forValue(json.optInt("sy"));
+    points = new AnimatableFloatValue(json.optJSONObject("pt"), composition, false);
     position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
-        json.getJSONObject("p"), composition);
-    rotation = new AnimatableFloatValue(json.getJSONObject("r"), composition, false);
+        json.optJSONObject("p"), composition);
+    rotation = new AnimatableFloatValue(json.optJSONObject("r"), composition, false);
 
-    outerRadius = new AnimatableFloatValue(json.getJSONObject("or"), composition);
-    outerRoundedness = new AnimatableFloatValue(json.getJSONObject("os"), composition, false);
+    outerRadius = new AnimatableFloatValue(json.optJSONObject("or"), composition);
+    outerRoundedness = new AnimatableFloatValue(json.optJSONObject("os"), composition, false);
 
     if (type == Type.Star) {
-      innerRadius = new AnimatableFloatValue(json.getJSONObject("ir"), composition);
-      innerRoundedness = new AnimatableFloatValue(json.getJSONObject("is"), composition, false);
+      innerRadius = new AnimatableFloatValue(json.optJSONObject("ir"), composition);
+      innerRoundedness = new AnimatableFloatValue(json.optJSONObject("is"), composition, false);
     } else {
       innerRadius = null;
       innerRoundedness = null;

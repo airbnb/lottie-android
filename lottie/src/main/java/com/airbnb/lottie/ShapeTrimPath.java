@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 class ShapeTrimPath {
@@ -8,15 +7,10 @@ class ShapeTrimPath {
   private final AnimatableFloatValue end;
   private final AnimatableFloatValue offset;
 
-  ShapeTrimPath(JSONObject json, LottieComposition composition)
-      throws JSONException {
-    try {
-      start = new AnimatableFloatValue(json.getJSONObject("s"), composition, false);
-      end = new AnimatableFloatValue(json.getJSONObject("e"), composition, false);
-      offset = new AnimatableFloatValue(json.getJSONObject("o"), composition, false);
-    } catch (JSONException e) {
-      throw new IllegalArgumentException("Unable to parse trim path " + json, e);
-    }
+  ShapeTrimPath(JSONObject json, LottieComposition composition) {
+    start = new AnimatableFloatValue(json.optJSONObject("s"), composition, false);
+    end = new AnimatableFloatValue(json.optJSONObject("e"), composition, false);
+    offset = new AnimatableFloatValue(json.optJSONObject("o"), composition, false);
   }
 
   AnimatableFloatValue getEnd() {
