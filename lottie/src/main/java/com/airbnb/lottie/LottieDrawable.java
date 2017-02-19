@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -23,7 +24,7 @@ import java.util.List;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-public class LottieDrawable extends AnimatableLayer {
+public class LottieDrawable extends AnimatableLayer implements Drawable.Callback {
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
@@ -98,7 +99,7 @@ public class LottieDrawable extends AnimatableLayer {
       LayerView layerView;
       if (maskedLayer == null) {
         layerView =
-            new LayerView(layer, composition, getCallback(), mainBitmap, maskBitmap, matteBitmap);
+            new LayerView(layer, composition, this, mainBitmap, maskBitmap, matteBitmap);
       } else {
         if (mainBitmapForMatte == null) {
           mainBitmapForMatte =
@@ -110,7 +111,7 @@ public class LottieDrawable extends AnimatableLayer {
         }
 
         layerView =
-            new LayerView(layer, composition, getCallback(), mainBitmapForMatte, maskBitmapForMatte,
+            new LayerView(layer, composition, this, mainBitmapForMatte, maskBitmapForMatte,
                 null);
       }
       layerMap.put(layerView.getId(), layerView);
@@ -279,5 +280,21 @@ public class LottieDrawable extends AnimatableLayer {
       maskBitmapForMatte.recycle();
       maskBitmapForMatte = null;
     }
+  }
+
+  /**
+   * These Drawable.Callback methods proxy the calls so that this is the drawable that is
+   * actually invalidated, not a child one which will not pass the view's validateDrawable check.
+   */
+  @Override public void invalidateDrawable(Drawable who) {
+    getCallback().invalidateDrawable(this);
+  }
+
+  @Override public void scheduleDrawable(Drawable who, Runnable what, long when) {
+    getCallback().scheduleDrawable(this, what, when);
+  }
+
+  @Override public void unscheduleDrawable(Drawable who, Runnable what) {
+    getCallback().unscheduleDrawable(this, what);
   }
 }
