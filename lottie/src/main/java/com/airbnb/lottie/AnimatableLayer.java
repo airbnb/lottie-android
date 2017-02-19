@@ -48,19 +48,11 @@ class AnimatableLayer extends Drawable {
   final List<AnimatableLayer> layers = new ArrayList<>();
   @Nullable private AnimatableLayer parentLayer;
 
-  private BaseKeyframeAnimation<?, PointF> position;
-  private BaseKeyframeAnimation<?, PointF> anchorPoint;
-  /**
-   * This should mimic CALayer#transform
-   */
-  private BaseKeyframeAnimation<?, ScaleXY> transform;
-  private BaseKeyframeAnimation<?, Integer> alpha = null;
-  private BaseKeyframeAnimation<?, Float> rotation;
-
   private final Paint solidBackgroundPaint = new Paint();
   @ColorInt private int backgroundColor;
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   @FloatRange(from = 0f, to = 1f) private float progress = 0f;
+  private TransformKeyframeAnimation transform;
 
   AnimatableLayer(Drawable.Callback callback) {
     setCallback(callback);
@@ -91,8 +83,8 @@ class AnimatableLayer extends Drawable {
     int backgroundAlpha = Color.alpha(backgroundColor);
     if (backgroundAlpha != 0) {
       int alpha = backgroundAlpha;
-      if (this.alpha != null) {
-        alpha = alpha * this.alpha.getValue() / 255;
+      if (this.transform != null) {
+        alpha = alpha * this.transform.getOpacity().getValue() / 255;
       }
       solidBackgroundPaint.setAlpha(alpha);
       if (alpha > 0) {
@@ -127,36 +119,28 @@ class AnimatableLayer extends Drawable {
   }
 
   void applyTransformForLayer(@Nullable Canvas canvas, AnimatableLayer layer) {
-    if (canvas == null) {
+    if (canvas == null || transform == null) {
       return;
     }
-    // TODO: Determine if these null checks are necessary.
-    if (layer.position != null) {
-      PointF position = layer.position.getValue();
-      if (position.x != 0 || position.y != 0) {
-        canvas.translate(position.x, position.y);
-      }
-    }
 
-    if (layer.rotation != null) {
-      float rotation = layer.rotation.getValue();
-      if (rotation != 0f) {
-        canvas.rotate(rotation);
+    PointF position = layer.transform.getPosition().getValue();
+    if (position.x != 0 || position.y != 0) {
+      canvas.translate(position.x, position.y);
       }
-    }
 
-    if (layer.transform != null) {
-      ScaleXY scale = layer.transform.getValue();
-      if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
-        canvas.scale(scale.getScaleX(), scale.getScaleY());
+    float rotation = layer.transform.getRotation().getValue();
+    if (rotation != 0f) {
+      canvas.rotate(rotation);
       }
-    }
 
-    if (layer.anchorPoint != null) {
-      PointF anchorPoint = layer.anchorPoint.getValue();
-      if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-        canvas.translate(-anchorPoint.x, -anchorPoint.y);
+    ScaleXY scale = layer.transform.getScale().getValue();
+    if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
+      canvas.scale(scale.getScaleX(), scale.getScaleY());
       }
+
+    PointF anchorPoint = layer.transform.getAnchorPoint().getValue();
+    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
+      canvas.translate(-anchorPoint.x, -anchorPoint.y);
     }
   }
 
@@ -165,21 +149,10 @@ class AnimatableLayer extends Drawable {
     throw new IllegalArgumentException("This shouldn't be used.");
   }
 
-  void setAlpha(KeyframeAnimation<Integer> alpha) {
-    if (this.alpha != null) {
-      removeAnimation(this.alpha);
-      this.alpha.removeUpdateListener(integerChangedListener);
-    }
-    this.alpha = alpha;
-    addAnimation(alpha);
-    alpha.addUpdateListener(integerChangedListener);
-
-    invalidateSelf();
-  }
 
   @Override
   public int getAlpha() {
-    float alpha = this.alpha == null ? 1f : (this.alpha.getValue() / 255f);
+    float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
     float parentAlpha = parentLayer == null ? 1f : (parentLayer.getAlpha() / 255f);
     return (int) (alpha * parentAlpha * 255);
   }
@@ -189,44 +162,14 @@ class AnimatableLayer extends Drawable {
 
   }
 
-  void setAnchorPoint(BaseKeyframeAnimation<?, PointF> anchorPoint) {
-    if (this.anchorPoint != null) {
-      removeAnimation(this.anchorPoint);
-      this.anchorPoint.removeUpdateListener(pointChangedListener);
-    }
-    this.anchorPoint = anchorPoint;
-    addAnimation(anchorPoint);
-    anchorPoint.addUpdateListener(pointChangedListener);
-  }
-
-  void setPosition(BaseKeyframeAnimation<?, PointF> position) {
-    if (this.position != null) {
-      removeAnimation(this.position);
-      this.position.removeUpdateListener(pointChangedListener);
-    }
-    this.position = position;
-    addAnimation(position);
-    position.addUpdateListener(pointChangedListener);
-  }
-
-  void setTransform(KeyframeAnimation<ScaleXY> transform) {
-    if (this.transform != null) {
-      removeAnimation(this.transform);
-      this.transform.removeUpdateListener(scaleChangedListener);
-    }
+  void setTransform(TransformKeyframeAnimation transform) {
     this.transform = transform;
-    addAnimation(this.transform);
-    transform.addUpdateListener(scaleChangedListener);
-  }
-
-  void setRotation(KeyframeAnimation<Float> rotation) {
-    if (this.rotation != null) {
-      removeAnimation(this.rotation);
-      this.rotation.removeUpdateListener(floatChangedListener);
-    }
-    this.rotation = rotation;
-    addAnimation(this.rotation);
-    rotation.addUpdateListener(floatChangedListener);
+    addAnimation(transform.getAnchorPoint());
+    addAnimation(transform.getPosition());
+    addAnimation(transform.getScale());
+    addAnimation(transform.getRotation());
+    addAnimation(transform.getOpacity());
+    invalidateSelf();
   }
 
   @Override

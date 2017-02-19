@@ -101,8 +101,8 @@ class ShapeLayer extends AnimatableLayer {
   @Nullable private BaseKeyframeAnimation<?, Float> strokeEnd;
   @Nullable private BaseKeyframeAnimation<?, Float> strokeOffset;
 
-  private BaseKeyframeAnimation<?, Integer> shapeAlpha;
-  private BaseKeyframeAnimation<?, Integer> transformAlpha;
+  private BaseKeyframeAnimation<?, Integer> shapeOpacity;
+  private BaseKeyframeAnimation<?, Integer> transformOpacity;
   private List<BaseKeyframeAnimation<?, Float>> lineDashPattern;
   private BaseKeyframeAnimation<?, Float> lineDashPatternOffset;
   private boolean pathPropertiesChanged = true;
@@ -278,31 +278,27 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   @Override public int getAlpha() {
-    int shapeAlpha = this.shapeAlpha == null ? 255 : this.shapeAlpha.getValue();
-    int transformAlpha = this.transformAlpha == null ? 255 : this.transformAlpha.getValue();
-    int layerAlpha = super.getAlpha();
-    return (int) ((shapeAlpha / 255f * transformAlpha / 255f * layerAlpha / 255f) * 255);
+    int shapeOpacity = this.shapeOpacity == null ? 255 : this.shapeOpacity.getValue();
+    int transformOpacity = this.transformOpacity == null ? 255 : this.transformOpacity.getValue();
+    int layerOpacity = super.getAlpha();
+    return (int) ((shapeOpacity / 255f * transformOpacity / 255f * layerOpacity / 255f) * 255);
   }
 
-  void setShapeAlpha(KeyframeAnimation<Integer> shapeAlpha) {
-    if (this.shapeAlpha != null) {
-      removeAnimation(this.shapeAlpha);
-      this.shapeAlpha.removeUpdateListener(alphaChangedListener);
+  void setShapeOpacity(KeyframeAnimation<Integer> shapeOpacity) {
+    if (this.shapeOpacity != null) {
+      removeAnimation(this.shapeOpacity);
+      this.shapeOpacity.removeUpdateListener(alphaChangedListener);
     }
-    this.shapeAlpha = shapeAlpha;
-    addAnimation(shapeAlpha);
-    shapeAlpha.addUpdateListener(alphaChangedListener);
+    this.shapeOpacity = shapeOpacity;
+    addAnimation(shapeOpacity);
+    shapeOpacity.addUpdateListener(alphaChangedListener);
     invalidateSelf();
   }
 
-  void setTransformAlpha(KeyframeAnimation<Integer> transformAlpha) {
-    if (this.transformAlpha != null) {
-      removeAnimation(this.transformAlpha);
-      this.transformAlpha.removeUpdateListener(alphaChangedListener);
-    }
-    this.transformAlpha = transformAlpha;
-    addAnimation(transformAlpha);
-    transformAlpha.addUpdateListener(alphaChangedListener);
+  void setTransformOpacity(KeyframeAnimation<Integer> transformOpacity) {
+    this.transformOpacity = transformOpacity;
+    addAnimation(transformOpacity);
+    transformOpacity.addUpdateListener(alphaChangedListener);
     invalidateSelf();
   }
 

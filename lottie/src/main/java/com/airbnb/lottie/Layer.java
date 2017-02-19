@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class Layer implements Transform {
+class Layer {
   private static final String TAG = Layer.class.getSimpleName();
   private final LottieComposition composition;
 
@@ -63,59 +62,7 @@ class Layer implements Transform {
       }
     }
 
-    JSONObject ks = json.getJSONObject("ks");
-
-    JSONObject opacity = null;
-    try {
-      opacity = ks.getJSONObject("o");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
-    if (opacity != null) {
-      layer.opacity = new AnimatableIntegerValue(opacity, composition, false, true);
-    }
-
-    JSONObject rotation;
-    try {
-      rotation = ks.getJSONObject("r");
-    } catch (JSONException e) {
-      rotation = ks.getJSONObject("rz");
-    }
-
-    if (rotation != null) {
-      layer.rotation = new AnimatableFloatValue(rotation, composition, false);
-    }
-
-    JSONObject position = null;
-    try {
-      position = ks.getJSONObject("p");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
-    if (position != null) {
-      layer.position =
-          AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(position, composition);
-    }
-
-    JSONObject anchor = null;
-    try {
-      anchor = ks.getJSONObject("a");
-    } catch (JSONException e) {
-      // DO nothing.
-    }
-    if (anchor != null) {
-      layer.anchor = new AnimatablePathValue(anchor.get("k"), composition);
-    }
-
-    JSONObject scale = null;
-    try {
-      scale = ks.getJSONObject("s");
-    } catch (JSONException e) {
-      // Do nothing.
-    }
-    if (scale != null) {
-      layer.scale = new AnimatableScaleValue(scale, composition, false);
-    }
+    layer.transform = new AnimatableTransform(json.getJSONObject("ks"), composition);
 
     try {
       layer.matteType = MatteType.values()[json.getInt("tt")];
@@ -191,16 +138,11 @@ class Layer implements Transform {
 
   private final List<Mask> masks = new ArrayList<>();
 
+  private AnimatableTransform transform;
   private int solidWidth;
   private int solidHeight;
   private int solidColor;
 
-  private AnimatableIntegerValue opacity;
-  private AnimatableFloatValue rotation;
-  private IAnimatablePathValue position;
-
-  private AnimatablePathValue anchor;
-  private AnimatableScaleValue scale;
 
   private final List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
 
@@ -208,14 +150,6 @@ class Layer implements Transform {
 
   private Layer(LottieComposition composition) {
     this.composition = composition;
-  }
-
-  @Override public Rect getBounds() {
-    return composition.getBounds();
-  }
-
-  @Override public AnimatablePathValue getAnchor() {
-    return anchor;
   }
 
   LottieComposition getComposition() {
@@ -246,28 +180,16 @@ class Layer implements Transform {
     return matteType;
   }
 
-  @Override public AnimatableIntegerValue getOpacity() {
-    return opacity;
-  }
-
   long getParentId() {
     return parentId;
   }
 
-  @Override public IAnimatablePathValue getPosition() {
-    return position;
-  }
-
-  @Override public AnimatableFloatValue getRotation() {
-    return rotation;
-  }
-
-  @Override public AnimatableScaleValue getScale() {
-    return scale;
-  }
-
   List<Object> getShapes() {
     return shapes;
+  }
+
+  AnimatableTransform getTransform() {
+    return transform;
   }
 
   int getSolidColor() {
@@ -298,18 +220,6 @@ class Layer implements Transform {
         parent = composition.layerModelForId(parent.getParentId());
       }
       sb.append(prefix).append("\n");
-    }
-    if (getPosition().hasAnimation() || getPosition().getInitialPoint().length() != 0) {
-      sb.append(prefix).append("\tPosition: ").append(getPosition()).append("\n");
-    }
-    if (getRotation().hasAnimation() || getRotation().getInitialValue() != 0f) {
-      sb.append(prefix).append("\tRotation: ").append(getRotation()).append("\n");
-    }
-    if (getScale().hasAnimation() || !getScale().getInitialValue().isDefault()) {
-      sb.append(prefix).append("\tScale: ").append(getScale()).append("\n");
-    }
-    if (getAnchor().hasAnimation() || getAnchor().getInitialPoint().length() != 0) {
-      sb.append(prefix).append("\tAnchor: ").append(getAnchor()).append("\n");
     }
     if (!getMasks().isEmpty()) {
       sb.append(prefix).append("\tMasks: ").append(getMasks().size()).append("\n");

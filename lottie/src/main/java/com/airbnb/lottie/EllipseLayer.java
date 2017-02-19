@@ -9,20 +9,16 @@ import java.util.List;
 
 class EllipseLayer extends AnimatableLayer {
   EllipseLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
-      ShapeTrimPath trim, Transform transform, Drawable.Callback callback) {
+      ShapeTrimPath trim, AnimatableTransform transform, Drawable.Callback callback) {
     super(callback);
 
-    setBounds(transform.getBounds());
-    setAnchorPoint(transform.getAnchor().createAnimation());
-    setAlpha(transform.getOpacity().createAnimation());
-    setPosition(transform.getPosition().createAnimation());
-    setTransform(transform.getScale().createAnimation());
-    setRotation(transform.getRotation().createAnimation());
+    setTransform(transform.createAnimation());
 
     if (fill != null) {
       EllipseShapeLayer fillLayer = new EllipseShapeLayer(getCallback());
       fillLayer.setColor(fill.getColor().createAnimation());
-      fillLayer.setAlpha(fill.getOpacity().createAnimation());
+      fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
+      fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
       fillLayer.updateCircle(
           circleShape.getPosition().createAnimation(),
           circleShape.getSize().createAnimation());
@@ -37,7 +33,8 @@ class EllipseLayer extends AnimatableLayer {
       EllipseShapeLayer strokeLayer = new EllipseShapeLayer(getCallback());
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
-      strokeLayer.setAlpha(stroke.getOpacity().createAnimation());
+      strokeLayer.setTransformOpacity(stroke.getOpacity().createAnimation());
+      strokeLayer.setShapeOpacity(stroke.getOpacity().createAnimation());
       strokeLayer.setLineWidth(stroke.getWidth().createAnimation());
       if (!stroke.getLineDashPattern().isEmpty()) {
         List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations =
