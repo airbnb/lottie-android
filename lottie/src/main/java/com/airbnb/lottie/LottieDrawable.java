@@ -2,11 +2,10 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 import android.view.animation.LinearInterpolator;
@@ -23,16 +22,12 @@ import java.util.List;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-public class LottieDrawable extends AnimatableLayer {
+public class LottieDrawable extends AnimatableLayer implements Drawable.Callback {
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
 
-  @Nullable private Bitmap mainBitmap = null;
-  @Nullable private Bitmap maskBitmap = null;
-  @Nullable private Bitmap matteBitmap = null;
-  @Nullable private Bitmap mainBitmapForMatte = null;
-  @Nullable private Bitmap maskBitmapForMatte = null;
+  private final CanvasPool canvasPool = new CanvasPool();
   private boolean playAnimationWhenLayerAdded;
   private boolean reverseAnimationWhenLayerAdded;
   private boolean systemAnimationsAreDisabled;
@@ -72,7 +67,7 @@ public class LottieDrawable extends AnimatableLayer {
   }
 
   private void clearComposition() {
-    recycleBitmaps();
+    canvasPool.recycleBitmaps();
     clearLayers();
   }
 
@@ -80,39 +75,13 @@ public class LottieDrawable extends AnimatableLayer {
     if (composition == null) {
       throw new IllegalStateException("Composition is null");
     }
-    Rect bounds = composition.getBounds();
-    if (composition.hasMasks() || composition.hasMattes()) {
-      mainBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
-    }
-    if (composition.hasMasks()) {
-      maskBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-    }
-    if (composition.hasMattes()) {
-      matteBitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
-    }
     LongSparseArray<LayerView> layerMap = new LongSparseArray<>(composition.getLayers().size());
     List<LayerView> layers = new ArrayList<>(composition.getLayers().size());
     LayerView maskedLayer = null;
     for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
       Layer layer = composition.getLayers().get(i);
       LayerView layerView;
-      if (maskedLayer == null) {
-        layerView =
-            new LayerView(layer, composition, getCallback(), mainBitmap, maskBitmap, matteBitmap);
-      } else {
-        if (mainBitmapForMatte == null) {
-          mainBitmapForMatte =
-              Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-        }
-        if (maskBitmapForMatte == null && !layer.getMasks().isEmpty()) {
-          maskBitmapForMatte =
-              Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ALPHA_8);
-        }
-
-        layerView =
-            new LayerView(layer, composition, getCallback(), mainBitmapForMatte, maskBitmapForMatte,
-                null);
-      }
+      layerView = new LayerView(layer, composition, this, canvasPool);
       layerMap.put(layerView.getId(), layerView);
       if (maskedLayer != null) {
         maskedLayer.setMatteLayer(layerView);
@@ -259,25 +228,22 @@ public class LottieDrawable extends AnimatableLayer {
 
   @VisibleForTesting
   void recycleBitmaps() {
-    if (mainBitmap != null) {
-      mainBitmap.recycle();
-      mainBitmap = null;
-    }
-    if (maskBitmap != null) {
-      maskBitmap.recycle();
-      maskBitmap = null;
-    }
-    if (matteBitmap != null) {
-      matteBitmap.recycle();
-      matteBitmap = null;
-    }
-    if (mainBitmapForMatte != null) {
-      mainBitmapForMatte.recycle();
-      mainBitmapForMatte = null;
-    }
-    if (maskBitmapForMatte != null) {
-      maskBitmapForMatte.recycle();
-      maskBitmapForMatte = null;
-    }
+    canvasPool.recycleBitmaps();
+  }
+
+  /**
+   * These Drawable.Callback methods proxy the calls so that this is the drawable that is
+   * actually invalidated, not a child one which will not pass the view's validateDrawable check.
+   */
+  @Override public void invalidateDrawable(Drawable who) {
+    getCallback().invalidateDrawable(this);
+  }
+
+  @Override public void scheduleDrawable(Drawable who, Runnable what, long when) {
+    getCallback().scheduleDrawable(this, what, when);
+  }
+
+  @Override public void unscheduleDrawable(Drawable who, Runnable what) {
+    getCallback().unscheduleDrawable(this, what);
   }
 }

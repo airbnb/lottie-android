@@ -31,10 +31,6 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     JSONArray pointsArray = pointsData.optJSONArray("v");
     JSONArray inTangents = pointsData.optJSONArray("i");
     JSONArray outTangents = pointsData.optJSONArray("o");
-    // Bodymovin < 4.4 uses "closed" one level up in the json so it is passed in to the
-    // constructor.
-    // Bodymovin 4.4+ has closed here.
-    // TODO: stop supporting bodymovin < 4.4
     boolean closed = pointsData.optBoolean("c", false);
 
     if (pointsArray == null || inTangents == null || outTangents == null ||

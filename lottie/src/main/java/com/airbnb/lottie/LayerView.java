@@ -1,14 +1,12 @@
 package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
+import android.graphics.RectF;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,50 +17,37 @@ import java.util.Collections;
 import java.util.List;
 
 class LayerView extends AnimatableLayer {
-  private MaskLayer mask;
+  private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
+  private MaskKeyframeAnimation mask;
   private LayerView matteLayer;
 
+  private final RectF rect = new RectF();
   private final List<LayerView> transformLayers = new ArrayList<>();
   private final Paint mainCanvasPaint = new Paint();
-  @Nullable private final Bitmap contentBitmap;
-  @Nullable private final Bitmap maskBitmap;
-  @Nullable private final Bitmap matteBitmap;
-  @Nullable private Canvas contentCanvas;
-  @Nullable private Canvas maskCanvas;
-  @Nullable private Canvas matteCanvas;
-  private final Paint maskShapePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint normalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
+    setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+  }};
 
   private final Layer layerModel;
   private final LottieComposition composition;
+  private final CanvasPool canvasPool;
 
   @Nullable private LayerView parentLayer;
 
-  LayerView(Layer layerModel, LottieComposition composition, Callback callback,
-      @Nullable Bitmap mainBitmap, @Nullable Bitmap maskBitmap, @Nullable Bitmap matteBitmap) {
+  LayerView(Layer layerModel, LottieComposition composition, Callback callback, CanvasPool canvasPool) {
     super(callback);
     this.layerModel = layerModel;
     this.composition = composition;
-    this.maskBitmap = maskBitmap;
-    this.matteBitmap = matteBitmap;
-    this.contentBitmap = mainBitmap;
-    mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+    this.canvasPool = canvasPool;
     setBounds(composition.getBounds());
-    if (contentBitmap != null) {
-      contentCanvas = new Canvas(contentBitmap);
-      if (maskBitmap != null) {
-        maskPaint.setShader(
-            new BitmapShader(contentBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
-      }
-    }
 
     List<Layer> precomps = composition.getPrecomps(layerModel.getPrecompId());
     LongSparseArray<LayerView> precompMap = new LongSparseArray<>();
     if (precomps != null) {
       for (int i = precomps.size() - 1; i >= 0; i--) {
-        LayerView precompLayerView = new LayerView(
-            precomps.get(i), composition, callback, mainBitmap, maskBitmap, matteBitmap);
+        LayerView precompLayerView =
+            new LayerView(precomps.get(i), composition, callback, canvasPool);
         addLayer(precompLayerView);
         precompMap.put(precompLayerView.getId(), precompLayerView);
       }
@@ -139,9 +124,8 @@ class LayerView extends AnimatableLayer {
       }
     }
 
-    if (maskBitmap != null && layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-      setMask(new MaskLayer(layerModel.getMasks(), getCallback()));
-      maskCanvas = new Canvas(maskBitmap);
+    if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
+      setMask(new MaskKeyframeAnimation(layerModel.getMasks()));
     }
     buildAnimations();
   }
@@ -176,40 +160,19 @@ class LayerView extends AnimatableLayer {
     return parentLayer;
   }
 
-  private void setMask(MaskLayer mask) {
+  private void setMask(MaskKeyframeAnimation mask) {
     this.mask = mask;
-    // TODO: make this a field like other animation listeners and remove existing ones.
     for (BaseKeyframeAnimation<?, Path> animation : mask.getMasks()) {
       addAnimation(animation);
-      animation.addUpdateListener(new KeyframeAnimation.AnimationListener<Path>() {
-        @Override public void onValueChanged(Path value) {
-          invalidateSelf();
-        }
-      });
+      animation.addUpdateListener(pathChangedListener);
     }
   }
 
   void setMatteLayer(LayerView matteLayer) {
-    if (matteBitmap == null) {
-      throw new IllegalArgumentException("Cannot set a matte if no matte bitmap was given!");
-    }
     this.matteLayer = matteLayer;
-    matteCanvas = new Canvas(matteBitmap);
   }
 
-  @Override public void draw(@NonNull Canvas mainCanvas) {
-    if (contentBitmap != null) {
-      if (contentBitmap.isRecycled()) {
-        return;
-      }
-      contentBitmap.eraseColor(Color.TRANSPARENT);
-    }
-    if (maskBitmap != null) {
-      maskBitmap.eraseColor(Color.TRANSPARENT);
-    }
-    if (matteBitmap != null) {
-      matteBitmap.eraseColor(Color.TRANSPARENT);
-    }
+  @Override public void draw(@NonNull Canvas canvas) {
     if (!isVisible() || mainCanvasPaint.getAlpha() == 0) {
       return;
     }
@@ -222,67 +185,59 @@ class LayerView extends AnimatableLayer {
       parent = parent.getParentLayer();
     }
 
-    if (contentCanvas == null || contentBitmap == null) {
-      int mainCanvasCount = saveCanvas(mainCanvas);
+    if (!hasMasks() && !hasMatte()) {
+      int mainCanvasCount = saveCanvas(canvas);
       // Now apply the parent transformations from the top down.
       for (int i = transformLayers.size() - 1; i >= 0; i--) {
         LayerView layer = transformLayers.get(i);
-        applyTransformForLayer(mainCanvas, layer);
+        applyTransformForLayer(canvas, layer);
       }
-      super.draw(mainCanvas);
-      mainCanvas.restoreToCount(mainCanvasCount);
+      super.draw(canvas);
+      canvas.restoreToCount(mainCanvasCount);
       return;
     }
 
-    int contentCanvasCount = saveCanvas(contentCanvas);
-    int maskCanvasCount = saveCanvas(maskCanvas);
+
+    BitmapCanvas bitmapCanvas =
+        canvasPool.acquire(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+
     // Now apply the parent transformations from the top down.
-    for (int i = transformLayers.size() - 1; i >= 0 ; i--) {
+    bitmapCanvas.save();
+    for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
-      applyTransformForLayer(contentCanvas, layer);
-      applyTransformForLayer(maskCanvas, layer);
+      applyTransformForLayer(bitmapCanvas, layer);
     }
-    // We only have to apply the transformation to the mask because it's normally handed in 
-    // AnimatableLayer#draw but masks don't go through that.
-    applyTransformForLayer(maskCanvas, this);
+    super.draw(bitmapCanvas);
 
-    super.draw(contentCanvas);
-
-    Bitmap mainBitmap;
+    rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
     if (hasMasks()) {
-      for (int i = 0; i < mask.getMasks().size(); i++) {
-        Path path = mask.getMasks().get(i).getValue();
-        //noinspection ConstantConditions
-        maskCanvas.drawPath(path, maskShapePaint);
+      bitmapCanvas.saveLayer(rect, overlayPaint, SAVE_FLAGS);
+      for (int i = transformLayers.size() - 1; i >= 0; i--) {
+        LayerView layer = transformLayers.get(i);
+        applyTransformForLayer(bitmapCanvas, layer);
       }
-      if (!hasMattes()) {
-        mainCanvas.drawBitmap(maskBitmap, 0, 0, maskPaint);
-      }
-      mainBitmap = maskBitmap;
-    } else {
-      if (!hasMattes()) {
-        mainCanvas.drawBitmap(contentBitmap, 0, 0, mainCanvasPaint);
-      }
-      mainBitmap = contentBitmap;
+      applyTransformForLayer(bitmapCanvas, this);
+      bitmapCanvas.drawPath(mask.getMaskUnionPath(), normalPaint);
+      bitmapCanvas.restore();
+    }
+    bitmapCanvas.restore();
+
+    if (hasMatte()) {
+      bitmapCanvas.saveLayer(rect, overlayPaint, SAVE_FLAGS);
+      matteLayer.draw(bitmapCanvas);
+      bitmapCanvas.restore();
     }
 
-    restoreCanvas(contentCanvas, contentCanvasCount);
-    restoreCanvas(maskCanvas, maskCanvasCount);
-
-    if (hasMattes()) {
-      //noinspection ConstantConditions
-      matteLayer.draw(matteCanvas);
-      matteCanvas.drawBitmap(mainBitmap, 0, 0, mattePaint);
-      mainCanvas.drawBitmap(matteBitmap, 0, 0, mainCanvasPaint);
-    }
+    canvas.drawBitmap(bitmapCanvas.getBitmap(), 0, 0, null);
+    canvasPool.release(bitmapCanvas);
   }
 
-  private boolean hasMattes() {
-    return matteCanvas != null && matteBitmap != null && matteLayer != null;
+  private boolean hasMatte() {
+    return matteLayer != null;
   }
 
   private boolean hasMasks() {
-    return maskBitmap != null && maskCanvas != null && mask != null && !mask.getMasks().isEmpty();
+    return mask != null && !mask.getMasks().isEmpty();
   }
 
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
