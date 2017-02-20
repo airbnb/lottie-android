@@ -25,7 +25,10 @@ class LayerView extends AnimatableLayer {
   private final List<LayerView> transformLayers = new ArrayList<>();
   private final Paint mainCanvasPaint = new Paint();
   private final Paint normalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
+    setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+  }};
 
   private final Layer layerModel;
   private final LottieComposition composition;
@@ -48,9 +51,9 @@ class LayerView extends AnimatableLayer {
     setBounds(composition.getBounds());
 
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
-      overlayPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+      mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
-      overlayPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+      mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     }
 
     setupForModel();
@@ -252,7 +255,7 @@ class LayerView extends AnimatableLayer {
 
     rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
     if (hasMasks()) {
-      bitmapCanvas.saveLayer(rect, overlayPaint, SAVE_FLAGS);
+      bitmapCanvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
       for (int i = transformLayers.size() - 1; i >= 0; i--) {
         LayerView layer = transformLayers.get(i);
         applyTransformForLayer(bitmapCanvas, layer);
@@ -264,7 +267,7 @@ class LayerView extends AnimatableLayer {
     bitmapCanvas.restore();
 
     if (hasMatte()) {
-      bitmapCanvas.saveLayer(rect, overlayPaint, SAVE_FLAGS);
+      bitmapCanvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       matteLayer.draw(bitmapCanvas);
       bitmapCanvas.restore();
     }
