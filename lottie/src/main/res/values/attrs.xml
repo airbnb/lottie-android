@@ -4,5 +4,6 @@
         <attr name="lottie_fileName" format="string"/>
         <attr name="lottie_autoPlay" format="boolean" />
         <attr name="lottie_loop" format="boolean" />
+        <attr name="lottie_imageAssetsFolder" format="string" />
     </declare-styleable>
 </resources>

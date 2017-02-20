@@ -210,4 +210,11 @@ class AnimatableLayer extends Drawable {
   float getProgress() {
     return progress;
   }
+
+  LottieDrawable getLottieDrawable() {
+    if (!(getCallback() instanceof LottieDrawable)) {
+      return null;
+    }
+    return ((LottieDrawable) getCallback());
+  }
 }

@@ -2,12 +2,15 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import java.util.ArrayList;
@@ -28,6 +31,8 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   private float speed = 1f;
 
   private final CanvasPool canvasPool = new CanvasPool();
+  @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
+  @Nullable private String imageAssetsFolder;
   private boolean playAnimationWhenLayerAdded;
   private boolean reverseAnimationWhenLayerAdded;
   private boolean systemAnimationsAreDisabled;
@@ -49,6 +54,37 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     });
   }
 
+  /**
+   * If you use image assets, you must explicitly specify the folder in assets/ in which they are
+   * located because bodymovin uses the name filenames across all compositions (img_#).
+   * Do NOT rename the images themselves.
+   *
+   * If your images are located in src/main/assets/airbnb_loader/ then call
+   * `setImageAssetsFolder("airbnb_loader/");`.
+   *
+   *
+   * If you use LottieDrawable directly, you MUST call {@link #recycleBitmaps()} when you
+   * are done. Calling {@link #recycleBitmaps()} doesn't have to be final and {@link LottieDrawable}
+   * will recreate the bitmaps if needed but they will leak if you don't recycle them.
+   */
+  @SuppressWarnings("WeakerAccess") public void setImagesAssetsFolder(@Nullable String imageAssetsFolder) {
+    this.imageAssetsFolder = imageAssetsFolder;
+  }
+
+  /**
+   * If you have image assets and use {@link LottieDrawable} directly, you must call this yourself.
+   *
+   * Calling {@link #recycleBitmaps()} doesn't have to be final and {@link LottieDrawable}
+   * will recreate the bitmaps if needed but they will leak if you don't recycle them.
+   *
+   */
+  @SuppressWarnings("WeakerAccess") public void recycleBitmaps() {
+    canvasPool.recycleBitmaps();
+    if (imageAssetBitmapManager != null) {
+      imageAssetBitmapManager.recycleBitmaps();
+    }
+  }
+
   void setComposition(LottieComposition composition) {
     if (getCallback() == null) {
       throw new IllegalStateException(
@@ -67,8 +103,9 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   }
 
   private void clearComposition() {
-    canvasPool.recycleBitmaps();
+    recycleBitmaps();
     clearLayers();
+    imageAssetBitmapManager = null;
   }
 
   private void buildLayersForComposition(LottieComposition composition) {
@@ -229,9 +266,34 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     return composition == null ? -1 : composition.getBounds().height();
   }
 
-  @VisibleForTesting
-  void recycleBitmaps() {
-    canvasPool.recycleBitmaps();
+  Bitmap getImageBitmap(String id) {
+    return getImageAssetBitmapManager().bitmapForId(id);
+  }
+
+  private ImageAssetBitmapManager getImageAssetBitmapManager() {
+    if (imageAssetBitmapManager != null && !imageAssetBitmapManager.hasSameContext(getContext())) {
+      imageAssetBitmapManager.recycleBitmaps();
+      imageAssetBitmapManager = null;
+    }
+
+    if (imageAssetBitmapManager == null) {
+      imageAssetBitmapManager = new ImageAssetBitmapManager(getCallback(),
+          imageAssetsFolder, composition.getImages());
+    }
+
+    return imageAssetBitmapManager;
+  }
+
+  private @Nullable Context getContext() {
+    Callback callback = getCallback();
+    if (callback == null) {
+      return null;
+    }
+
+    if (callback instanceof View) {
+      return ((View) callback).getContext();
+    }
+    return null;
   }
 
   /**
