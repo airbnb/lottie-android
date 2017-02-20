@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -141,6 +142,11 @@ public class LottieComposition {
     for (int i = 0; i < precompsJson.length(); i++) {
       JSONObject precomp = precompsJson.optJSONObject(i);
       JSONArray layersJson = precomp.optJSONArray("layers");
+      if (layersJson == null) {
+        Log.w(L.TAG, "Lottie doesn't yet support images.");
+        // TODO: image support
+        continue;
+      }
       List<Layer> layers = new ArrayList<>(layersJson.length());
       LongSparseArray<Layer> layerMap = new LongSparseArray<>();
       for (int j = 0; j < layersJson.length(); j++) {
