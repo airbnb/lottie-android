@@ -32,7 +32,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   private boolean reverseAnimationWhenLayerAdded;
   private boolean systemAnimationsAreDisabled;
 
-  LottieDrawable() {
+  @SuppressWarnings("WeakerAccess") public LottieDrawable() {
     super(null);
 
     animator.setRepeatCount(0);
