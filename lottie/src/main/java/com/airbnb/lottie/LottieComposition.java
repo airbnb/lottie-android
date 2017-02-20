@@ -153,12 +153,6 @@ public class LottieComposition {
         Layer layer = new Layer(layersJson.optJSONObject(j), composition);
         layerMap.put(layer.getId(), layer);
         layers.add(layer);
-        if (!layer.getMasks().isEmpty()) {
-          composition.hasMasks = true;
-        }
-        if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
-          composition.hasMattes = true;
-        }
       }
       String id = precomp.optString("id");
       composition.precomps.put(id, layers);
@@ -170,12 +164,6 @@ public class LottieComposition {
   private static void addLayer(LottieComposition composition, Layer layer) {
     composition.layers.add(layer);
     composition.layerMap.put(layer.getId(), layer);
-    if (!layer.getMasks().isEmpty()) {
-      composition.hasMasks = true;
-    }
-    if (layer.getMatteType() != null && layer.getMatteType() != Layer.MatteType.None) {
-      composition.hasMattes = true;
-    }
   }
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
@@ -185,8 +173,6 @@ public class LottieComposition {
   private long startFrame;
   private long endFrame;
   private int frameRate;
-  private boolean hasMasks;
-  private boolean hasMattes;
   private float scale;
 
   private LottieComposition(Resources res) {
@@ -198,11 +184,11 @@ public class LottieComposition {
     return layerMap.get(id);
   }
 
-  Rect getBounds() {
+  @SuppressWarnings("WeakerAccess") public Rect getBounds() {
     return bounds;
   }
 
-  long getDuration() {
+  @SuppressWarnings("WeakerAccess") public long getDuration() {
     long frameDuration = endFrame - startFrame;
     return (long) (frameDuration / (float) frameRate * 1000);
   }
@@ -225,15 +211,7 @@ public class LottieComposition {
   }
 
 
-  boolean hasMasks() {
-    return hasMasks;
-  }
-
-  boolean hasMattes() {
-    return hasMattes;
-  }
-
-  float getScale() {
+  public float getScale() {
     return scale;
   }
 
