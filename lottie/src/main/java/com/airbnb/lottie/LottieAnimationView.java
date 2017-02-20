@@ -7,12 +7,14 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
@@ -160,7 +162,10 @@ public class LottieAnimationView extends AppCompatImageView {
     super.onDetachedFromWindow();
   }
 
-  @VisibleForTesting void recycleBitmaps() {
+  @UiThread @VisibleForTesting void recycleBitmaps() {
+    if (Looper.myLooper() != Looper.getMainLooper()) {
+      throw new IllegalStateException("This must be called from the main thread.");
+    }
     lottieDrawable.recycleBitmaps();
   }
 

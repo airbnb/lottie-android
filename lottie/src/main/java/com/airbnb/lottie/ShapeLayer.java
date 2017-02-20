@@ -75,7 +75,9 @@ class ShapeLayer extends AnimatableLayer {
       };
 
 
-  private final Paint paint = new Paint();
+  private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
+    setStyle(Paint.Style.FILL);
+  }};
   private final Path tempPath = new Path();
   private final Path currentPath = new Path();
   /**
@@ -110,8 +112,6 @@ class ShapeLayer extends AnimatableLayer {
 
   ShapeLayer(Drawable.Callback callback) {
     super(callback);
-    paint.setStyle(Paint.Style.FILL);
-    paint.setAntiAlias(true);
   }
 
   void setIsStroke() {

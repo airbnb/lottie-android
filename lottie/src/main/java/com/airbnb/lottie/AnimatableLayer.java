@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
@@ -41,6 +42,14 @@ class AnimatableLayer extends Drawable {
       new KeyframeAnimation.AnimationListener<PointF>() {
         @Override
         public void onValueChanged(PointF value) {
+          invalidateSelf();
+        }
+      };
+
+  final KeyframeAnimation.AnimationListener<Path> pathChangedListener =
+      new KeyframeAnimation.AnimationListener<Path>() {
+        @Override
+        public void onValueChanged(Path value) {
           invalidateSelf();
         }
       };
