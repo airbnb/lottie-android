@@ -239,14 +239,26 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
    * actually invalidated, not a child one which will not pass the view's validateDrawable check.
    */
   @Override public void invalidateDrawable(Drawable who) {
-    getCallback().invalidateDrawable(this);
+    Callback callback = getCallback();
+    if (callback == null) {
+      return;
+    }
+    callback.invalidateDrawable(this);
   }
 
   @Override public void scheduleDrawable(Drawable who, Runnable what, long when) {
-    getCallback().scheduleDrawable(this, what, when);
+    Callback callback = getCallback();
+    if (callback == null) {
+      return;
+    }
+    callback.scheduleDrawable(this, what, when);
   }
 
   @Override public void unscheduleDrawable(Drawable who, Runnable what) {
-    getCallback().unscheduleDrawable(this, what);
+    Callback callback = getCallback();
+    if (callback == null) {
+      return;
+    }
+    callback.unscheduleDrawable(this, what);
   }
 }
