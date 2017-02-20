@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,13 +137,18 @@ public class LottieComposition {
       addLayer(composition, layer);
     }
 
-    JSONArray precompsJson = json.optJSONArray("assets");
-    for (int i = 0; i < precompsJson.length(); i++) {
-      JSONObject precomp = precompsJson.optJSONObject(i);
-      JSONArray layersJson = precomp.optJSONArray("layers");
+    JSONArray assetsJson = json.optJSONArray("assets");
+    parsePrecomps(composition, assetsJson);
+    parseImages(composition, assetsJson);
+
+    return composition;
+  }
+
+  private static void parsePrecomps(LottieComposition composition, JSONArray assetsJson) {
+    for (int i = 0; i < assetsJson.length(); i++) {
+      JSONObject assetJson = assetsJson.optJSONObject(i);
+      JSONArray layersJson = assetJson.optJSONArray("layers");
       if (layersJson == null) {
-        Log.w(L.TAG, "Lottie doesn't yet support images.");
-        // TODO: image support
         continue;
       }
       List<Layer> layers = new ArrayList<>(layersJson.length());
@@ -154,11 +158,20 @@ public class LottieComposition {
         layerMap.put(layer.getId(), layer);
         layers.add(layer);
       }
-      String id = precomp.optString("id");
+      String id = assetJson.optString("id");
       composition.precomps.put(id, layers);
     }
+  }
 
-    return composition;
+  private static void parseImages(LottieComposition composition, JSONArray assetsJson) {
+    for (int i = 0; i < assetsJson.length(); i++) {
+      JSONObject assetJson = assetsJson.optJSONObject(i);
+      if (!assetJson.has("p")) {
+        continue;
+      }
+      ImageAsset image = new ImageAsset(assetJson);
+      composition.images.put(image.getId(), image);
+    }
   }
 
   private static void addLayer(LottieComposition composition, Layer layer) {
@@ -167,6 +180,7 @@ public class LottieComposition {
   }
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
+  private final Map<String, ImageAsset> images = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
   private Rect bounds;
@@ -204,6 +218,14 @@ public class LottieComposition {
   @Nullable
   List<Layer> getPrecomps(String id) {
     return precomps.get(id);
+  }
+
+  boolean hasImages() {
+    return !images.isEmpty();
+  }
+
+  Map<String, ImageAsset> getImages() {
+    return images;
   }
 
   float getDurationFrames() {

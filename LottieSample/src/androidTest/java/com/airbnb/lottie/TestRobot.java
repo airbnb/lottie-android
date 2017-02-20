@@ -11,15 +11,21 @@ class TestRobot {
   private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.5f, 1f};
 
   static void testStatic(MainActivity activity, String fileName) {
-    testAnimation(activity, fileName, new float[] {0});
+    testAnimation(activity, fileName, null, new float[] {0});
   }
 
   static void testAnimation(MainActivity activity, String fileName) {
-    testAnimation(activity, fileName, DEFAULT_ANIMATED_PROGRESS);
+    testAnimation(activity, fileName, null, DEFAULT_ANIMATED_PROGRESS);
   }
 
-  static void testAnimation(MainActivity activity, String fileName, float[] progress) {
+  static void testAnimation(MainActivity activity, String fileName, String imageAssetsFolder) {
+    testAnimation(activity, fileName, imageAssetsFolder, DEFAULT_ANIMATED_PROGRESS);
+  }
+
+  static void testAnimation(MainActivity activity, String fileName, String imageAssetsFolder,
+      float[] progress) {
     final LottieAnimationView view = new LottieAnimationView(activity);
+    view.setImageAssetsFolder(imageAssetsFolder);
     view.setComposition(LottieComposition.fromFileSync(activity, fileName));
     ViewHelpers.setupView(view)
         .layout();

@@ -38,7 +38,7 @@ class Layer {
   private final long layerId;
   private final LayerType layerType;
   private final long parentId;
-  @Nullable private final String precompId;
+  @Nullable private final String refId;
 
   private final List<Mask> masks = new ArrayList<>();
 
@@ -52,6 +52,7 @@ class Layer {
   private float preCompStartProgress;
   private int preCompWidth;
   private int preCompHeight;
+  @Nullable private ImageAsset imageAsset;
 
   private final List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
 
@@ -61,7 +62,7 @@ class Layer {
     this.composition = composition;
     layerName = json.optString("nm");
     layerId = json.optLong("ind");
-    precompId = json.optString("refId");
+    refId = json.optString("refId");
 
     int layerTypeInt = json.optInt("ty", -1);
     if (layerTypeInt < LayerType.Unknown.ordinal()) {
@@ -166,8 +167,8 @@ class Layer {
     return layerName;
   }
 
-  @Nullable String getPrecompId() {
-    return precompId;
+  @Nullable String getRefId() {
+    return refId;
   }
 
   int getPreCompWidth() {

@@ -28,7 +28,8 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
     TestRobot.testAnimation(getActivity(), "PinJump.json");
     TestRobot.testAnimation(getActivity(), "TwitterHeart.json");
     TestRobot.testAnimation(getActivity(), "Tests/Hosts.json");
-    TestRobot.testAnimation(getActivity(), "Tests/LightBulb.json", new float[]{0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f, 0.5f, 1f});
+    TestRobot.testAnimation(getActivity(), "Tests/LightBulb.json", null,
+        new float[]{0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f, 0.5f, 1f});
     TestRobot.testAnimation(getActivity(), "Tests/LoopPlayOnce.json");
     TestRobot.testAnimation(getActivity(), "Tests/Alarm.json");
     TestRobot.testAnimation(getActivity(), "Tests/CheckSwitch.json");
@@ -42,6 +43,7 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
     TestRobot.testAnimation(getActivity(), "Tests/City.json");
     TestRobot.testAnimation(getActivity(), "Tests/PreCompMadness.json");
     TestRobot.testAnimation(getActivity(), "Tests/MatteParentPrecomp.json");
+    TestRobot.testAnimation(getActivity(), "Tests/Image.json", "Tests/weaccept");
     TestRobot.testStatic(getActivity(), "Tests/TrimPathFill.json");
     TestRobot.testStatic(getActivity(), "Tests/Mask_26.json");
     TestRobot.testStatic(getActivity(), "Tests/MatteInv.json");

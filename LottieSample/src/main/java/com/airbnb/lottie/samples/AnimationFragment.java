@@ -36,6 +36,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +59,10 @@ public class AnimationFragment extends Fragment {
   static AnimationFragment newInstance() {
     return new AnimationFragment();
   }
+
+  private final Map<String, String> assetFolders = new HashMap<String, String>() {{
+    put("WeAccept.json", "Tests/weaccept");
+  }};
 
   private OkHttpClient client;
 
@@ -143,6 +149,7 @@ public class AnimationFragment extends Fragment {
     switch (requestCode) {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
+        animationView.setImageAssetsFolder(assetFolders.get(assetName));
         LottieComposition.fromAssetFileName(getContext(), assetName,
             new LottieComposition.OnCompositionLoadedListener() {
               @Override

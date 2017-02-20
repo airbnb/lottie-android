@@ -107,7 +107,15 @@ LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (compositi
 });
 ```
 
-If your animation will be frequently reused, `LottieAnimationView` has an optional caching strategy built in. Use `LottieAnimationView#setAnimation(String, CacheStrategy)`. `CacheStrategy` can be `Strong`, `Weak`, or `None` to have `LottieAnimationView` hold a strong or weak reference to the loaded and parsed animation. 
+If your animation will be frequently reused, `LottieAnimationView` has an optional caching strategy built in. Use `LottieAnimationView#setAnimation(String, CacheStrategy)`. `CacheStrategy` can be `Strong`, `Weak`, or `None` to have `LottieAnimationView` hold a strong or weak reference to the loaded and parsed animation.
+ 
+ 
+### Image Support
+You can animate images if your animation is loaded from assets and your image file is in a 
+subdirectory of assets. Just call `setImageAssetsFolder` on `LottieAnimationView` or 
+`LottieDrawable` with the relative folder inside of assets and make sure that the images that 
+bodymovin export are in that folder with their names unchanged (should be img_#).
+If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you are done with it.
 
 ## Supported After Effects Features
 
