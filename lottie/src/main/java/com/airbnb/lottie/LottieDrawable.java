@@ -77,21 +77,21 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     }
     LongSparseArray<LayerView> layerMap = new LongSparseArray<>(composition.getLayers().size());
     List<LayerView> layers = new ArrayList<>(composition.getLayers().size());
-    LayerView maskedLayer = null;
+    LayerView mattedLayer = null;
     for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
       Layer layer = composition.getLayers().get(i);
       LayerView layerView;
       layerView = new LayerView(layer, composition, this, canvasPool);
       layerMap.put(layerView.getId(), layerView);
-      if (maskedLayer != null) {
-        maskedLayer.setMatteLayer(layerView);
-        maskedLayer = null;
+      if (mattedLayer != null) {
+        mattedLayer.setMatteLayer(layerView);
+        mattedLayer = null;
       } else {
         layers.add(layerView);
         if (layer.getMatteType() == Layer.MatteType.Add) {
-          maskedLayer = layerView;
+          mattedLayer = layerView;
         } else if (layer.getMatteType() == Layer.MatteType.Invert) {
-          maskedLayer = layerView;
+          mattedLayer = layerView;
         }
       }
     }

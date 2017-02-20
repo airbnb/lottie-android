@@ -41,6 +41,7 @@ public class LottieTest extends ActivityInstrumentationTestCase2<MainActivity> {
     TestRobot.testAnimation(getActivity(), "Tests/AllSet.json");
     TestRobot.testAnimation(getActivity(), "Tests/City.json");
     TestRobot.testAnimation(getActivity(), "Tests/PreCompMadness.json");
+    TestRobot.testAnimation(getActivity(), "Tests/MatteParentPrecomp.json");
     TestRobot.testStatic(getActivity(), "Tests/TrimPathFill.json");
     TestRobot.testStatic(getActivity(), "Tests/Mask_26.json");
     TestRobot.testStatic(getActivity(), "Tests/MatteInv.json");
