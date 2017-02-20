@@ -25,9 +25,7 @@ class LayerView extends AnimatableLayer {
   private final List<LayerView> transformLayers = new ArrayList<>();
   private final Paint mainCanvasPaint = new Paint();
   private final Paint normalPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
-    setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-  }};
+  private final Paint overlayPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
   private final Layer layerModel;
   private final LottieComposition composition;
@@ -48,6 +46,12 @@ class LayerView extends AnimatableLayer {
     this.composition = composition;
     this.canvasPool = canvasPool;
     setBounds(composition.getBounds());
+
+    if (layerModel.getMatteType() == Layer.MatteType.Invert) {
+      overlayPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+    } else {
+      overlayPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+    }
 
     setupForModel();
   }

@@ -90,6 +90,8 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
         layers.add(layerView);
         if (layer.getMatteType() == Layer.MatteType.Add) {
           maskedLayer = layerView;
+        } else if (layer.getMatteType() == Layer.MatteType.Invert) {
+          maskedLayer = layerView;
         }
       }
     }
