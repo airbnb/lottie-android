@@ -83,6 +83,10 @@ class LayerView extends AnimatableLayer {
     for (AnimatableLayer layer : layers) {
       if (layer instanceof LayerView) {
         layerMap.put(((LayerView) layer).getId(), ((LayerView) layer));
+        LayerView matteLayer = ((LayerView) layer).matteLayer;
+        if (matteLayer != null) {
+          layerMap.put(matteLayer.getId(), matteLayer);
+        }
       }
     }
 
@@ -91,14 +95,20 @@ class LayerView extends AnimatableLayer {
         continue;
       }
       long parentId = ((LayerView) layer).getLayerModel().getParentId();
-      if (parentId == -1) {
-        continue;
-      }
       LayerView parentLayer = layerMap.get(parentId);
-      if (parentLayer == null) {
-        continue;
+      if (parentLayer != null) {
+        ((LayerView) layer).setParentLayer(parentLayer);
       }
-      ((LayerView) layer).setParentLayer(parentLayer);
+
+      LayerView matteLayer = ((LayerView) layer).matteLayer;
+      if (matteLayer != null) {
+        parentId = matteLayer.getLayerModel().getParentId();
+        parentLayer = layerMap.get(parentId);
+        if (parentLayer != null) {
+          matteLayer.setParentLayer(parentLayer);
+        }
+      }
+
     }
   }
 
@@ -156,12 +166,23 @@ class LayerView extends AnimatableLayer {
     if (precompLayers == null) {
       return;
     }
+    LayerView mattedLayer = null;
     for (int i = precompLayers.size() - 1; i >= 0; i--) {
       Layer layer = precompLayers.get(i);
       LayerView layerView =
           new LayerView(layer, composition, getCallback(), canvasPool);
       layerView.setPrecompSize(layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
-      addLayer(layerView);
+      if (mattedLayer != null) {
+        mattedLayer.setMatteLayer(layerView);
+        mattedLayer = null;
+      } else {
+        addLayer(layerView);
+        if (layer.getMatteType() == Layer.MatteType.Add) {
+          mattedLayer = layerView;
+        } else if (layer.getMatteType() == Layer.MatteType.Invert) {
+          mattedLayer = layerView;
+        }
+      }
     }
   }
 
