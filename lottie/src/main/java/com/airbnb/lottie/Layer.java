@@ -13,14 +13,15 @@ import java.util.Locale;
 
 class Layer {
   private static final String TAG = Layer.class.getSimpleName();
-  private final LottieComposition composition;
 
-  private enum LottieLayerType {
-    None,
+  enum LayerType {
+    PreComp,
     Solid,
-    Unknown,
+    Image,
     Null,
-    Shape
+    Shape,
+    Text,
+    Unknown
   }
 
   enum MatteType {
@@ -30,51 +31,87 @@ class Layer {
     Unknown
   }
 
-  static Layer fromJson(JSONObject json, LottieComposition composition) {
-    Layer layer = new Layer(composition);
-    layer.layerName = json.optString("nm");
-    layer.layerId = json.optLong("ind");
-    layer.precompId = json.optString("refId");
+  private final List<Object> shapes = new ArrayList<>();
+  private final LottieComposition composition;
 
-    int layerType = json.optInt("ty", -1);
-    if (layerType <= LottieLayerType.Shape.ordinal()) {
-      layer.layerType = LottieLayerType.values()[layerType];
+  private final String layerName;
+  private final long layerId;
+  private final LayerType layerType;
+  private final long parentId;
+  @Nullable private final String precompId;
+
+  private final List<Mask> masks = new ArrayList<>();
+
+  private final AnimatableTransform transform;
+  private int solidWidth;
+  private int solidHeight;
+  private int solidColor;
+
+  private final float timeStretch;
+  private final float startProgress;
+  private float preCompStartProgress;
+  private int preCompWidth;
+  private int preCompHeight;
+
+  private final List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
+
+  private MatteType matteType;
+
+  Layer(JSONObject json, LottieComposition composition) {
+    this.composition = composition;
+    layerName = json.optString("nm");
+    layerId = json.optLong("ind");
+    precompId = json.optString("refId");
+
+    int layerTypeInt = json.optInt("ty", -1);
+    if (layerTypeInt < LayerType.Unknown.ordinal()) {
+      layerType = LayerType.values()[layerTypeInt];
     } else {
-      layer.layerType = LottieLayerType.Unknown;
+      layerType = LayerType.Unknown;
     }
 
-    layer.parentId = json.optLong("parent", -1);
+    parentId = json.optLong("parent", -1);
 
-    if (layer.layerType == LottieLayerType.Solid) {
-      layer.solidWidth = (int) (json.optInt("sw") * composition.getScale());
-      layer.solidHeight = (int) (json.optInt("sh") * composition.getScale());
-      layer.solidColor = Color.parseColor(json.optString("sc"));
+    if (layerType == LayerType.Solid) {
+      solidWidth = (int) (json.optInt("sw") * composition.getScale());
+      solidHeight = (int) (json.optInt("sh") * composition.getScale());
+      solidColor = Color.parseColor(json.optString("sc"));
       if (L.DBG) {
-        Log.d(TAG, "\tSolid=" + Integer.toHexString(layer.solidColor) + " " +
-            layer.solidWidth + "x" + layer.solidHeight + " " + composition.getBounds());
+        Log.d(TAG, "\tSolid=" + Integer.toHexString(solidColor) + " " +
+            solidWidth + "x" + solidHeight + " " + composition.getBounds());
       }
     }
 
-    layer.transform = new AnimatableTransform(json.optJSONObject("ks"), composition);
+    transform = new AnimatableTransform(json.optJSONObject("ks"), composition);
 
-    layer.matteType = MatteType.values()[json.optInt("tt")];
+    matteType = MatteType.values()[json.optInt("tt")];
 
     JSONArray jsonMasks = json.optJSONArray("masksProperties");
     if (jsonMasks != null) {
       for (int i = 0; i < jsonMasks.length(); i++) {
         Mask mask = new Mask(jsonMasks.optJSONObject(i), composition);
-        layer.masks.add(mask);
+        masks.add(mask);
       }
     }
 
-    JSONArray shapes = json.optJSONArray("shapes");
-    if (shapes != null) {
-      for (int i = 0; i < shapes.length(); i++) {
-        Object shape = ShapeGroup.shapeItemWithJson(shapes.optJSONObject(i), composition);
+    JSONArray shapesJson = json.optJSONArray("shapes");
+    if (shapesJson != null) {
+      for (int i = 0; i < shapesJson.length(); i++) {
+        Object shape = ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition);
         if (shape != null) {
-          layer.shapes.add(shape);
+          shapes.add(shape);
         }
       }
+    }
+
+    timeStretch = (float) json.optDouble("sr", 1.0);
+    float startFrame = (float) json.optDouble("st");
+    float frames = composition.getDurationFrames();
+    startProgress = startFrame / frames;
+
+    if (layerType == LayerType.PreComp) {
+      preCompWidth = (int) (json.optInt("w") * composition.getScale());
+      preCompHeight = (int) (json.optInt("h") * composition.getScale());
     }
 
     long inFrame = json.optLong("ip");
@@ -85,7 +122,7 @@ class Layer {
       Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0, inFrame);
       preKeyframe.startValue = 0f;
       preKeyframe.endValue = 0f;
-      layer.inOutKeyframes.add(preKeyframe);
+      inOutKeyframes.add(preKeyframe);
     }
 
     // The + 1 is because the animation should be visible on the out frame itself.
@@ -94,45 +131,27 @@ class Layer {
         new Keyframe<>(composition, inFrame, outFrame);
     visibleKeyframe.startValue = 1f;
     visibleKeyframe.endValue = 1f;
-    layer.inOutKeyframes.add(visibleKeyframe);
+    inOutKeyframes.add(visibleKeyframe);
 
     if (outFrame <= composition.getDurationFrames()) {
       Keyframe<Float> outKeyframe =
           new Keyframe<>(composition, outFrame, composition.getEndFrame());
       outKeyframe.startValue = 0f;
       outKeyframe.endValue = 0f;
-      layer.inOutKeyframes.add(outKeyframe);
+      inOutKeyframes.add(outKeyframe);
     }
-
-    return layer;
-  }
-
-  private final List<Object> shapes = new ArrayList<>();
-
-  private String layerName;
-  private long layerId;
-  private LottieLayerType layerType;
-  private long parentId;
-  @Nullable private String precompId;
-
-  private final List<Mask> masks = new ArrayList<>();
-
-  private AnimatableTransform transform;
-  private int solidWidth;
-  private int solidHeight;
-  private int solidColor;
-
-
-  private final List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
-
-  private MatteType matteType;
-
-  private Layer(LottieComposition composition) {
-    this.composition = composition;
   }
 
   LottieComposition getComposition() {
     return composition;
+  }
+
+  float getTimeStretch() {
+    return timeStretch;
+  }
+
+  float getStartProgress() {
+    return startProgress;
   }
 
   List<Keyframe<Float>> getInOutKeyframes() {
@@ -151,8 +170,20 @@ class Layer {
     return precompId;
   }
 
+  int getPreCompWidth() {
+    return preCompWidth;
+  }
+
+  int getPreCompHeight() {
+    return preCompHeight;
+  }
+
   List<Mask> getMasks() {
     return masks;
+  }
+
+  LayerType getLayerType() {
+    return layerType;
   }
 
   MatteType getMatteType() {
