@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 import org.json.JSONObject;
 
 class Mask {
-  private enum MaskMode {
+  enum MaskMode {
     MaskModeAdd,
     MaskModeSubtract,
     MaskModeIntersect,

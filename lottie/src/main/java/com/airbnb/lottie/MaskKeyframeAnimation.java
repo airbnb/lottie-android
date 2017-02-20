@@ -7,22 +7,28 @@ import java.util.List;
 
 class MaskKeyframeAnimation {
   private final Path path = new Path();
-  private final List<BaseKeyframeAnimation<?, Path>> masks;
+  private final List<BaseKeyframeAnimation<?, Path>> maskAnimations;
+  private final List<Mask> masks;
 
   MaskKeyframeAnimation(List<Mask> masks) {
-    this.masks = new ArrayList<>(masks.size());
+    this.masks = masks;
+    this.maskAnimations = new ArrayList<>(masks.size());
     for (int i = 0; i < masks.size(); i++) {
-      this.masks.add(masks.get(i).getMaskPath().createAnimation());
+      this.maskAnimations.add(masks.get(i).getMaskPath().createAnimation());
     }
   }
 
-  List<BaseKeyframeAnimation<?, Path>> getMasks() {
+  List<Mask> getMasks() {
     return masks;
+  }
+
+  List<BaseKeyframeAnimation<?, Path>> getMaskAnimations() {
+    return maskAnimations;
   }
 
   Path getMaskUnionPath() {
     path.reset();
-    for (BaseKeyframeAnimation<?, Path> mask : masks) {
+    for (BaseKeyframeAnimation<?, Path> mask : maskAnimations) {
       this.path.addPath(mask.getValue());
     }
     return path;
