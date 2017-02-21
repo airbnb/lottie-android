@@ -337,11 +337,11 @@ class LayerView extends AnimatableLayer {
     canvas.restore();
   }
 
-  private boolean hasMatte() {
+  boolean hasMatte() {
     return matteLayer != null;
   }
 
-  private boolean hasMasks() {
+  boolean hasMasks() {
     return mask != null && !mask.getMaskAnimations().isEmpty();
   }
 

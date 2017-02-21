@@ -256,6 +256,20 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   /**
+   * Returns whether or not any layers in this composition has masks.
+   */
+  @SuppressWarnings("unused") public boolean hasMasks() {
+    return lottieDrawable.hasMasks();
+  }
+
+  /**
+   * Returns whether or not any layers in this composition has a matte layer.
+   */
+  @SuppressWarnings("unused") public boolean hasMatte() {
+    return lottieDrawable.hasMatte();
+  }
+
+  /**
    * If you use image assets, you must explicitly specify the folder in assets/ in which they are
    * located because bodymovin uses the name filenames across all compositions (img_#).
    * Do NOT rename the images themselves.
