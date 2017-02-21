@@ -28,6 +28,8 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.LottieCompositionFactory;
+import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,8 +145,8 @@ public class AnimationFragment extends Fragment {
     switch (requestCode) {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
-        LottieComposition.fromAssetFileName(getContext(), assetName,
-            new LottieComposition.OnCompositionLoadedListener() {
+        LottieCompositionFactory.fromAssetFileName(getContext(), assetName,
+            new OnCompositionLoadedListener() {
               @Override
               public void onCompositionLoaded(LottieComposition composition) {
                 setComposition(composition, assetName);
@@ -281,8 +283,8 @@ public class AnimationFragment extends Fragment {
       return;
     }
 
-    LottieComposition
-        .fromInputStream(getContext(), fis, new LottieComposition.OnCompositionLoadedListener() {
+    LottieCompositionFactory
+        .fromInputStream(getContext(), fis, new OnCompositionLoadedListener() {
           @Override
           public void onCompositionLoaded(LottieComposition composition) {
             setComposition(composition, uri.getPath());
@@ -317,8 +319,8 @@ public class AnimationFragment extends Fragment {
 
         try {
           JSONObject json = new JSONObject(response.body().string());
-          LottieComposition
-              .fromJson(getResources(), json, new LottieComposition.OnCompositionLoadedListener() {
+          LottieCompositionFactory
+              .fromJson(getResources(), json, new OnCompositionLoadedListener() {
                 @Override
                 public void onCompositionLoaded(LottieComposition composition) {
                   setComposition(composition, "Network Animation");

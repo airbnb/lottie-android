@@ -14,6 +14,8 @@ import android.widget.FrameLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.LottieCompositionFactory;
+import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,8 +45,8 @@ public class LottieFontViewGroup extends FrameLayout {
 
   private void init() {
     setFocusableInTouchMode(true);
-    LottieComposition.fromAssetFileName(getContext(), "Mobilo/BlinkingCursor.json",
-        new LottieComposition.OnCompositionLoadedListener() {
+    LottieCompositionFactory.fromAssetFileName(getContext(), "Mobilo/BlinkingCursor.json",
+        new OnCompositionLoadedListener() {
           @Override
           public void onCompositionLoaded(LottieComposition composition) {
             cursorView = new LottieAnimationView(getContext());
@@ -180,8 +182,8 @@ public class LottieFontViewGroup extends FrameLayout {
     if (compositionMap.containsKey(fileName)) {
       addComposition(compositionMap.get(fileName));
     } else {
-      LottieComposition.fromAssetFileName(getContext(), fileName,
-          new LottieComposition.OnCompositionLoadedListener() {
+      LottieCompositionFactory.fromAssetFileName(getContext(), fileName,
+          new OnCompositionLoadedListener() {
             @Override
             public void onCompositionLoaded(LottieComposition composition) {
               compositionMap.put(fileName, composition);
