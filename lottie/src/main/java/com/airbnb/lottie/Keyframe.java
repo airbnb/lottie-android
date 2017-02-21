@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Keyframe<T> {
-  private static Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
+  private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
 
   static <T> List<Keyframe<T>> parseKeyframes(JSONArray json, LottieComposition composition,
       float scale, AnimatableValue<T, ?> animatableValue) {

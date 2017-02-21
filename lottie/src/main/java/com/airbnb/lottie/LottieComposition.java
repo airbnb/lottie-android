@@ -134,13 +134,13 @@ public class LottieComposition {
     }
 
     static LottieComposition fromFileSync(Context context, String fileName) {
-      InputStream file;
+      InputStream stream;
       try {
-        file = context.getAssets().open(fileName);
+        stream = context.getAssets().open(fileName);
       } catch (IOException e) {
         throw new IllegalStateException("Unable to find file " + fileName, e);
       }
-      return fromInputStream(context.getResources(), file);
+      return fromInputStream(context.getResources(), stream);
     }
 
     /**
@@ -209,7 +209,7 @@ public class LottieComposition {
       JSONArray jsonLayers = json.optJSONArray("layers");
       int length = jsonLayers.length();
       for (int i = 0; i < length; i++) {
-        Layer layer = new Layer(jsonLayers.optJSONObject(i), composition);
+        Layer layer = Layer.Factory.newInstance(jsonLayers.optJSONObject(i), composition);
         addLayer(composition.layers, composition.layerMap, layer);
       }
     }
@@ -225,7 +225,7 @@ public class LottieComposition {
         List<Layer> layers = new ArrayList<>(layersJson.length());
         LongSparseArray<Layer> layerMap = new LongSparseArray<>();
         for (int j = 0; j < layersJson.length(); j++) {
-          Layer layer = new Layer(layersJson.optJSONObject(j), composition);
+          Layer layer = Layer.Factory.newInstance(layersJson.optJSONObject(j), composition);
           layerMap.put(layer.getId(), layer);
           layers.add(layer);
         }

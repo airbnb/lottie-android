@@ -31,116 +31,48 @@ class Layer {
     Unknown
   }
 
-  private final List<Object> shapes = new ArrayList<>();
+  private final List<Object> shapes;
   private final LottieComposition composition;
-
   private final String layerName;
   private final long layerId;
   private final LayerType layerType;
   private final long parentId;
   @Nullable private final String refId;
-
-  private final List<Mask> masks = new ArrayList<>();
-
+  private final List<Mask> masks;
   private final AnimatableTransform transform;
-  private int solidWidth;
-  private int solidHeight;
-  private int solidColor;
-
+  private final int solidWidth;
+  private final int solidHeight;
+  private final int solidColor;
   private final float timeStretch;
   private final float startProgress;
-  private float preCompStartProgress;
-  private int preCompWidth;
-  private int preCompHeight;
-  @Nullable private ImageAsset imageAsset;
+  private final int preCompWidth;
+  private final int preCompHeight;
+  private final List<Keyframe<Float>> inOutKeyframes;
+  private final MatteType matteType;
 
-  private final List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
-
-  private MatteType matteType;
-
-  Layer(JSONObject json, LottieComposition composition) {
+  private Layer(List<Object> shapes, LottieComposition composition, String layerName, long layerId,
+      LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
+      AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
+      float timeStretch, float startProgress, int preCompWidth, int preCompHeight,
+      List<Keyframe<Float>> inOutKeyframes, MatteType matteType) {
+    this.shapes = shapes;
     this.composition = composition;
-    layerName = json.optString("nm");
-    layerId = json.optLong("ind");
-    refId = json.optString("refId");
-
-    int layerTypeInt = json.optInt("ty", -1);
-    if (layerTypeInt < LayerType.Unknown.ordinal()) {
-      layerType = LayerType.values()[layerTypeInt];
-    } else {
-      layerType = LayerType.Unknown;
-    }
-
-    parentId = json.optLong("parent", -1);
-
-    if (layerType == LayerType.Solid) {
-      solidWidth = (int) (json.optInt("sw") * composition.getScale());
-      solidHeight = (int) (json.optInt("sh") * composition.getScale());
-      solidColor = Color.parseColor(json.optString("sc"));
-      if (L.DBG) {
-        Log.d(TAG, "\tSolid=" + Integer.toHexString(solidColor) + " " +
-            solidWidth + "x" + solidHeight + " " + composition.getBounds());
-      }
-    }
-
-    transform = new AnimatableTransform(json.optJSONObject("ks"), composition);
-
-    matteType = MatteType.values()[json.optInt("tt")];
-
-    JSONArray jsonMasks = json.optJSONArray("masksProperties");
-    if (jsonMasks != null) {
-      for (int i = 0; i < jsonMasks.length(); i++) {
-        Mask mask = new Mask(jsonMasks.optJSONObject(i), composition);
-        masks.add(mask);
-      }
-    }
-
-    JSONArray shapesJson = json.optJSONArray("shapes");
-    if (shapesJson != null) {
-      for (int i = 0; i < shapesJson.length(); i++) {
-        Object shape = ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition);
-        if (shape != null) {
-          shapes.add(shape);
-        }
-      }
-    }
-
-    timeStretch = (float) json.optDouble("sr", 1.0);
-    float startFrame = (float) json.optDouble("st");
-    float frames = composition.getDurationFrames();
-    startProgress = startFrame / frames;
-
-    if (layerType == LayerType.PreComp) {
-      preCompWidth = (int) (json.optInt("w") * composition.getScale());
-      preCompHeight = (int) (json.optInt("h") * composition.getScale());
-    }
-
-    long inFrame = json.optLong("ip");
-    long outFrame = json.optLong("op");
-
-    // Before the in frame
-    if (inFrame > 0) {
-      Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0, inFrame);
-      preKeyframe.startValue = 0f;
-      preKeyframe.endValue = 0f;
-      inOutKeyframes.add(preKeyframe);
-    }
-
-    // The + 1 is because the animation should be visible on the out frame itself.
-    outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame() + 1);
-    Keyframe<Float> visibleKeyframe =
-        new Keyframe<>(composition, inFrame, outFrame);
-    visibleKeyframe.startValue = 1f;
-    visibleKeyframe.endValue = 1f;
-    inOutKeyframes.add(visibleKeyframe);
-
-    if (outFrame <= composition.getDurationFrames()) {
-      Keyframe<Float> outKeyframe =
-          new Keyframe<>(composition, outFrame, composition.getEndFrame());
-      outKeyframe.startValue = 0f;
-      outKeyframe.endValue = 0f;
-      inOutKeyframes.add(outKeyframe);
-    }
+    this.layerName = layerName;
+    this.layerId = layerId;
+    this.layerType = layerType;
+    this.parentId = parentId;
+    this.refId = refId;
+    this.masks = masks;
+    this.transform = transform;
+    this.solidWidth = solidWidth;
+    this.solidHeight = solidHeight;
+    this.solidColor = solidColor;
+    this.timeStretch = timeStretch;
+    this.startProgress = startProgress;
+    this.preCompWidth = preCompWidth;
+    this.preCompHeight = preCompHeight;
+    this.inOutKeyframes = inOutKeyframes;
+    this.matteType = matteType;
   }
 
   LottieComposition getComposition() {
@@ -246,5 +178,102 @@ class Layer {
       }
     }
     return sb.toString();
+  }
+
+  static class Factory {
+    static Layer newInstance(JSONObject json, LottieComposition composition) {
+      String layerName = json.optString("nm");
+      String refId = json.optString("refId");
+      long layerId = json.optLong("ind");
+      int solidWidth = 0;
+      int solidHeight = 0;
+      int solidColor = 0;
+      int preCompWidth = 0;
+      int preCompHeight = 0;
+      LayerType layerType;
+      int layerTypeInt = json.optInt("ty", -1);
+      if (layerTypeInt < LayerType.Unknown.ordinal()) {
+        layerType = LayerType.values()[layerTypeInt];
+      } else {
+        layerType = LayerType.Unknown;
+      }
+
+      long parentId = json.optLong("parent", -1);
+
+      if (layerType == LayerType.Solid) {
+        solidWidth = (int) (json.optInt("sw") * composition.getScale());
+        solidHeight = (int) (json.optInt("sh") * composition.getScale());
+        solidColor = Color.parseColor(json.optString("sc"));
+        if (L.DBG) {
+          Log.d(TAG, "\tSolid=" + Integer.toHexString(solidColor) + " " +
+              solidWidth + "x" + solidHeight + " " + composition.getBounds());
+        }
+      }
+
+      AnimatableTransform transform = AnimatableTransform.Factory.newInstance(json.optJSONObject("ks"),
+          composition);
+      MatteType matteType = MatteType.values()[json.optInt("tt")];
+      List<Object> shapes = new ArrayList<>();
+      List<Mask> masks = new ArrayList<>();
+      List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
+      JSONArray jsonMasks = json.optJSONArray("masksProperties");
+      if (jsonMasks != null) {
+        for (int i = 0; i < jsonMasks.length(); i++) {
+          Mask mask = Mask.Factory.newMask(jsonMasks.optJSONObject(i), composition);
+          masks.add(mask);
+        }
+      }
+
+      JSONArray shapesJson = json.optJSONArray("shapes");
+      if (shapesJson != null) {
+        for (int i = 0; i < shapesJson.length(); i++) {
+          Object shape = ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition);
+          if (shape != null) {
+            shapes.add(shape);
+          }
+        }
+      }
+
+      float timeStretch = (float) json.optDouble("sr", 1.0);
+      float startFrame = (float) json.optDouble("st");
+      float frames = composition.getDurationFrames();
+      float startProgress = startFrame / frames;
+
+      if (layerType == LayerType.PreComp) {
+        preCompWidth = (int) (json.optInt("w") * composition.getScale());
+        preCompHeight = (int) (json.optInt("h") * composition.getScale());
+      }
+
+      long inFrame = json.optLong("ip");
+      long outFrame = json.optLong("op");
+
+      // Before the in frame
+      if (inFrame > 0) {
+        Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0, inFrame);
+        preKeyframe.startValue = 0f;
+        preKeyframe.endValue = 0f;
+        inOutKeyframes.add(preKeyframe);
+      }
+
+      // The + 1 is because the animation should be visible on the out frame itself.
+      outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame() + 1);
+      Keyframe<Float> visibleKeyframe =
+          new Keyframe<>(composition, inFrame, outFrame);
+      visibleKeyframe.startValue = 1f;
+      visibleKeyframe.endValue = 1f;
+      inOutKeyframes.add(visibleKeyframe);
+
+      if (outFrame <= composition.getDurationFrames()) {
+        Keyframe<Float> outKeyframe =
+            new Keyframe<>(composition, outFrame, composition.getEndFrame());
+        outKeyframe.startValue = 0f;
+        outKeyframe.endValue = 0f;
+        inOutKeyframes.add(outKeyframe);
+      }
+
+      return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
+          masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress,
+          preCompWidth, preCompHeight, inOutKeyframes, matteType);
+    }
   }
 }

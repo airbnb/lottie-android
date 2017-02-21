@@ -1,20 +1,23 @@
 package com.airbnb.lottie;
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
 class ShapePath {
-  private static final String TAG = ShapePath.class.getSimpleName();
-
   private final String name;
   private final int index;
-  private AnimatableShapeValue shapePath;
+  private final AnimatableShapeValue shapePath;
 
-  ShapePath(JSONObject json, LottieComposition composition) {
-    index = json.optInt("ind");
-    name = json.optString("nm");
-    shapePath = new AnimatableShapeValue(json.optJSONObject("ks"), composition);
+  private ShapePath(String name, int index, AnimatableShapeValue shapePath) {
+    this.name = name;
+    this.index = index;
+    this.shapePath = shapePath;
+  }
+
+  static class Factory {
+    static ShapePath newInstance(JSONObject json, LottieComposition composition) {
+      return new ShapePath(json.optString("nm"), json.optInt("ind"),
+          new AnimatableShapeValue(json.optJSONObject("ks"), composition));
+    }
   }
 
   AnimatableShapeValue getShapePath() {

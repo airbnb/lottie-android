@@ -32,22 +32,45 @@ class PolystarShape {
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
 
-  PolystarShape(JSONObject json, LottieComposition composition) {
-    type = Type.forValue(json.optInt("sy"));
-    points = new AnimatableFloatValue(json.optJSONObject("pt"), composition, false);
-    position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
-        json.optJSONObject("p"), composition);
-    rotation = new AnimatableFloatValue(json.optJSONObject("r"), composition, false);
+  private PolystarShape(Type type, AnimatableFloatValue points, IAnimatablePathValue position,
+      AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
+      AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
+      AnimatableFloatValue outerRoundedness) {
+    this.type = type;
+    this.points = points;
+    this.position = position;
+    this.rotation = rotation;
+    this.innerRadius = innerRadius;
+    this.outerRadius = outerRadius;
+    this.innerRoundedness = innerRoundedness;
+    this.outerRoundedness = outerRoundedness;
+  }
 
-    outerRadius = new AnimatableFloatValue(json.optJSONObject("or"), composition);
-    outerRoundedness = new AnimatableFloatValue(json.optJSONObject("os"), composition, false);
+  static class Factory {
+    static PolystarShape newInstance(JSONObject json, LottieComposition composition) {
+      Type type = Type.forValue(json.optInt("sy"));
+      AnimatableFloatValue points =
+          new AnimatableFloatValue(json.optJSONObject("pt"), composition, false);
+      IAnimatablePathValue position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
+          json.optJSONObject("p"), composition);
+      AnimatableFloatValue rotation =
+          new AnimatableFloatValue(json.optJSONObject("r"), composition, false);
+      AnimatableFloatValue outerRadius =
+          new AnimatableFloatValue(json.optJSONObject("or"), composition);
+      AnimatableFloatValue outerRoundedness =
+          new AnimatableFloatValue(json.optJSONObject("os"), composition, false);
+      AnimatableFloatValue innerRadius;
+      AnimatableFloatValue innerRoundedness;
 
-    if (type == Type.Star) {
-      innerRadius = new AnimatableFloatValue(json.optJSONObject("ir"), composition);
-      innerRoundedness = new AnimatableFloatValue(json.optJSONObject("is"), composition, false);
-    } else {
-      innerRadius = null;
-      innerRoundedness = null;
+      if (type == Type.Star) {
+        innerRadius = new AnimatableFloatValue(json.optJSONObject("ir"), composition);
+        innerRoundedness = new AnimatableFloatValue(json.optJSONObject("is"), composition, false);
+      } else {
+        innerRadius = null;
+        innerRoundedness = null;
+      }
+      return new PolystarShape(type, points, position, rotation, innerRadius, outerRadius,
+          innerRoundedness, outerRoundedness);
     }
   }
 

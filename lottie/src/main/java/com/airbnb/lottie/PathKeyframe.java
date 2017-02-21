@@ -8,9 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 class PathKeyframe extends Keyframe<PointF> {
-
   @Nullable private Path path;
-
 
   PathKeyframe(JSONObject json, LottieComposition composition,
       AnimatableValue<PointF, ?> animatableValue) {
@@ -29,11 +27,8 @@ class PathKeyframe extends Keyframe<PointF> {
     }
   }
 
-  /**
-   * This will be null if the startValue and endValue are the same.
-   */
-  @Nullable
-  Path getPath() {
+  /** This will be null if the startValue and endValue are the same. */
+  @Nullable Path getPath() {
     return path;
   }
 }
