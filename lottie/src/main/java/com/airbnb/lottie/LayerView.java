@@ -28,6 +28,8 @@ class LayerView extends AnimatableLayer {
   private final Paint mainCanvasPaint = new Paint();
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint imagePaint =
+      new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
   private final Layer layerModel;
   private final LottieComposition composition;
@@ -256,7 +258,7 @@ class LayerView extends AnimatableLayer {
         LayerView layer = transformLayers.get(i);
         applyTransformForLayer(canvas, layer);
       }
-      drawBitmapIfNeeded(canvas);
+      drawImageIfNeeded(canvas);
       super.draw(canvas);
       canvas.restoreToCount(mainCanvasCount);
       return;
@@ -268,7 +270,7 @@ class LayerView extends AnimatableLayer {
 
     // Now apply the parent transformations from the top down.
     bitmapCanvas.save();
-    drawBitmapIfNeeded(bitmapCanvas);
+    drawImageIfNeeded(bitmapCanvas);
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
       applyTransformForLayer(bitmapCanvas, layer);
@@ -319,19 +321,19 @@ class LayerView extends AnimatableLayer {
     canvas.restore();
   }
 
-  private void drawBitmapIfNeeded(Canvas canvas) {
+  private void drawImageIfNeeded(Canvas canvas) {
     if (!composition.hasImages()) {
       return;
     }
     String refId = layerModel.getRefId();
-    Bitmap bitmap = getLottieDrawable().getImageBitmap(refId);
+    Bitmap bitmap = getLottieDrawable().getImageAsset(refId);
     if (bitmap == null) {
       return;
     }
 
     canvas.save();
     applyTransformForLayer(canvas, this);
-    canvas.drawBitmap(bitmap, 0, 0 ,null);
+    canvas.drawBitmap(bitmap, 0, 0 ,imagePaint);
     canvas.restore();
   }
 

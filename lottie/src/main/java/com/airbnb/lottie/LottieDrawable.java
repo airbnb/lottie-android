@@ -266,7 +266,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     return composition == null ? -1 : composition.getBounds().height();
   }
 
-  Bitmap getImageBitmap(String id) {
+  Bitmap getImageAsset(String id) {
     return getImageAssetBitmapManager().bitmapForId(id);
   }
 
