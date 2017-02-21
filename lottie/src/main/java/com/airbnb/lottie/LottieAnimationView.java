@@ -55,8 +55,8 @@ public class LottieAnimationView extends AppCompatImageView {
   private static final Map<String, WeakReference<LottieComposition>> weakRefCache =
       new HashMap<>();
 
-  private final LottieComposition.OnCompositionLoadedListener loadedListener =
-      new LottieComposition.OnCompositionLoadedListener() {
+  private final OnCompositionLoadedListener loadedListener =
+      new OnCompositionLoadedListener() {
         @Override
         public void onCompositionLoaded(LottieComposition composition) {
           setComposition(composition);
@@ -67,7 +67,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private String animationName;
 
-  @Nullable private LottieComposition.Cancellable compositionLoader;
+  @Nullable private Cancellable compositionLoader;
   /**
    * Can be null because it is created async
    */
@@ -205,8 +205,8 @@ public class LottieAnimationView extends AppCompatImageView {
     this.animationName = animationName;
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.fromAssetFileName(getContext(), animationName,
-        new LottieComposition.OnCompositionLoadedListener() {
+    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
+        new OnCompositionLoadedListener() {
           @Override
           public void onCompositionLoaded(LottieComposition composition) {
             if (cacheStrategy == CacheStrategy.Strong) {
@@ -229,7 +229,7 @@ public class LottieAnimationView extends AppCompatImageView {
    */
   public void setAnimation(final JSONObject json) {
     cancelLoaderTask();
-    compositionLoader = LottieComposition.fromJson(getResources(), json, loadedListener);
+    compositionLoader = LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
   }
 
   private void cancelLoaderTask() {

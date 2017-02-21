@@ -3,7 +3,6 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
@@ -18,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.airbnb.lottie.Utils.closeQuietly;
+
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
  * animation will be created.
@@ -25,14 +26,6 @@ import java.util.Map;
  * {@link com.airbnb.lottie.LottieDrawable}.
  */
 public class LottieComposition {
-  public interface OnCompositionLoadedListener {
-    void onCompositionLoaded(LottieComposition composition);
-  }
-
-  interface Cancellable {
-    void cancel();
-  }
-
   /**
    * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel
    * leaving ~2.3M pixels available.
@@ -42,157 +35,24 @@ public class LottieComposition {
    */
   private static final int MAX_PIXELS = 1000;
 
-  /**
-   * Loads a composition from a file stored in /assets.
-   */
-  public static Cancellable fromAssetFileName(Context context, String fileName,
-      OnCompositionLoadedListener loadedListener) {
-    InputStream stream;
-    try {
-      stream = context.getAssets().open(fileName);
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to find file " + fileName, e);
-    }
-    return fromInputStream(context, stream, loadedListener);
-  }
-
-  /**
-   * Loads a composition from an arbitrary input stream.
-   * <p>
-   * ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
-   */
-  public static Cancellable fromInputStream(Context context, InputStream stream,
-      OnCompositionLoadedListener loadedListener) {
-    FileCompositionLoader loader =
-        new FileCompositionLoader(context.getResources(), loadedListener);
-    loader.execute(stream);
-    return loader;
-  }
-
-  static LottieComposition fromFileSync(Context context, String fileName) {
-    InputStream file;
-    try {
-      file = context.getAssets().open(fileName);
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to find file " + fileName, e);
-    }
-    return fromInputStream(context.getResources(), file);
-  }
-
-  /**
-   * Loads a composition from a raw json object. This is useful for animations loaded from the
-   * network.
-   */
-  public static Cancellable fromJson(Resources res, JSONObject json,
-      OnCompositionLoadedListener loadedListener) {
-    JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
-    loader.execute(json);
-    return loader;
-  }
-
-  @SuppressWarnings("WeakerAccess")
-  static LottieComposition fromInputStream(Resources res, InputStream file) {
-    try {
-      int size = file.available();
-      byte[] buffer = new byte[size];
-      //noinspection ResultOfMethodCallIgnored
-      file.read(buffer);
-      file.close();
-      String json = new String(buffer, "UTF-8");
-
-      JSONObject jsonObject = new JSONObject(json);
-      return LottieComposition.fromJsonSync(res, jsonObject);
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to find file.", e);
-    } catch (JSONException e) {
-      throw new IllegalStateException("Unable to load JSON.", e);
-    }
-  }
-
-  @SuppressWarnings("WeakerAccess")
-  static LottieComposition fromJsonSync(Resources res, JSONObject json) {
-    LottieComposition composition = new LottieComposition(res);
-
-    int width = json.optInt("w", -1);
-    int height = json.optInt("h", -1);
-    if (width != -1 && height != -1) {
-      int scaledWidth = (int) (width * composition.scale);
-      int scaledHeight = (int) (height * composition.scale);
-      if (Math.max(scaledWidth, scaledHeight) > MAX_PIXELS) {
-        float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
-        scaledWidth *= factor;
-        scaledHeight *= factor;
-        composition.scale *= factor;
-      }
-      composition.bounds = new Rect(0, 0, scaledWidth, scaledHeight);
-    }
-
-    composition.startFrame = json.optLong("ip", 0);
-    composition.endFrame = json.optLong("op", 0);
-    composition.frameRate = json.optInt("fr", 0);
-
-    JSONArray jsonLayers = json.optJSONArray("layers");
-    for (int i = 0; i < jsonLayers.length(); i++) {
-      Layer layer = new Layer(jsonLayers.optJSONObject(i), composition);
-      addLayer(composition, layer);
-    }
-
-    JSONArray assetsJson = json.optJSONArray("assets");
-    parsePrecomps(composition, assetsJson);
-    parseImages(composition, assetsJson);
-
-    return composition;
-  }
-
-  private static void parsePrecomps(LottieComposition composition, JSONArray assetsJson) {
-    for (int i = 0; i < assetsJson.length(); i++) {
-      JSONObject assetJson = assetsJson.optJSONObject(i);
-      JSONArray layersJson = assetJson.optJSONArray("layers");
-      if (layersJson == null) {
-        continue;
-      }
-      List<Layer> layers = new ArrayList<>(layersJson.length());
-      LongSparseArray<Layer> layerMap = new LongSparseArray<>();
-      for (int j = 0; j < layersJson.length(); j++) {
-        Layer layer = new Layer(layersJson.optJSONObject(j), composition);
-        layerMap.put(layer.getId(), layer);
-        layers.add(layer);
-      }
-      String id = assetJson.optString("id");
-      composition.precomps.put(id, layers);
-    }
-  }
-
-  private static void parseImages(LottieComposition composition, JSONArray assetsJson) {
-    for (int i = 0; i < assetsJson.length(); i++) {
-      JSONObject assetJson = assetsJson.optJSONObject(i);
-      if (!assetJson.has("p")) {
-        continue;
-      }
-      ImageAsset image = new ImageAsset(assetJson);
-      composition.images.put(image.getId(), image);
-    }
-  }
-
-  private static void addLayer(LottieComposition composition, Layer layer) {
-    composition.layers.add(layer);
-    composition.layerMap.put(layer.getId(), layer);
-  }
-
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, ImageAsset> images = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
-  private Rect bounds;
-  private long startFrame;
-  private long endFrame;
-  private int frameRate;
-  private float scale;
+  private final Rect bounds;
+  private final long startFrame;
+  private final long endFrame;
+  private final int frameRate;
+  private final float scale;
 
-  private LottieComposition(Resources res) {
-    scale = res.getDisplayMetrics().density;
+  private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate,
+      float scale) {
+    this.bounds = bounds;
+    this.startFrame = startFrame;
+    this.endFrame = endFrame;
+    this.frameRate = frameRate;
+    this.scale = scale;
   }
-
 
   Layer layerModelForId(long id) {
     return layerMap.get(id);
@@ -245,54 +105,150 @@ public class LottieComposition {
     return sb.toString();
   }
 
-  private static final class FileCompositionLoader extends CompositionLoader<InputStream> {
-
-    private final Resources res;
-    private final OnCompositionLoadedListener loadedListener;
-
-    FileCompositionLoader(Resources res, OnCompositionLoadedListener loadedListener) {
-      this.res = res;
-      this.loadedListener = loadedListener;
+  public static class Factory {
+    /**
+     * Loads a composition from a file stored in /assets.
+     */
+    public static Cancellable fromAssetFileName(Context context, String fileName,
+        OnCompositionLoadedListener loadedListener) {
+      InputStream stream;
+      try {
+        stream = context.getAssets().open(fileName);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file " + fileName, e);
+      }
+      return fromInputStream(context, stream, loadedListener);
     }
 
-    @Override
-    protected LottieComposition doInBackground(InputStream... params) {
-      return fromInputStream(res, params[0]);
+    /**
+     * Loads a composition from an arbitrary input stream.
+     * <p>
+     * ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
+     */
+    public static Cancellable fromInputStream(Context context, InputStream stream,
+        OnCompositionLoadedListener loadedListener) {
+      FileCompositionLoader loader =
+          new FileCompositionLoader(context.getResources(), loadedListener);
+      loader.execute(stream);
+      return loader;
     }
 
-    @Override
-    protected void onPostExecute(LottieComposition composition) {
-      loadedListener.onCompositionLoaded(composition);
-    }
-  }
-
-  private static final class JsonCompositionLoader extends CompositionLoader<JSONObject> {
-
-    private final Resources res;
-    private final OnCompositionLoadedListener loadedListener;
-
-    JsonCompositionLoader(Resources res, OnCompositionLoadedListener loadedListener) {
-      this.res = res;
-      this.loadedListener = loadedListener;
+    static LottieComposition fromFileSync(Context context, String fileName) {
+      InputStream file;
+      try {
+        file = context.getAssets().open(fileName);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file " + fileName, e);
+      }
+      return fromInputStream(context.getResources(), file);
     }
 
-    @Override
-    protected LottieComposition doInBackground(JSONObject... params) {
-      return fromJsonSync(res, params[0]);
+    /**
+     * Loads a composition from a raw json object. This is useful for animations loaded from the
+     * network.
+     */
+    public static Cancellable fromJson(Resources res, JSONObject json,
+        OnCompositionLoadedListener loadedListener) {
+      JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
+      loader.execute(json);
+      return loader;
     }
 
-    @Override
-    protected void onPostExecute(LottieComposition composition) {
-      loadedListener.onCompositionLoaded(composition);
+    @SuppressWarnings("WeakerAccess")
+    static LottieComposition fromInputStream(Resources res, InputStream stream) {
+      try {
+        // TODO: It's not correct to use available() to allocate the byte array.
+        int size = stream.available();
+        byte[] buffer = new byte[size];
+        //noinspection ResultOfMethodCallIgnored
+        stream.read(buffer);
+        String json = new String(buffer, "UTF-8");
+        JSONObject jsonObject = new JSONObject(json);
+        return fromJsonSync(res, jsonObject);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file.", e);
+      } catch (JSONException e) {
+        throw new IllegalStateException("Unable to load JSON.", e);
+      } finally {
+        closeQuietly(stream);
+      }
     }
-  }
 
-  private abstract static class CompositionLoader<Params>
-      extends AsyncTask<Params, Void, LottieComposition>
-      implements Cancellable {
+    @SuppressWarnings("WeakerAccess")
+    static LottieComposition fromJsonSync(Resources res, JSONObject json) {
+      Rect bounds = null;
+      float scale = res.getDisplayMetrics().density;
+      int width = json.optInt("w", -1);
+      int height = json.optInt("h", -1);
 
-    @Override public void cancel() {
-      cancel(true);
+      if (width != -1 && height != -1) {
+        int scaledWidth = (int) (width * scale);
+        int scaledHeight = (int) (height * scale);
+        if (Math.max(scaledWidth, scaledHeight) > MAX_PIXELS) {
+          float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
+          scaledWidth *= factor;
+          scaledHeight *= factor;
+          scale *= factor;
+        }
+        bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+      }
+
+      long startFrame = json.optLong("ip", 0);
+      long endFrame = json.optLong("op", 0);
+      int frameRate = json.optInt("fr", 0);
+      LottieComposition composition =
+          new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
+      JSONArray assetsJson = json.optJSONArray("assets");
+      parseImages(assetsJson, composition);
+      parsePrecomps(assetsJson, composition);
+      parseLayers(json, composition);
+      return composition;
+    }
+
+    private static void parseLayers(JSONObject json, LottieComposition composition) {
+      JSONArray jsonLayers = json.optJSONArray("layers");
+      int length = jsonLayers.length();
+      for (int i = 0; i < length; i++) {
+        Layer layer = new Layer(jsonLayers.optJSONObject(i), composition);
+        addLayer(composition.layers, composition.layerMap, layer);
+      }
+    }
+
+    private static void parsePrecomps(JSONArray assetsJson, LottieComposition composition) {
+      int length = assetsJson.length();
+      for (int i = 0; i < length; i++) {
+        JSONObject assetJson = assetsJson.optJSONObject(i);
+        JSONArray layersJson = assetJson.optJSONArray("layers");
+        if (layersJson == null) {
+          continue;
+        }
+        List<Layer> layers = new ArrayList<>(layersJson.length());
+        LongSparseArray<Layer> layerMap = new LongSparseArray<>();
+        for (int j = 0; j < layersJson.length(); j++) {
+          Layer layer = new Layer(layersJson.optJSONObject(j), composition);
+          layerMap.put(layer.getId(), layer);
+          layers.add(layer);
+        }
+        String id = assetJson.optString("id");
+        composition.precomps.put(id, layers);
+      }
+    }
+
+    private static void parseImages(JSONArray assetsJson, LottieComposition composition) {
+      int length = assetsJson.length();
+      for (int i = 0; i < length; i++) {
+        JSONObject assetJson = assetsJson.optJSONObject(i);
+        if (!assetJson.has("p")) {
+          continue;
+        }
+        ImageAsset image = new ImageAsset(assetJson);
+        composition.images.put(image.getId(), image);
+      }
+    }
+
+    private static void addLayer(List<Layer> layers, LongSparseArray<Layer> layerMap, Layer layer) {
+      layers.add(layer);
+      layerMap.put(layer.getId(), layer);
     }
   }
 }

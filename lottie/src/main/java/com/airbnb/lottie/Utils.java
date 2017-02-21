@@ -3,6 +3,8 @@ package com.airbnb.lottie;
 import android.graphics.Path;
 import android.graphics.PointF;
 
+import java.io.Closeable;
+
 final class Utils {
   private static PointF emptyPoint;
 
@@ -26,5 +28,16 @@ final class Utils {
       path.lineTo(endPoint.x, endPoint.y);
     }
     return path;
+  }
+
+  static void closeQuietly(Closeable closeable) {
+    if (closeable != null) {
+      try {
+        closeable.close();
+      } catch (RuntimeException rethrown) {
+        throw rethrown;
+      } catch (Exception ignored) {
+      }
+    }
   }
 }
