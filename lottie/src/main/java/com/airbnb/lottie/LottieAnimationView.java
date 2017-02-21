@@ -205,7 +205,7 @@ public class LottieAnimationView extends AppCompatImageView {
     this.animationName = animationName;
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
-    compositionLoader = Factory.fromAssetFileName(getContext(), animationName,
+    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
         new OnCompositionLoadedListener() {
           @Override
           public void onCompositionLoaded(LottieComposition composition) {
@@ -229,7 +229,7 @@ public class LottieAnimationView extends AppCompatImageView {
    */
   public void setAnimation(final JSONObject json) {
     cancelLoaderTask();
-    compositionLoader = Factory.fromJson(getResources(), json, loadedListener);
+    compositionLoader = LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
   }
 
   private void cancelLoaderTask() {

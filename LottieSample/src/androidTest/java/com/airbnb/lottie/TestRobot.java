@@ -26,7 +26,7 @@ class TestRobot {
       float[] progress) {
     final LottieAnimationView view = new LottieAnimationView(activity);
     view.setImageAssetsFolder(imageAssetsFolder);
-    view.setComposition(LottieComposition.fromFileSync(activity, fileName));
+    view.setComposition(LottieComposition.Factory.fromFileSync(activity, fileName));
     ViewHelpers.setupView(view)
         .layout();
 

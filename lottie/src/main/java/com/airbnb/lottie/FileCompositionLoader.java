@@ -13,13 +13,11 @@ final class FileCompositionLoader extends CompositionLoader<InputStream> {
     this.loadedListener = loadedListener;
   }
 
-  @Override
-  protected LottieComposition doInBackground(InputStream... params) {
-    return Factory.fromInputStream(res, params[0]);
+  @Override protected LottieComposition doInBackground(InputStream... params) {
+    return LottieComposition.Factory.fromInputStream(res, params[0]);
   }
 
-  @Override
-  protected void onPostExecute(LottieComposition composition) {
+  @Override protected void onPostExecute(LottieComposition composition) {
     loadedListener.onCompositionLoaded(composition);
   }
 }

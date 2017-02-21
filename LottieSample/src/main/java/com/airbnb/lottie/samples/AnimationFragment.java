@@ -151,7 +151,7 @@ public class AnimationFragment extends Fragment {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
         animationView.setImageAssetsFolder(assetFolders.get(assetName));
-        LottieComposition.fromAssetFileName(getContext(), assetName,
+        LottieComposition.Factory.fromAssetFileName(getContext(), assetName,
             new OnCompositionLoadedListener() {
               @Override
               public void onCompositionLoaded(LottieComposition composition) {

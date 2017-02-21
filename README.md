@@ -102,7 +102,7 @@ animationView.cancelAnimation();
 Under the hood, `LottieAnimationView` uses `LottieDrawable` to render its animations. If you need to, you can use the drawable form directly:
 ```java
 LottieDrawable drawable = new LottieDrawable();
-LottieComposition.fromAssetFileName(getContext(), "hello-world.json", (composition) -> {
+LottieComposition.Factory.fromAssetFileName(getContext(), "hello-world.json", (composition) -> {
     drawable.setComposition(composition);
 });
 ```

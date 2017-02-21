@@ -13,13 +13,11 @@ final class JsonCompositionLoader extends CompositionLoader<JSONObject> {
     this.loadedListener = loadedListener;
   }
 
-  @Override
-  protected LottieComposition doInBackground(JSONObject... params) {
-    return Factory.fromJsonSync(res, params[0]);
+  @Override protected LottieComposition doInBackground(JSONObject... params) {
+    return LottieComposition.Factory.fromJsonSync(res, params[0]);
   }
 
-  @Override
-  protected void onPostExecute(LottieComposition composition) {
+  @Override protected void onPostExecute(LottieComposition composition) {
     loadedListener.onCompositionLoaded(composition);
   }
 }
