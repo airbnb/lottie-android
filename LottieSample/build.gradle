@@ -10,6 +10,7 @@ android {
         targetSdkVersion 25
         versionCode 3
         versionName "1.0.3"
+        testInstrumentationRunner "com.airbnb.lottie.TestRunner"
     }
     buildTypes {
         release {
