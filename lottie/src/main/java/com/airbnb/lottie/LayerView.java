@@ -70,7 +70,7 @@ class LayerView extends AnimatableLayer {
         setupShapeLayer();
         break;
       case PreComp:
-        setupPreComp();
+        setupPreCompLayer();
         break;
     }
 
@@ -161,8 +161,8 @@ class LayerView extends AnimatableLayer {
     }
   }
 
-  private void setupPreComp() {
-    List<Layer> precompLayers = composition.getPrecomps(layerModel.getPrecompId());
+  private void setupPreCompLayer() {
+    List<Layer> precompLayers = composition.getPrecomps(layerModel.getRefId());
     if (precompLayers == null) {
       return;
     }
@@ -256,6 +256,7 @@ class LayerView extends AnimatableLayer {
         LayerView layer = transformLayers.get(i);
         applyTransformForLayer(canvas, layer);
       }
+      drawBitmapIfNeeded(canvas);
       super.draw(canvas);
       canvas.restoreToCount(mainCanvasCount);
       return;
@@ -267,6 +268,7 @@ class LayerView extends AnimatableLayer {
 
     // Now apply the parent transformations from the top down.
     bitmapCanvas.save();
+    drawBitmapIfNeeded(bitmapCanvas);
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
       applyTransformForLayer(bitmapCanvas, layer);
@@ -314,6 +316,22 @@ class LayerView extends AnimatableLayer {
     }
     applyTransformForLayer(canvas, this);
     canvas.drawPath(maskAnimation.getValue(), mainCanvasPaint);
+    canvas.restore();
+  }
+
+  private void drawBitmapIfNeeded(Canvas canvas) {
+    if (!composition.hasImages()) {
+      return;
+    }
+    String refId = layerModel.getRefId();
+    Bitmap bitmap = getLottieDrawable().getImageBitmap(refId);
+    if (bitmap == null) {
+      return;
+    }
+
+    canvas.save();
+    applyTransformForLayer(canvas, this);
+    canvas.drawBitmap(bitmap, 0, 0 ,null);
     canvas.restore();
   }
 

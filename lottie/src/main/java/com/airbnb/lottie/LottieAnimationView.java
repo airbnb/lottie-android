@@ -98,6 +98,7 @@ public class LottieAnimationView extends AppCompatImageView {
       lottieDrawable.playAnimation();
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
+    setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     ta.recycle();
     setLayerType(LAYER_TYPE_SOFTWARE, null);
 
@@ -254,6 +255,17 @@ public class LottieAnimationView extends AppCompatImageView {
     requestLayout();
   }
 
+  /**
+   * If you use image assets, you must explicitly specify the folder in assets/ in which they are
+   * located because bodymovin uses the name filenames across all compositions (img_#).
+   * Do NOT rename the images themselves.
+   *
+   * If your images are located in src/main/assets/airbnb_loader/ then call
+   * `setImageAssetsFolder("airbnb_loader/");`.
+   */
+  @SuppressWarnings("WeakerAccess") public void setImageAssetsFolder(String imageAssetsFolder) {
+    lottieDrawable.setImagesAssetsFolder(imageAssetsFolder);
+  }
 
   public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     lottieDrawable.addAnimatorUpdateListener(updateListener);
