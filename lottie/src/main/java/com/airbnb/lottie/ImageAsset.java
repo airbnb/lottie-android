@@ -3,11 +3,10 @@ package com.airbnb.lottie;
 import org.json.JSONObject;
 
 class ImageAsset {
-
-  private int width;
-  private int height;
-  private String id;
-  private String fileName;
+  private final int width;
+  private final int height;
+  private final String id;
+  private final String fileName;
 
   ImageAsset(JSONObject imageJson) {
     width = imageJson.optInt("w");

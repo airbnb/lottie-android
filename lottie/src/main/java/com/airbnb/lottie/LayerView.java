@@ -138,24 +138,24 @@ class LayerView extends AnimatableLayer {
         ShapePath shapePath = (ShapePath) item;
         ShapeLayerView shapeLayer =
             new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim,
-                new AnimatableTransform(composition), getCallback());
+                AnimatableTransform.Factory.newInstance(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof RectangleShape) {
         RectangleShape shapeRect = (RectangleShape) item;
         RectLayer shapeLayer =
             new RectLayer(shapeRect, currentFill, currentStroke, currentTrim,
-                new AnimatableTransform(composition), getCallback());
+                AnimatableTransform.Factory.newInstance(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof CircleShape) {
         CircleShape shapeCircle = (CircleShape) item;
         EllipseLayer shapeLayer =
             new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrim,
-                new AnimatableTransform(composition), getCallback());
+                AnimatableTransform.Factory.newInstance(composition), getCallback());
         addLayer(shapeLayer);
       } else if (item instanceof PolystarShape) {
         PolystarShape polystarShape = (PolystarShape) item;
         PolystarLayer shapeLayer = new PolystarLayer(polystarShape, currentFill, currentStroke,
-            currentTrim, new AnimatableTransform(composition), getCallback());
+            currentTrim, AnimatableTransform.Factory.newInstance(composition), getCallback());
         addLayer(shapeLayer);
       }
     }

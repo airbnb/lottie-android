@@ -16,7 +16,6 @@ import java.util.Map;
 import static junit.framework.Assert.assertNotNull;
 
 class ImageAssetBitmapManager {
-
   private final Context context;
   private String imagesFolder;
   private final Map<String, ImageAsset> imageAssets;

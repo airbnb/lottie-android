@@ -7,10 +7,20 @@ class ShapeTrimPath {
   private final AnimatableFloatValue end;
   private final AnimatableFloatValue offset;
 
-  ShapeTrimPath(JSONObject json, LottieComposition composition) {
-    start = new AnimatableFloatValue(json.optJSONObject("s"), composition, false);
-    end = new AnimatableFloatValue(json.optJSONObject("e"), composition, false);
-    offset = new AnimatableFloatValue(json.optJSONObject("o"), composition, false);
+  private ShapeTrimPath(AnimatableFloatValue start, AnimatableFloatValue end, AnimatableFloatValue
+      offset) {
+    this.start = start;
+    this.end = end;
+    this.offset = offset;
+  }
+
+  static class Factory {
+    static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
+      return new ShapeTrimPath(
+          new AnimatableFloatValue(json.optJSONObject("s"), composition, false),
+          new AnimatableFloatValue(json.optJSONObject("e"), composition, false),
+          new AnimatableFloatValue(json.optJSONObject("o"), composition, false));
+    }
   }
 
   AnimatableFloatValue getEnd() {

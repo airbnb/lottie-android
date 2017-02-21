@@ -11,48 +11,55 @@ import java.util.Arrays;
 import java.util.List;
 
 class ShapeGroup {
-
-  @Nullable
-  static Object shapeItemWithJson(JSONObject json, LottieComposition composition) {
+  @Nullable static Object shapeItemWithJson(JSONObject json, LottieComposition composition) {
     String type = json.optString("ty");
 
     switch (type) {
       case "gr":
-        return new ShapeGroup(json, composition);
+        return ShapeGroup.Factory.newInstance(json, composition);
       case "st":
-        return new ShapeStroke(json, composition);
+        return ShapeStroke.Factory.newInstance(json, composition);
       case "fl":
-        return new ShapeFill(json, composition);
+        return ShapeFill.Factory.newInstance(json, composition);
       case "tr":
-        return new AnimatableTransform(json, composition);
+        return AnimatableTransform.Factory.newInstance(json, composition);
       case "sh":
-        return new ShapePath(json, composition);
+        return ShapePath.Factory.newInstance(json, composition);
       case "el":
-        return new CircleShape(json, composition);
+        return CircleShape.Factory.newInstance(json, composition);
       case "rc":
-        return new RectangleShape(json, composition);
+        return RectangleShape.Factory.newInstance(json, composition);
       case "tm":
-        return new ShapeTrimPath(json, composition);
+        return ShapeTrimPath.Factory.newInstance(json, composition);
       case "sr":
-        return new PolystarShape(json, composition);
+        return PolystarShape.Factory.newInstance(json, composition);
       default:
         Log.w(L.TAG, "Unknown shape type " + type);
     }
     return null;
   }
 
-  private String name;
-  private final List<Object> items = new ArrayList<>();
+  private final String name;
+  private final List<Object> items;
 
-  private ShapeGroup(JSONObject json, LottieComposition composition) {
-    JSONArray jsonItems =  json.optJSONArray("it");
-    name = json.optString("nm");
+  private ShapeGroup(String name, List<Object> items) {
+    this.name = name;
+    this.items = items;
+  }
 
-    for (int i = 0; i < jsonItems.length(); i++) {
-      Object newItem = shapeItemWithJson(jsonItems.optJSONObject(i), composition);
-      if (newItem != null) {
-        items.add(newItem);
+  static class Factory {
+    private static ShapeGroup newInstance(JSONObject json, LottieComposition composition) {
+      JSONArray jsonItems = json.optJSONArray("it");
+      String name = json.optString("nm");
+      List<Object> items = new ArrayList<>();
+
+      for (int i = 0; i < jsonItems.length(); i++) {
+        Object newItem = shapeItemWithJson(jsonItems.optJSONObject(i), composition);
+        if (newItem != null) {
+          items.add(newItem);
+        }
       }
+      return new ShapeGroup(name, items);
     }
   }
 
@@ -60,8 +67,7 @@ class ShapeGroup {
     return items;
   }
 
-  @Override
-  public String toString() {
+  @Override public String toString() {
     return "ShapeGroup{" + "name='" + name + "\' Shapes: " + Arrays.toString(items.toArray()) + '}';
   }
 }

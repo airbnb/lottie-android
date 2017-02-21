@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,42 +21,57 @@ class ShapeStroke {
     Bevel
   }
 
-  private AnimatableFloatValue offset;
-  private final List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
-
+  @Nullable private final AnimatableFloatValue offset;
+  private final List<AnimatableFloatValue> lineDashPattern;
   private final AnimatableColorValue color;
   private final AnimatableIntegerValue opacity;
   private final AnimatableFloatValue width;
   private final LineCapType capType;
   private final LineJoinType joinType;
 
-  ShapeStroke(JSONObject json, LottieComposition composition) {
-    color = new AnimatableColorValue(json.optJSONObject("c"), composition);
+  private ShapeStroke(@Nullable AnimatableFloatValue offset,
+      List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
+      AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
+      LineJoinType joinType) {
+    this.offset = offset;
+    this.lineDashPattern = lineDashPattern;
+    this.color = color;
+    this.opacity = opacity;
+    this.width = width;
+    this.capType = capType;
+    this.joinType = joinType;
+  }
 
-    width = new AnimatableFloatValue(json.optJSONObject("w"), composition);
+  static class Factory {
+    static ShapeStroke newInstance(JSONObject json, LottieComposition composition) {
+      List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
+      AnimatableColorValue color = new AnimatableColorValue(json.optJSONObject("c"), composition);
+      AnimatableFloatValue width = new AnimatableFloatValue(json.optJSONObject("w"), composition);
+      AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.optJSONObject("o"),
+          composition, false, true);
+      LineCapType capType = LineCapType.values()[json.optInt("lc") - 1];
+      LineJoinType joinType = LineJoinType.values()[json.optInt("lj") - 1];
+      AnimatableFloatValue offset = null;
 
-    opacity = new AnimatableIntegerValue(json.optJSONObject("o"), composition, false, true);
-
-    capType = LineCapType.values()[json.optInt("lc") - 1];
-    joinType = LineJoinType.values()[json.optInt("lj") - 1];
-
-    if (json.has("d")) {
-      JSONArray dashesJson = json.optJSONArray("d");
-      for (int i = 0; i < dashesJson.length(); i++) {
-        JSONObject dashJson = dashesJson.optJSONObject(i);
-        String n = dashJson.optString("n");
-        if (n.equals("o")) {
-          JSONObject value = dashJson.optJSONObject("v");
-          offset = new AnimatableFloatValue(value, composition);
-        } else if (n.equals("d") || n.equals("g")) {
-          JSONObject value = dashJson.optJSONObject("v");
-          lineDashPattern.add(new AnimatableFloatValue(value, composition));
+      if (json.has("d")) {
+        JSONArray dashesJson = json.optJSONArray("d");
+        for (int i = 0; i < dashesJson.length(); i++) {
+          JSONObject dashJson = dashesJson.optJSONObject(i);
+          String n = dashJson.optString("n");
+          if (n.equals("o")) {
+            JSONObject value = dashJson.optJSONObject("v");
+            offset = new AnimatableFloatValue(value, composition);
+          } else if (n.equals("d") || n.equals("g")) {
+            JSONObject value = dashJson.optJSONObject("v");
+            lineDashPattern.add(new AnimatableFloatValue(value, composition));
+          }
+        }
+        if (lineDashPattern.size() == 1) {
+          // If there is only 1 value then it is assumed to be equal parts on and off.
+          lineDashPattern.add(lineDashPattern.get(0));
         }
       }
-      if (lineDashPattern.size() == 1) {
-        // If there is only 1 value then it is assumed to be equal parts on and off.
-        lineDashPattern.add(lineDashPattern.get(0));
-      }
+      return new ShapeStroke(offset, lineDashPattern, color, opacity, width, capType, joinType);
     }
   }
 
