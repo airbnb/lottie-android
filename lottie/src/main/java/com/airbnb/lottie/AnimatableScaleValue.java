@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
@@ -14,17 +13,14 @@ class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
   }
 
   @Override public ScaleXY valueFromObject(Object object, float scale) {
-    JSONArray array = (JSONArray) object;
-    return new ScaleXY().scale(
-        (float) array.optDouble(0, 1) / 100f * scale,
-        (float) array.optDouble(1, 1) / 100f * scale);
+    return ScaleXY.Factory.newInstance(object, scale);
   }
 
   @Override public KeyframeAnimation<ScaleXY> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
+    } else {
+      return new ScaleKeyframeAnimation(keyframes);
     }
-
-    return new ScaleKeyframeAnimation(keyframes);
   }
 }

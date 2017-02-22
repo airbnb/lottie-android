@@ -28,7 +28,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
     if (json != null) {
       Object k = json.opt("k");
       if (hasKeyframes(k)) {
-        keyframes = Keyframe.parseKeyframes((JSONArray) k, composition, getScale(), this);
+        keyframes = Keyframe.Factory.parseKeyframes((JSONArray) k, composition, getScale(), this);
         if (!keyframes.isEmpty()) {
           initialValue = keyframes.get(0).startValue;
         }

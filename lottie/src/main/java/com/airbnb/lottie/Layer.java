@@ -244,30 +244,24 @@ class Layer {
         preCompHeight = (int) (json.optInt("h") * composition.getScale());
       }
 
-      long inFrame = json.optLong("ip");
-      long outFrame = json.optLong("op");
+      float inFrame = json.optLong("ip");
+      float outFrame = json.optLong("op");
 
       // Before the in frame
       if (inFrame > 0) {
-        Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0, inFrame);
-        preKeyframe.startValue = 0f;
-        preKeyframe.endValue = 0f;
+        Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0f, 0f, null, 0f, inFrame);
         inOutKeyframes.add(preKeyframe);
       }
 
       // The + 1 is because the animation should be visible on the out frame itself.
       outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame() + 1);
       Keyframe<Float> visibleKeyframe =
-          new Keyframe<>(composition, inFrame, outFrame);
-      visibleKeyframe.startValue = 1f;
-      visibleKeyframe.endValue = 1f;
+          new Keyframe<>(composition, 1f, 1f, null, inFrame, outFrame);
       inOutKeyframes.add(visibleKeyframe);
 
       if (outFrame <= composition.getDurationFrames()) {
         Keyframe<Float> outKeyframe =
-            new Keyframe<>(composition, outFrame, composition.getEndFrame());
-        outKeyframe.startValue = 0f;
-        outKeyframe.endValue = 0f;
+            new Keyframe<>(composition, 0f, 0f, null, outFrame, (float) composition.getEndFrame());
         inOutKeyframes.add(outKeyframe);
       }
 

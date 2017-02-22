@@ -2,7 +2,6 @@ package com.airbnb.lottie;
 
 import android.graphics.PointF;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
@@ -11,12 +10,7 @@ class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
   }
 
   @Override public PointF valueFromObject(Object object, float scale) {
-    if (object instanceof JSONArray) {
-      return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
-    } else if (object instanceof JSONObject) {
-      return JsonUtils.pointFromJsonObject((JSONObject) object, scale);
-    }
-    throw new IllegalArgumentException("Unable to parse point from " + object);
+    return PointFFactory.newInstance(object, scale);
   }
 
   @Override public KeyframeAnimation<PointF> createAnimation() {

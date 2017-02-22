@@ -241,7 +241,7 @@ public class LottieComposition {
         if (!assetJson.has("p")) {
           continue;
         }
-        ImageAsset image = new ImageAsset(assetJson);
+        ImageAsset image = ImageAsset.Factory.newInstance(assetJson);
         composition.images.put(image.getId(), image);
       }
     }

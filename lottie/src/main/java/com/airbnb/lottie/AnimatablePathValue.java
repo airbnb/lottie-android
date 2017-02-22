@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class AnimatablePathValue implements IAnimatablePathValue {
-
   static IAnimatablePathValue createAnimatablePathOrSplitDimensionPath(
       JSONObject json, LottieComposition composition) {
     if (json.has("k")) {
@@ -17,8 +16,7 @@ class AnimatablePathValue implements IAnimatablePathValue {
     } else {
       return new AnimatableSplitDimensionPathValue(
           new AnimatableFloatValue(json.optJSONObject("x"), composition),
-          new AnimatableFloatValue(json.optJSONObject("y"), composition)
-      );
+          new AnimatableFloatValue(json.optJSONObject("y"), composition));
     }
   }
 
@@ -33,12 +31,12 @@ class AnimatablePathValue implements IAnimatablePathValue {
   }
 
   AnimatablePathValue(Object json, LottieComposition composition) {
-
     if (hasKeyframes(json)) {
       JSONArray jsonArray = (JSONArray) json;
-      for (int i = 0; i < jsonArray.length(); i++) {
+      int length = jsonArray.length();
+      for (int i = 0; i < length; i++) {
         JSONObject jsonKeyframe = jsonArray.optJSONObject(i);
-        PathKeyframe keyframe = new PathKeyframe(jsonKeyframe, composition, this);
+        PathKeyframe keyframe = PathKeyframe.Factory.newInstance(jsonKeyframe, composition, this);
         keyframes.add(keyframe);
       }
       Keyframe.setEndFrames(keyframes);

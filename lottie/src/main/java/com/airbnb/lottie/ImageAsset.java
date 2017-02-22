@@ -8,11 +8,18 @@ class ImageAsset {
   private final String id;
   private final String fileName;
 
-  ImageAsset(JSONObject imageJson) {
-    width = imageJson.optInt("w");
-    height = imageJson.optInt("h");
-    id = imageJson.optString("id");
-    fileName = imageJson.optString("p");
+  private ImageAsset(int width, int height, String id, String fileName) {
+    this.width = width;
+    this.height = height;
+    this.id = id;
+    this.fileName = fileName;
+  }
+
+  static class Factory {
+    static ImageAsset newInstance(JSONObject imageJson) {
+      return new ImageAsset(imageJson.optInt("w"), imageJson.optInt("h"), imageJson.optString("id"),
+          imageJson.optString("p"));
+    }
   }
 
   int getWidth() {
