@@ -12,8 +12,7 @@ class JsonUtils {
   static PointF pointFromJsonObject(JSONObject values, float scale) {
     return new PointF(
         valueFromObject(values.opt("x")) * scale,
-        valueFromObject(values.opt("y")) * scale
-    );
+        valueFromObject(values.opt("y")) * scale);
   }
 
   static PointF pointFromJsonArray(JSONArray values, float scale) {
@@ -34,7 +33,8 @@ class JsonUtils {
       return (float) (double) object;
     } else if (object instanceof JSONArray) {
       return (float) ((JSONArray) object).optDouble(0);
+    } else {
+      return 0;
     }
-    return 0;
   }
 }

@@ -12,6 +12,9 @@ class CircleShape {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static CircleShape newInstance(JSONObject json, LottieComposition composition) {
       return new CircleShape(
           AnimatablePathValue

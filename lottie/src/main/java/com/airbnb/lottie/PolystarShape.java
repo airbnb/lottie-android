@@ -47,6 +47,9 @@ class PolystarShape {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static PolystarShape newInstance(JSONObject json, LottieComposition composition) {
       Type type = Type.forValue(json.optInt("sy"));
       AnimatableFloatValue points =

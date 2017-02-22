@@ -4,7 +4,6 @@ import android.graphics.PointF;
 
 class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
   private final PointF point = new PointF();
-
   private final AnimatableFloatValue animatableXDimension;
   private final AnimatableFloatValue animatableYDimension;
 

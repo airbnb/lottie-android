@@ -107,6 +107,9 @@ public class LottieComposition {
   }
 
   public static class Factory {
+    private Factory() {
+    }
+
     /**
      * Loads a composition from a file stored in /assets.
      */
@@ -242,7 +245,7 @@ public class LottieComposition {
         if (!assetJson.has("p")) {
           continue;
         }
-        ImageAsset image = new ImageAsset(assetJson);
+        ImageAsset image = ImageAsset.Factory.newInstance(assetJson);
         composition.images.put(image.getId(), image);
       }
     }

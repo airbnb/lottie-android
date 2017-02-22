@@ -1,13 +1,18 @@
 package com.airbnb.lottie;
 
-class ScaleXY {
-  private float scaleX = 1f;
-  private float scaleY = 1f;
+import org.json.JSONArray;
 
-  ScaleXY scale(float sx, float sy) {
+class ScaleXY {
+  private final float scaleX;
+  private final float scaleY;
+
+  ScaleXY(float sx, float sy) {
     this.scaleX = sx;
     this.scaleY = sy;
-    return this;
+  }
+
+  ScaleXY() {
+    this(1f, 1f);
   }
 
   float getScaleX() {
@@ -18,11 +23,19 @@ class ScaleXY {
     return scaleY;
   }
 
-  boolean isDefault() {
-    return scaleX == 1f && scaleY == 1f;
-  }
-
   @Override public String toString() {
     return getScaleX() + "x" + getScaleY();
+  }
+
+  static class Factory {
+    private Factory() {
+    }
+
+    static ScaleXY newInstance(Object object, float scale) {
+      JSONArray array = (JSONArray) object;
+      return new ScaleXY(
+          (float) array.optDouble(0, 1) / 100f * scale,
+          (float) array.optDouble(1, 1) / 100f * scale);
+    }
   }
 }

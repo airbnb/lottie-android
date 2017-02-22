@@ -19,6 +19,9 @@ class AnimatableTransform {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static AnimatableTransform newInstance(LottieComposition composition) {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
       IAnimatablePathValue position = new AnimatablePathValue();

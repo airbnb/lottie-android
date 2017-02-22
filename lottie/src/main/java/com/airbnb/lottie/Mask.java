@@ -19,6 +19,9 @@ class Mask {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static Mask newMask(JSONObject json, LottieComposition composition) {
       MaskMode maskMode;
       switch (json.optString("mode")) {
