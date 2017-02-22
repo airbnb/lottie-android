@@ -55,6 +55,36 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   }
 
   /**
+   * Returns whether or not any layers in this composition has masks.
+   */
+  @SuppressWarnings("unused") public boolean hasMasks() {
+    for (AnimatableLayer layer : layers) {
+      if (!(layer instanceof LayerView)) {
+        continue;
+      }
+      if (((LayerView) layer).hasMasks()){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Returns whether or not any layers in this composition has a matte layer.
+   */
+  @SuppressWarnings("unused") public boolean hasMatte() {
+    for (AnimatableLayer layer : layers) {
+      if (!(layer instanceof LayerView)) {
+        continue;
+      }
+      if (((LayerView) layer).hasMatte()){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * If you use image assets, you must explicitly specify the folder in assets/ in which they are
    * located because bodymovin uses the name filenames across all compositions (img_#).
    * Do NOT rename the images themselves.
@@ -266,7 +296,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     return composition == null ? -1 : composition.getBounds().height();
   }
 
-  Bitmap getImageBitmap(String id) {
+  Bitmap getImageAsset(String id) {
     return getImageAssetBitmapManager().bitmapForId(id);
   }
 

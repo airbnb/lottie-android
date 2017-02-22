@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
@@ -129,7 +130,7 @@ public class LottieComposition {
         OnCompositionLoadedListener loadedListener) {
       FileCompositionLoader loader =
           new FileCompositionLoader(context.getResources(), loadedListener);
-      loader.execute(stream);
+      loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, stream);
       return loader;
     }
 
@@ -150,7 +151,7 @@ public class LottieComposition {
     public static Cancellable fromJson(Resources res, JSONObject json,
         OnCompositionLoadedListener loadedListener) {
       JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
-      loader.execute(json);
+      loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, json);
       return loader;
     }
 
