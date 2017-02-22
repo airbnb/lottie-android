@@ -9,7 +9,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 3
-        versionName "1.0.3"
+        versionName "1.5.0"
         testInstrumentationRunner "com.airbnb.lottie.TestRunner"
     }
     buildTypes {

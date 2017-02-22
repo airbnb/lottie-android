@@ -1,3 +1,15 @@
+# 1.5.0
+* Precomps.
+* 60% performance and memory improvement for masks and mattes.
+* Images support. See documentation for more information.
+* Polystars.
+* Polygons.
+* Alpha inverted masks.
+* Subtract masks.
+* Trim paths on rectangles.
+* Variable speed (positive or negative).
+* Improved color interpolation (rgb -> gamma color space).
+
 # 1.0.3
 * Make `LottieDrawable` public again.
 * Apply trim paths to shape fills.

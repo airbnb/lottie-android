@@ -37,7 +37,7 @@ Gradle is the only supported build configuration, so just add the dependency to 
 
 ```groovy
 dependencies {  
-  compile 'com.airbnb.android:lottie:1.0.3'
+  compile 'com.airbnb.android:lottie:1.5.0'
 }
 ```
 
@@ -119,6 +119,10 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 ## Supported After Effects Features
 
+### Pre-composition
+
+---
+
 ### Keyframe Interpolation
 
 ---
@@ -155,7 +159,7 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 * Opacity
 
-* Multiple Masks (additive)
+* Multiple Masks (additive, subtractive, inverted)
 
 ### Track Mattes
 
@@ -175,6 +179,16 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 ---
 
+* Rectangle (All properties)
+
+* Ellipse (All properties)
+
+* Polystar (All properties)
+
+* Polygon (All properties. Integer point values only.)
+
+* Path (All properties)
+
 * Anchor Point
 
 * Position
@@ -185,13 +199,7 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 * Opacity
 
-* Path
-
 * Group Transforms (Anchor point, position, scale etc)
-
-* Rectangle (All properties)
-
-* Ellipse (All properties)
 
 * Multiple paths in one group
 
@@ -229,8 +237,9 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 ## Performance and Memory
 1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
-2. If the composition has mattes, 2-3 bitmaps will be created at the composition size. The bitmaps are created automatically by lottie when the animation view is added to the window and recycled when it is removed from the window. For this reason, it is not recommended to use animations with masks or mattes in a RecyclerView because it will cause significant bitmap churn. In addition to memory churn, additional bitmap.eraseColor() and canvas.drawBitmap() calls are necessary for masks and mattes which will slow down the performance of the animation. For small animations, the performance hit should not be large enough to be obvious when actually used.
-4. If you are using your animation in a list, it is recommended to use a CacheStrategy in LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not have to be deserialized every time.
+2. If the composition has masks or mattes, a bitmap will be created and there will be a minor performance hit has it gets drawn.  
+3. If you are using your animation in a list, it is recommended to use a CacheStrategy in 
+LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not have to be deserialized every time.
 
 ## Try it out
 Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [LottieSample/src/main/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets) and the original After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
