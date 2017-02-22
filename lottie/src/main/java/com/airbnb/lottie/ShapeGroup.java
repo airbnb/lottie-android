@@ -48,6 +48,9 @@ class ShapeGroup {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     private static ShapeGroup newInstance(JSONObject json, LottieComposition composition) {
       JSONArray jsonItems = json.optJSONArray("it");
       String name = json.optString("nm");

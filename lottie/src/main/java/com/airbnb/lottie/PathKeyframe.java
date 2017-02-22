@@ -11,13 +11,16 @@ import org.json.JSONObject;
 class PathKeyframe extends Keyframe<PointF> {
   @Nullable private Path path;
 
-  PathKeyframe(LottieComposition composition, @Nullable PointF startValue,
+  private PathKeyframe(LottieComposition composition, @Nullable PointF startValue,
       @Nullable PointF endValue, @Nullable Interpolator interpolator, float startFrame,
       @Nullable Float endFrame) {
     super(composition, startValue, endValue, interpolator, startFrame, endFrame);
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static PathKeyframe newInstance(JSONObject json, LottieComposition composition,
         AnimatableValue<PointF, ?> animatableValue) {
       Keyframe<PointF> keyframe = Keyframe.Factory.newInstance(json, composition,

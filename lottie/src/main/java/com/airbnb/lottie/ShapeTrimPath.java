@@ -15,6 +15,9 @@ class ShapeTrimPath {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
       return new ShapeTrimPath(
           new AnimatableFloatValue(json.optJSONObject("s"), composition, false),

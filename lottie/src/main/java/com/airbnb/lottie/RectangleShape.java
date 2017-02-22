@@ -15,6 +15,9 @@ class RectangleShape {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static RectangleShape newInstance(JSONObject json, LottieComposition composition) {
       return new RectangleShape(
           AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(

@@ -181,6 +181,9 @@ class Layer {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static Layer newInstance(JSONObject json, LottieComposition composition) {
       String layerName = json.optString("nm");
       String refId = json.optString("refId");

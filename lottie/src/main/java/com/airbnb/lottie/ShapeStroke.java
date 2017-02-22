@@ -43,6 +43,9 @@ class ShapeStroke {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static ShapeStroke newInstance(JSONObject json, LottieComposition composition) {
       List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
       AnimatableColorValue color = new AnimatableColorValue(json.optJSONObject("c"), composition);

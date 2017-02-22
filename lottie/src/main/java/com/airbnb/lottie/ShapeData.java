@@ -98,7 +98,10 @@ class ShapeData {
   }
 
   static class Factory {
-    static ShapeData newInstance(Object object, float scale, AnimatableShapeValue shapeValue) {
+    private Factory() {
+    }
+
+    static ShapeData newInstance(Object object, float scale) {
       JSONObject pointsData = null;
       if (object instanceof JSONArray) {
         Object firstObject = ((JSONArray) object).opt(0);
@@ -126,17 +129,17 @@ class ShapeData {
       }
 
       int length = pointsArray.length();
-      PointF vertex = shapeValue.vertexAtIndex(0, pointsArray);
+      PointF vertex = vertexAtIndex(0, pointsArray);
       vertex.x *= scale;
       vertex.y *= scale;
       PointF initialPoint = vertex;
       List<CubicCurveData> curves = new ArrayList<>(length);
 
       for (int i = 1; i < length; i++) {
-        vertex = shapeValue.vertexAtIndex(i, pointsArray);
-        PointF previousVertex = shapeValue.vertexAtIndex(i - 1, pointsArray);
-        PointF cp1 = shapeValue.vertexAtIndex(i - 1, outTangents);
-        PointF cp2 = shapeValue.vertexAtIndex(i, inTangents);
+        vertex = vertexAtIndex(i, pointsArray);
+        PointF previousVertex = vertexAtIndex(i - 1, pointsArray);
+        PointF cp1 = vertexAtIndex(i - 1, outTangents);
+        PointF cp2 = vertexAtIndex(i, inTangents);
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
 
@@ -151,10 +154,10 @@ class ShapeData {
       }
 
       if (closed) {
-        vertex = shapeValue.vertexAtIndex(0, pointsArray);
-        PointF previousVertex = shapeValue.vertexAtIndex(length - 1, pointsArray);
-        PointF cp1 = shapeValue.vertexAtIndex(length - 1, outTangents);
-        PointF cp2 = shapeValue.vertexAtIndex(0, inTangents);
+        vertex = vertexAtIndex(0, pointsArray);
+        PointF previousVertex = vertexAtIndex(length - 1, pointsArray);
+        PointF cp1 = vertexAtIndex(length - 1, outTangents);
+        PointF cp2 = vertexAtIndex(0, inTangents);
 
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
@@ -171,6 +174,20 @@ class ShapeData {
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }
       return new ShapeData(initialPoint, closed, curves);
+    }
+
+    private static PointF vertexAtIndex(int idx, JSONArray points) {
+      if (idx >= points.length()) {
+        throw new IllegalArgumentException(
+            "Invalid index " + idx + ". There are only " + points.length() + " points.");
+      }
+
+      JSONArray pointArray = points.optJSONArray(idx);
+      Object x = pointArray.opt(0);
+      Object y = pointArray.opt(1);
+      return new PointF(
+          x instanceof Double ? new Float((Double) x) : (int) x,
+          y instanceof Double ? new Float((Double) y) : (int) y);
     }
   }
 }

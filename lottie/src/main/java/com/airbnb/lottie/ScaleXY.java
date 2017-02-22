@@ -28,6 +28,9 @@ class ScaleXY {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static ScaleXY newInstance(Object object, float scale) {
       JSONArray array = (JSONArray) object;
       return new ScaleXY(

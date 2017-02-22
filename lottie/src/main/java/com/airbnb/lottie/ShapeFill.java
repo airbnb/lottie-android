@@ -17,6 +17,9 @@ class ShapeFill {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static ShapeFill newInstance(JSONObject json, LottieComposition composition) {
       AnimatableColorValue color = null;
       boolean fillEnabled;

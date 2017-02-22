@@ -107,6 +107,9 @@ public class LottieComposition {
   }
 
   public static class Factory {
+    private Factory() {
+    }
+
     /**
      * Loads a composition from a file stored in /assets.
      */

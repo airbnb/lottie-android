@@ -5,6 +5,9 @@ import android.graphics.Color;
 import org.json.JSONArray;
 
 class ColorFactory {
+  private ColorFactory() {
+  }
+
   static Integer newInstance(Object object) {
     JSONArray colorArray = (JSONArray) object;
     if (colorArray.length() == 4) {

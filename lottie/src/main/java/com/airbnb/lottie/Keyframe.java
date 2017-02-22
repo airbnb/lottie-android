@@ -83,6 +83,9 @@ public class Keyframe<T> {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition, float scale,
         AnimatableValue<T, ?> animatableValue) {
       PointF cp1 = null;

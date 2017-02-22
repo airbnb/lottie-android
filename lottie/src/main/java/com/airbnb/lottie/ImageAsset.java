@@ -16,6 +16,9 @@ class ImageAsset {
   }
 
   static class Factory {
+    private Factory() {
+    }
+
     static ImageAsset newInstance(JSONObject imageJson) {
       return new ImageAsset(imageJson.optInt("w"), imageJson.optInt("h"), imageJson.optString("id"),
           imageJson.optString("p"));
