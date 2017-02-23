@@ -18,8 +18,9 @@ class ShapePath {
     }
 
     static ShapePath newInstance(JSONObject json, LottieComposition composition) {
-      return new ShapePath(json.optString("nm"), json.optInt("ind"),
-          new AnimatableShapeValue(json.optJSONObject("ks"), composition));
+      AnimatableShapeValue animatableShapeValue =
+          AnimatableShapeValue.Factory.newInstance(json.optJSONObject("ks"), composition);
+      return new ShapePath(json.optString("nm"), json.optInt("ind"), animatableShapeValue);
     }
   }
 

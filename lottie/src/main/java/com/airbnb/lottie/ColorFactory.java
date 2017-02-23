@@ -4,11 +4,10 @@ import android.graphics.Color;
 
 import org.json.JSONArray;
 
-class ColorFactory {
-  private ColorFactory() {
-  }
+class ColorFactory implements AnimatableValue.Factory<Integer> {
+  static final ColorFactory INSTANCE = new ColorFactory();
 
-  static Integer newInstance(Object object) {
+  @Override public Integer valueFromObject(Object object, float scale) {
     JSONArray colorArray = (JSONArray) object;
     if (colorArray.length() == 4) {
       boolean shouldUse255 = true;

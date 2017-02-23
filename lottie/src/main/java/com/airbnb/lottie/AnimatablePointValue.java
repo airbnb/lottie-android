@@ -4,20 +4,31 @@ import android.graphics.PointF;
 
 import org.json.JSONObject;
 
-class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
-  AnimatablePointValue(JSONObject pointValues, LottieComposition composition) {
-    super(pointValues, composition, true);
-  }
+import java.util.List;
 
-  @Override public PointF valueFromObject(Object object, float scale) {
-    return PointFFactory.newInstance(object, scale);
+class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
+  private AnimatablePointValue(List<Keyframe<PointF>> keyframes, LottieComposition composition,
+      PointF initialValue) {
+    super(keyframes, composition, initialValue);
   }
 
   @Override public KeyframeAnimation<PointF> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
+    } else {
+      return new PointKeyframeAnimation(keyframes);
+    }
+  }
+
+  static final class Factory {
+    private Factory() {
     }
 
-    return new PointKeyframeAnimation(keyframes);
+    static AnimatablePointValue newInstance(JSONObject json, LottieComposition composition) {
+      AnimatableValueParser.Result<PointF> result = AnimatableValueParser
+          .newInstance(json, composition.getScale(), composition, PointFFactory.INSTANCE)
+          .parseJson();
+      return new AnimatablePointValue(result.keyframes, composition, result.initialValue);
+    }
   }
 }

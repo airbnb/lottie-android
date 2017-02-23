@@ -19,7 +19,7 @@ class CircleShape {
       return new CircleShape(
           AnimatablePathValue
               .createAnimatablePathOrSplitDimensionPath(json.optJSONObject("p"), composition),
-          new AnimatablePointValue(json.optJSONObject("s"), composition));
+          AnimatablePointValue.Factory.newInstance(json.optJSONObject("s"), composition));
     }
   }
 

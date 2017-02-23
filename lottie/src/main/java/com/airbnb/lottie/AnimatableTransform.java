@@ -25,9 +25,9 @@ class AnimatableTransform {
     static AnimatableTransform newInstance(LottieComposition composition) {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
       IAnimatablePathValue position = new AnimatablePathValue();
-      AnimatableScaleValue scale = new AnimatableScaleValue(composition);
-      AnimatableFloatValue rotation = new AnimatableFloatValue(composition, 0f);
-      AnimatableIntegerValue opacity = new AnimatableIntegerValue(composition, 255);
+      AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance(composition);
+      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition, 0f);
+      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(composition, 255);
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }
 
@@ -54,7 +54,7 @@ class AnimatableTransform {
 
       JSONObject scaleJson = json.optJSONObject("s");
       if (scaleJson != null) {
-        scale = new AnimatableScaleValue(scaleJson, composition, false);
+        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition, false);
       } else {
         throwMissingTransform("scale");
       }
@@ -64,14 +64,14 @@ class AnimatableTransform {
         rotationJson = json.optJSONObject("rz");
       }
       if (rotationJson != null) {
-        rotation = new AnimatableFloatValue(rotationJson, composition, false);
+        rotation = AnimatableFloatValue.Factory.newInstance(rotationJson, composition, false);
       } else {
         throwMissingTransform("rotation");
       }
 
       JSONObject opacityJson = json.optJSONObject("o");
       if (opacityJson != null) {
-        opacity = new AnimatableIntegerValue(opacityJson, composition, false, true);
+        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition, false, true);
       } else {
         throwMissingTransform("opacity");
       }

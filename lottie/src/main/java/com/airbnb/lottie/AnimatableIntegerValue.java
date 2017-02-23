@@ -2,27 +2,16 @@ package com.airbnb.lottie;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
-  AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
-    super(composition);
-    this.initialValue = initialValue;
+  private AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
+    super(composition, initialValue);
   }
 
-  AnimatableIntegerValue(JSONObject json, LottieComposition composition,
-      boolean isDp, boolean remap100To255) {
-    super(json, composition, isDp);
-    if (remap100To255) {
-      initialValue = initialValue * 255 / 100;
-      for (int i = 0; i < keyframes.size(); i++) {
-        Keyframe<Integer> keyframe = keyframes.get(i);
-        keyframe.startValue = keyframe.startValue * 255 / 100;
-        keyframe.endValue = keyframe.endValue * 255 / 100;
-      }
-    }
-  }
-
-  @Override public Integer valueFromObject(Object object, float scale) {
-    return Math.round(JsonUtils.valueFromObject(object) * scale);
+  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,
+      Integer initialValue) {
+    super(keyframes, composition, initialValue);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -35,5 +24,44 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
   public Integer getInitialValue() {
     return initialValue;
+  }
+
+  static final class Factory {
+    private Factory() {
+    }
+
+    static AnimatableIntegerValue newInstance(LottieComposition composition, Integer initialValue) {
+      return new AnimatableIntegerValue(composition, initialValue);
+    }
+
+    static AnimatableIntegerValue newInstance(JSONObject json, LottieComposition composition,
+        boolean isDp, boolean remap100To255) {
+      float scale = isDp ? composition.getScale() : 1f;
+      AnimatableValueParser.Result<Integer> result = AnimatableValueParser
+          .newInstance(json, scale, composition, ValueFactory.INSTANCE)
+          .parseJson();
+      Integer initialValue = result.initialValue;
+      if (remap100To255 && result.initialValue != null) {
+        initialValue = result.initialValue * 255 / 100;
+        int size = result.keyframes.size();
+        for (int i = 0; i < size; i++) {
+          Keyframe<Integer> keyframe = result.keyframes.get(i);
+          keyframe.startValue = keyframe.startValue * 255 / 100;
+          keyframe.endValue = keyframe.endValue * 255 / 100;
+        }
+      }
+      return new AnimatableIntegerValue(result.keyframes, composition, initialValue);
+    }
+  }
+
+  private static class ValueFactory implements AnimatableValue.Factory<Integer> {
+    private static final ValueFactory INSTANCE = new ValueFactory();
+
+    private ValueFactory() {
+    }
+
+    @Override public Integer valueFromObject(Object object, float scale) {
+      return Math.round(JsonUtils.valueFromObject(object) * scale);
+    }
   }
 }

@@ -20,9 +20,9 @@ class ShapeTrimPath {
 
     static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
       return new ShapeTrimPath(
-          new AnimatableFloatValue(json.optJSONObject("s"), composition, false),
-          new AnimatableFloatValue(json.optJSONObject("e"), composition, false),
-          new AnimatableFloatValue(json.optJSONObject("o"), composition, false));
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("s"), composition, false),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("e"), composition, false),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false));
     }
   }
 

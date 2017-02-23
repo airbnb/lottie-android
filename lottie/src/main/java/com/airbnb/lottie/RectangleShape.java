@@ -22,8 +22,8 @@ class RectangleShape {
       return new RectangleShape(
           AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
               json.optJSONObject("p"), composition),
-          new AnimatablePointValue(json.optJSONObject("s"), composition),
-          new AnimatableFloatValue(json.optJSONObject("r"), composition));
+          AnimatablePointValue.Factory.newInstance(json.optJSONObject("s"), composition),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("r"), composition));
     }
   }
 

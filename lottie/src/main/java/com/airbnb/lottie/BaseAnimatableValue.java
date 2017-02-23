@@ -1,57 +1,25 @@
 package com.airbnb.lottie;
 
-import android.support.annotation.Nullable;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
-  List<Keyframe<V>> keyframes = Collections.emptyList();
+  final List<Keyframe<V>> keyframes;
   final LottieComposition composition;
-  private final boolean isDp;
+  final V initialValue;
 
-  V initialValue;
+  /**
+   * Create a default static animatable path.
+   */
+  BaseAnimatableValue(LottieComposition composition, V initialValue) {
+    this(Collections.<Keyframe<V>>emptyList(), composition, initialValue);
+  }
 
-  /** Create a default static animatable path. */
-  BaseAnimatableValue(LottieComposition composition) {
+  BaseAnimatableValue(List<Keyframe<V>> keyframes, LottieComposition composition, V initialValue) {
+    this.keyframes = keyframes;
     this.composition = composition;
-    isDp = false;
-  }
-
-  BaseAnimatableValue(@Nullable JSONObject json, LottieComposition composition, boolean isDp) {
-    this.composition = composition;
-    this.isDp = isDp;
-    if (json != null) {
-      Object k = json.opt("k");
-      if (hasKeyframes(k)) {
-        keyframes = Keyframe.Factory.parseKeyframes((JSONArray) k, composition, getScale(), this);
-        if (!keyframes.isEmpty()) {
-          initialValue = keyframes.get(0).startValue;
-        }
-      } else {
-        initialValue = valueFromObject(k, getScale());
-      }
-      if (keyframes == null) {
-        keyframes = Collections.emptyList();
-      }
-    }
-  }
-
-  private boolean hasKeyframes(Object json) {
-    if (!(json instanceof JSONArray)) {
-      return false;
-    }
-
-    Object firstObject = ((JSONArray) json).opt(0);
-    return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
-  }
-
-  private float getScale() {
-    return isDp ? composition.getScale() : 1f;
+    this.initialValue = initialValue;
   }
 
   /**
@@ -71,11 +39,9 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
     return convertType(initialValue);
   }
 
-  public abstract BaseKeyframeAnimation<?, O> createAnimation();
-
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder();
-    sb.append("initialValue=").append(initialValue);
+    sb.append("parseInitialValue=").append(initialValue);
     if (!keyframes.isEmpty()) {
       sb.append(", values=").append(Arrays.toString(keyframes.toArray()));
     }

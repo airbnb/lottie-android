@@ -38,8 +38,8 @@ class Mask {
           maskMode = MaskMode.MaskModeUnknown;
       }
 
-      AnimatableShapeValue maskPath = new AnimatableShapeValue(json.optJSONObject("pt"),
-          composition);
+      AnimatableShapeValue maskPath = AnimatableShapeValue.Factory.newInstance(
+          json.optJSONObject("pt"), composition);
       // TODO: use this
       // JSONObject opacityJson = json.optJSONObject("o");
       // if (opacityJson != null) {

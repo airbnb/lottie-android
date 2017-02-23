@@ -87,7 +87,7 @@ public class Keyframe<T> {
     }
 
     static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition, float scale,
-        AnimatableValue<T, ?> animatableValue) {
+        AnimatableValue.Factory<T> valueFactory) {
       PointF cp1 = null;
       PointF cp2 = null;
       float startFrame = 0;
@@ -99,12 +99,12 @@ public class Keyframe<T> {
         startFrame = (float) json.optDouble("t", 0);
         Object startValueJson = json.opt("s");
         if (startValueJson != null) {
-          startValue = animatableValue.valueFromObject(startValueJson, scale);
+          startValue = valueFactory.valueFromObject(startValueJson, scale);
         }
 
         Object endValueJson = json.opt("e");
         if (endValueJson != null) {
-          endValue = animatableValue.valueFromObject(endValueJson, scale);
+          endValue = valueFactory.valueFromObject(endValueJson, scale);
         }
 
         JSONObject cp1Json = json.optJSONObject("o");
@@ -127,14 +127,14 @@ public class Keyframe<T> {
           interpolator = LINEAR_INTERPOLATOR;
         }
       } else {
-        startValue = animatableValue.valueFromObject(json, scale);
+        startValue = valueFactory.valueFromObject(json, scale);
         endValue = startValue;
       }
       return new Keyframe<>(composition, startValue, endValue, interpolator, startFrame, null);
     }
 
     static <T> List<Keyframe<T>> parseKeyframes(JSONArray json, LottieComposition composition,
-        float scale, AnimatableValue<T, ?> animatableValue) {
+        float scale, AnimatableValue.Factory<T> valueFactory) {
       int length = json.length();
       if (length == 0) {
         return Collections.emptyList();
@@ -142,7 +142,7 @@ public class Keyframe<T> {
       List<Keyframe<T>> keyframes = new ArrayList<>();
       for (int i = 0; i < length; i++) {
         keyframes.add(Keyframe.Factory.newInstance(json.optJSONObject(i), composition, scale,
-            animatableValue));
+            valueFactory));
       }
 
       setEndFrames(keyframes);

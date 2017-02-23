@@ -5,8 +5,13 @@ import android.graphics.PointF;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-class PointFFactory {
-  static PointF newInstance(Object object, float scale) {
+class PointFFactory implements AnimatableValue.Factory<PointF> {
+  static final PointFFactory INSTANCE = new PointFFactory();
+
+  private PointFFactory() {
+  }
+
+  @Override public PointF valueFromObject(Object object, float scale) {
     if (object instanceof JSONArray) {
       return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
     } else if (object instanceof JSONObject) {

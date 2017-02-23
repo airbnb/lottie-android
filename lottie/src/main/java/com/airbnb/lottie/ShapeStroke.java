@@ -48,10 +48,12 @@ class ShapeStroke {
 
     static ShapeStroke newInstance(JSONObject json, LottieComposition composition) {
       List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
-      AnimatableColorValue color = new AnimatableColorValue(json.optJSONObject("c"), composition);
-      AnimatableFloatValue width = new AnimatableFloatValue(json.optJSONObject("w"), composition);
-      AnimatableIntegerValue opacity = new AnimatableIntegerValue(json.optJSONObject("o"),
-          composition, false, true);
+      AnimatableColorValue color = AnimatableColorValue.Factory.newInstance(json.optJSONObject("c"),
+          composition);
+      AnimatableFloatValue width = AnimatableFloatValue.Factory.newInstance(json.optJSONObject("w"),
+          composition);
+      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(
+          json.optJSONObject("o"), composition, false, true);
       LineCapType capType = LineCapType.values()[json.optInt("lc") - 1];
       LineJoinType joinType = LineJoinType.values()[json.optInt("lj") - 1];
       AnimatableFloatValue offset = null;
@@ -63,10 +65,10 @@ class ShapeStroke {
           String n = dashJson.optString("n");
           if (n.equals("o")) {
             JSONObject value = dashJson.optJSONObject("v");
-            offset = new AnimatableFloatValue(value, composition);
+            offset = AnimatableFloatValue.Factory.newInstance(value, composition);
           } else if (n.equals("d") || n.equals("g")) {
             JSONObject value = dashJson.optJSONObject("v");
-            lineDashPattern.add(new AnimatableFloatValue(value, composition));
+            lineDashPattern.add(AnimatableFloatValue.Factory.newInstance(value, composition));
           }
         }
         if (lineDashPattern.size() == 1) {
