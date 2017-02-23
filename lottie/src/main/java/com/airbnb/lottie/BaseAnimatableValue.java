@@ -7,14 +7,13 @@ import java.util.List;
 abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
   final List<Keyframe<V>> keyframes;
   final LottieComposition composition;
-  V initialValue;
+  final V initialValue;
 
   /**
    * Create a default static animatable path.
    */
-  BaseAnimatableValue(LottieComposition composition) {
-    this.composition = composition;
-    this.keyframes = Collections.emptyList();
+  BaseAnimatableValue(LottieComposition composition, V initialValue) {
+    this(Collections.<Keyframe<V>>emptyList(), composition, initialValue);
   }
 
   BaseAnimatableValue(List<Keyframe<V>> keyframes, LottieComposition composition, V initialValue) {
@@ -39,8 +38,6 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
   public O getInitialValue() {
     return convertType(initialValue);
   }
-
-  public abstract BaseKeyframeAnimation<?, O> createAnimation();
 
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder();

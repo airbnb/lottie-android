@@ -6,8 +6,7 @@ import java.util.List;
 
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
   private AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
-    super(composition);
-    this.initialValue = initialValue;
+    super(composition, initialValue);
   }
 
   private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,

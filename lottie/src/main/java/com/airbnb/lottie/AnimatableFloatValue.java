@@ -6,8 +6,7 @@ import java.util.List;
 
 class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
   private AnimatableFloatValue(LottieComposition composition, Float initialValue) {
-    super(composition);
-    this.initialValue = initialValue;
+    super(composition, initialValue);
   }
 
   private AnimatableFloatValue(List<Keyframe<Float>> keyframes,

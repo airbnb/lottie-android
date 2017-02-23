@@ -6,8 +6,7 @@ import java.util.List;
 
 class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
   private AnimatableScaleValue(LottieComposition composition) {
-    super(composition);
-    initialValue = new ScaleXY();
+    super(composition, new ScaleXY());
   }
 
   private AnimatableScaleValue(List<Keyframe<ScaleXY>> keyframes, LottieComposition composition,
