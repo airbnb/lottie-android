@@ -115,7 +115,10 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     }
   }
 
-  void setComposition(LottieComposition composition) {
+  /**
+   * @return True if the composition is different from the previously set composition, false otherwise.
+   */
+  boolean setComposition(LottieComposition composition) {
     if (getCallback() == null) {
       throw new IllegalStateException(
           "You or your view must set a Drawable.Callback before setting the composition. This " +
@@ -123,6 +126,11 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
               "Either call ImageView.setImageDrawable() before setComposition() or call " +
               "setCallback(yourView.getCallback()) first.");
     }
+
+    if (this.composition == composition) {
+      return false;
+    }
+
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
@@ -130,6 +138,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     buildLayersForComposition(composition);
 
     setProgress(getProgress());
+    return true;
   }
 
   private void clearComposition() {

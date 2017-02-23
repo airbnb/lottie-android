@@ -244,7 +244,14 @@ public class LottieAnimationView extends AppCompatImageView {
       Log.v(TAG, "Set Composition \n" + composition);
     }
     lottieDrawable.setCallback(this);
-    lottieDrawable.setComposition(composition);
+
+    boolean isNewComposition = lottieDrawable.setComposition(composition);
+    if (!isNewComposition) {
+      // We can avoid re-setting the drawable, and invalidating the view, since the composition
+      // hasn't changed.
+      return;
+    }
+
     // If you set a different composition on the view, the bounds will not update unless
     // the drawable is different than the original.
     setImageDrawable(null);
