@@ -27,11 +27,13 @@ class ScaleXY {
     return getScaleX() + "x" + getScaleY();
   }
 
-  static class Factory {
+  static class Factory implements AnimatableValue.Factory<ScaleXY> {
+    static final Factory INSTANCE = new Factory();
+
     private Factory() {
     }
 
-    static ScaleXY newInstance(Object object, float scale) {
+    @Override public ScaleXY valueFromObject(Object object, float scale) {
       JSONArray array = (JSONArray) object;
       return new ScaleXY(
           (float) array.optDouble(0, 1) / 100f * scale,

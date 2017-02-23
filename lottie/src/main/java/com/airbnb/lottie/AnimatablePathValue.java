@@ -15,8 +15,8 @@ class AnimatablePathValue implements IAnimatablePathValue {
       return new AnimatablePathValue(json.opt("k"), composition);
     } else {
       return new AnimatableSplitDimensionPathValue(
-          new AnimatableFloatValue(json.optJSONObject("x"), composition),
-          new AnimatableFloatValue(json.optJSONObject("y"), composition));
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("x"), composition),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("y"), composition));
     }
   }
 
@@ -36,7 +36,8 @@ class AnimatablePathValue implements IAnimatablePathValue {
       int length = jsonArray.length();
       for (int i = 0; i < length; i++) {
         JSONObject jsonKeyframe = jsonArray.optJSONObject(i);
-        PathKeyframe keyframe = PathKeyframe.Factory.newInstance(jsonKeyframe, composition, this);
+        PathKeyframe keyframe = PathKeyframe.Factory.newInstance(jsonKeyframe, composition,
+            new ValueFactory());
         keyframes.add(keyframe);
       }
       Keyframe.setEndFrames(keyframes);
@@ -52,10 +53,6 @@ class AnimatablePathValue implements IAnimatablePathValue {
 
     Object firstObject = ((JSONArray) json).opt(0);
     return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
-  }
-
-  @Override public PointF valueFromObject(Object object, float scale) {
-    return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
   }
 
   @Override
@@ -80,5 +77,11 @@ class AnimatablePathValue implements IAnimatablePathValue {
   @Override
   public String toString() {
     return "initialPoint=" + initialPoint;
+  }
+
+  private static class ValueFactory implements AnimatableValue.Factory<PointF> {
+    @Override public PointF valueFromObject(Object object, float scale) {
+      return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
+    }
   }
 }

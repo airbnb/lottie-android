@@ -97,11 +97,13 @@ class ShapeData {
         '}';
   }
 
-  static class Factory {
+  static class Factory implements AnimatableValue.Factory<ShapeData> {
+    static final ShapeData.Factory INSTANCE = new Factory();
+
     private Factory() {
     }
 
-    static ShapeData newInstance(Object object, float scale) {
+    @Override public ShapeData valueFromObject(Object object, float scale) {
       JSONObject pointsData = null;
       if (object instanceof JSONArray) {
         Object firstObject = ((JSONArray) object).opt(0);

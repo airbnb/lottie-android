@@ -2,13 +2,12 @@ package com.airbnb.lottie;
 
 import org.json.JSONObject;
 
-class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
-  AnimatableColorValue(JSONObject json, LottieComposition composition) {
-    super(json, composition, false);
-  }
+import java.util.List;
 
-  @Override public Integer valueFromObject(Object object, float scale) {
-    return ColorFactory.newInstance(object);
+class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
+  private AnimatableColorValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,
+      Integer initialValue) {
+    super(keyframes, composition, initialValue);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -20,5 +19,17 @@ class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
 
   @Override public String toString() {
     return "AnimatableColorValue{" + "initialValue=" + initialValue + '}';
+  }
+
+  static final class Factory {
+    private Factory() {
+    }
+
+    static AnimatableColorValue newInstance(JSONObject json, LottieComposition composition) {
+      AnimatableValueParser.Result<Integer> result = AnimatableValueParser
+          .newInstance(json, 1f, composition, new ColorFactory())
+          .parseJson();
+      return new AnimatableColorValue(result.keyframes, composition, result.initialValue);
+    }
   }
 }

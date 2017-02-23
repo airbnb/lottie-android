@@ -53,21 +53,23 @@ class PolystarShape {
     static PolystarShape newInstance(JSONObject json, LottieComposition composition) {
       Type type = Type.forValue(json.optInt("sy"));
       AnimatableFloatValue points =
-          new AnimatableFloatValue(json.optJSONObject("pt"), composition, false);
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("pt"), composition, false);
       IAnimatablePathValue position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
           json.optJSONObject("p"), composition);
       AnimatableFloatValue rotation =
-          new AnimatableFloatValue(json.optJSONObject("r"), composition, false);
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("r"), composition, false);
       AnimatableFloatValue outerRadius =
-          new AnimatableFloatValue(json.optJSONObject("or"), composition);
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("or"), composition);
       AnimatableFloatValue outerRoundedness =
-          new AnimatableFloatValue(json.optJSONObject("os"), composition, false);
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("os"), composition, false);
       AnimatableFloatValue innerRadius;
       AnimatableFloatValue innerRoundedness;
 
       if (type == Type.Star) {
-        innerRadius = new AnimatableFloatValue(json.optJSONObject("ir"), composition);
-        innerRoundedness = new AnimatableFloatValue(json.optJSONObject("is"), composition, false);
+        innerRadius =
+            AnimatableFloatValue.Factory.newInstance(json.optJSONObject("ir"), composition);
+        innerRoundedness =
+            AnimatableFloatValue.Factory.newInstance(json.optJSONObject("is"), composition, false);
       } else {
         innerRadius = null;
         innerRoundedness = null;

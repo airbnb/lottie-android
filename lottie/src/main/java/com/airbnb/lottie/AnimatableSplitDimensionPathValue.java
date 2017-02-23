@@ -14,10 +14,6 @@ class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
     this.animatableYDimension = animatableYDimension;
   }
 
-  @Override public PointF valueFromObject(Object object, float scale) {
-    return null;
-  }
-
   @Override public KeyframeAnimation<PointF> createAnimation() {
     return new SplitDimensionPathKeyframeAnimation(
         animatableXDimension.createAnimation(), animatableYDimension.createAnimation());
