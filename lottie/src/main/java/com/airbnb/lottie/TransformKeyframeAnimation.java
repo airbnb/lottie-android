@@ -1,11 +1,9 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
 class TransformKeyframeAnimation {
 
-  private final BaseKeyframeAnimation<?, PointF> anchorPoint;
-  private final BaseKeyframeAnimation<?, PointF> position;
+  private final BaseKeyframeAnimation<?, CPointF> anchorPoint;
+  private final BaseKeyframeAnimation<?, CPointF> position;
   private final BaseKeyframeAnimation<?, ScaleXY> scale;
   private final BaseKeyframeAnimation<?, Float> rotation;
   private final BaseKeyframeAnimation<?, Integer> opacity;
@@ -18,11 +16,11 @@ class TransformKeyframeAnimation {
     opacity = animatableTransform.getOpacity().createAnimation();
   }
 
-  BaseKeyframeAnimation<?, PointF> getAnchorPoint() {
+  BaseKeyframeAnimation<?, CPointF> getAnchorPoint() {
     return anchorPoint;
   }
 
-  BaseKeyframeAnimation<?, PointF> getPosition() {
+  BaseKeyframeAnimation<?, CPointF> getPosition() {
     return position;
   }
 

@@ -26,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.ExpressionFactory;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
@@ -63,7 +64,13 @@ public class AnimationFragment extends Fragment {
 
   private final Map<String, String> assetFolders = new HashMap<String, String>() {{
     put("WeAccept.json", "Tests/weaccept");
+    put("gift.json", "Tests/gift");
   }};
+
+  // test
+  static {
+    ExpressionFactory.add(new WigglePattenImpl(), WiggleMagicPointFF.class);
+  }
 
   private OkHttpClient client;
 

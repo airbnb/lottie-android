@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply from: 'gradle-maven-push.gradle'
+
 
 android {
   compileSdkVersion 25

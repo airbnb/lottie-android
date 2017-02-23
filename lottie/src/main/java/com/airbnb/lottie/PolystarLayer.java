@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
@@ -63,10 +62,10 @@ class PolystarLayer extends AnimatableLayer {
      */
     private static final float POLYSTAR_MAGIC_NUMBER = .47829f;
     private static final float POLYGON_MAGIC_NUMBER = .25f;
-    private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
-        new KeyframeAnimation.AnimationListener<PointF>() {
+    private final KeyframeAnimation.AnimationListener<CPointF> pointChangedListener =
+        new KeyframeAnimation.AnimationListener<CPointF>() {
           @Override
-          public void onValueChanged(PointF value) {
+          public void onValueChanged(CPointF value) {
             onPolystarChanged();
           }
         };
@@ -83,7 +82,7 @@ class PolystarLayer extends AnimatableLayer {
 
     private PolystarShape.Type type;
     private BaseKeyframeAnimation<?, Float> pointsAnimation;
-    private BaseKeyframeAnimation<?, PointF> positionAnimation;
+    private BaseKeyframeAnimation<?, CPointF> positionAnimation;
     private BaseKeyframeAnimation<?, Float> rotationAnimation;
     private BaseKeyframeAnimation<?, Float> outerRadiusAnimation;
     private BaseKeyframeAnimation<?, Float> outerRoundednessAnimation;
@@ -279,8 +278,8 @@ class PolystarLayer extends AnimatableLayer {
       }
 
 
-      PointF position = positionAnimation.getValue();
-      path.offset(position.x, position.y);
+      CPointF position = positionAnimation.getValue();
+      path.offset(position.x(), position.y());
       path.close();
     }
 
@@ -336,8 +335,8 @@ class PolystarLayer extends AnimatableLayer {
       }
 
 
-      PointF position = positionAnimation.getValue();
-      path.offset(position.x, position.y);
+      CPointF position = positionAnimation.getValue();
+      path.offset(position.x(), position.y());
       path.close();
     }
   }

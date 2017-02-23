@@ -1,18 +1,18 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.graphics.PointF;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-class PathKeyframe extends Keyframe<PointF> {
+class PathKeyframe extends Keyframe<CPointF> implements IPathKeyframe {
   @Nullable private Path path;
 
-  private PathKeyframe(LottieComposition composition, @Nullable PointF startValue,
-      @Nullable PointF endValue, @Nullable Interpolator interpolator, float startFrame,
+  private PathKeyframe(LottieComposition composition, @Nullable CPointF startValue,
+      @Nullable CPointF endValue, @Nullable Interpolator interpolator, float startFrame,
       @Nullable Float endFrame) {
     super(composition, startValue, endValue, interpolator, startFrame, endFrame);
   }
@@ -22,11 +22,11 @@ class PathKeyframe extends Keyframe<PointF> {
     }
 
     static PathKeyframe newInstance(JSONObject json, LottieComposition composition,
-        AnimatableValue<PointF, ?> animatableValue) {
-      Keyframe<PointF> keyframe = Keyframe.Factory.newInstance(json, composition,
+        AnimatableValue<CPointF, ?> animatableValue) {
+      Keyframe<CPointF> keyframe = Keyframe.Factory.newInstance(json, composition,
           composition.getScale(), animatableValue);
-      PointF cp1 = null;
-      PointF cp2 = null;
+      CPointF cp1 = null;
+      CPointF cp2 = null;
       JSONArray tiJson = json.optJSONArray("ti");
       JSONArray toJson = json.optJSONArray("to");
       if (tiJson != null && toJson != null) {
@@ -44,8 +44,13 @@ class PathKeyframe extends Keyframe<PointF> {
     }
   }
 
+  @Override
+  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    // do noting
+  }
+
   /** This will be null if the startValue and endValue are the same. */
-  @Nullable Path getPath() {
+  public Path getPath() {
     return path;
   }
 }

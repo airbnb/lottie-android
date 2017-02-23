@@ -1,19 +1,17 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
 import org.json.JSONObject;
 
-class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
+class AnimatablePointValue extends BaseAnimatableValue<CPointF, CPointF> {
   AnimatablePointValue(JSONObject pointValues, LottieComposition composition) {
     super(pointValues, composition, true);
   }
 
-  @Override public PointF valueFromObject(Object object, float scale) {
+  @Override public CPointF valueFromObject(Object object, float scale) {
     return PointFFactory.newInstance(object, scale);
   }
 
-  @Override public KeyframeAnimation<PointF> createAnimation() {
+  @Override public KeyframeAnimation<CPointF> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
     }
