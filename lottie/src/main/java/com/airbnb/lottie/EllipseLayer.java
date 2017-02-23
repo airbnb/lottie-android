@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
@@ -60,34 +59,34 @@ class EllipseLayer extends AnimatableLayer {
   private static final class EllipseShapeLayer extends ShapeLayer {
     private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
-    private final KeyframeAnimation.AnimationListener<PointF> circleSizeChangedListener =
-        new KeyframeAnimation.AnimationListener<PointF>() {
+    private final KeyframeAnimation.AnimationListener<CPointF> circleSizeChangedListener =
+        new KeyframeAnimation.AnimationListener<CPointF>() {
           @Override
-          public void onValueChanged(PointF value) {
+          public void onValueChanged(CPointF value) {
             onCircleSizeChanged();
           }
         };
 
-    private final KeyframeAnimation.AnimationListener<PointF> circlePositionChangedListener =
-        new KeyframeAnimation.AnimationListener<PointF>() {
+    private final KeyframeAnimation.AnimationListener<CPointF> circlePositionChangedListener =
+        new KeyframeAnimation.AnimationListener<CPointF>() {
           @Override
-          public void onValueChanged(PointF value) {
+          public void onValueChanged(CPointF value) {
             invalidateSelf();
           }
         };
 
     private final Path path = new Path();
 
-    private BaseKeyframeAnimation<?, PointF> circleSize;
-    private BaseKeyframeAnimation<?, PointF> circlePosition;
+    private BaseKeyframeAnimation<?, CPointF> circleSize;
+    private BaseKeyframeAnimation<?, CPointF> circlePosition;
 
     EllipseShapeLayer(Drawable.Callback callback) {
       super(callback);
       setPath(new StaticKeyframeAnimation<>(path));
     }
 
-    void updateCircle(BaseKeyframeAnimation<?, PointF> circlePosition,
-        BaseKeyframeAnimation<?, PointF> circleSize) {
+    void updateCircle(BaseKeyframeAnimation<?, CPointF> circlePosition,
+        BaseKeyframeAnimation<?, CPointF> circleSize) {
       if (this.circleSize != null) {
         removeAnimation(this.circleSize);
         this.circleSize.removeUpdateListener(circleSizeChangedListener);
@@ -106,8 +105,8 @@ class EllipseLayer extends AnimatableLayer {
     }
 
     private void onCircleSizeChanged() {
-      float halfWidth = circleSize.getValue().x / 2f;
-      float halfHeight = circleSize.getValue().y / 2f;
+      float halfWidth = circleSize.getValue().x() / 2f;
+      float halfHeight = circleSize.getValue().y() / 2f;
       setBounds(0, 0, (int) halfWidth * 2, (int) halfHeight * 2);
 
       float cpW = halfWidth * ELLIPSE_CONTROL_POINT_PERCENTAGE;
@@ -120,7 +119,7 @@ class EllipseLayer extends AnimatableLayer {
       path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
       path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
 
-      path.offset(circlePosition.getValue().x, circlePosition.getValue().y);
+      path.offset(circlePosition.getValue().x(), circlePosition.getValue().y());
 
       path.close();
 

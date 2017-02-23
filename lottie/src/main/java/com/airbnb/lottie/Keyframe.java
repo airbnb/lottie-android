@@ -1,6 +1,5 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.view.animation.PathInterpolatorCompat;
@@ -88,8 +87,8 @@ public class Keyframe<T> {
 
     static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition, float scale,
         AnimatableValue<T, ?> animatableValue) {
-      PointF cp1 = null;
-      PointF cp2 = null;
+      CPointF cp1 = null;
+      CPointF cp2 = null;
       float startFrame = 0;
       T startValue = null;
       T endValue = null;
@@ -122,7 +121,7 @@ public class Keyframe<T> {
           interpolator = LINEAR_INTERPOLATOR;
         } else if (cp1 != null) {
           interpolator = PathInterpolatorCompat.create(
-              cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+              cp1.x() / scale, cp1.y() / scale, cp2.x() / scale, cp2.y() / scale);
         } else {
           interpolator = LINEAR_INTERPOLATOR;
         }

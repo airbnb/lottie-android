@@ -1,7 +1,5 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
-public interface IAnimatablePathValue extends AnimatableValue<PointF, PointF> {
-  PointF getInitialPoint();
+public interface IAnimatablePathValue extends AnimatableValue<CPointF, CPointF> {
+  CPointF getInitialPoint();
 }

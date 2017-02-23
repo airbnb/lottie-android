@@ -1,23 +1,22 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 
 class MiscUtils {
-  static PointF addPoints(PointF p1, PointF p2) {
-    return new PointF(p1.x + p2.x, p1.y + p2.y);
+  static CPointF addPoints(CPointF p1, CPointF p2) {
+    return new CPointF(p1.x() + p2.x(), p1.y() + p2.y());
   }
 
   static void getPathFromData(ShapeData shapeData, Path outPath) {
     outPath.reset();
-    PointF initialPoint = shapeData.getInitialPoint();
-    outPath.moveTo(initialPoint.x, initialPoint.y);
+    CPointF initialPoint = shapeData.getInitialPoint();
+    outPath.moveTo(initialPoint.x(), initialPoint.y());
     for (int i = 0; i < shapeData.getCurves().size(); i++) {
       CubicCurveData curveData = shapeData.getCurves().get(i);
-      outPath.cubicTo(curveData.getControlPoint1().x, curveData.getControlPoint1().y,
-          curveData.getControlPoint2().x, curveData.getControlPoint2().y,
-          curveData.getVertex().x, curveData.getVertex().y);
+      outPath.cubicTo(curveData.getControlPoint1().x(), curveData.getControlPoint1().y(),
+          curveData.getControlPoint2().x(), curveData.getControlPoint2().y(),
+          curveData.getVertex().x(), curveData.getVertex().y());
     }
     if (shapeData.isClosed()) {
       outPath.close();

@@ -1,17 +1,15 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
 import java.util.Collections;
 
-class SplitDimensionPathKeyframeAnimation extends KeyframeAnimation<PointF> {
-  private final PointF point = new PointF();
+class SplitDimensionPathKeyframeAnimation extends KeyframeAnimation<CPointF> {
+  private final CPointF point = new CPointF();
   private final KeyframeAnimation<Float> xAnimation;
   private final KeyframeAnimation<Float> yAnimation;
 
   SplitDimensionPathKeyframeAnimation(
       KeyframeAnimation<Float> xAnimation, KeyframeAnimation<Float> yAnimation) {
-    super(Collections.<Keyframe<PointF>>emptyList());
+    super(Collections.<Keyframe<CPointF>>emptyList());
 
     this.xAnimation = xAnimation;
     this.yAnimation = yAnimation;
@@ -26,11 +24,11 @@ class SplitDimensionPathKeyframeAnimation extends KeyframeAnimation<PointF> {
     }
   }
 
-  @Override public PointF getValue() {
+  @Override public CPointF getValue() {
     return getValue(null, 0);
   }
 
-  @Override PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
+  @Override CPointF getValue(Keyframe<CPointF> keyframe, float keyframeProgress) {
     return point;
   }
 }

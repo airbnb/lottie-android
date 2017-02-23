@@ -2,7 +2,6 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -77,10 +76,10 @@ class RectLayer extends AnimatableLayer {
 
   private static class RectShapeLayer extends ShapeLayer {
 
-    private final KeyframeAnimation.AnimationListener<PointF> sizeChangedListener =
-        new KeyframeAnimation.AnimationListener<PointF>() {
+    private final KeyframeAnimation.AnimationListener<CPointF> sizeChangedListener =
+        new KeyframeAnimation.AnimationListener<CPointF>() {
           @Override
-          public void onValueChanged(PointF value) {
+          public void onValueChanged(CPointF value) {
             onRectChanged();
           }
         };
@@ -93,10 +92,10 @@ class RectLayer extends AnimatableLayer {
           }
         };
 
-    private final KeyframeAnimation.AnimationListener<PointF> positionChangedListener =
-        new KeyframeAnimation.AnimationListener<PointF>() {
+    private final KeyframeAnimation.AnimationListener<CPointF> positionChangedListener =
+        new KeyframeAnimation.AnimationListener<CPointF>() {
           @Override
-          public void onValueChanged(PointF value) {
+          public void onValueChanged(CPointF value) {
             onRectChanged();
           }
         };
@@ -104,8 +103,8 @@ class RectLayer extends AnimatableLayer {
     private final Path path = new Path();
     private final RectF rect = new RectF();
     private BaseKeyframeAnimation<?, Float> rectCornerRadius;
-    private BaseKeyframeAnimation<?, PointF> rectPosition;
-    private BaseKeyframeAnimation<?, PointF> rectSize;
+    private BaseKeyframeAnimation<?, CPointF> rectPosition;
+    private BaseKeyframeAnimation<?, CPointF> rectSize;
 
     private boolean updateRectOnNextDraw;
 
@@ -125,7 +124,7 @@ class RectLayer extends AnimatableLayer {
       onRectChanged();
     }
 
-    void setRectSize(KeyframeAnimation<PointF> rectSize) {
+    void setRectSize(KeyframeAnimation<CPointF> rectSize) {
       if (this.rectSize != null) {
         removeAnimation(this.rectSize);
         this.rectSize.removeUpdateListener(sizeChangedListener);
@@ -136,7 +135,7 @@ class RectLayer extends AnimatableLayer {
       onRectChanged();
     }
 
-    void setRectPosition(BaseKeyframeAnimation<?, PointF> rectPosition) {
+    void setRectPosition(BaseKeyframeAnimation<?, CPointF> rectPosition) {
       if (this.rectPosition != null) {
         removeAnimation(this.rectPosition);
         this.rectPosition.removeUpdateListener(positionChangedListener);
@@ -159,9 +158,9 @@ class RectLayer extends AnimatableLayer {
         return;
       }
 
-      PointF size = rectSize.getValue();
-      float halfWidth = size.x / 2f;
-      float halfHeight = size.y / 2f;
+      CPointF size = rectSize.getValue();
+      float halfWidth = size.x() / 2f;
+      float halfHeight = size.y() / 2f;
       float radius = rectCornerRadius == null ? 0f : rectCornerRadius.getValue();
       float maxRadius = Math.min(halfWidth, halfHeight);
       if (radius > maxRadius) {
@@ -169,47 +168,47 @@ class RectLayer extends AnimatableLayer {
       }
 
       // Draw the rectangle top right to bottom left.
-      PointF position = rectPosition == null ? Utils.emptyPoint() : rectPosition.getValue();
+      CPointF position = rectPosition == null ? Utils.emptyPoint() : rectPosition.getValue();
 
-      path.moveTo(position.x + halfWidth, position.y - halfHeight + radius);
+      path.moveTo(position.x() + halfWidth, position.y() - halfHeight + radius);
 
-      path.lineTo(position.x + halfWidth, position.y + halfHeight - radius);
+      path.lineTo(position.x() + halfWidth, position.y() + halfHeight - radius);
 
       if (radius > 0) {
-        rect.set(position.x + halfWidth - 2 * radius,
-            position.y + halfHeight - 2 * radius,
-            position.x + halfWidth,
-            position.y + halfHeight);
+        rect.set(position.x() + halfWidth - 2 * radius,
+            position.y() + halfHeight - 2 * radius,
+            position.x() + halfWidth,
+            position.y() + halfHeight);
         path.arcTo(rect, 0, 90, false);
       }
 
-      path.lineTo(position.x - halfWidth + radius, position.y + halfHeight);
+      path.lineTo(position.x() - halfWidth + radius, position.y() + halfHeight);
 
       if (radius > 0) {
-        rect.set(position.x - halfWidth,
-            position.y + halfHeight - 2 * radius,
-            position.x - halfWidth + 2 * radius,
-            position.y + halfHeight);
+        rect.set(position.x() - halfWidth,
+            position.y() + halfHeight - 2 * radius,
+            position.x() - halfWidth + 2 * radius,
+            position.y() + halfHeight);
         path.arcTo(rect, 90, 90, false);
       }
 
-      path.lineTo(position.x - halfWidth, position.y - halfHeight + 2 * radius);
+      path.lineTo(position.x() - halfWidth, position.y() - halfHeight + 2 * radius);
 
       if (radius > 0) {
-        rect.set(position.x - halfWidth,
-            position.y - halfHeight,
-            position.x - halfWidth + 2 * radius,
-            position.y - halfHeight + 2 * radius);
+        rect.set(position.x() - halfWidth,
+            position.y() - halfHeight,
+            position.x() - halfWidth + 2 * radius,
+            position.y() - halfHeight + 2 * radius);
         path.arcTo(rect, 180, 90, false);
       }
 
-      path.lineTo(position.x + halfWidth - 2 * radius, position.y - halfHeight);
+      path.lineTo(position.x() + halfWidth - 2 * radius, position.y() - halfHeight);
 
       if (radius > 0) {
-        rect.set(position.x + halfWidth - 2 * radius,
-            position.y - halfHeight,
-            position.x + halfWidth,
-            position.y - halfHeight + 2 * radius);
+        rect.set(position.x() + halfWidth - 2 * radius,
+            position.y() - halfHeight,
+            position.x() + halfWidth,
+            position.y() - halfHeight + 2 * radius);
         path.arcTo(rect, 270, 90, false);
       }
       path.close();

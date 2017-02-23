@@ -6,7 +6,6 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
@@ -38,10 +37,10 @@ class AnimatableLayer extends Drawable {
           invalidateSelf();
         }
       };
-  private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
-      new KeyframeAnimation.AnimationListener<PointF>() {
+  private final KeyframeAnimation.AnimationListener<CPointF> pointChangedListener =
+      new KeyframeAnimation.AnimationListener<CPointF>() {
         @Override
-        public void onValueChanged(PointF value) {
+        public void onValueChanged(CPointF value) {
           invalidateSelf();
         }
       };
@@ -118,9 +117,9 @@ class AnimatableLayer extends Drawable {
       return;
     }
 
-    PointF position = layer.transform.getPosition().getValue();
-    if (position.x != 0 || position.y != 0) {
-      canvas.translate(position.x, position.y);
+    CPointF position = layer.transform.getPosition().getValue();
+    if (position.x() != 0 || position.y() != 0) {
+      canvas.translate(position.x(), position.y());
     }
 
     float rotation = layer.transform.getRotation().getValue();
@@ -133,9 +132,9 @@ class AnimatableLayer extends Drawable {
       canvas.scale(scale.getScaleX(), scale.getScaleY());
     }
 
-    PointF anchorPoint = layer.transform.getAnchorPoint().getValue();
-    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      canvas.translate(-anchorPoint.x, -anchorPoint.y);
+    CPointF anchorPoint = layer.transform.getAnchorPoint().getValue();
+    if (anchorPoint.x() != 0 || anchorPoint.y() != 0) {
+      canvas.translate(-anchorPoint.x(), -anchorPoint.y());
     }
   }
 
@@ -159,8 +158,8 @@ class AnimatableLayer extends Drawable {
 
   void setTransform(TransformKeyframeAnimation transform) {
     this.transform = transform;
-    BaseKeyframeAnimation<?, PointF> anchorPoint = transform.getAnchorPoint();
-    BaseKeyframeAnimation<?, PointF> position = transform.getPosition();
+    BaseKeyframeAnimation<?, CPointF> anchorPoint = transform.getAnchorPoint();
+    BaseKeyframeAnimation<?, CPointF> position = transform.getPosition();
     BaseKeyframeAnimation<?, ScaleXY> scale = transform.getScale();
     BaseKeyframeAnimation<?, Float> rotation = transform.getRotation();
     BaseKeyframeAnimation<?, Integer> opacity = transform.getOpacity();

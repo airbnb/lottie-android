@@ -1,19 +1,17 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
 class CubicCurveData {
-  private final PointF controlPoint1;
-  private final PointF controlPoint2;
-  private final PointF vertex;
+  private final CPointF controlPoint1;
+  private final CPointF controlPoint2;
+  private final CPointF vertex;
 
   CubicCurveData() {
-    controlPoint1 = new PointF();
-    controlPoint2 = new PointF();
-    vertex = new PointF();
+    controlPoint1 = new CPointF();
+    controlPoint2 = new CPointF();
+    vertex = new CPointF();
   }
 
-  CubicCurveData(PointF controlPoint1, PointF controlPoint2, PointF vertex) {
+  CubicCurveData(CPointF controlPoint1, CPointF controlPoint2, CPointF vertex) {
     this.controlPoint1 = controlPoint1;
     this.controlPoint2 = controlPoint2;
     this.vertex = vertex;
@@ -23,7 +21,7 @@ class CubicCurveData {
     controlPoint1.set(x, y);
   }
 
-  PointF getControlPoint1() {
+  CPointF getControlPoint1() {
     return controlPoint1;
   }
 
@@ -31,7 +29,7 @@ class CubicCurveData {
     controlPoint2.set(x, y);
   }
 
-  PointF getControlPoint2() {
+  CPointF getControlPoint2() {
     return controlPoint2;
   }
 
@@ -39,7 +37,7 @@ class CubicCurveData {
     vertex.set(x, y);
   }
 
-  PointF getVertex() {
+  CPointF getVertex() {
     return vertex;
   }
 }

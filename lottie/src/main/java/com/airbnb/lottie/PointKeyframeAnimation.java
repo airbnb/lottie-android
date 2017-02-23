@@ -1,22 +1,20 @@
 package com.airbnb.lottie;
 
-import android.graphics.PointF;
-
 import java.util.List;
 
-class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
-  private final PointF point = new PointF();
+class PointKeyframeAnimation extends KeyframeAnimation<CPointF> {
+  private final CPointF point = new CPointF();
 
-  PointKeyframeAnimation(List<Keyframe<PointF>> keyframes) {
+  PointKeyframeAnimation(List<Keyframe<CPointF>> keyframes) {
     super(keyframes);
   }
 
-  @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
-    PointF startPoint = keyframe.startValue;
-    PointF endPoint = keyframe.endValue;
+  @Override public CPointF getValue(Keyframe<CPointF> keyframe, float keyframeProgress) {
+    CPointF startPoint = keyframe.startValue;
+    CPointF endPoint = keyframe.endValue;
 
-    point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
-        startPoint.y + keyframeProgress * (endPoint.y - startPoint.y));
+    point.set(startPoint.x() + keyframeProgress * (endPoint.x() - startPoint.x()),
+        startPoint.y() + keyframeProgress * (endPoint.y() - startPoint.y()));
     return point;
   }
 }
