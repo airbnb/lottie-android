@@ -68,10 +68,13 @@ If you want to reuse an animation such as in each item of a list or load it from
 ```java
  LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
  ...
- LottieComposition composition = LottieComposition.fromJson(getResources(), jsonObject, (composition) -> {
+ Cancellable compositionCancellable = LottieComposition.Factory.fromJson(getResources(), jsonObject, (composition) -> {
      animationView.setComposition(composition);
      animationView.playAnimation();
  });
+
+ // Cancel to stop asynchronous loading of composition
+ // compositionCancellable.cancel();
 ```
 
 You can then control the animation or add listeners:
