@@ -5,6 +5,8 @@ import android.graphics.Color;
 import org.json.JSONArray;
 
 class ColorFactory implements AnimatableValue.Factory<Integer> {
+  static final ColorFactory INSTANCE = new ColorFactory();
+
   @Override public Integer valueFromObject(Object object, float scale) {
     JSONArray colorArray = (JSONArray) object;
     if (colorArray.length() == 4) {

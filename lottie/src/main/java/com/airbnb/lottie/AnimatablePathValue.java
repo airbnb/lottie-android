@@ -37,7 +37,7 @@ class AnimatablePathValue implements IAnimatablePathValue {
       for (int i = 0; i < length; i++) {
         JSONObject jsonKeyframe = jsonArray.optJSONObject(i);
         PathKeyframe keyframe = PathKeyframe.Factory.newInstance(jsonKeyframe, composition,
-            new ValueFactory());
+            ValueFactory.INSTANCE);
         keyframes.add(keyframe);
       }
       Keyframe.setEndFrames(keyframes);
@@ -80,6 +80,11 @@ class AnimatablePathValue implements IAnimatablePathValue {
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<PointF> {
+    private static final Factory<PointF> INSTANCE = new ValueFactory();
+
+    private ValueFactory() {
+    }
+
     @Override public PointF valueFromObject(Object object, float scale) {
       return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
     }

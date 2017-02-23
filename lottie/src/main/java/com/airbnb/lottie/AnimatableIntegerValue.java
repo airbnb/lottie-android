@@ -58,6 +58,9 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
   private static class ValueFactory implements AnimatableValue.Factory<Integer> {
     private static final ValueFactory INSTANCE = new ValueFactory();
 
+    private ValueFactory() {
+    }
+
     @Override public Integer valueFromObject(Object object, float scale) {
       return Math.round(JsonUtils.valueFromObject(object) * scale);
     }
