@@ -31,11 +31,7 @@ public class LottieTest {
     TestRobot.testAnimation(activity, "MotionCorpse-Jrcanest.json");
     TestRobot.testAnimation(activity, "PinJump.json");
     TestRobot.testAnimation(activity, "TwitterHeart.json");
-    TestRobot.testAnimation(activity, "Tests/Hosts.json");
-    TestRobot.testAnimation(activity, "Tests/LightBulb.json", null,
-        new float[]{0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f, 0.5f, 1f});
     TestRobot.testAnimation(activity, "Tests/LoopPlayOnce.json");
-    TestRobot.testAnimation(activity, "Tests/Alarm.json");
     TestRobot.testAnimation(activity, "Tests/CheckSwitch.json");
     TestRobot.testAnimation(activity, "Tests/EllipseTrimPath.json");
     TestRobot.testAnimation(activity, "Tests/SplitDimensions.json");
@@ -43,8 +39,6 @@ public class LottieTest {
     TestRobot.testAnimation(activity, "Tests/Laugh4.json");
     TestRobot.testAnimation(activity, "Tests/Star.json");
     TestRobot.testAnimation(activity, "Tests/Polygon.json");
-    TestRobot.testAnimation(activity, "Tests/AllSet.json");
-    TestRobot.testAnimation(activity, "Tests/City.json");
     TestRobot.testAnimation(activity, "Tests/PreCompMadness.json");
     TestRobot.testAnimation(activity, "Tests/MatteParentPrecomp.json");
     TestRobot.testAnimation(activity, "Tests/Image.json", "Tests/weaccept");
