@@ -1,3 +1,13 @@
+# 1.5.1
+##### Features and improvements
+* Use a thread pool executor for deserialization.
+* Allow setting a default cache strategy
+* Drop repeated calls to setComposition with the same composition.
+##### Bugs Fixed
+* Fixed an image scaling issue.
+* Fixed a crash when leaving a screen with an image animation.
+* Fixed a crash when the json has no assets.
+
 # 1.5.0
 * Precomps.
 * 60% performance and memory improvement for masks and mattes.
