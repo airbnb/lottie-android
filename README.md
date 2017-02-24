@@ -42,7 +42,7 @@ dependencies {
 ```
 
 ## Using Lottie
-Lottie supports Jellybean (API 16) and above.
+Lottie supports ICS (API 14) and above.
 The simplest way to use it is with LottieAnimationView:
 
 ```xml
