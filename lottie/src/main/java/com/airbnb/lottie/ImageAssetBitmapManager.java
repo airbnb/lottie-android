@@ -26,6 +26,10 @@ class ImageAssetBitmapManager {
       Map<String, ImageAsset> imageAssets) {
     assertNotNull(callback);
 
+    if (TextUtils.isEmpty(imagesFolder)) {
+      throw new IllegalStateException("You must specify an image assets folder by calling " +
+          "setImageAssetsFolder on LottieAnimationView or LottieDrawable.");
+    }
     this.imagesFolder = imagesFolder;
     if (this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
       this.imagesFolder += '/';

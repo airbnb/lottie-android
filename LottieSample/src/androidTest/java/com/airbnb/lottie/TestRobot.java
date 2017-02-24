@@ -8,7 +8,8 @@ import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 class TestRobot {
-  private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.5f, 1f};
+  private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f,
+      0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0.95f, 1f};
 
   static void testStatic(MainActivity activity, String fileName) {
     testAnimation(activity, fileName, null, new float[] {0});

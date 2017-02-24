@@ -31,20 +31,18 @@ public class LottieTest {
     TestRobot.testAnimation(activity, "MotionCorpse-Jrcanest.json");
     TestRobot.testAnimation(activity, "PinJump.json");
     TestRobot.testAnimation(activity, "TwitterHeart.json");
-    TestRobot.testAnimation(activity, "Tests/LoopPlayOnce.json");
     TestRobot.testAnimation(activity, "Tests/CheckSwitch.json");
-    TestRobot.testAnimation(activity, "Tests/EllipseTrimPath.json");
-    TestRobot.testAnimation(activity, "Tests/SplitDimensions.json");
-    TestRobot.testAnimation(activity, "Tests/TrimPathsFull.json");
-    TestRobot.testAnimation(activity, "Tests/Laugh4.json");
-    TestRobot.testAnimation(activity, "Tests/Star.json");
-    TestRobot.testAnimation(activity, "Tests/Polygon.json");
-    TestRobot.testAnimation(activity, "Tests/PreCompMadness.json");
-    TestRobot.testAnimation(activity, "Tests/MatteParentPrecomp.json");
+    TestRobot.testAnimation(activity, "Tests/Fill.json");
     TestRobot.testAnimation(activity, "Tests/Image.json", "Tests/weaccept");
-    TestRobot.testStatic(activity, "Tests/TrimPathFill.json");
-    TestRobot.testStatic(activity, "Tests/Mask_26.json");
-    TestRobot.testStatic(activity, "Tests/MatteInv.json");
-    TestRobot.testStatic(activity, "Tests/MaskInv.json");
+    TestRobot.testAnimation(activity, "Tests/KeyframeTypes.json");
+    TestRobot.testAnimation(activity, "Tests/Laugh4.json");
+    TestRobot.testAnimation(activity, "Tests/LoopPlayOnce.json");
+    TestRobot.testAnimation(activity, "Tests/Parenting.json");
+    TestRobot.testAnimation(activity, "Tests/Precomps.json");
+    TestRobot.testAnimation(activity, "Tests/ShapeTypes.json");
+    TestRobot.testAnimation(activity, "Tests/SplitDimensions.json");
+    TestRobot.testAnimation(activity, "Tests/Stroke.json");
+    TestRobot.testAnimation(activity, "Tests/TrackMattes.json");
+    TestRobot.testAnimation(activity, "Tests/TrimPaths.json");
   }
 }
