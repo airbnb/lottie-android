@@ -11,6 +11,7 @@ import android.view.View;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static junit.framework.Assert.assertNotNull;
@@ -69,9 +70,11 @@ class ImageAssetBitmapManager {
   }
 
   void recycleBitmaps() {
-    for (String key : bitmaps.keySet()) {
-      Bitmap bitmap = bitmaps.remove(key);
-      bitmap.recycle();
+    Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry<String, Bitmap> entry = it.next();
+      entry.getValue().recycle();
+      it.remove();
     }
   }
 
