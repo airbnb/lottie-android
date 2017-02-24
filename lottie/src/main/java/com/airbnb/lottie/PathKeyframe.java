@@ -37,6 +37,7 @@ class PathKeyframe extends Keyframe<PointF> {
       PathKeyframe pathKeyframe = new PathKeyframe(composition, keyframe.startValue,
           keyframe.endValue, keyframe.interpolator, keyframe.startFrame, keyframe.endFrame);
 
+      //noinspection ConstantConditions
       if (keyframe.endValue != null && !keyframe.startValue.equals(keyframe.endValue)) {
         pathKeyframe.path = Utils.createPath(keyframe.startValue, keyframe.endValue, cp1, cp2);
       }

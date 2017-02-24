@@ -218,7 +218,11 @@ public class LottieComposition {
       }
     }
 
-    private static void parsePrecomps(JSONArray assetsJson, LottieComposition composition) {
+    private static void parsePrecomps(
+        @Nullable JSONArray assetsJson, LottieComposition composition) {
+      if (assetsJson == null) {
+        return;
+      }
       int length = assetsJson.length();
       for (int i = 0; i < length; i++) {
         JSONObject assetJson = assetsJson.optJSONObject(i);
@@ -238,7 +242,11 @@ public class LottieComposition {
       }
     }
 
-    private static void parseImages(JSONArray assetsJson, LottieComposition composition) {
+    private static void parseImages(
+        @Nullable JSONArray assetsJson, LottieComposition composition) {
+      if (assetsJson == null) {
+        return;
+      }
       int length = assetsJson.length();
       for (int i = 0; i < length; i++) {
         JSONObject assetJson = assetsJson.optJSONObject(i);
