@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Looper;
@@ -154,19 +153,8 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   @Override
-  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-  }
-
-  @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
-  }
-
-  @Override
   protected void onDetachedFromWindow() {
     recycleBitmaps();
-
     super.onDetachedFromWindow();
   }
 
