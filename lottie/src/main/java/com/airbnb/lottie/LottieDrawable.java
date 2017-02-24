@@ -206,9 +206,8 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
       float scaleY = bounds.height() / (float) compBounds.height();
       canvas.scale(scaleX, scaleY);
     }
-    super.draw(canvas);
-    // TODO: delete this?
     canvas.clipRect(getBounds());
+    super.draw(canvas);
     canvas.restoreToCount(saveCount);
 
   }

@@ -27,14 +27,6 @@ import static com.airbnb.lottie.Utils.closeQuietly;
  * {@link com.airbnb.lottie.LottieDrawable}.
  */
 public class LottieComposition {
-  /**
-   * The largest bitmap drawing cache can be is 8,294,400 bytes. There are 4 bytes per pixel
-   * leaving ~2.3M pixels available.
-   * Reduce the number a little bit for safety.
-   * <p>
-   * Hopefully this can be hardware accelerated someday.
-   */
-  private static final int MAX_PIXELS = 1000;
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, ImageAsset> images = new HashMap<>();
@@ -188,12 +180,6 @@ public class LottieComposition {
       if (width != -1 && height != -1) {
         int scaledWidth = (int) (width * scale);
         int scaledHeight = (int) (height * scale);
-        if (Math.max(scaledWidth, scaledHeight) > MAX_PIXELS) {
-          float factor = (float) MAX_PIXELS / (float) Math.max(scaledWidth, scaledHeight);
-          scaledWidth *= factor;
-          scaledHeight *= factor;
-          scale *= factor;
-        }
         bounds = new Rect(0, 0, scaledWidth, scaledHeight);
       }
 
