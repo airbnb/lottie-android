@@ -5,5 +5,10 @@
         <attr name="lottie_autoPlay" format="boolean" />
         <attr name="lottie_loop" format="boolean" />
         <attr name="lottie_imageAssetsFolder" format="string" />
+        <attr name="lottie_cacheStrategy" format="enum">
+            <enum name="none" value="0" />
+            <enum name="weak" value="1" />
+            <enum name="strong" value="2" />
+        </attr>
     </declare-styleable>
 </resources>

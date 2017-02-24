@@ -36,6 +36,8 @@ import java.util.Map;
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
  * or {@link #setAnimation(JSONObject)}.
  * <p>
+ * You can also set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
+ * <p>
  * You may manually set the progress of the animation with {@link #setProgress(float)}
  */
 public class LottieAnimationView extends AppCompatImageView {
@@ -65,6 +67,7 @@ public class LottieAnimationView extends AppCompatImageView {
       };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
+  private CacheStrategy defaultCacheStrategy;
   private String animationName;
 
   @Nullable private Cancellable compositionLoader;
@@ -99,6 +102,10 @@ public class LottieAnimationView extends AppCompatImageView {
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
+    int cacheStrategy = ta.getInt(
+        R.styleable.LottieAnimationView_lottie_cacheStrategy,
+        CacheStrategy.None.ordinal());
+    defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     ta.recycle();
     setLayerType(LAYER_TYPE_SOFTWARE, null);
 
@@ -177,7 +184,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * Will not cache the composition once loaded.
    */
   public void setAnimation(String animationName) {
-    setAnimation(animationName, CacheStrategy.None);
+    setAnimation(animationName, defaultCacheStrategy);
   }
 
   /**
@@ -239,6 +246,11 @@ public class LottieAnimationView extends AppCompatImageView {
     }
   }
 
+  /**
+   * Sets a composition.
+   * You can set a default cache strategy if this view was inflated with xml by
+   * using {@link R.attr#lottie_cacheStrategy}.
+   */
   public void setComposition(@NonNull LottieComposition composition) {
     if (L.DBG) {
       Log.v(TAG, "Set Composition \n" + composition);
