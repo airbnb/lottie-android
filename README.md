@@ -26,6 +26,12 @@ All of these animations were created in After Effects, exported with Bodymovin, 
 Read more about it on our [blog post](http://airbnb.design/introducing-lottie/)
 Or get in touch on Twitter ([gpeal8](https://twitter.com/gpeal8)) or via lottie@airbnb.com
 
+## Other Platforms
+ * [Web](https://github.com/bodymovin/bodymovin)
+ * [Xamarin](https://github.com/martijn00/LottieXamarin)
+ * [NativeScript](https://github.com/bradmartin/nativescript-lottie)
+ * [Appcelerator Titanium](https://github.com/m1ga/ti.animation)
+
 ## Sample App
 
 You can build the sample app yourself or download it from the [Play Store](https://play.google.com/store/apps/details?id=com.airbnb.lottie). The sample app includes some built in animations but also allows you to load an animation from internal storage or from a url.
@@ -248,11 +254,6 @@ LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not
 Clone this repository and run the LottieSample module to see a bunch of sample animations. The JSON files for them are located in [LottieSample/src/main/assets](https://github.com/airbnb/lottie-android/tree/master/LottieSample/src/main/assets) and the original After Effects files are located in [/After Effects Samples](https://github.com/airbnb/lottie-android/tree/master/After%20Effects%20Samples)
 
 The sample app can also load json files at a given url or locally on your device (like Downloads or on your sdcard).
-
-## Community Contributions
- * [Xamarin bindings](https://github.com/martijn00/LottieXamarin)
- * [NativeScript bindings](https://github.com/bradmartin/nativescript-lottie)
- * [Appcelerator Titanium bindings](https://github.com/m1ga/ti.animation)
  
 ## Alternatives
 1. Build animations by hand. Building animations by hand is a huge time commitment for design and engineering across Android and iOS. It's often hard or even impossible to justify spending so much time to get an animation right.
