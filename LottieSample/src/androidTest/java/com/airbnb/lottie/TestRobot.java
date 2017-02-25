@@ -12,7 +12,7 @@ class TestRobot {
       0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0.95f, 1f};
 
   static void testStatic(MainActivity activity, String fileName) {
-    testAnimation(activity, fileName, null, new float[] {0});
+    testAnimation(activity, fileName, null, new float[]{0});
   }
 
   static void testAnimation(MainActivity activity, String fileName) {
@@ -26,11 +26,49 @@ class TestRobot {
   static void testAnimation(MainActivity activity, String fileName, String imageAssetsFolder,
       float[] progress) {
     final LottieAnimationView view = new LottieAnimationView(activity);
-    view.setImageAssetsFolder(imageAssetsFolder);
-    view.setComposition(LottieComposition.Factory.fromFileSync(activity, fileName));
-    ViewHelpers.setupView(view)
-        .layout();
+    loadCompositionOnView(view, imageAssetsFolder, fileName);
+    recordScreenshots(view, fileName, progress);
+    cleanUpView(view, activity);
+  }
 
+  static void testChangingCompositions(MainActivity activity, String firstFile, String secondFile) {
+    final LottieAnimationView view = new LottieAnimationView(activity);
+    loadCompositionOnView(view, null, firstFile);
+    recordScreenshots(view, "test_changing_compositions_" + firstFile, DEFAULT_ANIMATED_PROGRESS);
+
+    loadCompositionOnView(view, null, secondFile);
+    recordScreenshots(view, "test_changing_compositions_" + secondFile, DEFAULT_ANIMATED_PROGRESS);
+
+    cleanUpView(view, activity);
+  }
+
+  static void testSettingSameComposition(MainActivity activity, String fileName) {
+    final LottieAnimationView view = new LottieAnimationView(activity);
+    loadCompositionOnView(view, null, fileName);
+    recordScreenshots(view, "same_composition_first_run_" + fileName, DEFAULT_ANIMATED_PROGRESS);
+
+    loadCompositionOnView(view, null, fileName);
+    recordScreenshots(view, "same_composition_second_run_" + fileName, DEFAULT_ANIMATED_PROGRESS);
+
+    cleanUpView(view, activity);
+  }
+
+  private static void loadCompositionOnView(LottieAnimationView view, String imageAssetsFolder,
+      String fileName) {
+
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(view.getContext(), fileName);
+
+    view.setImageAssetsFolder(imageAssetsFolder);
+    view.setComposition(composition);
+
+    ViewHelpers
+        .setupView(view)
+        .layout();
+  }
+
+  private static void recordScreenshots(LottieAnimationView view, String fileName,
+      float[] progress) {
     String nameWithoutExtension = fileName
         .substring(0, fileName.indexOf('.'))
         .replace("/", "_");
@@ -41,6 +79,9 @@ class TestRobot {
           .setName(String.format(Locale.US, "%s %d", nameWithoutExtension, (int) (p * 100)))
           .record();
     }
+  }
+
+  private static void cleanUpView(final LottieAnimationView view, MainActivity activity) {
     final Semaphore semaphore = new Semaphore(1);
     activity.runOnUiThread(new Runnable() {
       @Override public void run() {
@@ -48,6 +89,7 @@ class TestRobot {
         semaphore.release();
       }
     });
+
     try {
       semaphore.acquire();
     } catch (InterruptedException e) {

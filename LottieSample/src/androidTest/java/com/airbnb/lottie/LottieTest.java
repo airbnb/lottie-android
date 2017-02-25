@@ -44,5 +44,7 @@ public class LottieTest {
     TestRobot.testAnimation(activity, "Tests/Stroke.json");
     TestRobot.testAnimation(activity, "Tests/TrackMattes.json");
     TestRobot.testAnimation(activity, "Tests/TrimPaths.json");
+    TestRobot.testChangingCompositions(activity, "TwitterHeart.json", "PinJump.json");
+    TestRobot.testSettingSameComposition(activity, "PinJump.json");
   }
 }
