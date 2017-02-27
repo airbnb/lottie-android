@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class ShapeData {
@@ -128,6 +129,8 @@ class ShapeData {
           pointsArray.length() != outTangents.length()) {
         throw new IllegalStateException(
             "Unable to process points array or tangents. " + pointsData);
+      } else if (pointsArray.length() == 0) {
+        return new ShapeData(new PointF(), false, Collections.<CubicCurveData>emptyList());
       }
 
       int length = pointsArray.length();
