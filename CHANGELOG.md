@@ -1,3 +1,9 @@
+# 1.5.2
+#### Features and improvements
+* Significantly improved memory usage when using masks or mattes. No more bitmaps!
+#### Bugs Fixed
+* Further improved the compatibility of masks and mattes.
+
 # 1.5.1
 ##### Features and improvements
 * Use a thread pool executor for deserialization.
