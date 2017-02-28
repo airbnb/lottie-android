@@ -17,13 +17,14 @@ import java.util.Collections;
 import java.util.List;
 
 class LayerView extends AnimatableLayer {
-  private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG;
+  private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
+      Canvas.MATRIX_SAVE_FLAG;
   private MaskKeyframeAnimation mask;
   private LayerView matteLayer;
 
   private final RectF rect = new RectF();
   private final List<LayerView> transformLayers = new ArrayList<>();
-  private final Paint mainCanvasPaint = new Paint();
+  private final Paint mainCanvasPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint imagePaint =
@@ -31,7 +32,6 @@ class LayerView extends AnimatableLayer {
 
   private final Layer layerModel;
   private final LottieComposition composition;
-  private final CanvasPool canvasPool;
 
   @Nullable private LayerView parentLayer;
   /**
@@ -42,11 +42,10 @@ class LayerView extends AnimatableLayer {
   private int precompWidth;
   private int precompHeight;
 
-  LayerView(Layer layerModel, LottieComposition composition, Callback callback, CanvasPool canvasPool) {
+  LayerView(Layer layerModel, LottieComposition composition, Callback callback) {
     super(callback);
     this.layerModel = layerModel;
     this.composition = composition;
-    this.canvasPool = canvasPool;
     setBounds(composition.getBounds());
 
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
@@ -171,7 +170,7 @@ class LayerView extends AnimatableLayer {
     for (int i = precompLayers.size() - 1; i >= 0; i--) {
       Layer layer = precompLayers.get(i);
       LayerView layerView =
-          new LayerView(layer, composition, getCallback(), canvasPool);
+          new LayerView(layer, composition, getCallback());
       layerView.setPrecompSize(layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
       if (mattedLayer != null) {
         mattedLayer.setMatteLayer(layerView);
@@ -247,11 +246,12 @@ class LayerView extends AnimatableLayer {
       parent = parent.getParentLayer();
     }
 
+    if (precompWidth != 0 || precompHeight != 0) {
+      canvas.clipRect(0, 0, precompWidth, precompHeight);
+    }
+
     if (!hasMasks() && !hasMatte()) {
       int mainCanvasCount = saveCanvas(canvas);
-      if (precompWidth != 0 || precompHeight != 0) {
-        canvas.clipRect(0, 0, precompWidth, precompHeight);
-      }
       // Now apply the parent transformations from the top down.
       for (int i = transformLayers.size() - 1; i >= 0; i--) {
         LayerView layer = transformLayers.get(i);
@@ -263,40 +263,32 @@ class LayerView extends AnimatableLayer {
       return;
     }
 
-
-    BitmapCanvas bitmapCanvas =
-        canvasPool.acquire(composition.getBounds().width(), composition.getBounds().height(),
-            Bitmap.Config.ARGB_8888);
-
     // Now apply the parent transformations from the top down.
-    bitmapCanvas.save();
-    drawImageIfNeeded(bitmapCanvas);
+    rect.set(0, 0, composition.getBounds().width(), composition.getBounds().height());
+    canvas.saveLayer(rect, mainCanvasPaint, Canvas.ALL_SAVE_FLAG);
+
+    drawImageIfNeeded(canvas);
+    canvas.save();
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
-      applyTransformForLayer(bitmapCanvas, layer);
+      applyTransformForLayer(canvas, layer);
     }
-    super.draw(bitmapCanvas);
+    super.draw(canvas);
+    canvas.restore();
 
-    rect.set(0, 0, bitmapCanvas.getWidth(), bitmapCanvas.getHeight());
     if (hasMasks()) {
-      applyMasks(bitmapCanvas);
+      applyMasks(canvas);
     }
-    bitmapCanvas.restore();
 
     if (hasMatte()) {
-      bitmapCanvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
-      matteLayer.draw(bitmapCanvas);
-      bitmapCanvas.restore();
+      canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
+      matteLayer.draw(canvas);
+      canvas.restore();
     }
-
-    if (precompWidth != 0 || precompHeight != 0) {
-      canvas.clipRect(0, 0, precompWidth, precompHeight);
-    }
-    canvas.drawBitmap(bitmapCanvas.getBitmap(), 0, 0, null);
-    canvasPool.release(bitmapCanvas);
+    canvas.restore();
   }
 
-  private void applyMasks(BitmapCanvas canvas) {
+  private void applyMasks(Canvas canvas) {
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
 
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
