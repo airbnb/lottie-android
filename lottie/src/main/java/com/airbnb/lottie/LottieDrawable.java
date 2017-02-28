@@ -30,7 +30,6 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
 
-  private final CanvasPool canvasPool = new CanvasPool();
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
   private boolean playAnimationWhenLayerAdded;
@@ -109,7 +108,6 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
    *
    */
   @SuppressWarnings("WeakerAccess") public void recycleBitmaps() {
-    canvasPool.recycleBitmaps();
     if (imageAssetBitmapManager != null) {
       imageAssetBitmapManager.recycleBitmaps();
     }
@@ -157,7 +155,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
       Layer layer = composition.getLayers().get(i);
       LayerView layerView;
-      layerView = new LayerView(layer, composition, this, canvasPool);
+      layerView = new LayerView(layer, composition, this);
       layerMap.put(layerView.getId(), layerView);
       if (mattedLayer != null) {
         mattedLayer.setMatteLayer(layerView);

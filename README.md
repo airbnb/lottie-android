@@ -246,7 +246,8 @@ If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you ar
 
 ## Performance and Memory
 1. If the composition has no masks or mattes then the performance and memory overhead should be quite good. No bitmaps are created and most operations are simple canvas draw operations.
-2. If the composition has masks or mattes, a bitmap will be created and there will be a minor performance hit has it gets drawn.  
+2. If the composition has masks or mattes, offscreen buffers will be used and there will 
+be a performance hit has it gets drawn.  
 3. If you are using your animation in a list, it is recommended to use a CacheStrategy in 
 LottieAnimationView.setAnimation(String, CacheStrategy) so the animations do not have to be deserialized every time.
 
