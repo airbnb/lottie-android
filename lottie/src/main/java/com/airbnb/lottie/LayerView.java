@@ -21,8 +21,6 @@ class LayerView extends AnimatableLayer {
   private MaskKeyframeAnimation mask;
   private LayerView matteLayer;
 
-  private final PorterDuffXfermode DST_OUT = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
-  private final PorterDuffXfermode DST_IN = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
   private final RectF rect = new RectF();
   private final List<LayerView> transformLayers = new ArrayList<>();
   private final Paint mainCanvasPaint = new Paint();
@@ -52,10 +50,11 @@ class LayerView extends AnimatableLayer {
     setBounds(composition.getBounds());
 
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
-      mattePaint.setXfermode(DST_OUT);
+      mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
-      mattePaint.setXfermode(DST_IN);
+      mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     }
+    maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
 
     setupForModel();
   }
@@ -266,7 +265,8 @@ class LayerView extends AnimatableLayer {
 
 
     BitmapCanvas bitmapCanvas =
-        canvasPool.acquire(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+        canvasPool.acquire(composition.getBounds().width(), composition.getBounds().height(),
+            Bitmap.Config.ARGB_8888);
 
     // Now apply the parent transformations from the top down.
     bitmapCanvas.save();
@@ -277,13 +277,9 @@ class LayerView extends AnimatableLayer {
     }
     super.draw(bitmapCanvas);
 
-    rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
+    rect.set(0, 0, bitmapCanvas.getWidth(), bitmapCanvas.getHeight());
     if (hasMasks()) {
-      List<Mask> masks = mask.getMasks();
-      List<BaseKeyframeAnimation<?, Path>> maskAnimations = mask.getMaskAnimations();
-      for (int i = 0; i < masks.size(); i++) {
-        applyMask(bitmapCanvas, masks.get(i), maskAnimations.get(i));
-      }
+      applyMasks(bitmapCanvas);
     }
     bitmapCanvas.restore();
 
@@ -300,24 +296,30 @@ class LayerView extends AnimatableLayer {
     canvasPool.release(bitmapCanvas);
   }
 
-  private void applyMask(BitmapCanvas canvas, Mask mask,
-      BaseKeyframeAnimation<?, Path> maskAnimation) {
-    switch (mask.getMaskMode()) {
-      case MaskModeSubtract:
-        maskPaint.setXfermode(DST_OUT);
-        break;
-      case MaskModeAdd:
-      default:
-        maskPaint.setXfermode(DST_IN);
-    }
-
+  private void applyMasks(BitmapCanvas canvas) {
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
+
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
       applyTransformForLayer(canvas, layer);
     }
     applyTransformForLayer(canvas, this);
-    canvas.drawPath(maskAnimation.getValue(), mainCanvasPaint);
+
+    int size = mask.getMasks().size();
+    for (int i = 0; i < size; i++) {
+      Mask mask = this.mask.getMasks().get(i);
+      BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
+      Path maskPath = maskAnimation.getValue();
+      switch (mask.getMaskMode()) {
+        case MaskModeSubtract:
+          maskPath.setFillType(Path.FillType.INVERSE_WINDING);
+          break;
+        case MaskModeAdd:
+        default:
+          maskPath.setFillType(Path.FillType.WINDING);
+      }
+      canvas.drawPath(maskAnimation.getValue(), mainCanvasPaint);
+    }
     canvas.restore();
   }
 
