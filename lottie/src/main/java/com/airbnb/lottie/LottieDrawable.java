@@ -116,7 +116,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   /**
    * @return True if the composition is different from the previously set composition, false otherwise.
    */
-  boolean setComposition(LottieComposition composition) {
+  @SuppressWarnings("WeakerAccess") public boolean setComposition(LottieComposition composition) {
     if (getCallback() == null) {
       throw new IllegalStateException(
           "You or your view must set a Drawable.Callback before setting the composition. This " +
