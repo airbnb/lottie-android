@@ -108,7 +108,6 @@ class LayerView extends AnimatableLayer {
           matteLayer.setParentLayer(parentLayer);
         }
       }
-
     }
   }
 
@@ -248,6 +247,8 @@ class LayerView extends AnimatableLayer {
 
     if (precompWidth != 0 || precompHeight != 0) {
       canvas.clipRect(0, 0, precompWidth, precompHeight);
+    } else {
+      canvas.clipRect(0, 0, composition.getBounds().width(), composition.getBounds().height());
     }
 
     if (!hasMasks() && !hasMatte()) {
@@ -264,17 +265,15 @@ class LayerView extends AnimatableLayer {
     }
 
     // Now apply the parent transformations from the top down.
-    rect.set(0, 0, composition.getBounds().width(), composition.getBounds().height());
+    rect.set(canvas.getClipBounds());
     canvas.saveLayer(rect, mainCanvasPaint, Canvas.ALL_SAVE_FLAG);
 
     drawImageIfNeeded(canvas);
-    canvas.save();
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
       applyTransformForLayer(canvas, layer);
     }
     super.draw(canvas);
-    canvas.restore();
 
     if (hasMasks()) {
       applyMasks(canvas);
@@ -284,6 +283,7 @@ class LayerView extends AnimatableLayer {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       matteLayer.draw(canvas);
       canvas.restore();
+
     }
     canvas.restore();
   }
