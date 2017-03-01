@@ -1,59 +1,64 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.Nullable;
+
 import com.airbnb.lottie.samples.MainActivity;
 import com.facebook.testing.screenshot.Screenshot;
 import com.facebook.testing.screenshot.ViewHelpers;
 
-import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 class TestRobot {
-  private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f,
-      0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0.95f, 1f};
 
-  static void testStatic(MainActivity activity, String fileName) {
-    testAnimation(activity, fileName, null, new float[]{0});
+  static void testLinearAnimation(MainActivity activity, String fileName) {
+    testLinearAnimation(activity, fileName, null);
   }
 
-  static void testAnimation(MainActivity activity, String fileName) {
-    testAnimation(activity, fileName, null, DEFAULT_ANIMATED_PROGRESS);
-  }
+  static void testLinearAnimation(MainActivity activity, String fileName,
+      @Nullable String imageAssetsFolder) {
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(activity, fileName);
+    AnimationLinearLayout view = new AnimationLinearLayout(activity);
 
-  static void testAnimation(MainActivity activity, String fileName, String imageAssetsFolder) {
-    testAnimation(activity, fileName, imageAssetsFolder, DEFAULT_ANIMATED_PROGRESS);
-  }
+    view.setImageAssetsFolder(imageAssetsFolder);
+    view.setComposition(composition);
 
-  static void testAnimation(MainActivity activity, String fileName, String imageAssetsFolder,
-      float[] progress) {
-    final LottieAnimationView view = new LottieAnimationView(activity);
-    loadCompositionOnView(view, imageAssetsFolder, fileName);
-    recordScreenshots(view, fileName, progress);
-    cleanUpView(view, activity);
+    ViewHelpers
+        .setupView(view)
+        .layout();
+
+    String nameWithoutExtension = fileName
+        .substring(0, fileName.indexOf('.'))
+        .replace("/", "_");
+    Screenshot.snap(view)
+        .setGroup(fileName)
+        .setName(nameWithoutExtension)
+        .record();
   }
 
   static void testChangingCompositions(MainActivity activity, String firstFile, String secondFile) {
-    final LottieAnimationView view = new LottieAnimationView(activity);
+    final AnimationLinearLayout view = new AnimationLinearLayout(activity);
     loadCompositionOnView(view, null, firstFile);
-    recordScreenshots(view, "test_changing_compositions_" + firstFile, DEFAULT_ANIMATED_PROGRESS);
+    recordScreenshots(view, "test_changing_compositions_" + firstFile);
 
     loadCompositionOnView(view, null, secondFile);
-    recordScreenshots(view, "test_changing_compositions_" + secondFile, DEFAULT_ANIMATED_PROGRESS);
+    recordScreenshots(view, "test_changing_compositions_" + secondFile);
 
     cleanUpView(view, activity);
   }
 
   static void testSettingSameComposition(MainActivity activity, String fileName) {
-    final LottieAnimationView view = new LottieAnimationView(activity);
+    final AnimationLinearLayout view = new AnimationLinearLayout(activity);
     loadCompositionOnView(view, null, fileName);
-    recordScreenshots(view, "same_composition_first_run_" + fileName, DEFAULT_ANIMATED_PROGRESS);
+    recordScreenshots(view, "same_composition_first_run_" + fileName);
 
     loadCompositionOnView(view, null, fileName);
-    recordScreenshots(view, "same_composition_second_run_" + fileName, DEFAULT_ANIMATED_PROGRESS);
+    recordScreenshots(view, "same_composition_second_run_" + fileName);
 
     cleanUpView(view, activity);
   }
 
-  private static void loadCompositionOnView(LottieAnimationView view, String imageAssetsFolder,
+  private static void loadCompositionOnView(AnimationLinearLayout view, String imageAssetsFolder,
       String fileName) {
 
     LottieComposition composition =
@@ -67,21 +72,17 @@ class TestRobot {
         .layout();
   }
 
-  private static void recordScreenshots(LottieAnimationView view, String fileName,
-      float[] progress) {
+  private static void recordScreenshots(AnimationLinearLayout view, String fileName) {
     String nameWithoutExtension = fileName
         .substring(0, fileName.indexOf('.'))
         .replace("/", "_");
-    for (float p : progress) {
-      view.setProgress(p);
-      Screenshot.snap(view)
-          .setGroup(fileName)
-          .setName(String.format(Locale.US, "%s %d", nameWithoutExtension, (int) (p * 100)))
-          .record();
-    }
+    Screenshot.snap(view)
+        .setGroup(fileName)
+        .setName(nameWithoutExtension)
+        .record();
   }
 
-  private static void cleanUpView(final LottieAnimationView view, MainActivity activity) {
+  private static void cleanUpView(final AnimationLinearLayout view, MainActivity activity) {
     final Semaphore semaphore = new Semaphore(1);
     activity.runOnUiThread(new Runnable() {
       @Override public void run() {

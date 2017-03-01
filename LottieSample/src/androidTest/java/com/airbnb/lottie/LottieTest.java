@@ -23,27 +23,27 @@ public class LottieTest {
 
   @Test public void testAll() {
     MainActivity activity = activityRule.getActivity();
-    TestRobot.testAnimation(activity, "9squares-AlBoardman.json");
-    TestRobot.testAnimation(activity, "EmptyState.json");
-    TestRobot.testAnimation(activity, "HamburgerArrow.json");
-    TestRobot.testAnimation(activity, "LottieLogo1.json");
-    TestRobot.testAnimation(activity, "LottieLogo2.json");
-    TestRobot.testAnimation(activity, "MotionCorpse-Jrcanest.json");
-    TestRobot.testAnimation(activity, "PinJump.json");
-    TestRobot.testAnimation(activity, "TwitterHeart.json");
-    TestRobot.testAnimation(activity, "Tests/CheckSwitch.json");
-    TestRobot.testAnimation(activity, "Tests/Fill.json");
-    TestRobot.testAnimation(activity, "Tests/Image.json", "Tests/weaccept");
-    TestRobot.testAnimation(activity, "Tests/KeyframeTypes.json");
-    TestRobot.testAnimation(activity, "Tests/Laugh4.json");
-    TestRobot.testAnimation(activity, "Tests/LoopPlayOnce.json");
-    TestRobot.testAnimation(activity, "Tests/Parenting.json");
-    TestRobot.testAnimation(activity, "Tests/Precomps.json");
-    TestRobot.testAnimation(activity, "Tests/ShapeTypes.json");
-    TestRobot.testAnimation(activity, "Tests/SplitDimensions.json");
-    TestRobot.testAnimation(activity, "Tests/Stroke.json");
-    TestRobot.testAnimation(activity, "Tests/TrackMattes.json");
-    TestRobot.testAnimation(activity, "Tests/TrimPaths.json");
+    TestRobot.testLinearAnimation(activity, "9squares-AlBoardman.json");
+    TestRobot.testLinearAnimation(activity, "EmptyState.json");
+    TestRobot.testLinearAnimation(activity, "HamburgerArrow.json");
+    TestRobot.testLinearAnimation(activity, "LottieLogo1.json");
+    TestRobot.testLinearAnimation(activity, "LottieLogo2.json");
+    TestRobot.testLinearAnimation(activity, "MotionCorpse-Jrcanest.json");
+    TestRobot.testLinearAnimation(activity, "PinJump.json");
+    TestRobot.testLinearAnimation(activity, "TwitterHeart.json");
+    TestRobot.testLinearAnimation(activity, "Tests/CheckSwitch.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Fill.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Image.json", "Tests/weaccept");
+    TestRobot.testLinearAnimation(activity, "Tests/KeyframeTypes.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Laugh4.json");
+    TestRobot.testLinearAnimation(activity, "Tests/LoopPlayOnce.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Parenting.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Precomps.json");
+    TestRobot.testLinearAnimation(activity, "Tests/ShapeTypes.json");
+    TestRobot.testLinearAnimation(activity, "Tests/SplitDimensions.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Stroke.json");
+    TestRobot.testLinearAnimation(activity, "Tests/TrackMattes.json");
+    TestRobot.testLinearAnimation(activity, "Tests/TrimPaths.json");
     TestRobot.testChangingCompositions(activity, "TwitterHeart.json", "PinJump.json");
     TestRobot.testSettingSameComposition(activity, "PinJump.json");
   }
