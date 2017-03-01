@@ -35,9 +35,10 @@ import java.util.Map;
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
  * or {@link #setAnimation(JSONObject)}.
  * <p>
- * You can also set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
+ * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
  * <p>
- * You may manually set the progress of the animation with {@link #setProgress(float)}
+ * You can manually set the progress of the animation with {@link #setProgress(float)} or
+ * {@link R.attr#lottie_progress}
  */
 public class LottieAnimationView extends AppCompatImageView {
   private static final String TAG = LottieAnimationView.class.getSimpleName();
@@ -101,6 +102,7 @@ public class LottieAnimationView extends AppCompatImageView {
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
+    setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     int cacheStrategy = ta.getInt(
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
         CacheStrategy.None.ordinal());
