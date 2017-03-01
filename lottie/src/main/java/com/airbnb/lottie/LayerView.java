@@ -268,12 +268,14 @@ class LayerView extends AnimatableLayer {
     rect.set(canvas.getClipBounds());
     canvas.saveLayer(rect, mainCanvasPaint, Canvas.ALL_SAVE_FLAG);
 
+    canvas.save();
     drawImageIfNeeded(canvas);
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
       applyTransformForLayer(canvas, layer);
     }
     super.draw(canvas);
+    canvas.restore();
 
     if (hasMasks()) {
       applyMasks(canvas);
@@ -283,7 +285,6 @@ class LayerView extends AnimatableLayer {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       matteLayer.draw(canvas);
       canvas.restore();
-
     }
     canvas.restore();
   }
