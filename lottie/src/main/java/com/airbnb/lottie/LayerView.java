@@ -328,6 +328,7 @@ class LayerView extends AnimatableLayer {
 
     canvas.save();
     applyTransformForLayer(canvas, this);
+    imagePaint.setAlpha(getAlpha());
     canvas.drawBitmap(bitmap, 0, 0 ,imagePaint);
     canvas.restore();
   }

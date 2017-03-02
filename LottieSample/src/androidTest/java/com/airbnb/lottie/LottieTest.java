@@ -31,9 +31,9 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "MotionCorpse-Jrcanest.json");
     TestRobot.testLinearAnimation(activity, "PinJump.json");
     TestRobot.testLinearAnimation(activity, "TwitterHeart.json");
+    TestRobot.testLinearAnimation(activity, "WeAccept.json", "Images/WeAccept");
     TestRobot.testLinearAnimation(activity, "Tests/CheckSwitch.json");
     TestRobot.testLinearAnimation(activity, "Tests/Fill.json");
-    TestRobot.testLinearAnimation(activity, "Tests/Image.json", "Tests/weaccept");
     TestRobot.testLinearAnimation(activity, "Tests/KeyframeTypes.json");
     TestRobot.testLinearAnimation(activity, "Tests/Laugh4.json");
     TestRobot.testLinearAnimation(activity, "Tests/LoopPlayOnce.json");
