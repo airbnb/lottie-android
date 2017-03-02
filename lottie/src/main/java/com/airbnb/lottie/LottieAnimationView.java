@@ -320,8 +320,16 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.playAnimation();
   }
 
+  public void resumeAnimation() {
+    lottieDrawable.resumeAnimation();
+  }
+
   @SuppressWarnings("unused") public void reverseAnimation() {
     lottieDrawable.reverseAnimation();
+  }
+
+  @SuppressWarnings("unused") public void resumeReverseAnimation() {
+    lottieDrawable.resumeReverseAnimation();
   }
 
   @SuppressWarnings("unused") public void setSpeed(float speed) {

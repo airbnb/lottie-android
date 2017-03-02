@@ -184,7 +184,7 @@ public class AnimationFragment extends Fragment {
       if (animationView.getProgress() == 1f) {
         animationView.setProgress(0f);
       }
-      animationView.playAnimation();
+      animationView.resumeAnimation();
       postUpdatePlayButtonText();
     }
   }

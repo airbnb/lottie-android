@@ -226,23 +226,43 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     return animator.isRunning();
   }
 
-  void playAnimation() {
+  @SuppressWarnings("WeakerAccess") public void playAnimation() {
+    playAnimation(false);
+  }
+
+  public void resumeAnimation() {
+    playAnimation(true);
+  }
+
+  private void playAnimation(boolean setStartTime) {
     if (layers.isEmpty()) {
       playAnimationWhenLayerAdded = true;
       reverseAnimationWhenLayerAdded = false;
       return;
     }
-    animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+    if (setStartTime) {
+      animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+    }
     animator.start();
   }
 
-  void reverseAnimation() {
+  @SuppressWarnings("unused") public void resumeReverseAnimation() {
+    reverseAnimation(true);
+  }
+
+  @SuppressWarnings("WeakerAccess") public void reverseAnimation() {
+    reverseAnimation(false);
+  }
+
+  private void reverseAnimation(boolean setStartTime) {
     if (layers.isEmpty()) {
       playAnimationWhenLayerAdded = false;
       reverseAnimationWhenLayerAdded = true;
       return;
     }
-    animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+    if (setStartTime) {
+      animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+    }
     animator.reverse();
   }
 
