@@ -42,7 +42,7 @@ class AnimatablePathValue implements IAnimatablePathValue {
       }
       Keyframe.setEndFrames(keyframes);
     } else {
-      initialPoint = JsonUtils.pointFromJsonArray((JSONArray) json, composition.getScale());
+      initialPoint = JsonUtils.pointFromJsonArray((JSONArray) json, composition.getDpScale());
     }
   }
 

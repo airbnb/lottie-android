@@ -336,6 +336,12 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setSpeed(speed);
   }
 
+  void setScale(float scale) {
+    lottieDrawable.setScale(scale);
+    setImageDrawable(null);
+    setImageDrawable(lottieDrawable);
+  }
+
   public void cancelAnimation() {
     lottieDrawable.cancelAnimation();
   }

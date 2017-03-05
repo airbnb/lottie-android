@@ -46,7 +46,7 @@ class ShapeLayer extends AnimatableLayer {
       new KeyframeAnimation.AnimationListener<Float>() {
         @Override
         public void onValueChanged(Float value) {
-          onLineWidthChanged();
+          invalidateSelf();
         }
       };
 
@@ -88,6 +88,7 @@ class ShapeLayer extends AnimatableLayer {
 
   private float currentPathScaleX;
   private float currentPathScaleY;
+  private float currentDrawableScale = 1f;
   private float currentPathStrokeStart;
   private float currentPathStrokeEnd = 100;
   private float currentPathStrokeOffset = 0;
@@ -155,6 +156,7 @@ class ShapeLayer extends AnimatableLayer {
     currentPathStrokeEnd = Float.NaN;
     currentPathScaleX = Float.NaN;
     currentPathScaleY = Float.NaN;
+    currentDrawableScale = 1f;
     onPathPropertiesChanged();
     invalidateSelf();
   }
@@ -167,11 +169,19 @@ class ShapeLayer extends AnimatableLayer {
   @SuppressLint("NewApi")
   @Override
   public void draw(@NonNull Canvas canvas) {
+    float scale = getLottieDrawable().getScale();
+    if (currentDrawableScale != scale) {
+      updateShape();
+    }
+
     if (pathPropertiesChanged) {
-      updateTrimPathPath();
+      updateShape();
     }
     if (dashPatternChanged) {
       updateDashPattern();
+    }
+    if (lineWidth != null) {
+      paint.setStrokeWidth(lineWidth.getValue() * getLottieDrawable().getScale());
     }
     if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
       return;
@@ -183,7 +193,7 @@ class ShapeLayer extends AnimatableLayer {
     }
   }
 
-  private void updateTrimPathPath() {
+  private void updateShape() {
     pathPropertiesChanged = false;
     boolean needsStrokeStart =
         strokeStart != null && strokeStart.getValue() != currentPathStrokeStart;
@@ -192,21 +202,30 @@ class ShapeLayer extends AnimatableLayer {
         strokeOffset != null && strokeOffset.getValue() != currentPathStrokeOffset;
     boolean needsScaleX = scale != null && scale.getValue().getScaleX() != currentPathScaleX;
     boolean needsScaleY = scale != null && scale.getValue().getScaleY() != currentPathScaleY;
+    boolean needsDrawableScale = currentDrawableScale != getLottieDrawable().getScale();
 
     if (!needsStrokeStart && !needsStrokeEnd && !needsScaleX && !needsScaleY &&
-        !needsStrokeOffset) {
+        !needsStrokeOffset && !needsDrawableScale) {
       return;
     }
+
     currentPath.set(path.getValue());
 
-    if (needsScaleX || needsScaleY) {
-      currentPath.computeBounds(tempRect, false);
-      currentPathScaleX = scale.getValue().getScaleX();
-      currentPathScaleY = scale.getValue().getScaleY();
-      scaleMatrix
-          .setScale(currentPathScaleX, currentPathScaleY, tempRect.centerX(), tempRect.centerY());
+    currentPath.computeBounds(tempRect, false);
+    currentPathScaleX = scale == null ? 1f : scale.getValue().getScaleX();
+    currentPathScaleY = scale == null ? 1f : scale.getValue().getScaleY();
+    currentDrawableScale = getLottieDrawable().getScale();
+    scaleMatrix.reset();
+    scaleMatrix
+          .setScale(
+              currentPathScaleX,
+              currentPathScaleY,
+              tempRect.centerX(),
+              tempRect.centerY());
       currentPath.transform(scaleMatrix, currentPath);
-    }
+    scaleMatrix.reset();
+    scaleMatrix.setScale(currentDrawableScale, currentDrawableScale ,0, 0);
+    currentPath.transform(scaleMatrix, currentPath);
 
     if (needsStrokeStart || needsStrokeEnd || needsStrokeOffset) {
       tempPath.set(currentPath);
@@ -257,6 +276,7 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   private void updateDashPattern() {
+    float scale = getLottieDrawable().getScale();
     float[] values = new float[lineDashPattern.size()];
     for (int i = 0; i < lineDashPattern.size(); i++) {
       values[i] = lineDashPattern.get(i).getValue();
@@ -273,6 +293,7 @@ class ShapeLayer extends AnimatableLayer {
           values[i] = 0.1f;
         }
       }
+      values[i] *= scale;
     }
     paint.setPathEffect(new DashPathEffect(values, lineDashPatternOffset.getValue()));
   }
@@ -323,11 +344,6 @@ class ShapeLayer extends AnimatableLayer {
     this.lineWidth = lineWidth;
     addAnimation(lineWidth);
     lineWidth.addUpdateListener(lineWidthChangedListener);
-    onLineWidthChanged();
-  }
-
-  private void onLineWidthChanged() {
-    paint.setStrokeWidth(lineWidth.getValue());
     invalidateSelf();
   }
 

@@ -97,7 +97,13 @@ class AnimatableLayer extends Drawable {
       }
       solidBackgroundPaint.setAlpha(alpha);
       if (alpha > 0) {
-        canvas.drawRect(getBounds(), solidBackgroundPaint);
+        float scale = getLottieDrawable().getScale();
+        canvas.drawRect(
+            0,
+            0,
+            getBounds().width() * scale,
+            getBounds().height() * scale,
+            solidBackgroundPaint);
       }
     }
     for (int i = 0; i < layers.size(); i++) {
@@ -118,9 +124,11 @@ class AnimatableLayer extends Drawable {
       return;
     }
 
+    float scale = getLottieDrawable().getScale();
+
     PointF position = layer.transform.getPosition().getValue();
     if (position.x != 0 || position.y != 0) {
-      canvas.translate(position.x, position.y);
+      canvas.translate(position.x * scale, position.y * scale);
     }
 
     float rotation = layer.transform.getRotation().getValue();
@@ -128,14 +136,14 @@ class AnimatableLayer extends Drawable {
       canvas.rotate(rotation);
     }
 
-    ScaleXY scale = layer.transform.getScale().getValue();
-    if (scale.getScaleX() != 1f || scale.getScaleY() != 1f) {
-      canvas.scale(scale.getScaleX(), scale.getScaleY());
+    ScaleXY scaleTransform = layer.transform.getScale().getValue();
+    if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
+      canvas.scale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
     }
 
     PointF anchorPoint = layer.transform.getAnchorPoint().getValue();
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      canvas.translate(-anchorPoint.x, -anchorPoint.y);
+      canvas.translate(-anchorPoint.x * scale, -anchorPoint.y * scale);
     }
   }
 

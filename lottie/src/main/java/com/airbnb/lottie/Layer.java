@@ -204,8 +204,8 @@ class Layer {
       long parentId = json.optLong("parent", -1);
 
       if (layerType == LayerType.Solid) {
-        solidWidth = (int) (json.optInt("sw") * composition.getScale());
-        solidHeight = (int) (json.optInt("sh") * composition.getScale());
+        solidWidth = (int) (json.optInt("sw") * composition.getDpScale());
+        solidHeight = (int) (json.optInt("sh") * composition.getDpScale());
         solidColor = Color.parseColor(json.optString("sc"));
         if (L.DBG) {
           Log.d(TAG, "\tSolid=" + Integer.toHexString(solidColor) + " " +
@@ -243,8 +243,8 @@ class Layer {
       float startProgress = startFrame / frames;
 
       if (layerType == LayerType.PreComp) {
-        preCompWidth = (int) (json.optInt("w") * composition.getScale());
-        preCompHeight = (int) (json.optInt("h") * composition.getScale());
+        preCompWidth = (int) (json.optInt("w") * composition.getDpScale());
+        preCompHeight = (int) (json.optInt("h") * composition.getDpScale());
       }
 
       float inFrame = json.optLong("ip");

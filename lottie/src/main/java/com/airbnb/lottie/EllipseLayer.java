@@ -16,8 +16,10 @@ class EllipseLayer extends AnimatableLayer {
 
     if (fill != null) {
       EllipseShapeLayer fillLayer = new EllipseShapeLayer(getCallback());
+      //noinspection ConstantConditions
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
+      //noinspection ConstantConditions
       fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
       fillLayer.updateCircle(
           circleShape.getPosition().createAnimation(),

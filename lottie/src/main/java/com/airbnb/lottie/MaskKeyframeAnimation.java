@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class MaskKeyframeAnimation {
-  private final Path path = new Path();
   private final List<BaseKeyframeAnimation<?, Path>> maskAnimations;
   private final List<Mask> masks;
 
@@ -24,13 +23,5 @@ class MaskKeyframeAnimation {
 
   List<BaseKeyframeAnimation<?, Path>> getMaskAnimations() {
     return maskAnimations;
-  }
-
-  Path getMaskUnionPath() {
-    path.reset();
-    for (BaseKeyframeAnimation<?, Path> mask : maskAnimations) {
-      this.path.addPath(mask.getValue());
-    }
-    return path;
   }
 }

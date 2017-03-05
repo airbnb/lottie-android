@@ -36,7 +36,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
     static AnimatableIntegerValue newInstance(JSONObject json, LottieComposition composition,
         boolean isDp, boolean remap100To255) {
-      float scale = isDp ? composition.getScale() : 1f;
+      float scale = isDp ? composition.getDpScale() : 1f;
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
           .newInstance(json, scale, composition, ValueFactory.INSTANCE)
           .parseJson();
