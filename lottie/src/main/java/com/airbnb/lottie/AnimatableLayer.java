@@ -147,6 +147,14 @@ class AnimatableLayer extends Drawable {
 
   @Override
   public int getAlpha() {
+    return getAlphaInternal();
+  }
+
+  /**
+   * getAlpha was added in 19. This internal getAlpha allows us to call it
+   * without having to avoid suppressing the NewApi lint rule.
+   */
+  int getAlphaInternal() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
     float parentAlpha = parentLayer == null ? 1f : (parentLayer.getAlpha() / 255f);
     return (int) (alpha * parentAlpha * 255);
