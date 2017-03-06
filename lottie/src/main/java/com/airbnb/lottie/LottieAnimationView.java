@@ -6,14 +6,12 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
@@ -174,10 +172,7 @@ public class LottieAnimationView extends AppCompatImageView {
     super.onDetachedFromWindow();
   }
 
-  @UiThread @VisibleForTesting void recycleBitmaps() {
-    if (Looper.myLooper() != Looper.getMainLooper()) {
-      throw new IllegalStateException("This must be called from the main thread.");
-    }
+  @VisibleForTesting void recycleBitmaps() {
     lottieDrawable.recycleBitmaps();
   }
 
@@ -267,6 +262,21 @@ public class LottieAnimationView extends AppCompatImageView {
       // hasn't changed.
       return;
     }
+
+    int screenWidth = Utils.getScreenWidth(getContext());
+    int screenHeight = Utils.getScreenHeight(getContext());
+    int compWidth = composition.getBounds().width();
+    int compHeight = composition.getBounds().height();
+    if (compWidth > screenWidth ||
+        compHeight > screenHeight) {
+      float xScale = screenWidth / (float) compWidth;
+      float yScale = screenHeight / (float) compHeight;
+      setScale(Math.min(xScale, yScale));
+      Log.w(L.TAG, String.format(
+          "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
+          compWidth, compHeight, screenWidth, screenHeight));
+    }
+
 
     // If you set a different composition on the view, the bounds will not update unless
     // the drawable is different than the original.
