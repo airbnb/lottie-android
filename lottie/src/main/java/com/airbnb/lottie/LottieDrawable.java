@@ -196,6 +196,10 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     if (composition == null) {
       return;
     }
+    float xScale = canvas.getWidth() / (float) composition.getBounds().width();
+    float yScale = canvas.getHeight() / (float) composition.getBounds().height();
+    setScale(Math.min(xScale, yScale));
+
     int saveCount = canvas.save();
     canvas.clipRect(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
     super.draw(canvas);
@@ -274,7 +278,6 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   @SuppressWarnings("WeakerAccess") public void setScale(float scale) {
     this.scale = scale;
     updateBounds();
-    invalidateSelf();
   }
 
   @SuppressWarnings("WeakerAccess") public float getScale() {
