@@ -119,10 +119,24 @@ public class LottieAnimationView extends AppCompatImageView {
     }
   }
 
+  @Override public void setImageResource(int resId) {
+    super.setImageResource(resId);
+    recycleBitmaps();
+  }
+
+  @Override public void setImageDrawable(Drawable drawable) {
+    if (drawable != lottieDrawable) {
+      recycleBitmaps();
+    }
+    super.setImageDrawable(drawable);
+  }
+
   @Override public void invalidateDrawable(Drawable dr) {
-    // We always want to invalidate the root drawable to it redraws the whole drawable.
-    // Eventually it would be great to be able to invalidate just the changed region.
-    super.invalidateDrawable(lottieDrawable);
+    if (getDrawable() == lottieDrawable) {
+      // We always want to invalidate the root drawable to it redraws the whole drawable.
+      // Eventually it would be great to be able to invalidate just the changed region.
+      super.invalidateDrawable(lottieDrawable);
+    }
   }
 
   @Override protected Parcelable onSaveInstanceState() {
