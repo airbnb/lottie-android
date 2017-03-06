@@ -1,3 +1,15 @@
+# 1.5.3
+#### Features and improvements
+* Added an image asset delegate so you can provide your own bitmaps from and sd card, for example.
+* Added an attr for setting progress.
+* Improved the performance of very large compositions by scaling them down to the screen size.
+* Separate APIs for play/cancel with or without setting progress.
+
+#### Bugs Fixed
+* Several issues that could cause graphical corruption in masks or mattes.
+* LottieAnimationView checks whether it's current drawable is LottieDrawable for some calls.
+
+
 # 1.5.2
 #### Features and improvements
 * Significantly improved memory usage when using masks or mattes. No more bitmaps!
