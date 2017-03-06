@@ -27,6 +27,7 @@ class LayerView extends AnimatableLayer {
   private final Paint mainCanvasPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint clearPaint = new Paint();
   private final Paint imagePaint =
       new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 
@@ -54,6 +55,7 @@ class LayerView extends AnimatableLayer {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     }
     maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+    clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
 
     setupForModel();
   }
@@ -270,6 +272,7 @@ class LayerView extends AnimatableLayer {
     // Now apply the parent transformations from the top down.
     rect.set(canvas.getClipBounds());
     canvas.saveLayer(rect, mainCanvasPaint, Canvas.ALL_SAVE_FLAG);
+    canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
 
     canvas.save();
     drawImageIfNeeded(canvas);
@@ -286,6 +289,7 @@ class LayerView extends AnimatableLayer {
 
     if (hasMatte()) {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
+      canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
       matteLayer.draw(canvas);
       canvas.restore();
     }
@@ -294,6 +298,7 @@ class LayerView extends AnimatableLayer {
 
   private void applyMasks(Canvas canvas) {
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
+    canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
 
     for (int i = transformLayers.size() - 1; i >= 0; i--) {
       LayerView layer = transformLayers.get(i);
