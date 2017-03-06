@@ -23,7 +23,9 @@ class RectLayer extends AnimatableLayer {
 
     if (fill != null) {
       fillLayer = new RectShapeLayer(getCallback());
+      //noinspection ConstantConditions
       fillLayer.setColor(fill.getColor().createAnimation());
+      //noinspection ConstantConditions
       fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
       fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
       fillLayer.setRectCornerRadius(rectShape.getCornerRadius().createAnimation());

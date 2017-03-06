@@ -28,7 +28,7 @@ class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
 
     static AnimatableScaleValue newInstance(JSONObject json, LottieComposition
         composition, boolean isDp) {
-      float scale = isDp ? composition.getScale() : 1f;
+      float scale = isDp ? composition.getDpScale() : 1f;
       AnimatableValueParser.Result<ScaleXY> result = AnimatableValueParser
           .newInstance(json, scale, composition, ScaleXY.Factory.INSTANCE)
           .parseJson();

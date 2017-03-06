@@ -36,15 +36,15 @@ public class LottieComposition {
   private final long startFrame;
   private final long endFrame;
   private final int frameRate;
-  private final float scale;
+  private final float dpScale;
 
-  private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate,
-      float scale) {
+  private LottieComposition(
+      Rect bounds, long startFrame, long endFrame, int frameRate, float dpScale) {
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
     this.frameRate = frameRate;
-    this.scale = scale;
+    this.dpScale = dpScale;
   }
 
   Layer layerModelForId(long id) {
@@ -86,8 +86,8 @@ public class LottieComposition {
   }
 
 
-  public float getScale() {
-    return scale;
+  public float getDpScale() {
+    return dpScale;
   }
 
   @Override public String toString() {

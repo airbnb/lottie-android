@@ -245,10 +245,13 @@ class LayerView extends AnimatableLayer {
       parent = parent.getParentLayer();
     }
 
+    float scale = getLottieDrawable().getScale();
     if (precompWidth != 0 || precompHeight != 0) {
-      canvas.clipRect(0, 0, precompWidth, precompHeight);
+      canvas.clipRect(0, 0, precompWidth * scale, precompHeight * scale);
     } else {
-      canvas.clipRect(0, 0, composition.getBounds().width(), composition.getBounds().height());
+      canvas.clipRect(0, 0,
+          getLottieDrawable().getIntrinsicWidth(),
+          getLottieDrawable().getIntrinsicHeight());
     }
 
     if (!hasMasks() && !hasMatte()) {
@@ -298,6 +301,9 @@ class LayerView extends AnimatableLayer {
     }
     applyTransformForLayer(canvas, this);
 
+    float scale = getLottieDrawable().getScale();
+    canvas.scale(scale, scale);
+
     int size = mask.getMasks().size();
     for (int i = 0; i < size; i++) {
       Mask mask = this.mask.getMasks().get(i);
@@ -311,7 +317,7 @@ class LayerView extends AnimatableLayer {
         default:
           maskPath.setFillType(Path.FillType.WINDING);
       }
-      canvas.drawPath(maskAnimation.getValue(), mainCanvasPaint);
+      canvas.drawPath(maskPath, mainCanvasPaint);
     }
     canvas.restore();
   }
@@ -328,6 +334,7 @@ class LayerView extends AnimatableLayer {
 
     canvas.save();
     applyTransformForLayer(canvas, this);
+    canvas.scale(getLottieDrawable().getScale(), getLottieDrawable().getScale());
     imagePaint.setAlpha(getAlphaInternal());
     canvas.drawBitmap(bitmap, 0, 0 ,imagePaint);
     canvas.restore();

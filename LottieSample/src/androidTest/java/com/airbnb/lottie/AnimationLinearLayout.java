@@ -11,6 +11,7 @@ import android.widget.TextView;
 public class AnimationLinearLayout extends LinearLayout {
   private static final float[] DEFAULT_ANIMATED_PROGRESS = {0f, 0.05f, 0.10f, 0.2f, 0.3f, 0.4f,
       0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0.95f, 1f};
+  private static final int DESIRED_WIDTH = 500;
 
   public AnimationLinearLayout(Context context) {
     super(context);
@@ -36,7 +37,6 @@ public class AnimationLinearLayout extends LinearLayout {
 
     LottieAnimationView animationView = new LottieAnimationView(getContext());
     animationView.setProgress(progress);
-    lp = generateDefaultLayoutParams();
     addView(animationView);
   }
 
@@ -57,6 +57,8 @@ public class AnimationLinearLayout extends LinearLayout {
         continue;
       }
       ((LottieAnimationView) child).setComposition(composition);
+      float scale = DESIRED_WIDTH / (float) composition.getBounds().width();
+      ((LottieAnimationView) child).setScale(scale);
     }
   }
 
