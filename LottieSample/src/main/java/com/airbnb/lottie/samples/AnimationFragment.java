@@ -6,8 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,10 +26,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.airbnb.lottie.ImageAssetDelegate;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import org.json.JSONException;
@@ -154,23 +150,7 @@ public class AnimationFragment extends Fragment {
     switch (requestCode) {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
-        // animationView.setImageAssetsFolder(assetFolders.get(assetName));
-        animationView.setImageAssetDelegate(new ImageAssetDelegate() {
-          @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
-            InputStream is;
-            try {
-              is = getContext().getAssets().open("Images/WeAccept/" + asset.getFileName());
-            } catch (IOException e) {
-              Log.w("Gabe", "Unable to open asset.", e);
-              return null;
-            }
-            BitmapFactory.Options opts = new BitmapFactory.Options();
-            opts.inScaled = true;
-            opts.inDensity = 160;
-            Bitmap bitmap = BitmapFactory.decodeStream(is, null, opts);
-            return bitmap;
-          }
-        });
+        animationView.setImageAssetsFolder(assetFolders.get(assetName));
         LottieComposition.Factory.fromAssetFileName(getContext(), assetName,
             new OnCompositionLoadedListener() {
               @Override

@@ -44,7 +44,7 @@ Gradle is the only supported build configuration, so just add the dependency to 
 
 ```groovy
 dependencies {  
-  compile 'com.airbnb.android:lottie:1.5.2'
+  compile 'com.airbnb.android:lottie:1.5.3'
 }
 ```
 
@@ -126,6 +126,16 @@ subdirectory of assets. Just call `setImageAssetsFolder` on `LottieAnimationView
 `LottieDrawable` with the relative folder inside of assets and make sure that the images that 
 bodymovin export are in that folder with their names unchanged (should be img_#).
 If you use `LottieDrawable` directly, you must call `recycleBitmaps` when you are done with it.
+
+If you need to provide your own bitmaps if you downloaded them from the network or something, you
+ can provide a delegate to do that:
+ ```java
+animationView.setImageAssetDelegate(new ImageAssetDelegate() {
+          @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
+            getBitmap(asset);
+          }
+        });
+```
 
 ## Supported After Effects Features
 
