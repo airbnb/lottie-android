@@ -1,12 +1,16 @@
 package com.airbnb.lottie;
 
+import android.content.Context;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import java.io.Closeable;
 
 final class Utils {
   private static PointF emptyPoint;
+  private static DisplayMetrics displayMetrics;
 
   static PointF emptyPoint() {
     if (emptyPoint == null) {
@@ -39,5 +43,23 @@ final class Utils {
       } catch (Exception ignored) {
       }
     }
+  }
+
+  static int getScreenWidth(Context context) {
+    if (displayMetrics == null) {
+      displayMetrics = new DisplayMetrics();
+    }
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    wm.getDefaultDisplay().getMetrics(displayMetrics);
+    return displayMetrics.widthPixels;
+  }
+
+  static int getScreenHeight(Context context) {
+    if (displayMetrics == null) {
+      displayMetrics = new DisplayMetrics();
+    }
+    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    wm.getDefaultDisplay().getMetrics(displayMetrics);
+    return displayMetrics.heightPixels;
   }
 }

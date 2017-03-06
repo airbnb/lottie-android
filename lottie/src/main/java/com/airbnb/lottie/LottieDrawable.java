@@ -132,6 +132,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
+    setScale(1f);
     updateBounds();
     buildLayersForComposition(composition);
 
@@ -196,9 +197,6 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     if (composition == null) {
       return;
     }
-    float xScale = canvas.getWidth() / (float) composition.getBounds().width();
-    float yScale = canvas.getHeight() / (float) composition.getBounds().height();
-    setScale(Math.min(xScale, yScale));
 
     int saveCount = canvas.save();
     canvas.clipRect(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
