@@ -32,6 +32,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
 
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
+  @Nullable private ImageAssetDelegate imageAssetDelegate;
   private boolean playAnimationWhenLayerAdded;
   private boolean reverseAnimationWhenLayerAdded;
   private boolean systemAnimationsAreDisabled;
@@ -278,6 +279,19 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     updateBounds();
   }
 
+  /**
+   * Use this if you can't bundle images with your app. This may be useful if you download the
+   * animations from the network or have the images saved to an SD Card. In that case, Lottie
+   * will defer the loading of the bitmap to this delegate.
+   */
+  @SuppressWarnings({"unused", "WeakerAccess"}) public void setImageAssetDelegate(
+      @SuppressWarnings("NullableProblems") ImageAssetDelegate assetDelegate) {
+    this.imageAssetDelegate = assetDelegate;
+    if (imageAssetBitmapManager != null) {
+      imageAssetBitmapManager.setAssetDelegate(assetDelegate);
+    }
+  }
+
   @SuppressWarnings("WeakerAccess") public float getScale() {
     return scale;
   }
@@ -345,7 +359,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
 
     if (imageAssetBitmapManager == null) {
       imageAssetBitmapManager = new ImageAssetBitmapManager(getCallback(),
-          imageAssetsFolder, composition.getImages());
+          imageAssetsFolder, imageAssetDelegate, composition.getImages());
     }
 
     return imageAssetBitmapManager;

@@ -360,6 +360,15 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setSpeed(speed);
   }
 
+  /**
+   * Use this if you can't bundle images with your app. This may be useful if you download the
+   * animations from the network or have the images saved to an SD Card. In that case, Lottie
+   * will defer the loading of the bitmap to this delegate.
+   */
+  public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
+    lottieDrawable.setImageAssetDelegate(assetDelegate);
+  }
+
   void setScale(float scale) {
     lottieDrawable.setScale(scale);
     setImageDrawable(null);

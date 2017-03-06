@@ -2,13 +2,16 @@ package com.airbnb.lottie;
 
 import org.json.JSONObject;
 
-class ImageAsset {
+/**
+ * Data class describing an image asset exported by bodymovin.
+ */
+public class LottieImageAsset {
   private final int width;
   private final int height;
   private final String id;
   private final String fileName;
 
-  private ImageAsset(int width, int height, String id, String fileName) {
+  private LottieImageAsset(int width, int height, String id, String fileName) {
     this.width = width;
     this.height = height;
     this.id = id;
@@ -19,25 +22,25 @@ class ImageAsset {
     private Factory() {
     }
 
-    static ImageAsset newInstance(JSONObject imageJson) {
-      return new ImageAsset(imageJson.optInt("w"), imageJson.optInt("h"), imageJson.optString("id"),
+    static LottieImageAsset newInstance(JSONObject imageJson) {
+      return new LottieImageAsset(imageJson.optInt("w"), imageJson.optInt("h"), imageJson.optString("id"),
           imageJson.optString("p"));
     }
   }
 
-  int getWidth() {
+  public int getWidth() {
     return width;
   }
 
-  int getHeight() {
+  public int getHeight() {
     return height;
   }
 
-  String getId() {
+  public String getId() {
     return id;
   }
 
-  String getFileName() {
+  public String getFileName() {
     return fileName;
   }
 }

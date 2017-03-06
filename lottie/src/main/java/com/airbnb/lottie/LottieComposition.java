@@ -29,7 +29,7 @@ import static com.airbnb.lottie.Utils.closeQuietly;
 public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
-  private final Map<String, ImageAsset> images = new HashMap<>();
+  private final Map<String, LottieImageAsset> images = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
   private final Rect bounds;
@@ -77,7 +77,7 @@ public class LottieComposition {
     return !images.isEmpty();
   }
 
-  Map<String, ImageAsset> getImages() {
+  Map<String, LottieImageAsset> getImages() {
     return images;
   }
 
@@ -239,7 +239,7 @@ public class LottieComposition {
         if (!assetJson.has("p")) {
           continue;
         }
-        ImageAsset image = ImageAsset.Factory.newInstance(assetJson);
+        LottieImageAsset image = LottieImageAsset.Factory.newInstance(assetJson);
         composition.images.put(image.getId(), image);
       }
     }

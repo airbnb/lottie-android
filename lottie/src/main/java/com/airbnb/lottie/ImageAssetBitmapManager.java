@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,19 +20,17 @@ import static junit.framework.Assert.assertNotNull;
 class ImageAssetBitmapManager {
   private final Context context;
   private String imagesFolder;
-  private final Map<String, ImageAsset> imageAssets;
+  @Nullable private ImageAssetDelegate assetDelegate;
+  private final Map<String, LottieImageAsset> imageAssets;
   private final Map<String, Bitmap> bitmaps = new HashMap<>();
 
   ImageAssetBitmapManager(Drawable.Callback callback, String imagesFolder,
-      Map<String, ImageAsset> imageAssets) {
+      ImageAssetDelegate assetDelegate, Map<String, LottieImageAsset> imageAssets) {
     assertNotNull(callback);
 
-    if (TextUtils.isEmpty(imagesFolder)) {
-      throw new IllegalStateException("You must specify an image assets folder by calling " +
-          "setImageAssetsFolder on LottieAnimationView or LottieDrawable.");
-    }
     this.imagesFolder = imagesFolder;
-    if (this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
+    if (!TextUtils.isEmpty(imagesFolder) &&
+        this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
       this.imagesFolder += '/';
     }
 
@@ -44,15 +43,26 @@ class ImageAssetBitmapManager {
 
     context = ((View) callback).getContext();
     this.imageAssets = imageAssets;
+    setAssetDelegate(assetDelegate);
+  }
+
+  void setAssetDelegate(@Nullable ImageAssetDelegate assetDelegate) {
+    this.assetDelegate = assetDelegate;
   }
 
   Bitmap bitmapForId(String id) {
     Bitmap bitmap = bitmaps.get(id);
     if (bitmap == null) {
-      ImageAsset imageAsset = imageAssets.get(id);
+      LottieImageAsset imageAsset = imageAssets.get(id);
       if (imageAsset == null) {
         return null;
       }
+      if (assetDelegate != null) {
+        bitmap = assetDelegate.fetchBitmap(imageAsset);
+        bitmaps.put(id, bitmap);
+        return bitmap;
+      }
+
       InputStream is;
       try {
         if (TextUtils.isEmpty(imagesFolder)) {
