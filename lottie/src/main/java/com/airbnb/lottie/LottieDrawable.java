@@ -5,7 +5,11 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.FloatRange;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
@@ -24,12 +28,14 @@ import java.util.List;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-public class LottieDrawable extends AnimatableLayer implements Drawable.Callback {
+public class LottieDrawable extends Drawable implements Drawable.Callback {
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
   private float scale = 1f;
+  private float progress = 0f;
 
+  private final List<AnimatableLayer> layers = new ArrayList<>();
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
@@ -38,8 +44,6 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
   private boolean systemAnimationsAreDisabled;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
-    super(null);
-
     animator.setRepeatCount(0);
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -137,14 +141,15 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     updateBounds();
     buildLayersForComposition(composition);
 
-    setProgress(getProgress());
+    setProgress(progress);
     return true;
   }
 
   private void clearComposition() {
     recycleBitmaps();
-    clearLayers();
+    layers.clear();
     imageAssetBitmapManager = null;
+    invalidateSelf();
   }
 
   private void buildLayersForComposition(LottieComposition composition) {
@@ -194,14 +199,32 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     }
   }
 
+  @Override public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
+    throw new UnsupportedOperationException("setAlpha not supported. Can only use alpha baked " +
+        "into animation.)");
+  }
+
+  @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
+    // Do nothing.
+  }
+
+  @Override public int getOpacity() {
+    return PixelFormat.TRANSLUCENT;
+  }
+
   @Override public void draw(@NonNull Canvas canvas) {
     if (composition == null) {
       return;
     }
 
+    // TODO: is this save necessary?
     int saveCount = canvas.save();
     canvas.clipRect(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
-    super.draw(canvas);
+    for (AnimatableLayer layer : layers) {
+      if (layer.isVisible()) {
+        layer.draw(canvas);
+      }
+    }
     canvas.restoreToCount(saveCount);
   }
 
@@ -236,7 +259,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
       return;
     }
     if (setStartTime) {
-      animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+      animator.setCurrentPlayTime((long) (progress * animator.getDuration()));
     }
     animator.start();
   }
@@ -256,7 +279,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
       return;
     }
     if (setStartTime) {
-      animator.setCurrentPlayTime((long) (getProgress() * animator.getDuration()));
+      animator.setCurrentPlayTime((long) (progress * animator.getDuration()));
     }
     animator.reverse();
   }
@@ -272,6 +295,17 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     if (composition != null) {
       animator.setDuration((long) (composition.getDuration() / Math.abs(speed)));
     }
+  }
+
+  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    this.progress = progress;
+    for (AnimatableLayer layer : layers) {
+      layer.setProgress(progress);
+    }
+  }
+
+  public float getProgress() {
+    return progress;
   }
 
   @SuppressWarnings("WeakerAccess") public void setScale(float scale) {
@@ -296,6 +330,10 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     return scale;
   }
 
+  LottieComposition getComposition() {
+    return composition;
+  }
+
   private void updateBounds() {
     if (composition == null) {
       return;
@@ -310,9 +348,9 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     animator.cancel();
   }
 
-  @Override
   void addLayer(AnimatableLayer layer) {
-    super.addLayer(layer);
+    layers.add(layer);
+    layer.setProgress(progress);
     if (playAnimationWhenLayerAdded) {
       playAnimationWhenLayerAdded = false;
       playAnimation();
@@ -381,7 +419,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
    * These Drawable.Callback methods proxy the calls so that this is the drawable that is
    * actually invalidated, not a child one which will not pass the view's validateDrawable check.
    */
-  @Override public void invalidateDrawable(Drawable who) {
+  @Override public void invalidateDrawable(@NonNull Drawable who) {
     Callback callback = getCallback();
     if (callback == null) {
       return;
@@ -389,7 +427,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     callback.invalidateDrawable(this);
   }
 
-  @Override public void scheduleDrawable(Drawable who, Runnable what, long when) {
+  @Override public void scheduleDrawable(@NonNull Drawable who, @NonNull Runnable what, long when) {
     Callback callback = getCallback();
     if (callback == null) {
       return;
@@ -397,7 +435,7 @@ public class LottieDrawable extends AnimatableLayer implements Drawable.Callback
     callback.scheduleDrawable(this, what, when);
   }
 
-  @Override public void unscheduleDrawable(Drawable who, Runnable what) {
+  @Override public void unscheduleDrawable(@NonNull Drawable who, @NonNull Runnable what) {
     Callback callback = getCallback();
     if (callback == null) {
       return;

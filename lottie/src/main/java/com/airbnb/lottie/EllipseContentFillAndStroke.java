@@ -2,20 +2,19 @@ package com.airbnb.lottie;
 
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class EllipseLayer extends AnimatableLayer {
-  EllipseLayer(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
-      ShapeTrimPath trim, AnimatableTransform transform, Drawable.Callback callback) {
-    super(callback);
+class EllipseContentFillAndStroke extends AnimatableLayer {
+  EllipseContentFillAndStroke(CircleShape circleShape, ShapeFill fill, ShapeStroke stroke,
+      ShapeTrimPath trim, AnimatableTransform transform, LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
 
     setTransform(transform.createAnimation());
 
     if (fill != null) {
-      EllipseShapeLayer fillLayer = new EllipseShapeLayer(getCallback());
+      EllipseContent fillLayer = new EllipseContent(lottieDrawable);
       //noinspection ConstantConditions
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
@@ -32,7 +31,7 @@ class EllipseLayer extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      EllipseShapeLayer strokeLayer = new EllipseShapeLayer(getCallback());
+      EllipseContent strokeLayer = new EllipseContent(lottieDrawable);
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setTransformOpacity(stroke.getOpacity().createAnimation());
@@ -59,7 +58,7 @@ class EllipseLayer extends AnimatableLayer {
     }
   }
 
-  private static final class EllipseShapeLayer extends ShapeLayer {
+  private static final class EllipseContent extends ShapeContent {
     private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
     private final KeyframeAnimation.AnimationListener<PointF> circleSizeChangedListener =
@@ -83,8 +82,8 @@ class EllipseLayer extends AnimatableLayer {
     private BaseKeyframeAnimation<?, PointF> circleSize;
     private BaseKeyframeAnimation<?, PointF> circlePosition;
 
-    EllipseShapeLayer(Drawable.Callback callback) {
-      super(callback);
+    EllipseContent(LottieDrawable lottieDrawable) {
+      super(lottieDrawable);
       setPath(new StaticKeyframeAnimation<>(path));
     }
 
@@ -110,7 +109,7 @@ class EllipseLayer extends AnimatableLayer {
     private void onCircleSizeChanged() {
       float halfWidth = circleSize.getValue().x / 2f;
       float halfHeight = circleSize.getValue().y / 2f;
-      setBounds(0, 0, (int) halfWidth * 2, (int) halfHeight * 2);
+      // TODO: handle bounds
 
       float cpW = halfWidth * ELLIPSE_CONTROL_POINT_PERCENTAGE;
       float cpH = halfHeight * ELLIPSE_CONTROL_POINT_PERCENTAGE;

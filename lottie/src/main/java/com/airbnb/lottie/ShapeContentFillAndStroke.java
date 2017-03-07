@@ -1,22 +1,21 @@
 package com.airbnb.lottie;
 
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class ShapeLayerView extends AnimatableLayer {
-  @Nullable private ShapeLayer fillLayer;
-  @Nullable private ShapeLayer strokeLayer;
+class ShapeContentFillAndStroke extends AnimatableLayer {
+  @Nullable private ShapeContent fillLayer;
+  @Nullable private ShapeContent strokeLayer;
 
-  ShapeLayerView(ShapePath shape, @Nullable ShapeFill fill,
+  ShapeContentFillAndStroke(ShapePath shape, @Nullable ShapeFill fill,
       @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim,
-      AnimatableTransform transformModel, Drawable.Callback callback) {
-    super(callback);
+      AnimatableTransform transformModel, LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
     setTransform(transformModel.createAnimation());
     if (fill != null) {
-      fillLayer = new ShapeLayer(getCallback());
+      fillLayer = new ShapeContent(lottieDrawable);
       fillLayer.setPath(shape.getShapePath().createAnimation());
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
@@ -30,7 +29,7 @@ class ShapeLayerView extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      strokeLayer = new ShapeLayer(getCallback());
+      strokeLayer = new ShapeContent(lottieDrawable);
       strokeLayer.setIsStroke();
       strokeLayer.setPath(shape.getShapePath().createAnimation());
       strokeLayer.setColor(stroke.getColor().createAnimation());
@@ -56,8 +55,7 @@ class ShapeLayerView extends AnimatableLayer {
     }
   }
 
-  @Override public void setAlpha(int alpha) {
-    super.setAlpha(alpha);
+  public void setAlpha(int alpha) {
     if (fillLayer != null) {
       fillLayer.setAlpha(alpha);
     }

@@ -2,11 +2,13 @@ package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +23,8 @@ class LayerView extends AnimatableLayer {
   private MaskKeyframeAnimation mask;
   private LayerView matteLayer;
 
+  private final Paint solidBackgroundPaint = new Paint();
+  @ColorInt private int backgroundColor;
   private final RectF rect = new RectF();
   private final List<LayerView> transformLayers = new ArrayList<>();
   private final Paint mainCanvasPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -42,11 +46,13 @@ class LayerView extends AnimatableLayer {
   private int precompWidth;
   private int precompHeight;
 
-  LayerView(Layer layerModel, LottieComposition composition, Callback callback) {
-    super(callback);
+  LayerView(Layer layerModel, LottieComposition composition, LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
     this.layerModel = layerModel;
     this.composition = composition;
-    setBounds(composition.getBounds());
+
+    solidBackgroundPaint.setAlpha(0);
+    solidBackgroundPaint.setStyle(Paint.Style.FILL);
 
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
@@ -61,7 +67,6 @@ class LayerView extends AnimatableLayer {
 
   private void setupForModel() {
     setBackgroundColor(layerModel.getSolidColor());
-    setBounds(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
 
     setTransform(layerModel.getTransform().createAnimation());
     setupInOutAnimations();
@@ -112,9 +117,15 @@ class LayerView extends AnimatableLayer {
     }
   }
 
+  void setBackgroundColor(@ColorInt int color) {
+    this.backgroundColor = color;
+    solidBackgroundPaint.setColor(color);
+    invalidateSelf();
+  }
+
   private void setupShapeLayer() {
     ShapeGroup shapeGroup = new ShapeGroup(layerModel.getName(), layerModel.getShapes());
-    addLayer(new ContentGroup(shapeGroup, null, null, null, null, getCallback()));
+    addLayer(new ContentGroup(shapeGroup, null, null, null, null, lottieDrawable));
   }
 
   private void setupPreCompLayer() {
@@ -125,8 +136,7 @@ class LayerView extends AnimatableLayer {
     LayerView mattedLayer = null;
     for (int i = precompLayers.size() - 1; i >= 0; i--) {
       Layer layer = precompLayers.get(i);
-      LayerView layerView =
-          new LayerView(layer, composition, getCallback());
+      LayerView layerView = new LayerView(layer, composition, lottieDrawable);
       layerView.setPrecompSize(layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
       if (mattedLayer != null) {
         mattedLayer.setMatteLayer(layerView);
@@ -149,13 +159,13 @@ class LayerView extends AnimatableLayer {
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
         @Override public void onValueChanged(Float value) {
-          setVisible(value == 1f, false);
+          setVisible(value == 1f);
         }
       });
-      setVisible(inOutAnimation.getValue() == 1f, false);
+      setVisible(inOutAnimation.getValue() == 1f);
       addAnimation(inOutAnimation);
     } else {
-      setVisible(true, false);
+      setVisible(true);
     }
   }
 
@@ -194,6 +204,23 @@ class LayerView extends AnimatableLayer {
       return;
     }
 
+    int backgroundAlpha = Color.alpha(backgroundColor);
+    if (backgroundAlpha != 0) {
+      int alpha = backgroundAlpha;
+      if (this.transform != null) {
+        alpha = alpha * this.transform.getOpacity().getValue() / 255;
+      }
+      solidBackgroundPaint.setAlpha(alpha);
+      if (alpha > 0) {
+        canvas.drawRect(
+            0,
+            0,
+            layerModel.getSolidWidth(),
+            layerModel.getSolidHeight(),
+            solidBackgroundPaint);
+      }
+    }
+
     // Make a list of all parent layers.
     transformLayers.clear();
     LayerView parent = parentLayer;
@@ -202,13 +229,13 @@ class LayerView extends AnimatableLayer {
       parent = parent.getParentLayer();
     }
 
-    float scale = getLottieDrawable().getScale();
+    float scale = lottieDrawable.getScale();
     if (precompWidth != 0 || precompHeight != 0) {
       canvas.clipRect(0, 0, precompWidth * scale, precompHeight * scale);
     } else {
       canvas.clipRect(0, 0,
-          getLottieDrawable().getIntrinsicWidth(),
-          getLottieDrawable().getIntrinsicHeight());
+          lottieDrawable.getIntrinsicWidth(),
+          lottieDrawable.getIntrinsicHeight());
     }
 
     if (!hasMasks() && !hasMatte()) {
@@ -261,7 +288,7 @@ class LayerView extends AnimatableLayer {
     }
     applyTransformForLayer(canvas, this);
 
-    float scale = getLottieDrawable().getScale();
+    float scale = lottieDrawable.getScale();
     canvas.scale(scale, scale);
 
     int size = mask.getMasks().size();
@@ -287,15 +314,15 @@ class LayerView extends AnimatableLayer {
       return;
     }
     String refId = layerModel.getRefId();
-    Bitmap bitmap = getLottieDrawable().getImageAsset(refId);
+    Bitmap bitmap = lottieDrawable.getImageAsset(refId);
     if (bitmap == null) {
       return;
     }
 
     canvas.save();
     applyTransformForLayer(canvas, this);
-    canvas.scale(getLottieDrawable().getScale(), getLottieDrawable().getScale());
-    imagePaint.setAlpha(getAlphaInternal());
+    canvas.scale(lottieDrawable.getScale(), lottieDrawable.getScale());
+    imagePaint.setAlpha(getAlpha());
     canvas.drawBitmap(bitmap, 0, 0 ,imagePaint);
     canvas.restore();
   }

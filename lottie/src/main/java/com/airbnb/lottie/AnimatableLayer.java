@@ -1,14 +1,9 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PixelFormat;
 import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
+import android.graphics.Rect;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,7 +11,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class AnimatableLayer extends Drawable {
+class AnimatableLayer {
   private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener =
       new KeyframeAnimation.AnimationListener<Integer>() {
         @Override
@@ -54,26 +49,22 @@ class AnimatableLayer extends Drawable {
         }
       };
 
+  private final Rect bounds = new Rect();
   final List<AnimatableLayer> layers = new ArrayList<>();
+  final LottieDrawable lottieDrawable;
   @Nullable private AnimatableLayer parentLayer;
 
-  private final Paint solidBackgroundPaint = new Paint();
-  @ColorInt private int backgroundColor;
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   @FloatRange(from = 0f, to = 1f) private float progress = 0f;
-  private TransformKeyframeAnimation transform;
+  TransformKeyframeAnimation transform;
+  private boolean visible = true;
 
-  AnimatableLayer(Drawable.Callback callback) {
-    setCallback(callback);
-
-    solidBackgroundPaint.setAlpha(0);
-    solidBackgroundPaint.setStyle(Paint.Style.FILL);
+  AnimatableLayer(LottieDrawable lottieDrawable) {
+    this.lottieDrawable = lottieDrawable;
   }
 
-  void setBackgroundColor(@ColorInt int color) {
-    this.backgroundColor = color;
-    solidBackgroundPaint.setColor(color);
-    invalidateSelf();
+  void invalidateSelf() {
+    lottieDrawable.invalidateSelf();
   }
 
   void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
@@ -84,28 +75,10 @@ class AnimatableLayer extends Drawable {
     animations.remove(animation);
   }
 
-  @Override
   public void draw(@NonNull Canvas canvas) {
     int saveCount = canvas.save();
     applyTransformForLayer(canvas, this);
 
-    int backgroundAlpha = Color.alpha(backgroundColor);
-    if (backgroundAlpha != 0) {
-      int alpha = backgroundAlpha;
-      if (this.transform != null) {
-        alpha = alpha * this.transform.getOpacity().getValue() / 255;
-      }
-      solidBackgroundPaint.setAlpha(alpha);
-      if (alpha > 0) {
-        float scale = getLottieDrawable().getScale();
-        canvas.drawRect(
-            0,
-            0,
-            getBounds().width() * scale,
-            getBounds().height() * scale,
-            solidBackgroundPaint);
-      }
-    }
     for (int i = 0; i < layers.size(); i++) {
       layers.get(i).draw(canvas);
     }
@@ -124,7 +97,7 @@ class AnimatableLayer extends Drawable {
       return;
     }
 
-    float scale = getLottieDrawable().getScale();
+    float scale = lottieDrawable.getScale();
 
     PointF position = layer.transform.getPosition().getValue();
     if (position.x != 0 || position.y != 0) {
@@ -147,30 +120,11 @@ class AnimatableLayer extends Drawable {
     }
   }
 
-  @Override
-  public void setAlpha(int alpha) {
-    throw new IllegalArgumentException("This shouldn't be used.");
-  }
 
-
-  @Override
   public int getAlpha() {
-    return getAlphaInternal();
-  }
-
-  /**
-   * getAlpha was added in 19. This internal getAlpha allows us to call it
-   * without having to avoid suppressing the NewApi lint rule.
-   */
-  int getAlphaInternal() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
     float parentAlpha = parentLayer == null ? 1f : (parentLayer.getAlpha() / 255f);
     return (int) (alpha * parentAlpha * 255);
-  }
-
-  @Override
-  public void setColorFilter(ColorFilter colorFilter) {
-
   }
 
   void setTransform(TransformKeyframeAnimation transform) {
@@ -195,11 +149,6 @@ class AnimatableLayer extends Drawable {
     invalidateSelf();
   }
 
-  @Override
-  public int getOpacity() {
-    return PixelFormat.TRANSLUCENT;
-  }
-
   void addLayer(AnimatableLayer layer) {
     layer.parentLayer = this;
     layers.add(layer);
@@ -210,6 +159,14 @@ class AnimatableLayer extends Drawable {
   void clearLayers() {
     layers.clear();
     invalidateSelf();
+  }
+
+  boolean isVisible() {
+    return visible;
+  }
+
+  void setVisible(boolean visible) {
+    this.visible = visible;
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
@@ -225,12 +182,5 @@ class AnimatableLayer extends Drawable {
 
   float getProgress() {
     return progress;
-  }
-
-  LottieDrawable getLottieDrawable() {
-    if (!(getCallback() instanceof LottieDrawable)) {
-      return null;
-    }
-    return ((LottieDrawable) getCallback());
   }
 }

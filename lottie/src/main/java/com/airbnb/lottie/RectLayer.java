@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -12,17 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 class RectLayer extends AnimatableLayer {
-  @Nullable private RectShapeLayer fillLayer;
-  @Nullable private RectShapeLayer strokeLayer;
+  @Nullable private RectShapeContent fillLayer;
+  @Nullable private RectShapeContent strokeLayer;
 
   RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill, @Nullable ShapeStroke stroke,
-      @Nullable ShapeTrimPath trim, AnimatableTransform transform, Drawable.Callback callback) {
-    super(callback);
+      @Nullable ShapeTrimPath trim, AnimatableTransform transform, LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
 
     setTransform(transform.createAnimation());
 
     if (fill != null) {
-      fillLayer = new RectShapeLayer(getCallback());
+      fillLayer = new RectShapeContent(lottieDrawable);
       //noinspection ConstantConditions
       fillLayer.setColor(fill.getColor().createAnimation());
       //noinspection ConstantConditions
@@ -39,7 +38,7 @@ class RectLayer extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      strokeLayer = new RectShapeLayer(getCallback());
+      strokeLayer = new RectShapeContent(lottieDrawable);
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setShapeOpacity(stroke.getOpacity().createAnimation());
@@ -66,9 +65,7 @@ class RectLayer extends AnimatableLayer {
     }
   }
 
-  @Override
   public void setAlpha(int alpha) {
-    super.setAlpha(alpha);
     if (fillLayer != null) {
       fillLayer.setAlpha(alpha);
     }
@@ -77,7 +74,7 @@ class RectLayer extends AnimatableLayer {
     }
   }
 
-  private static class RectShapeLayer extends ShapeLayer {
+  private static class RectShapeContent extends ShapeContent {
 
     private final KeyframeAnimation.AnimationListener<PointF> sizeChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
@@ -111,8 +108,8 @@ class RectLayer extends AnimatableLayer {
 
     private boolean updateRectOnNextDraw;
 
-    RectShapeLayer(Drawable.Callback callback) {
-      super(callback);
+    RectShapeContent(LottieDrawable lottieDrawable) {
+      super(lottieDrawable);
       setPath(new StaticKeyframeAnimation<>(path));
     }
 

@@ -2,20 +2,19 @@ package com.airbnb.lottie;
 
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class PolystarLayer extends AnimatableLayer {
-  PolystarLayer(PolystarShape polystarShape, ShapeFill fill, ShapeStroke stroke,
-      ShapeTrimPath trim, AnimatableTransform transform, Drawable.Callback callback) {
-    super(callback);
+class PolystarContentFillAndStroke extends AnimatableLayer {
+  PolystarContentFillAndStroke(PolystarShape polystarShape, ShapeFill fill, ShapeStroke stroke,
+      ShapeTrimPath trim, AnimatableTransform transform, LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
 
     setTransform(transform.createAnimation());
 
     if (fill != null) {
-      PolystarShapeLayer fillLayer = new PolystarShapeLayer(getCallback());
+      PolystarContent fillLayer = new PolystarContent(lottieDrawable);
       fillLayer.setColor(fill.getColor().createAnimation());
       fillLayer.setTransformOpacity(transform.getOpacity().createAnimation());
       fillLayer.setShapeOpacity(fill.getOpacity().createAnimation());
@@ -28,7 +27,7 @@ class PolystarLayer extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      PolystarShapeLayer strokeLayer = new PolystarShapeLayer(getCallback());
+      PolystarContent strokeLayer = new PolystarContent(lottieDrawable);
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setTransformOpacity(transform.getOpacity().createAnimation());
@@ -53,7 +52,7 @@ class PolystarLayer extends AnimatableLayer {
     }
   }
 
-  private static final class PolystarShapeLayer extends ShapeLayer {
+  private static final class PolystarContent extends ShapeContent {
 
     /**
      * This was empirically derived by creating polystars, converting them to
@@ -90,8 +89,8 @@ class PolystarLayer extends AnimatableLayer {
     private BaseKeyframeAnimation<?, Float> innerRadiusAnimation;
     private BaseKeyframeAnimation<?, Float> innerRoundednessAnimation;
 
-    PolystarShapeLayer(Drawable.Callback callback) {
-      super(callback);
+    PolystarContent(LottieDrawable lottieDrawable) {
+      super(lottieDrawable);
       setPath(new StaticKeyframeAnimation<>(path));
     }
 

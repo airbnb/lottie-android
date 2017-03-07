@@ -2,22 +2,19 @@ package com.airbnb.lottie;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
-import android.graphics.PixelFormat;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class ShapeLayer extends AnimatableLayer {
+class ShapeContent extends AnimatableLayer {
   private final KeyframeAnimation.AnimationListener<Path> pathChangedListener =
       new KeyframeAnimation.AnimationListener<Path>() {
         @Override
@@ -111,8 +108,8 @@ class ShapeLayer extends AnimatableLayer {
   private boolean pathPropertiesChanged = true;
   private boolean dashPatternChanged;
 
-  ShapeLayer(Drawable.Callback callback) {
-    super(callback);
+  ShapeContent(LottieDrawable lottieDrawable) {
+    super(lottieDrawable);
   }
 
   void setIsStroke() {
@@ -169,7 +166,7 @@ class ShapeLayer extends AnimatableLayer {
   @SuppressLint("NewApi")
   @Override
   public void draw(@NonNull Canvas canvas) {
-    float scale = getLottieDrawable().getScale();
+    float scale = lottieDrawable.getScale();
     if (currentDrawableScale != scale) {
       updateShape();
     }
@@ -181,7 +178,7 @@ class ShapeLayer extends AnimatableLayer {
       updateDashPattern();
     }
     if (lineWidth != null) {
-      paint.setStrokeWidth(lineWidth.getValue() * getLottieDrawable().getScale());
+      paint.setStrokeWidth(lineWidth.getValue() * lottieDrawable.getScale());
     }
     if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0f) {
       return;
@@ -202,7 +199,7 @@ class ShapeLayer extends AnimatableLayer {
         strokeOffset != null && strokeOffset.getValue() != currentPathStrokeOffset;
     boolean needsScaleX = scale != null && scale.getValue().getScaleX() != currentPathScaleX;
     boolean needsScaleY = scale != null && scale.getValue().getScaleY() != currentPathScaleY;
-    boolean needsDrawableScale = currentDrawableScale != getLottieDrawable().getScale();
+    boolean needsDrawableScale = currentDrawableScale != lottieDrawable.getScale();
 
     if (!needsStrokeStart && !needsStrokeEnd && !needsScaleX && !needsScaleY &&
         !needsStrokeOffset && !needsDrawableScale) {
@@ -214,7 +211,7 @@ class ShapeLayer extends AnimatableLayer {
     currentPath.computeBounds(tempRect, false);
     currentPathScaleX = scale == null ? 1f : scale.getValue().getScaleX();
     currentPathScaleY = scale == null ? 1f : scale.getValue().getScaleY();
-    currentDrawableScale = getLottieDrawable().getScale();
+    currentDrawableScale = lottieDrawable.getScale();
     scaleMatrix.reset();
     scaleMatrix
           .setScale(
@@ -276,7 +273,7 @@ class ShapeLayer extends AnimatableLayer {
   }
 
   private void updateDashPattern() {
-    float scale = getLottieDrawable().getScale();
+    float scale = lottieDrawable.getScale();
     float[] values = new float[lineDashPattern.size()];
     for (int i = 0; i < lineDashPattern.size(); i++) {
       values[i] = lineDashPattern.get(i).getValue();
@@ -323,17 +320,9 @@ class ShapeLayer extends AnimatableLayer {
     invalidateSelf();
   }
 
-  @Override public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
+  public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
     paint.setAlpha(alpha);
     invalidateSelf();
-  }
-
-  @Override public void setColorFilter(ColorFilter colorFilter) {
-
-  }
-
-  @Override public int getOpacity() {
-    return PixelFormat.TRANSLUCENT;
   }
 
   void setLineWidth(KeyframeAnimation<Float> lineWidth) {
