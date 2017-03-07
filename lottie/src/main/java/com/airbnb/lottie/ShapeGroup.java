@@ -42,7 +42,7 @@ class ShapeGroup {
   private final String name;
   private final List<Object> items;
 
-  private ShapeGroup(String name, List<Object> items) {
+  ShapeGroup(String name, List<Object> items) {
     this.name = name;
     this.items = items;
   }

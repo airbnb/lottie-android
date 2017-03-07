@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class LayerView extends AnimatableLayer {
@@ -114,52 +113,8 @@ class LayerView extends AnimatableLayer {
   }
 
   private void setupShapeLayer() {
-    List<Object> reversedItems = new ArrayList<>(layerModel.getShapes());
-    Collections.reverse(reversedItems);
-    AnimatableTransform currentTransform = null;
-    ShapeTrimPath currentTrim = null;
-    ShapeFill currentFill = null;
-    ShapeStroke currentStroke = null;
-
-    for (int i = 0; i < reversedItems.size(); i++) {
-      Object item = reversedItems.get(i);
-      if (item instanceof ShapeGroup) {
-        ContentGroup groupLayer = new ContentGroup((ShapeGroup) item, currentFill,
-            currentStroke, currentTrim, currentTransform, getCallback());
-        addLayer(groupLayer);
-      } else if (item instanceof AnimatableTransform) {
-        currentTransform = (AnimatableTransform) item;
-      } else if (item instanceof ShapeFill) {
-        currentFill = (ShapeFill) item;
-      } else if (item instanceof ShapeTrimPath) {
-        currentTrim = (ShapeTrimPath) item;
-      } else if (item instanceof ShapeStroke) {
-        currentStroke = (ShapeStroke) item;
-      } else if (item instanceof ShapePath) {
-        ShapePath shapePath = (ShapePath) item;
-        ShapeLayerView shapeLayer =
-            new ShapeLayerView(shapePath, currentFill, currentStroke, currentTrim,
-                AnimatableTransform.Factory.newInstance(composition), getCallback());
-        addLayer(shapeLayer);
-      } else if (item instanceof RectangleShape) {
-        RectangleShape shapeRect = (RectangleShape) item;
-        RectLayer shapeLayer =
-            new RectLayer(shapeRect, currentFill, currentStroke, currentTrim,
-                AnimatableTransform.Factory.newInstance(composition), getCallback());
-        addLayer(shapeLayer);
-      } else if (item instanceof CircleShape) {
-        CircleShape shapeCircle = (CircleShape) item;
-        EllipseLayer shapeLayer =
-            new EllipseLayer(shapeCircle, currentFill, currentStroke, currentTrim,
-                AnimatableTransform.Factory.newInstance(composition), getCallback());
-        addLayer(shapeLayer);
-      } else if (item instanceof PolystarShape) {
-        PolystarShape polystarShape = (PolystarShape) item;
-        PolystarLayer shapeLayer = new PolystarLayer(polystarShape, currentFill, currentStroke,
-            currentTrim, AnimatableTransform.Factory.newInstance(composition), getCallback());
-        addLayer(shapeLayer);
-      }
-    }
+    ShapeGroup shapeGroup = new ShapeGroup(layerModel.getName(), layerModel.getShapes());
+    addLayer(new ContentGroup(shapeGroup, null, null, null, null, getCallback()));
   }
 
   private void setupPreCompLayer() {
