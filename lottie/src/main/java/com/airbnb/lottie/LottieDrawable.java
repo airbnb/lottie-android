@@ -12,12 +12,8 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -35,13 +31,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private float scale = 1f;
   private float progress = 0f;
 
-  private final List<AnimatableLayer> layers = new ArrayList<>();
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
-  private boolean playAnimationWhenLayerAdded;
-  private boolean reverseAnimationWhenLayerAdded;
+  private boolean playAnimationWhenCompositionAdded;
+  private boolean reverseAnimationWhenCompositionAdded;
   private boolean systemAnimationsAreDisabled;
+  @Nullable private CompositionLayer compositionLayer;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
     animator.setRepeatCount(0);
@@ -62,30 +58,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * Returns whether or not any layers in this composition has masks.
    */
   @SuppressWarnings({"unused", "WeakerAccess"}) public boolean hasMasks() {
-    for (AnimatableLayer layer : layers) {
-      if (!(layer instanceof LayerView)) {
-        continue;
-      }
-      if (((LayerView) layer).hasMasks()){
-        return true;
-      }
-    }
-    return false;
+    return compositionLayer != null && compositionLayer.hasMasks();
   }
 
   /**
    * Returns whether or not any layers in this composition has a matte layer.
    */
   @SuppressWarnings({"unused", "WeakerAccess"}) public boolean hasMatte() {
-    for (AnimatableLayer layer : layers) {
-      if (!(layer instanceof LayerView)) {
-        continue;
-      }
-      if (((LayerView) layer).hasMatte()){
-        return true;
-      }
-    }
-    return false;
+    return compositionLayer != null && compositionLayer.hasMatte();
   }
 
   /**
@@ -139,57 +119,27 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     setSpeed(speed);
     setScale(1f);
     updateBounds();
-    buildLayersForComposition(composition);
+    compositionLayer = new CompositionLayer(
+        this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
 
     setProgress(progress);
+    if (playAnimationWhenCompositionAdded) {
+      playAnimationWhenCompositionAdded = false;
+      playAnimation();
+    }
+    if (reverseAnimationWhenCompositionAdded) {
+      reverseAnimationWhenCompositionAdded = false;
+      reverseAnimation();
+    }
+
     return true;
   }
 
   private void clearComposition() {
     recycleBitmaps();
-    layers.clear();
+    compositionLayer = null;
     imageAssetBitmapManager = null;
     invalidateSelf();
-  }
-
-  private void buildLayersForComposition(LottieComposition composition) {
-    if (composition == null) {
-      throw new IllegalStateException("Composition is null");
-    }
-    LongSparseArray<LayerView> layerMap = new LongSparseArray<>(composition.getLayers().size());
-    List<LayerView> layers = new ArrayList<>(composition.getLayers().size());
-    LayerView mattedLayer = null;
-    for (int i = composition.getLayers().size() - 1; i >= 0; i--) {
-      Layer layer = composition.getLayers().get(i);
-      LayerView layerView;
-      layerView = new LayerView(layer, composition, this);
-      layerMap.put(layerView.getId(), layerView);
-      if (mattedLayer != null) {
-        mattedLayer.setMatteLayer(layerView);
-        mattedLayer = null;
-      } else {
-        layers.add(layerView);
-        if (layer.getMatteType() == Layer.MatteType.Add) {
-          mattedLayer = layerView;
-        } else if (layer.getMatteType() == Layer.MatteType.Invert) {
-          mattedLayer = layerView;
-        }
-      }
-    }
-
-    for (int i = 0; i < layers.size(); i++) {
-      LayerView layerView = layers.get(i);
-      addLayer(layerView);
-    }
-
-    for (int i = 0; i < layerMap.size(); i++) {
-      long key = layerMap.keyAt(i);
-      LayerView layerView = layerMap.get(key);
-      LayerView parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
-      if (parentLayer != null) {
-        layerView.setParentLayer(parentLayer);
-      }
-    }
   }
 
   @Override public void invalidateSelf() {
@@ -213,19 +163,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @Override public void draw(@NonNull Canvas canvas) {
-    if (composition == null) {
+    if (compositionLayer == null) {
       return;
     }
-
-    // TODO: is this save necessary?
-    int saveCount = canvas.save();
-    canvas.clipRect(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
-    for (AnimatableLayer layer : layers) {
-      if (layer.isVisible()) {
-        layer.draw(canvas);
-      }
-    }
-    canvas.restoreToCount(saveCount);
+    compositionLayer.draw(canvas);
   }
 
   void systemAnimationsAreDisabled() {
@@ -253,9 +194,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   private void playAnimation(boolean setStartTime) {
-    if (layers.isEmpty()) {
-      playAnimationWhenLayerAdded = true;
-      reverseAnimationWhenLayerAdded = false;
+    if (compositionLayer == null) {
+      playAnimationWhenCompositionAdded = true;
+      reverseAnimationWhenCompositionAdded = false;
       return;
     }
     if (setStartTime) {
@@ -273,9 +214,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   private void reverseAnimation(boolean setStartTime) {
-    if (layers.isEmpty()) {
-      playAnimationWhenLayerAdded = false;
-      reverseAnimationWhenLayerAdded = true;
+    if (compositionLayer == null) {
+      playAnimationWhenCompositionAdded = false;
+      reverseAnimationWhenCompositionAdded = true;
       return;
     }
     if (setStartTime) {
@@ -299,8 +240,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     this.progress = progress;
-    for (AnimatableLayer layer : layers) {
-      layer.setProgress(progress);
+    if (compositionLayer != null) {
+      compositionLayer.setProgress(progress);
     }
   }
 
@@ -343,22 +284,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   void cancelAnimation() {
-    playAnimationWhenLayerAdded = false;
-    reverseAnimationWhenLayerAdded = false;
+    playAnimationWhenCompositionAdded = false;
+    reverseAnimationWhenCompositionAdded = false;
     animator.cancel();
-  }
-
-  void addLayer(AnimatableLayer layer) {
-    layers.add(layer);
-    layer.setProgress(progress);
-    if (playAnimationWhenLayerAdded) {
-      playAnimationWhenLayerAdded = false;
-      playAnimation();
-    }
-    if (reverseAnimationWhenLayerAdded) {
-      reverseAnimationWhenLayerAdded = false;
-      reverseAnimation();
-    }
   }
 
   void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {

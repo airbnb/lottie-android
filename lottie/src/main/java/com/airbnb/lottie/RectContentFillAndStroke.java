@@ -217,12 +217,12 @@ class RectContentFillAndStroke extends AnimatableLayer {
       onPathChanged();
     }
 
-    @Override public void draw(@NonNull Canvas canvas) {
+    @Override public void drawLayer(@NonNull Canvas canvas) {
       if (updateRectOnNextDraw) {
         updateRectOnNextDraw = false;
         updateRect();
       }
-      super.draw(canvas);
+      super.drawLayer(canvas);
     }
   }
 }

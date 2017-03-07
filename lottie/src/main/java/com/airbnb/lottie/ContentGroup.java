@@ -2,14 +2,13 @@ package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
 
-class ContentGroup extends AnimatableLayer {
+class ContentGroup implements DrawingContent, PathContent {
   private final ShapeGroup shapeGroup;
   @Nullable private final AnimatableTransform transform;
 
   ContentGroup(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
       @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
       @Nullable AnimatableTransform transform, LottieDrawable lottieDrawable) {
-    super(lottieDrawable);
     this.shapeGroup = shapeGroup;
     this.transform = transform;
     setupShapeGroupWithFill(previousFill, previousStroke, previousTrimPath);
@@ -18,7 +17,7 @@ class ContentGroup extends AnimatableLayer {
   private void setupShapeGroupWithFill(ShapeFill previousFill,
       ShapeStroke previousStroke, ShapeTrimPath previousTrimPath) {
     if (transform != null) {
-      setTransform(transform.createAnimation());
+      transform.createAnimation();
     }
 
     ShapeFill currentFill = previousFill;

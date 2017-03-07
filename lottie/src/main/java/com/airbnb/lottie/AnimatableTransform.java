@@ -9,7 +9,7 @@ class AnimatableTransform {
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
 
-  AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatablePathValue position,
+  private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatablePathValue position,
       AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity) {
     this.anchorPoint = anchorPoint;
     this.position = position;

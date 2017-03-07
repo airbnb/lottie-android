@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -182,6 +183,13 @@ class Layer {
 
   static class Factory {
     private Factory() {
+    }
+
+    static Layer newInstance(LottieComposition composition) {
+      // TODO: make sure in out keyframes work
+      return new Layer(Collections.emptyList(), composition, null, -1, LayerType.PreComp, -1, null,
+          Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(composition),
+          0, 0, 0, 0, 0, 0, 0, Collections.<Keyframe<Float>>emptyList(), MatteType.None);
     }
 
     static Layer newInstance(JSONObject json, LottieComposition composition) {

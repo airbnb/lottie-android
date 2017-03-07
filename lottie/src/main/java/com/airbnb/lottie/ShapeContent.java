@@ -165,7 +165,7 @@ class ShapeContent extends AnimatableLayer {
 
   @SuppressLint("NewApi")
   @Override
-  public void draw(@NonNull Canvas canvas) {
+  public void drawLayer(@NonNull Canvas canvas) {
     float scale = lottieDrawable.getScale();
     if (currentDrawableScale != scale) {
       updateShape();
