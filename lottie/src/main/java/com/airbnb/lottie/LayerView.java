@@ -124,7 +124,7 @@ class LayerView extends AnimatableLayer {
     for (int i = 0; i < reversedItems.size(); i++) {
       Object item = reversedItems.get(i);
       if (item instanceof ShapeGroup) {
-        GroupLayerView groupLayer = new GroupLayerView((ShapeGroup) item, currentFill,
+        ContentGroup groupLayer = new ContentGroup((ShapeGroup) item, currentFill,
             currentStroke, currentTrim, currentTransform, getCallback());
         addLayer(groupLayer);
       } else if (item instanceof AnimatableTransform) {

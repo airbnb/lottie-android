@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class GroupLayerView extends AnimatableLayer {
+class ContentGroup extends AnimatableLayer {
   private final ShapeGroup shapeGroup;
   @Nullable private final AnimatableTransform transform;
 
-  GroupLayerView(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
+  ContentGroup(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
       @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
       @Nullable AnimatableTransform transform, Drawable.Callback callback) {
     super(callback);
@@ -69,8 +69,8 @@ class GroupLayerView extends AnimatableLayer {
         addLayer(shapeLayer);
       } else if (item instanceof ShapeGroup) {
         ShapeGroup shapeGroup = (ShapeGroup) item;
-        GroupLayerView groupLayer =
-            new GroupLayerView(shapeGroup, currentFill, currentStroke, currentTrim,
+        ContentGroup groupLayer =
+            new ContentGroup(shapeGroup, currentFill, currentStroke, currentTrim,
                 currentTransform, getCallback());
         addLayer(groupLayer);
       }
