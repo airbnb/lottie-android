@@ -134,6 +134,9 @@ public class LottieAnimationView extends AppCompatImageView {
       // We always want to invalidate the root drawable to it redraws the whole drawable.
       // Eventually it would be great to be able to invalidate just the changed region.
       super.invalidateDrawable(lottieDrawable);
+    } else {
+      // Otherwise work as regular ImageView
+      super.invalidateDrawable(dr);
     }
   }
 
