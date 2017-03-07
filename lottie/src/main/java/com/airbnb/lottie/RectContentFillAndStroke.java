@@ -10,18 +10,19 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class RectLayer extends AnimatableLayer {
-  @Nullable private RectShapeContent fillLayer;
-  @Nullable private RectShapeContent strokeLayer;
+class RectContentFillAndStroke extends AnimatableLayer {
+  @Nullable private RectContent fillLayer;
+  @Nullable private RectContent strokeLayer;
 
-  RectLayer(RectangleShape rectShape, @Nullable ShapeFill fill, @Nullable ShapeStroke stroke,
-      @Nullable ShapeTrimPath trim, AnimatableTransform transform, LottieDrawable lottieDrawable) {
+  RectContentFillAndStroke(RectangleShape rectShape, @Nullable ShapeFill fill,
+      @Nullable ShapeStroke stroke, @Nullable ShapeTrimPath trim, AnimatableTransform transform,
+      LottieDrawable lottieDrawable) {
     super(lottieDrawable);
 
     setTransform(transform.createAnimation());
 
     if (fill != null) {
-      fillLayer = new RectShapeContent(lottieDrawable);
+      fillLayer = new RectContent(lottieDrawable);
       //noinspection ConstantConditions
       fillLayer.setColor(fill.getColor().createAnimation());
       //noinspection ConstantConditions
@@ -38,7 +39,7 @@ class RectLayer extends AnimatableLayer {
     }
 
     if (stroke != null) {
-      strokeLayer = new RectShapeContent(lottieDrawable);
+      strokeLayer = new RectContent(lottieDrawable);
       strokeLayer.setIsStroke();
       strokeLayer.setColor(stroke.getColor().createAnimation());
       strokeLayer.setShapeOpacity(stroke.getOpacity().createAnimation());
@@ -74,7 +75,7 @@ class RectLayer extends AnimatableLayer {
     }
   }
 
-  private static class RectShapeContent extends ShapeContent {
+  private static class RectContent extends ShapeContent {
 
     private final KeyframeAnimation.AnimationListener<PointF> sizeChangedListener =
         new KeyframeAnimation.AnimationListener<PointF>() {
@@ -108,7 +109,7 @@ class RectLayer extends AnimatableLayer {
 
     private boolean updateRectOnNextDraw;
 
-    RectShapeContent(LottieDrawable lottieDrawable) {
+    RectContent(LottieDrawable lottieDrawable) {
       super(lottieDrawable);
       setPath(new StaticKeyframeAnimation<>(path));
     }

@@ -43,7 +43,7 @@ class ContentGroup extends AnimatableLayer {
         addLayer(shapeLayer);
       } else if (item instanceof RectangleShape) {
         RectangleShape shapeRect = (RectangleShape) item;
-        RectLayer shapeLayer = new RectLayer(
+        RectContentFillAndStroke shapeLayer = new RectContentFillAndStroke(
             shapeRect, currentFill, currentStroke, currentTrim, currentTransform, lottieDrawable);
         addLayer(shapeLayer);
       } else if (item instanceof CircleShape) {
