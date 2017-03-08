@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.support.annotation.FloatRange;
 import android.support.v4.util.LongSparseArray;
 
@@ -27,7 +28,7 @@ class CompositionLayer extends AnimatableLayer {
         mattedLayer.setMatteLayer(layer);
         mattedLayer = null;
       } else {
-        layers.add(layer);
+        layers.add(0, layer);
         switch (lm.getMatteType()) {
           case Add:
           case Invert:
@@ -47,9 +48,9 @@ class CompositionLayer extends AnimatableLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     for (int i = layers.size() - 1; i >= 0 ; i--) {
-      layers.get(i).draw(canvas);
+      layers.get(i).draw(canvas, parentMatrix, parentAlpha);
     }
   }
 

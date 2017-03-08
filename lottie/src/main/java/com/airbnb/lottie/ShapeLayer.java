@@ -1,29 +1,29 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.support.annotation.NonNull;
 
+import java.util.Collections;
+
 class ShapeLayer extends AnimatableLayer {
   private MaskKeyframeAnimation mask;
 
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint clearPain = new Paint();
 
-  private final Layer layerModel;
-  private final LottieComposition composition;
   private final ContentGroup contentGroup;
 
-  ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, LottieComposition composition) {
+  ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
-    this.layerModel = layerModel;
-    this.composition = composition;
 
     ShapeGroup shapeGroup = new ShapeGroup(layerModel.getName(), layerModel.getShapes());
-    contentGroup = new ContentGroup(shapeGroup, null, null, null, null, lottieDrawable);
+    contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
+    contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
+
     maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
 
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
@@ -43,12 +43,7 @@ class ShapeLayer extends AnimatableLayer {
     return mask != null && !mask.getMaskAnimations().isEmpty();
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas) {
-    canvas.save();
-    applyTransformsForParentLayersAndSelf(canvas);
-
-    contentGroup.draw(canvas);
-
-    canvas.restore();
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    contentGroup.draw(canvas, parentMatrix, parentAlpha);
   }
 }

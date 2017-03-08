@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import static com.airbnb.lottie.Utils.closeQuietly;
  * {@link com.airbnb.lottie.LottieDrawable}.
  */
 public class LottieComposition {
+  private final Matrix matrix = new Matrix();
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();

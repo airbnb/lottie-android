@@ -32,7 +32,7 @@ class ShapeFill {
 
       JSONObject jsonOpacity = json.optJSONObject("o");
       if (jsonOpacity != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition, false, true);
+        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition, false);
       }
       fillEnabled = json.optBoolean("fillEnabled");
       return new ShapeFill(fillEnabled, color, opacity);

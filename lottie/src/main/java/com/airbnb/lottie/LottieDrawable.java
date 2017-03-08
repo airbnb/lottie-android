@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.FloatRange;
@@ -25,6 +26,7 @@ import android.view.animation.LinearInterpolator;
  * of compositions.
  */
 public class LottieDrawable extends Drawable implements Drawable.Callback {
+  private final Matrix matrix = new Matrix();
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
@@ -38,6 +40,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private boolean reverseAnimationWhenCompositionAdded;
   private boolean systemAnimationsAreDisabled;
   @Nullable private CompositionLayer compositionLayer;
+  private int alpha = 255;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
     animator.setRepeatCount(0);
@@ -150,8 +153,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @Override public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-    throw new UnsupportedOperationException("setAlpha not supported. Can only use alpha baked " +
-        "into animation.)");
+    this.alpha = alpha;
+  }
+
+  @Override public int getAlpha() {
+    return alpha;
   }
 
   @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
@@ -166,7 +172,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     if (compositionLayer == null) {
       return;
     }
-    compositionLayer.draw(canvas);
+    compositionLayer.draw(canvas, matrix, alpha);
   }
 
   void systemAnimationsAreDisabled() {

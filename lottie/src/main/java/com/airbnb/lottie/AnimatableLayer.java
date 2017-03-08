@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -14,7 +15,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class AnimatableLayer {
+abstract class AnimatableLayer implements DrawingContent {
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
@@ -22,7 +23,7 @@ abstract class AnimatableLayer {
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case Shape:
-        return new ShapeLayer(drawable, layerModel, composition);
+        return new ShapeLayer(drawable, layerModel);
       case PreComp:
         return new CompositionLayer(drawable, layerModel,
             composition.getPrecomps(layerModel.getRefId()), composition);
@@ -81,8 +82,8 @@ abstract class AnimatableLayer {
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
+  private final Matrix matrix = new Matrix();
   private final RectF rect = new RectF();
-  private final List<AnimatableLayer> transformLayers = new ArrayList<>();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
   @Nullable private AnimatableLayer matteLayer;
@@ -151,12 +152,13 @@ abstract class AnimatableLayer {
     animations.remove(animation);
   }
 
-  void draw(Canvas canvas) {
+  @Override
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    matrix.set(parentMatrix);
+    matrix.preConcat(transform.getMatrix(lottieDrawable));
+    int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
     if (!hasMatte()) {
-      canvas.save();
-      applyTransformsForParentLayersAndSelf(canvas);
-      drawLayer(canvas);
-      canvas.restore();
+      drawLayer(canvas, matrix, alpha);
       return;
     }
 
@@ -164,64 +166,18 @@ abstract class AnimatableLayer {
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
-    applyTransformsForParentLayersAndSelf(canvas);
-    drawLayer(canvas);
+    drawLayer(canvas, matrix, alpha);
 
     canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
     canvas.drawRect(rect, clearPaint);
     assert matteLayer != null;
-    matteLayer.drawLayer(canvas);
+    matteLayer.drawLayer(canvas, matrix, alpha);
     canvas.restore();
 
     canvas.restore();
   }
 
-  abstract void drawLayer(Canvas canvas);
-
-  void applyTransformsForParentLayersAndSelf(Canvas canvas) {
-    // Make a list of all parent layers.
-    transformLayers.clear();
-    AnimatableLayer parent = parentLayer;
-    while (parent != null) {
-      transformLayers.add(parent);
-      parent = parent.parentLayer;
-    }
-    // Now apply the parent transformations from the top down.
-    for (int i = transformLayers.size() - 1; i >= 0; i--) {
-      AnimatableLayer layer = transformLayers.get(i);
-      applyTransformForLayer(canvas, layer);
-    }
-    applyTransformForLayer(canvas, this);
-  }
-
-  void applyTransformForLayer(@Nullable Canvas canvas, AnimatableLayer layer) {
-    if (canvas == null || transform == null) {
-      return;
-    }
-
-    float scale = lottieDrawable.getScale();
-    TransformKeyframeAnimation transform = layer.transform;
-
-    PointF position = transform.getPosition().getValue();
-    if (position.x != 0 || position.y != 0) {
-      canvas.translate(position.x * scale, position.y * scale);
-    }
-
-    float rotation = transform.getRotation().getValue();
-    if (rotation != 0f) {
-      canvas.rotate(rotation);
-    }
-
-    ScaleXY scaleTransform = transform.getScale().getValue();
-    if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
-      canvas.scale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
-    }
-
-    PointF anchorPoint = transform.getAnchorPoint().getValue();
-    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      canvas.translate(-anchorPoint.x * scale, -anchorPoint.y * scale);
-    }
-  }
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int alpha);
 
   public int getAlpha() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);

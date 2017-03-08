@@ -53,7 +53,7 @@ class ShapeStroke {
       AnimatableFloatValue width = AnimatableFloatValue.Factory.newInstance(json.optJSONObject("w"),
           composition);
       AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(
-          json.optJSONObject("o"), composition, false, true);
+          json.optJSONObject("o"), composition, false);
       LineCapType capType = LineCapType.values()[json.optInt("lc") - 1];
       LineJoinType joinType = LineJoinType.values()[json.optInt("lj") - 1];
       AnimatableFloatValue offset = null;

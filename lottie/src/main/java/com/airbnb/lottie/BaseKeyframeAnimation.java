@@ -35,10 +35,6 @@ abstract class BaseKeyframeAnimation<K, A> {
     listeners.add(listener);
   }
 
-  void removeUpdateListener(AnimationListener<A> listener) {
-    listeners.remove(listener);
-  }
-
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     if (progress < getStartDelayProgress()) {
       progress = 0f;

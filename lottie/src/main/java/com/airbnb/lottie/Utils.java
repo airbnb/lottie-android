@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.DisplayMetrics;
@@ -61,5 +62,31 @@ final class Utils {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     wm.getDefaultDisplay().getMetrics(displayMetrics);
     return displayMetrics.heightPixels;
+  }
+
+  static void applyTransformToCanvas(LottieDrawable drawable, TransformKeyframeAnimation transform,
+      Canvas canvas) {
+
+    float scale = drawable.getScale();
+
+    PointF position = transform.getPosition().getValue();
+    if (position.x != 0 || position.y != 0) {
+      canvas.translate(position.x * scale, position.y * scale);
+    }
+
+    float rotation = transform.getRotation().getValue();
+    if (rotation != 0f) {
+      canvas.rotate(rotation);
+    }
+
+    ScaleXY scaleTransform = transform.getScale().getValue();
+    if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
+      canvas.scale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
+    }
+
+    PointF anchorPoint = transform.getAnchorPoint().getValue();
+    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
+      canvas.translate(-anchorPoint.x * scale, -anchorPoint.y * scale);
+    }
   }
 }
