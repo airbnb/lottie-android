@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.support.annotation.FloatRange;
 import android.support.v4.util.LongSparseArray;
 
@@ -48,9 +47,9 @@ class CompositionLayer extends AnimatableLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override void drawLayer(Canvas canvas, int parentAlpha) {
     for (int i = layers.size() - 1; i >= 0 ; i--) {
-      layers.get(i).draw(canvas, parentMatrix, parentAlpha);
+      layers.get(i).draw(canvas, parentAlpha);
     }
   }
 

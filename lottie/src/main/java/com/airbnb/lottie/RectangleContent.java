@@ -6,7 +6,7 @@ import android.graphics.RectF;
 
 import java.util.List;
 
-public class RectContent implements Content, PathContent {
+class RectangleContent implements Content, PathContent {
   private final Path path = new Path();
   private final RectF rect = new RectF();
   private boolean isPathValid;
@@ -16,7 +16,7 @@ public class RectContent implements Content, PathContent {
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, Float> cornerRadiusAnimation;
 
-  RectContent(LottieDrawable lottieDrawable, AnimatableLayer layer, RectangleShape rectShape) {
+  RectangleContent(LottieDrawable lottieDrawable, AnimatableLayer layer, RectangleShape rectShape) {
     this.lottieDrawable = lottieDrawable;
     positionAnimation = rectShape.getPosition().createAnimation();
     sizeAnimation = rectShape.getSize().createAnimation();

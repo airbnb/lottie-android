@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
@@ -44,14 +43,12 @@ class FillContent implements Content, DrawingContent {
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix transformMatrix, int alpha) {
-    canvas.save();
-    canvas.setMatrix(transformMatrix);
+  @Override public void draw(Canvas canvas, int alpha) {
     paint.setColor(colorAnimation.getValue());
     paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
 
     for (int i = 0; i < paths.size(); i++) {
-      canvas.drawPath(paths.get(0).getPath(), paint);
+      canvas.drawPath(paths.get(i).getPath(), paint);
     }
   }
 }

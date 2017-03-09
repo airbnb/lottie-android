@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -82,7 +81,6 @@ abstract class AnimatableLayer implements DrawingContent {
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
-  private final Matrix matrix = new Matrix();
   private final RectF rect = new RectF();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
@@ -148,17 +146,14 @@ abstract class AnimatableLayer implements DrawingContent {
     animations.add(newAnimation);
   }
 
-  void removeAnimation(BaseKeyframeAnimation<?, ?> animation) {
-    animations.remove(animation);
-  }
-
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    matrix.set(parentMatrix);
-    matrix.preConcat(transform.getMatrix(lottieDrawable));
+  public void draw(Canvas canvas, int parentAlpha) {
     int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
     if (!hasMatte()) {
-      drawLayer(canvas, matrix, alpha);
+      canvas.save();
+      canvas.concat(transform.getMatrix(lottieDrawable));
+      drawLayer(canvas, alpha);
+      canvas.restore();
       return;
     }
 
@@ -166,18 +161,21 @@ abstract class AnimatableLayer implements DrawingContent {
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
-    drawLayer(canvas, matrix, alpha);
+    canvas.save();
+    canvas.concat(transform.getMatrix(lottieDrawable));
+    drawLayer(canvas, alpha);
+    canvas.restore();
 
     canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
     canvas.drawRect(rect, clearPaint);
     assert matteLayer != null;
-    matteLayer.drawLayer(canvas, matrix, alpha);
+    matteLayer.drawLayer(canvas, alpha);
     canvas.restore();
 
     canvas.restore();
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int alpha);
+  abstract void drawLayer(Canvas canvas, int alpha);
 
   public int getAlpha() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);

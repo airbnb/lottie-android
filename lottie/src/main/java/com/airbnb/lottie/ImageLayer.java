@@ -2,7 +2,6 @@ package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
@@ -14,17 +13,14 @@ class ImageLayer extends AnimatableLayer {
     super(lottieDrawable, layerModel);
   }
 
-  @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void drawLayer(@NonNull Canvas canvas, int parentAlpha) {
     String refId = layerModel.getRefId();
     Bitmap bitmap = lottieDrawable.getImageAsset(refId);
     if (bitmap == null) {
       return;
     }
 
-    canvas.save();
-    canvas.concat(parentMatrix);
     paint.setAlpha(parentAlpha);
     canvas.drawBitmap(bitmap, 0, 0 , paint);
-    canvas.restore();
   }
 }

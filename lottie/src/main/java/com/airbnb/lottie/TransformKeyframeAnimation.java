@@ -69,6 +69,7 @@ class TransformKeyframeAnimation {
   }
 
   Matrix getMatrix(LottieDrawable drawable) {
+    matrix.reset();
     float scale = drawable.getScale();
 
     PointF position = getPosition().getValue();

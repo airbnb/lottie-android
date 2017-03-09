@@ -11,6 +11,7 @@ import java.util.List;
 class ContentGroup implements Content, DrawingContent, PathContent {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
+  private final Path path2 = new Path();
 
   private final List<Content> contents = new ArrayList<>();
   private final LottieDrawable lottieDrawable;
@@ -39,7 +40,7 @@ class ContentGroup implements Content, DrawingContent, PathContent {
       } else if (item instanceof ShapeGroup) {
         contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
       } else if (item instanceof RectangleShape) {
-        contents.add(new RectContent(lottieDrawable, layer, (RectangleShape) item));
+        contents.add(new RectangleContent(lottieDrawable, layer, (RectangleShape) item));
       }
     }
   }
@@ -58,33 +59,40 @@ class ContentGroup implements Content, DrawingContent, PathContent {
 
   @Override public Path getPath() {
     // TODO: cache this somehow.
+    matrix.reset();
+    if (transformAnimation != null) {
+      matrix.set(transformAnimation.getMatrix(lottieDrawable));
+    }
     path.reset();
-    for (int i = 0; i < contents.size(); i++) {
+    for (int i = contents.size() - 1; i >= 0; i--) {
       Content content = contents.get(i);
       if (content instanceof PathContent) {
-        path.addPath(((PathContent) content).getPath());
+        path.addPath(((PathContent) content).getPath(), matrix);
       }
     }
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix transformMatrix, int parentAlpha) {
-    matrix.reset();
-    matrix.set(transformMatrix);
+  @Override public void draw(Canvas canvas, int parentAlpha) {
     int alpha;
     if (transformAnimation != null) {
-      matrix.preConcat(transformAnimation.getMatrix(lottieDrawable));
+      canvas.save();
+      canvas.concat(transformAnimation.getMatrix(lottieDrawable));
       alpha =
           (int) ((transformAnimation.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
     } else {
       alpha = parentAlpha;
     }
 
+
     for (int i = contents.size() - 1; i >= 0; i--) {
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(canvas, matrix, alpha);
+        ((DrawingContent) content).draw(canvas, alpha);
       }
+    }
+    if (transformAnimation != null) {
+      canvas.restore();
     }
   }
 }
