@@ -124,7 +124,7 @@ abstract class BaseLayer implements DrawingContent {
     this.matteLayer = matteLayer;
   }
 
-  boolean hasMatte() {
+  boolean hasMatteOnThisLayer() {
     return matteLayer != null;
   }
 
@@ -170,7 +170,7 @@ abstract class BaseLayer implements DrawingContent {
     }
     matrix.preConcat(transform.getMatrix(lottieDrawable));
     int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
-    if (!hasMatte() && !hasMasksOnThisLayer()) {
+    if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       drawLayer(canvas, matrix, alpha);
       return;
     }
@@ -186,7 +186,7 @@ abstract class BaseLayer implements DrawingContent {
       applyMasks(canvas, matrix);
     }
 
-    if (hasMatte()) {
+    if (hasMatteOnThisLayer()) {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       canvas.drawRect(rect, clearPaint);
       matrix.reset();

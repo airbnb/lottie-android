@@ -75,13 +75,13 @@ class CompositionLayer extends BaseLayer {
     return false;
   }
 
-  @Override boolean hasMatte() {
-    if (super.hasMatte()) {
+  boolean hasMatte() {
+    if (hasMatteOnThisLayer()) {
       return true;
     }
 
     for (int i = layers.size() - 1; i >= 0; i--) {
-      if (layers.get(i).hasMatte()) {
+      if (layers.get(i).hasMatteOnThisLayer()) {
         return true;
       }
     }

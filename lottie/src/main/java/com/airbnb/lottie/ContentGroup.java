@@ -20,6 +20,9 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     this.lottieDrawable = lottieDrawable;
 
     List<Object> items = shapeGroup.getItems();
+    if (items.isEmpty()) {
+      return;
+    }
 
     Object potentialTransform = items.get(items.size() - 1);
     if (potentialTransform instanceof AnimatableTransform) {
