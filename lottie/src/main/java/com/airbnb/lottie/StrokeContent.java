@@ -90,9 +90,10 @@ class StrokeContent implements Content, DrawingContent {
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     paint.setColor(colorAnimation.getValue());
-    paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
+    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+    paint.setAlpha(alpha);
     paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
     if (paint.getStrokeWidth() < 1) {
       // Android draws a hairline stroke for 0, After Effects doesn't.

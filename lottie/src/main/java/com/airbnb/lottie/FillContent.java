@@ -46,9 +46,10 @@ class FillContent implements Content, DrawingContent {
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     paint.setColor(colorAnimation.getValue());
-    paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
+    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+    paint.setAlpha(alpha);
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {

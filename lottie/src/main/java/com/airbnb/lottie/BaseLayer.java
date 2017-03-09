@@ -169,7 +169,8 @@ abstract class BaseLayer implements DrawingContent {
       matrix.preConcat(parentLayers.get(i).transform.getMatrix(lottieDrawable));
     }
     matrix.preConcat(transform.getMatrix(lottieDrawable));
-    int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
+    int alpha = (int)
+        ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       drawLayer(canvas, matrix, alpha);
       return;
