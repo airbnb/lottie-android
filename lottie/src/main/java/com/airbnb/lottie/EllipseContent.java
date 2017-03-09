@@ -2,7 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.RectF;
+import android.support.annotation.Nullable;
 
 import java.util.List;
 
@@ -10,12 +10,13 @@ class EllipseContent implements Content, PathContent {
   private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
   private final Path path = new Path();
-  private final RectF rect = new RectF();
-  private boolean isPathValid;
 
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
+
+  @Nullable private TrimPathContent trimPath;
+  private boolean isPathValid;
 
   EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
     this.lottieDrawable = lottieDrawable;
@@ -43,7 +44,17 @@ class EllipseContent implements Content, PathContent {
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
-
+    for (int i = 0; i < contentsBefore.size(); i++) {
+      Content content = contentsBefore.get(i);
+      if (content instanceof TrimPathContent) {
+        trimPath = (TrimPathContent) content;
+        trimPath.addListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+          @Override public void onValueChanged() {
+            lottieDrawable.invalidateSelf();
+          }
+        });
+      }
+    }
   }
 
   @Override public Path getPath() {
@@ -73,6 +84,8 @@ class EllipseContent implements Content, PathContent {
     path.offset(position.x, position.y);
 
     path.close();
+
+    Utils.applyTrimPathIfNeeded(path, trimPath);
 
     isPathValid = false;
     return path;

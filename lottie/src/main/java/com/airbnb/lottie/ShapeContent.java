@@ -1,15 +1,11 @@
 package com.airbnb.lottie;
 
 import android.graphics.Path;
-import android.graphics.PathMeasure;
 import android.support.annotation.Nullable;
 
 import java.util.List;
 
 class ShapeContent implements Content, PathContent {
-  private final PathMeasure pathMeasure = new PathMeasure();
-  private final Path tempPath = new Path();
-  private final Path tempPath2 = new Path();
   private final Path path = new Path();
 
   private final LottieDrawable lottieDrawable;
@@ -57,62 +53,9 @@ class ShapeContent implements Content, PathContent {
 
     path.set(shapeAnimation.getValue());
 
-    applyTrimPathIfNeeded();
+    Utils.applyTrimPathIfNeeded(path, trimPath);
 
     isPathValid = false;
     return path;
-  }
-
-  private void applyTrimPathIfNeeded() {
-    if (trimPath == null) {
-      return;
-    }
-
-    pathMeasure.setPath(path, false);
-
-    float length = pathMeasure.getLength();
-    float start = length * trimPath.getStart().getValue() / 100f;
-    float end = length * trimPath.getEnd().getValue() / 100f;
-    float newStart = Math.min(start, end);
-    float newEnd = Math.max(start, end);
-
-    float offset = trimPath.getOffset().getValue() / 360f * length;
-    newStart += offset;
-    newEnd += offset;
-
-    // If the trim path has rotated around the path, we need to shift it back.
-    if (newStart > length && newEnd > length) {
-      newStart %= length;
-      newEnd %= length;
-    }
-    if (newStart > newEnd) {
-      newStart -= length;
-    }
-
-    tempPath.reset();
-    pathMeasure.getSegment(
-        newStart,
-        newEnd,
-        tempPath,
-        true);
-
-    if (newEnd > length) {
-      tempPath2.reset();
-      pathMeasure.getSegment(
-          0,
-          newEnd % length,
-          tempPath2,
-          true);
-      tempPath.addPath(tempPath2);
-    } else if (newStart < 0) {
-      tempPath2.reset();
-      pathMeasure.getSegment(
-          length + newStart,
-          length,
-          tempPath2,
-          true);
-      tempPath.addPath(tempPath2);
-    }
-    path.set(tempPath);
   }
 }

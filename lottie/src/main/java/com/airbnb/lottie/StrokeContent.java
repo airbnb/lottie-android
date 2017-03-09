@@ -93,7 +93,11 @@ class StrokeContent implements Content, DrawingContent {
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
     paint.setColor(colorAnimation.getValue());
     paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
-    paint.setStrokeWidth(widthAnimation.getValue());
+    paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
+    if (paint.getStrokeWidth() < 1) {
+      // Android draws a hairline stroke for 0, After Effects doesn't.
+      return;
+    }
     applyDashPatternIfNeeded();
 
     path.reset();
