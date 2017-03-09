@@ -15,6 +15,10 @@ abstract class BaseKeyframeAnimation<K, A> {
     void onValueChanged(A value);
   }
 
+  interface SimpleAnimationListener {
+    void onValueChanged();
+  }
+
   final List<AnimationListener<A>> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
 

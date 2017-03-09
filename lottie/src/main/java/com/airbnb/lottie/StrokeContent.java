@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -11,8 +12,13 @@ import java.util.List;
 
 public class StrokeContent implements Content, DrawingContent {
 
+  private final PathMeasure pathMeasure = new PathMeasure();
+  private final Path tempPath = new Path();
+  private final Path tempPath2 = new Path();
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final LottieDrawable lottieDrawable;
+  @Nullable private TrimPathContent trimPath;
   private final List<PathContent> paths = new ArrayList<>();
 
   private final BaseKeyframeAnimation<?, Integer> colorAnimation;
@@ -22,6 +28,7 @@ public class StrokeContent implements Content, DrawingContent {
   @Nullable private final BaseKeyframeAnimation<?, Float> offsetAnimation;
 
   StrokeContent(final LottieDrawable lottieDrawable, AnimatableLayer layer, ShapeStroke stroke) {
+    this.lottieDrawable = lottieDrawable;
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeCap(stroke.getCapType().toPaintCap());
     paint.setStrokeJoin(stroke.getJoinType().toPaintJoin());
@@ -76,6 +83,18 @@ public class StrokeContent implements Content, DrawingContent {
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    for (int i = 0; i < contentsBefore.size(); i++) {
+      Content content = contentsBefore.get(i);
+      if (content instanceof TrimPathContent) {
+        trimPath = (TrimPathContent) content;
+        trimPath.addListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+          @Override public void onValueChanged() {
+            lottieDrawable.invalidateSelf();
+          }
+        });
+      }
+    }
+
     for (int i = 0; i < contentsAfter.size(); i++) {
       Content content = contentsAfter.get(i);
       if (content instanceof PathContent) {
@@ -91,9 +110,64 @@ public class StrokeContent implements Content, DrawingContent {
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
-      path.addPath(paths.get(i).getPath(), parentMatrix);
+      Path path = paths.get(i).getPath();
+      path = applyTrimPathIfNeeded(path);
+      this.path.addPath(path, parentMatrix);
     }
 
     canvas.drawPath(path, paint);
+  }
+
+  private Path applyTrimPathIfNeeded(Path path) {
+    if (trimPath == null) {
+      return path;
+    }
+
+    pathMeasure.setPath(path, false);
+
+    float length = pathMeasure.getLength();
+    float start = length * trimPath.getStart().getValue() / 100f;
+    float end = length * trimPath.getEnd().getValue() / 100f;
+    float newStart = Math.min(start, end);
+    float newEnd = Math.max(start, end);
+
+    float offset = trimPath.getOffset().getValue() / 360f * length;
+    newStart += offset;
+    newEnd += offset;
+
+    // If the trim path has rotated around the path, we need to shift it back.
+    if (newStart > length && newEnd > length) {
+      newStart %= length;
+      newEnd %= length;
+    }
+    if (newStart > newEnd) {
+      newStart -= length;
+    }
+
+    tempPath.reset();
+    pathMeasure.getSegment(
+        newStart,
+        newEnd,
+        tempPath,
+        true);
+
+    if (newEnd > length) {
+      tempPath2.reset();
+      pathMeasure.getSegment(
+          0,
+          newEnd % length,
+          tempPath2,
+          true);
+      tempPath.addPath(tempPath2);
+    } else if (newStart < 0) {
+      tempPath2.reset();
+      pathMeasure.getSegment(
+          length + newStart,
+          length,
+          tempPath2,
+          true);
+      tempPath.addPath(tempPath2);
+    }
+    return tempPath;
   }
 }
