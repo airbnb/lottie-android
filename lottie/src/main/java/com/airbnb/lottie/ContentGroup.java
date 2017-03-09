@@ -11,7 +11,6 @@ import java.util.List;
 class ContentGroup implements Content, DrawingContent, PathContent {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
-  private final Path path2 = new Path();
 
   private final List<Content> contents = new ArrayList<>();
   private final LottieDrawable lottieDrawable;
@@ -26,6 +25,7 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     if (potentialTransform instanceof AnimatableTransform) {
       transformAnimation = ((AnimatableTransform) potentialTransform).createAnimation();
       //noinspection ConstantConditions
+      transformAnimation.addAnimationsToLayer(layer);
       transformAnimation.addListener(new BaseKeyframeAnimation.AnimationListener<Void>() {
         @Override public void onValueChanged(Void value) {
           lottieDrawable.invalidateSelf();
@@ -43,6 +43,8 @@ class ContentGroup implements Content, DrawingContent, PathContent {
         contents.add(new RectangleContent(lottieDrawable, layer, (RectangleShape) item));
       } else if (item instanceof CircleShape) {
         contents.add(new EllipseContent(lottieDrawable, layer, (CircleShape) item));
+      } else if (item instanceof ShapePath) {
+        contents.add(new ShapeContent(lottieDrawable, layer, (ShapePath) item));
       }
     }
   }

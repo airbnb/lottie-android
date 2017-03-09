@@ -40,6 +40,14 @@ class TransformKeyframeAnimation {
     return opacity;
   }
 
+  void addAnimationsToLayer(AnimatableLayer layer) {
+    layer.addAnimation(getAnchorPoint());
+    layer.addAnimation(getPosition());
+    layer.addAnimation(getScale());
+    layer.addAnimation(getRotation());
+    layer.addAnimation(getOpacity());
+  }
+
   void addListener(final BaseKeyframeAnimation.AnimationListener<Void> listener) {
     getAnchorPoint().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
      @Override public void onValueChanged(PointF value) {

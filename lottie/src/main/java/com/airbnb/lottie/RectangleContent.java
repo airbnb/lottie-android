@@ -44,7 +44,7 @@ class RectangleContent implements Content, PathContent {
   }
 
   private void invalidate() {
-    isPathValid = true;
+    isPathValid = false;
     lottieDrawable.invalidateSelf();
   }
 

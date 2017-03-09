@@ -6,7 +6,7 @@ import android.graphics.RectF;
 
 import java.util.List;
 
-public class EllipseContent implements Content, PathContent {
+class EllipseContent implements Content, PathContent {
   private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
   private final Path path = new Path();
@@ -38,7 +38,7 @@ public class EllipseContent implements Content, PathContent {
   }
 
   private void invalidate() {
-    isPathValid = true;
+    isPathValid = false;
     lottieDrawable.invalidateSelf();
   }
 
