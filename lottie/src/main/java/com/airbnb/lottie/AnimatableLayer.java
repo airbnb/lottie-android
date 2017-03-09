@@ -80,13 +80,16 @@ abstract class AnimatableLayer implements DrawingContent {
         }
       };
 
+  private final Path path = new Path();
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
   private final RectF rect = new RectF();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
+  @Nullable private MaskKeyframeAnimation mask;
   @Nullable private AnimatableLayer matteLayer;
   @Nullable private AnimatableLayer parentLayer;
   private List<AnimatableLayer> parentLayers;
@@ -99,6 +102,7 @@ abstract class AnimatableLayer implements DrawingContent {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+    maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
@@ -106,6 +110,9 @@ abstract class AnimatableLayer implements DrawingContent {
     }
 
     setTransform(layerModel.getTransform().createAnimation());
+    if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
+      setMask(new MaskKeyframeAnimation(layerModel.getMasks()));
+    }
     setupInOutAnimations();
   }
 
@@ -163,31 +170,61 @@ abstract class AnimatableLayer implements DrawingContent {
     }
     matrix.preConcat(transform.getMatrix(lottieDrawable));
     int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
-    if (!hasMatte()) {
+    if (!hasMatte() && !hasMasksOnThisLayer()) {
       drawLayer(canvas, matrix, alpha);
       return;
     }
 
+    // TODO: make sure this is the right clip.
     rect.set(canvas.getClipBounds());
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
-    canvas.save();
-    canvas.concat(transform.getMatrix(lottieDrawable));
     drawLayer(canvas, matrix, alpha);
-    canvas.restore();
 
-    canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
-    canvas.drawRect(rect, clearPaint);
-    assert matteLayer != null;
-    matrix.reset();
-    matteLayer.drawLayer(canvas, matrix, alpha);
-    canvas.restore();
+    if (hasMasksOnThisLayer()) {
+      applyMasks(canvas, matrix);
+    }
+
+    if (hasMatte()) {
+      canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
+      canvas.drawRect(rect, clearPaint);
+      matrix.reset();
+      //noinspection ConstantConditions
+      matteLayer.drawLayer(canvas, matrix, alpha);
+      canvas.restore();
+    }
 
     canvas.restore();
   }
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
+
+  private void applyMasks(Canvas canvas, Matrix matrix) {
+    canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
+    canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
+
+    //noinspection ConstantConditions
+    int size = mask.getMasks().size();
+    for (int i = 0; i < size; i++) {
+      Mask mask = this.mask.getMasks().get(i);
+      BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
+      Path maskPath = maskAnimation.getValue();
+      path.set(maskPath);
+      path.transform(matrix);
+
+      switch (mask.getMaskMode()) {
+        case MaskModeSubtract:
+          maskPath.setFillType(Path.FillType.INVERSE_WINDING);
+          break;
+        case MaskModeAdd:
+        default:
+          maskPath.setFillType(Path.FillType.WINDING);
+      }
+      canvas.drawPath(maskPath, contentPaint);
+    }
+    canvas.restore();
+  }
 
   public int getAlpha() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
@@ -214,7 +251,18 @@ abstract class AnimatableLayer implements DrawingContent {
     addAnimation(scale);
     addAnimation(rotation);
     addAnimation(opacity);
-    invalidateSelf();
+  }
+
+  private void setMask(@SuppressWarnings("NullableProblems") MaskKeyframeAnimation mask) {
+    this.mask = mask;
+    for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
+      addAnimation(animation);
+      animation.addUpdateListener(pathChangedListener);
+    }
+  }
+
+  boolean hasMasksOnThisLayer() {
+    return mask != null && !mask.getMaskAnimations().isEmpty();
   }
 
   private void setVisible(boolean visible) {

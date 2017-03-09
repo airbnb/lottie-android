@@ -67,7 +67,7 @@ class CompositionLayer extends AnimatableLayer {
     for (int i = layers.size() - 1; i >= 0; i--) {
       AnimatableLayer layer = layers.get(i);
       if (layer instanceof ShapeLayer) {
-        if (((ShapeLayer) layer).hasMasks()) {
+        if (layer.hasMasksOnThisLayer()) {
           return true;
         }
       }
