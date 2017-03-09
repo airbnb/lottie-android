@@ -37,6 +37,8 @@ class ContentGroup implements Content, DrawingContent, PathContent {
       Object item = items.get(i);
       if (item instanceof ShapeFill) {
         contents.add(new FillContent(lottieDrawable, layer, (ShapeFill) item));
+      } else if (item instanceof ShapeStroke) {
+        contents.add(new StrokeContent(lottieDrawable, layer, (ShapeStroke) item));
       } else if (item instanceof ShapeGroup) {
         contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
       } else if (item instanceof RectangleShape) {
