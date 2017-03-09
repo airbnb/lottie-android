@@ -73,11 +73,11 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     return path;
   }
 
-  @Override public void draw(Canvas canvas, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    matrix.set(parentMatrix);
     int alpha;
     if (transformAnimation != null) {
-      canvas.save();
-      canvas.concat(transformAnimation.getMatrix(lottieDrawable));
+      matrix.preConcat(transformAnimation.getMatrix(lottieDrawable));
       alpha =
           (int) ((transformAnimation.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
     } else {
@@ -88,11 +88,8 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     for (int i = contents.size() - 1; i >= 0; i--) {
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(canvas, alpha);
+        ((DrawingContent) content).draw(canvas, matrix, alpha);
       }
-    }
-    if (transformAnimation != null) {
-      canvas.restore();
     }
   }
 }

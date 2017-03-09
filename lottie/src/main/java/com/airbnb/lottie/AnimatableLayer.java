@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -12,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 abstract class AnimatableLayer implements DrawingContent {
@@ -78,6 +80,7 @@ abstract class AnimatableLayer implements DrawingContent {
         }
       };
 
+  private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
@@ -86,6 +89,7 @@ abstract class AnimatableLayer implements DrawingContent {
   final Layer layerModel;
   @Nullable private AnimatableLayer matteLayer;
   @Nullable private AnimatableLayer parentLayer;
+  private List<AnimatableLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   TransformKeyframeAnimation transform;
@@ -147,13 +151,17 @@ abstract class AnimatableLayer implements DrawingContent {
   }
 
   @Override
-  public void draw(Canvas canvas, int parentAlpha) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    buildParentLayerListIfNeeded();
+    matrix.reset();
+    matrix.set(parentMatrix);
+    for (int i = parentLayers.size() - 1; i >= 0; i--) {
+      matrix.preConcat(parentLayers.get(i).transform.getMatrix(lottieDrawable));
+    }
+    matrix.preConcat(transform.getMatrix(lottieDrawable));
     int alpha = (int) (parentAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255;
     if (!hasMatte()) {
-      canvas.save();
-      canvas.concat(transform.getMatrix(lottieDrawable));
-      drawLayer(canvas, alpha);
-      canvas.restore();
+      drawLayer(canvas, matrix, alpha);
       return;
     }
 
@@ -163,19 +171,20 @@ abstract class AnimatableLayer implements DrawingContent {
     canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
     canvas.save();
     canvas.concat(transform.getMatrix(lottieDrawable));
-    drawLayer(canvas, alpha);
+    drawLayer(canvas, matrix, alpha);
     canvas.restore();
 
     canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
     canvas.drawRect(rect, clearPaint);
     assert matteLayer != null;
-    matteLayer.drawLayer(canvas, alpha);
+    matrix.reset();
+    matteLayer.drawLayer(canvas, matrix, alpha);
     canvas.restore();
 
     canvas.restore();
   }
 
-  abstract void drawLayer(Canvas canvas, int alpha);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   public int getAlpha() {
     float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
@@ -205,10 +214,6 @@ abstract class AnimatableLayer implements DrawingContent {
     invalidateSelf();
   }
 
-  boolean isVisible() {
-    return visible;
-  }
-
   private void setVisible(boolean visible) {
     this.visible = visible;
   }
@@ -216,6 +221,23 @@ abstract class AnimatableLayer implements DrawingContent {
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
+    }
+  }
+
+  private void buildParentLayerListIfNeeded() {
+    if (parentLayers != null) {
+      return;
+    }
+    if (parentLayer == null) {
+      parentLayers = Collections.emptyList();
+      return;
+    }
+
+    parentLayers = new ArrayList<>();
+    AnimatableLayer layer = parentLayer;
+    while (layer != null) {
+      parentLayers.add(layer);
+      layer = layer.parentLayer;
     }
   }
 }

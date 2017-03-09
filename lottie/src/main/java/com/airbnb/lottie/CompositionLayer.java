@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.support.annotation.FloatRange;
 import android.support.v4.util.LongSparseArray;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class CompositionLayer extends AnimatableLayer {
-
+  private final Matrix matrix = new Matrix();
   private final List<AnimatableLayer> layers = new ArrayList<>();
 
   CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
@@ -47,9 +48,11 @@ class CompositionLayer extends AnimatableLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, int parentAlpha) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    matrix.set(parentMatrix);
+    matrix.preConcat(transform.getMatrix(lottieDrawable));
     for (int i = layers.size() - 1; i >= 0 ; i--) {
-      layers.get(i).draw(canvas, parentAlpha);
+      layers.get(i).draw(canvas, matrix, parentAlpha);
     }
   }
 

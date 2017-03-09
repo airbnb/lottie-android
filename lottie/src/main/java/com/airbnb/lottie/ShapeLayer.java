@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
@@ -42,7 +43,7 @@ class ShapeLayer extends AnimatableLayer {
     return mask != null && !mask.getMaskAnimations().isEmpty();
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, int parentAlpha) {
-    contentGroup.draw(canvas, parentAlpha);
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    contentGroup.draw(canvas, parentMatrix, parentAlpha);
   }
 }

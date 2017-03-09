@@ -1,12 +1,15 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 
 import java.util.ArrayList;
 import java.util.List;
 
 class FillContent implements Content, DrawingContent {
+  private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<PathContent> paths = new ArrayList<>();
   private final KeyframeAnimation<Integer> colorAnimation;
@@ -43,12 +46,15 @@ class FillContent implements Content, DrawingContent {
     }
   }
 
-  @Override public void draw(Canvas canvas, int alpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
     paint.setColor(colorAnimation.getValue());
     paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
 
+    path.reset();
     for (int i = 0; i < paths.size(); i++) {
-      canvas.drawPath(paths.get(i).getPath(), paint);
+      path.addPath(paths.get(i).getPath(), parentMatrix);
     }
+
+    canvas.drawPath(path, paint);
   }
 }

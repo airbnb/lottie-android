@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
 class SolidLayer extends AnimatableLayer {
@@ -18,7 +19,7 @@ class SolidLayer extends AnimatableLayer {
     paint.setColor(layerModel.getSolidColor());
   }
 
-  @Override public void drawLayer(Canvas canvas, int parentAlpha) {
+  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     int backgroundAlpha = Color.alpha(layerModel.getSolidColor());
     if (backgroundAlpha == 0) {
       return;

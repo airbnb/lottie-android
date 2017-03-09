@@ -172,7 +172,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     if (compositionLayer == null) {
       return;
     }
-    compositionLayer.draw(canvas, alpha);
+    compositionLayer.draw(canvas, matrix, alpha);
   }
 
   void systemAnimationsAreDisabled() {
