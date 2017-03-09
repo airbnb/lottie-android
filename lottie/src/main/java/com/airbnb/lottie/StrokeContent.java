@@ -23,7 +23,7 @@ class StrokeContent implements Content, DrawingContent {
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
   @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
 
-  StrokeContent(final LottieDrawable lottieDrawable, AnimatableLayer layer, ShapeStroke stroke) {
+  StrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) {
     this.lottieDrawable = lottieDrawable;
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeCap(stroke.getCapType().toPaintCap());

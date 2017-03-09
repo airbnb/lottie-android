@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 
-class NullLayer extends AnimatableLayer {
+class NullLayer extends BaseLayer {
   NullLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
   }

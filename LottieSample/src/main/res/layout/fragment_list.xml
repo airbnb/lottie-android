@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:lottie_fileName="Comp1.json"
+            app:lottie_fileName="TrimPath.json"
             app:lottie_loop="true" />
     </FrameLayout>
 

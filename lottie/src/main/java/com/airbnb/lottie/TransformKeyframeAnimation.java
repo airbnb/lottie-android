@@ -40,7 +40,7 @@ class TransformKeyframeAnimation {
     return opacity;
   }
 
-  void addAnimationsToLayer(AnimatableLayer layer) {
+  void addAnimationsToLayer(BaseLayer layer) {
     layer.addAnimation(getAnchorPoint());
     layer.addAnimation(getPosition());
     layer.addAnimation(getScale());

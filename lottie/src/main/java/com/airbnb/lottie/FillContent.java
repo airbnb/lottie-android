@@ -15,7 +15,7 @@ class FillContent implements Content, DrawingContent {
   private final KeyframeAnimation<Integer> colorAnimation;
   private final KeyframeAnimation<Integer> opacityAnimation;
 
-  FillContent(final LottieDrawable lottieDrawable, AnimatableLayer layer, ShapeFill fill) {
+  FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
     if (fill.getColor() == null || fill.getOpacity() == null ) {
       colorAnimation = null;
       opacityAnimation = null;

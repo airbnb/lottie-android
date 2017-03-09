@@ -6,7 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 
-class ImageLayer extends AnimatableLayer {
+class ImageLayer extends BaseLayer {
 
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
 

@@ -10,7 +10,7 @@ public class TrimPathContent implements Content {
   private final BaseKeyframeAnimation<?, Float> endAnimation;
   private final BaseKeyframeAnimation<?, Float> offsetAnimation;
 
-  public TrimPathContent(AnimatableLayer layer, ShapeTrimPath trimPath) {
+  public TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath) {
     startAnimation = trimPath.getStart().createAnimation();
     endAnimation = trimPath.getEnd().createAnimation();
     offsetAnimation = trimPath.getOffset().createAnimation();

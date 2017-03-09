@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class AnimatableLayer implements DrawingContent {
+abstract class BaseLayer implements DrawingContent {
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
-  static AnimatableLayer forModel(
+  static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case Shape:
@@ -90,15 +90,15 @@ abstract class AnimatableLayer implements DrawingContent {
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
   @Nullable private MaskKeyframeAnimation mask;
-  @Nullable private AnimatableLayer matteLayer;
-  @Nullable private AnimatableLayer parentLayer;
-  private List<AnimatableLayer> parentLayers;
+  @Nullable private BaseLayer matteLayer;
+  @Nullable private BaseLayer parentLayer;
+  private List<BaseLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   TransformKeyframeAnimation transform;
   private boolean visible = true;
 
-  AnimatableLayer(LottieDrawable lottieDrawable, Layer layerModel) {
+  BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
@@ -120,7 +120,7 @@ abstract class AnimatableLayer implements DrawingContent {
     return layerModel;
   }
 
-  void setMatteLayer(@Nullable AnimatableLayer matteLayer) {
+  void setMatteLayer(@Nullable BaseLayer matteLayer) {
     this.matteLayer = matteLayer;
   }
 
@@ -128,7 +128,7 @@ abstract class AnimatableLayer implements DrawingContent {
     return matteLayer != null;
   }
 
-  void setParentLayer(@Nullable AnimatableLayer parentLayer) {
+  void setParentLayer(@Nullable BaseLayer parentLayer) {
     this.parentLayer = parentLayer;
   }
 
@@ -288,7 +288,7 @@ abstract class AnimatableLayer implements DrawingContent {
     }
 
     parentLayers = new ArrayList<>();
-    AnimatableLayer layer = parentLayer;
+    BaseLayer layer = parentLayer;
     while (layer != null) {
       parentLayers.add(layer);
       layer = layer.parentLayer;

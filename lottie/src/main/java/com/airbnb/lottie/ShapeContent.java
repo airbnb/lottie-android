@@ -18,7 +18,7 @@ class ShapeContent implements Content, PathContent {
   private boolean isPathValid;
   @Nullable private TrimPathContent trimPath;
 
-  ShapeContent(LottieDrawable lottieDrawable, AnimatableLayer layer, ShapePath shape) {
+  ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
     this.lottieDrawable = lottieDrawable;
     shapeAnimation = shape.getShapePath().createAnimation();
     layer.addAnimation(shapeAnimation);

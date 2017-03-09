@@ -17,7 +17,7 @@ class EllipseContent implements Content, PathContent {
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
 
-  EllipseContent(LottieDrawable lottieDrawable, AnimatableLayer layer, CircleShape circleShape) {
+  EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
     this.lottieDrawable = lottieDrawable;
     sizeAnimation = circleShape.getSize().createAnimation();
     positionAnimation = circleShape.getPosition().createAnimation();

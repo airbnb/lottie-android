@@ -16,7 +16,7 @@ class ContentGroup implements Content, DrawingContent, PathContent {
   private final LottieDrawable lottieDrawable;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
-  ContentGroup(final LottieDrawable lottieDrawable, AnimatableLayer layer, ShapeGroup shapeGroup) {
+  ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
     this.lottieDrawable = lottieDrawable;
 
     List<Object> items = shapeGroup.getItems();

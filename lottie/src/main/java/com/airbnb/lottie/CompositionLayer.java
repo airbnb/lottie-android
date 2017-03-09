@@ -8,21 +8,21 @@ import android.support.v4.util.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-class CompositionLayer extends AnimatableLayer {
+class CompositionLayer extends BaseLayer {
   private final Matrix matrix = new Matrix();
-  private final List<AnimatableLayer> layers = new ArrayList<>();
+  private final List<BaseLayer> layers = new ArrayList<>();
 
   CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
     super(lottieDrawable, layerModel);
 
-    LongSparseArray<AnimatableLayer> layerMap =
+    LongSparseArray<BaseLayer> layerMap =
         new LongSparseArray<>(composition.getLayers().size());
 
-    AnimatableLayer mattedLayer = null;
+    BaseLayer mattedLayer = null;
     for (int i = layerModels.size() - 1; i >= 0; i--) {
       Layer lm = layerModels.get(i);
-      AnimatableLayer layer = AnimatableLayer.forModel(lm, lottieDrawable, composition);
+      BaseLayer layer = BaseLayer.forModel(lm, lottieDrawable, composition);
       layerMap.put(layer.getLayerModel().getId(), layer);
       if (mattedLayer != null) {
         mattedLayer.setMatteLayer(layer);
@@ -40,8 +40,8 @@ class CompositionLayer extends AnimatableLayer {
 
     for (int i = 0; i < layerMap.size(); i++) {
       long key = layerMap.keyAt(i);
-      AnimatableLayer layerView = layerMap.get(key);
-      AnimatableLayer parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
+      BaseLayer layerView = layerMap.get(key);
+      BaseLayer parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
       if (parentLayer != null) {
         layerView.setParentLayer(parentLayer);
       }
@@ -65,7 +65,7 @@ class CompositionLayer extends AnimatableLayer {
 
   boolean hasMasks() {
     for (int i = layers.size() - 1; i >= 0; i--) {
-      AnimatableLayer layer = layers.get(i);
+      BaseLayer layer = layers.get(i);
       if (layer instanceof ShapeLayer) {
         if (layer.hasMasksOnThisLayer()) {
           return true;

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 
 import java.util.Collections;
 
-class ShapeLayer extends AnimatableLayer {
+class ShapeLayer extends BaseLayer {
 
   private final ContentGroup contentGroup;
 

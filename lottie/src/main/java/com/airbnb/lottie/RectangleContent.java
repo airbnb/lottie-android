@@ -16,7 +16,7 @@ class RectangleContent implements Content, PathContent {
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, Float> cornerRadiusAnimation;
 
-  RectangleContent(LottieDrawable lottieDrawable, AnimatableLayer layer, RectangleShape rectShape) {
+  RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape) {
     this.lottieDrawable = lottieDrawable;
     positionAnimation = rectShape.getPosition().createAnimation();
     sizeAnimation = rectShape.getSize().createAnimation();

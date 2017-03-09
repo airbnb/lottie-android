@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 
-class SolidLayer extends AnimatableLayer {
+class SolidLayer extends BaseLayer {
 
   private final Paint paint = new Paint();
   private final Layer layerModel;
