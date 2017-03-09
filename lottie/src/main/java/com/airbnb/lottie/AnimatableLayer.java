@@ -152,6 +152,9 @@ abstract class AnimatableLayer implements DrawingContent {
 
   @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (!visible) {
+      return;
+    }
     buildParentLayerListIfNeeded();
     matrix.reset();
     matrix.set(parentMatrix);
@@ -215,7 +218,10 @@ abstract class AnimatableLayer implements DrawingContent {
   }
 
   private void setVisible(boolean visible) {
-    this.visible = visible;
+    if (visible != this.visible) {
+      this.visible = visible;
+      invalidateSelf();
+    }
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
