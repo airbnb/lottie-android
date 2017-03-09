@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -20,12 +21,13 @@ public class StrokeContent implements Content, DrawingContent {
   private final LottieDrawable lottieDrawable;
   @Nullable private TrimPathContent trimPath;
   private final List<PathContent> paths = new ArrayList<>();
+  private final float[] dashPatternValues;
 
   private final BaseKeyframeAnimation<?, Integer> colorAnimation;
   private final BaseKeyframeAnimation<?, Float> widthAnimation;
   private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
-  @Nullable private final BaseKeyframeAnimation<?, Float> offsetAnimation;
+  @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
 
   StrokeContent(final LottieDrawable lottieDrawable, AnimatableLayer layer, ShapeStroke stroke) {
     this.lottieDrawable = lottieDrawable;
@@ -38,12 +40,15 @@ public class StrokeContent implements Content, DrawingContent {
     widthAnimation = stroke.getWidth().createAnimation();
 
     if (stroke.getDashOffset() == null) {
-      offsetAnimation = null;
+      dashPatternOffsetAnimation = null;
     } else {
-      offsetAnimation = stroke.getDashOffset().createAnimation();
+      dashPatternOffsetAnimation = stroke.getDashOffset().createAnimation();
     }
     List<AnimatableFloatValue> dashPattern = stroke.getLineDashPattern();
     dashPatternAnimations = new ArrayList<>(dashPattern.size());
+    dashPatternValues = new float[dashPattern.size()];
+    float[] values = new float[dashPatternAnimations.size()];
+
     for (int i = 0; i < dashPattern.size(); i++) {
       dashPatternAnimations.add(dashPattern.get(i).createAnimation());
     }
@@ -54,8 +59,8 @@ public class StrokeContent implements Content, DrawingContent {
     for (int i = 0; i < dashPatternAnimations.size(); i++) {
       layer.addAnimation(dashPatternAnimations.get(i));
     }
-    if (offsetAnimation != null) {
-      layer.addAnimation(offsetAnimation);
+    if (dashPatternOffsetAnimation != null) {
+      layer.addAnimation(dashPatternOffsetAnimation);
     }
 
     BaseKeyframeAnimation.AnimationListener<Float> floatListener =
@@ -77,8 +82,8 @@ public class StrokeContent implements Content, DrawingContent {
     for (int i = 0; i < dashPattern.size(); i++) {
       dashPatternAnimations.get(i).addUpdateListener(floatListener);
     }
-    if (offsetAnimation != null) {
-      offsetAnimation.addUpdateListener(floatListener);
+    if (dashPatternOffsetAnimation != null) {
+      dashPatternOffsetAnimation.addUpdateListener(floatListener);
     }
   }
 
@@ -107,6 +112,7 @@ public class StrokeContent implements Content, DrawingContent {
     paint.setColor(colorAnimation.getValue());
     paint.setAlpha(opacityAnimation.getValue() * 255 / 100);
     paint.setStrokeWidth(widthAnimation.getValue());
+    applyDashPatternIfNeeded();
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
@@ -169,5 +175,32 @@ public class StrokeContent implements Content, DrawingContent {
       tempPath.addPath(tempPath2);
     }
     return tempPath;
+  }
+
+  private void applyDashPatternIfNeeded() {
+    if (dashPatternAnimations.isEmpty()) {
+      return;
+    }
+
+    float scale = lottieDrawable.getScale();
+    for (int i = 0; i < dashPatternAnimations.size(); i++) {
+      dashPatternValues[i] = dashPatternAnimations.get(i).getValue();
+      // If the value of the dash pattern or gap is too small, the number of individual sections
+      // approaches infinity as the value approaches 0.
+      // To mitigate this, we essentially put a minimum value on the dash pattern size of 1px
+      // and a minimum gap size of 0.01.
+      if (i % 2 == 0) {
+        if (dashPatternValues[i] < 1f) {
+          dashPatternValues[i] = 1f;
+        }
+      } else {
+        if (dashPatternValues[i] < 0.1f) {
+          dashPatternValues[i] = 0.1f;
+        }
+      }
+      dashPatternValues[i] *= scale;
+    }
+    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
+    paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
   }
 }
