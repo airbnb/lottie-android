@@ -41,6 +41,8 @@ class ContentGroup implements Content, DrawingContent, PathContent {
         contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
       } else if (item instanceof RectangleShape) {
         contents.add(new RectangleContent(lottieDrawable, layer, (RectangleShape) item));
+      } else if (item instanceof CircleShape) {
+        contents.add(new EllipseContent(lottieDrawable, layer, (CircleShape) item));
       }
     }
   }
