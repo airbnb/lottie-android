@@ -72,7 +72,7 @@ abstract class BaseLayer implements DrawingContent {
         }
       };
 
-  final KeyframeAnimation.AnimationListener<Path> pathChangedListener =
+  private final KeyframeAnimation.AnimationListener<Path> pathChangedListener =
       new KeyframeAnimation.AnimationListener<Path>() {
         @Override
         public void onValueChanged(Path value) {
@@ -149,7 +149,7 @@ abstract class BaseLayer implements DrawingContent {
     }
   }
 
-  void invalidateSelf() {
+  private void invalidateSelf() {
     lottieDrawable.invalidateSelf();
   }
 
@@ -221,7 +221,7 @@ abstract class BaseLayer implements DrawingContent {
         default:
           maskPath.setFillType(Path.FillType.WINDING);
       }
-      canvas.drawPath(maskPath, contentPaint);
+      canvas.drawPath(path, contentPaint);
     }
     canvas.restore();
   }
