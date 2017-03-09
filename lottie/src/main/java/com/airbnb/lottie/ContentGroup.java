@@ -72,7 +72,7 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     // TODO: cache this somehow.
     matrix.reset();
     if (transformAnimation != null) {
-      matrix.set(transformAnimation.getMatrix(lottieDrawable));
+      matrix.set(transformAnimation.getMatrix());
     }
     path.reset();
     for (int i = contents.size() - 1; i >= 0; i--) {
@@ -88,7 +88,7 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     matrix.set(parentMatrix);
     int alpha;
     if (transformAnimation != null) {
-      matrix.preConcat(transformAnimation.getMatrix(lottieDrawable));
+      matrix.preConcat(transformAnimation.getMatrix());
       alpha =
           (int) ((transformAnimation.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
     } else {

@@ -76,13 +76,11 @@ class TransformKeyframeAnimation {
     });
   }
 
-  Matrix getMatrix(LottieDrawable drawable) {
+  Matrix getMatrix() {
     matrix.reset();
-    float scale = drawable.getScale();
-
     PointF position = getPosition().getValue();
     if (position.x != 0 || position.y != 0) {
-      matrix.preTranslate(position.x * scale, position.y * scale);
+      matrix.preTranslate(position.x, position.y);
     }
 
     float rotation = getRotation().getValue();
@@ -97,7 +95,7 @@ class TransformKeyframeAnimation {
 
     PointF anchorPoint = getAnchorPoint().getValue();
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      matrix.preTranslate(-anchorPoint.x * scale, -anchorPoint.y * scale);
+      matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
     }
     return matrix;
   }
