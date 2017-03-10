@@ -48,6 +48,10 @@ dependencies {
 }
 ```
 
+## Shipping something with Lottie?
+
+Email us at lottie@airbnb.com and soon we will create a testimonals and use cases page with real world usages of Lottie from around the world.
+
 ## Using Lottie
 Lottie supports ICS (API 14) and above.
 The simplest way to use it is with LottieAnimationView:
