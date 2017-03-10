@@ -1,17 +1,20 @@
 package com.airbnb.lottie;
 
+import android.graphics.Path;
 import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
 class ShapeFill {
   private final boolean fillEnabled;
+  private final Path.FillType fillType;
   @Nullable private final AnimatableColorValue color;
   @Nullable private final AnimatableIntegerValue opacity;
 
-  private ShapeFill(boolean fillEnabled, @Nullable AnimatableColorValue color, @Nullable
-      AnimatableIntegerValue opacity) {
+  private ShapeFill(boolean fillEnabled, Path.FillType fillType,
+      @Nullable AnimatableColorValue color, @Nullable AnimatableIntegerValue opacity) {
     this.fillEnabled = fillEnabled;
+    this.fillType = fillType;
     this.color = color;
     this.opacity = opacity;
   }
@@ -35,16 +38,24 @@ class ShapeFill {
         opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition, false);
       }
       fillEnabled = json.optBoolean("fillEnabled");
-      return new ShapeFill(fillEnabled, color, opacity);
+
+      int fillTypeInt = json.optInt("r", 1);
+      Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
+
+      return new ShapeFill(fillEnabled, fillType, color, opacity);
     }
   }
 
-  @Nullable public AnimatableColorValue getColor() {
+  @Nullable AnimatableColorValue getColor() {
     return color;
   }
 
-  @Nullable public AnimatableIntegerValue getOpacity() {
+  @Nullable AnimatableIntegerValue getOpacity() {
     return opacity;
+  }
+
+  Path.FillType getFillType() {
+    return fillType;
   }
 
   @Override

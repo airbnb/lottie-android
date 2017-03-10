@@ -22,6 +22,8 @@ class FillContent implements Content, DrawingContent {
       return;
     }
 
+    path.setFillType(fill.getFillType());
+
     BaseKeyframeAnimation.AnimationListener<Integer> listener =
         new BaseKeyframeAnimation.AnimationListener<Integer>() {
           @Override public void onValueChanged(Integer value) {
