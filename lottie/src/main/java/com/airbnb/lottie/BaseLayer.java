@@ -154,7 +154,9 @@ abstract class BaseLayer implements DrawingContent {
   }
 
   void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
-    animations.add(newAnimation);
+    if (!(newAnimation instanceof StaticKeyframeAnimation)) {
+      animations.add(newAnimation);
+    }
   }
 
   @Override
@@ -190,9 +192,8 @@ abstract class BaseLayer implements DrawingContent {
     if (hasMatteOnThisLayer()) {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       canvas.drawRect(rect, clearPaint);
-      matrix.reset();
       //noinspection ConstantConditions
-      matteLayer.drawLayer(canvas, matrix, alpha);
+      matteLayer.draw(canvas, parentMatrix, alpha);
       canvas.restore();
     }
 
@@ -274,6 +275,9 @@ abstract class BaseLayer implements DrawingContent {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    if (matteLayer != null) {
+      matteLayer.setProgress(progress);
+    }
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
     }
