@@ -11,6 +11,9 @@ class FloatKeyframeAnimation extends KeyframeAnimation<Float> {
   }
 
   @Override Float getValue(Keyframe<Float> keyframe, float keyframeProgress) {
+    if (keyframe.startValue == null || keyframe.endValue == null) {
+      throw new IllegalStateException("Missing values for keyframe.");
+    }
     return lerp(keyframe.startValue, keyframe.endValue, keyframeProgress);
   }
 }

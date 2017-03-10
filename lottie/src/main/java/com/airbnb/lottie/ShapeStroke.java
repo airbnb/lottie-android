@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.graphics.Paint;
 import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -12,13 +13,37 @@ class ShapeStroke {
   enum LineCapType {
     Butt,
     Round,
-    Unknown
+    Unknown;
+
+    Paint.Cap toPaintCap() {
+      switch (this) {
+        case Butt:
+          return Paint.Cap.BUTT;
+        case Round:
+          return Paint.Cap.ROUND;
+        case Unknown:
+        default:
+          return Paint.Cap.SQUARE;
+      }
+    }
   }
 
   enum LineJoinType {
     Miter,
     Round,
-    Bevel
+    Bevel;
+
+    Paint.Join toPaintJoin() {
+      switch (this) {
+        case Bevel:
+          return Paint.Join.BEVEL;
+        case Miter:
+          return Paint.Join.MITER;
+        case Round:
+          return Paint.Join.ROUND;
+      }
+      return null;
+    }
   }
 
   @Nullable private final AnimatableFloatValue offset;
@@ -53,7 +78,7 @@ class ShapeStroke {
       AnimatableFloatValue width = AnimatableFloatValue.Factory.newInstance(json.optJSONObject("w"),
           composition);
       AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(
-          json.optJSONObject("o"), composition, false, true);
+          json.optJSONObject("o"), composition);
       LineCapType capType = LineCapType.values()[json.optInt("lc") - 1];
       LineJoinType joinType = LineJoinType.values()[json.optInt("lj") - 1];
       AnimatableFloatValue offset = null;

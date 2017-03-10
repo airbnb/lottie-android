@@ -5,13 +5,12 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
-  private AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
-    super(composition, initialValue);
+  private AnimatableIntegerValue(Integer initialValue) {
+    super(initialValue);
   }
 
-  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,
-      Integer initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -30,27 +29,17 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     private Factory() {
     }
 
-    static AnimatableIntegerValue newInstance(LottieComposition composition, Integer initialValue) {
-      return new AnimatableIntegerValue(composition, initialValue);
+    static AnimatableIntegerValue newInstance() {
+      return new AnimatableIntegerValue(100);
     }
 
-    static AnimatableIntegerValue newInstance(JSONObject json, LottieComposition composition,
-        boolean isDp, boolean remap100To255) {
-      float scale = isDp ? composition.getDpScale() : 1f;
+    static AnimatableIntegerValue newInstance(
+        JSONObject json, LottieComposition composition) {
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
-          .newInstance(json, scale, composition, ValueFactory.INSTANCE)
+          .newInstance(json, 1, composition, ValueFactory.INSTANCE)
           .parseJson();
       Integer initialValue = result.initialValue;
-      if (remap100To255 && result.initialValue != null) {
-        initialValue = result.initialValue * 255 / 100;
-        int size = result.keyframes.size();
-        for (int i = 0; i < size; i++) {
-          Keyframe<Integer> keyframe = result.keyframes.get(i);
-          keyframe.startValue = keyframe.startValue * 255 / 100;
-          keyframe.endValue = keyframe.endValue * 255 / 100;
-        }
-      }
-      return new AnimatableIntegerValue(result.keyframes, composition, initialValue);
+      return new AnimatableIntegerValue(result.keyframes, initialValue);
     }
   }
 

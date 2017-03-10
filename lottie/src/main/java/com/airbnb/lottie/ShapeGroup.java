@@ -33,6 +33,8 @@ class ShapeGroup {
         return ShapeTrimPath.Factory.newInstance(json, composition);
       case "sr":
         return PolystarShape.Factory.newInstance(json, composition);
+      case "mm":
+        return MergePaths.Factory.newInstance(json);
       default:
         Log.w(L.TAG, "Unknown shape type " + type);
     }

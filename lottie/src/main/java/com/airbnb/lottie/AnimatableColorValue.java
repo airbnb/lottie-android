@@ -5,9 +5,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
-  private AnimatableColorValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,
-      Integer initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableColorValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -29,7 +28,7 @@ class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
           .newInstance(json, 1f, composition, ColorFactory.INSTANCE)
           .parseJson();
-      return new AnimatableColorValue(result.keyframes, composition, result.initialValue);
+      return new AnimatableColorValue(result.keyframes, result.initialValue);
     }
   }
 }

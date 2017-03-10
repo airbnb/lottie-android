@@ -1,69 +1,156 @@
 package com.airbnb.lottie;
 
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Path;
 import android.support.annotation.Nullable;
 
-class ContentGroup extends AnimatableLayer {
-  private final ShapeGroup shapeGroup;
-  @Nullable private final AnimatableTransform transform;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-  ContentGroup(ShapeGroup shapeGroup, @Nullable ShapeFill previousFill,
-      @Nullable ShapeStroke previousStroke, @Nullable ShapeTrimPath previousTrimPath,
-      @Nullable AnimatableTransform transform, LottieDrawable lottieDrawable) {
-    super(lottieDrawable);
-    this.shapeGroup = shapeGroup;
-    this.transform = transform;
-    setupShapeGroupWithFill(previousFill, previousStroke, previousTrimPath);
-  }
+class ContentGroup implements Content, DrawingContent, PathContent {
+  private final Matrix matrix = new Matrix();
+  private final Path path = new Path();
 
-  private void setupShapeGroupWithFill(ShapeFill previousFill,
-      ShapeStroke previousStroke, ShapeTrimPath previousTrimPath) {
-    if (transform != null) {
-      setTransform(transform.createAnimation());
+  private final List<Content> contents = new ArrayList<>();
+  @Nullable private List<PathContent> pathContents;
+  @Nullable private TransformKeyframeAnimation transformAnimation;
+
+  ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
+    List<Object> items = shapeGroup.getItems();
+    if (items.isEmpty()) {
+      return;
     }
 
-    ShapeFill currentFill = previousFill;
-    ShapeStroke currentStroke = previousStroke;
-    AnimatableTransform currentTransform = null;
-    ShapeTrimPath currentTrim = previousTrimPath;
+    Object potentialTransform = items.get(items.size() - 1);
+    if (potentialTransform instanceof AnimatableTransform) {
+      transformAnimation = ((AnimatableTransform) potentialTransform).createAnimation();
+      //noinspection ConstantConditions
+      transformAnimation.addAnimationsToLayer(layer);
+      transformAnimation.addListener(new BaseKeyframeAnimation.AnimationListener<Void>() {
+        @Override public void onValueChanged(Void value) {
+          lottieDrawable.invalidateSelf();
+        }
+      });
+    }
 
-    for (int i = shapeGroup.getItems().size() - 1; i >= 0; i--) {
-      Object item = shapeGroup.getItems().get(i);
-      if (item instanceof AnimatableTransform) {
-        currentTransform = (AnimatableTransform) item;
+    for (int i = 0; i < items.size(); i++) {
+      Object item = items.get(i);
+      if (item instanceof ShapeFill) {
+        contents.add(new FillContent(lottieDrawable, layer, (ShapeFill) item));
       } else if (item instanceof ShapeStroke) {
-        currentStroke = (ShapeStroke) item;
-      } else if (item instanceof ShapeFill) {
-        currentFill = (ShapeFill) item;
-      } else if (item instanceof ShapeTrimPath) {
-        currentTrim = (ShapeTrimPath) item;
-      } else if (item instanceof ShapePath) {
-        ShapePath shapePath = (ShapePath) item;
-        ShapeContentFillAndStroke shapeLayer = new ShapeContentFillAndStroke(
-            shapePath, currentFill, currentStroke, currentTrim, currentTransform, lottieDrawable);
-        addLayer(shapeLayer);
-      } else if (item instanceof RectangleShape) {
-        RectangleShape shapeRect = (RectangleShape) item;
-        RectContentFillAndStroke shapeLayer = new RectContentFillAndStroke(
-            shapeRect, currentFill, currentStroke, currentTrim, currentTransform, lottieDrawable);
-        addLayer(shapeLayer);
-      } else if (item instanceof CircleShape) {
-        CircleShape shapeCircle = (CircleShape) item;
-        EllipseContentFillAndStroke shapeLayer = new EllipseContentFillAndStroke(
-            shapeCircle, currentFill, currentStroke, currentTrim, currentTransform, lottieDrawable);
-        addLayer(shapeLayer);
-      } else if (item instanceof PolystarShape) {
-        PolystarShape polystarShape = (PolystarShape) item;
-        PolystarContentFillAndStroke
-            shapeLayer = new PolystarContentFillAndStroke(polystarShape, currentFill, currentStroke,
-            currentTrim, currentTransform, lottieDrawable);
-        addLayer(shapeLayer);
+        contents.add(new StrokeContent(lottieDrawable, layer, (ShapeStroke) item));
       } else if (item instanceof ShapeGroup) {
-        ShapeGroup shapeGroup = (ShapeGroup) item;
-        ContentGroup groupLayer = new ContentGroup(
-            shapeGroup, currentFill, currentStroke, currentTrim, currentTransform, lottieDrawable);
-        addLayer(groupLayer);
+        contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
+      } else if (item instanceof RectangleShape) {
+        contents.add(new RectangleContent(lottieDrawable, layer, (RectangleShape) item));
+      } else if (item instanceof CircleShape) {
+        contents.add(new EllipseContent(lottieDrawable, layer, (CircleShape) item));
+      } else if (item instanceof ShapePath) {
+        contents.add(new ShapeContent(lottieDrawable, layer, (ShapePath) item));
+      } else if (item instanceof PolystarShape) {
+        contents.add(new PolystarContent(lottieDrawable, layer, (PolystarShape) item));
+      } else if (item instanceof ShapeTrimPath) {
+        contents.add(new TrimPathContent(layer, (ShapeTrimPath) item));
+      } else if (item instanceof MergePaths) {
+        // Merge paths are not ready yet.
+        // contents.add(new MergePathsContent((MergePaths) item));
       }
+    }
 
+    List<Content> contentsToRemove = new ArrayList<>();
+    MergePathsContent currentMergePathsContent = null;
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof MergePathsContent) {
+        currentMergePathsContent = (MergePathsContent) content;
+      }
+      if (currentMergePathsContent != null && content != currentMergePathsContent) {
+        currentMergePathsContent.addContentIfNeeded(content);
+        contentsToRemove.add(content);
+      }
+    }
+
+    Iterator<Content> it = contents.iterator();
+    while (it.hasNext()) {
+      Content content = it.next();
+      if (contentsToRemove.contains(content)) {
+        it.remove();
+      }
+    }
+  }
+
+  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    // Do nothing with contents after.
+    List<Content> myContentsBefore = new ArrayList<>(contentsBefore.size() + contents.size());
+    myContentsBefore.addAll(contentsBefore);
+
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      content.setContents(myContentsBefore, contents.subList(0, i));
+      myContentsBefore.add(content);
+    }
+  }
+
+  List<Content> getContents() {
+    return contents;
+  }
+
+  List<PathContent> getPathList() {
+    if (pathContents == null) {
+      pathContents = new ArrayList<>();
+      for (int i = 0; i < contents.size(); i++) {
+        Content content = contents.get(i);
+        if (content instanceof PathContent) {
+          pathContents.add((PathContent) content);
+        }
+      }
+    }
+    return pathContents;
+  }
+
+  Matrix getTransformationMatrix() {
+    if (transformAnimation != null) {
+      return transformAnimation.getMatrix();
+    }
+    matrix.reset();
+    return matrix;
+  }
+
+  @Override public Path getPath() {
+    // TODO: cache this somehow.
+    matrix.reset();
+    if (transformAnimation != null) {
+      matrix.set(transformAnimation.getMatrix());
+    }
+    path.reset();
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof PathContent) {
+        path.addPath(((PathContent) content).getPath(), matrix);
+      }
+    }
+    return path;
+  }
+
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    matrix.set(parentMatrix);
+    int alpha;
+    if (transformAnimation != null) {
+      matrix.preConcat(transformAnimation.getMatrix());
+      alpha =
+          (int) ((transformAnimation.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
+    } else {
+      alpha = parentAlpha;
+    }
+
+
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Object content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        ((DrawingContent) content).draw(canvas, matrix, alpha);
+      }
     }
   }
 }

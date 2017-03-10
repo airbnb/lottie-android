@@ -15,10 +15,14 @@ abstract class BaseKeyframeAnimation<K, A> {
     void onValueChanged(A value);
   }
 
+  interface SimpleAnimationListener {
+    void onValueChanged();
+  }
+
   final List<AnimationListener<A>> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
 
-  final List<? extends Keyframe<K>> keyframes;
+  private final List<? extends Keyframe<K>> keyframes;
   private float progress = 0f;
 
   @Nullable private Keyframe<K> cachedKeyframe;
@@ -33,10 +37,6 @@ abstract class BaseKeyframeAnimation<K, A> {
 
   void addUpdateListener(AnimationListener<A> listener) {
     listeners.add(listener);
-  }
-
-  void removeUpdateListener(AnimationListener<A> listener) {
-    listeners.remove(listener);
   }
 
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
@@ -96,6 +96,7 @@ abstract class BaseKeyframeAnimation<K, A> {
     }
     float progressIntoFrame = progress - keyframe.getStartProgress();
     float keyframeProgress = keyframe.getEndProgress() - keyframe.getStartProgress();
+    //noinspection ConstantConditions
     return keyframe.interpolator.getInterpolation(progressIntoFrame / keyframeProgress);
   }
 

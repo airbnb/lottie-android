@@ -1,23 +1,25 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import java.io.Closeable;
 
 final class Utils {
-  private static PointF emptyPoint;
+  private static final PathMeasure pathMeasure = new PathMeasure();
+  private static final Path tempPath = new Path();
+  private static final Path tempPath2 = new Path();
   private static DisplayMetrics displayMetrics;
+  private static final float[] points = new float[4];
+  private static final float SQRT_2 = (float) Math.sqrt(2);
 
-  static PointF emptyPoint() {
-    if (emptyPoint == null) {
-      emptyPoint = new PointF();
-    }
-    return emptyPoint;
-  }
+  private Utils() {}
 
   static Path createPath(PointF startPoint, PointF endPoint, PointF cp1, PointF cp2) {
     Path path = new Path();
@@ -61,5 +63,72 @@ final class Utils {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     wm.getDefaultDisplay().getMetrics(displayMetrics);
     return displayMetrics.heightPixels;
+  }
+
+  static float getScale(Matrix matrix) {
+    points[0] = 0;
+    points[1] = 0;
+    // Use sqrt(2) so that the hypotenuse is of length 1.
+    points[2] = SQRT_2;
+    points[3] = SQRT_2;
+    matrix.mapPoints(points);
+    float dx = points[2] - points[0];
+    float dy = points[3] - points[1];
+
+    // TODO: figure out why the result needs to be divided by 2.
+    return (float) Math.hypot(dx, dy) / 2f;
+  }
+
+  static void applyTrimPathIfNeeded(Path path, @Nullable TrimPathContent trimPath) {
+    if (trimPath == null) {
+      return;
+    }
+
+    pathMeasure.setPath(path, false);
+
+    float length = pathMeasure.getLength();
+    float start = length * trimPath.getStart().getValue() / 100f;
+    float end = length * trimPath.getEnd().getValue() / 100f;
+    float newStart = Math.min(start, end);
+    float newEnd = Math.max(start, end);
+
+    float offset = trimPath.getOffset().getValue() / 360f * length;
+    newStart += offset;
+    newEnd += offset;
+
+    // If the trim path has rotated around the path, we need to shift it back.
+    if (newStart > length && newEnd > length) {
+      newStart %= length;
+      newEnd %= length;
+    }
+    if (newStart > newEnd) {
+      newStart -= length;
+    }
+
+    tempPath.reset();
+    pathMeasure.getSegment(
+        newStart,
+        newEnd,
+        tempPath,
+        true);
+
+    if (newEnd > length) {
+      tempPath2.reset();
+      pathMeasure.getSegment(
+          0,
+          newEnd % length,
+          tempPath2,
+          true);
+      tempPath.addPath(tempPath2);
+    } else if (newStart < 0) {
+      tempPath2.reset();
+      pathMeasure.getSegment(
+          length + newStart,
+          length,
+          tempPath2,
+          true);
+      tempPath.addPath(tempPath2);
+    }
+    path.set(tempPath);
   }
 }

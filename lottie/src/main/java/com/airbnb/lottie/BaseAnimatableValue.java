@@ -4,21 +4,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
+abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
   final List<Keyframe<V>> keyframes;
-  final LottieComposition composition;
   final V initialValue;
 
   /**
    * Create a default static animatable path.
    */
-  BaseAnimatableValue(LottieComposition composition, V initialValue) {
-    this(Collections.<Keyframe<V>>emptyList(), composition, initialValue);
+  BaseAnimatableValue(V initialValue) {
+    this(Collections.<Keyframe<V>>emptyList(), initialValue);
   }
 
-  BaseAnimatableValue(List<Keyframe<V>> keyframes, LottieComposition composition, V initialValue) {
+  BaseAnimatableValue(List<Keyframe<V>> keyframes, V initialValue) {
     this.keyframes = keyframes;
-    this.composition = composition;
     this.initialValue = initialValue;
   }
 

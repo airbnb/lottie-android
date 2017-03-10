@@ -7,9 +7,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
-  private AnimatablePointValue(List<Keyframe<PointF>> keyframes, LottieComposition composition,
-      PointF initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatablePointValue(List<Keyframe<PointF>> keyframes, PointF initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<PointF> createAnimation() {
@@ -28,7 +27,7 @@ class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
       AnimatableValueParser.Result<PointF> result = AnimatableValueParser
           .newInstance(json, composition.getDpScale(), composition, PointFFactory.INSTANCE)
           .parseJson();
-      return new AnimatablePointValue(result.keyframes, composition, result.initialValue);
+      return new AnimatablePointValue(result.keyframes, result.initialValue);
     }
   }
 }

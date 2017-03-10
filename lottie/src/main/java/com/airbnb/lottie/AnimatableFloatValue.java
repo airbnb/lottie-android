@@ -5,13 +5,12 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
-  private AnimatableFloatValue(LottieComposition composition, Float initialValue) {
-    super(composition, initialValue);
+  private AnimatableFloatValue(Float initialValue) {
+    super(initialValue);
   }
 
-  private AnimatableFloatValue(List<Keyframe<Float>> keyframes,
-      LottieComposition composition, Float initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableFloatValue(List<Keyframe<Float>> keyframes, Float initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<Float> createAnimation() {
@@ -41,8 +40,8 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     private Factory() {
     }
 
-    static AnimatableFloatValue newInstance(LottieComposition composition, Float initialValue) {
-      return new AnimatableFloatValue(composition, initialValue);
+    static AnimatableFloatValue newInstance(LottieComposition composition) {
+      return new AnimatableFloatValue(0f);
     }
 
     static AnimatableFloatValue newInstance(JSONObject json, LottieComposition composition) {
@@ -55,7 +54,7 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
       AnimatableValueParser.Result<Float> result = AnimatableValueParser
           .newInstance(json, scale, composition, ValueFactory.INSTANCE)
           .parseJson();
-      return new AnimatableFloatValue(result.keyframes, composition, result.initialValue);
+      return new AnimatableFloatValue(result.keyframes, result.initialValue);
     }
   }
 }

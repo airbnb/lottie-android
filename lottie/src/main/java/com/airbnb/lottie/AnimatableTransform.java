@@ -2,14 +2,14 @@ package com.airbnb.lottie;
 
 import org.json.JSONObject;
 
-class AnimatableTransform {
+class AnimatableTransform implements ModifierContent {
   private final AnimatablePathValue anchorPoint;
   private final IAnimatablePathValue position;
   private final AnimatableScaleValue scale;
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
 
-  AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatablePathValue position,
+  private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatablePathValue position,
       AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity) {
     this.anchorPoint = anchorPoint;
     this.position = position;
@@ -26,8 +26,8 @@ class AnimatableTransform {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
       IAnimatablePathValue position = new AnimatablePathValue();
       AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance(composition);
-      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition, 0f);
-      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(composition, 255);
+      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition);
+      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }
 
@@ -54,7 +54,7 @@ class AnimatableTransform {
 
       JSONObject scaleJson = json.optJSONObject("s");
       if (scaleJson != null) {
-        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition, false);
+        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition);
       } else {
         throwMissingTransform("scale");
       }
@@ -71,7 +71,7 @@ class AnimatableTransform {
 
       JSONObject opacityJson = json.optJSONObject("o");
       if (opacityJson != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition, false, true);
+        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
       } else {
         throwMissingTransform("opacity");
       }

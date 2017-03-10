@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Keyframe<T> {
+class Keyframe<T> {
   private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
 
   /**
@@ -38,8 +38,8 @@ public class Keyframe<T> {
 
 
   private final LottieComposition composition;
-  @Nullable T startValue;
-  @Nullable T endValue;
+  @Nullable final T startValue;
+  @Nullable final T endValue;
   @Nullable final Interpolator interpolator;
   @SuppressWarnings("WeakerAccess") final float startFrame;
   @SuppressWarnings("WeakerAccess") @Nullable Float endFrame;

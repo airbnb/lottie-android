@@ -9,9 +9,8 @@ import java.util.List;
 class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
   private final Path convertTypePath = new Path();
 
-  private AnimatableShapeValue(List<Keyframe<ShapeData>> keyframes, LottieComposition composition,
-      ShapeData initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableShapeValue(List<Keyframe<ShapeData>> keyframes, ShapeData initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public BaseKeyframeAnimation<?, Path> createAnimation() {
@@ -36,7 +35,7 @@ class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
       AnimatableValueParser.Result<ShapeData> result = AnimatableValueParser
           .newInstance(json, composition.getDpScale(), composition, ShapeData.Factory.INSTANCE)
           .parseJson();
-      return new AnimatableShapeValue(result.keyframes, composition, result.initialValue);
+      return new AnimatableShapeValue(result.keyframes, result.initialValue);
     }
   }
 }

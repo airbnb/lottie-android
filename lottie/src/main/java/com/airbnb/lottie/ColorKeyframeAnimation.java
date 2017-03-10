@@ -9,6 +9,9 @@ class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
   }
 
   @Override public Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+    if (keyframe.startValue == null || keyframe.endValue == null) {
+      throw new IllegalStateException("Missing values for keyframe.");
+    }
     int startColor = keyframe.startValue;
     int endColor = keyframe.endValue;
 

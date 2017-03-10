@@ -12,6 +12,10 @@ class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
   }
 
   @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
+    if (keyframe.startValue == null || keyframe.endValue == null) {
+      throw new IllegalStateException("Missing values for keyframe.");
+    }
+
     PointF startPoint = keyframe.startValue;
     PointF endPoint = keyframe.endValue;
 

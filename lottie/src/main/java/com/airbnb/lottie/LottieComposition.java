@@ -73,7 +73,7 @@ public class LottieComposition {
     return precomps.get(id);
   }
 
-  boolean hasImages() {
+  @SuppressWarnings("unused") boolean hasImages() {
     return !images.isEmpty();
   }
 
