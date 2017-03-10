@@ -35,7 +35,7 @@ class ShapeFill {
 
       JSONObject jsonOpacity = json.optJSONObject("o");
       if (jsonOpacity != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition, false);
+        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition);
       }
       fillEnabled = json.optBoolean("fillEnabled");
 
@@ -60,9 +60,10 @@ class ShapeFill {
 
   @Override
   public String toString() {
-    return "ShapeFill{" + "color=" +  Integer.toHexString(color.getInitialValue()) +
+    return "ShapeFill{" + "color=" +
+        (color == null ? "null" :  Integer.toHexString(color.getInitialValue())) +
         ", fillEnabled=" + fillEnabled +
-        ", opacity=" + opacity.getInitialValue() +
+        ", opacity=" + (opacity == null ? "null" : opacity.getInitialValue()) +
         '}';
   }
 }

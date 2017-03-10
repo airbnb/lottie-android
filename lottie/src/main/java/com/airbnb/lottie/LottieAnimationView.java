@@ -45,6 +45,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * Caching strategy for compositions that will be reused frequently.
    * Weak or Strong indicates the GC reference strength of the composition in the cache.
    */
+  @SuppressWarnings("WeakerAccess")
   public enum CacheStrategy {
     None,
     Weak,
@@ -129,7 +130,7 @@ public class LottieAnimationView extends AppCompatImageView {
     super.setImageDrawable(drawable);
   }
 
-  @Override public void invalidateDrawable(Drawable dr) {
+  @Override public void invalidateDrawable(@NonNull Drawable dr) {
     if (getDrawable() == lottieDrawable) {
       // We always want to invalidate the root drawable to it redraws the whole drawable.
       // Eventually it would be great to be able to invalidate just the changed region.
@@ -185,6 +186,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * <p>
    * Will not cache the composition once loaded.
    */
+  @SuppressWarnings("WeakerAccess")
   public void setAnimation(String animationName) {
     setAnimation(animationName, defaultCacheStrategy);
   }
@@ -368,7 +370,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * animations from the network or have the images saved to an SD Card. In that case, Lottie
    * will defer the loading of the bitmap to this delegate.
    */
-  public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
+  @SuppressWarnings("unused") public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
     lottieDrawable.setImageAssetDelegate(assetDelegate);
   }
 

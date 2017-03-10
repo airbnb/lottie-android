@@ -22,7 +22,7 @@ abstract class BaseKeyframeAnimation<K, A> {
   final List<AnimationListener<A>> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
 
-  final List<? extends Keyframe<K>> keyframes;
+  private final List<? extends Keyframe<K>> keyframes;
   private float progress = 0f;
 
   @Nullable private Keyframe<K> cachedKeyframe;
@@ -96,6 +96,7 @@ abstract class BaseKeyframeAnimation<K, A> {
     }
     float progressIntoFrame = progress - keyframe.getStartProgress();
     float keyframeProgress = keyframe.getEndProgress() - keyframe.getStartProgress();
+    //noinspection ConstantConditions
     return keyframe.interpolator.getInterpolation(progressIntoFrame / keyframeProgress);
   }
 

@@ -110,8 +110,12 @@ class ContentGroup implements Content, DrawingContent, PathContent {
     return pathContents;
   }
 
-  public Matrix getTransformationMatrix() {
-    return transformAnimation.getMatrix();
+  Matrix getTransformationMatrix() {
+    if (transformAnimation != null) {
+      return transformAnimation.getMatrix();
+    }
+    matrix.reset();
+    return matrix;
   }
 
   @Override public Path getPath() {

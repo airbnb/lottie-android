@@ -5,13 +5,12 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
-  private AnimatableIntegerValue(LottieComposition composition, Integer initialValue) {
-    super(composition, initialValue);
+  private AnimatableIntegerValue(Integer initialValue) {
+    super(initialValue);
   }
 
-  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, LottieComposition composition,
-      Integer initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<Integer> createAnimation() {
@@ -30,18 +29,17 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     private Factory() {
     }
 
-    static AnimatableIntegerValue newInstance(LottieComposition composition, Integer initialValue) {
-      return new AnimatableIntegerValue(composition, initialValue);
+    static AnimatableIntegerValue newInstance(LottieComposition composition) {
+      return new AnimatableIntegerValue(100);
     }
 
     static AnimatableIntegerValue newInstance(
-        JSONObject json, LottieComposition composition, boolean isDp) {
-      float scale = isDp ? composition.getDpScale() : 1f;
+        JSONObject json, LottieComposition composition) {
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
-          .newInstance(json, scale, composition, ValueFactory.INSTANCE)
+          .newInstance(json, 1, composition, ValueFactory.INSTANCE)
           .parseJson();
       Integer initialValue = result.initialValue;
-      return new AnimatableIntegerValue(result.keyframes, composition, initialValue);
+      return new AnimatableIntegerValue(result.keyframes, initialValue);
     }
   }
 

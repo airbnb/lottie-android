@@ -11,6 +11,9 @@ class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
   }
 
   @Override Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+    if (keyframe.startValue == null || keyframe.endValue == null) {
+      throw new IllegalStateException("Missing values for keyframe.");
+    }
     return lerp(keyframe.startValue, keyframe.endValue, keyframeProgress);
   }
 }

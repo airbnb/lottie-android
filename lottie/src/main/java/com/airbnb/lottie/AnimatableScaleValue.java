@@ -5,13 +5,12 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
-  private AnimatableScaleValue(LottieComposition composition) {
-    super(composition, new ScaleXY());
+  private AnimatableScaleValue() {
+    super(new ScaleXY());
   }
 
-  private AnimatableScaleValue(List<Keyframe<ScaleXY>> keyframes, LottieComposition composition,
-      ScaleXY initialValue) {
-    super(keyframes, composition, initialValue);
+  private AnimatableScaleValue(List<Keyframe<ScaleXY>> keyframes, ScaleXY initialValue) {
+    super(keyframes, initialValue);
   }
 
   @Override public KeyframeAnimation<ScaleXY> createAnimation() {
@@ -27,16 +26,15 @@ class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
     }
 
     static AnimatableScaleValue newInstance(JSONObject json, LottieComposition
-        composition, boolean isDp) {
-      float scale = isDp ? composition.getDpScale() : 1f;
+        composition) {
       AnimatableValueParser.Result<ScaleXY> result = AnimatableValueParser
-          .newInstance(json, scale, composition, ScaleXY.Factory.INSTANCE)
+          .newInstance(json, 1, composition, ScaleXY.Factory.INSTANCE)
           .parseJson();
-      return new AnimatableScaleValue(result.keyframes, composition, result.initialValue);
+      return new AnimatableScaleValue(result.keyframes, result.initialValue);
     }
 
     static AnimatableScaleValue newInstance(LottieComposition composition) {
-      return new AnimatableScaleValue(composition);
+      return new AnimatableScaleValue();
     }
   }
 }

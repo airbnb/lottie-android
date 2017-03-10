@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
@@ -43,43 +42,6 @@ abstract class BaseLayer implements DrawingContent {
     }
   }
 
-  private final KeyframeAnimation.AnimationListener<Integer> integerChangedListener =
-      new KeyframeAnimation.AnimationListener<Integer>() {
-        @Override
-        public void onValueChanged(Integer value) {
-          invalidateSelf();
-        }
-      };
-  private final KeyframeAnimation.AnimationListener<Float> floatChangedListener =
-      new KeyframeAnimation.AnimationListener<Float>() {
-        @Override
-        public void onValueChanged(Float value) {
-          invalidateSelf();
-        }
-      };
-  private final KeyframeAnimation.AnimationListener<ScaleXY> scaleChangedListener =
-      new KeyframeAnimation.AnimationListener<ScaleXY>() {
-        @Override
-        public void onValueChanged(ScaleXY value) {
-          invalidateSelf();
-        }
-      };
-  private final KeyframeAnimation.AnimationListener<PointF> pointChangedListener =
-      new KeyframeAnimation.AnimationListener<PointF>() {
-        @Override
-        public void onValueChanged(PointF value) {
-          invalidateSelf();
-        }
-      };
-
-  private final KeyframeAnimation.AnimationListener<Path> pathChangedListener =
-      new KeyframeAnimation.AnimationListener<Path>() {
-        @Override
-        public void onValueChanged(Path value) {
-          invalidateSelf();
-        }
-      };
-
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -95,7 +57,7 @@ abstract class BaseLayer implements DrawingContent {
   private List<BaseLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
-  TransformKeyframeAnimation transform;
+  final TransformKeyframeAnimation transform;
   private boolean visible = true;
 
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
@@ -109,9 +71,27 @@ abstract class BaseLayer implements DrawingContent {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     }
 
-    setTransform(layerModel.getTransform().createAnimation());
+    this.transform = layerModel.getTransform().createAnimation();
+    transform.addListener(new BaseKeyframeAnimation.AnimationListener<Void>() {
+      @Override public void onValueChanged(Void value) {
+        invalidateSelf();
+      }
+    });
+    transform.addAnimationsToLayer(this);
+
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
-      setMask(new MaskKeyframeAnimation(layerModel.getMasks()));
+      this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
+      for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
+        addAnimation(animation);
+        KeyframeAnimation.AnimationListener<Path> pathChangedListener =
+            new KeyframeAnimation.AnimationListener<Path>() {
+              @Override
+              public void onValueChanged(Path value) {
+                invalidateSelf();
+              }
+            };
+        animation.addUpdateListener(pathChangedListener);
+      }
     }
     setupInOutAnimations();
   }
@@ -228,41 +208,6 @@ abstract class BaseLayer implements DrawingContent {
     canvas.restore();
   }
 
-  public int getAlpha() {
-    float alpha = this.transform == null ? 1f : (this.transform.getOpacity().getValue() / 255f);
-    float parentAlpha = parentLayer == null ? 1f : (parentLayer.getAlpha() / 255f);
-    return (int) (alpha * parentAlpha * 255);
-  }
-
-  void setTransform(TransformKeyframeAnimation transform) {
-    this.transform = transform;
-    BaseKeyframeAnimation<?, PointF> anchorPoint = transform.getAnchorPoint();
-    BaseKeyframeAnimation<?, PointF> position = transform.getPosition();
-    BaseKeyframeAnimation<?, ScaleXY> scale = transform.getScale();
-    BaseKeyframeAnimation<?, Float> rotation = transform.getRotation();
-    BaseKeyframeAnimation<?, Integer> opacity = transform.getOpacity();
-
-    anchorPoint.addUpdateListener(pointChangedListener);
-    position.addUpdateListener(pointChangedListener);
-    scale.addUpdateListener(scaleChangedListener);
-    rotation.addUpdateListener(floatChangedListener);
-    opacity.addUpdateListener(integerChangedListener);
-
-    addAnimation(anchorPoint);
-    addAnimation(position);
-    addAnimation(scale);
-    addAnimation(rotation);
-    addAnimation(opacity);
-  }
-
-  private void setMask(@SuppressWarnings("NullableProblems") MaskKeyframeAnimation mask) {
-    this.mask = mask;
-    for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
-      addAnimation(animation);
-      animation.addUpdateListener(pathChangedListener);
-    }
-  }
-
   boolean hasMasksOnThisLayer() {
     return mask != null && !mask.getMaskAnimations().isEmpty();
   }
@@ -274,7 +219,7 @@ abstract class BaseLayer implements DrawingContent {
     }
   }
 
-  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+  void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     if (matteLayer != null) {
       matteLayer.setProgress(progress);
     }

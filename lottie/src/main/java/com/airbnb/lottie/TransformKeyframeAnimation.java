@@ -20,80 +20,64 @@ class TransformKeyframeAnimation {
     opacity = animatableTransform.getOpacity().createAnimation();
   }
 
-  BaseKeyframeAnimation<?, PointF> getAnchorPoint() {
-    return anchorPoint;
-  }
-
-  BaseKeyframeAnimation<?, PointF> getPosition() {
-    return position;
-  }
-
-  BaseKeyframeAnimation<?, ScaleXY> getScale() {
-    return scale;
-  }
-
-  BaseKeyframeAnimation<?, Float> getRotation() {
-    return rotation;
-  }
-
-  BaseKeyframeAnimation<?, Integer> getOpacity() {
-    return opacity;
-  }
-
   void addAnimationsToLayer(BaseLayer layer) {
-    layer.addAnimation(getAnchorPoint());
-    layer.addAnimation(getPosition());
-    layer.addAnimation(getScale());
-    layer.addAnimation(getRotation());
-    layer.addAnimation(getOpacity());
+    layer.addAnimation(anchorPoint);
+    layer.addAnimation(position);
+    layer.addAnimation(scale);
+    layer.addAnimation(rotation);
+    layer.addAnimation(opacity);
   }
 
   void addListener(final BaseKeyframeAnimation.AnimationListener<Void> listener) {
-    getAnchorPoint().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
+    anchorPoint.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
      @Override public void onValueChanged(PointF value) {
        listener.onValueChanged(null);
      }
     });
-    getPosition().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
+    position.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
       @Override public void onValueChanged(PointF value) {
         listener.onValueChanged(null);
       }
     });
-    getScale().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<ScaleXY>() {
+    scale.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<ScaleXY>() {
       @Override public void onValueChanged(ScaleXY value) {
         listener.onValueChanged(null);
       }
     });
-    getRotation().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Float>() {
+    rotation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Float>() {
       @Override public void onValueChanged(Float value) {
         listener.onValueChanged(null);
       }
     });
-    getOpacity().addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Integer>() {
+    opacity.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Integer>() {
       @Override public void onValueChanged(Integer value) {
         listener.onValueChanged(null);
       }
     });
   }
 
+  BaseKeyframeAnimation<?, Integer> getOpacity() {
+    return opacity;
+  }
+
   Matrix getMatrix() {
     matrix.reset();
-    PointF position = getPosition().getValue();
+    PointF position = this.position.getValue();
     if (position.x != 0 || position.y != 0) {
       matrix.preTranslate(position.x, position.y);
     }
 
-    float rotation = getRotation().getValue();
+    float rotation = this.rotation.getValue();
     if (rotation != 0f) {
       matrix.preRotate(rotation);
     }
 
-    ScaleXY scaleTransform = getScale().getValue();
+    ScaleXY scaleTransform = this.scale.getValue();
     if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
       matrix.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
     }
 
-    PointF anchorPoint = getAnchorPoint().getValue();
+    PointF anchorPoint = this.anchorPoint.getValue();
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
       matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
     }

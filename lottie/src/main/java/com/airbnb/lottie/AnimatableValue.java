@@ -1,6 +1,6 @@
 package com.airbnb.lottie;
 
-interface AnimatableValue<V, O> {
+interface AnimatableValue<O> {
   BaseKeyframeAnimation<?, O> createAnimation();
   boolean hasAnimation();
 

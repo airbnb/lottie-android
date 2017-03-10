@@ -279,7 +279,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return scale;
   }
 
-  LottieComposition getComposition() {
+  @SuppressWarnings("WeakerAccess") LottieComposition getComposition() {
     return composition;
   }
 

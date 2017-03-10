@@ -41,7 +41,6 @@ class StrokeContent implements Content, DrawingContent {
     List<AnimatableFloatValue> dashPattern = stroke.getLineDashPattern();
     dashPatternAnimations = new ArrayList<>(dashPattern.size());
     dashPatternValues = new float[dashPattern.size()];
-    float[] values = new float[dashPatternAnimations.size()];
 
     for (int i = 0; i < dashPattern.size(); i++) {
       dashPatternAnimations.add(dashPattern.get(i).createAnimation());

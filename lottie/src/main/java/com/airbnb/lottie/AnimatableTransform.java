@@ -26,8 +26,8 @@ class AnimatableTransform implements ModifierContent {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
       IAnimatablePathValue position = new AnimatablePathValue();
       AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance(composition);
-      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition, 0f);
-      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(composition, 100);
+      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition);
+      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(composition);
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }
 
@@ -54,7 +54,7 @@ class AnimatableTransform implements ModifierContent {
 
       JSONObject scaleJson = json.optJSONObject("s");
       if (scaleJson != null) {
-        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition, false);
+        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition);
       } else {
         throwMissingTransform("scale");
       }
@@ -71,7 +71,7 @@ class AnimatableTransform implements ModifierContent {
 
       JSONObject opacityJson = json.optJSONObject("o");
       if (opacityJson != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition, false);
+        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
       } else {
         throwMissingTransform("opacity");
       }

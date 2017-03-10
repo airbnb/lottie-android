@@ -5,6 +5,7 @@ import org.json.JSONObject;
 /**
  * Data class describing an image asset exported by bodymovin.
  */
+@SuppressWarnings("WeakerAccess")
 public class LottieImageAsset {
   private final int width;
   private final int height;
@@ -28,11 +29,11 @@ public class LottieImageAsset {
     }
   }
 
-  public int getWidth() {
+  @SuppressWarnings("WeakerAccess") public int getWidth() {
     return width;
   }
 
-  public int getHeight() {
+  @SuppressWarnings("WeakerAccess")public int getHeight() {
     return height;
   }
 
