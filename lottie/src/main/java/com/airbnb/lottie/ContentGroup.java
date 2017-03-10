@@ -50,6 +50,8 @@ class ContentGroup implements Content, DrawingContent, PathContent {
         contents.add(new EllipseContent(lottieDrawable, layer, (CircleShape) item));
       } else if (item instanceof ShapePath) {
         contents.add(new ShapeContent(lottieDrawable, layer, (ShapePath) item));
+      } else if (item instanceof PolystarShape) {
+        contents.add(new PolystarContent(lottieDrawable, layer, (PolystarShape) item));
       } else if (item instanceof ShapeTrimPath) {
         contents.add(new TrimPathContent(layer, (ShapeTrimPath) item));
       }
