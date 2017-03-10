@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class CompositionLayer extends BaseLayer {
-  private final Matrix matrix = new Matrix();
   private final List<BaseLayer> layers = new ArrayList<>();
 
   CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
@@ -56,6 +55,7 @@ class CompositionLayer extends BaseLayer {
 
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     super.setProgress(progress);
+    progress -= layerModel.getStartProgress();
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
     }
