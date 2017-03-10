@@ -4,9 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.RectF;
 
 class SolidLayer extends BaseLayer {
 
+  private final RectF rect = new RectF();
   private final Paint paint = new Paint();
   private final Layer layerModel;
 
@@ -28,7 +30,9 @@ class SolidLayer extends BaseLayer {
     int alpha = (int) ((backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
     paint.setAlpha(alpha);
     if (alpha > 0) {
-      canvas.drawRect(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight(), paint);
+      rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
+      parentMatrix.mapRect(rect);
+      canvas.drawRect((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom, paint);
     }
   }
 }
