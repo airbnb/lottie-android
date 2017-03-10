@@ -52,6 +52,7 @@ class ShapeContent implements Content, PathContent {
     path.reset();
 
     path.set(shapeAnimation.getValue());
+    path.setFillType(Path.FillType.EVEN_ODD);
 
     Utils.applyTrimPathIfNeeded(path, trimPath);
 
