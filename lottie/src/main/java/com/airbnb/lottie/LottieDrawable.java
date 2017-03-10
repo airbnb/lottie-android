@@ -120,7 +120,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
-    setScale(5f);
+    setScale(1f);
     updateBounds();
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);

@@ -29,7 +29,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     private Factory() {
     }
 
-    static AnimatableIntegerValue newInstance(LottieComposition composition) {
+    static AnimatableIntegerValue newInstance() {
       return new AnimatableIntegerValue(100);
     }
 

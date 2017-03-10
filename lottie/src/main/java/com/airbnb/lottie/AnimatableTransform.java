@@ -27,7 +27,7 @@ class AnimatableTransform implements ModifierContent {
       IAnimatablePathValue position = new AnimatablePathValue();
       AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance(composition);
       AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition);
-      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(composition);
+      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }
 

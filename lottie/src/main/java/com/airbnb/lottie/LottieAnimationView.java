@@ -107,7 +107,7 @@ public class LottieAnimationView extends AppCompatImageView {
         CacheStrategy.None.ordinal());
     defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     ta.recycle();
-    setLayerType(LAYER_TYPE_SOFTWARE, null);
+    setLayerType(LAYER_TYPE_HARDWARE, null);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
     float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
