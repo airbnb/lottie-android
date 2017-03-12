@@ -2,6 +2,8 @@ package com.airbnb.lottie;
 
 import org.json.JSONObject;
 
+import java.util.Collections;
+
 class AnimatableTransform implements ModifierContent {
   private final AnimatablePathValue anchorPoint;
   private final IAnimatablePathValue position;
@@ -34,9 +36,9 @@ class AnimatableTransform implements ModifierContent {
     static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
       AnimatablePathValue anchorPoint = null;
       IAnimatablePathValue position = null;
-      AnimatableScaleValue scale = null;
+      AnimatableScaleValue scale;
       AnimatableFloatValue rotation = null;
-      AnimatableIntegerValue opacity = null;
+      AnimatableIntegerValue opacity;
       JSONObject anchorJson = json.optJSONObject("a");
       if (anchorJson != null) {
         anchorPoint = new AnimatablePathValue(anchorJson.opt("k"), composition);
@@ -56,7 +58,8 @@ class AnimatableTransform implements ModifierContent {
       if (scaleJson != null) {
         scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition);
       } else {
-        throwMissingTransform("scale");
+        // Somehow some community animations don't have scale in the transform.
+        scale = new AnimatableScaleValue(Collections.<Keyframe<ScaleXY>>emptyList(), new ScaleXY());
       }
 
       JSONObject rotationJson = json.optJSONObject("r");
@@ -73,7 +76,8 @@ class AnimatableTransform implements ModifierContent {
       if (opacityJson != null) {
         opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
       } else {
-        throwMissingTransform("opacity");
+        // Somehow some community animations don't have opacity in the transform.
+        opacity = new AnimatableIntegerValue(Collections.<Keyframe<Integer>>emptyList(), 100);
       }
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }

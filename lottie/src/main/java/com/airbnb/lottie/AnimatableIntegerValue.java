@@ -9,7 +9,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     super(initialValue);
   }
 
-  private AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
+  AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
     super(keyframes, initialValue);
   }
 
