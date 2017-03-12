@@ -3,14 +3,14 @@ package com.airbnb.lottie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrimPathContent implements Content {
+class TrimPathContent implements Content {
 
   private final List<BaseKeyframeAnimation.SimpleAnimationListener> listeners = new ArrayList<>();
   private final BaseKeyframeAnimation<?, Float> startAnimation;
   private final BaseKeyframeAnimation<?, Float> endAnimation;
   private final BaseKeyframeAnimation<?, Float> offsetAnimation;
 
-  public TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath) {
+  TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath) {
     startAnimation = trimPath.getStart().createAnimation();
     endAnimation = trimPath.getEnd().createAnimation();
     offsetAnimation = trimPath.getOffset().createAnimation();

@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class PolystarContent implements Content, PathContent {
+class PolystarContent implements PathContent {
   /**
    * This was empirically derived by creating polystars, converting them to
    * curves, and calculating a scale factor.

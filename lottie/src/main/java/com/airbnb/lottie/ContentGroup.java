@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class ContentGroup implements Content, DrawingContent, PathContent {
+class ContentGroup implements DrawingContent, PathContent {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
 

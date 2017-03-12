@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class EllipseContent implements Content, PathContent {
+class EllipseContent implements PathContent {
   private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
   private final Path path = new Path();

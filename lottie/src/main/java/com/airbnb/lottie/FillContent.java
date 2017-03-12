@@ -8,7 +8,7 @@ import android.graphics.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-class FillContent implements Content, DrawingContent {
+class FillContent implements DrawingContent {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<PathContent> paths = new ArrayList<>();
