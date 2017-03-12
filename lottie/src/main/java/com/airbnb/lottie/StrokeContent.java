@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class StrokeContent implements Content, DrawingContent {
+class StrokeContent implements DrawingContent {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final LottieDrawable lottieDrawable;

@@ -7,9 +7,10 @@ import android.os.Build;
 import java.util.ArrayList;
 import java.util.List;
 
-class MergePathsContent implements Content, PathContent {
+class MergePathsContent implements PathContent {
+  private final Path firstPath = new Path();
+  private final Path remainderPath = new Path();
   private final Path path = new Path();
-  private final Path path2 = new Path();
 
   private final List<PathContent> pathContents = new ArrayList<>();
   private final MergePaths mergePaths;
@@ -25,7 +26,9 @@ class MergePathsContent implements Content, PathContent {
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
-
+    for (int i = 0; i < pathContents.size(); i++) {
+      pathContents.get(i).setContents(contentsBefore, contentsAfter);
+    }
   }
 
   @Override public Path getPath() {
@@ -49,9 +52,10 @@ class MergePathsContent implements Content, PathContent {
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
   private void mergePaths() {
+
     switch (mergePaths.getMode()) {
       case Merge:
-        opFirstPathWithRest(Path.Op.INTERSECT);
+        supportMergePaths();
         break;
       case Add:
         opFirstPathWithRest(Path.Op.UNION);
@@ -70,10 +74,8 @@ class MergePathsContent implements Content, PathContent {
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
   private void opFirstPathWithRest(Path.Op op) {
-    if (pathContents.size() == 1) {
-      path.addPath(pathContents.get(0).getPath());
-      return;
-    }
+    remainderPath.reset();
+    firstPath.reset();
 
     for (int i = pathContents.size() - 1; i >= 1; i--) {
       PathContent content = pathContents.get(i);
@@ -83,10 +85,10 @@ class MergePathsContent implements Content, PathContent {
         for (int j = pathList.size() - 1; j >= 0; j--) {
           Path path = pathList.get(j).getPath();
           path.transform(((ContentGroup) content).getTransformationMatrix());
-          this.path2.op(path, Path.Op.UNION);
+          this.remainderPath.addPath(path);
         }
       } else {
-        path2.op(content.getPath(), Path.Op.UNION);
+        remainderPath.addPath(content.getPath());
       }
     }
 
@@ -96,30 +98,12 @@ class MergePathsContent implements Content, PathContent {
       for (int j = 0; j < pathList.size(); j++) {
         Path path = pathList.get(j).getPath();
         path.transform(((ContentGroup) lastContent).getTransformationMatrix());
-        this.path.op(path, Path.Op.UNION);
+        this.firstPath.addPath(path);
       }
     } else {
-      path.set(lastContent.getPath());
+      firstPath.set(lastContent.getPath());
     }
 
-    path.op(path2, op);
-  }
-
-  @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void addMergePaths(Path.Op op) {
-    for (int i = 0; i < pathContents.size(); i++) {
-      PathContent content = pathContents.get(i);
-
-      if (content instanceof ContentGroup) {
-        List<PathContent> pathList = ((ContentGroup) content).getPathList();
-        for (int j = 0; j < pathList.size(); j++) {
-          Path path = pathList.get(j).getPath();
-          path.transform(((ContentGroup) content).getTransformationMatrix());
-          this.path.op(path, op);
-        }
-      } else {
-        path.op(content.getPath(), op);
-      }
-    }
+    path.op(firstPath, remainderPath, op);
   }
 }

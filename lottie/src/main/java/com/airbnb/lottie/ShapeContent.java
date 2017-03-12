@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class ShapeContent implements Content, PathContent {
+class ShapeContent implements PathContent {
   private final Path path = new Path();
 
   private final LottieDrawable lottieDrawable;

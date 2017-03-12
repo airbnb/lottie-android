@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class RectangleContent implements Content, PathContent {
+class RectangleContent implements PathContent {
   private final Path path = new Path();
   private final RectF rect = new RectF();
 

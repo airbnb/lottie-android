@@ -244,4 +244,8 @@ abstract class BaseLayer implements DrawingContent {
       layer = layer.parentLayer;
     }
   }
+
+  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    // Do nothing
+  }
 }

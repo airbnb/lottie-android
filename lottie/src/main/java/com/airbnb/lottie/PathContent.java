@@ -2,6 +2,6 @@ package com.airbnb.lottie;
 
 import android.graphics.Path;
 
-interface PathContent {
+interface PathContent extends Content {
   Path getPath();
 }
