@@ -8,8 +8,8 @@ android {
         applicationId "com.airbnb.lottie"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 6
-        versionName "1.5.3"
+        versionCode 7
+        versionName "2.0.0"
         testInstrumentationRunner "com.airbnb.lottie.TestRunner"
     }
     buildTypes {

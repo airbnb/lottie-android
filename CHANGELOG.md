@@ -1,3 +1,14 @@
+# 2.0.0
+#### Features and improvements
+* Ground up rewrite of the rendering engine.
+* Support for fill types (non-zero or even-odd).
+* Support for multiple fills and strokes on shapes.
+* Expose several package prive methods on `LottieAnimationView` and `LottieDrawable`
+* Added a ton of samples from lottiefiles.com to the sample app.
+
+#### Bugs Fixed
+* Invalidate whatever drawable is set as the image drawable even if it's not LottieDrawable.
+
 # 1.5.3
 #### Features and improvements
 * Added an image asset delegate so you can provide your own bitmaps from and sd card, for example.

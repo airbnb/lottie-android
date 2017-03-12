@@ -44,7 +44,7 @@ Gradle is the only supported build configuration, so just add the dependency to 
 
 ```groovy
 dependencies {  
-  compile 'com.airbnb.android:lottie:1.5.3'
+  compile 'com.airbnb.android:lottie:2.0.0'
 }
 ```
 
@@ -226,6 +226,9 @@ animationView.setImageAssetDelegate(new ImageAssetDelegate() {
 * Group Transforms (Anchor point, position, scale etc)
 
 * Multiple paths in one group
+
+* Merge paths (off by default and must be explicitly enabled with
+`enableMergePathsForKitKatAndAbove`)
 
 #### Stroke (shape layer)
 
