@@ -9,7 +9,7 @@ class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
     super(new ScaleXY());
   }
 
-  private AnimatableScaleValue(List<Keyframe<ScaleXY>> keyframes, ScaleXY initialValue) {
+  AnimatableScaleValue(List<Keyframe<ScaleXY>> keyframes, ScaleXY initialValue) {
     super(keyframes, initialValue);
   }
 

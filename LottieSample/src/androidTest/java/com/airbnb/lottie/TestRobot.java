@@ -28,7 +28,8 @@ class TestRobot {
         .layout();
 
     String nameWithoutExtension = fileName
-        .substring(0, fileName.indexOf('.'))
+        .substring(0, fileName.lastIndexOf('.'))
+        .replace(" ", "_")
         .replace("/", "_");
     Screenshot.snap(view)
         .setGroup(fileName)
@@ -74,7 +75,8 @@ class TestRobot {
 
   private static void recordScreenshots(AnimationLinearLayout view, String fileName) {
     String nameWithoutExtension = fileName
-        .substring(0, fileName.indexOf('.'))
+        .substring(0, fileName.lastIndexOf('.'))
+        .replace(" ", "_")
         .replace("/", "_");
     Screenshot.snap(view)
         .setGroup(fileName)
