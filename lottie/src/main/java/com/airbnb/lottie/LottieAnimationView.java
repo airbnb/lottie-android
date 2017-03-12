@@ -170,8 +170,7 @@ public class LottieAnimationView extends AppCompatImageView {
     }
   }
 
-  @Override
-  protected void onDetachedFromWindow() {
+  @Override protected void onDetachedFromWindow() {
     recycleBitmaps();
     super.onDetachedFromWindow();
   }
@@ -186,8 +185,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * <p>
    * Will not cache the composition once loaded.
    */
-  @SuppressWarnings("WeakerAccess")
-  public void setAnimation(String animationName) {
+  @SuppressWarnings("WeakerAccess") public void setAnimation(String animationName) {
     setAnimation(animationName, defaultCacheStrategy);
   }
 
@@ -199,8 +197,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  @SuppressWarnings("WeakerAccess")
-  public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
+  @SuppressWarnings("WeakerAccess") public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
     if (weakRefCache.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
@@ -394,8 +391,7 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setProgress(progress);
   }
 
-  @FloatRange(from = 0.0f, to = 1.0f)
-  public float getProgress() {
+  @FloatRange(from = 0.0f, to = 1.0f) public float getProgress() {
     return lottieDrawable.getProgress();
   }
 

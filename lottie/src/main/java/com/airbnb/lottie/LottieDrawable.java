@@ -181,15 +181,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     systemAnimationsAreDisabled = true;
   }
 
-  void loop(boolean loop) {
+  @SuppressWarnings("WeakerAccess") public void loop(boolean loop) {
     animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
   }
 
-  boolean isLooping() {
+  @SuppressWarnings("WeakerAccess") public boolean isLooping() {
     return animator.getRepeatCount() == ValueAnimator.INFINITE;
   }
 
-  boolean isAnimating() {
+  @SuppressWarnings("WeakerAccess") public boolean isAnimating() {
     return animator.isRunning();
   }
 
@@ -279,7 +279,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return scale;
   }
 
-  @SuppressWarnings("WeakerAccess") LottieComposition getComposition() {
+  @SuppressWarnings("WeakerAccess") public LottieComposition getComposition() {
     return composition;
   }
 
@@ -297,19 +297,19 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     animator.cancel();
   }
 
-  void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+  @SuppressWarnings("WeakerAccess") public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     animator.addUpdateListener(updateListener);
   }
 
-  void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+  @SuppressWarnings("WeakerAccess") public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     animator.removeUpdateListener(updateListener);
   }
 
-  void addAnimatorListener(Animator.AnimatorListener listener) {
+  @SuppressWarnings("WeakerAccess") public void addAnimatorListener(Animator.AnimatorListener listener) {
     animator.addListener(listener);
   }
 
-  void removeAnimatorListener(Animator.AnimatorListener listener) {
+  @SuppressWarnings("WeakerAccess") public void removeAnimatorListener(Animator.AnimatorListener listener) {
     animator.removeListener(listener);
   }
 
