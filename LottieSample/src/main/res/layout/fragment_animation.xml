@@ -171,4 +171,13 @@
         android:textColor="@android:color/black"
         android:layout_marginBottom="8dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@android:color/black"
+        android:textSize="8sp"
+        android:layout_marginBottom="8dp"
+        android:text="1.5.3"/>
+
 </LinearLayout>
