@@ -33,7 +33,7 @@ class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
       return new AnimatableScaleValue(result.keyframes, result.initialValue);
     }
 
-    static AnimatableScaleValue newInstance(LottieComposition composition) {
+    static AnimatableScaleValue newInstance() {
       return new AnimatableScaleValue();
     }
   }

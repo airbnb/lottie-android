@@ -1,13 +1,15 @@
 package com.airbnb.lottie;
 
+import android.graphics.PointF;
+
 import org.json.JSONObject;
 
 class RectangleShape {
-  private final IAnimatablePathValue position;
+  private final AnimatableValue<PointF> position;
   private final AnimatablePointValue size;
   private final AnimatableFloatValue cornerRadius;
 
-  private RectangleShape(IAnimatablePathValue position, AnimatablePointValue size,
+  private RectangleShape(AnimatableValue<PointF> position, AnimatablePointValue size,
       AnimatableFloatValue cornerRadius) {
     this.position = position;
     this.size = size;
@@ -35,7 +37,7 @@ class RectangleShape {
     return size;
   }
 
-  IAnimatablePathValue getPosition() {
+  AnimatableValue<PointF> getPosition() {
     return position;
   }
 

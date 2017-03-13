@@ -2,8 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.PointF;
 
-class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
-  private final PointF point = new PointF();
+class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF> {
   private final AnimatableFloatValue animatableXDimension;
   private final AnimatableFloatValue animatableYDimension;
 
@@ -23,8 +22,4 @@ class AnimatableSplitDimensionPathValue implements IAnimatablePathValue {
     return animatableXDimension.hasAnimation() || animatableYDimension.hasAnimation();
   }
 
-  @Override public PointF getInitialPoint() {
-    point.set(animatableXDimension.getInitialValue(), animatableYDimension.getInitialValue());
-    return point;
-  }
 }

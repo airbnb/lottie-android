@@ -1,12 +1,14 @@
 package com.airbnb.lottie;
 
+import android.graphics.PointF;
+
 import org.json.JSONObject;
 
 class CircleShape {
-  private final IAnimatablePathValue position;
+  private final AnimatableValue<PointF> position;
   private final AnimatablePointValue size;
 
-  private CircleShape(IAnimatablePathValue position, AnimatablePointValue size) {
+  private CircleShape(AnimatableValue<PointF> position, AnimatablePointValue size) {
     this.position = position;
     this.size = size;
   }
@@ -23,7 +25,7 @@ class CircleShape {
     }
   }
 
-  public IAnimatablePathValue getPosition() {
+  public AnimatableValue<PointF> getPosition() {
     return position;
   }
 

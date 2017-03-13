@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.graphics.PointF;
+
 import org.json.JSONObject;
 
 class PolystarShape {
@@ -25,14 +27,14 @@ class PolystarShape {
 
   private final Type type;
   private final AnimatableFloatValue points;
-  private final IAnimatablePathValue position;
+  private final AnimatableValue<PointF> position;
   private final AnimatableFloatValue rotation;
   private final AnimatableFloatValue innerRadius;
   private final AnimatableFloatValue outerRadius;
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
 
-  private PolystarShape(Type type, AnimatableFloatValue points, IAnimatablePathValue position,
+  private PolystarShape(Type type, AnimatableFloatValue points, AnimatableValue<PointF> position,
       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
       AnimatableFloatValue outerRoundedness) {
@@ -54,7 +56,7 @@ class PolystarShape {
       Type type = Type.forValue(json.optInt("sy"));
       AnimatableFloatValue points =
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("pt"), composition, false);
-      IAnimatablePathValue position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
+      AnimatableValue<PointF> position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
           json.optJSONObject("p"), composition);
       AnimatableFloatValue rotation =
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("r"), composition, false);
@@ -87,7 +89,7 @@ class PolystarShape {
     return points;
   }
 
-  IAnimatablePathValue getPosition() {
+  AnimatableValue<PointF> getPosition() {
     return position;
   }
 

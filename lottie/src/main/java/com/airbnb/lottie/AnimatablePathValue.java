@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class AnimatablePathValue implements IAnimatablePathValue {
-  static IAnimatablePathValue createAnimatablePathOrSplitDimensionPath(
+class AnimatablePathValue implements AnimatableValue<PointF> {
+  static AnimatableValue<PointF> createAnimatablePathOrSplitDimensionPath(
       JSONObject json, LottieComposition composition) {
     if (json.has("k")) {
       return new AnimatablePathValue(json.opt("k"), composition);
@@ -67,11 +67,6 @@ class AnimatablePathValue implements IAnimatablePathValue {
   @Override
   public boolean hasAnimation() {
     return !keyframes.isEmpty();
-  }
-
-  @Override
-  public PointF getInitialPoint() {
-    return initialPoint;
   }
 
   @Override

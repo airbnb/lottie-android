@@ -12,7 +12,12 @@ import java.util.Map;
 
 import static junit.framework.Assert.assertNotNull;
 
-class CanvasPool {
+/**
+ * Can be used for debugging. When needed, you can acquire and
+ * draw to this bitmap layer when rendering to an offscreen
+ * buffer to view the contents.
+ */
+@SuppressWarnings("unused") class CanvasPool {
   private final LongSparseArray<List<Bitmap>> availableBitmaps = new LongSparseArray<>();
   private final Map<BitmapCanvas, Bitmap> canvasBitmapMap = new HashMap<>();
   private final Map<Bitmap, BitmapCanvas> bitmapCanvasMap = new HashMap<>();

@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
-  private AnimatableFloatValue(Float initialValue) {
-    super(initialValue);
+  private AnimatableFloatValue() {
+    super(0f);
   }
 
   private AnimatableFloatValue(List<Keyframe<Float>> keyframes, Float initialValue) {
@@ -40,8 +40,8 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     private Factory() {
     }
 
-    static AnimatableFloatValue newInstance(LottieComposition composition) {
-      return new AnimatableFloatValue(0f);
+    static AnimatableFloatValue newInstance() {
+      return new AnimatableFloatValue();
     }
 
     static AnimatableFloatValue newInstance(JSONObject json, LottieComposition composition) {

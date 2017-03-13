@@ -1,17 +1,19 @@
 package com.airbnb.lottie;
 
+import android.graphics.PointF;
+
 import org.json.JSONObject;
 
 import java.util.Collections;
 
 class AnimatableTransform implements ModifierContent {
   private final AnimatablePathValue anchorPoint;
-  private final IAnimatablePathValue position;
+  private final AnimatableValue<PointF> position;
   private final AnimatableScaleValue scale;
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
 
-  private AnimatableTransform(AnimatablePathValue anchorPoint, IAnimatablePathValue position,
+  private AnimatableTransform(AnimatablePathValue anchorPoint, AnimatableValue<PointF> position,
       AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity) {
     this.anchorPoint = anchorPoint;
     this.position = position;
@@ -24,18 +26,18 @@ class AnimatableTransform implements ModifierContent {
     private Factory() {
     }
 
-    static AnimatableTransform newInstance(LottieComposition composition) {
+    static AnimatableTransform newInstance() {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
-      IAnimatablePathValue position = new AnimatablePathValue();
-      AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance(composition);
-      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance(composition);
+      AnimatableValue<PointF> position = new AnimatablePathValue();
+      AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance();
+      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance();
       AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
     }
 
     static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
       AnimatablePathValue anchorPoint = null;
-      IAnimatablePathValue position = null;
+      AnimatableValue<PointF> position = null;
       AnimatableScaleValue scale;
       AnimatableFloatValue rotation = null;
       AnimatableIntegerValue opacity;
@@ -91,7 +93,7 @@ class AnimatableTransform implements ModifierContent {
     return anchorPoint;
   }
 
-  IAnimatablePathValue getPosition() {
+  AnimatableValue<PointF> getPosition() {
     return position;
   }
 

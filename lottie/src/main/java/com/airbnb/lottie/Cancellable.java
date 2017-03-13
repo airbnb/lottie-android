@@ -1,5 +1,5 @@
 package com.airbnb.lottie;
 
-public interface Cancellable {
+interface Cancellable {
   void cancel();
 }

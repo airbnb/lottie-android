@@ -188,7 +188,7 @@ class Layer {
     static Layer newInstance(LottieComposition composition) {
       // TODO: make sure in out keyframes work
       return new Layer(Collections.emptyList(), composition, null, -1, LayerType.PreComp, -1, null,
-          Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(composition),
+          Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
           0, 0, 0, 0, 0, 0, 0, Collections.<Keyframe<Float>>emptyList(), MatteType.None);
     }
 

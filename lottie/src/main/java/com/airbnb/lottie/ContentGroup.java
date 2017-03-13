@@ -53,7 +53,8 @@ class ContentGroup implements DrawingContent, PathContent {
         contents.add(new PolystarContent(lottieDrawable, layer, (PolystarShape) item));
       } else if (item instanceof ShapeTrimPath) {
         contents.add(new TrimPathContent(layer, (ShapeTrimPath) item));
-      } else if (item instanceof MergePaths) {
+      } else //noinspection StatementWithEmptyBody
+        if (item instanceof MergePaths) {
         // Merge paths are not ready yet.
         // contents.add(new MergePathsContent((MergePaths) item));
       }
@@ -91,10 +92,6 @@ class ContentGroup implements DrawingContent, PathContent {
       content.setContents(myContentsBefore, contents.subList(0, i));
       myContentsBefore.add(content);
     }
-  }
-
-  List<Content> getContents() {
-    return contents;
   }
 
   List<PathContent> getPathList() {

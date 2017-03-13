@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
-  private AnimatableIntegerValue(Integer initialValue) {
-    super(initialValue);
+  private AnimatableIntegerValue() {
+    super(100);
   }
 
   AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
@@ -30,7 +30,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     }
 
     static AnimatableIntegerValue newInstance() {
-      return new AnimatableIntegerValue(100);
+      return new AnimatableIntegerValue();
     }
 
     static AnimatableIntegerValue newInstance(
