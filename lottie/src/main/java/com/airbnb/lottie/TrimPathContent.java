@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 import java.util.ArrayList;
 import java.util.List;
 
-class TrimPathContent implements Content {
+class TrimPathContent implements Content, BaseKeyframeAnimation.SimpleAnimationListener {
 
   private final List<BaseKeyframeAnimation.SimpleAnimationListener> listeners = new ArrayList<>();
   private final BaseKeyframeAnimation<?, Float> startAnimation;
@@ -19,16 +19,15 @@ class TrimPathContent implements Content {
     layer.addAnimation(endAnimation);
     layer.addAnimation(offsetAnimation);
 
-    KeyframeAnimation.AnimationListener<Float> updateListener = new BaseKeyframeAnimation.AnimationListener<Float>() {
-      @Override public void onValueChanged(Float value) {
-        for (int i = 0; i < listeners.size(); i++) {
-          listeners.get(i).onValueChanged();
-        }
-      }
-    };
-    startAnimation.addUpdateListener(updateListener);
-    endAnimation.addUpdateListener(updateListener);
-    offsetAnimation.addUpdateListener(updateListener);
+    startAnimation.addUpdateListener(this);
+    endAnimation.addUpdateListener(this);
+    offsetAnimation.addUpdateListener(this);
+  }
+
+  @Override public void onValueChanged() {
+    for (int i = 0; i < listeners.size(); i++) {
+      listeners.get(i).onValueChanged();
+    }
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

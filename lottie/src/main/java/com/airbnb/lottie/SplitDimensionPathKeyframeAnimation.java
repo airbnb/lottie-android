@@ -22,7 +22,7 @@ class SplitDimensionPathKeyframeAnimation extends KeyframeAnimation<PointF> {
     yAnimation.setProgress(progress);
     point.set(xAnimation.getValue(), yAnimation.getValue());
     for (int i = 0; i < listeners.size(); i++) {
-      listeners.get(i).onValueChanged(point);
+      listeners.get(i).onValueChanged();
     }
   }
 

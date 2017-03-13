@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class EllipseContent implements PathContent {
+class EllipseContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
   private final Path path = new Path();
@@ -26,16 +26,12 @@ class EllipseContent implements PathContent {
     layer.addAnimation(sizeAnimation);
     layer.addAnimation(positionAnimation);
 
-    sizeAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-      @Override public void onValueChanged(PointF value) {
-        invalidate();
-      }
-    });
-    positionAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-      @Override public void onValueChanged(PointF value) {
-        invalidate();
-      }
-    });
+    sizeAnimation.addUpdateListener(this);
+    positionAnimation.addUpdateListener(this);
+  }
+
+  @Override public void onValueChanged() {
+    invalidate();
   }
 
   private void invalidate() {

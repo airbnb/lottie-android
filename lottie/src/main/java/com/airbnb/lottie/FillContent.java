@@ -8,14 +8,16 @@ import android.graphics.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-class FillContent implements DrawingContent {
+class FillContent implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<PathContent> paths = new ArrayList<>();
   private final KeyframeAnimation<Integer> colorAnimation;
   private final KeyframeAnimation<Integer> opacityAnimation;
+  private final LottieDrawable lottieDrawable;
 
   FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
+    this.lottieDrawable = lottieDrawable;
     if (fill.getColor() == null || fill.getOpacity() == null ) {
       colorAnimation = null;
       opacityAnimation = null;
@@ -24,19 +26,16 @@ class FillContent implements DrawingContent {
 
     path.setFillType(fill.getFillType());
 
-    BaseKeyframeAnimation.AnimationListener<Integer> listener =
-        new BaseKeyframeAnimation.AnimationListener<Integer>() {
-          @Override public void onValueChanged(Integer value) {
-            lottieDrawable.invalidateSelf();
-          }
-        };
-
     colorAnimation = fill.getColor().createAnimation();
-    colorAnimation.addUpdateListener(listener);
+    colorAnimation.addUpdateListener(this);
     layer.addAnimation(colorAnimation);
     opacityAnimation = fill.getOpacity().createAnimation();
-    opacityAnimation.addUpdateListener(listener);
+    opacityAnimation.addUpdateListener(this);
     layer.addAnimation(opacityAnimation);
+  }
+
+  @Override public void onValueChanged() {
+    lottieDrawable.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

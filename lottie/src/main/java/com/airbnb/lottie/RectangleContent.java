@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class RectangleContent implements PathContent {
+class RectangleContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private final Path path = new Path();
   private final RectF rect = new RectF();
 
@@ -29,21 +29,13 @@ class RectangleContent implements PathContent {
     layer.addAnimation(sizeAnimation);
     layer.addAnimation(cornerRadiusAnimation);
 
-    positionAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-      @Override public void onValueChanged(PointF value) {
-        invalidate();
-      }
-    });
-    sizeAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-      @Override public void onValueChanged(PointF value) {
-        invalidate();
-      }
-    });
-    cornerRadiusAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Float>() {
-      @Override public void onValueChanged(Float value) {
-        invalidate();
-      }
-    });
+    positionAnimation.addUpdateListener(this);
+    sizeAnimation.addUpdateListener(this);
+    cornerRadiusAnimation.addUpdateListener(this);
+  }
+
+  @Override public void onValueChanged() {
+    invalidate();
   }
 
   private void invalidate() {

@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class PolystarContent implements PathContent {
+class PolystarContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
   /**
    * This was empirically derived by creating polystars, converting them to
    * curves, and calculating a scale factor.
@@ -57,27 +57,19 @@ class PolystarContent implements PathContent {
       layer.addAnimation(innerRoundednessAnimation);
     }
 
-    BaseKeyframeAnimation.AnimationListener<Float> floatListener =
-        new BaseKeyframeAnimation.AnimationListener<Float>() {
-          @Override public void onValueChanged(Float value) {
-            invalidate();
-          }
-        };
-    BaseKeyframeAnimation.AnimationListener<PointF> pointListener =
-        new BaseKeyframeAnimation.AnimationListener<PointF>() {
-          @Override public void onValueChanged(PointF value) {
-            invalidate();
-          }
-        };
-    pointsAnimation.addUpdateListener(floatListener);
-    positionAnimation.addUpdateListener(pointListener);
-    rotationAnimation.addUpdateListener(floatListener);
-    outerRadiusAnimation.addUpdateListener(floatListener);
-    outerRoundednessAnimation.addUpdateListener(floatListener);
+    pointsAnimation.addUpdateListener(this);
+    positionAnimation.addUpdateListener(this);
+    rotationAnimation.addUpdateListener(this);
+    outerRadiusAnimation.addUpdateListener(this);
+    outerRoundednessAnimation.addUpdateListener(this);
     if (type == PolystarShape.Type.Star) {
-      outerRadiusAnimation.addUpdateListener(floatListener);
-      outerRoundednessAnimation.addUpdateListener(floatListener);
+      outerRadiusAnimation.addUpdateListener(this);
+      outerRoundednessAnimation.addUpdateListener(this);
     }
+  }
+
+  @Override public void onValueChanged() {
+    invalidate();
   }
 
   private void invalidate() {

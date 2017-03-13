@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class BaseLayer implements DrawingContent {
+abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
@@ -72,28 +72,21 @@ abstract class BaseLayer implements DrawingContent {
     }
 
     this.transform = layerModel.getTransform().createAnimation();
-    transform.addListener(new BaseKeyframeAnimation.AnimationListener<Void>() {
-      @Override public void onValueChanged(Void value) {
-        invalidateSelf();
-      }
-    });
+    transform.addListener(this);
     transform.addAnimationsToLayer(this);
 
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
       this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
       for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
         addAnimation(animation);
-        KeyframeAnimation.AnimationListener<Path> pathChangedListener =
-            new KeyframeAnimation.AnimationListener<Path>() {
-              @Override
-              public void onValueChanged(Path value) {
-                invalidateSelf();
-              }
-            };
-        animation.addUpdateListener(pathChangedListener);
+        animation.addUpdateListener(this);
       }
     }
     setupInOutAnimations();
+  }
+
+  @Override public void onValueChanged() {
+    invalidateSelf();
   }
 
   Layer getLayerModel() {
@@ -114,12 +107,12 @@ abstract class BaseLayer implements DrawingContent {
 
   private void setupInOutAnimations() {
     if (!layerModel.getInOutKeyframes().isEmpty()) {
-      FloatKeyframeAnimation inOutAnimation =
+      final FloatKeyframeAnimation inOutAnimation =
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
-      inOutAnimation.addUpdateListener(new KeyframeAnimation.AnimationListener<Float>() {
-        @Override public void onValueChanged(Float value) {
-          setVisible(value == 1f);
+      inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+        @Override public void onValueChanged() {
+          setVisible(inOutAnimation.getValue() == 1f);
         }
       });
       setVisible(inOutAnimation.getValue() == 1f);

@@ -11,15 +11,11 @@ import java.util.List;
  * @param <A> Animation type
  */
 abstract class BaseKeyframeAnimation<K, A> {
-  interface AnimationListener<A> {
-    void onValueChanged(A value);
-  }
-
   interface SimpleAnimationListener {
     void onValueChanged();
   }
 
-  final List<AnimationListener<A>> listeners = new ArrayList<>();
+  final List<SimpleAnimationListener> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
 
   private final List<? extends Keyframe<K>> keyframes;
@@ -35,7 +31,7 @@ abstract class BaseKeyframeAnimation<K, A> {
     isDiscrete = true;
   }
 
-  void addUpdateListener(AnimationListener<A> listener) {
+  void addUpdateListener(SimpleAnimationListener listener) {
     listeners.add(listener);
   }
 
@@ -51,9 +47,8 @@ abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
 
-    A value = getValue();
     for (int i = 0; i < listeners.size(); i++) {
-      listeners.get(i).onValueChanged(value);
+      listeners.get(i).onValueChanged();
     }
   }
 

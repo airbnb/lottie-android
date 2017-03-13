@@ -28,32 +28,12 @@ class TransformKeyframeAnimation {
     layer.addAnimation(opacity);
   }
 
-  void addListener(final BaseKeyframeAnimation.AnimationListener<Void> listener) {
-    anchorPoint.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-     @Override public void onValueChanged(PointF value) {
-       listener.onValueChanged(null);
-     }
-    });
-    position.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<PointF>() {
-      @Override public void onValueChanged(PointF value) {
-        listener.onValueChanged(null);
-      }
-    });
-    scale.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<ScaleXY>() {
-      @Override public void onValueChanged(ScaleXY value) {
-        listener.onValueChanged(null);
-      }
-    });
-    rotation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Float>() {
-      @Override public void onValueChanged(Float value) {
-        listener.onValueChanged(null);
-      }
-    });
-    opacity.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Integer>() {
-      @Override public void onValueChanged(Integer value) {
-        listener.onValueChanged(null);
-      }
-    });
+  void addListener(final BaseKeyframeAnimation.SimpleAnimationListener listener) {
+    anchorPoint.addUpdateListener(listener);
+    position.addUpdateListener(listener);
+    scale.addUpdateListener(listener);
+    rotation.addUpdateListener(listener);
+    opacity.addUpdateListener(listener);
   }
 
   BaseKeyframeAnimation<?, Integer> getOpacity() {

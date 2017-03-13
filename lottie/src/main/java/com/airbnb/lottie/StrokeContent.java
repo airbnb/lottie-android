@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class StrokeContent implements DrawingContent {
+class StrokeContent implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final LottieDrawable lottieDrawable;
@@ -56,28 +56,20 @@ class StrokeContent implements DrawingContent {
       layer.addAnimation(dashPatternOffsetAnimation);
     }
 
-    BaseKeyframeAnimation.AnimationListener<Float> floatListener =
-        new BaseKeyframeAnimation.AnimationListener<Float>() {
-          @Override public void onValueChanged(Float value) {
-            lottieDrawable.invalidateSelf();
-          }
-        };
-    BaseKeyframeAnimation.AnimationListener<Integer> integerListener =
-        new BaseKeyframeAnimation.AnimationListener<Integer>() {
-          @Override public void onValueChanged(Integer value) {
-            lottieDrawable.invalidateSelf();
-          }
-        };
-    colorAnimation.addUpdateListener(integerListener);
-    opacityAnimation.addUpdateListener(integerListener);
-    widthAnimation.addUpdateListener(floatListener);
+    colorAnimation.addUpdateListener(this);
+    opacityAnimation.addUpdateListener(this);
+    widthAnimation.addUpdateListener(this);
 
     for (int i = 0; i < dashPattern.size(); i++) {
-      dashPatternAnimations.get(i).addUpdateListener(floatListener);
+      dashPatternAnimations.get(i).addUpdateListener(this);
     }
     if (dashPatternOffsetAnimation != null) {
-      dashPatternOffsetAnimation.addUpdateListener(floatListener);
+      dashPatternOffsetAnimation.addUpdateListener(this);
     }
+  }
+
+  @Override public void onValueChanged() {
+    lottieDrawable.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

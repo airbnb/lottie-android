@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class ShapeContent implements PathContent {
+class ShapeContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
   private final Path path = new Path();
 
   private final LottieDrawable lottieDrawable;
@@ -18,11 +18,11 @@ class ShapeContent implements PathContent {
     this.lottieDrawable = lottieDrawable;
     shapeAnimation = shape.getShapePath().createAnimation();
     layer.addAnimation(shapeAnimation);
-    shapeAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener<Path>() {
-      @Override public void onValueChanged(Path value) {
-        invalidate();
-      }
-    });
+    shapeAnimation.addUpdateListener(this);
+  }
+
+  @Override public void onValueChanged() {
+    invalidate();
   }
 
   private void invalidate() {

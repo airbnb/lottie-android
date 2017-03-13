@@ -9,15 +9,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-class ContentGroup implements DrawingContent, PathContent {
+class ContentGroup implements DrawingContent, PathContent,
+    BaseKeyframeAnimation.SimpleAnimationListener {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
 
   private final List<Content> contents = new ArrayList<>();
+  private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
+    this.lottieDrawable = lottieDrawable;
     List<Object> items = shapeGroup.getItems();
     if (items.isEmpty()) {
       return;
@@ -28,11 +31,7 @@ class ContentGroup implements DrawingContent, PathContent {
       transformAnimation = ((AnimatableTransform) potentialTransform).createAnimation();
       //noinspection ConstantConditions
       transformAnimation.addAnimationsToLayer(layer);
-      transformAnimation.addListener(new BaseKeyframeAnimation.AnimationListener<Void>() {
-        @Override public void onValueChanged(Void value) {
-          lottieDrawable.invalidateSelf();
-        }
-      });
+      transformAnimation.addListener(this);
     }
 
     for (int i = 0; i < items.size(); i++) {
@@ -80,6 +79,10 @@ class ContentGroup implements DrawingContent, PathContent {
         it.remove();
       }
     }
+  }
+
+  @Override public void onValueChanged() {
+    lottieDrawable.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
