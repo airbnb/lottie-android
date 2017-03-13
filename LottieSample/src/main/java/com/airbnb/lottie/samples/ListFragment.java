@@ -1,6 +1,7 @@
 package com.airbnb.lottie.samples;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -63,6 +64,12 @@ public class ListFragment extends Fragment {
     startActivity(new Intent(getContext(), AppIntroActivity.class));
   }
 
+  private void onOpenLottieFilesClicked() {
+    Intent i = new Intent(Intent.ACTION_VIEW);
+    i.setData(Uri.parse("http://www.lottiefiles.com"));
+    startActivity(i);
+  }
+
   private void showFragment(Fragment fragment) {
     getFragmentManager().beginTransaction()
         .addToBackStack(null)
@@ -72,14 +79,11 @@ public class ListFragment extends Fragment {
         .commit();
   }
 
-  private void onFontClicked() {
-    startActivity(new Intent(getContext(), FontActivity.class));
-  }
-
-  final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
+  private final class FileAdapter extends RecyclerView.Adapter<StringViewHolder> {
     private static final String TAG_VIEWER = "viewer";
     private static final String TAG_TYPOGRAPHY = "typography";
     private static final String TAG_APP_INTRO = "app_intro";
+    private static final String TAG_OPEN_LOTTIE_FILES = "open_lottie_files";
 
     @Override
     public StringViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -98,12 +102,15 @@ public class ListFragment extends Fragment {
         case 2:
           holder.bind("Animated App Tutorial", TAG_APP_INTRO);
           break;
+        case 3:
+          holder.bind("Open lottiefiles.com", TAG_OPEN_LOTTIE_FILES);
+          break;
       }
     }
 
     @Override
     public int getItemCount() {
-      return 3;
+      return 4;
     }
   }
 
@@ -129,6 +136,8 @@ public class ListFragment extends Fragment {
             onTypographyClicked();
           } else if (FileAdapter.TAG_APP_INTRO.equals(v.getTag())) {
             onAppIntroPagerClicked();
+          } else if (FileAdapter.TAG_OPEN_LOTTIE_FILES.equals(v.getTag())) {
+            onOpenLottieFilesClicked();
           }
         }
       });
