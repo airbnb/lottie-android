@@ -82,11 +82,7 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent) {
         trimPath = (TrimPathContent) content;
-        trimPath.addListener(new BaseKeyframeAnimation.AnimationListener() {
-          @Override public void onValueChanged() {
-            lottieDrawable.invalidateSelf();
-          }
-        });
+        trimPath.addListener(this);
       }
     }
   }
@@ -111,7 +107,7 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
 
     Utils.applyTrimPathIfNeeded(path, trimPath);
 
-    isPathValid = false;
+    isPathValid = true;
     return path;
   }
 

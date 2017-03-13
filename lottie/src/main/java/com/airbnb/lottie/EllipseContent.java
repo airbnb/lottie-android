@@ -44,11 +44,7 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationList
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent) {
         trimPath = (TrimPathContent) content;
-        trimPath.addListener(new BaseKeyframeAnimation.AnimationListener() {
-          @Override public void onValueChanged() {
-            lottieDrawable.invalidateSelf();
-          }
-        });
+        trimPath.addListener(this);
       }
     }
   }
@@ -83,7 +79,7 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationList
 
     Utils.applyTrimPathIfNeeded(path, trimPath);
 
-    isPathValid = false;
+    isPathValid = true;
     return path;
   }
 }
