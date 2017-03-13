@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 class ContentGroup implements DrawingContent, PathContent,
-    BaseKeyframeAnimation.SimpleAnimationListener {
+    BaseKeyframeAnimation.AnimationListener {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
 

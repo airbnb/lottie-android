@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class EllipseContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
+class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
   private static final float ELLIPSE_CONTROL_POINT_PERCENTAGE = 0.55228f;
 
   private final Path path = new Path();
@@ -44,7 +44,7 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.SimpleAnimati
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent) {
         trimPath = (TrimPathContent) content;
-        trimPath.addListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+        trimPath.addListener(new BaseKeyframeAnimation.AnimationListener() {
           @Override public void onValueChanged() {
             lottieDrawable.invalidateSelf();
           }

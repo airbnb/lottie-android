@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-class StrokeContent implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
+class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final LottieDrawable lottieDrawable;

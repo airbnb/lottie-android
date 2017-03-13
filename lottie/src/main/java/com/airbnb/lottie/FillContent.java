@@ -8,7 +8,7 @@ import android.graphics.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-class FillContent implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
+class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<PathContent> paths = new ArrayList<>();

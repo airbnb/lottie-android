@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.util.List;
 
-class PolystarContent implements PathContent, BaseKeyframeAnimation.SimpleAnimationListener {
+class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
   /**
    * This was empirically derived by creating polystars, converting them to
    * curves, and calculating a scale factor.
@@ -82,7 +82,7 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.SimpleAnimat
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent) {
         trimPath = (TrimPathContent) content;
-        trimPath.addListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+        trimPath.addListener(new BaseKeyframeAnimation.AnimationListener() {
           @Override public void onValueChanged() {
             lottieDrawable.invalidateSelf();
           }

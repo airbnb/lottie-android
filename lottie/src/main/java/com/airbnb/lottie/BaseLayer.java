@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.SimpleAnimationListener {
+abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
@@ -110,7 +110,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Simple
       final FloatKeyframeAnimation inOutAnimation =
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
-      inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.SimpleAnimationListener() {
+      inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
         @Override public void onValueChanged() {
           setVisible(inOutAnimation.getValue() == 1f);
         }

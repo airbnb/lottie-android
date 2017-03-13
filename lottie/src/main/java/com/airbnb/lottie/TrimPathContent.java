@@ -3,9 +3,9 @@ package com.airbnb.lottie;
 import java.util.ArrayList;
 import java.util.List;
 
-class TrimPathContent implements Content, BaseKeyframeAnimation.SimpleAnimationListener {
+class TrimPathContent implements Content, BaseKeyframeAnimation.AnimationListener {
 
-  private final List<BaseKeyframeAnimation.SimpleAnimationListener> listeners = new ArrayList<>();
+  private final List<BaseKeyframeAnimation.AnimationListener> listeners = new ArrayList<>();
   private final BaseKeyframeAnimation<?, Float> startAnimation;
   private final BaseKeyframeAnimation<?, Float> endAnimation;
   private final BaseKeyframeAnimation<?, Float> offsetAnimation;
@@ -34,7 +34,7 @@ class TrimPathContent implements Content, BaseKeyframeAnimation.SimpleAnimationL
     // Do nothing.
   }
 
-  void addListener(BaseKeyframeAnimation.SimpleAnimationListener listener) {
+  void addListener(BaseKeyframeAnimation.AnimationListener listener) {
     listeners.add(listener);
   }
 

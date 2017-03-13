@@ -28,7 +28,7 @@ class TransformKeyframeAnimation {
     layer.addAnimation(opacity);
   }
 
-  void addListener(final BaseKeyframeAnimation.SimpleAnimationListener listener) {
+  void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
     anchorPoint.addUpdateListener(listener);
     position.addUpdateListener(listener);
     scale.addUpdateListener(listener);
