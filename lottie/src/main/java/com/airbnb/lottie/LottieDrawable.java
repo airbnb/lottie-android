@@ -291,7 +291,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
         (int) (composition.getBounds().height() * scale));
   }
 
-  void cancelAnimation() {
+  @SuppressWarnings("WeakerAccess") public void cancelAnimation() {
     playAnimationWhenCompositionAdded = false;
     reverseAnimationWhenCompositionAdded = false;
     animator.cancel();
