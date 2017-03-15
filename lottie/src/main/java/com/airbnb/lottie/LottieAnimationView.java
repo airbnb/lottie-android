@@ -68,6 +68,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private CacheStrategy defaultCacheStrategy;
   private String animationName;
+  private boolean wasAnimatingWhenDetached = false;
 
   @Nullable private Cancellable compositionLoader;
   /**
@@ -170,7 +171,18 @@ public class LottieAnimationView extends AppCompatImageView {
     }
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (wasAnimatingWhenDetached) {
+      playAnimation();
+    }
+  }
+
   @Override protected void onDetachedFromWindow() {
+    if (isAnimating()) {
+      cancelAnimation();
+      wasAnimatingWhenDetached = true;
+    }
     recycleBitmaps();
     super.onDetachedFromWindow();
   }
