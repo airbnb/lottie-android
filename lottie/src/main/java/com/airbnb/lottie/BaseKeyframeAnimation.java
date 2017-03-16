@@ -109,6 +109,10 @@ abstract class BaseKeyframeAnimation<K, A> {
     return getValue(getCurrentKeyframe(), getCurrentKeyframeProgress());
   }
 
+  float getProgress() {
+    return progress;
+  }
+
   /**
    * keyframeProgress will be [0, 1] unless the interpolator has overshoot in which case, this
    * should be able to handle values outside of that range.

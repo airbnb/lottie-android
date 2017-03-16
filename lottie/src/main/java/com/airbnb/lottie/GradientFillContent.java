@@ -8,11 +8,18 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
 class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+  /**
+   * Gradient values will be slightly rounded and cached for performance. There will be N
+   * number of items cached.
+   */
+  private static final int CACHE_STEPS = 100;
+  private final LongSparseArray<LinearGradient> gradientCache = new LongSparseArray<>();
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final RectF boundsRect = new RectF();
@@ -65,15 +72,19 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
 
     path.computeBounds(boundsRect, false);
 
-    paint.setShader(getShader());
+    paint.setShader(getGradient());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(alpha);
 
     canvas.drawPath(path, paint);
   }
 
-  private LinearGradient getShader() {
-    // TODO: cache these
+  private LinearGradient getGradient() {
+    int gradientHash = getGradientHash();
+    LinearGradient gradient = gradientCache.get(gradientHash);
+    if (gradient != null) {
+      return gradient;
+    }
     PointF startPoint = startPointAnimation.getValue();
     PointF endPoint = endPointAnimation.getValue();
     GradientColor gradientColor = colorAnimation.getValue();
@@ -83,6 +94,19 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
     int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
     int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
-    return new LinearGradient(x0 , y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
+    gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
+    gradientCache.put(gradientHash, gradient);
+    return gradient;
+  }
+
+  private int getGradientHash() {
+    int startPointProgress = Math.round(startPointAnimation.getProgress() * CACHE_STEPS);
+    int endPointProgress = Math.round(endPointAnimation.getProgress() * CACHE_STEPS);
+    int colorProgress = Math.round(colorAnimation.getProgress() * CACHE_STEPS);
+    int hash = 17;
+    hash = hash * 31 * startPointProgress;
+    hash = hash * 31 * endPointProgress;
+    hash = hash * 31 * colorProgress;
+    return hash;
   }
 }
