@@ -103,6 +103,8 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
+    enableMergePathsForKitKatAndAbove(ta.getBoolean(
+        R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     int cacheStrategy = ta.getInt(
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
         CacheStrategy.None.ordinal());
@@ -192,6 +194,18 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   /**
+   * Enable this to get merge path support for devices running KitKat (19) and above.
+   *
+   * Merge paths currently don't work if the the operand shape is entirely contained within the
+   * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
+   * instead of using merge paths.
+   */
+  @SuppressWarnings({"WeakerAccess", "Unused"})
+  public void enableMergePathsForKitKatAndAbove(boolean enable) {
+    lottieDrawable.enableMergePathsForKitKatAndAbove(enable);
+  }
+
+  /**
    * Enable hardware acceleration for this view.
    * READ THIS BEFORE ENABLING HARDWARE ACCELERATION:
    * 1) Test your animation on the minimum API level you support. Some drawing features such as
@@ -203,7 +217,7 @@ public class LottieAnimationView extends AppCompatImageView {
    *    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
    *    anything about that.
    */
-  @SuppressWarnings("WeakerAccess") public void useExperimentalHardwareAcceleration() {
+  @SuppressWarnings({"WeakerAccess", "unused"}) public void useExperimentalHardwareAcceleration() {
     setLayerType(LAYER_TYPE_HARDWARE, null);
   }
 

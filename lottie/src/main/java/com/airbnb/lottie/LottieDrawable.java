@@ -9,10 +9,12 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -26,6 +28,7 @@ import android.view.animation.LinearInterpolator;
  * of compositions.
  */
 public class LottieDrawable extends Drawable implements Drawable.Callback {
+  private static final String TAG = LottieDrawable.class.getSimpleName();
   private final Matrix matrix = new Matrix();
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
@@ -39,6 +42,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private boolean playAnimationWhenCompositionAdded;
   private boolean reverseAnimationWhenCompositionAdded;
   private boolean systemAnimationsAreDisabled;
+  private boolean enableMergePaths;
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
 
@@ -69,6 +73,28 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    */
   @SuppressWarnings({"unused", "WeakerAccess"}) public boolean hasMatte() {
     return compositionLayer != null && compositionLayer.hasMatte();
+  }
+
+  boolean enableMergePathsForKitKatAndAbove() {
+    return enableMergePaths;
+  }
+
+  /**
+   * Enable this to get merge path support for devices running KitKat (19) and above.
+   *
+   * Merge paths currently don't work if the the operand shape is entirely contained within the
+   * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
+   * instead of using merge paths.
+   */
+  @SuppressWarnings("WeakerAccess") public void enableMergePathsForKitKatAndAbove(boolean enable) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+      Log.w(TAG, "Merge paths are not supported pre-Kit Kat.");
+      return;
+    }
+    enableMergePaths = enable;
+    if (composition != null) {
+      buildCompositionLayer();
+    }
   }
 
   /**
@@ -122,8 +148,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     setSpeed(speed);
     setScale(1f);
     updateBounds();
-    compositionLayer = new CompositionLayer(
-        this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
+    buildCompositionLayer();
 
     setProgress(progress);
     if (playAnimationWhenCompositionAdded) {
@@ -136,6 +161,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     }
 
     return true;
+  }
+
+  private void buildCompositionLayer() {
+    compositionLayer = new CompositionLayer(
+        this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
   }
 
   private void clearComposition() {

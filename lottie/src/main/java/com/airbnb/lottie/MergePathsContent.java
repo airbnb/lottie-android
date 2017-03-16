@@ -7,6 +7,7 @@ import android.os.Build;
 import java.util.ArrayList;
 import java.util.List;
 
+@TargetApi(Build.VERSION_CODES.KITKAT)
 class MergePathsContent implements PathContent {
   private final Path firstPath = new Path();
   private final Path remainderPath = new Path();
@@ -16,6 +17,9 @@ class MergePathsContent implements PathContent {
   private final MergePaths mergePaths;
 
   MergePathsContent(MergePaths mergePaths) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+      throw new IllegalStateException("Merge paths are not supported pre-KitKat.");
+    }
     this.mergePaths = mergePaths;
   }
 
@@ -34,28 +38,9 @@ class MergePathsContent implements PathContent {
   @Override public Path getPath() {
     path.reset();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      mergePaths();
-    } else {
-      supportMergePaths();
-    }
-
-
-    return path;
-  }
-
-  private void supportMergePaths() {
-    for (int i = 0; i < pathContents.size(); i++) {
-      path.addPath(pathContents.get(i).getPath());
-    }
-  }
-
-  @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void mergePaths() {
-
     switch (mergePaths.getMode()) {
       case Merge:
-        supportMergePaths();
+        addPaths();
         break;
       case Add:
         opFirstPathWithRest(Path.Op.UNION);
@@ -69,6 +54,14 @@ class MergePathsContent implements PathContent {
       case ExcludeIntersections:
         opFirstPathWithRest(Path.Op.XOR);
         break;
+    }
+
+    return path;
+  }
+
+  private void addPaths() {
+    for (int i = 0; i < pathContents.size(); i++) {
+      path.addPath(pathContents.get(i).getPath());
     }
   }
 
