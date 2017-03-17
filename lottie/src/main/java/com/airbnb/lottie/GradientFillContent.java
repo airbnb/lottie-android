@@ -15,10 +15,9 @@ import java.util.List;
 
 class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   /**
-   * Gradient values will be slightly rounded and cached for performance. There will be N
-   * number of items cached.
+   * Cache the gradients such that it runs at 30fps.
    */
-  private static final int CACHE_STEPS = 100;
+  private static final int CACHE_STEPS_MS = 32;
   private final LongSparseArray<LinearGradient> gradientCache = new LongSparseArray<>();
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -29,10 +28,12 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
   private final KeyframeAnimation<PointF> startPointAnimation;
   private final KeyframeAnimation<PointF> endPointAnimation;
   private final LottieDrawable lottieDrawable;
+  private final int cacheSteps;
 
   GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     this.lottieDrawable = lottieDrawable;
     path.setFillType(fill.getFillType());
+    cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
 
     colorAnimation = fill.getGradientColor().createAnimation();
     colorAnimation.addUpdateListener(this);
@@ -100,9 +101,9 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
   }
 
   private int getGradientHash() {
-    int startPointProgress = Math.round(startPointAnimation.getProgress() * CACHE_STEPS);
-    int endPointProgress = Math.round(endPointAnimation.getProgress() * CACHE_STEPS);
-    int colorProgress = Math.round(colorAnimation.getProgress() * CACHE_STEPS);
+    int startPointProgress = Math.round(startPointAnimation.getProgress() * cacheSteps);
+    int endPointProgress = Math.round(endPointAnimation.getProgress() * cacheSteps);
+    int colorProgress = Math.round(colorAnimation.getProgress() * cacheSteps);
     int hash = 17;
     hash = hash * 31 * startPointProgress;
     hash = hash * 31 * endPointProgress;
