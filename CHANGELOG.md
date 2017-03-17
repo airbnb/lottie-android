@@ -3,6 +3,8 @@
 * Ground up rewrite of the rendering engine.
 * Support for fill types (non-zero or even-odd).
 * Support for linear gradient fills.
+* Some merge path support. Enable it with `enableMergePathsForKitKatAndAbove` and read the 
+documentation before using it.
 * Support for multiple fills and strokes on shapes.
 * Expose several package prive methods on `LottieAnimationView` and `LottieDrawable`
 * Added a ton of samples from lottiefiles.com to the sample app.
