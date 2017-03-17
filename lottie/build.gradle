@@ -21,7 +21,7 @@ android {
 }
 
 dependencies {
-  compile 'com.android.support:appcompat-v7:25.2.0'
+  compile 'com.android.support:appcompat-v7:25.3.0'
   testCompile 'junit:junit:4.12'
   testCompile "org.robolectric:robolectric:3.1.2"
 }
