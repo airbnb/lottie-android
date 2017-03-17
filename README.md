@@ -14,7 +14,7 @@ For the first time, designers can create **and ship** beautiful animations witho
 ![Example3](gifs/Example3.gif)
 
 
-![Community](gifs/Community%202_3)
+![Community](gifs/Community%202_3.gif)
 
 
 ![Example4](gifs/Example4.gif)
