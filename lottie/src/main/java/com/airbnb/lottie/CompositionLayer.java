@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.support.annotation.FloatRange;
 import android.support.v4.util.LongSparseArray;
 
@@ -10,6 +11,8 @@ import java.util.List;
 
 class CompositionLayer extends BaseLayer {
   private final List<BaseLayer> layers = new ArrayList<>();
+  private final Rect boundsRect = new Rect();
+  private final Rect rect = new Rect();
 
   CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
@@ -50,6 +53,20 @@ class CompositionLayer extends BaseLayer {
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     for (int i = layers.size() - 1; i >= 0 ; i--) {
       layers.get(i).draw(canvas, parentMatrix, parentAlpha);
+    }
+  }
+
+  @Override public void getBounds(Rect outBounds) {
+    boundsRect.set(0, 0 ,0, 0);
+    for (int i = layers.size(); i >= 0; i--) {
+      BaseLayer content = layers.get(i);
+      content.getBounds(rect);
+      boundsRect.set(
+          Math.min(boundsRect.left, rect.left),
+          Math.min(boundsRect.top, rect.top),
+          Math.min(boundsRect.right, rect.right),
+          Math.min(boundsRect.bottom, rect.bottom)
+      );
     }
   }
 

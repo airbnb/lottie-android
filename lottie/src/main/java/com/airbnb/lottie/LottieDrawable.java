@@ -351,6 +351,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return composition == null ? -1 : (int) (composition.getBounds().height() * scale);
   }
 
+  @Nullable
   Bitmap getImageAsset(String id) {
     return getImageAssetBitmapManager().bitmapForId(id);
   }

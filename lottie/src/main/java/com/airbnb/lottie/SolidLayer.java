@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 class SolidLayer extends BaseLayer {
@@ -34,5 +35,9 @@ class SolidLayer extends BaseLayer {
       parentMatrix.mapRect(rect);
       canvas.drawRect((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom, paint);
     }
+  }
+
+  @Override public void getBounds(Rect outBounds) {
+    outBounds.set((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom);
   }
 }

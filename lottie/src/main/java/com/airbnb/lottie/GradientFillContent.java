@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.support.v4.util.LongSparseArray;
@@ -78,6 +79,12 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     paint.setAlpha(alpha);
 
     canvas.drawPath(path, paint);
+  }
+
+  @Override public void getBounds(Rect outBounds) {
+    outBounds.set((int) boundsRect.left, (int) boundsRect.top, (int) boundsRect.right,
+        (int) boundsRect.bottom);
+
   }
 
   private LinearGradient getGradient() {

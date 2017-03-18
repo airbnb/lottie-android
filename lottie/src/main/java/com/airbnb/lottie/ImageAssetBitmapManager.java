@@ -50,6 +50,7 @@ class ImageAssetBitmapManager {
     this.assetDelegate = assetDelegate;
   }
 
+  @Nullable
   Bitmap bitmapForId(String id) {
     Bitmap bitmap = bitmaps.get(id);
     if (bitmap == null) {

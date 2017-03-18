@@ -5,6 +5,8 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final RectF rect = new RectF();
   private final LottieDrawable lottieDrawable;
   private final List<PathContent> paths = new ArrayList<>();
   private final float[] dashPatternValues;
@@ -98,6 +101,11 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
     }
 
     canvas.drawPath(path, paint);
+  }
+
+  @Override public void getBounds(Rect outBounds) {
+    path.computeBounds(rect, false);
+    outBounds.set((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom);
   }
 
   private void applyDashPatternIfNeeded() {
