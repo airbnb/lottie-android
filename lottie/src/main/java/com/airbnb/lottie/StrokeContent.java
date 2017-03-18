@@ -103,10 +103,10 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    // path.reset();
-    // for (int i = 0; i < paths.size(); i++) {
-    //   this.path.addPath(paths.get(i).getPath(), parentMatrix);
-    // }
+    path.reset();
+    for (int i = 0; i < paths.size(); i++) {
+      this.path.addPath(paths.get(i).getPath(), parentMatrix);
+    }
     path.computeBounds(rect, false);
 
     float width = widthAnimation.getValue();

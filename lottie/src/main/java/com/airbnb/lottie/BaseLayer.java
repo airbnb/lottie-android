@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -154,13 +153,8 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     }
 
     rect.set(0, 0, 0, 0);
-    getBounds(rect, parentMatrix);
-
-
-
-    canvas.drawRect(rect, paint);
-
-
+    getBounds(rect, matrix);
+    // rect.set(canvas.getClipBounds());
 
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
@@ -181,12 +175,6 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
     canvas.restore();
   }
-
-  private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
-    setStrokeWidth(3);
-    setStyle(Style.STROKE);
-    setColor(Color.RED);
-  }};
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
