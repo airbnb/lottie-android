@@ -86,8 +86,14 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
       path.addPath(paths.get(i).getPath(), parentMatrix);
     }
 
-    path.computeBounds(boundsRect, false);
-    outBounds.set(boundsRect.left, boundsRect.top, boundsRect.right, boundsRect.bottom);
+    path.computeBounds(outBounds, false);
+    // Add padding to account for rounding errors.
+    outBounds.set(
+        outBounds.left - 1,
+        outBounds.top - 1,
+        outBounds.right + 1,
+        outBounds.bottom + 1
+    );
   }
 
   private LinearGradient getGradient() {

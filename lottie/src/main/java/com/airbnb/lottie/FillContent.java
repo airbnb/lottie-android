@@ -13,7 +13,6 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final List<PathContent> paths = new ArrayList<>();
-  private final RectF rect = new RectF();
   private final KeyframeAnimation<Integer> colorAnimation;
   private final KeyframeAnimation<Integer> opacityAnimation;
   private final LottieDrawable lottieDrawable;
@@ -67,7 +66,13 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
     for (int i = 0; i < paths.size(); i++) {
       this.path.addPath(paths.get(i).getPath(), parentMatrix);
     }
-    path.computeBounds(rect, false);
-    outBounds.set(rect.left, rect.top, rect.right, rect.bottom);
+    path.computeBounds(outBounds, false);
+    // Add padding to account for rounding errors.
+    outBounds.set(
+        outBounds.left - 1,
+        outBounds.top - 1,
+        outBounds.right + 1,
+        outBounds.bottom + 1
+    );
   }
 }

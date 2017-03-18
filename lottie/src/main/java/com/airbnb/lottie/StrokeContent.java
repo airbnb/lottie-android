@@ -112,8 +112,14 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
     float width = widthAnimation.getValue();
     rect.set(rect.left - width / 2f, rect.top - width / 2f,
         rect.right + width / 2f, rect.bottom + width / 2f);
-    outBounds.set(rect.left, rect.top, rect.right, rect.bottom);
-
+    outBounds.set(rect);
+    // Add padding to account for rounding errors.
+    outBounds.set(
+        outBounds.left - 1,
+        outBounds.top - 1,
+        outBounds.right + 1,
+        outBounds.bottom + 1
+    );
   }
 
   private void applyDashPatternIfNeeded() {

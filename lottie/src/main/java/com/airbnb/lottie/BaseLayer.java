@@ -137,7 +137,6 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     if (!visible) {
       return;
     }
-
     buildParentLayerListIfNeeded();
     matrix.reset();
     matrix.set(parentMatrix);
