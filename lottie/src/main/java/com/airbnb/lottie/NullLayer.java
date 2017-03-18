@@ -2,7 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Rect;
+import android.graphics.RectF;
 
 class NullLayer extends BaseLayer {
   NullLayer(LottieDrawable lottieDrawable, Layer layerModel) {
@@ -13,7 +13,7 @@ class NullLayer extends BaseLayer {
     // Do nothing.
   }
 
-  @Override public void getBounds(Rect outBounds) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     outBounds.set(0, 0, 0, 0);
   }
 }

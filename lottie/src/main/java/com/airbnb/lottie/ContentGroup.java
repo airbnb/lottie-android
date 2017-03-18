@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -16,8 +16,7 @@ class ContentGroup implements DrawingContent, PathContent,
   private static final String TAG = ContentGroup.class.getSimpleName();
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
-  private final Rect boundsRect = new Rect();
-  private final Rect rect = new Rect();
+  private final RectF rect = new RectF();
 
   private final List<Content> contents = new ArrayList<>();
   private final LottieDrawable lottieDrawable;
@@ -164,18 +163,22 @@ class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
-  @Override public void getBounds(Rect outBounds) {
-    boundsRect.set(0, 0 ,0, 0);
-    for (int i = contents.size(); i >= 0; i--) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    rect.set(0, 0, 0, 0);
+    for (int i = contents.size() - 1; i >= 0; i--) {
       Content content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).getBounds(rect);
-        boundsRect.set(
-          Math.min(boundsRect.left, rect.left),
-          Math.min(boundsRect.top, rect.top),
-          Math.min(boundsRect.right, rect.right),
-          Math.min(boundsRect.bottom, rect.bottom)
-        );
+        ((DrawingContent) content).getBounds(rect, parentMatrix);
+        if (outBounds.isEmpty()) {
+          outBounds.set(rect);
+        } else {
+          outBounds.set(
+              Math.min(outBounds.left, rect.left),
+              Math.min(outBounds.top, rect.top),
+              Math.max(outBounds.right, rect.right),
+              Math.max(outBounds.bottom, rect.bottom)
+          );
+        }
       }
     }
   }

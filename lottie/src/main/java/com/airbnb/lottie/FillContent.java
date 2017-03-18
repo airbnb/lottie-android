@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import java.util.ArrayList;
@@ -63,8 +62,12 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
     canvas.drawPath(path, paint);
   }
 
-  @Override public void getBounds(Rect outBounds) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    path.reset();
+    for (int i = 0; i < paths.size(); i++) {
+      this.path.addPath(paths.get(i).getPath(), parentMatrix);
+    }
     path.computeBounds(rect, false);
-    outBounds.set((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom);
+    outBounds.set(rect.left, rect.top, rect.right, rect.bottom);
   }
 }

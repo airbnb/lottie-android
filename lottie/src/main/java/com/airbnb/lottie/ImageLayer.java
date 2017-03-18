@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -28,12 +28,15 @@ class ImageLayer extends BaseLayer {
     canvas.restore();
   }
 
-  @Override public void getBounds(Rect outBounds) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     Bitmap bitmap = getBitmap();
-    if (bitmap == null) {
-      outBounds.set(0, 0, 0, 0);
-    } else {
-      outBounds.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
+    if (bitmap != null) {
+      outBounds.set(
+          outBounds.left,
+          outBounds.top,
+          Math.min(outBounds.right, bitmap.getWidth()),
+          Math.min(outBounds.bottom, bitmap.getHeight())
+      );
     }
 
   }

@@ -2,7 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ class ShapeLayer extends BaseLayer {
     contentGroup.draw(canvas, parentMatrix, parentAlpha);
   }
 
-  @Override public void getBounds(Rect outBounds) {
-    contentGroup.getBounds(outBounds);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    contentGroup.getBounds(outBounds, parentMatrix);
   }
 }

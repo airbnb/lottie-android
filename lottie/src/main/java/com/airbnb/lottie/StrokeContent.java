@@ -5,7 +5,6 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
@@ -103,9 +102,18 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
     canvas.drawPath(path, paint);
   }
 
-  @Override public void getBounds(Rect outBounds) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    // path.reset();
+    // for (int i = 0; i < paths.size(); i++) {
+    //   this.path.addPath(paths.get(i).getPath(), parentMatrix);
+    // }
     path.computeBounds(rect, false);
-    outBounds.set((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom);
+
+    float width = widthAnimation.getValue();
+    rect.set(rect.left - width / 2f, rect.top - width / 2f,
+        rect.right + width / 2f, rect.bottom + width / 2f);
+    outBounds.set(rect.left, rect.top, rect.right, rect.bottom);
+
   }
 
   private void applyDashPatternIfNeeded() {
