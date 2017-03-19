@@ -80,7 +80,8 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
-      if (content instanceof TrimPathContent) {
+      if (content instanceof TrimPathContent &&
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
         trimPath = (TrimPathContent) content;
         trimPath.addListener(this);
       }

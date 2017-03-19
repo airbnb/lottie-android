@@ -83,16 +83,21 @@ final class Utils {
     if (trimPath == null) {
       return;
     }
+    applyTrimPathIfNeeded(path, trimPath.getStart().getValue() / 100f,
+        trimPath.getEnd().getValue() / 100f, trimPath.getOffset().getValue() / 360f);
+  }
 
+  static void applyTrimPathIfNeeded(
+      Path path, float startValue, float endValue, float offsetValue) {
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
-    float start = length * trimPath.getStart().getValue() / 100f;
-    float end = length * trimPath.getEnd().getValue() / 100f;
+    float start = length * startValue;
+    float end = length * endValue;
     float newStart = Math.min(start, end);
     float newEnd = Math.max(start, end);
 
-    float offset = trimPath.getOffset().getValue() / 360f * length;
+    float offset = offsetValue * length;
     newStart += offset;
     newEnd += offset;
 
