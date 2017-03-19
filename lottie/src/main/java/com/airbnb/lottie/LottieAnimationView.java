@@ -69,6 +69,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private CacheStrategy defaultCacheStrategy;
   private String animationName;
   private boolean wasAnimatingWhenDetached = false;
+  private boolean autoPlay = false;
 
   @Nullable private Cancellable compositionLoader;
   /**
@@ -99,6 +100,7 @@ public class LottieAnimationView extends AppCompatImageView {
     }
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
       lottieDrawable.playAnimation();
+      autoPlay = true;
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
@@ -175,7 +177,7 @@ public class LottieAnimationView extends AppCompatImageView {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (wasAnimatingWhenDetached) {
+    if (autoPlay && wasAnimatingWhenDetached) {
       playAnimation();
     }
   }
