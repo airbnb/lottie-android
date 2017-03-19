@@ -5,6 +5,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final RectF rect = new RectF();
   private final LottieDrawable lottieDrawable;
   private final List<PathContent> paths = new ArrayList<>();
   private final float[] dashPatternValues;
@@ -98,6 +100,26 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
     }
 
     canvas.drawPath(path, paint);
+  }
+
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    path.reset();
+    for (int i = 0; i < paths.size(); i++) {
+      this.path.addPath(paths.get(i).getPath(), parentMatrix);
+    }
+    path.computeBounds(rect, false);
+
+    float width = widthAnimation.getValue();
+    rect.set(rect.left - width / 2f, rect.top - width / 2f,
+        rect.right + width / 2f, rect.bottom + width / 2f);
+    outBounds.set(rect);
+    // Add padding to account for rounding errors.
+    outBounds.set(
+        outBounds.left - 1,
+        outBounds.top - 1,
+        outBounds.right + 1,
+        outBounds.bottom + 1
+    );
   }
 
   private void applyDashPatternIfNeeded() {

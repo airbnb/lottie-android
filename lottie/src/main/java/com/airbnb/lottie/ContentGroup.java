@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -15,6 +16,7 @@ class ContentGroup implements DrawingContent, PathContent,
   private static final String TAG = ContentGroup.class.getSimpleName();
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
+  private final RectF rect = new RectF();
 
   private final List<Content> contents = new ArrayList<>();
   private final LottieDrawable lottieDrawable;
@@ -157,6 +159,30 @@ class ContentGroup implements DrawingContent, PathContent,
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
         ((DrawingContent) content).draw(canvas, matrix, alpha);
+      }
+    }
+  }
+
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    matrix.set(parentMatrix);
+    if (transformAnimation != null) {
+      matrix.preConcat(transformAnimation.getMatrix());
+    }
+    rect.set(0, 0, 0, 0);
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        ((DrawingContent) content).getBounds(rect, matrix);
+        if (outBounds.isEmpty()) {
+          outBounds.set(rect);
+        } else {
+          outBounds.set(
+              Math.min(outBounds.left, rect.left),
+              Math.min(outBounds.top, rect.top),
+              Math.max(outBounds.right, rect.right),
+              Math.max(outBounds.bottom, rect.bottom)
+          );
+        }
       }
     }
   }
