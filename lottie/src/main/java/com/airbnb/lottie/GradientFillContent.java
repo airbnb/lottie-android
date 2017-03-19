@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.support.v4.util.LongSparseArray;
@@ -18,11 +19,13 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
    * Cache the gradients such that it runs at 30fps.
    */
   private static final int CACHE_STEPS_MS = 32;
-  private final LongSparseArray<LinearGradient> gradientCache = new LongSparseArray<>();
+  private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
+  private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final RectF boundsRect = new RectF();
   private final List<PathContent> paths = new ArrayList<>();
+  private final GradientFill.GradientType type;
   private final KeyframeAnimation<GradientColor> colorAnimation;
   private final KeyframeAnimation<Integer> opacityAnimation;
   private final KeyframeAnimation<PointF> startPointAnimation;
@@ -32,6 +35,7 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
 
   GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     this.lottieDrawable = lottieDrawable;
+    type = fill.getGradientType();
     path.setFillType(fill.getFillType());
     cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
 
@@ -73,7 +77,11 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
 
     path.computeBounds(boundsRect, false);
 
-    paint.setShader(getGradient());
+    if (type == GradientFill.GradientType.Linear) {
+      paint.setShader(getLinearGradient());
+    } else {
+      paint.setShader(getRadialGradient());
+    }
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(alpha);
 
@@ -96,9 +104,9 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     );
   }
 
-  private LinearGradient getGradient() {
+  private LinearGradient getLinearGradient() {
     int gradientHash = getGradientHash();
-    LinearGradient gradient = gradientCache.get(gradientHash);
+    LinearGradient gradient = linearGradientCache.get(gradientHash);
     if (gradient != null) {
       return gradient;
     }
@@ -112,7 +120,28 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
     int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
     gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
-    gradientCache.put(gradientHash, gradient);
+    linearGradientCache.put(gradientHash, gradient);
+    return gradient;
+  }
+
+  private RadialGradient getRadialGradient() {
+    int gradientHash = getGradientHash();
+    RadialGradient gradient = radialGradientCache.get(gradientHash);
+    if (gradient != null) {
+      return gradient;
+    }
+    PointF startPoint = startPointAnimation.getValue();
+    PointF endPoint = endPointAnimation.getValue();
+    GradientColor gradientColor = colorAnimation.getValue();
+    int[] colors = gradientColor.getColors();
+    float[] positions = gradientColor.getPositions();
+    int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
+    int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
+    int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
+    int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+    float r = (float) Math.hypot(x1 - x0, y1 - y0);
+    gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.CLAMP);
+    radialGradientCache.put(gradientHash, gradient);
     return gradient;
   }
 

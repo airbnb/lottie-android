@@ -106,11 +106,8 @@ class GradientFill {
         endPoint = AnimatablePointValue.Factory.newInstance(jsonEndPoint, composition);
       }
 
-      // TODO: radial gradients.
-
       return new GradientFill(
           gradientType, fillType, color, opacity, startPoint, endPoint, null, null);
-
     }
   }
 }
