@@ -32,6 +32,8 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "PinJump.json");
     TestRobot.testLinearAnimation(activity, "TwitterHeart.json");
     TestRobot.testLinearAnimation(activity, "WeAccept.json", "Images/WeAccept");
+    TestRobot.testLinearAnimation(activity, "lottiefiles.com - Animated Graph.json");
+    TestRobot.testLinearAnimation(activity, "lottiefiles.com - Beating Heart.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Progress Success.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Touch ID.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Loading 1.json");
@@ -45,10 +47,12 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Emoji Wink.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Emoji Shock.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Im Thirsty.json");
+    TestRobot.testLinearAnimation(activity, "lottiefiles.com - Mail Sent.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Play and Like It.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Gears.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Postcard.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Preloader.json");
+    TestRobot.testLinearAnimation(activity, "lottiefiles.com - Star Wars Rey.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Tadah Image.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Tadah Video.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Favorite Star.json");
