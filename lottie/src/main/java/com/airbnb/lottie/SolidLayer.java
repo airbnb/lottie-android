@@ -30,13 +30,18 @@ class SolidLayer extends BaseLayer {
     int alpha = (int) ((backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
     paint.setAlpha(alpha);
     if (alpha > 0) {
-      rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
-      parentMatrix.mapRect(rect);
-      canvas.drawRect((int) rect.left, (int) rect.top, (int) rect.right, (int) rect.bottom, paint);
+      updateRect(parentMatrix);
+      canvas.drawRect(rect, paint);
     }
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    outBounds.set(rect.left, rect.top, rect.right, rect.bottom);
+    updateRect(parentMatrix);
+    outBounds.set(rect);
+  }
+
+  private void updateRect(Matrix matrix) {
+    rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
+    matrix.mapRect(rect);
   }
 }

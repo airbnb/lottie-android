@@ -49,6 +49,8 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
   private final RectF rect = new RectF();
+  private final RectF maskBoundsRect = new RectF();
+  private final RectF tempMaskBoundsRect = new RectF();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
   @Nullable private MaskKeyframeAnimation mask;
@@ -153,11 +155,19 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
     rect.set(0, 0, 0, 0);
     getBounds(rect, matrix);
-    // rect.set(canvas.getClipBounds());
+    updateMaskBoundsRect();
+    if (!maskBoundsRect.isEmpty()) {
+      rect.set(
+          Math.max(rect.left, maskBoundsRect.left),
+          Math.max(rect.top, maskBoundsRect.top),
+          Math.min(rect.right, maskBoundsRect.right),
+          Math.min(rect.bottom, maskBoundsRect.bottom)
+      );
+    }
 
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
-    canvas.drawRect(rect, clearPaint);
+    clearCanvas(canvas);
     drawLayer(canvas, matrix, alpha);
 
     if (hasMasksOnThisLayer()) {
@@ -166,7 +176,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
     if (hasMatteOnThisLayer()) {
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
-      canvas.drawRect(rect, clearPaint);
+      clearCanvas(canvas);
       //noinspection ConstantConditions
       matteLayer.draw(canvas, parentMatrix, alpha);
       canvas.restore();
@@ -175,11 +185,52 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     canvas.restore();
   }
 
+  private void clearCanvas(Canvas canvas) {
+    canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, clearPaint);
+  }
+
+  private void updateMaskBoundsRect() {
+    maskBoundsRect.set(0, 0, 0, 0);
+    if (!hasMasksOnThisLayer()) {
+      return;
+    }
+    //noinspection ConstantConditions
+    int size = mask.getMasks().size();
+    for (int i = 0; i < size; i++) {
+      Mask mask = this.mask.getMasks().get(i);
+      BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
+      Path maskPath = maskAnimation.getValue();
+      path.set(maskPath);
+      path.transform(matrix);
+
+      switch (mask.getMaskMode()) {
+        case MaskModeSubtract:
+          // If there is a subtract mask, the mask could potentially be the size of the entire
+          // canvas so we can't use the mask bounds.
+          maskBoundsRect.set(0, 0, 0, 0);
+          return;
+        case MaskModeAdd:
+        default:
+          path.computeBounds(tempMaskBoundsRect, false);
+          if (i == 0) {
+            maskBoundsRect.set(tempMaskBoundsRect);
+          } else {
+            maskBoundsRect.set(
+              Math.min(maskBoundsRect.left, tempMaskBoundsRect.left),
+              Math.min(maskBoundsRect.top, tempMaskBoundsRect.top),
+              Math.max(maskBoundsRect.right, tempMaskBoundsRect.right),
+              Math.max(maskBoundsRect.bottom, tempMaskBoundsRect.bottom)
+            );
+          }
+      }
+    }
+  }
+
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
-    canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), clearPaint);
+    clearCanvas(canvas);
 
     //noinspection ConstantConditions
     int size = mask.getMasks().size();
@@ -192,11 +243,11 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
       switch (mask.getMaskMode()) {
         case MaskModeSubtract:
-          maskPath.setFillType(Path.FillType.INVERSE_WINDING);
+          path.setFillType(Path.FillType.INVERSE_WINDING);
           break;
         case MaskModeAdd:
         default:
-          maskPath.setFillType(Path.FillType.WINDING);
+          path.setFillType(Path.FillType.WINDING);
       }
       canvas.drawPath(path, contentPaint);
     }

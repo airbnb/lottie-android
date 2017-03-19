@@ -50,6 +50,9 @@ class CompositionLayer extends BaseLayer {
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    rect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
+    parentMatrix.mapRect(rect);
+    canvas.clipRect(rect);
     for (int i = layers.size() - 1; i >= 0 ; i--) {
       layers.get(i).draw(canvas, parentMatrix, parentAlpha);
     }
