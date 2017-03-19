@@ -31,7 +31,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       case Solid:
         return new SolidLayer(drawable, layerModel);
       case Image:
-        return new ImageLayer(drawable, layerModel);
+        return new ImageLayer(drawable, layerModel, composition.getDpScale());
       case Null:
         return new NullLayer(drawable, layerModel);
       case Text:
