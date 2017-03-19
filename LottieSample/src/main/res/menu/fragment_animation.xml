@@ -12,6 +12,6 @@
         android:id="@+id/merge_paths"
         android:title="@string/enable_merge_paths"
         android:checkable="true"
-        android:checked="true"
+        android:checked="false"
         app:showAsAction="never" />
 </menu>
