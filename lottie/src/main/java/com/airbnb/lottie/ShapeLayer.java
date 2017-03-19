@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.Collections;
 
 class ShapeLayer extends BaseLayer {
+  private final Matrix matrix = new Matrix();
 
   private final ContentGroup contentGroup;
 
@@ -24,6 +25,7 @@ class ShapeLayer extends BaseLayer {
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    contentGroup.getBounds(outBounds, parentMatrix);
+    super.getBounds(outBounds, parentMatrix);
+    contentGroup.getBounds(outBounds, boundsMatrix);
   }
 }

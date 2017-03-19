@@ -7,6 +7,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.support.annotation.CallSuper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -44,7 +45,6 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
-  private final Matrix boundsMatrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -53,6 +53,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   private final RectF maskBoundsRect = new RectF();
   private final RectF matteBoundsRect = new RectF();
   private final RectF tempMaskBoundsRect = new RectF();
+  final Matrix boundsMatrix = new Matrix();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
   @Nullable private MaskKeyframeAnimation mask;
@@ -136,6 +137,11 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     }
   }
 
+  @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    boundsMatrix.set(parentMatrix);
+    boundsMatrix.preConcat(transform.getMatrix());
+  }
+
   @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     if (!visible) {
@@ -147,17 +153,20 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     for (int i = parentLayers.size() - 1; i >= 0; i--) {
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
-    matrix.preConcat(transform.getMatrix());
     int alpha = (int)
         ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
+      matrix.preConcat(transform.getMatrix());
       drawLayer(canvas, matrix, alpha);
       return;
     }
 
     rect.set(0, 0, 0, 0);
     getBounds(rect, matrix);
-    intersectBoundsWithMask(rect);
+    intersectBoundsWithMatte(rect, matrix);
+
+    matrix.preConcat(transform.getMatrix());
+    intersectBoundsWithMask(rect, matrix);
 
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
@@ -183,7 +192,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, clearPaint);
   }
 
-  private void intersectBoundsWithMask(RectF rect) {
+  private void intersectBoundsWithMask(RectF rect, Matrix matrix) {
     maskBoundsRect.set(0, 0, 0, 0);
     if (!hasMasksOnThisLayer()) {
       return;
@@ -226,12 +235,17 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     );
   }
 
-  private void intersectBoundsWithMatte(RectF rect, Matrix parentMatrix) {
+  private void intersectBoundsWithMatte(RectF rect, Matrix matrix) {
     if (!hasMatteOnThisLayer()) {
       return;
     }
+    if (layerModel.getMatteType() == Layer.MatteType.Invert) {
+      // We can't trim the bounds if the mask is inverted since it extends all the way to the
+      // composition bounds.
+      return;
+    }
     //noinspection ConstantConditions
-    matteLayer.getBounds(matteBoundsRect, parentMatrix);
+    matteLayer.getBounds(matteBoundsRect, matrix);
     rect.set(
         Math.max(rect.left, matteBoundsRect.left),
         Math.max(rect.top, matteBoundsRect.top),

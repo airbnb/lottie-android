@@ -36,7 +36,8 @@ class SolidLayer extends BaseLayer {
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    updateRect(parentMatrix);
+    super.getBounds(outBounds, parentMatrix);
+    updateRect(boundsMatrix);
     outBounds.set(rect);
   }
 

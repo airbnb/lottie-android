@@ -59,10 +59,11 @@ class CompositionLayer extends BaseLayer {
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    super.getBounds(outBounds, parentMatrix);
     rect.set(0, 0, 0, 0);
     for (int i = layers.size() - 1; i >= 0; i--) {
       BaseLayer content = layers.get(i);
-      content.getBounds(rect, parentMatrix);
+      content.getBounds(rect, boundsMatrix);
       if (outBounds.isEmpty()) {
         outBounds.set(rect);
       } else {

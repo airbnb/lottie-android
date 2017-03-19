@@ -29,6 +29,7 @@ class ImageLayer extends BaseLayer {
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    super.getBounds(outBounds, parentMatrix);
     Bitmap bitmap = getBitmap();
     if (bitmap != null) {
       outBounds.set(
@@ -37,6 +38,7 @@ class ImageLayer extends BaseLayer {
           Math.min(outBounds.right, bitmap.getWidth()),
           Math.min(outBounds.bottom, bitmap.getHeight())
       );
+      boundsMatrix.mapRect(outBounds);
     }
 
   }
