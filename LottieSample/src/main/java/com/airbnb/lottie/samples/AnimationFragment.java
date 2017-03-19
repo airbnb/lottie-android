@@ -18,6 +18,9 @@ import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -92,6 +95,7 @@ public class AnimationFragment extends Fragment {
         getFragmentManager().popBackStack();
       }
     });
+    setHasOptionsMenu(true);
     postUpdatePlayButtonText();
     onLoopChanged();
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
@@ -140,6 +144,26 @@ public class AnimationFragment extends Fragment {
   @Override public void onStop() {
     animationView.cancelAnimation();
     super.onStop();
+  }
+
+  @Override public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    inflater.inflate(R.menu.fragment_animation, menu);
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.isCheckable()) {
+      item.setChecked(!item.isChecked());
+    }
+    switch (item.getItemId()) {
+      case R.id.hardware_acceleration:
+        int layerType = item.isChecked() ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_SOFTWARE;
+        animationView.setLayerType(layerType, null);
+        return true;
+      case R.id.merge_paths:
+        animationView.enableMergePathsForKitKatAndAbove(item.isChecked());
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   @Override public void onActivityResult(int requestCode, int resultCode, Intent data) {

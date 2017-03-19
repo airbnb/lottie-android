@@ -88,7 +88,7 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(alpha);
     paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
-    if (paint.getStrokeWidth() < 1) {
+    if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
       return;
     }

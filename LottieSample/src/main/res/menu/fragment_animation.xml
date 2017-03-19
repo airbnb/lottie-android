@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/hardware_acceleration"
+        android:title="@string/hardware_acceleration"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/merge_paths"
+        android:title="@string/enable_merge_paths"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+</menu>

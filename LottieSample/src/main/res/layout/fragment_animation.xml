@@ -32,8 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/outline"
-            android:duplicateParentState="true"
-            app:lottie_enableMergePathsForKitKatAndAbove="true"/>
+            android:duplicateParentState="true"/>
 
         <LinearLayout
             android:id="@+id/instructions"
