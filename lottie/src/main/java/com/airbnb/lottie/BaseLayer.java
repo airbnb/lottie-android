@@ -168,6 +168,8 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
+    rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
+
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
     clearCanvas(canvas);
@@ -189,6 +191,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   }
 
   private void clearCanvas(Canvas canvas) {
+    // If we don't pad the clear draw, some phones leave a 1px border of the graphics buffer.
     canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, clearPaint);
   }
 
@@ -214,6 +217,9 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
         case MaskModeAdd:
         default:
           path.computeBounds(tempMaskBoundsRect, false);
+          // As we iterate through the masks, we want to calculate the union region of the masks.
+          // We initialize the rect with the first mask. If we don't call set() on the first call,
+          // the rect will always extend to (0,0).
           if (i == 0) {
             maskBoundsRect.set(tempMaskBoundsRect);
           } else {
