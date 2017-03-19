@@ -44,12 +44,14 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
+  private final Matrix boundsMatrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
   private final RectF rect = new RectF();
   private final RectF maskBoundsRect = new RectF();
+  private final RectF matteBoundsRect = new RectF();
   private final RectF tempMaskBoundsRect = new RectF();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
@@ -155,15 +157,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
     rect.set(0, 0, 0, 0);
     getBounds(rect, matrix);
-    updateMaskBoundsRect();
-    if (!maskBoundsRect.isEmpty()) {
-      rect.set(
-          Math.max(rect.left, maskBoundsRect.left),
-          Math.max(rect.top, maskBoundsRect.top),
-          Math.min(rect.right, maskBoundsRect.right),
-          Math.min(rect.bottom, maskBoundsRect.bottom)
-      );
-    }
+    intersectBoundsWithMask(rect);
 
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     // Clear the off screen buffer. This is necessary for some phones.
@@ -189,7 +183,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, clearPaint);
   }
 
-  private void updateMaskBoundsRect() {
+  private void intersectBoundsWithMask(RectF rect) {
     maskBoundsRect.set(0, 0, 0, 0);
     if (!hasMasksOnThisLayer()) {
       return;
@@ -207,7 +201,6 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
         case MaskModeSubtract:
           // If there is a subtract mask, the mask could potentially be the size of the entire
           // canvas so we can't use the mask bounds.
-          maskBoundsRect.set(0, 0, 0, 0);
           return;
         case MaskModeAdd:
         default:
@@ -224,6 +217,27 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
           }
       }
     }
+
+    rect.set(
+        Math.max(rect.left, maskBoundsRect.left),
+        Math.max(rect.top, maskBoundsRect.top),
+        Math.min(rect.right, maskBoundsRect.right),
+        Math.min(rect.bottom, maskBoundsRect.bottom)
+    );
+  }
+
+  private void intersectBoundsWithMatte(RectF rect, Matrix parentMatrix) {
+    if (!hasMatteOnThisLayer()) {
+      return;
+    }
+    //noinspection ConstantConditions
+    matteLayer.getBounds(matteBoundsRect, parentMatrix);
+    rect.set(
+        Math.max(rect.left, matteBoundsRect.left),
+        Math.max(rect.top, matteBoundsRect.top),
+        Math.min(rect.right, matteBoundsRect.right),
+        Math.min(rect.bottom, matteBoundsRect.bottom)
+    );
   }
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
