@@ -178,6 +178,6 @@
         android:textColor="@android:color/black"
         android:textSize="8sp"
         android:layout_marginBottom="8dp"
-        android:text="2.0.0-beta1"/>
+        android:text="2.0.0-beta2"/>
 
 </LinearLayout>
