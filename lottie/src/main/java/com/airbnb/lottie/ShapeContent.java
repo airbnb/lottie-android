@@ -33,7 +33,9 @@ class ShapeContent implements PathContent, BaseKeyframeAnimation.AnimationListen
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
-      if (content instanceof TrimPathContent) {
+      if (content instanceof TrimPathContent &&
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
+        // Trim path individually will be handled by the stroke where paths are combined.
         trimPath = (TrimPathContent) content;
         trimPath.addListener(this);
       }
