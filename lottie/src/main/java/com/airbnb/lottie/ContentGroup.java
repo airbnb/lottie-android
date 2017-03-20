@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -92,6 +93,16 @@ class ContentGroup implements DrawingContent, PathContent,
 
   @Override public void onValueChanged() {
     lottieDrawable.invalidateSelf();
+  }
+
+  @Override
+  public void setColorFilter(@Nullable String name, @Nullable ColorFilter colorFilter) {
+    for (int i = 0; i < contents.size(); ++i) {
+      final Content content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        ((DrawingContent) content).setColorFilter(name, colorFilter);
+      }
+    }
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

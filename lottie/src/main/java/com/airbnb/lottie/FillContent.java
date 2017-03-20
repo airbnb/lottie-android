@@ -1,10 +1,12 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,10 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
         paths.add((PathContent) content);
       }
     }
+  }
+
+  @Override public void setColorFilter(@Nullable String name, @Nullable ColorFilter colorFilter) {
+    paint.setColorFilter(colorFilter);
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {

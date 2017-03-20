@@ -18,6 +18,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
  * If there are masks or mattes, then you MUST call {@link #recycleBitmaps()} when you are done
@@ -36,6 +39,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private float scale = 1f;
   private float progress = 0f;
 
+  @NonNull Map<String, ColorFilter> layerNameColorFilterMap;
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
@@ -47,6 +51,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private int alpha = 255;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
+    layerNameColorFilterMap = new HashMap<>();
     animator.setRepeatCount(0);
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -149,6 +154,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     setScale(1f);
     updateBounds();
     buildCompositionLayer();
+    applyColorFilters();
 
     setProgress(progress);
     if (playAnimationWhenCompositionAdded) {
@@ -166,6 +172,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
+  }
+
+  private void applyColorFilters() {
+    if (compositionLayer == null) {
+      return;
+    }
+
+    for (Map.Entry<String, ColorFilter> entry : layerNameColorFilterMap.entrySet()) {
+      compositionLayer.setColorFilter(entry.getKey(), entry.getValue());
+    }
   }
 
   private void clearComposition() {
@@ -192,6 +208,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
     // Do nothing.
+  }
+
+  public void setColorFilter(@NonNull String layerName, @Nullable ColorFilter colorFilter) {
+    layerNameColorFilterMap.put(layerName, colorFilter);
+    if (compositionLayer == null) {
+      return;
+    }
+
+    compositionLayer.setColorFilter(layerName, colorFilter);
   }
 
   @Override public int getOpacity() {

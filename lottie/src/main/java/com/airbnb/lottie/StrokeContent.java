@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -108,6 +109,11 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
       }
     }
     pathGroups.add(currentPathGroup);
+  }
+
+  @Override
+  public void setColorFilter(@Nullable String name, @Nullable ColorFilter colorFilter) {
+    paint.setColorFilter(colorFilter);
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {

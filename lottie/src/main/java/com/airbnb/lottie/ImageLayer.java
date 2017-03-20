@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -54,5 +55,10 @@ class ImageLayer extends BaseLayer {
   private Bitmap getBitmap() {
     String refId = layerModel.getRefId();
     return lottieDrawable.getImageAsset(refId);
+  }
+
+  @Override
+  public void setColorFilter(@Nullable String name, @Nullable ColorFilter colorFilter) {
+    // Do nothing
   }
 }
