@@ -2,9 +2,11 @@ package com.airbnb.lottie;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.support.annotation.Nullable;
 
 class SolidLayer extends BaseLayer {
 
@@ -44,5 +46,10 @@ class SolidLayer extends BaseLayer {
   private void updateRect(Matrix matrix) {
     rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
     matrix.mapRect(rect);
+  }
+
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    paint.setColorFilter(colorFilter);
   }
 }

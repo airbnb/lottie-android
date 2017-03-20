@@ -108,6 +108,11 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     );
   }
 
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    // Do nothing
+  }
+
   @Override public String getName() {
     return name;
   }

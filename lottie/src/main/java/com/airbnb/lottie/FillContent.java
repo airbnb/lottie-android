@@ -56,6 +56,11 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
     return name;
   }
 
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    paint.setColorFilter(colorFilter);
+  }
+
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);

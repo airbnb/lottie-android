@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -133,6 +134,11 @@ public class LottieAnimationView extends AppCompatImageView {
       recycleBitmaps();
     }
     super.setImageDrawable(drawable);
+  }
+
+  public void addColorFilter(String layername, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    lottieDrawable.addColorFilter(layername, contentName, colorFilter);
   }
 
   @Override public void invalidateDrawable(@NonNull Drawable dr) {

@@ -1,9 +1,11 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.Collections;
 
@@ -27,5 +29,10 @@ class ShapeLayer extends BaseLayer {
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     super.getBounds(outBounds, parentMatrix);
     contentGroup.getBounds(outBounds, boundsMatrix);
+  }
+
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    contentGroup.addColorFilter(layerName, contentName, colorFilter);
   }
 }

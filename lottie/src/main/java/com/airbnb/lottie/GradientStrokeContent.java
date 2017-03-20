@@ -62,6 +62,11 @@ public class GradientStrokeContent extends BaseStrokeContent {
     super.draw(canvas, parentMatrix, parentAlpha);
   }
 
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    //Do nothing
+  }
+
   @Override public String getName() {
     return name;
   }

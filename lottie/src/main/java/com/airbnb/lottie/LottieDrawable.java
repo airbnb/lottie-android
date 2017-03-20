@@ -15,8 +15,15 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -36,6 +43,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private float scale = 1f;
   private float progress = 0f;
 
+  @NonNull private final Set<ColorFilterData> colorFilterData;
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
@@ -47,6 +55,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private int alpha = 255;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
+    colorFilterData = new HashSet<>();
     animator.setRepeatCount(0);
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -149,6 +158,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     setScale(1f);
     updateBounds();
     buildCompositionLayer();
+    applyColorFilters();
 
     setProgress(progress);
     if (playAnimationWhenCompositionAdded) {
@@ -166,6 +176,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
+  }
+
+  private void applyColorFilters() {
+    if (compositionLayer == null) {
+      return;
+    }
+
+    for (ColorFilterData data : colorFilterData) {
+      compositionLayer.addColorFilter(data.layerName, data.contentName, data.colorFilter);
+    }
   }
 
   private void clearComposition() {
@@ -192,6 +212,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
     // Do nothing.
+  }
+
+  public void addColorFilter(String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    colorFilterData.add(new ColorFilterData(layerName, contentName, colorFilter));
+    if (compositionLayer == null) {
+      return;
+    }
+
+    compositionLayer.addColorFilter(layerName, contentName, colorFilter);
   }
 
   @Override public int getOpacity() {
@@ -408,5 +438,47 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
       return;
     }
     callback.unscheduleDrawable(this, what);
+  }
+
+  private static class ColorFilterData {
+
+    final String layerName;
+    @Nullable final String contentName;
+    @Nullable final ColorFilter colorFilter;
+    private final int hashCode;
+
+    ColorFilterData(String layerName, @Nullable String contentName,
+        @Nullable ColorFilter colorFilter) {
+      this.layerName = layerName;
+      this.contentName = contentName;
+      this.colorFilter = colorFilter;
+      hashCode = (this.layerName + this.contentName).hashCode();
+    }
+
+    @Override public int hashCode() {
+      return hashCode;
+    }
+
+    @Override public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+
+      if (!(obj instanceof ColorFilterData)) {
+        return false;
+      }
+
+      final ColorFilterData other = (ColorFilterData) obj;
+
+      if (hashCode != other.hashCode) {
+        return false;
+      }
+
+      if (colorFilter != other.colorFilter) {
+        return false;
+      }
+
+      return true;
+    }
   }
 }

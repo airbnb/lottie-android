@@ -103,6 +103,21 @@ class ContentGroup implements DrawingContent, PathContent,
     return name;
   }
 
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    for (int i = 0; i < contents.size(); i++) {
+      final Content content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        final DrawingContent drawingContent = (DrawingContent) content;
+        if (contentName == null || contentName.equals(content.getName())) {
+          drawingContent.addColorFilter(layerName, null, colorFilter);
+        } else {
+          drawingContent.addColorFilter(layerName, contentName, colorFilter);
+        }
+      }
+    }
+  }
+
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     // Do nothing with contents after.
     List<Content> myContentsBefore = new ArrayList<>(contentsBefore.size() + contents.size());
