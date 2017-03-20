@@ -46,6 +46,8 @@ class ContentGroup implements DrawingContent, PathContent,
         contents.add(new GradientFillContent(lottieDrawable, layer, (GradientFill) item));
       } else if (item instanceof ShapeStroke) {
         contents.add(new StrokeContent(lottieDrawable, layer, (ShapeStroke) item));
+      } else if (item instanceof GradientStroke) {
+        contents.add(new GradientStrokeContent(lottieDrawable, layer, (GradientStroke) item));
       } else if (item instanceof ShapeGroup) {
         contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
       } else if (item instanceof RectangleShape) {

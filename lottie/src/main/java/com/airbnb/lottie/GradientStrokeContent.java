@@ -3,105 +3,59 @@ package com.airbnb.lottie;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.support.v4.util.LongSparseArray;
 
-import java.util.ArrayList;
-import java.util.List;
-
-class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public class GradientStrokeContent extends BaseStrokeContent {
   /**
    * Cache the gradients such that it runs at 30fps.
    */
   private static final int CACHE_STEPS_MS = 32;
+
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
-  private final Path path = new Path();
-  private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final RectF boundsRect = new RectF();
-  private final List<PathContent> paths = new ArrayList<>();
+
   private final GradientType type;
+  private final int cacheSteps;
   private final KeyframeAnimation<GradientColor> colorAnimation;
-  private final KeyframeAnimation<Integer> opacityAnimation;
   private final KeyframeAnimation<PointF> startPointAnimation;
   private final KeyframeAnimation<PointF> endPointAnimation;
-  private final LottieDrawable lottieDrawable;
-  private final int cacheSteps;
 
-  GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
-    this.lottieDrawable = lottieDrawable;
-    type = fill.getGradientType();
-    path.setFillType(fill.getFillType());
+  GradientStrokeContent(
+      final LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) {
+    super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),
+        stroke.getJoinType().toPaintJoin(), stroke.getOpacity(), stroke.getWidth(),
+        stroke.getLineDashPattern(), stroke.getDashOffset());
+
+    type = stroke.getGradientType();
     cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
 
-    colorAnimation = fill.getGradientColor().createAnimation();
+    colorAnimation = stroke.getGradientColor().createAnimation();
     colorAnimation.addUpdateListener(this);
     layer.addAnimation(colorAnimation);
 
-    opacityAnimation = fill.getOpacity().createAnimation();
-    opacityAnimation.addUpdateListener(this);
-    layer.addAnimation(opacityAnimation);
-
-    startPointAnimation = fill.getStartPoint().createAnimation();
+    startPointAnimation = stroke.getStartPoint().createAnimation();
     startPointAnimation.addUpdateListener(this);
     layer.addAnimation(startPointAnimation);
 
-    endPointAnimation = fill.getEndPoint().createAnimation();
+    endPointAnimation = stroke.getEndPoint().createAnimation();
     endPointAnimation.addUpdateListener(this);
     layer.addAnimation(endPointAnimation);
   }
 
-  @Override public void onValueChanged() {
-    lottieDrawable.invalidateSelf();
-  }
-
-  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
-    for (int i = 0; i < contentsAfter.size(); i++) {
-      Content content = contentsAfter.get(i);
-      if (content instanceof PathContent) {
-        paths.add((PathContent) content);
-      }
-    }
-  }
-
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    path.reset();
-    for (int i = 0; i < paths.size(); i++) {
-      path.addPath(paths.get(i).getPath(), parentMatrix);
-    }
-
-    path.computeBounds(boundsRect, false);
-
+    getBounds(boundsRect, parentMatrix);
     if (type == GradientType.Linear) {
       paint.setShader(getLinearGradient());
     } else {
       paint.setShader(getRadialGradient());
     }
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(alpha);
 
-    canvas.drawPath(path, paint);
-  }
-
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    path.reset();
-    for (int i = 0; i < paths.size(); i++) {
-      path.addPath(paths.get(i).getPath(), parentMatrix);
-    }
-
-    path.computeBounds(outBounds, false);
-    // Add padding to account for rounding errors.
-    outBounds.set(
-        outBounds.left - 1,
-        outBounds.top - 1,
-        outBounds.right + 1,
-        outBounds.bottom + 1
-    );
+    super.draw(canvas, parentMatrix, parentAlpha);
   }
 
   private LinearGradient getLinearGradient() {

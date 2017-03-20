@@ -19,6 +19,8 @@ class ShapeGroup {
         return ShapeGroup.Factory.newInstance(json, composition);
       case "st":
         return ShapeStroke.Factory.newInstance(json, composition);
+      case "gs":
+        return GradientStroke.Factory.newInstance(json, composition);
       case "fl":
         return ShapeFill.Factory.newInstance(json, composition);
       case "gf":

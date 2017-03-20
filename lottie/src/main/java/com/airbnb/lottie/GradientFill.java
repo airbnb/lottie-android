@@ -7,11 +7,6 @@ import org.json.JSONObject;
 
 class GradientFill {
 
-  enum GradientType {
-    Linear,
-    Radial
-  }
-
   private final GradientType gradientType;
   private final Path.FillType fillType;
   private final AnimatableGradientColorValue gradientColor;
