@@ -78,6 +78,18 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    TrimPathContent trimPathContentBefore = null;
+    for (int i = contentsBefore.size() - 1; i >= 0; i--) {
+      Content content = contentsBefore.get(i);
+      if (content instanceof TrimPathContent &&
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Individually) {
+        trimPathContentBefore = (TrimPathContent) content;
+      }
+    }
+    if (trimPathContentBefore != null) {
+      trimPathContentBefore.addListener(this);
+    }
+
     PathGroup currentPathGroup = null;
     for (int i = contentsAfter.size() - 1; i >= 0; i--) {
       Content content = contentsAfter.get(i);
@@ -90,7 +102,7 @@ class StrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationLi
         ((TrimPathContent) content).addListener(this);
       } else if (content instanceof PathContent) {
         if (currentPathGroup == null) {
-          currentPathGroup = new PathGroup(null);
+          currentPathGroup = new PathGroup(trimPathContentBefore);
         }
         currentPathGroup.paths.add((PathContent) content);
       }

@@ -89,6 +89,10 @@ final class Utils {
 
   static void applyTrimPathIfNeeded(
       Path path, float startValue, float endValue, float offsetValue) {
+    if (startValue == endValue) {
+      path.reset();
+    }
+
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
