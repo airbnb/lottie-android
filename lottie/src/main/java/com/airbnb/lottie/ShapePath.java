@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONObject;
 
 class ShapePath {
@@ -22,6 +24,10 @@ class ShapePath {
           AnimatableShapeValue.Factory.newInstance(json.optJSONObject("ks"), composition);
       return new ShapePath(json.optString("nm"), json.optInt("ind"), animatableShapeValue);
     }
+  }
+
+  public String getName() {
+    return name;
   }
 
   AnimatableShapeValue getShapePath() {

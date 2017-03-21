@@ -10,6 +10,7 @@ import java.util.List;
 
 class GradientStroke {
 
+  private final String name;
   private final GradientType gradientType;
   private final AnimatableGradientColorValue gradientColor;
   private final AnimatableIntegerValue opacity;
@@ -21,12 +22,13 @@ class GradientStroke {
   private final List<AnimatableFloatValue> lineDashPattern;
   @Nullable private final AnimatableFloatValue dashOffset;
 
-  private GradientStroke(GradientType gradientType, AnimatableGradientColorValue
-      gradientColor,
+  private GradientStroke(String name, GradientType gradientType,
+      AnimatableGradientColorValue gradientColor,
       AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
       AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
       ShapeStroke.LineJoinType joinType, List<AnimatableFloatValue> lineDashPattern,
       @Nullable AnimatableFloatValue dashOffset) {
+    this.name = name;
     this.gradientType = gradientType;
     this.gradientColor = gradientColor;
     this.opacity = opacity;
@@ -37,6 +39,10 @@ class GradientStroke {
     this.joinType = joinType;
     this.lineDashPattern = lineDashPattern;
     this.dashOffset = dashOffset;
+  }
+
+  String getName() {
+    return name;
   }
 
   GradientType getGradientType() {
@@ -84,6 +90,7 @@ class GradientStroke {
     }
 
     static GradientStroke newInstance(JSONObject json, LottieComposition composition) {
+      final String name = json.optString("nm");
       JSONObject jsonColor = json.optJSONObject("g");
       if (jsonColor != null && jsonColor.has("k")) {
         jsonColor = jsonColor.optJSONObject("k");
@@ -142,7 +149,7 @@ class GradientStroke {
       }
 
       return new GradientStroke(
-          gradientType, color, opacity, startPoint, endPoint, width, capType, joinType,
+          name, gradientType, color, opacity, startPoint, endPoint, width, capType, joinType,
           lineDashPattern, offset);
     }
   }

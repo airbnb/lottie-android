@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -25,6 +26,7 @@ class PolystarShape {
     }
   }
 
+  private final String name;
   private final Type type;
   private final AnimatableFloatValue points;
   private final AnimatableValue<PointF> position;
@@ -34,10 +36,13 @@ class PolystarShape {
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
 
-  private PolystarShape(Type type, AnimatableFloatValue points, AnimatableValue<PointF> position,
+  private PolystarShape(String name, Type type, AnimatableFloatValue points,
+      AnimatableValue<PointF>
+      position,
       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
       AnimatableFloatValue outerRoundedness) {
+    this.name = name;
     this.type = type;
     this.points = points;
     this.position = position;
@@ -53,6 +58,7 @@ class PolystarShape {
     }
 
     static PolystarShape newInstance(JSONObject json, LottieComposition composition) {
+      final String name = json.optString("nm");
       Type type = Type.forValue(json.optInt("sy"));
       AnimatableFloatValue points =
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("pt"), composition, false);
@@ -76,9 +82,13 @@ class PolystarShape {
         innerRadius = null;
         innerRoundedness = null;
       }
-      return new PolystarShape(type, points, position, rotation, innerRadius, outerRadius,
+      return new PolystarShape(name, type, points, position, rotation, innerRadius, outerRadius,
           innerRoundedness, outerRoundedness);
     }
+  }
+
+  String getName() {
+    return name;
   }
 
   Type getType() {

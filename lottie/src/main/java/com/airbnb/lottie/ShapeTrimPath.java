@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONObject;
 
 class ShapeTrimPath {
@@ -20,13 +22,15 @@ class ShapeTrimPath {
     }
   }
 
+  private final String name;
   private final Type type;
   private final AnimatableFloatValue start;
   private final AnimatableFloatValue end;
   private final AnimatableFloatValue offset;
 
-  private ShapeTrimPath(Type type, AnimatableFloatValue start, AnimatableFloatValue end,
-      AnimatableFloatValue offset) {
+  private ShapeTrimPath(String name, Type type, AnimatableFloatValue start,
+      AnimatableFloatValue end, AnimatableFloatValue offset) {
+    this.name = name;
     this.type = type;
     this.start = start;
     this.end = end;
@@ -39,11 +43,16 @@ class ShapeTrimPath {
 
     static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
       return new ShapeTrimPath(
+          json.optString("nm"),
           Type.forId(json.optInt("m", 1)),
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("s"), composition, false),
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("e"), composition, false),
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false));
     }
+  }
+
+  String getName() {
+    return name;
   }
 
   Type getType() {

@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.Nullable;
+
 import org.json.JSONObject;
 
 
@@ -30,9 +32,11 @@ public class MergePaths {
     }
   }
 
+  private final String name;
   private final MergePathsMode mode;
 
-  private MergePaths(MergePathsMode mode) {
+  private MergePaths(String name, MergePathsMode mode) {
+    this.name = name;
     this.mode = mode;
   }
 
@@ -41,8 +45,12 @@ public class MergePaths {
     }
 
     static MergePaths newInstance(JSONObject json) {
-      return new MergePaths(MergePathsMode.forId(json.optInt("mm", 1)));
+      return new MergePaths(json.optString("nm"), MergePathsMode.forId(json.optInt("mm", 1)));
     }
+  }
+
+  public String getName() {
+    return name;
   }
 
   MergePathsMode getMode() {

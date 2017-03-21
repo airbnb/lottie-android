@@ -8,11 +8,13 @@ import org.json.JSONObject;
 class ShapeFill {
   private final boolean fillEnabled;
   private final Path.FillType fillType;
+  private final String name;
   @Nullable private final AnimatableColorValue color;
   @Nullable private final AnimatableIntegerValue opacity;
 
-  private ShapeFill(boolean fillEnabled, Path.FillType fillType,
+  private ShapeFill(String name, boolean fillEnabled, Path.FillType fillType,
       @Nullable AnimatableColorValue color, @Nullable AnimatableIntegerValue opacity) {
+    this.name = name;
     this.fillEnabled = fillEnabled;
     this.fillType = fillType;
     this.color = color;
@@ -27,6 +29,7 @@ class ShapeFill {
       AnimatableColorValue color = null;
       boolean fillEnabled;
       AnimatableIntegerValue opacity = null;
+      final String name = json.optString("nm");
 
       JSONObject jsonColor = json.optJSONObject("c");
       if (jsonColor != null) {
@@ -42,8 +45,12 @@ class ShapeFill {
       int fillTypeInt = json.optInt("r", 1);
       Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
 
-      return new ShapeFill(fillEnabled, fillType, color, opacity);
+      return new ShapeFill(name, fillEnabled, fillType, color, opacity);
     }
+  }
+
+  String getName() {
+    return name;
   }
 
   @Nullable AnimatableColorValue getColor() {
