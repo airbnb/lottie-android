@@ -8,6 +8,7 @@ import java.util.List;
 class ShapeContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
 
+  private final String name;
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, Path> shapeAnimation;
 
@@ -15,6 +16,7 @@ class ShapeContent implements PathContent, BaseKeyframeAnimation.AnimationListen
   @Nullable private TrimPathContent trimPath;
 
   ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
+    name = shape.getName();
     this.lottieDrawable = lottieDrawable;
     shapeAnimation = shape.getShapePath().createAnimation();
     layer.addAnimation(shapeAnimation);
@@ -56,5 +58,9 @@ class ShapeContent implements PathContent, BaseKeyframeAnimation.AnimationListen
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public String getName() {
+    return name;
   }
 }

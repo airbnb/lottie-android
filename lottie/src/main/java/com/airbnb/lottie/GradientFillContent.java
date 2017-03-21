@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -9,6 +10,7 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
    * Cache the gradients such that it runs at 30fps.
    */
   private static final int CACHE_STEPS_MS = 32;
+  private final String name;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final Path path = new Path();
@@ -34,6 +37,7 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
   private final int cacheSteps;
 
   GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
+    name = fill.getName();
     this.lottieDrawable = lottieDrawable;
     type = fill.getGradientType();
     path.setFillType(fill.getFillType());
@@ -102,6 +106,10 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
         outBounds.right + 1,
         outBounds.bottom + 1
     );
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   private LinearGradient getLinearGradient() {

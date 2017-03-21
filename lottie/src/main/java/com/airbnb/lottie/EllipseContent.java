@@ -11,6 +11,7 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationList
 
   private final Path path = new Path();
 
+  private final String name;
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
@@ -19,6 +20,7 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationList
   private boolean isPathValid;
 
   EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
+    name = circleShape.getName();
     this.lottieDrawable = lottieDrawable;
     sizeAnimation = circleShape.getSize().createAnimation();
     positionAnimation = circleShape.getPosition().createAnimation();
@@ -48,6 +50,10 @@ class EllipseContent implements PathContent, BaseKeyframeAnimation.AnimationList
         trimPath.addListener(this);
       }
     }
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   @Override public Path getPath() {

@@ -325,6 +325,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     }
   }
 
+  @Override public String getName() {
+    return layerModel.getName();
+  }
+
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     // Do nothing
   }

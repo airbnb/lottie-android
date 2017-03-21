@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -18,12 +19,14 @@ class ContentGroup implements DrawingContent, PathContent,
   private final Path path = new Path();
   private final RectF rect = new RectF();
 
+  private final String name;
   private final List<Content> contents = new ArrayList<>();
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
+    name = shapeGroup.getName();
     this.lottieDrawable = lottieDrawable;
     List<Object> items = shapeGroup.getItems();
     if (items.isEmpty()) {
@@ -94,6 +97,10 @@ class ContentGroup implements DrawingContent, PathContent,
 
   @Override public void onValueChanged() {
     lottieDrawable.invalidateSelf();
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
