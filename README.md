@@ -80,6 +80,7 @@ From a json asset in app/src/main/assets:
 LottieAnimationView animationView = (LottieAnimationView) findViewById(R.id.animation_view);
 animationView.setAnimation("hello-world.json");
 animationView.loop(true);
+animationView.playAnimation();
 ```
 This method will load the file and parse the animation in the background and asynchronously start rendering once completed.
 
