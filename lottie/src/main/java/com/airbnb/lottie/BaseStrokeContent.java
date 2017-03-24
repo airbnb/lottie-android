@@ -104,7 +104,9 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
         currentPathGroup.paths.add((PathContent) content);
       }
     }
-    pathGroups.add(currentPathGroup);
+    if (currentPathGroup != null) {
+      pathGroups.add(currentPathGroup);
+    }
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
