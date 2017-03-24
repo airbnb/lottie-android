@@ -13,10 +13,11 @@ class GradientFill {
   private final AnimatableIntegerValue opacity;
   private final AnimatablePointValue startPoint;
   private final AnimatablePointValue endPoint;
+  private final String name;
   @Nullable private final AnimatableFloatValue highlightLength;
   @Nullable private final AnimatableFloatValue highlightAngle;
 
-  private GradientFill(GradientType gradientType, Path.FillType fillType,
+  private GradientFill(String name, GradientType gradientType, Path.FillType fillType,
       AnimatableGradientColorValue gradientColor,
       AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
       AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
@@ -27,8 +28,13 @@ class GradientFill {
     this.opacity = opacity;
     this.startPoint = startPoint;
     this.endPoint = endPoint;
+    this.name = name;
     this.highlightLength = highlightLength;
     this.highlightAngle = highlightAngle;
+  }
+
+  String getName() {
+    return name;
   }
 
   GradientType getGradientType() {
@@ -68,6 +74,8 @@ class GradientFill {
     }
 
     static GradientFill newInstance(JSONObject json, LottieComposition composition) {
+      final String name = json.optString("nm");
+
       JSONObject jsonColor = json.optJSONObject("g");
       if (jsonColor != null && jsonColor.has("k")) {
         jsonColor = jsonColor.optJSONObject("k");
@@ -101,8 +109,8 @@ class GradientFill {
         endPoint = AnimatablePointValue.Factory.newInstance(jsonEndPoint, composition);
       }
 
-      return new GradientFill(
-          gradientType, fillType, color, opacity, startPoint, endPoint, null, null);
+      return new GradientFill(name, gradientType, fillType, color, opacity, startPoint, endPoint,
+          null, null);
     }
   }
 }

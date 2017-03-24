@@ -13,6 +13,7 @@ class MergePathsContent implements PathContent {
   private final Path remainderPath = new Path();
   private final Path path = new Path();
 
+  private final String name;
   private final List<PathContent> pathContents = new ArrayList<>();
   private final MergePaths mergePaths;
 
@@ -20,6 +21,7 @@ class MergePathsContent implements PathContent {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
       throw new IllegalStateException("Merge paths are not supported pre-KitKat.");
     }
+    name = mergePaths.getName();
     this.mergePaths = mergePaths;
   }
 
@@ -57,6 +59,10 @@ class MergePathsContent implements PathContent {
     }
 
     return path;
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   private void addPaths() {

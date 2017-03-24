@@ -1,12 +1,14 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 public class GradientStrokeContent extends BaseStrokeContent {
@@ -15,6 +17,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
    */
   private static final int CACHE_STEPS_MS = 32;
 
+  private final String name;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final RectF boundsRect = new RectF();
@@ -31,6 +34,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
         stroke.getJoinType().toPaintJoin(), stroke.getOpacity(), stroke.getWidth(),
         stroke.getLineDashPattern(), stroke.getDashOffset());
 
+    name = stroke.getName();
     type = stroke.getGradientType();
     cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
 
@@ -56,6 +60,15 @@ public class GradientStrokeContent extends BaseStrokeContent {
     }
 
     super.draw(canvas, parentMatrix, parentAlpha);
+  }
+
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    //Do nothing
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   private LinearGradient getLinearGradient() {

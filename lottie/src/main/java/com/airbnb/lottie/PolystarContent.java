@@ -17,6 +17,7 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
   private static final float POLYGON_MAGIC_NUMBER = .25f;
   private final Path path = new Path();
 
+  private final String name;
   private final LottieDrawable lottieDrawable;
   private final PolystarShape.Type type;
   private final BaseKeyframeAnimation<?, Float> pointsAnimation;
@@ -33,6 +34,7 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
   PolystarContent(LottieDrawable lottieDrawable, BaseLayer layer, PolystarShape polystarShape) {
     this.lottieDrawable = lottieDrawable;
 
+    name = polystarShape.getName();
     type = polystarShape.getType();
     pointsAnimation = polystarShape.getPoints().createAnimation();
     positionAnimation = polystarShape.getPosition().createAnimation();
@@ -110,6 +112,10 @@ class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationLis
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public String getName() {
+    return name;
   }
 
   private void createStarPath() {

@@ -46,6 +46,7 @@ class ShapeStroke {
     }
   }
 
+  private final String name;
   @Nullable private final AnimatableFloatValue offset;
   private final List<AnimatableFloatValue> lineDashPattern;
   private final AnimatableColorValue color;
@@ -54,10 +55,11 @@ class ShapeStroke {
   private final LineCapType capType;
   private final LineJoinType joinType;
 
-  private ShapeStroke(@Nullable AnimatableFloatValue offset,
+  private ShapeStroke(String name, @Nullable AnimatableFloatValue offset,
       List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
       AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
       LineJoinType joinType) {
+    this.name = name;
     this.offset = offset;
     this.lineDashPattern = lineDashPattern;
     this.color = color;
@@ -72,6 +74,7 @@ class ShapeStroke {
     }
 
     static ShapeStroke newInstance(JSONObject json, LottieComposition composition) {
+      final String name = json.optString("nm");
       List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
       AnimatableColorValue color = AnimatableColorValue.Factory.newInstance(json.optJSONObject("c"),
           composition);
@@ -101,8 +104,13 @@ class ShapeStroke {
           lineDashPattern.add(lineDashPattern.get(0));
         }
       }
-      return new ShapeStroke(offset, lineDashPattern, color, opacity, width, capType, joinType);
+      return new ShapeStroke(name, offset, lineDashPattern, color, opacity, width, capType,
+          joinType);
     }
+  }
+
+  String getName() {
+    return name;
   }
 
   AnimatableColorValue getColor() {

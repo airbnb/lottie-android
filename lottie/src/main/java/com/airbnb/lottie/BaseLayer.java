@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -325,7 +326,16 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     }
   }
 
+  @Override public String getName() {
+    return layerModel.getName();
+  }
+
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    // Do nothing
+  }
+
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
     // Do nothing
   }
 }

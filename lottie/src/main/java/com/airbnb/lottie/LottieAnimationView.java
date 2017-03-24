@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -133,6 +134,41 @@ public class LottieAnimationView extends AppCompatImageView {
       recycleBitmaps();
     }
     super.setImageDrawable(drawable);
+  }
+
+  /**
+   * Add a color filter to specific content on a specific layer.
+   * @param layerName name of the layer where the supplied content name lives
+   * @param contentName name of the specific content that the color filter is to be applied
+   * @param colorFilter the color filter, null to clear the color filter
+   */
+  public void addColorFilterToContent(String layerName, String contentName,
+      @Nullable ColorFilter colorFilter) {
+    lottieDrawable.addColorFilterToContent(layerName, contentName, colorFilter);
+  }
+
+  /**
+   * Add a color filter to a whole layer
+   * @param layerName name of the layer that the color filter is to be applied
+   * @param colorFilter the color filter, null to clear the color filter
+   */
+  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
+    lottieDrawable.addColorFilterToLayer(layerName, colorFilter);
+  }
+
+  /**
+   * Add a color filter to all layers
+   * @param colorFilter the color filter, null to clear all color filters
+   */
+  public void addColorFilter(@Nullable ColorFilter colorFilter) {
+    lottieDrawable.addColorFilter(colorFilter);
+  }
+
+  /**
+   * Clear all color filters on all layers and all content in the layers
+   */
+  public void clearColorFilters() {
+    lottieDrawable.clearColorFilters();
   }
 
   @Override public void invalidateDrawable(@NonNull Drawable dr) {

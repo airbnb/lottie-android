@@ -1,9 +1,11 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.support.annotation.FloatRange;
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 import java.util.ArrayList;
@@ -105,5 +107,18 @@ class CompositionLayer extends BaseLayer {
       }
     }
     return false;
+  }
+
+  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
+      @Nullable ColorFilter colorFilter) {
+    for (int i = 0; i < layers.size(); ++i) {
+      final BaseLayer layer = layers.get(i);
+      final String name = layer.getLayerModel().getName();
+      if (layerName == null) {
+        layer.addColorFilter(null, null, colorFilter);
+      } else if (name.equals(layerName)) {
+        layer.addColorFilter(layerName, contentName, colorFilter);
+      }
+    }
   }
 }

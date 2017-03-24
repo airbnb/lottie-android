@@ -72,6 +72,10 @@ class ShapeGroup {
     }
   }
 
+  public String getName() {
+    return name;
+  }
+
   List<Object> getItems() {
     return items;
   }
