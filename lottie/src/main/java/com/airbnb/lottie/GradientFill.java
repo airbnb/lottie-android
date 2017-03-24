@@ -94,7 +94,7 @@ class GradientFill {
       int fillTypeInt = json.optInt("r", 1);
       Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
 
-      int gradientTypeInt = json.optInt("r", 1);
+      int gradientTypeInt = json.optInt("t", 1);
       GradientType gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
 
       JSONObject jsonStartPoint = json.optJSONObject("s");
