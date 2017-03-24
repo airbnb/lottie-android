@@ -1,4 +1,4 @@
-# 2.0.0-beta2
+# 2.0.0-beta3
 #### Features and improvements
 * Ground up rewrite of the rendering engine.
 * Vastly improved the performance of masks and mattes.

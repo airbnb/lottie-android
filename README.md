@@ -52,7 +52,7 @@ dependencies {
 ### Beta
 ```groovy
 dependencies {  
-  compile 'com.airbnb.android:lottie:2.0.0-beta2'
+  compile 'com.airbnb.android:lottie:2.0.0-beta3'
 }
 ```
 
