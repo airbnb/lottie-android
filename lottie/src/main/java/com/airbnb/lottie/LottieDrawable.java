@@ -15,14 +15,10 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -304,7 +300,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @SuppressWarnings("WeakerAccess") public void playAnimation() {
-    playAnimation(false);
+    playAnimation((progress > 0.0 && progress < 1.0));
   }
 
   @SuppressWarnings("WeakerAccess") public void resumeAnimation() {
@@ -328,7 +324,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @SuppressWarnings("WeakerAccess") public void reverseAnimation() {
-    reverseAnimation(false);
+    reverseAnimation((progress > 0.0 && progress < 1.0));
   }
 
   private void reverseAnimation(boolean setStartTime) {
