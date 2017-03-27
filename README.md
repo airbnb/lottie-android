@@ -42,14 +42,6 @@ You can build the sample app yourself or download it from the [Play Store](https
 
 Gradle is the only supported build configuration, so just add the dependency to your project `build.gradle` file:
 
-### Release
-```groovy
-dependencies {  
-  compile 'com.airbnb.android:lottie:1.5.3'
-}
-```
-
-### Beta
 ```groovy
 dependencies {  
   compile 'com.airbnb.android:lottie:2.0.0-beta3'
