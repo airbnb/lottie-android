@@ -96,6 +96,9 @@ final class Utils {
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
+    if (length == 0f) {
+      return;
+    }
     float start = length * startValue;
     float end = length * endValue;
     float newStart = Math.min(start, end);
@@ -106,11 +109,11 @@ final class Utils {
     newEnd += offset;
 
     // If the trim path has rotated around the path, we need to shift it back.
-    if (newStart > length && newEnd > length) {
+    if (newStart >= length && newEnd >= length) {
       newStart %= length;
       newEnd %= length;
     }
-    if (newStart > newEnd) {
+    if (newStart >= newEnd) {
       newStart -= length;
     }
 
