@@ -45,6 +45,7 @@ import java.util.Map;
 public class LottieAnimationView extends AppCompatImageView {
   private static final String TAG = LottieAnimationView.class.getSimpleName();
 
+
   /**
    * Caching strategy for compositions that will be reused frequently.
    * Weak or Strong indicates the GC reference strength of the composition in the cache.
@@ -74,6 +75,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private String animationName;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
+  private boolean shoudPlayAfterLayoutParamsUpdate=false;
   @Nullable private Cancellable compositionLoader;
   /**
    * Can be null because it is created async
@@ -104,6 +106,7 @@ public class LottieAnimationView extends AppCompatImageView {
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
       lottieDrawable.playAnimation();
       autoPlay = true;
+      shoudPlayAfterLayoutParamsUpdate=true;
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
@@ -556,6 +559,7 @@ public class LottieAnimationView extends AppCompatImageView {
     float progress = getProgress();
     lottieDrawable.cancelAnimation();
     setProgress(progress);
+    shoudPlayAfterLayoutParamsUpdate=false;
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
@@ -577,6 +581,9 @@ public class LottieAnimationView extends AppCompatImageView {
 
     if (animationName != null) {
       setAnimation(animationName);
+    }
+    if (shoudPlayAfterLayoutParamsUpdate) {
+      playAnimation();
     }
   }
 
