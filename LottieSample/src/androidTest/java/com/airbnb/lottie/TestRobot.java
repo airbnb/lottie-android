@@ -50,7 +50,7 @@ class TestRobot {
       @Nullable String imageAssetsFolder) {
     LottieComposition composition =
         LottieComposition.Factory.fromFileSyncScaled(activity, fileName, SCALE);
-    AnimationLinearLayout view = new AnimationLinearLayout(activity);
+    ScaledAnimationLinearLayout view = new ScaledAnimationLinearLayout(activity);
 
     view.setImageAssetsFolder(imageAssetsFolder);
     view.setComposition(composition);
