@@ -10,6 +10,8 @@ import java.util.concurrent.Semaphore;
 
 class TestRobot {
 
+
+
   static void testLinearAnimation(MainActivity activity, String fileName) {
     testLinearAnimation(activity, fileName, null);
   }
@@ -31,11 +33,43 @@ class TestRobot {
         .substring(0, fileName.lastIndexOf('.'))
         .replace(" ", "_")
         .replace("/", "_");
+
     Screenshot.snap(view)
         .setGroup(fileName)
         .setName(nameWithoutExtension)
         .record();
   }
+
+  static void testLinearAnimationWithScale(MainActivity activity, String fileName) {
+    testLinearAnimationWithScale(activity, fileName, null);
+  }
+
+  static final float SCALE = 0.5f;
+
+  static void testLinearAnimationWithScale(MainActivity activity, String fileName,
+      @Nullable String imageAssetsFolder) {
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSyncScaled(activity, fileName, SCALE);
+    AnimationLinearLayout view = new AnimationLinearLayout(activity);
+
+    view.setImageAssetsFolder(imageAssetsFolder);
+    view.setComposition(composition);
+
+    ViewHelpers
+        .setupView(view)
+        .layout();
+
+    String nameWithoutExtension = fileName
+        .substring(0, fileName.lastIndexOf('.'))
+        .replace(" ", "_")
+        .replace("/", "_")
+        .concat("_scaled");
+    Screenshot.snap(view)
+        .setGroup(fileName)
+        .setName(nameWithoutExtension)
+        .record();
+  }
+
 
   static void testChangingCompositions(MainActivity activity, String firstFile, String secondFile) {
     final AnimationLinearLayout view = new AnimationLinearLayout(activity);
@@ -99,4 +133,6 @@ class TestRobot {
       // Do nothing.
     }
   }
+
+
 }
