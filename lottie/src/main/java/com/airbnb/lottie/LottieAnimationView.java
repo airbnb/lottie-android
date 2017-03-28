@@ -17,7 +17,10 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import org.json.JSONObject;
 
@@ -71,7 +74,6 @@ public class LottieAnimationView extends AppCompatImageView {
   private String animationName;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
-
   @Nullable private Cancellable compositionLoader;
   /**
    * Can be null because it is created async
@@ -116,8 +118,8 @@ public class LottieAnimationView extends AppCompatImageView {
     setLayerType(LAYER_TYPE_SOFTWARE, null);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-    float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
-        Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+      float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
+          Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
       if (systemAnimationScale == 0f) {
         lottieDrawable.systemAnimationsAreDisabled();
       }
@@ -138,7 +140,7 @@ public class LottieAnimationView extends AppCompatImageView {
 
   /**
    * Add a color filter to specific content on a specific layer.
-   * @param layerName name of the layer where the supplied content name lives
+   * @param layerName   name of the layer where the supplied content name lives
    * @param contentName name of the specific content that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
@@ -149,7 +151,7 @@ public class LottieAnimationView extends AppCompatImageView {
 
   /**
    * Add a color filter to a whole layer
-   * @param layerName name of the layer that the color filter is to be applied
+   * @param layerName   name of the layer that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
   public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
@@ -231,7 +233,7 @@ public class LottieAnimationView extends AppCompatImageView {
     // AppCompatImageView constructor will set the image when set from xml
     // before LottieDrawable has been initialized
     if (lottieDrawable != null) {
-        lottieDrawable.recycleBitmaps();
+      lottieDrawable.recycleBitmaps();
     }
   }
 
@@ -251,13 +253,13 @@ public class LottieAnimationView extends AppCompatImageView {
    * Enable hardware acceleration for this view.
    * READ THIS BEFORE ENABLING HARDWARE ACCELERATION:
    * 1) Test your animation on the minimum API level you support. Some drawing features such as
-   *    dashes and stroke caps have min api levels
-   *    (https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported)
+   * dashes and stroke caps have min api levels
+   * (https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported)
    * 2) Enabling hardware acceleration is not always more performant. Check it with your specific
-   *    animation only if you are having performance issues with software rendering.
+   * animation only if you are having performance issues with software rendering.
    * 3) Software rendering is safer and will be consistent across devices. Manufacturers can
-   *    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
-   *    anything about that.
+   * potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
+   * anything about that.
    */
   @SuppressWarnings({"WeakerAccess", "unused"}) public void useExperimentalHardwareAcceleration() {
     setLayerType(LAYER_TYPE_HARDWARE, null);
@@ -281,7 +283,8 @@ public class LottieAnimationView extends AppCompatImageView {
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  @SuppressWarnings("WeakerAccess") public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
+  @SuppressWarnings("WeakerAccess") public void setAnimation(final String animationName,
+      final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
     if (weakRefCache.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
@@ -297,19 +300,73 @@ public class LottieAnimationView extends AppCompatImageView {
     this.animationName = animationName;
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
-        new OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            if (cacheStrategy == CacheStrategy.Strong) {
-              strongRefCache.put(animationName, composition);
-            } else if (cacheStrategy == CacheStrategy.Weak) {
-              weakRefCache.put(animationName, new WeakReference<>(composition));
-            }
 
-            setComposition(composition);
-          }
-        });
+    if (getLayoutParams() != null) {
+
+      int height = getLayoutParams().height;
+      int width = getLayoutParams().width;
+
+      if ((height >= 0 && width >= 0)) {
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) getContext()
+            .getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+
+        float scale;
+        if (height < width) {
+          scale = (float) height / (float) screenHeight;
+        } else {
+          scale = (float) width / (float) screenWidth;
+        }
+        compositionLoader = LottieComposition.Factory.fromAssetFileNameScaled(getContext(),
+            animationName, scale,
+            new OnCompositionLoadedListener() {
+              @Override
+              public void onCompositionLoaded(LottieComposition composition) {
+                if (cacheStrategy == CacheStrategy.Strong) {
+                  strongRefCache.put(animationName, composition);
+                } else if (cacheStrategy == CacheStrategy.Weak) {
+                  weakRefCache.put(animationName, new WeakReference<>(composition));
+                }
+
+                setComposition(composition);
+              }
+            });
+
+      } else {
+        compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
+            new OnCompositionLoadedListener() {
+              @Override
+              public void onCompositionLoaded(LottieComposition composition) {
+                if (cacheStrategy == CacheStrategy.Strong) {
+                  strongRefCache.put(animationName, composition);
+                } else if (cacheStrategy == CacheStrategy.Weak) {
+                  weakRefCache.put(animationName, new WeakReference<>(composition));
+                }
+
+                setComposition(composition);
+              }
+            });
+      }
+
+    } else {
+      compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
+          new OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+              if (cacheStrategy == CacheStrategy.Strong) {
+                strongRefCache.put(animationName, composition);
+              } else if (cacheStrategy == CacheStrategy.Weak) {
+                weakRefCache.put(animationName, new WeakReference<>(composition));
+              }
+
+              setComposition(composition);
+            }
+          });
+    }
   }
 
   /**
@@ -321,7 +378,35 @@ public class LottieAnimationView extends AppCompatImageView {
    */
   public void setAnimation(final JSONObject json) {
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
+    if (getLayoutParams() != null) {
+      int height = getLayoutParams().height;
+      int width = getLayoutParams().width;
+
+      if ((height >= 0 && width >= 0)) {
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) getContext()
+            .getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+
+        float scale;
+        if (height < width) {
+          scale = (float) height / (float) screenHeight;
+        } else {
+          scale = (float) width / (float) screenWidth;
+        }
+        compositionLoader =
+            LottieComposition.Factory.fromJsonScaled(getResources(), json, scale, loadedListener);
+
+      } else {
+        compositionLoader =
+            LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
+      }
+    } else {
+      compositionLoader = LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
+    }
   }
 
   private void cancelLoaderTask() {
@@ -483,6 +568,16 @@ public class LottieAnimationView extends AppCompatImageView {
 
   @SuppressWarnings("unused") public long getDuration() {
     return composition != null ? composition.getDuration() : 0;
+  }
+
+  @Override public void setLayoutParams(ViewGroup.LayoutParams params) {
+    super.setLayoutParams(params);
+    strongRefCache.clear();
+    weakRefCache.clear();
+
+    if (animationName != null) {
+      setAnimation(animationName);
+    }
   }
 
   private static class SavedState extends BaseSavedState {

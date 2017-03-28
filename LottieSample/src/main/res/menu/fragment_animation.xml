@@ -14,4 +14,11 @@
         android:checkable="true"
         android:checked="false"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/fixed_width"
+        android:title="@string/fixed_size"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
 </menu>

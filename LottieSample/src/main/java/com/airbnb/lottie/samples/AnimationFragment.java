@@ -16,6 +16,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,9 +53,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.airbnb.lottie.samples.ViewUtils.dpToPx;
+
 public class AnimationFragment extends Fragment {
   private static final String TAG = AnimationFragment.class.getSimpleName();
-
   private static final int RC_ASSET = 1337;
   private static final int RC_FILE = 1338;
   private static final int RC_URL = 1339;
@@ -162,6 +164,19 @@ public class AnimationFragment extends Fragment {
       case R.id.merge_paths:
         animationView.enableMergePathsForKitKatAndAbove(item.isChecked());
         return true;
+      case R.id.fixed_width:
+        ViewGroup.LayoutParams lp = animationView.getLayoutParams();
+
+        if (item.isChecked()) {
+          lp.height = dpToPx(getContext(), 100);
+          lp.width = dpToPx(getContext(), 100);
+          animationView.setLayoutParams(lp);
+        } else {
+          lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+          lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+          animationView.setLayoutParams(lp);
+        }
+        return true;
     }
     return super.onOptionsItemSelected(item);
   }
@@ -175,13 +190,41 @@ public class AnimationFragment extends Fragment {
       case RC_ASSET:
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
         animationView.setImageAssetsFolder(assetFolders.get(assetName));
-        LottieComposition.Factory.fromAssetFileName(getContext(), assetName,
-            new OnCompositionLoadedListener() {
-              @Override
-              public void onCompositionLoaded(LottieComposition composition) {
-                setComposition(composition, assetName);
-              }
-            });
+
+        int height=animationView.getLayoutParams().height;
+        int width=animationView.getLayoutParams().width;
+
+        if ((height>=0 && width>=0)) {
+
+          DisplayMetrics displayMetrics = new DisplayMetrics();
+          getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+          int screenHeight = displayMetrics.heightPixels;
+          int screenWidth = displayMetrics.widthPixels;
+
+
+          float scale;
+          if(height<width){
+            scale=(float)height/(float)screenHeight;
+          }else{
+            scale=(float)width/(float)screenWidth;
+          }
+          LottieComposition.Factory.fromAssetFileNameScaled(getContext(), assetName,scale,
+              new OnCompositionLoadedListener() {
+                @Override
+                public void onCompositionLoaded(LottieComposition composition) {
+                  setComposition(composition, assetName);
+                }
+              });
+
+        }else{
+          LottieComposition.Factory.fromAssetFileName(getContext(), assetName,
+              new OnCompositionLoadedListener() {
+                @Override
+                public void onCompositionLoaded(LottieComposition composition) {
+                  setComposition(composition, assetName);
+                }
+              });
+        }
         break;
       case RC_FILE:
         onFileLoaded(data.getData());
@@ -313,13 +356,39 @@ public class AnimationFragment extends Fragment {
       return;
     }
 
-    LottieComposition.Factory
-        .fromInputStream(getContext(), fis, new OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            setComposition(composition, uri.getPath());
-          }
-        });
+    int height=animationView.getLayoutParams().height;
+    int width=animationView.getLayoutParams().width;
+
+    if ((height>=0 && width>=0)) {
+
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+      int screenHeight = displayMetrics.heightPixels;
+      int screenWidth = displayMetrics.widthPixels;
+
+      float scale;
+      if(height<width){
+        scale=(float)height/(float)screenHeight;
+      }else{
+        scale=(float)width/(float)screenWidth;
+      }
+      LottieComposition.Factory
+          .fromInputStreamScaled(getContext(), fis,scale, new OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+              setComposition(composition, uri.getPath());
+            }
+          });
+
+    }else{
+      LottieComposition.Factory
+          .fromInputStream(getContext(), fis, new OnCompositionLoadedListener() {
+            @Override
+            public void onCompositionLoaded(LottieComposition composition) {
+              setComposition(composition, uri.getPath());
+            }
+          });
+    }
   }
 
   private void loadUrl(String url) {
@@ -349,13 +418,43 @@ public class AnimationFragment extends Fragment {
 
         try {
           JSONObject json = new JSONObject(response.body().string());
-          LottieComposition.Factory
-              .fromJson(getResources(), json, new OnCompositionLoadedListener() {
-                @Override
-                public void onCompositionLoaded(LottieComposition composition) {
-                  setComposition(composition, "Network Animation");
-                }
-              });
+
+          int height=animationView.getLayoutParams().height;
+          int width=animationView.getLayoutParams().width;
+
+          if ((height>=0 && width>=0)) {
+
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int screenHeight = displayMetrics.heightPixels;
+            int screenWidth = displayMetrics.widthPixels;
+
+            float scale;
+            if(height<width){
+              scale=(float)height/(float)screenHeight;
+            }else{
+              scale=(float)width/(float)screenWidth;
+            }
+
+            LottieComposition.Factory
+                .fromJsonScaled(getResources(), json,scale, new OnCompositionLoadedListener() {
+                  @Override
+                  public void onCompositionLoaded(LottieComposition composition) {
+                    setComposition(composition, "Network Animation");
+                  }
+                });
+
+          }else{
+
+            LottieComposition.Factory
+                .fromJson(getResources(), json, new OnCompositionLoadedListener() {
+                  @Override
+                  public void onCompositionLoaded(LottieComposition composition) {
+                    setComposition(composition, "Network Animation");
+                  }
+                });
+          }
+
         } catch (JSONException e) {
           onLoadError();
         }
