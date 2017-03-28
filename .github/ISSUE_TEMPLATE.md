@@ -12,4 +12,4 @@ Effects file. Github doesn't allow you to attach a json or aep file directly so 
 If this is a feature request:
 * Explain what feature you would like and why you need it. There are usually After Effects 
 workarounds that we can provide in the meantime that achieve the same effect.
-* What version of Lottie did you test this on?
+* What version of Lottie did you test this on? Check the readme for the latest version and makes sure it hasn't been resolved.
