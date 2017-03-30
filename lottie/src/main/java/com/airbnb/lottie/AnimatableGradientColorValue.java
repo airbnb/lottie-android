@@ -43,7 +43,7 @@ class AnimatableGradientColorValue extends BaseAnimatableValue<GradientColor, Gr
 
     @Override public GradientColor valueFromObject(Object object, float scale) {
       JSONArray array = (JSONArray) object;
-      int size = array.length() / 4;
+      int size = 1 + array.length() / 4;
       float[] positions = new float[size];
       int[] colors = new int[size];
       GradientColor gradientColor = new GradientColor(positions, colors);
