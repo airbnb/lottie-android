@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,7 +49,13 @@ class AnimatableGradientColorValue extends BaseAnimatableValue<GradientColor, Gr
       GradientColor gradientColor = new GradientColor(positions, colors);
       int r = 0;
       int g = 0;
-      for (int i = 0; i < array.length(); i++) {
+      if (array.length() != size * 4) {
+        Log.w(L.TAG, "Unexpected gradient length: " + array.length() +
+            ". Expected " + (size * 4) + ". This may affect the appearance of the gradient. " +
+            "Make sure to save your After Effects file before exporting an animation with " +
+            "gradients.");
+      }
+      for (int i = 0; i < size * 4; i++) {
         int colorIndex = i / 4;
         double value = array.optDouble(i);
         switch (i % 4) {
