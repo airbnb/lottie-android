@@ -37,6 +37,8 @@ class PathKeyframe extends Keyframe<PointF> {
       PathKeyframe pathKeyframe = new PathKeyframe(composition, keyframe.startValue,
           keyframe.endValue, keyframe.interpolator, keyframe.startFrame, keyframe.endFrame);
 
+      // This must use equals(float, float) because PathF didn't have an equals(PathF) method
+      // until KitKat...
       boolean equals = keyframe.endValue != null && keyframe.startValue != null &&
           keyframe.startValue.equals(keyframe.endValue.x, keyframe.endValue.y);
       //noinspection ConstantConditions
