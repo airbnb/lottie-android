@@ -117,7 +117,7 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
       // Android draws a hairline stroke for 0, After Effects doesn't.
       return;
     }
-    applyDashPatternIfNeeded();
+    applyDashPatternIfNeeded(parentMatrix);
 
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
@@ -221,12 +221,13 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
     );
   }
 
-  private void applyDashPatternIfNeeded() {
+  private void applyDashPatternIfNeeded(Matrix parentMatrix) {
     if (dashPatternAnimations.isEmpty()) {
       return;
     }
 
     float scale = lottieDrawable.getScale();
+    scale *= Utils.getScale(parentMatrix);
     for (int i = 0; i < dashPatternAnimations.size(); i++) {
       dashPatternValues[i] = dashPatternAnimations.get(i).getValue();
       // If the value of the dash pattern or gap is too small, the number of individual sections
