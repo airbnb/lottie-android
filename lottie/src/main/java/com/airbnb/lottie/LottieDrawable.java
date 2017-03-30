@@ -501,8 +501,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
     @Override public int hashCode() {
       int hashCode = 17;
-      hashCode = hashCode * 31 * layerName.hashCode();
-      hashCode = hashCode * 31 * contentName.hashCode();
+      if (layerName != null) {
+        hashCode = hashCode * 31 * layerName.hashCode();
+      }
+
+      if (contentName != null) {
+        hashCode = hashCode * 31 * contentName.hashCode();
+      }
       return hashCode;
     }
 
