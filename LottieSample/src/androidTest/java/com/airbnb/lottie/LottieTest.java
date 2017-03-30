@@ -52,6 +52,7 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Gears.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Permission.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Postcard.json");
+    TestRobot.testLinearAnimationWithScale(activity, "lottiefiles.com - Postcard.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Preloader.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Star Wars Rey.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Tadah Image.json");

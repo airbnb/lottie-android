@@ -3,4 +3,5 @@
     <string name="invalid_assets">Unable to load assets</string>
     <string name="hardware_acceleration">Use hardware acceleration</string>
     <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
+    <string name="fixed_size">Fixed size (100dpx100dp)</string>
 </resources>

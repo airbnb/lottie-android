@@ -116,6 +116,22 @@ public class LottieComposition {
       return fromInputStream(context, stream, loadedListener);
     }
 
+
+    /**
+     * Loads a composition from a file stored in /assets using the defined scale
+     */
+    public static Cancellable fromAssetFileNameScaled(Context context, String fileName, float scale,
+        OnCompositionLoadedListener loadedListener) {
+      InputStream stream;
+      try {
+        stream = context.getAssets().open(fileName);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file " + fileName, e);
+      }
+      return fromInputStreamScaled(context, stream, scale, loadedListener);
+    }
+
+
     /**
      * Loads a composition from an arbitrary input stream.
      * <p>
@@ -129,6 +145,21 @@ public class LottieComposition {
       return loader;
     }
 
+    /**
+     * Loads a composition from an arbitrary input stream using the defined scale
+     * <p>
+     * ex: fromInputStream(context, new FileInputStream(filePath), (composition) -> {});
+     */
+    public static Cancellable fromInputStreamScaled(Context context, InputStream stream, float
+        scale,
+        OnCompositionLoadedListener loadedListener) {
+      ScaledFileCompositionLoader loader =
+          new ScaledFileCompositionLoader(scale, context.getResources(), loadedListener);
+      loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, stream);
+      return loader;
+    }
+
+
     static LottieComposition fromFileSync(Context context, String fileName) {
       InputStream stream;
       try {
@@ -137,6 +168,16 @@ public class LottieComposition {
         throw new IllegalStateException("Unable to find file " + fileName, e);
       }
       return fromInputStream(context.getResources(), stream);
+    }
+
+    static LottieComposition fromFileSyncScaled(Context context, String fileName, float scale) {
+      InputStream stream;
+      try {
+        stream = context.getAssets().open(fileName);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file " + fileName, e);
+      }
+      return fromInputStreamScaled(context.getResources(), stream, scale);
     }
 
     /**
@@ -149,6 +190,19 @@ public class LottieComposition {
       loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, json);
       return loader;
     }
+
+    /**
+     * Loads a composition from a raw json object, using the defined scale. This is useful for
+     * animations loaded from the network.
+     */
+    public static Cancellable fromJsonScaled(Resources res, JSONObject json, float scale,
+        OnCompositionLoadedListener loadedListener) {
+      ScaledJsonCompositionLoader loader = new ScaledJsonCompositionLoader(scale, res,
+          loadedListener);
+      loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, json);
+      return loader;
+    }
+
 
     @SuppressWarnings("WeakerAccess")
     static LottieComposition fromInputStream(Resources res, InputStream stream) {
@@ -171,9 +225,55 @@ public class LottieComposition {
     }
 
     @SuppressWarnings("WeakerAccess")
+    static LottieComposition fromInputStreamScaled(Resources res, InputStream stream, float scale) {
+      try {
+        // TODO: It's not correct to use available() to allocate the byte array.
+        int size = stream.available();
+        byte[] buffer = new byte[size];
+        //noinspection ResultOfMethodCallIgnored
+        stream.read(buffer);
+        String json = new String(buffer, "UTF-8");
+        JSONObject jsonObject = new JSONObject(json);
+        return fromJsonSyncScaled(res, scale, jsonObject);
+      } catch (IOException e) {
+        throw new IllegalStateException("Unable to find file.", e);
+      } catch (JSONException e) {
+        throw new IllegalStateException("Unable to load JSON.", e);
+      } finally {
+        closeQuietly(stream);
+      }
+    }
+
+
+    @SuppressWarnings("WeakerAccess")
     static LottieComposition fromJsonSync(Resources res, JSONObject json) {
       Rect bounds = null;
       float scale = res.getDisplayMetrics().density;
+      int width = json.optInt("w", -1);
+      int height = json.optInt("h", -1);
+
+      if (width != -1 && height != -1) {
+        int scaledWidth = (int) (width * scale);
+        int scaledHeight = (int) (height * scale);
+        bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+      }
+
+      long startFrame = json.optLong("ip", 0);
+      long endFrame = json.optLong("op", 0);
+      int frameRate = json.optInt("fr", 0);
+      LottieComposition composition =
+          new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
+      JSONArray assetsJson = json.optJSONArray("assets");
+      parseImages(assetsJson, composition);
+      parsePrecomps(assetsJson, composition);
+      parseLayers(json, composition);
+      return composition;
+    }
+
+
+    @SuppressWarnings("WeakerAccess")
+    static LottieComposition fromJsonSyncScaled(Resources res, float scale, JSONObject json) {
+      Rect bounds = null;
       int width = json.optInt("w", -1);
       int height = json.optInt("h", -1);
 
