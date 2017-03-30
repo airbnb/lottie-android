@@ -110,9 +110,17 @@ final class Utils {
 
     // If the trim path has rotated around the path, we need to shift it back.
     if (newStart >= length && newEnd >= length) {
-      newStart %= length;
-      newEnd %= length;
+      newStart = MiscUtils.floorMod(newStart, length);
+      newEnd = MiscUtils.floorMod(newEnd, length);
     }
+
+    if (newStart < 0) {
+      newStart = MiscUtils.floorMod(newStart, length);
+    }
+    if (newEnd < 0) {
+      newEnd = MiscUtils.floorMod(newEnd, length);
+    }
+
     if (newStart >= newEnd) {
       newStart -= length;
     }
