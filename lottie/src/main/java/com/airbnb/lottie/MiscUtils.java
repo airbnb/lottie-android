@@ -54,4 +54,8 @@ class MiscUtils {
     }
     return r;
   }
+
+  static float clamp(float number, float min, float max) {
+    return Math.max(min, Math.min(max, number));
+  }
 }

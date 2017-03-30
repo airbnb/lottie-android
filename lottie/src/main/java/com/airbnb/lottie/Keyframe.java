@@ -15,6 +15,12 @@ import java.util.Collections;
 import java.util.List;
 
 class Keyframe<T> {
+  /**
+   * Some animations get exported with insane cp values in the tens of thousands.
+   * PathInterpolator fails to create the interpolator in those cases and hangs.
+   * Clamping the cp helps prevent that.
+   */
+  private static final float MAX_CP_VALUE = 100;
   private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
 
   /**
@@ -121,6 +127,10 @@ class Keyframe<T> {
           // TODO: create a HoldInterpolator so progress changes don't invalidate.
           interpolator = LINEAR_INTERPOLATOR;
         } else if (cp1 != null) {
+          cp1.x = MiscUtils.clamp(cp1.x, -MAX_CP_VALUE, MAX_CP_VALUE);
+          cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
+          cp2.x = MiscUtils.clamp(cp2.x, -MAX_CP_VALUE, MAX_CP_VALUE);
+          cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           interpolator = PathInterpolatorCompat.create(
               cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
         } else {
