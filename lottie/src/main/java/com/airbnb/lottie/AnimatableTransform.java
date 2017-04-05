@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -45,7 +46,11 @@ class AnimatableTransform implements ModifierContent {
       if (anchorJson != null) {
         anchorPoint = new AnimatablePathValue(anchorJson.opt("k"), composition);
       } else {
-        throwMissingTransform("anchor");
+        // Cameras don't have an anchor point property. Although we don't support them, at least
+        // we won't crash.
+        Log.w(L.TAG, "Layer has no transform property. You may be using an unsupported " +
+            "layer type such as a camera.");
+        anchorPoint = new AnimatablePathValue();
       }
 
       JSONObject positionJson = json.optJSONObject("p");
