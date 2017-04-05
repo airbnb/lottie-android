@@ -142,8 +142,8 @@ public class LottieAnimationView extends AppCompatImageView {
    * @param contentName name of the specific content that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  public void addColorFilterToContent(String layerName, String contentName,
-      @Nullable ColorFilter colorFilter) {
+  @SuppressWarnings("unused") public void addColorFilterToContent(
+      String layerName, String contentName, @Nullable ColorFilter colorFilter) {
     lottieDrawable.addColorFilterToContent(layerName, contentName, colorFilter);
   }
 
@@ -152,7 +152,8 @@ public class LottieAnimationView extends AppCompatImageView {
    * @param layerName name of the layer that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
+  @SuppressWarnings("unused") public void addColorFilterToLayer(
+      String layerName, @Nullable ColorFilter colorFilter) {
     lottieDrawable.addColorFilterToLayer(layerName, colorFilter);
   }
 
@@ -167,7 +168,7 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * Clear all color filters on all layers and all content in the layers
    */
-  public void clearColorFilters() {
+  @SuppressWarnings("unused") public void clearColorFilters() {
     lottieDrawable.clearColorFilters();
   }
 
@@ -298,17 +299,14 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
-        new OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            if (cacheStrategy == CacheStrategy.Strong) {
-              strongRefCache.put(animationName, composition);
-            } else if (cacheStrategy == CacheStrategy.Weak) {
-              weakRefCache.put(animationName, new WeakReference<>(composition));
-            }
-
-            setComposition(composition);
+        composition -> {
+          if (cacheStrategy == CacheStrategy.Strong) {
+            strongRefCache.put(animationName, composition);
+          } else if (cacheStrategy == CacheStrategy.Weak) {
+            weakRefCache.put(animationName, new WeakReference<>(composition));
           }
+
+          setComposition(composition);
         });
   }
 

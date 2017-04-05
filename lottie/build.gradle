@@ -15,13 +15,13 @@ android {
     abortOnError true
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
 }
 
 dependencies {
-  compile 'com.android.support:appcompat-v7:25.3.0'
+  compile 'com.android.support:appcompat-v7:25.3.1'
   testCompile 'junit:junit:4.12'
   testCompile "org.robolectric:robolectric:3.1.2"
 }
