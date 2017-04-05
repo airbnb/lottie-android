@@ -492,7 +492,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     @Nullable final String contentName;
     @Nullable final ColorFilter colorFilter;
 
-    ColorFilterData(String layerName, @Nullable String contentName,
+    ColorFilterData(@Nullable String layerName, @Nullable String contentName,
         @Nullable ColorFilter colorFilter) {
       this.layerName = layerName;
       this.contentName = contentName;
