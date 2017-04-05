@@ -28,6 +28,10 @@ class MiscUtils {
     return a + percentage * (b - a);
   }
 
+  static double lerp(double a, double b, @FloatRange(from = 0f, to = 1f) double percentage) {
+    return a + percentage * (b - a);
+  }
+
   static int lerp(int a, int b, @FloatRange(from = 0f, to = 1f) float percentage) {
     return (int) (a + percentage * (b - a));
   }

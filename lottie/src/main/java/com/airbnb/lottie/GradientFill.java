@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 class GradientFill {
@@ -78,7 +79,15 @@ class GradientFill {
 
       JSONObject jsonColor = json.optJSONObject("g");
       if (jsonColor != null && jsonColor.has("k")) {
+        // This is a hack because the "p" value which contains the number of color points is outside
+        // of "k" which contains the useful data.
+        int points = jsonColor.optInt("p");
         jsonColor = jsonColor.optJSONObject("k");
+        try {
+          jsonColor.put("p", points);
+        } catch (JSONException e) {
+          // Do nothing. This shouldn't fail.
+        }
       }
       AnimatableGradientColorValue color = null;
       if (jsonColor != null) {
