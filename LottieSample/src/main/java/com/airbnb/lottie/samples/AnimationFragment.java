@@ -1,10 +1,8 @@
 package com.airbnb.lottie.samples;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,7 +29,6 @@ import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -75,6 +73,8 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.animation_container) ViewGroup animationContainer;
   @BindView(R.id.animation_view) LottieAnimationView animationView;
   @BindView(R.id.seek_bar) AppCompatSeekBar seekBar;
+  @BindView(R.id.scale_seek_bar) AppCompatSeekBar scaleSeekBar;
+  @BindView(R.id.scale_text) TextView scaleTextView;
   @BindView(R.id.invert_colors) ImageButton invertButton;
   @BindView(R.id.play_button) ImageButton playButton;
   @BindView(R.id.loop) ImageButton loopButton;
@@ -89,12 +89,7 @@ public class AnimationFragment extends Fragment {
 
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_back);
-    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        getFragmentManager().popBackStack();
-      }
-    });
+    toolbar.setNavigationOnClickListener(v -> getFragmentManager().popBackStack());
     setHasOptionsMenu(true);
     postUpdatePlayButtonText();
     onLoopChanged();
@@ -117,12 +112,8 @@ public class AnimationFragment extends Fragment {
         startRecordingDroppedFrames();
       }
     });
-    animationView.addAnimatorUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        seekBar.setProgress((int) (animation.getAnimatedFraction() * 100));
-      }
-    });
+    animationView.addAnimatorUpdateListener(
+        animation -> seekBar.setProgress((int) (animation.getAnimatedFraction() * 100)));
 
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -131,11 +122,20 @@ public class AnimationFragment extends Fragment {
         }
       }
 
-      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+      @Override public void onStartTrackingTouch(SeekBar seekBar) { }
+
+      @Override public void onStopTrackingTouch(SeekBar seekBar) { }
+    });
+
+    scaleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        animationView.setScale(progress / 20f);
+        scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
       }
 
-      @Override public void onStopTrackingTouch(SeekBar seekBar) {
-      }
+      @Override public void onStartTrackingTouch(SeekBar seekBar) { }
+
+      @Override public void onStopTrackingTouch(SeekBar seekBar) { }
     });
 
     return view;
@@ -176,12 +176,7 @@ public class AnimationFragment extends Fragment {
         final String assetName = data.getStringExtra(EXTRA_ANIMATION_NAME);
         animationView.setImageAssetsFolder(assetFolders.get(assetName));
         LottieComposition.Factory.fromAssetFileName(getContext(), assetName,
-            new OnCompositionLoadedListener() {
-              @Override
-              public void onCompositionLoaded(LottieComposition composition) {
-                setComposition(composition, assetName);
-              }
-            });
+            composition -> setComposition(composition, assetName));
         break;
       case RC_FILE:
         onFileLoaded(data.getData());
@@ -197,6 +192,8 @@ public class AnimationFragment extends Fragment {
     seekBar.setProgress(0);
     animationView.setComposition(composition);
     animationNameView.setText(name);
+    scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
+    scaleSeekBar.setProgress((int) (animationView.getScale() * 20f));
   }
 
   @OnClick(R.id.play_button)
@@ -265,28 +262,13 @@ public class AnimationFragment extends Fragment {
     new AlertDialog.Builder(getContext())
         .setTitle("Enter a URL")
         .setView(urlView)
-        .setPositiveButton("Load", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            loadUrl(urlView.getText().toString());
-          }
-        })
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            dialog.dismiss();
-          }
-        })
+        .setPositiveButton("Load", (dialog, which) -> loadUrl(urlView.getText().toString()))
+        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
         .show();
   }
 
   private void postUpdatePlayButtonText() {
-    new Handler().post(new Runnable() {
-      @Override
-      public void run() {
-        updatePlayButtonText();
-      }
-    });
+    new Handler().post(this::updatePlayButtonText);
   }
 
   private void updatePlayButtonText() {
@@ -314,12 +296,8 @@ public class AnimationFragment extends Fragment {
     }
 
     LottieComposition.Factory
-        .fromInputStream(getContext(), fis, new OnCompositionLoadedListener() {
-          @Override
-          public void onCompositionLoaded(LottieComposition composition) {
-            setComposition(composition, uri.getPath());
-          }
-        });
+        .fromInputStream(getContext(), fis,
+            composition -> setComposition(composition, uri.getPath()));
   }
 
   private void loadUrl(String url) {
@@ -350,12 +328,8 @@ public class AnimationFragment extends Fragment {
         try {
           JSONObject json = new JSONObject(response.body().string());
           LottieComposition.Factory
-              .fromJson(getResources(), json, new OnCompositionLoadedListener() {
-                @Override
-                public void onCompositionLoaded(LottieComposition composition) {
-                  setComposition(composition, "Network Animation");
-                }
-              });
+              .fromJson(getResources(), json,
+                  composition -> setComposition(composition, "Network Animation"));
         } catch (JSONException e) {
           onLoadError();
         }

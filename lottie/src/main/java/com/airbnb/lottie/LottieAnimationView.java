@@ -453,12 +453,25 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setImageAssetDelegate(assetDelegate);
   }
 
-  void setScale(float scale) {
+  /**
+   * Set the scale on the current composition. The only cost of this function is re-rendering the
+   * current frame so you may call it frequent to scale something up or down.
+   *
+   * The smaller the animation is, the better the performance will be. You may find that scaling an
+   * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
+   * with a scaleType such as centerInside will yield better performance with little perceivable
+   * quality loss.
+   */
+  public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {
       setImageDrawable(null);
       setImageDrawable(lottieDrawable);
     }
+  }
+
+  public float getScale() {
+    return lottieDrawable.getScale();
   }
 
   public void cancelAnimation() {
