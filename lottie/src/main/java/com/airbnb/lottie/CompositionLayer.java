@@ -26,6 +26,9 @@ class CompositionLayer extends BaseLayer {
     for (int i = layerModels.size() - 1; i >= 0; i--) {
       Layer lm = layerModels.get(i);
       BaseLayer layer = BaseLayer.forModel(lm, lottieDrawable, composition);
+      if (layer == null) {
+        continue;
+      }
       layerMap.put(layer.getLayerModel().getId(), layer);
       if (mattedLayer != null) {
         mattedLayer.setMatteLayer(layer);

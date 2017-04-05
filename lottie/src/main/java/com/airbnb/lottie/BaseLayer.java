@@ -21,6 +21,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
+  @Nullable
   static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
@@ -40,7 +41,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       default:
         // Do nothing
         Log.w(L.TAG, "Unknown layer type " + layerModel.getLayerType());
-        return new NullLayer(drawable, layerModel);
+        return null;
     }
   }
 
