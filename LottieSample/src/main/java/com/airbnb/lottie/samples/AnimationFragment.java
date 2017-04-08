@@ -69,6 +69,7 @@ public class AnimationFragment extends Fragment {
 
   static final String EXTRA_ANIMATION_NAME = "animation_name";
   static final String EXTRA_URL = "json_url";
+  public static final float SCALE_SLIDER_FACTOR = 50f;
 
   static AnimationFragment newInstance() {
     return new AnimationFragment();
@@ -149,7 +150,7 @@ public class AnimationFragment extends Fragment {
 
     scaleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        animationView.setScale(progress / 20f);
+        animationView.setScale(progress / SCALE_SLIDER_FACTOR);
         scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
       }
 
@@ -220,7 +221,8 @@ public class AnimationFragment extends Fragment {
     animationView.setComposition(composition);
     animationNameView.setText(name);
     scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
-    scaleSeekBar.setProgress((int) (animationView.getScale() * 20f));
+    scaleSeekBar.setProgress((int) (animationView.getScale() * SCALE_SLIDER_FACTOR));
+
   }
 
   @OnClick(R.id.play_button)
