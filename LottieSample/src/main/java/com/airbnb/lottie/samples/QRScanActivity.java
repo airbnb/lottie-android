@@ -7,6 +7,7 @@ import android.graphics.PointF;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 
@@ -34,7 +35,11 @@ public class QRScanActivity extends AppCompatActivity
     qrCodeReaderView.setAutofocusInterval(2000L);
     qrCodeReaderView.setBackCamera();
     qrCodeReaderView.setOnQRCodeReadListener(this);
-    qrCodeReaderView.setOnClickListener(v -> qrCodeReaderView.forceAutoFocus());
+    qrCodeReaderView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        qrCodeReaderView.forceAutoFocus();
+      }
+    });
 
   }
 

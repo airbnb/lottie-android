@@ -22,8 +22,8 @@ android {
     ignore 'InvalidPackage'
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_1_7
+    targetCompatibility JavaVersion.VERSION_1_7
   }
 }
 
@@ -37,7 +37,6 @@ dependencies {
   compile 'com.squareup.okhttp3:okhttp:3.5.0'
   compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
-
 
   debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
 

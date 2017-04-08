@@ -299,14 +299,16 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
-        composition -> {
-          if (cacheStrategy == CacheStrategy.Strong) {
-            strongRefCache.put(animationName, composition);
-          } else if (cacheStrategy == CacheStrategy.Weak) {
-            weakRefCache.put(animationName, new WeakReference<>(composition));
-          }
+        new OnCompositionLoadedListener() {
+          @Override public void onCompositionLoaded(LottieComposition composition) {
+            if (cacheStrategy == CacheStrategy.Strong) {
+              strongRefCache.put(animationName, composition);
+            } else if (cacheStrategy == CacheStrategy.Weak) {
+              weakRefCache.put(animationName, new WeakReference<>(composition));
+            }
 
-          setComposition(composition);
+            setComposition(composition);
+          }
         });
   }
 
