@@ -3,4 +3,6 @@
     <string name="invalid_assets">Unable to load assets</string>
     <string name="hardware_acceleration">Use hardware acceleration</string>
     <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
+    <string name="permission_required">Camera permissions are required to use the QR Scanner</string>
+    <string name="scan_prompt">Scan QR Code from lottiefiles.com</string>
 </resources>

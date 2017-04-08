@@ -1,15 +1,20 @@
 package com.airbnb.lottie.samples;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -56,7 +61,12 @@ public class AnimationFragment extends Fragment {
   private static final int RC_ASSET = 1337;
   private static final int RC_FILE = 1338;
   private static final int RC_URL = 1339;
+  private static final int RC_QR = 1340;
+  private static final int RC_CAMERA = 1341;
+
+
   static final String EXTRA_ANIMATION_NAME = "animation_name";
+  static final String EXTRA_URL = "json_url";
 
   static AnimationFragment newInstance() {
     return new AnimationFragment();
@@ -184,6 +194,9 @@ public class AnimationFragment extends Fragment {
       case RC_URL:
 
         break;
+      case RC_QR:
+        loadUrl(data.getExtras().getString(EXTRA_URL));
+        break;
     }
   }
 
@@ -214,6 +227,31 @@ public class AnimationFragment extends Fragment {
   void onLoopChanged() {
     loopButton.setActivated(!loopButton.isActivated());
     animationView.loop(loopButton.isActivated());
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
+    if (requestCode==RC_CAMERA && grantResults.length > 0 && grantResults[0] == PackageManager
+        .PERMISSION_GRANTED) {
+      startActivityForResult(new Intent(getContext(), QRScanActivity.class), RC_QR);
+    } else {
+      Toast.makeText(getContext(),R.string.permission_required,Toast.LENGTH_LONG).show();
+    }
+
+  }
+
+  @OnClick(R.id.qrscan)
+  void onQRScanClicked() {
+    animationView.cancelAnimation();
+    if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) !=
+        PackageManager.PERMISSION_GRANTED) {
+
+      requestPermissions(new String[]{Manifest.permission.CAMERA}, RC_CAMERA);
+
+    } else {
+      startActivityForResult(new Intent(getContext(), QRScanActivity.class), RC_QR);
+    }
   }
 
   @OnClick(R.id.restart)

@@ -2,52 +2,56 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.facebook.testing.screenshot'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
-    defaultConfig {
-        applicationId "com.airbnb.lottie"
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 9
-        versionName "2.0.0-beta3"
-        testInstrumentationRunner "com.airbnb.lottie.TestRunner"
+  compileSdkVersion 25
+  buildToolsVersion "25.0.2"
+  defaultConfig {
+    applicationId "com.airbnb.lottie"
+    minSdkVersion 16
+    targetSdkVersion 25
+    versionCode 9
+    versionName "2.0.0-beta3"
+    testInstrumentationRunner "com.airbnb.lottie.TestRunner"
+    vectorDrawables.useSupportLibrary = true
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
-    }
-    lintOptions {
-        ignore 'InvalidPackage'
-    }
-    compileOptions {
-      sourceCompatibility JavaVersion.VERSION_1_8
-      targetCompatibility JavaVersion.VERSION_1_8
-    }
+  }
+  lintOptions {
+    ignore 'InvalidPackage'
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 dependencies {
-    compile project(':lottie')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.jakewharton:butterknife:8.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
+  compile project(':lottie')
+  compile 'com.android.support:appcompat-v7:25.3.1'
+  compile 'com.android.support:recyclerview-v7:25.3.1'
+  compile 'com.android.support:design:25.3.1'
+  compile 'com.jakewharton:butterknife:8.2.1'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:8.2.1'
+  compile 'com.squareup.okhttp3:okhttp:3.5.0'
+  compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
+  compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
 
-    debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
 
-    testCompile 'junit:junit:4.12'
+  debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'org.hamcrest', module: 'hamcrest-integration'
-    })
-    androidTestCompile('com.android.support.test:runner:0.5', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    androidTestCompile('com.android.support.test:rules:0.5', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+  testCompile 'junit:junit:4.12'
+
+  androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+    exclude group: 'org.hamcrest', module: 'hamcrest-integration'
+  })
+  androidTestCompile('com.android.support.test:runner:0.5', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+  androidTestCompile('com.android.support.test:rules:0.5', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+  compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

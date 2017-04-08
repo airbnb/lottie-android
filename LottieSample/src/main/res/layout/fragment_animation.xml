@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -52,6 +53,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:drawableLeft="@drawable/ic_qr_scan"
+                android:drawablePadding="4dp"
+                android:textColor="@android:color/black"
+                android:text="Scan QR Code"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:drawableLeft="@drawable/ic_assets"
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
@@ -73,6 +83,7 @@
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
                 android:text="Load animation from json url"/>
+
         </LinearLayout>
     </FrameLayout>
 
@@ -104,14 +115,25 @@
             android:background="?selectableItemBackgroundBorderless"
             android:src="@drawable/ic_loop"/>
 
+
         <ImageButton
+            android:id="@+id/qrscan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:background="?selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_qr_scan"/>
+
+        <ImageButton
+            android:visibility="gone"
             android:id="@+id/restart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_restart"/>
+            app:srcCompat="@drawable/ic_restart"/>
 
         <ImageButton
             android:id="@+id/play_button"
@@ -132,7 +154,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_assets"/>
+            app:srcCompat="@drawable/ic_assets"/>
 
         <ImageButton
             android:id="@+id/load_file"
@@ -141,7 +163,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_file"/>
+            app:srcCompat="@drawable/ic_file"/>
 
         <ImageButton
             android:id="@+id/load_url"
@@ -150,7 +172,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:background="?selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_network"/>
+            app:srcCompat="@drawable/ic_network"/>
 
     </LinearLayout>
 
