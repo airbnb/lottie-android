@@ -89,10 +89,6 @@ final class Utils {
 
   static void applyTrimPathIfNeeded(
       Path path, float startValue, float endValue, float offsetValue) {
-    if (startValue == endValue) {
-      path.reset();
-    }
-
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
@@ -119,6 +115,11 @@ final class Utils {
     }
     if (newEnd < 0) {
       newEnd = MiscUtils.floorMod(newEnd, length);
+    }
+
+    if (newStart == newEnd) {
+      path.reset();
+      return;
     }
 
     if (newStart >= newEnd) {
