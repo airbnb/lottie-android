@@ -101,7 +101,7 @@ class RectangleContent implements PathContent, BaseKeyframeAnimation.AnimationLi
       path.arcTo(rect, 90, 90, false);
     }
 
-    path.lineTo(position.x - halfWidth, position.y - halfHeight + 2 * radius);
+    path.lineTo(position.x - halfWidth, position.y - halfHeight + radius);
 
     if (radius > 0) {
       rect.set(position.x - halfWidth,
@@ -111,7 +111,7 @@ class RectangleContent implements PathContent, BaseKeyframeAnimation.AnimationLi
       path.arcTo(rect, 180, 90, false);
     }
 
-    path.lineTo(position.x + halfWidth - 2 * radius, position.y - halfHeight);
+    path.lineTo(position.x + halfWidth - radius, position.y - halfHeight);
 
     if (radius > 0) {
       rect.set(position.x + halfWidth - 2 * radius,
