@@ -1,3 +1,16 @@
+# 2.0.0-beta4
+### Features and improvements
+* Added support to load an animation by scanning a qr code with a url to the json. All 
+lottiefiles.com animations now have qr codes.
+* Added support for opacity stops in gradients.
+* Exposed setScale to arbitrarily scale up or down an animation. Added a slider in Lottie Sample 
+to try it.
+
+#### Bugs Fixed
+* Fixed several subtle trim path and dash pattern bugs.
+* Fixed a bug with path animations on Jelly Bean.
+* Fixed a bug that would incorrectly draw rounded rectangles.
+
 # 2.0.0-beta3
 #### Features and improvements
 * Ground up rewrite of the rendering engine.

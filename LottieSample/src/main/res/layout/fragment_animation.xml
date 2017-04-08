@@ -242,6 +242,6 @@
         android:textColor="@android:color/black"
         android:textSize="8sp"
         android:layout_marginBottom="8dp"
-        android:text="2.0.0-beta3"/>
+        android:text="2.0.0-beta4"/>
 
 </LinearLayout>
