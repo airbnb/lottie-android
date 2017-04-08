@@ -110,6 +110,11 @@ final class Utils {
       newEnd = MiscUtils.floorMod(newEnd, length);
     }
 
+    // If the start and end are length distance apart, just return the path;
+    if (Math.abs(Math.abs(newEnd - newStart) - length) < 1) {
+      return;
+    }
+
     if (newStart < 0) {
       newStart = MiscUtils.floorMod(newStart, length);
     }
@@ -117,6 +122,7 @@ final class Utils {
       newEnd = MiscUtils.floorMod(newEnd, length);
     }
 
+    // If the start and end are equals, return an empty path.
     if (newStart == newEnd) {
       path.reset();
       return;
