@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -112,6 +113,10 @@ public class LottieAnimationView extends AppCompatImageView {
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
         CacheStrategy.None.ordinal());
     defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
+      addColorFilter(new SimpleColorFilter(ta.getColor(
+          R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
+    }
     ta.recycle();
     setLayerType(LAYER_TYPE_SOFTWARE, null);
 

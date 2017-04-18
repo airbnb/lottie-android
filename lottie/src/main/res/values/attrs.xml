@@ -12,5 +12,6 @@
             <enum name="weak" value="1" />
             <enum name="strong" value="2" />
         </attr>
+        <attr name="lottie_colorFilter" format="color" />
     </declare-styleable>
 </resources>
