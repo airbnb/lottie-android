@@ -27,6 +27,9 @@ android {
   }
 }
 
+
+
+
 dependencies {
   compile project(':lottie')
   compile 'com.android.support:appcompat-v7:25.3.1'
