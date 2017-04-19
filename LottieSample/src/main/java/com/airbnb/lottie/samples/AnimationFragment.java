@@ -8,9 +8,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,6 +20,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatDrawableManager;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -66,7 +69,6 @@ public class AnimationFragment extends Fragment {
   private static final int RC_QR = 1340;
   private static final int RC_CAMERA = 1341;
 
-
   static final String EXTRA_ANIMATION_NAME = "animation_name";
   static final String EXTRA_URL = "json_url";
   public static final float SCALE_SLIDER_FACTOR = 50f;
@@ -92,6 +94,10 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.play_button) ImageButton playButton;
   @BindView(R.id.loop) ImageButton loopButton;
   @BindView(R.id.animation_name) TextView animationNameView;
+  @BindView(R.id.qr_code_textview) TextView qrCodeTextView;
+  @BindView(R.id.sample_animations_textview) TextView sampleAnimationsTextView;
+  @BindView(R.id.load_animation_textview) TextView loadAnimationTextView;
+  @BindView(R.id.load_from_json_textview) TextView loadFromJsonTextView;
 
   @Nullable
   @Override
@@ -110,6 +116,12 @@ public class AnimationFragment extends Fragment {
     setHasOptionsMenu(true);
     postUpdatePlayButtonText();
     onLoopChanged();
+
+    setDrawableLeft(qrCodeTextView, R.drawable.ic_qr_scan);
+    setDrawableLeft(sampleAnimationsTextView, R.drawable.ic_assets);
+    setDrawableLeft(loadAnimationTextView, R.drawable.ic_file);
+    setDrawableLeft(loadFromJsonTextView, R.drawable.ic_network);
+
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
       @Override public void onAnimationStart(Animator animation) {
         startRecordingDroppedFrames();
@@ -143,9 +155,11 @@ public class AnimationFragment extends Fragment {
         }
       }
 
-      @Override public void onStartTrackingTouch(SeekBar seekBar) { }
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+      }
 
-      @Override public void onStopTrackingTouch(SeekBar seekBar) { }
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
+      }
     });
 
     scaleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -154,12 +168,20 @@ public class AnimationFragment extends Fragment {
         scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
       }
 
-      @Override public void onStartTrackingTouch(SeekBar seekBar) { }
+      @Override public void onStartTrackingTouch(SeekBar seekBar) {
+      }
 
-      @Override public void onStopTrackingTouch(SeekBar seekBar) { }
+      @Override public void onStopTrackingTouch(SeekBar seekBar) {
+      }
     });
 
     return view;
+  }
+
+  private void setDrawableLeft(TextView textView, @DrawableRes int resId) {
+    //noinspection RestrictedApi
+    Drawable drawable = AppCompatDrawableManager.get().getDrawable(getActivity(), resId);
+    textView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
   }
 
   @Override public void onStop() {
@@ -248,11 +270,11 @@ public class AnimationFragment extends Fragment {
   @Override
   public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
       @NonNull int[] grantResults) {
-    if (requestCode==RC_CAMERA && grantResults.length > 0 && grantResults[0] == PackageManager
+    if (requestCode == RC_CAMERA && grantResults.length > 0 && grantResults[0] == PackageManager
         .PERMISSION_GRANTED) {
       startActivityForResult(new Intent(getContext(), QRScanActivity.class), RC_QR);
     } else {
-      Toast.makeText(getContext(),R.string.permission_required,Toast.LENGTH_LONG).show();
+      Toast.makeText(getContext(), R.string.permission_required, Toast.LENGTH_LONG).show();
     }
 
   }
@@ -260,7 +282,7 @@ public class AnimationFragment extends Fragment {
   @OnClick(R.id.qrscan)
   void onQRScanClicked() {
     animationView.cancelAnimation();
-    if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) !=
+    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) !=
         PackageManager.PERMISSION_GRANTED) {
 
       requestPermissions(new String[]{Manifest.permission.CAMERA}, RC_CAMERA);
