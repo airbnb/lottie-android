@@ -92,7 +92,7 @@ final class Utils {
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
-    if (length == 0f) {
+    if (length == 0f || Math.abs(endValue - startValue - 1) < .01) {
       return;
     }
     float start = length * startValue;
@@ -108,11 +108,6 @@ final class Utils {
     if (newStart >= length && newEnd >= length) {
       newStart = MiscUtils.floorMod(newStart, length);
       newEnd = MiscUtils.floorMod(newEnd, length);
-    }
-
-    // If the start and end are length distance apart, just return the path;
-    if (Math.abs(Math.abs(newEnd - newStart) - length) < 1) {
-      return;
     }
 
     if (newStart < 0) {

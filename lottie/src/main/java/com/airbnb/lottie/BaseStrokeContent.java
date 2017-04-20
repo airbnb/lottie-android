@@ -173,7 +173,8 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         canvas.drawPath(trimPathPath, paint);
-      } else //noinspection StatementWithEmptyBody
+      } else
+        //noinspection StatementWithEmptyBody
         if (currentLength + length < startLength || currentLength > endLength) {
           // Do nothing
         } else if (currentLength + length <= endLength && startLength < currentLength) {
