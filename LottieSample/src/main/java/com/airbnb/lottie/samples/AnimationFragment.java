@@ -199,8 +199,7 @@ public class AnimationFragment extends Fragment {
     }
     switch (item.getItemId()) {
       case R.id.hardware_acceleration:
-        int layerType = item.isChecked() ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_SOFTWARE;
-        animationView.setLayerType(layerType, null);
+        animationView.useExperimentalHardwareAcceleration(item.isChecked());
         return true;
       case R.id.merge_paths:
         animationView.enableMergePathsForKitKatAndAbove(item.isChecked());
