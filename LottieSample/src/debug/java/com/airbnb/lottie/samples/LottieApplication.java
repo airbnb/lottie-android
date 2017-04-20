@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples;
 
 import android.app.Application;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatDelegate;
 import android.view.Gravity;
 
 import com.airbnb.lottie.L;
@@ -12,9 +13,9 @@ public class LottieApplication extends Application implements ILottieApplication
   private int droppedFrames;
   private long droppedFramesStartingNs;
   private long currentFrameNs;
-
   @Override public void onCreate() {
     super.onCreate();
+    AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     if (L.DBG) {
       TinyDancer.create()
           .startingGravity(Gravity.TOP | Gravity.END)
