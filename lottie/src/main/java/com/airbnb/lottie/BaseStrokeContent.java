@@ -203,7 +203,7 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
       for (int j = 0; j < pathGroup.paths.size(); j++) {
-        path.addPath(pathGroup.paths.get(i).getPath(), parentMatrix);
+        path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
       }
     }
     path.computeBounds(rect, false);
