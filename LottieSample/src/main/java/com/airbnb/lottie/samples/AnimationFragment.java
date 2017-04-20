@@ -94,10 +94,10 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.play_button) ImageButton playButton;
   @BindView(R.id.loop) ImageButton loopButton;
   @BindView(R.id.animation_name) TextView animationNameView;
-  @BindView(R.id.qr_code_textview) TextView qrCodeTextView;
-  @BindView(R.id.sample_animations_textview) TextView sampleAnimationsTextView;
-  @BindView(R.id.load_animation_textview) TextView loadAnimationTextView;
-  @BindView(R.id.load_from_json_textview) TextView loadFromJsonTextView;
+  @BindView(R.id.qr_code) TextView qrCode;
+  @BindView(R.id.sample_animations) TextView sampleAnimations;
+  @BindView(R.id.load_animation) TextView loadAnimation;
+  @BindView(R.id.load_from_json) TextView loadFromJson;
 
   @Nullable
   @Override
@@ -117,10 +117,10 @@ public class AnimationFragment extends Fragment {
     postUpdatePlayButtonText();
     onLoopChanged();
 
-    setDrawableLeft(qrCodeTextView, R.drawable.ic_qr_scan);
-    setDrawableLeft(sampleAnimationsTextView, R.drawable.ic_assets);
-    setDrawableLeft(loadAnimationTextView, R.drawable.ic_file);
-    setDrawableLeft(loadFromJsonTextView, R.drawable.ic_network);
+    setDrawableLeft(qrCode, R.drawable.ic_qr_scan);
+    setDrawableLeft(sampleAnimations, R.drawable.ic_assets);
+    setDrawableLeft(loadAnimation, R.drawable.ic_file);
+    setDrawableLeft(loadFromJson, R.drawable.ic_network);
 
     animationView.addAnimatorListener(new Animator.AnimatorListener() {
       @Override public void onAnimationStart(Animator animation) {

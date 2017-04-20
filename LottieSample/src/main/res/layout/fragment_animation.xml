@@ -50,7 +50,7 @@
                 android:text="Choose an option below"/>
 
             <TextView
-                android:id="@+id/qr_code_textview"
+                android:id="@+id/qr_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -59,7 +59,7 @@
                 android:text="Scan QR Code"/>
 
             <TextView
-                android:id="@+id/sample_animations_textview"
+                android:id="@+id/sample_animations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -68,7 +68,7 @@
                 android:text="Sample animations"/>
 
             <TextView
-                android:id="@+id/load_animation_textview"
+                android:id="@+id/load_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -77,7 +77,7 @@
                 android:text="Load animation file"/>
 
             <TextView
-                android:id="@+id/load_from_json_textview"
+                android:id="@+id/load_from_json"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="4dp"
