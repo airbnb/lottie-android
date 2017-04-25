@@ -130,6 +130,16 @@ animationView.addColorFilterToContent("hello_layer", "hello", colorFilter);
 // Clear all color filters
 animationView.clearColorFilters();
 ```
+You can also add a color filter to the whole animation in the layout XML, which will be applied with `PorterDuff.Mode.SRC_ATOP`:
+
+```xml
+<com.airbnb.lottie.LottieAnimationView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lottie_fileName="hello-world.json"
+        app:lottie_colorFilter="@color/blue" />
+```
+
 Note: Color filters are only available for layers such as Image layer and Solid layer as well as content that includes fill, stroke, or group content.
 
 Under the hood, `LottieAnimationView` uses `LottieDrawable` to render its animations. If you need to, you can use the drawable form directly:
