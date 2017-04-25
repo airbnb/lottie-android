@@ -72,6 +72,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private String animationName;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
+  private boolean useHardwareLayer = false;
 
   @Nullable private Cancellable compositionLoader;
   /**
@@ -254,6 +255,13 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   /**
+   * @see #useExperimentalHardwareAcceleration(boolean)
+   */
+  @SuppressWarnings({"WeakerAccess", "unused"}) public void useExperimentalHardwareAcceleration() {
+    useExperimentalHardwareAcceleration(true);
+  }
+
+  /**
    * Enable hardware acceleration for this view.
    * READ THIS BEFORE ENABLING HARDWARE ACCELERATION:
    * 1) Test your animation on the minimum API level you support. Some drawing features such as
@@ -265,8 +273,10 @@ public class LottieAnimationView extends AppCompatImageView {
    *    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
    *    anything about that.
    */
-  @SuppressWarnings({"WeakerAccess", "unused"}) public void useExperimentalHardwareAcceleration() {
-    setLayerType(LAYER_TYPE_HARDWARE, null);
+  @SuppressWarnings({"WeakerAccess", "unused"})
+  public void useExperimentalHardwareAcceleration(boolean use) {
+    useHardwareLayer = use;
+    enableOrDisableHardwareLayer();
   }
 
   /**
@@ -433,18 +443,22 @@ public class LottieAnimationView extends AppCompatImageView {
 
   public void playAnimation() {
     lottieDrawable.playAnimation();
+    enableOrDisableHardwareLayer();
   }
 
   public void resumeAnimation() {
     lottieDrawable.resumeAnimation();
+    enableOrDisableHardwareLayer();
   }
 
   @SuppressWarnings("unused") public void reverseAnimation() {
     lottieDrawable.reverseAnimation();
+    enableOrDisableHardwareLayer();
   }
 
   @SuppressWarnings("unused") public void resumeReverseAnimation() {
     lottieDrawable.resumeReverseAnimation();
+    enableOrDisableHardwareLayer();
   }
 
   @SuppressWarnings("unused") public void setSpeed(float speed) {
@@ -483,12 +497,14 @@ public class LottieAnimationView extends AppCompatImageView {
 
   public void cancelAnimation() {
     lottieDrawable.cancelAnimation();
+    enableOrDisableHardwareLayer();
   }
 
   public void pauseAnimation() {
     float progress = getProgress();
     lottieDrawable.cancelAnimation();
     setProgress(progress);
+    enableOrDisableHardwareLayer();
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
@@ -501,6 +517,11 @@ public class LottieAnimationView extends AppCompatImageView {
 
   @SuppressWarnings("unused") public long getDuration() {
     return composition != null ? composition.getDuration() : 0;
+  }
+
+  private void enableOrDisableHardwareLayer() {
+    boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
+    setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_NONE, null);
   }
 
   private static class SavedState extends BaseSavedState {

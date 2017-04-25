@@ -50,36 +50,36 @@
                 android:text="Choose an option below"/>
 
             <TextView
+                android:id="@+id/qr_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_qr_scan"
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
                 android:text="Scan QR Code"/>
 
             <TextView
+                android:id="@+id/sample_animations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_assets"
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
                 android:text="Sample animations"/>
 
             <TextView
+                android:id="@+id/load_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:drawableLeft="@drawable/ic_file"
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
                 android:text="Load animation file"/>
 
             <TextView
+                android:id="@+id/load_from_json"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_network"
                 android:drawablePadding="4dp"
                 android:textColor="@android:color/black"
                 android:text="Load animation from json url"/>
