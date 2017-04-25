@@ -5,6 +5,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.airbnb.lottie.samples.MainActivity;
+import com.airbnb.lottie.samples.TestColorFilterActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,11 +19,14 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class LottieTest {
-  @Rule public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(
+  @Rule public ActivityTestRule<MainActivity> mainActivityRule = new ActivityTestRule<>(
       MainActivity.class);
 
+  @Rule public ActivityTestRule<TestColorFilterActivity> colorFilterActivityRule = new ActivityTestRule<>(
+      TestColorFilterActivity.class);
+
   @Test public void testAll() {
-    MainActivity activity = activityRule.getActivity();
+    MainActivity activity = mainActivityRule.getActivity();
     TestRobot.testLinearAnimation(activity, "9squares-AlBoardman.json");
     TestRobot.testLinearAnimation(activity, "EmptyState.json");
     TestRobot.testLinearAnimation(activity, "HamburgerArrow.json");
@@ -73,5 +77,9 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "Tests/TrimPaths.json");
     TestRobot.testChangingCompositions(activity, "TwitterHeart.json", "PinJump.json");
     TestRobot.testSettingSameComposition(activity, "PinJump.json");
+
+    TestColorFilterActivity colorFilterActivity = colorFilterActivityRule.getActivity();
+    TestRobot.testAddYellowColorFilterInXml(colorFilterActivity);
+    TestRobot.testAddNullColorFilterInXml(colorFilterActivity);
   }
 }

@@ -1,8 +1,11 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.airbnb.lottie.samples.MainActivity;
+import com.airbnb.lottie.samples.R;
+import com.airbnb.lottie.samples.TestColorFilterActivity;
 import com.facebook.testing.screenshot.Screenshot;
 import com.facebook.testing.screenshot.ViewHelpers;
 
@@ -98,5 +101,21 @@ class TestRobot {
     } catch (InterruptedException e) {
       // Do nothing.
     }
+  }
+
+  static void testAddYellowColorFilterInXml(final TestColorFilterActivity activity) {
+    View view = activity.findViewById(R.id.yellow_color_filter);
+    Screenshot.snap(view)
+        .setGroup("test_color_filter")
+        .setName("yellow_color_filter")
+        .record();
+  }
+
+  static void testAddNullColorFilterInXml(final TestColorFilterActivity activity) {
+    View view = activity.findViewById(R.id.null_color_filter);
+    Screenshot.snap(view)
+        .setGroup("test_color_filter")
+        .setName("null_color_filter")
+        .record();
   }
 }
