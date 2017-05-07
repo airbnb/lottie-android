@@ -118,6 +118,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     this.imageAssetsFolder = imageAssetsFolder;
   }
 
+  @SuppressWarnings("WeakerAccess") @Nullable public String getImageAssetsFolder() {
+    return imageAssetsFolder;
+  }
+
   /**
    * If you have image assets and use {@link LottieDrawable} directly, you must call this yourself.
    *

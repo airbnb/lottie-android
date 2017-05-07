@@ -196,6 +196,7 @@ public class LottieAnimationView extends AppCompatImageView {
     ss.progress = lottieDrawable.getProgress();
     ss.isAnimating = lottieDrawable.isAnimating();
     ss.isLooping = lottieDrawable.isLooping();
+    ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     return ss;
   }
 
@@ -216,6 +217,7 @@ public class LottieAnimationView extends AppCompatImageView {
     if (ss.isAnimating) {
       playAnimation();
     }
+    lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -529,6 +531,7 @@ public class LottieAnimationView extends AppCompatImageView {
     float progress;
     boolean isAnimating;
     boolean isLooping;
+    String imageAssetsFolder;
 
     SavedState(Parcelable superState) {
       super(superState);
@@ -540,6 +543,7 @@ public class LottieAnimationView extends AppCompatImageView {
       progress = in.readFloat();
       isAnimating = in.readInt() == 1;
       isLooping = in.readInt() == 1;
+      imageAssetsFolder = in.readString();
     }
 
     @Override
@@ -549,7 +553,7 @@ public class LottieAnimationView extends AppCompatImageView {
       out.writeFloat(progress);
       out.writeInt(isAnimating ? 1 : 0);
       out.writeInt(isLooping ? 1 : 0);
-
+      out.writeString(imageAssetsFolder);
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =
