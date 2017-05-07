@@ -119,7 +119,6 @@ public class LottieAnimationView extends AppCompatImageView {
           R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
     }
     ta.recycle();
-    setLayerType(LAYER_TYPE_SOFTWARE, null);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
     float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
@@ -128,6 +127,8 @@ public class LottieAnimationView extends AppCompatImageView {
         lottieDrawable.systemAnimationsAreDisabled();
       }
     }
+
+    enableOrDisableHardwareLayer();
   }
 
   @Override public void setImageResource(int resId) {
@@ -523,7 +524,7 @@ public class LottieAnimationView extends AppCompatImageView {
 
   private void enableOrDisableHardwareLayer() {
     boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
-    setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_NONE, null);
+    setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
   }
 
   private static class SavedState extends BaseSavedState {
