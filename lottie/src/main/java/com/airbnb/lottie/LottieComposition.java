@@ -129,7 +129,8 @@ public class LottieComposition {
       return loader;
     }
 
-    static LottieComposition fromFileSync(Context context, String fileName) {
+    @SuppressWarnings("WeakerAccess")
+    public static LottieComposition fromFileSync(Context context, String fileName) {
       InputStream stream;
       try {
         stream = context.getAssets().open(fileName);
