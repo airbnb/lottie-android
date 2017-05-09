@@ -4,7 +4,6 @@ import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.view.animation.PathInterpolatorCompat;
-import android.util.Log;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -128,18 +127,10 @@ class Keyframe<T> {
           // TODO: create a HoldInterpolator so progress changes don't invalidate.
           interpolator = LINEAR_INTERPOLATOR;
         } else if (cp1 != null) {
-          cp1.x = MiscUtils.clamp(cp1.x, -MAX_CP_VALUE, MAX_CP_VALUE);
+          cp1.x = MiscUtils.clamp(cp1.x, 0f, 1f);
           cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          cp2.x = MiscUtils.clamp(cp2.x, -MAX_CP_VALUE, MAX_CP_VALUE);
+          cp2.x = MiscUtils.clamp(cp2.x, 0f, 1f);
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          if (cp1.x < 0 || cp1.x > 1) {
-            Log.w(L.TAG, "Invalid control point X value: " + cp1.x);
-            cp1.x = MiscUtils.clamp(cp1.x, 0f, 1f);
-          }
-          if (cp2.x < 0 || cp2.x > 1) {
-            Log.w(L.TAG, "Invalid control point X value: " + cp2.x);
-            cp2.x = MiscUtils.clamp(cp2.x, 0f, 1f);
-          }
           interpolator = PathInterpolatorCompat.create(
               cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
         } else {
