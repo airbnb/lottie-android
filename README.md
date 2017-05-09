@@ -281,6 +281,8 @@ animationView.setImageAssetDelegate(new ImageAssetDelegate() {
 
 * Fill Opacity
 
+* Fiill Rule
+
 #### Trim Paths (shape layer)
 
 ---
