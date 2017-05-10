@@ -145,8 +145,6 @@ class ShapeData {
         PointF previousVertex = vertexAtIndex(i - 1, pointsArray);
         PointF cp1 = vertexAtIndex(i - 1, outTangents);
         PointF cp2 = vertexAtIndex(i, inTangents);
-        ensureNonZeroControlPoint(previousVertex, vertex, cp1);
-        ensureNonZeroControlPoint(previousVertex, vertex, cp2);
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
 
@@ -181,23 +179,6 @@ class ShapeData {
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }
       return new ShapeData(initialPoint, closed, curves);
-    }
-
-    /**
-     * On some phones like Samsung phones, zero valued control points can cause artifacting.
-     * https://github.com/airbnb/lottie-android/issues/275
-     *
-     * This does its best to add a tiny value to the control point without affecting the final
-     * animation as much as possible.
-     */
-    private void ensureNonZeroControlPoint(PointF previousVertex, PointF vertex, PointF cp) {
-      if (!cp.equals(0f, 0f)) {
-        return;
-      }
-      float dx = vertex.x - previousVertex.x;
-      float dy = vertex.y - previousVertex.y;
-      float length = (float) Math.sqrt(dx * dx + dy * dy);
-      cp.set(dx / length * 0.001f, dy / length * 0.001f);
     }
 
     private static PointF vertexAtIndex(int idx, JSONArray points) {
