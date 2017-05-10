@@ -13,23 +13,25 @@ class MiscUtils {
     outPath.reset();
     PointF initialPoint = shapeData.getInitialPoint();
     outPath.moveTo(initialPoint.x, initialPoint.y);
+    PointF currentPoint = new PointF(initialPoint.x, initialPoint.y);
     for (int i = 0; i < shapeData.getCurves().size(); i++) {
       CubicCurveData curveData = shapeData.getCurves().get(i);
       PointF cp1 = curveData.getControlPoint1();
       PointF cp2 = curveData.getControlPoint2();
       PointF vertex = curveData.getVertex();
 
-      if (cp2.equals(vertex)) {
+      if (cp1.equals(currentPoint) && cp2.equals(vertex)) {
         // On some phones like Samsung phones, zero valued control points can cause artifacting.
         // https://github.com/airbnb/lottie-android/issues/275
         //
         // This does its best to add a tiny value to the vertex without affecting the final
         // animation as much as possible.
-        outPath.cubicTo(cp1.x, cp1.y, cp2.x, cp2.y, vertex.x + 0.01f, vertex.y + 0.01f);
+        // outPath.rMoveTo(0.01f, 0.01f);
+        outPath.lineTo(vertex.x, vertex.y);
       } else {
         outPath.cubicTo(cp1.x, cp1.y, cp2.x, cp2.y, vertex.x, vertex.y);
       }
-
+      currentPoint.set(vertex.x, vertex.y);
     }
     if (shapeData.isClosed()) {
       outPath.close();
