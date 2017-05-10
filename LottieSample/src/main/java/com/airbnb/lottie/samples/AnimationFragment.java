@@ -71,7 +71,7 @@ public class AnimationFragment extends Fragment {
 
   static final String EXTRA_ANIMATION_NAME = "animation_name";
   static final String EXTRA_URL = "json_url";
-  public static final float SCALE_SLIDER_FACTOR = 50f;
+  private static final float SCALE_SLIDER_FACTOR = 50f;
 
   static AnimationFragment newInstance() {
     return new AnimationFragment();

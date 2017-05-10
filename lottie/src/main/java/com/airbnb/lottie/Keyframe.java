@@ -127,9 +127,9 @@ class Keyframe<T> {
           // TODO: create a HoldInterpolator so progress changes don't invalidate.
           interpolator = LINEAR_INTERPOLATOR;
         } else if (cp1 != null) {
-          cp1.x = MiscUtils.clamp(cp1.x, 0f, 1f);
+          cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
           cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          cp2.x = MiscUtils.clamp(cp2.x, 0f, 1f);
+          cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           interpolator = PathInterpolatorCompat.create(
               cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
