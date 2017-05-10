@@ -219,7 +219,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @param contentName name of the specific content that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  public void addColorFilterToContent(String layerName, String contentName,
+  @SuppressWarnings("WeakerAccess") public void addColorFilterToContent(String layerName, String contentName,
       @Nullable ColorFilter colorFilter) {
     addColorFilterInternal(layerName, contentName, colorFilter);
   }
@@ -229,7 +229,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @param layerName name of the layer that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
+  @SuppressWarnings("WeakerAccess") public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
     addColorFilterInternal(layerName, null, colorFilter);
   }
 
@@ -244,7 +244,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   /**
    * Clear all color filters on all layers and all content in the layers
    */
-  public void clearColorFilters() {
+  @SuppressWarnings("WeakerAccess") public void clearColorFilters() {
     colorFilterData.clear();
     addColorFilterInternal(null, null, null);
   }
@@ -282,6 +282,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     if (compositionLayer == null) {
       return;
     }
+    float scale = this.scale;
+    if (compositionLayer.hasMatte()) {
+      scale = Math.min(this.scale, getMaxScale(canvas));
+    }
+
     matrix.reset();
     matrix.preScale(scale, scale);
     compositionLayer.draw(canvas, matrix, alpha);
@@ -471,6 +476,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return null;
   }
 
+  private float getMaxScale(@NonNull Canvas canvas) {
+    float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
+    float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
+    return Math.min(maxScaleX, maxScaleY);
+  }
+
   /**
    * These Drawable.Callback methods proxy the calls so that this is the drawable that is
    * actually invalidated, not a child one which will not pass the view's validateDrawable check.
@@ -535,15 +546,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
       final ColorFilterData other = (ColorFilterData) obj;
 
-      if (hashCode() != other.hashCode()) {
-        return false;
-      }
+      return hashCode() == other.hashCode() && colorFilter == other.colorFilter;
 
-      if (colorFilter != other.colorFilter) {
-        return false;
-      }
-
-      return true;
     }
   }
 }

@@ -19,6 +19,9 @@ class CompositionLayer extends BaseLayer {
   private final Rect originalClipRect = new Rect();
   private final RectF newClipRect = new RectF();
 
+  @Nullable private Boolean hasMatte;
+  @Nullable private Boolean hasMasks;
+
   CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
     super(lottieDrawable, layerModel);
@@ -105,28 +108,37 @@ class CompositionLayer extends BaseLayer {
   }
 
   boolean hasMasks() {
-    for (int i = layers.size() - 1; i >= 0; i--) {
-      BaseLayer layer = layers.get(i);
-      if (layer instanceof ShapeLayer) {
-        if (layer.hasMasksOnThisLayer()) {
-          return true;
+    if (hasMasks == null) {
+      for (int i = layers.size() - 1; i >= 0; i--) {
+        BaseLayer layer = layers.get(i);
+        if (layer instanceof ShapeLayer) {
+          if (layer.hasMasksOnThisLayer()) {
+            hasMasks = true;
+            return true;
+          }
         }
       }
+      hasMasks = false;
     }
-    return false;
+    return hasMasks;
   }
 
   boolean hasMatte() {
-    if (hasMatteOnThisLayer()) {
-      return true;
-    }
-
-    for (int i = layers.size() - 1; i >= 0; i--) {
-      if (layers.get(i).hasMatteOnThisLayer()) {
+    if (hasMatte == null) {
+      if (hasMatteOnThisLayer()) {
+        hasMatte = true;
         return true;
       }
+
+      for (int i = layers.size() - 1; i >= 0; i--) {
+        if (layers.get(i).hasMatteOnThisLayer()) {
+          hasMatte = true;
+          return true;
+        }
+      }
+      hasMatte = false;
     }
-    return false;
+    return hasMatte;
   }
 
   @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,

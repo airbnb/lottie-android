@@ -10,8 +10,6 @@ import android.support.annotation.Nullable;
 import java.util.Collections;
 
 class ShapeLayer extends BaseLayer {
-  private final Matrix matrix = new Matrix();
-
   private final ContentGroup contentGroup;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
