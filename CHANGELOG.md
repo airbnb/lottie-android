@@ -1,3 +1,15 @@
+# 2.0.0-rc1
+### Features and improvements
+* Set a color filter with xml
+#### Bugs Fixed
+* Prevent a rare crash when used from React Native.
+* Apply transformation to gradient fills.
+* Clip precomps to their bounds.
+* Prevent a crash with certain extreme keyframe values.
+* Fix the sample app for pre-lollipop.
+* Fix some pre-lollipop rendering bugs.
+
+
 # 2.0.0-beta4
 ### Features and improvements
 * Added support to load an animation by scanning a qr code with a url to the json. All 
