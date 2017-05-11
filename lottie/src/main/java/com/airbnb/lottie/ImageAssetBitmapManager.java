@@ -88,7 +88,10 @@ class ImageAssetBitmapManager {
     Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<String, Bitmap> entry = it.next();
-      entry.getValue().recycle();
+      Bitmap value = entry.getValue();
+      if (value != null) {
+        value.recycle();
+      }
       it.remove();
     }
   }
