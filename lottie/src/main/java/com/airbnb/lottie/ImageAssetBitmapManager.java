@@ -60,7 +60,9 @@ class ImageAssetBitmapManager {
       }
       if (assetDelegate != null) {
         bitmap = assetDelegate.fetchBitmap(imageAsset);
-        bitmaps.put(id, bitmap);
+        if (bitmap != null) {
+          bitmaps.put(id, bitmap);
+        }
         return bitmap;
       }
 
@@ -88,10 +90,7 @@ class ImageAssetBitmapManager {
     Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
     while (it.hasNext()) {
       Map.Entry<String, Bitmap> entry = it.next();
-      Bitmap value = entry.getValue();
-      if (value != null) {
-        value.recycle();
-      }
+      entry.getValue().recycle();
       it.remove();
     }
   }
