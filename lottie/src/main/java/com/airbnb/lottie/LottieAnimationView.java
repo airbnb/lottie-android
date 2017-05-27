@@ -118,6 +118,10 @@ public class LottieAnimationView extends AppCompatImageView {
       addColorFilter(new SimpleColorFilter(ta.getColor(
           R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
     }
+    if(ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
+        lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
+    }
+
     ta.recycle();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -375,7 +379,10 @@ public class LottieAnimationView extends AppCompatImageView {
         compHeight > screenHeight) {
       float xScale = screenWidth / (float) compWidth;
       float yScale = screenHeight / (float) compHeight;
-      setScale(Math.min(xScale, yScale));
+
+      float maxScaleForScreen = Math.min(xScale, yScale);
+      setScale(Math.min(maxScaleForScreen, lottieDrawable.getScale()));
+
       Log.w(L.TAG, String.format(
           "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
           compWidth, compHeight, screenWidth, screenHeight));
