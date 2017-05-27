@@ -64,6 +64,10 @@ public class ListFragment extends Fragment {
     startActivity(new Intent(getContext(), AppIntroActivity.class));
   }
 
+  private void onFullScreenClicked() {
+    startActivity(new Intent(getContext(), FullScreenActivity.class));
+  }
+
   private void onOpenLottieFilesClicked() {
     Intent i = new Intent(Intent.ACTION_VIEW);
     i.setData(Uri.parse("http://www.lottiefiles.com"));
@@ -83,6 +87,7 @@ public class ListFragment extends Fragment {
     private static final String TAG_VIEWER = "viewer";
     private static final String TAG_TYPOGRAPHY = "typography";
     private static final String TAG_APP_INTRO = "app_intro";
+    private static final String TAG_FULL_SCREEN = "full_screen";
     private static final String TAG_OPEN_LOTTIE_FILES = "open_lottie_files";
 
     @Override
@@ -103,6 +108,9 @@ public class ListFragment extends Fragment {
           holder.bind("Animated App Tutorial", TAG_APP_INTRO);
           break;
         case 3:
+          holder.bind("Full screen animation", TAG_FULL_SCREEN);
+          break;
+        case 4:
           holder.bind("Open lottiefiles.com", TAG_OPEN_LOTTIE_FILES);
           break;
       }
@@ -136,6 +144,8 @@ public class ListFragment extends Fragment {
             onTypographyClicked();
           } else if (FileAdapter.TAG_APP_INTRO.equals(v.getTag())) {
             onAppIntroPagerClicked();
+          } else if (FileAdapter.TAG_FULL_SCREEN.equals(v.getTag())) {
+            onFullScreenClicked();
           } else if (FileAdapter.TAG_OPEN_LOTTIE_FILES.equals(v.getTag())) {
             onOpenLottieFilesClicked();
           }

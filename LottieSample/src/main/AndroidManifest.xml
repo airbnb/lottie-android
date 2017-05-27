@@ -33,6 +33,7 @@
         <activity
             android:name=".QRScanActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".FullScreenActivity" />
         <activity
             android:name=".TestColorFilterActivity"
             android:screenOrientation="portrait"/>
