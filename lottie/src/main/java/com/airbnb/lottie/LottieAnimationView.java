@@ -118,15 +118,15 @@ public class LottieAnimationView extends AppCompatImageView {
       addColorFilter(new SimpleColorFilter(ta.getColor(
           R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
     }
-    if(ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
-        lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
+      lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
     }
 
     ta.recycle();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-    float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
-        Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+      float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
+          Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
       if (systemAnimationScale == 0f) {
         lottieDrawable.systemAnimationsAreDisabled();
       }
