@@ -154,10 +154,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
-    if(scale == null) {
+    if (scale == null) {
       setScale(1f);
     }
-
     updateBounds();
     buildCompositionLayer();
     applyColorFilters();
