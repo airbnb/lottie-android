@@ -139,14 +139,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @return True if the composition is different from the previously set composition, false otherwise.
    */
   @SuppressWarnings("WeakerAccess") public boolean setComposition(LottieComposition composition) {
-    if (getCallback() == null) {
-      throw new IllegalStateException(
-          "You or your view must set a Drawable.Callback before setting the composition. This " +
-              "gets done automatically when added to an ImageView. " +
-              "Either call ImageView.setImageDrawable() before setComposition() or call " +
-              "setCallback(yourView.getCallback()) first.");
-    }
-
     if (this.composition == composition) {
       return false;
     }
@@ -449,10 +441,19 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   @Nullable
   Bitmap getImageAsset(String id) {
-    return getImageAssetBitmapManager().bitmapForId(id);
+    ImageAssetBitmapManager bm = getImageAssetBitmapManager();
+    if (bm != null) {
+      return bm.bitmapForId(id);
+    }
+    return null;
   }
 
   private ImageAssetBitmapManager getImageAssetBitmapManager() {
+    if (getCallback() == null) {
+      // We can't get a bitmap since we can't get a Context from the callback.
+      return null;
+    }
+
     if (imageAssetBitmapManager != null && !imageAssetBitmapManager.hasSameContext(getContext())) {
       imageAssetBitmapManager.recycleBitmaps();
       imageAssetBitmapManager = null;
