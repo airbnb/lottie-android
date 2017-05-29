@@ -62,8 +62,10 @@ public class LottieAnimationView extends AppCompatImageView {
   private final OnCompositionLoadedListener loadedListener =
       new OnCompositionLoadedListener() {
         @Override
-        public void onCompositionLoaded(LottieComposition composition) {
-          setComposition(composition);
+        public void onCompositionLoaded(@Nullable LottieComposition composition) {
+          if (composition != null) {
+            setComposition(composition);
+          }
           compositionLoader = null;
         }
       };
@@ -414,18 +416,6 @@ public class LottieAnimationView extends AppCompatImageView {
     return lottieDrawable.hasMatte();
   }
 
-  /**
-   * If you use image assets, you must explicitly specify the folder in assets/ in which they are
-   * located because bodymovin uses the name filenames across all compositions (img_#).
-   * Do NOT rename the images themselves.
-   *
-   * If your images are located in src/main/assets/airbnb_loader/ then call
-   * `setImageAssetsFolder("airbnb_loader/");`.
-   */
-  @SuppressWarnings("WeakerAccess") public void setImageAssetsFolder(String imageAssetsFolder) {
-    lottieDrawable.setImagesAssetsFolder(imageAssetsFolder);
-  }
-
   public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     lottieDrawable.addAnimatorUpdateListener(updateListener);
   }
@@ -474,6 +464,23 @@ public class LottieAnimationView extends AppCompatImageView {
 
   @SuppressWarnings("unused") public void setSpeed(float speed) {
     lottieDrawable.setSpeed(speed);
+  }
+
+  /**
+   * If you use image assets, you must explicitly specify the folder in assets/ in which they are
+   * located because bodymovin uses the name filenames across all compositions (img_#).
+   * Do NOT rename the images themselves.
+   *
+   * If your images are located in src/main/assets/airbnb_loader/ then call
+   * `setImageAssetsFolder("airbnb_loader/");`.
+   */
+  @SuppressWarnings("WeakerAccess") public void setImageAssetsFolder(String imageAssetsFolder) {
+    lottieDrawable.setImagesAssetsFolder(imageAssetsFolder);
+  }
+
+  @Nullable
+  public String getImageAssetsFolder() {
+    return lottieDrawable.getImageAssetsFolder();
   }
 
   /**

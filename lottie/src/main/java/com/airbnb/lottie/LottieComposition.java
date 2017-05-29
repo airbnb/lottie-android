@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +74,7 @@ public class LottieComposition {
     return precomps.get(id);
   }
 
-  @SuppressWarnings("unused") boolean hasImages() {
+  public boolean hasImages() {
     return !images.isEmpty();
   }
 
@@ -151,6 +152,7 @@ public class LottieComposition {
       return loader;
     }
 
+    @Nullable
     @SuppressWarnings("WeakerAccess")
     static LottieComposition fromInputStream(Resources res, InputStream stream) {
       try {
@@ -163,12 +165,15 @@ public class LottieComposition {
         JSONObject jsonObject = new JSONObject(json);
         return fromJsonSync(res, jsonObject);
       } catch (IOException e) {
-        throw new IllegalStateException("Unable to find file.", e);
+        Log.e(L.TAG, "Failed to load composition.",
+            new IllegalStateException("Unable to find file.", e));
       } catch (JSONException e) {
-        throw new IllegalStateException("Unable to load JSON.", e);
+        Log.e(L.TAG, "Failed to load composition.",
+            new IllegalStateException("Unable to load JSON.", e));
       } finally {
         closeQuietly(stream);
       }
+      return null;
     }
 
     @SuppressWarnings("WeakerAccess")
