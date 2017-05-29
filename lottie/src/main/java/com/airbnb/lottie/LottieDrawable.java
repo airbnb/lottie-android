@@ -313,10 +313,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
       reverseAnimationWhenCompositionAdded = false;
       return;
     }
-    if (setStartTime) {
-      animator.setCurrentPlayTime((long) (progress * animator.getDuration()));
-    }
+    long playTime = setStartTime ? (long) (progress * animator.getDuration()) : 0;
     animator.start();
+    if (setStartTime) {
+      animator.setCurrentPlayTime(playTime);
+    }
   }
 
   @SuppressWarnings({"unused", "WeakerAccess"}) public void resumeReverseAnimation() {
