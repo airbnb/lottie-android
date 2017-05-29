@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.util.Log;
+
 import org.json.JSONObject;
 
 import java.util.List;
@@ -35,6 +37,9 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
     static AnimatableIntegerValue newInstance(
         JSONObject json, LottieComposition composition) {
+      if (json.has("x")) {
+        Log.w(L.TAG, "Animation has expressions which are not supported.");
+      }
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
           .newInstance(json, 1, composition, ValueFactory.INSTANCE)
           .parseJson();
