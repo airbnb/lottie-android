@@ -437,6 +437,26 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return composition == null ? -1 : (int) (composition.getBounds().height() * scale);
   }
 
+  /**
+   * Allows you to modify or clear a bitmap that was loaded for an image either automatically
+   * through {@link #setImagesAssetsFolder(String)} or with an {@link ImageAssetDelegate}.
+   *
+   * @return the previous Bitmap or null.
+   */
+  @Nullable
+  @SuppressWarnings({"unused", "WeakerAccess"})
+  public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
+    ImageAssetBitmapManager bm = getImageAssetBitmapManager();
+    if (bm == null) {
+      Log.w(L.TAG, "Cannot update bitmap. Most likely the drawable is not added to a View " +
+        "which prevents Lottie from getting a Context.");
+      return null;
+    }
+    Bitmap ret = bm.updateBitmap(id, bitmap);
+    invalidateSelf();
+    return ret;
+  }
+
   @Nullable
   Bitmap getImageAsset(String id) {
     ImageAssetBitmapManager bm = getImageAssetBitmapManager();

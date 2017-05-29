@@ -51,6 +51,11 @@ class ImageAssetBitmapManager {
   }
 
   @Nullable
+  Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
+    return bitmaps.put(id, bitmap);
+  }
+
+  @Nullable
   Bitmap bitmapForId(String id) {
     Bitmap bitmap = bitmaps.get(id);
     if (bitmap == null) {

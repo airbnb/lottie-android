@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
@@ -473,6 +474,18 @@ public class LottieAnimationView extends AppCompatImageView {
 
   @SuppressWarnings("unused") public void setSpeed(float speed) {
     lottieDrawable.setSpeed(speed);
+  }
+
+  /**
+   * Allows you to modify or clear a bitmap that was loaded for an image either automatically
+   * through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}.
+   *
+   * @return the previous Bitmap or null.
+   */
+  @Nullable
+  @SuppressWarnings({"unused", "WeakerAccess"})
+  public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
+    return lottieDrawable.updateBitmap(id, bitmap);
   }
 
   /**
