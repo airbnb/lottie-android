@@ -97,6 +97,10 @@ public class LottieAnimationView extends AppCompatImageView {
 
   private void init(@Nullable AttributeSet attrs) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
+    int cacheStrategy = ta.getInt(
+        R.styleable.LottieAnimationView_lottie_cacheStrategy,
+        CacheStrategy.None.ordinal());
+    defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
     if (!isInEditMode() && fileName != null) {
       setAnimation(fileName);
@@ -110,10 +114,6 @@ public class LottieAnimationView extends AppCompatImageView {
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
-    int cacheStrategy = ta.getInt(
-        R.styleable.LottieAnimationView_lottie_cacheStrategy,
-        CacheStrategy.None.ordinal());
-    defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
       addColorFilter(new SimpleColorFilter(ta.getColor(
           R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
