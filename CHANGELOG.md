@@ -1,5 +1,16 @@
+#2.0.0-rc2
+### Features and Improvements
+* Paste json into the sample app.
+* Update a bitmap asset dynamically.
+* Set scale from xml.
+### Bugs Fixed
+* Resume no longer restarts the animation.
+* More lenient crashes and getCallback() checks.
+* Fewer addUpdateListener calls.
+* Fix cache strategy when it and the animation is set from xml.
+
 # 2.0.0-rc1
-### Features and improvements
+### Features and Improvements
 * Set a color filter with xml
 #### Bugs Fixed
 * Prevent a rare crash when used from React Native.
@@ -11,7 +22,7 @@
 
 
 # 2.0.0-beta4
-### Features and improvements
+### Features and Improvements
 * Added support to load an animation by scanning a qr code with a url to the json. All 
 lottiefiles.com animations now have qr codes.
 * Added support for opacity stops in gradients.
@@ -24,7 +35,7 @@ to try it.
 * Fixed a bug that would incorrectly draw rounded rectangles.
 
 # 2.0.0-beta3
-#### Features and improvements
+#### Features and Improvements
 * Ground up rewrite of the rendering engine.
 * Vastly improved the performance of masks and mattes.
 * Support for fill types (non-zero or even-odd).
@@ -40,7 +51,7 @@ documentation before using it.
 * Invalidate whatever drawable is set as the image drawable even if it's not LottieDrawable.
 
 # 1.5.3
-#### Features and improvements
+#### Features and Improvements
 * Added an image asset delegate so you can provide your own bitmaps from and sd card, for example.
 * Added an attr for setting progress.
 * Improved the performance of very large compositions by scaling them down to the screen size.
@@ -52,13 +63,13 @@ documentation before using it.
 
 
 # 1.5.2
-#### Features and improvements
+#### Features and Improvements
 * Significantly improved memory usage when using masks or mattes. No more bitmaps!
 #### Bugs Fixed
 * Further improved the compatibility of masks and mattes.
 
 # 1.5.1
-##### Features and improvements
+##### Features and Improvements
 * Use a thread pool executor for deserialization.
 * Allow setting a default cache strategy
 * Drop repeated calls to setComposition with the same composition.
