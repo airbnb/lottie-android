@@ -37,7 +37,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
   private float speed = 1f;
   private float progress = 0f;
-  @Nullable private Float scale;
+  private float scale = 1f;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
@@ -146,9 +146,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
-    if (scale == null) {
-      setScale(1f);
-    }
     updateBounds();
     buildCompositionLayer();
     applyColorFilters();
