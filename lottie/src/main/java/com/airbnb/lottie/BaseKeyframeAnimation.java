@@ -15,6 +15,7 @@ abstract class BaseKeyframeAnimation<K, A> {
     void onValueChanged();
   }
 
+  // This is not a Set because we don't want to create an iterator object on every setProgress.
   final List<AnimationListener> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
 

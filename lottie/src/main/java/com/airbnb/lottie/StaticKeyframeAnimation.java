@@ -16,6 +16,10 @@ class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
     // Do nothing
   }
 
+  @Override void addUpdateListener(AnimationListener listener) {
+    // Do nothing.
+  }
+
   @Override public T getValue() {
     return initialValue;
   }
