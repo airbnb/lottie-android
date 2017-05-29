@@ -330,16 +330,16 @@ public class AnimationFragment extends Fragment {
     }
   }
 
-  @OnClick(R.id.load_url)
-  void onLoadUrlClicked() {
+  @OnClick(R.id.load_url_or_json)
+  void onLoadUrlOrJsonClicked() {
     animationView.cancelAnimation();
-    final EditText urlView = new EditText(getContext());
+    final EditText urlOrJsonView = new EditText(getContext());
     new AlertDialog.Builder(getContext())
-        .setTitle("Enter a URL")
-        .setView(urlView)
+        .setTitle("Enter a URL or JSON string")
+        .setView(urlOrJsonView)
         .setPositiveButton("Load", new DialogInterface.OnClickListener() {
           @Override public void onClick(DialogInterface dialog, int which) {
-            loadUrl(urlView.getText().toString());
+            loadUrlOrJson(urlOrJsonView.getText().toString());
           }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -390,6 +390,29 @@ public class AnimationFragment extends Fragment {
         });
   }
 
+  private void loadUrlOrJson(String text) {
+    if (text.charAt(0) == '{') {
+      // Assume JSON
+      loadJsonString(text);
+      return;
+    }
+    loadUrl(text);
+  }
+
+  private void loadJsonString(String jsonString) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      LottieComposition.Factory
+          .fromJson(getResources(), json, new OnCompositionLoadedListener() {
+            @Override public void onCompositionLoaded(LottieComposition composition) {
+              setComposition(composition, "Animation");
+            }
+          });
+    } catch (JSONException e) {
+      onLoadError();
+    }
+  }
+
   private void loadUrl(String url) {
     Request request;
     try {
@@ -415,17 +438,7 @@ public class AnimationFragment extends Fragment {
           onLoadError();
         }
 
-        try {
-          JSONObject json = new JSONObject(response.body().string());
-          LottieComposition.Factory
-              .fromJson(getResources(), json, new OnCompositionLoadedListener() {
-                @Override public void onCompositionLoaded(LottieComposition composition) {
-                  setComposition(composition, "Network Animation");
-                }
-              });
-        } catch (JSONException e) {
-          onLoadError();
-        }
+        loadJsonString(response.body().string());
       }
     });
   }
