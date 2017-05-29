@@ -16,11 +16,11 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatDrawableManager;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -179,8 +179,7 @@ public class AnimationFragment extends Fragment {
   }
 
   private void setDrawableLeft(TextView textView, @DrawableRes int resId) {
-    //noinspection RestrictedApi
-    Drawable drawable = AppCompatDrawableManager.get().getDrawable(getActivity(), resId);
+    Drawable drawable = VectorDrawableCompat.create(getResources(), resId, getActivity().getTheme());
     textView.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
   }
 
