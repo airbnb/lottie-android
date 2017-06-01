@@ -166,9 +166,15 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     int endPointProgress = Math.round(endPointAnimation.getProgress() * cacheSteps);
     int colorProgress = Math.round(colorAnimation.getProgress() * cacheSteps);
     int hash = 17;
-    hash = hash * 31 * startPointProgress;
-    hash = hash * 31 * endPointProgress;
-    hash = hash * 31 * colorProgress;
+    if (startPointProgress != 0) {
+      hash = hash * 31 * startPointProgress;
+    }
+    if (endPointProgress != 0) {
+      hash = hash * 31 * endPointProgress;
+    }
+    if (colorProgress != 0) {
+      hash = hash * 31 * colorProgress;
+    }
     return hash;
   }
 }
