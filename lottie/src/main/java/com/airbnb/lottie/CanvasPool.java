@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.assertNotNull;
-
 /**
  * Can be used for debugging. When needed, you can acquire and
  * draw to this bitmap layer when rendering to an offscreen
@@ -39,19 +37,15 @@ import static junit.framework.Assert.assertNotNull;
     } else {
       Bitmap bitmap = bitmaps.remove(0);
       canvas = bitmapCanvasMap.get(bitmap);
-      assertNotNull(canvas);
     }
     canvas.getBitmap().eraseColor(Color.TRANSPARENT);
     return canvas;
   }
 
   void release(BitmapCanvas canvas) {
-    assertNotNull(canvas);
     Bitmap bitmap = canvasBitmapMap.get(canvas);
-    assertNotNull(bitmap);
     int key = getKey(bitmap);
     List<Bitmap> bitmaps = availableBitmaps.get(key);
-    assertNotNull(bitmaps);
     if (bitmaps.contains(bitmap)) {
       throw new IllegalStateException("Canvas already released.");
     }

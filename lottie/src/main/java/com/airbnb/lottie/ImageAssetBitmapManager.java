@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static junit.framework.Assert.assertNotNull;
-
 class ImageAssetBitmapManager {
   private final Context context;
   private String imagesFolder;
@@ -26,8 +24,6 @@ class ImageAssetBitmapManager {
 
   ImageAssetBitmapManager(Drawable.Callback callback, String imagesFolder,
       ImageAssetDelegate assetDelegate, Map<String, LottieImageAsset> imageAssets) {
-    assertNotNull(callback);
-
     this.imagesFolder = imagesFolder;
     if (!TextUtils.isEmpty(imagesFolder) &&
         this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
