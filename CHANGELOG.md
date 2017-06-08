@@ -1,4 +1,12 @@
-#2.0.0-rc2
+# 2.0.0
+### Features and Improvements
+* Increased version number.
+* New animations from lottiefiles in the sample app.
+### Bugs Fixed
+* Minor trim path fix.
+* Minor gradient caching fix.
+
+# 2.0.0-rc2
 ### Features and Improvements
 * Paste json into the sample app.
 * Update a bitmap asset dynamically.
