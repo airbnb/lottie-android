@@ -92,6 +92,9 @@ final class Utils {
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
+    if (startValue == 1f && endValue == 0f) {
+      return;
+    }
     if (length == 0f || Math.abs(endValue - startValue - 1) < .01) {
       return;
     }
