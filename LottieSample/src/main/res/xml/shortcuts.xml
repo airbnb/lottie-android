@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_animation_viewer"
+        android:shortcutDisabledMessage="@string/shortcut_disabled"
+        android:shortcutId="animationViewer"
+        android:shortcutLongLabel="@string/shortcut_animation_viewer"
+        android:shortcutShortLabel="@string/shortcut_animation_viewer_short"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="com.airbnb.lottie.samples.shortcut.VIEWER"
+            android:targetClass="com.airbnb.lottie.samples.MainActivity"
+            android:targetPackage="com.airbnb.lottie"/>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_animated_typography"
+        android:shortcutDisabledMessage="@string/shortcut_disabled"
+        android:shortcutId="animatedTypography"
+        android:shortcutLongLabel="@string/shortcut_animated_typography"
+        android:shortcutShortLabel="@string/shortcut_animated_typography_short"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="com.airbnb.lottie.samples.shortcut.TYPOGRAPHY"
+            android:targetClass="com.airbnb.lottie.samples.MainActivity"
+            android:targetPackage="com.airbnb.lottie"/>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_animated_app_tutorial"
+        android:shortcutDisabledMessage="@string/shortcut_disabled"
+        android:shortcutId="animatedAppTutorial"
+        android:shortcutLongLabel="@string/shortcut_animated_app_tutorial"
+        android:shortcutShortLabel="@string/shortcut_animated_app_tutorial_short"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="com.airbnb.lottie.samples.shortcut.TUTORIAL"
+            android:targetClass="com.airbnb.lottie.samples.MainActivity"
+            android:targetPackage="com.airbnb.lottie"/>
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_full_screen_animation"
+        android:shortcutDisabledMessage="@string/shortcut_disabled"
+        android:shortcutId="fullScreenAnimation"
+        android:shortcutLongLabel="@string/shortcut_full_screen_animation"
+        android:shortcutShortLabel="@string/shortcut_full_screen_animation_short"
+        tools:targetApi="n_mr1">
+        <intent
+            android:action="com.airbnb.lottie.samples.shortcut.FULLSCREEN"
+            android:targetClass="com.airbnb.lottie.samples.MainActivity"
+            android:targetPackage="com.airbnb.lottie"/>
+    </shortcut>
+
+</shortcuts>

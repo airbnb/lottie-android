@@ -8,4 +8,15 @@
     <string name="warnings_zero">%1$d warnings</string>
     <string name="warnings_one">%1$d warning</string>
     <string name="warnings_many">%1$d warnings</string>
+
+    <!-- Shortcuts -->
+    <string name="shortcut_animation_viewer">Animation Viewer</string>
+    <string name="shortcut_animation_viewer_short">Viewer</string>
+    <string name="shortcut_animated_typography">Animated Typography</string>
+    <string name="shortcut_animated_typography_short">Typography</string>
+    <string name="shortcut_animated_app_tutorial">Animated App Tutorial</string>
+    <string name="shortcut_animated_app_tutorial_short">App Tutorial</string>
+    <string name="shortcut_full_screen_animation">Full Screen Animation</string>
+    <string name="shortcut_full_screen_animation_short">Full Screen</string>
+    <string name="shortcut_disabled">Shortcut Disabled</string>
 </resources>

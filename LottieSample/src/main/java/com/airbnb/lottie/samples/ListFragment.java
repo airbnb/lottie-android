@@ -22,11 +22,21 @@ public class ListFragment extends Fragment {
     return new ListFragment();
   }
 
+  private static final String SHORTCUT_VIEWER = "com.airbnb.lottie.samples.shortcut.VIEWER";
+  private static final String SHORTCUT_TYPOGRAPHY = "com.airbnb.lottie.samples.shortcut.TYPOGRAPHY";
+  private static final String SHORTCUT_TUTORIAL = "com.airbnb.lottie.samples.shortcut.TUTORIAL";
+  private static final String SHORTCUT_FULLSCREEN = "com.airbnb.lottie.samples.shortcut.FULLSCREEN";
+
   @BindView(R.id.container) ViewGroup container;
   @BindView(R.id.recycler_view) RecyclerView recyclerView;
   @BindView(R.id.animation_view) LottieAnimationView animationView;
 
   private final FileAdapter adapter = new FileAdapter();
+
+  @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    handleShortcut(getActivity().getIntent().getAction());
+  }
 
   @Nullable
   @Override
@@ -37,6 +47,27 @@ public class ListFragment extends Fragment {
     recyclerView.setAdapter(adapter);
 
     return view;
+  }
+
+  /**
+   * Starts the relevant activity/fragment based on which shortcut has been pressed
+   * @param intentAction specific shortcut action
+   */
+  private void handleShortcut(String intentAction) {
+    switch (intentAction) {
+      case SHORTCUT_VIEWER:
+        onViewerClicked();
+        break;
+      case SHORTCUT_TYPOGRAPHY:
+        onTypographyClicked();
+        break;
+      case SHORTCUT_TUTORIAL:
+        onAppIntroPagerClicked();
+        break;
+      case SHORTCUT_FULLSCREEN:
+        onFullScreenClicked();
+        break;
+    }
   }
 
   @Override
