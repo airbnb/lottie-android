@@ -38,7 +38,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     static AnimatableIntegerValue newInstance(
         JSONObject json, LottieComposition composition) {
       if (json.has("x")) {
-        Log.w(L.TAG, "Animation has expressions which are not supported.");
+        composition.addWarning("Lottie doesn't support expressions.");
       }
       AnimatableValueParser.Result<Integer> result = AnimatableValueParser
           .newInstance(json, 1, composition, ValueFactory.INSTANCE)

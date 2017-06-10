@@ -48,6 +48,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -99,6 +100,7 @@ public class AnimationFragment extends Fragment {
   @BindView(R.id.sample_animations) TextView sampleAnimationsTextView;
   @BindView(R.id.load_animation) TextView loadAnimationTextView;
   @BindView(R.id.load_from_json) TextView loadFromJsonTextView;
+  @BindView(R.id.warnings) TextView warningsView;
 
   @Nullable
   @Override
@@ -255,7 +257,18 @@ public class AnimationFragment extends Fragment {
     animationNameView.setText(name);
     scaleTextView.setText(String.format(Locale.US, "%.2f", animationView.getScale()));
     scaleSeekBar.setProgress((int) (animationView.getScale() * SCALE_SLIDER_FACTOR));
+    setWarnings(composition.getWarnings());
+  }
 
+  private void setWarnings(final ArrayList<String> warnings) {
+    int size = warnings.size();
+    warningsView.setVisibility(size == 0 ? View.GONE : View.VISIBLE);
+    warningsView.setText(getResources().getQuantityString(R.plurals.warnings, size, size));
+    warningsView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        WarningsDialogFragment.newInstance(warnings).show(getFragmentManager(), null);
+      }
+    });
   }
 
   @OnClick(R.id.play_button)

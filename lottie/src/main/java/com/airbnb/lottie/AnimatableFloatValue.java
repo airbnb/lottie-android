@@ -1,7 +1,5 @@
 package com.airbnb.lottie;
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
 import java.util.List;
@@ -54,7 +52,7 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
         boolean isDp) {
       float scale = isDp ? composition.getDpScale() : 1f;
       if (json.has("x")) {
-        Log.w(L.TAG, "Animation has expressions which are not supported.");
+        composition.addWarning("Lottie doesn't support expressions.");
       }
       AnimatableValueParser.Result<Float> result = AnimatableValueParser
           .newInstance(json, scale, composition, ValueFactory.INSTANCE)

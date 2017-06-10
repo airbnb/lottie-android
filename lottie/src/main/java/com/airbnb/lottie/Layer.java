@@ -200,6 +200,11 @@ class Layer {
     static Layer newInstance(JSONObject json, LottieComposition composition) {
       String layerName = json.optString("nm");
       String refId = json.optString("refId");
+
+      if (layerName.endsWith(".ai") || json.optString("cl", "").equals("ai")) {
+        composition.addWarning("Convert your Illustrator layers to shape layers.");
+      }
+
       long layerId = json.optLong("ind");
       int solidWidth = 0;
       int solidHeight = 0;
@@ -248,6 +253,12 @@ class Layer {
             shapes.add(shape);
           }
         }
+      }
+
+      if (json.has("ef")) {
+        composition.addWarning("Lottie doesn't support layer effects. If you are using them for " +
+            " fills, strokes, trim paths etc. then try adding them directly as contents " +
+            " in your shape.");
       }
 
       float timeStretch = (float) json.optDouble("sr", 1.0);

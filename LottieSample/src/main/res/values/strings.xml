@@ -5,4 +5,7 @@
     <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
     <string name="permission_required">Camera permissions are required to use the QR Scanner</string>
     <string name="scan_prompt">Scan QR Code from lottiefiles.com</string>
+    <string name="warnings_zero">%1$d warnings</string>
+    <string name="warnings_one">%1$d warning</string>
+    <string name="warnings_many">%1$d warnings</string>
 </resources>

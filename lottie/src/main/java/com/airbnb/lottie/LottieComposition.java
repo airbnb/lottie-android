@@ -15,7 +15,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,8 @@ public class LottieComposition {
   private final Map<String, LottieImageAsset> images = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
+  // This is stored as a set to avoid duplicates.
+  private final HashSet<String> warnings = new HashSet<>();
   private final Rect bounds;
   private final long startFrame;
   private final long endFrame;
@@ -46,6 +50,15 @@ public class LottieComposition {
     this.endFrame = endFrame;
     this.frameRate = frameRate;
     this.dpScale = dpScale;
+  }
+
+  void addWarning(String warning) {
+    Log.w(L.TAG, warning);
+    warnings.add(warning);
+  }
+
+  public ArrayList<String> getWarnings() {
+    return new ArrayList<>(Arrays.asList(warnings.toArray(new String[warnings.size()])));
   }
 
   Layer layerModelForId(long id) {
@@ -87,7 +100,7 @@ public class LottieComposition {
   }
 
 
-  public float getDpScale() {
+  float getDpScale() {
     return dpScale;
   }
 
@@ -204,16 +217,26 @@ public class LottieComposition {
     private static void parseLayers(JSONObject json, LottieComposition composition) {
       JSONArray jsonLayers = json.optJSONArray("layers");
       // This should never be null. Bodymovin always exports at least an empty array.
-      // However, it seems as if the demarshalling from the React Native library sometimes
+      // However, it seems as if the unmarshalling from the React Native library sometimes
       // causes this to be null. The proper fix should be done there but this will prevent a crash.
       // https://github.com/airbnb/lottie-android/issues/279
       if (jsonLayers == null) {
         return;
       }
       int length = jsonLayers.length();
+      int imageCount = 0;
       for (int i = 0; i < length; i++) {
         Layer layer = Layer.Factory.newInstance(jsonLayers.optJSONObject(i), composition);
+        if (layer.getLayerType() == Layer.LayerType.Image) {
+          imageCount++;
+        }
         addLayer(composition.layers, composition.layerMap, layer);
+      }
+
+      if (imageCount > 4) {
+        composition.addWarning("You have " + imageCount + " images. Lottie should primarily be " +
+            "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
+            " to shape layers.");
       }
     }
 
