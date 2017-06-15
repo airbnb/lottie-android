@@ -37,7 +37,7 @@ class AnimatableTransform implements ModifierContent {
     }
 
     static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
-      AnimatablePathValue anchorPoint = null;
+      AnimatablePathValue anchorPoint;
       AnimatableValue<PointF> position = null;
       AnimatableScaleValue scale;
       AnimatableFloatValue rotation = null;

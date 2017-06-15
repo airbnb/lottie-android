@@ -33,6 +33,7 @@ public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();
+  private final Map<Integer, FontCharacter> characters = new HashMap<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
   // This is stored as a set to avoid duplicates.
@@ -85,6 +86,10 @@ public class LottieComposition {
   @Nullable
   List<Layer> getPrecomps(String id) {
     return precomps.get(id);
+  }
+
+  Map<Integer, FontCharacter> getCharacters() {
+    return characters;
   }
 
   public boolean hasImages() {
@@ -211,6 +216,7 @@ public class LottieComposition {
       parseImages(assetsJson, composition);
       parsePrecomps(assetsJson, composition);
       parseLayers(json, composition);
+      parseChars(json.optJSONArray("chars"), composition);
       return composition;
     }
 
@@ -277,6 +283,19 @@ public class LottieComposition {
         }
         LottieImageAsset image = LottieImageAsset.Factory.newInstance(assetJson);
         composition.images.put(image.getId(), image);
+      }
+    }
+
+    private static void parseChars(@Nullable JSONArray charsJson, LottieComposition composition) {
+      if (charsJson == null) {
+        return;
+      }
+
+      int length = charsJson.length();
+      for (int i = 0; i < length; i++) {
+        FontCharacter character =
+            FontCharacter.Factory.newInstance(charsJson.optJSONObject(i), composition);
+        composition.characters.put(character.hashCode(), character);
       }
     }
 

@@ -49,6 +49,7 @@ class Layer {
   private final float startProgress;
   private final int preCompWidth;
   private final int preCompHeight;
+  @Nullable private final AnimatableTextFrame text;
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
 
@@ -56,7 +57,8 @@ class Layer {
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
       float timeStretch, float startProgress, int preCompWidth, int preCompHeight,
-      List<Keyframe<Float>> inOutKeyframes, MatteType matteType) {
+      @Nullable AnimatableTextFrame text, List<Keyframe<Float>> inOutKeyframes,
+      MatteType matteType) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -73,6 +75,7 @@ class Layer {
     this.startProgress = startProgress;
     this.preCompWidth = preCompWidth;
     this.preCompHeight = preCompHeight;
+    this.text = text;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
   }
@@ -149,6 +152,11 @@ class Layer {
     return solidWidth;
   }
 
+  @Nullable
+  AnimatableTextFrame getText() {
+    return text;
+  }
+
   @Override public String toString() {
     return toString("");
   }
@@ -193,7 +201,7 @@ class Layer {
           Collections.emptyList(), composition, null, -1, LayerType.PreComp, -1, null,
           Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
           0, 0, 0, 0, 0,
-          bounds.width(), bounds.height(), Collections.<Keyframe<Float>>emptyList(), MatteType
+          bounds.width(), bounds.height(), null, Collections.<Keyframe<Float>>emptyList(), MatteType
           .None);
     }
 
@@ -234,7 +242,6 @@ class Layer {
       AnimatableTransform transform = AnimatableTransform.Factory.newInstance(json.optJSONObject("ks"),
           composition);
       MatteType matteType = MatteType.values()[json.optInt("tt")];
-      List<Object> shapes = new ArrayList<>();
       List<Mask> masks = new ArrayList<>();
       List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
       JSONArray jsonMasks = json.optJSONArray("masksProperties");
@@ -245,6 +252,7 @@ class Layer {
         }
       }
 
+      List<Object> shapes = new ArrayList<>();
       JSONArray shapesJson = json.optJSONArray("shapes");
       if (shapesJson != null) {
         for (int i = 0; i < shapesJson.length(); i++) {
@@ -253,6 +261,12 @@ class Layer {
             shapes.add(shape);
           }
         }
+      }
+
+      AnimatableTextFrame text = null;
+      JSONObject textJson = json.optJSONObject("t");
+      if (textJson != null) {
+        text = AnimatableTextFrame.Factory.newInstance(textJson.optJSONObject("d"), composition);
       }
 
       if (json.has("ef")) {
@@ -294,7 +308,7 @@ class Layer {
 
       return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
           masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress,
-          preCompWidth, preCompHeight, inOutKeyframes, matteType);
+          preCompWidth, preCompHeight, text, inOutKeyframes, matteType);
     }
   }
 }
