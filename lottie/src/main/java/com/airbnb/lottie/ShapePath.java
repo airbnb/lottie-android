@@ -1,7 +1,5 @@
 package com.airbnb.lottie;
 
-import android.support.annotation.Nullable;
-
 import org.json.JSONObject;
 
 class ShapePath {

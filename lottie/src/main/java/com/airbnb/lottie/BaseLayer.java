@@ -37,6 +37,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       case Null:
         return new NullLayer(drawable, layerModel);
       case Text:
+        return new TextLayer(drawable, layerModel);
       case Unknown:
       default:
         // Do nothing
