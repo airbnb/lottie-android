@@ -15,13 +15,17 @@ class DocumentData {
   int tracking;
   double lineHeight;
   @ColorInt int color;
+  @ColorInt int strokeColor;
+  int strokeWidth;
+  boolean strokeOverFill;
 
   DocumentData() {
   }
 
 
   DocumentData(String text, String fontFamily, int size, int justification, int tracking,
-      double lineHeight, @ColorInt int color) {
+      double lineHeight, @ColorInt int color, @ColorInt int strokeColor, int strokeWidth,
+      boolean strokeOverFill) {
     this.text = text;
     this.fontFamily = fontFamily;
     // TODO: figure out what these are.
@@ -30,6 +34,9 @@ class DocumentData {
     this.tracking = tracking;
     this.lineHeight = lineHeight;
     this.color = color;
+    this.strokeColor = strokeColor;
+    this.strokeWidth = strokeWidth;
+    this.strokeOverFill = strokeOverFill;
   }
 
   void set(DocumentData documentData) {
@@ -61,8 +68,21 @@ class DocumentData {
           (int) (colorArray.optDouble(0) * 255),
           (int) (colorArray.optDouble(1) * 255),
           (int) (colorArray.optDouble(2) * 255));
+      JSONArray strokeArray = json.optJSONArray("sc");
+      int strokeColor = 0;
+      if (strokeArray != null) {
+        strokeColor = Color.argb(
+            255,
+            (int) (strokeArray.optDouble(0) * 255),
+            (int) (strokeArray.optDouble(1) * 255),
+            (int) (strokeArray.optDouble(2) * 255));
+      }
 
-      return new DocumentData(text, fontFamily, size, justification, tracking, lineHeight, color);
+      int strokeWidth = json.optInt("sw");
+      boolean strokeOverFill = json.optBoolean("of");
+
+      return new DocumentData(text, fontFamily, size, justification, tracking, lineHeight, color,
+          strokeColor, strokeWidth, strokeOverFill);
     }
   }
 

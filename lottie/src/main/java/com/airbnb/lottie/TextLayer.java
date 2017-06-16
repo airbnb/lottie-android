@@ -1,10 +1,12 @@
 package com.airbnb.lottie;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,11 +16,16 @@ import java.util.Map;
 class TextLayer extends BaseLayer {
   private final RectF rectF = new RectF();
   private final Matrix matrix = new Matrix();
-  private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
+  private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
     setStyle(Style.FILL);
   }};
+  private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
+    setStyle(Style.STROKE);
+  }};
   private final TextKeyframeAnimation textAnimation;
-  private final KeyframeAnimation<Integer> colorAnimation;
+  @Nullable private KeyframeAnimation<Integer> colorAnimation;
+  @Nullable private KeyframeAnimation<Integer> strokeAnimation;
+  @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
@@ -32,10 +39,25 @@ class TextLayer extends BaseLayer {
     textAnimation.addUpdateListener(this);
     addAnimation(textAnimation);
 
-    //noinspection ConstantConditions
-    colorAnimation = layerModel.getTextProperties().color.createAnimation();
-    colorAnimation.addUpdateListener(this);
-    addAnimation(colorAnimation);
+    AnimatableTextProperties textProperties = layerModel.getTextProperties();
+    if (textProperties != null && textProperties.color != null) {
+      colorAnimation = textProperties.color.createAnimation();
+      colorAnimation.addUpdateListener(this);
+      addAnimation(colorAnimation);
+    }
+
+
+    if (textProperties != null && textProperties.stroke != null) {
+      strokeAnimation = textProperties.stroke.createAnimation();
+      strokeAnimation.addUpdateListener(this);
+      addAnimation(strokeAnimation);
+    }
+
+    if (textProperties != null && textProperties.strokeWidth != null) {
+      strokeWidthAnimation = textProperties.strokeWidth.createAnimation();
+      strokeWidthAnimation.addUpdateListener(this);
+      addAnimation(strokeWidthAnimation);
+    }
   }
 
   @Override void setProgress(float progress) {
@@ -44,12 +66,25 @@ class TextLayer extends BaseLayer {
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
-    // canvas.concat(parentMatrix);
     DocumentData documentData = textAnimation.getValue();
     float fontScale = (float) documentData.size / 100f;
+    float parentScale = Utils.getScale(parentMatrix);
     String text = documentData.text;
-    // TODO: pull the right color.
-    paint.setColor(colorAnimation.getValue());
+    if (colorAnimation != null) {
+      fillPaint.setColor(colorAnimation.getValue());
+    } else {
+      fillPaint.setColor(documentData.color);
+    }
+    if (strokeAnimation != null) {
+      strokePaint.setColor(strokeAnimation.getValue());
+    } else {
+      strokePaint.setColor(documentData.strokeColor);
+    }
+    if (strokeWidthAnimation != null) {
+      strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
+    } else {
+      strokePaint.setStrokeWidth(documentData.strokeWidth * composition.getDpScale() * parentScale);
+    }
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       FontCharacter character =
@@ -61,13 +96,28 @@ class TextLayer extends BaseLayer {
         matrix.set(parentMatrix);
         matrix.preScale(fontScale, fontScale);
         path.transform(matrix);
-        canvas.drawPath(path, paint);
+        if (documentData.strokeOverFill) {
+          drawCharacter(canvas, path, fillPaint);
+          drawCharacter(canvas, path, strokePaint);
+        } else {
+          drawCharacter(canvas, path, strokePaint);
+          drawCharacter(canvas, path, fillPaint);
+        }
       }
-      float parentScale = Utils.getScale(parentMatrix);
       float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
       canvas.translate(tx, 0);
     }
     canvas.restore();
+  }
+
+  private void drawCharacter(Canvas canvas, Path path, Paint paint) {
+    if (paint.getColor() == Color.TRANSPARENT) {
+      return;
+    }
+    if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0) {
+      return;
+    }
+    canvas.drawPath(path, paint);
   }
 
   private List<ContentGroup> getContentsForCharacter(FontCharacter character) {
