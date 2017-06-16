@@ -26,6 +26,7 @@ class TextLayer extends BaseLayer {
   @Nullable private KeyframeAnimation<Integer> colorAnimation;
   @Nullable private KeyframeAnimation<Integer> strokeAnimation;
   @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
+  @Nullable private KeyframeAnimation<Float> trackingAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
@@ -57,6 +58,12 @@ class TextLayer extends BaseLayer {
       strokeWidthAnimation = textProperties.strokeWidth.createAnimation();
       strokeWidthAnimation.addUpdateListener(this);
       addAnimation(strokeWidthAnimation);
+    }
+
+    if (textProperties != null && textProperties.tracking != null) {
+      trackingAnimation = textProperties.tracking.createAnimation();
+      trackingAnimation.addUpdateListener(this);
+      addAnimation(trackingAnimation);
     }
   }
 
@@ -105,6 +112,12 @@ class TextLayer extends BaseLayer {
         }
       }
       float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
+      // Add tracking
+      float tracking = documentData.tracking / 25f;
+      if (trackingAnimation != null) {
+        tracking += trackingAnimation.getValue() / 2.5f;
+      }
+      tx += tracking * composition.getDpScale();
       canvas.translate(tx, 0);
     }
     canvas.restore();
