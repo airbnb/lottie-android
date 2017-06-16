@@ -47,8 +47,6 @@ class TextLayer extends BaseLayer {
     // canvas.concat(parentMatrix);
     DocumentData documentData = textAnimation.getValue();
     float fontScale = (float) documentData.size / 100f;
-    float parentScale = Utils.getScale(parentMatrix);
-    canvas.translate(0, getLineHeight(documentData) * parentScale);
     String text = documentData.text;
     // TODO: pull the right color.
     paint.setColor(colorAnimation.getValue());
@@ -60,25 +58,16 @@ class TextLayer extends BaseLayer {
       for (int j = 0; j < contentGroups.size(); j++) {
         Path path = contentGroups.get(j).getPath();
         path.computeBounds(rectF, false);
-        // matrix.set(parentMatrix);
-        matrix.reset();
+        matrix.set(parentMatrix);
         matrix.preScale(fontScale, fontScale);
         path.transform(matrix);
         canvas.drawPath(path, paint);
       }
-      float tx = (float) character.getWidth() * fontScale * composition.getDpScale();
+      float parentScale = Utils.getScale(parentMatrix);
+      float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
       canvas.translate(tx, 0);
     }
     canvas.restore();
-  }
-
-  private float getLineHeight(DocumentData documentData) {
-    if (documentData.lineHeight > 0) {
-      return (float) (documentData.lineHeight * composition.getDpScale());
-    }
-    // Older versions of AE don't support line height so we arbitrarily make it size * 1.2. This
-    // really shouldn't ever be needed though.
-    return (float) (documentData.size * 1.2 * composition.getDpScale());
   }
 
   private List<ContentGroup> getContentsForCharacter(FontCharacter character) {
