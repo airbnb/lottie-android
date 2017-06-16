@@ -50,6 +50,7 @@ class Layer {
   private final int preCompWidth;
   private final int preCompHeight;
   @Nullable private final AnimatableTextFrame text;
+  @Nullable private final AnimatableTextProperties textProperties;
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
 
@@ -57,7 +58,8 @@ class Layer {
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
       float timeStretch, float startProgress, int preCompWidth, int preCompHeight,
-      @Nullable AnimatableTextFrame text, List<Keyframe<Float>> inOutKeyframes,
+      @Nullable AnimatableTextFrame text, AnimatableTextProperties textProperties,
+      List<Keyframe<Float>> inOutKeyframes,
       MatteType matteType) {
     this.shapes = shapes;
     this.composition = composition;
@@ -76,6 +78,7 @@ class Layer {
     this.preCompWidth = preCompWidth;
     this.preCompHeight = preCompHeight;
     this.text = text;
+    this.textProperties = textProperties;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
   }
@@ -152,9 +155,12 @@ class Layer {
     return solidWidth;
   }
 
-  @Nullable
-  AnimatableTextFrame getText() {
+  @Nullable AnimatableTextFrame getText() {
     return text;
+  }
+
+  @Nullable AnimatableTextProperties getTextProperties() {
+    return textProperties;
   }
 
   @Override public String toString() {
@@ -201,8 +207,8 @@ class Layer {
           Collections.emptyList(), composition, null, -1, LayerType.PreComp, -1, null,
           Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
           0, 0, 0, 0, 0,
-          bounds.width(), bounds.height(), null, Collections.<Keyframe<Float>>emptyList(), MatteType
-          .None);
+          bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
+          MatteType.None);
     }
 
     static Layer newInstance(JSONObject json, LottieComposition composition) {
@@ -264,9 +270,12 @@ class Layer {
       }
 
       AnimatableTextFrame text = null;
+      AnimatableTextProperties textProperties = null;
       JSONObject textJson = json.optJSONObject("t");
       if (textJson != null) {
         text = AnimatableTextFrame.Factory.newInstance(textJson.optJSONObject("d"), composition);
+        JSONObject propertiesJson = textJson.optJSONArray("a").optJSONObject(0);
+        textProperties = AnimatableTextProperties.Factory.newInstance(propertiesJson, composition);
       }
 
       if (json.has("ef")) {
@@ -308,7 +317,7 @@ class Layer {
 
       return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
           masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress,
-          preCompWidth, preCompHeight, text, inOutKeyframes, matteType);
+          preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType);
     }
   }
 }

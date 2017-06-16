@@ -5,7 +5,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ class TextLayer extends BaseLayer {
     setStyle(Style.FILL);
   }};
   private final TextKeyframeAnimation textAnimation;
+  private final KeyframeAnimation<Integer> colorAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
@@ -31,6 +31,11 @@ class TextLayer extends BaseLayer {
     textAnimation = layerModel.getText().createAnimation();
     textAnimation.addUpdateListener(this);
     addAnimation(textAnimation);
+
+    //noinspection ConstantConditions
+    colorAnimation = layerModel.getTextProperties().color.createAnimation();
+    colorAnimation.addUpdateListener(this);
+    addAnimation(colorAnimation);
   }
 
   @Override void setProgress(float progress) {
@@ -46,7 +51,7 @@ class TextLayer extends BaseLayer {
     canvas.translate(0, getLineHeight(documentData) * parentScale);
     String text = documentData.text;
     // TODO: pull the right color.
-    // paint.setColor(documentData.color);
+    paint.setColor(colorAnimation.getValue());
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       FontCharacter character =
@@ -55,7 +60,6 @@ class TextLayer extends BaseLayer {
       for (int j = 0; j < contentGroups.size(); j++) {
         Path path = contentGroups.get(j).getPath();
         path.computeBounds(rectF, false);
-        Log.d("Gabe", "TextLayer#drawLayer\t" + c + " -> " + rectF);
         // matrix.set(parentMatrix);
         matrix.reset();
         matrix.preScale(fontScale, fontScale);

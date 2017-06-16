@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -33,7 +34,7 @@ public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();
-  private final Map<Integer, FontCharacter> characters = new HashMap<>();
+  private final SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
   // This is stored as a set to avoid duplicates.
@@ -88,7 +89,7 @@ public class LottieComposition {
     return precomps.get(id);
   }
 
-  Map<Integer, FontCharacter> getCharacters() {
+  SparseArrayCompat<FontCharacter> getCharacters() {
     return characters;
   }
 
