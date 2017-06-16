@@ -19,7 +19,7 @@ class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, DocumentData
     }
 
     static AnimatableTextFrame newInstance(JSONObject json, LottieComposition composition) {
-      if (json.has("x")) {
+      if (json != null && json.has("x")) {
         composition.addWarning("Lottie doesn't support expressions.");
       }
       AnimatableValueParser.Result<DocumentData> result = AnimatableValueParser
