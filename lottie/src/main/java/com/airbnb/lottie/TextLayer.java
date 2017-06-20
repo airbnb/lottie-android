@@ -96,6 +96,10 @@ class TextLayer extends BaseLayer {
       char c = text.charAt(i);
       FontCharacter character =
           composition.getCharacters().get(FontCharacter.hashFor(c, documentData.fontFamily));
+      if (character == null) {
+        // Something is wrong. Potentially, they didn't export the text as a glyph.
+        continue;
+      }
       List<ContentGroup> contentGroups = getContentsForCharacter(character);
       for (int j = 0; j < contentGroups.size(); j++) {
         Path path = contentGroups.get(j).getPath();
@@ -137,10 +141,11 @@ class TextLayer extends BaseLayer {
     if (contentsForCharacter.containsKey(character)) {
       return contentsForCharacter.get(character);
     }
-    int size = character.getShapes().size();
+    List<ShapeGroup> shapes = character.getShapes();
+    int size = shapes.size();
     List<ContentGroup> contents = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
-      ShapeGroup sg = character.getShapes().get(i);
+      ShapeGroup sg = shapes.get(i);
       contents.add(new ContentGroup(lottieDrawable, this, sg));
     }
     contentsForCharacter.put(character, contents);

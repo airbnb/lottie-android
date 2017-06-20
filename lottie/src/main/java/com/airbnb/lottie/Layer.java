@@ -81,6 +81,10 @@ class Layer {
     this.textProperties = textProperties;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
+
+    if (layerType == LayerType.Text && composition.getCharacters().size() == 0) {
+      composition.addWarning("To use text, you must export text as glyphs in Bodymovin.");
+    }
   }
 
   LottieComposition getComposition() {
