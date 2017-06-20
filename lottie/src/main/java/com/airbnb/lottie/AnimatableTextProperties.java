@@ -20,7 +20,6 @@ class AnimatableTextProperties {
     this.tracking = tracking;
   }
 
-
   static final class Factory {
 
     private Factory() {
@@ -54,7 +53,6 @@ class AnimatableTextProperties {
       if (trackingJson != null) {
         tracking = AnimatableFloatValue.Factory.newInstance(trackingJson, composition);
       }
-
 
       return new AnimatableTextProperties(color, stroke, strokeWidth, tracking);
     }

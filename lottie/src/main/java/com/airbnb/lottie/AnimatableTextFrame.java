@@ -30,8 +30,8 @@ class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, DocumentData
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<DocumentData> {
-    private static final AnimatableTextFrame.ValueFactory
-        INSTANCE = new AnimatableTextFrame.ValueFactory();
+    private static final AnimatableTextFrame.ValueFactory INSTANCE =
+        new AnimatableTextFrame.ValueFactory();
 
     private ValueFactory() {
     }

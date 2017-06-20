@@ -22,14 +22,14 @@ class TextLayer extends BaseLayer {
   private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
     setStyle(Style.STROKE);
   }};
+  private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
   private final TextKeyframeAnimation textAnimation;
+  private final LottieDrawable lottieDrawable;
+  private final LottieComposition composition;
   @Nullable private KeyframeAnimation<Integer> colorAnimation;
   @Nullable private KeyframeAnimation<Integer> strokeAnimation;
   @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
   @Nullable private KeyframeAnimation<Float> trackingAnimation;
-  private final LottieDrawable lottieDrawable;
-  private final LottieComposition composition;
-  private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -65,10 +65,6 @@ class TextLayer extends BaseLayer {
       trackingAnimation.addUpdateListener(this);
       addAnimation(trackingAnimation);
     }
-  }
-
-  @Override void setProgress(float progress) {
-    super.setProgress(progress);
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
