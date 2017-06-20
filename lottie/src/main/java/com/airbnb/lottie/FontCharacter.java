@@ -37,10 +37,6 @@ class FontCharacter {
     return shapes;
   }
 
-  char getCharacter() {
-    return character;
-  }
-
   int getSize() {
     return size;
   }
@@ -51,10 +47,6 @@ class FontCharacter {
 
   String getStyle() {
     return style;
-  }
-
-  String getFontFamily() {
-    return fontFamily;
   }
 
   static class Factory {

@@ -11,16 +11,13 @@ class DocumentData {
   String text;
   String fontFamily;
   int size;
-  int justification;
+  @SuppressWarnings("WeakerAccess") int justification;
   int tracking;
-  double lineHeight;
+  @SuppressWarnings("WeakerAccess") double lineHeight;
   @ColorInt int color;
   @ColorInt int strokeColor;
   int strokeWidth;
   boolean strokeOverFill;
-
-  DocumentData() {
-  }
 
 
   DocumentData(String text, String fontFamily, int size, int justification, int tracking,
