@@ -64,7 +64,10 @@ class FontCharacter {
       int size = json.optInt("size");
       double width = json.optDouble("w");
       String style = json.optString("style");
-      String fontFamily = json.optString("fFamily");
+      // In chars[], fontFamily has spaces but in documentData it doesn't so they hash to different
+      // things.
+      // TODO: make bodymovin be consistent
+      String fontFamily = json.optString("fFamily").replace(" ", "");
       JSONArray shapesJson = json.optJSONObject("data").optJSONArray("shapes");
       List<ShapeGroup> shapes = Collections.emptyList();
       if (shapesJson != null) {
