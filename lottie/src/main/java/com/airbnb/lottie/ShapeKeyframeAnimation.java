@@ -13,6 +13,7 @@ class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Path> {
   }
 
   @Override public Path getValue(Keyframe<ShapeData> keyframe, float keyframeProgress) {
+    tempShapeData.getCurves().clear();
     ShapeData startShapeData = keyframe.startValue;
     ShapeData endShapeData = keyframe.endValue;
 
