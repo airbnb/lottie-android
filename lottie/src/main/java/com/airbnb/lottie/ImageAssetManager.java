@@ -15,14 +15,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-class ImageAssetBitmapManager {
+class ImageAssetManager {
   private final Context context;
   private String imagesFolder;
   @Nullable private ImageAssetDelegate assetDelegate;
   private final Map<String, LottieImageAsset> imageAssets;
   private final Map<String, Bitmap> bitmaps = new HashMap<>();
 
-  ImageAssetBitmapManager(Drawable.Callback callback, String imagesFolder,
+  ImageAssetManager(Drawable.Callback callback, String imagesFolder,
       ImageAssetDelegate assetDelegate, Map<String, LottieImageAsset> imageAssets) {
     this.imagesFolder = imagesFolder;
     if (!TextUtils.isEmpty(imagesFolder) &&

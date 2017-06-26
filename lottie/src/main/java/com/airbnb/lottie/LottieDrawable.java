@@ -40,7 +40,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private float scale = 1f;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
-  @Nullable private ImageAssetBitmapManager imageAssetBitmapManager;
+  @Nullable private ImageAssetManager imageAssetManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
   private boolean playAnimationWhenCompositionAdded;
@@ -130,8 +130,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    *
    */
   @SuppressWarnings("WeakerAccess") public void recycleBitmaps() {
-    if (imageAssetBitmapManager != null) {
-      imageAssetBitmapManager.recycleBitmaps();
+    if (imageAssetManager != null) {
+      imageAssetManager.recycleBitmaps();
     }
   }
 
@@ -181,7 +181,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private void clearComposition() {
     recycleBitmaps();
     compositionLayer = null;
-    imageAssetBitmapManager = null;
+    imageAssetManager = null;
     invalidateSelf();
   }
 
@@ -386,8 +386,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   @SuppressWarnings({"unused", "WeakerAccess"}) public void setImageAssetDelegate(
       @SuppressWarnings("NullableProblems") ImageAssetDelegate assetDelegate) {
     this.imageAssetDelegate = assetDelegate;
-    if (imageAssetBitmapManager != null) {
-      imageAssetBitmapManager.setAssetDelegate(assetDelegate);
+    if (imageAssetManager != null) {
+      imageAssetManager.setAssetDelegate(assetDelegate);
     }
   }
 
@@ -446,7 +446,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   @Nullable
   @SuppressWarnings({"unused", "WeakerAccess"})
   public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
-    ImageAssetBitmapManager bm = getImageAssetBitmapManager();
+    ImageAssetManager bm = getImageAssetManager();
     if (bm == null) {
       Log.w(L.TAG, "Cannot update bitmap. Most likely the drawable is not added to a View " +
         "which prevents Lottie from getting a Context.");
@@ -459,30 +459,30 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   @Nullable
   Bitmap getImageAsset(String id) {
-    ImageAssetBitmapManager bm = getImageAssetBitmapManager();
+    ImageAssetManager bm = getImageAssetManager();
     if (bm != null) {
       return bm.bitmapForId(id);
     }
     return null;
   }
 
-  private ImageAssetBitmapManager getImageAssetBitmapManager() {
+  private ImageAssetManager getImageAssetManager() {
     if (getCallback() == null) {
       // We can't get a bitmap since we can't get a Context from the callback.
       return null;
     }
 
-    if (imageAssetBitmapManager != null && !imageAssetBitmapManager.hasSameContext(getContext())) {
-      imageAssetBitmapManager.recycleBitmaps();
-      imageAssetBitmapManager = null;
+    if (imageAssetManager != null && !imageAssetManager.hasSameContext(getContext())) {
+      imageAssetManager.recycleBitmaps();
+      imageAssetManager = null;
     }
 
-    if (imageAssetBitmapManager == null) {
-      imageAssetBitmapManager = new ImageAssetBitmapManager(getCallback(),
+    if (imageAssetManager == null) {
+      imageAssetManager = new ImageAssetManager(getCallback(),
           imageAssetsFolder, imageAssetDelegate, composition.getImages());
     }
 
-    return imageAssetBitmapManager;
+    return imageAssetManager;
   }
 
   private @Nullable Context getContext() {
