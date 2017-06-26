@@ -16,19 +16,19 @@ class Font {
     this.ascent = ascent;
   }
 
-  @SuppressWarnings("unused") public String getFamily() {
+  @SuppressWarnings("unused") String getFamily() {
     return family;
   }
 
-  public String getName() {
+  String getName() {
     return name;
   }
 
-  public String getStyle() {
+  String getStyle() {
     return style;
   }
 
-  @SuppressWarnings("unused") public double getAscent() {
+  @SuppressWarnings("unused") double getAscent() {
     return ascent;
   }
 
