@@ -9,10 +9,11 @@ import java.util.List;
 
 class FontCharacter {
 
-  static int hashFor(char character, String fontFamily) {
+  static int hashFor(char character, String fontFamily, String style) {
     int result = 0;
     result = 31 * result + (int) character;
     result = 31 * result + fontFamily.hashCode();
+    result = 31 * result + style.hashCode();
     return result;
   }
 
@@ -56,10 +57,7 @@ class FontCharacter {
       int size = json.optInt("size");
       double width = json.optDouble("w");
       String style = json.optString("style");
-      // In chars[], fontFamily has spaces but in documentData it doesn't so they hash to different
-      // things.
-      // TODO: make bodymovin be consistent
-      String fontFamily = json.optString("fFamily").replace(" ", "");
+      String fontFamily = json.optString("fFamily");
       JSONArray shapesJson = json.optJSONObject("data").optJSONArray("shapes");
       List<ShapeGroup> shapes = Collections.emptyList();
       if (shapesJson != null) {
@@ -74,6 +72,6 @@ class FontCharacter {
   }
 
   @Override public int hashCode() {
-    return hashFor(character, fontFamily);
+    return hashFor(character, fontFamily, style);
   }
 }
