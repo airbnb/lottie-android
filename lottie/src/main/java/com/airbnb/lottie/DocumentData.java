@@ -9,7 +9,7 @@ import org.json.JSONObject;
 class DocumentData {
 
   String text;
-  String fontFamily;
+  @SuppressWarnings("WeakerAccess") String fontName;
   int size;
   @SuppressWarnings("WeakerAccess") int justification;
   int tracking;
@@ -20,12 +20,11 @@ class DocumentData {
   boolean strokeOverFill;
 
 
-  DocumentData(String text, String fontFamily, int size, int justification, int tracking,
+  DocumentData(String text, String fontName, int size, int justification, int tracking,
       double lineHeight, @ColorInt int color, @ColorInt int strokeColor, int strokeWidth,
       boolean strokeOverFill) {
     this.text = text;
-    this.fontFamily = fontFamily;
-    // TODO: figure out what these are.
+    this.fontName = fontName;
     this.size = size;
     this.justification = justification;
     this.tracking = tracking;
@@ -38,7 +37,7 @@ class DocumentData {
 
   void set(DocumentData documentData) {
     text = documentData.text;
-    fontFamily = documentData.fontFamily;
+    fontName = documentData.fontName;
     size = documentData.size;
     justification = documentData.justification;
     tracking = documentData.tracking;
@@ -54,7 +53,7 @@ class DocumentData {
 
     static DocumentData newInstance(JSONObject json) {
       String text = json.optString("t");
-      String fontFamily = json.optString("f");
+      String fontName = json.optString("f");
       int size = json.optInt("s");
       int justification = json.optInt("j");
       int tracking = json.optInt("tr");
@@ -78,7 +77,7 @@ class DocumentData {
       int strokeWidth = json.optInt("sw");
       boolean strokeOverFill = json.optBoolean("of");
 
-      return new DocumentData(text, fontFamily, size, justification, tracking, lineHeight, color,
+      return new DocumentData(text, fontName, size, justification, tracking, lineHeight, color,
           strokeColor, strokeWidth, strokeOverFill);
     }
   }
@@ -87,7 +86,7 @@ class DocumentData {
     int result;
     long temp;
     result = text.hashCode();
-    result = 31 * result + fontFamily.hashCode();
+    result = 31 * result + fontName.hashCode();
     result = 31 * result + size;
     result = 31 * result + justification;
     result = 31 * result + tracking;

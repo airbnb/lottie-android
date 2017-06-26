@@ -70,6 +70,11 @@ class TextLayer extends BaseLayer {
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
     DocumentData documentData = textAnimation.getValue();
+    Font font = composition.getFonts().get(documentData.fontName);
+    if (font == null) {
+      // Something is wrong.
+      return;
+    }
     float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
     String text = documentData.text;
@@ -91,7 +96,8 @@ class TextLayer extends BaseLayer {
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       FontCharacter character =
-          composition.getCharacters().get(FontCharacter.hashFor(c, documentData.fontFamily));
+          composition.getCharacters()
+              .get(FontCharacter.hashFor(c, font.getFamily(), font.getStyle()));
       if (character == null) {
         // Something is wrong. Potentially, they didn't export the text as a glyph.
         continue;
@@ -113,11 +119,11 @@ class TextLayer extends BaseLayer {
       }
       float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
       // Add tracking
-      float tracking = documentData.tracking / 25f;
+      float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
-        tracking += trackingAnimation.getValue() / 2.5f;
+        tracking += trackingAnimation.getValue();
       }
-      tx += tracking * composition.getDpScale();
+      tx += tracking * parentScale;
       canvas.translate(tx, 0);
     }
     canvas.restore();

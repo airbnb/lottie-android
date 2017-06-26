@@ -34,6 +34,7 @@ public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();
+  private final Map<String, Font> fonts = new HashMap<>();
   private final SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
   private final List<Layer> layers = new ArrayList<>();
@@ -91,6 +92,10 @@ public class LottieComposition {
 
   SparseArrayCompat<FontCharacter> getCharacters() {
     return characters;
+  }
+
+  Map<String, Font> getFonts() {
+    return fonts;
   }
 
   public boolean hasImages() {
@@ -216,8 +221,9 @@ public class LottieComposition {
       JSONArray assetsJson = json.optJSONArray("assets");
       parseImages(assetsJson, composition);
       parsePrecomps(assetsJson, composition);
-      parseLayers(json, composition);
+      parseFonts(json.optJSONObject("fonts"), composition);
       parseChars(json.optJSONArray("chars"), composition);
+      parseLayers(json, composition);
       return composition;
     }
 
@@ -284,6 +290,21 @@ public class LottieComposition {
         }
         LottieImageAsset image = LottieImageAsset.Factory.newInstance(assetJson);
         composition.images.put(image.getId(), image);
+      }
+    }
+
+    private static void parseFonts(@Nullable JSONObject fonts, LottieComposition composition) {
+      if (fonts == null) {
+        return;
+      }
+      JSONArray fontsList = fonts.optJSONArray("list");
+      if (fontsList == null) {
+        return;
+      }
+      int length = fontsList.length();
+      for (int i = 0; i < length; i++) {
+        Font font = Font.Factory.newInstance(fontsList.optJSONObject(i));
+        composition.fonts.put(font.getName(), font);
       }
     }
 
