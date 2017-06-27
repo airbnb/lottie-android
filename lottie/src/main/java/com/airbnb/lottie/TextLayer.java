@@ -32,9 +32,6 @@ class TextLayer extends BaseLayer {
   @Nullable private KeyframeAnimation<Integer> strokeAnimation;
   @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
   @Nullable private KeyframeAnimation<Float> trackingAnimation;
-  /** out array to measure text advances */
-  @Nullable private float[] advances;
-  @Nullable private String advancesText;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -145,7 +142,10 @@ class TextLayer extends BaseLayer {
       return;
     }
     String text = documentData.text;
-    updateAdvancesIfNecessary(text);
+    TextDelegate textDelegate = lottieDrawable.getTextDelegate();
+    if (textDelegate != null) {
+      text = textDelegate.getTextInternal(text);
+    }
     fillPaint.setTypeface(typeface);
     fillPaint.setTextSize(documentData.size * composition.getDpScale());
     strokePaint.setTypeface(strokePaint.getTypeface());
@@ -155,17 +155,12 @@ class TextLayer extends BaseLayer {
       drawCharacterFromFont(character, documentData, canvas);
       tempCharArray[0] = character;
       float charWidth = fillPaint.measureText(tempCharArray, 0, 1);
-      //noinspection ConstantConditions
-
-      advances[i] = 0;
-
-      float tx = charWidth + advances[i] * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
         tracking += trackingAnimation.getValue();
       }
-      tx += tracking * parentScale;
+      float tx = charWidth + tracking * parentScale;
       canvas.translate(tx, 0);
     }
   }
@@ -231,16 +226,5 @@ class TextLayer extends BaseLayer {
     }
     contentsForCharacter.put(character, contents);
     return contents;
-  }
-
-  private void updateAdvancesIfNecessary(String text) {
-    if (text.equals(advancesText)) {
-      return;
-    }
-    if (advances == null || advances.length < text.length()) {
-      advances = new float[text.length()];
-    }
-    advancesText = text;
-    fillPaint.getTextWidths(advancesText, advances);
   }
 }

@@ -5,14 +5,20 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class TextDelegate {
+/**
+ * Extend this class to replace animation text with custom text. This can be useful to handle
+ * translations.
+ *
+ * The only method you should have to override is {@link #getText(String)}.
+ */
+public class TextDelegate {
 
   private final Map<String, String> stringMap = new HashMap<>();
   @Nullable private final LottieAnimationView animationView;
   @Nullable private final LottieDrawable drawable;
   private boolean cacheText = true;
 
-  protected TextDelegate(
+  public TextDelegate(
       @SuppressWarnings("NullableProblems") LottieAnimationView animationView) {
     this.animationView = animationView;
     drawable = null;
@@ -29,6 +35,14 @@ public abstract class TextDelegate {
    */
   public String getText(String input) {
     return input;
+  }
+
+  /**
+   * Update the text that will be rendered for the given input text.
+   */
+  public void setText(String input, String output) {
+    stringMap.put(input, output);
+    invalidate();
   }
 
   /**

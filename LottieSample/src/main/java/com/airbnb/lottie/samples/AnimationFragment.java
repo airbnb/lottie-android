@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
+import com.airbnb.lottie.TextDelegate;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -175,6 +176,12 @@ public class AnimationFragment extends Fragment {
       }
 
       @Override public void onStopTrackingTouch(SeekBar seekBar) {
+      }
+    });
+
+    animationView.setTextDelegate(new TextDelegate(animationView) {
+      @Override public String getText(String input) {
+        return new StringBuffer(input).reverse().toString();
       }
     });
 

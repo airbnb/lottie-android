@@ -27,7 +27,7 @@
                 android:resource="@xml/shortcuts"/>
         </activity>
         <activity
-            android:name=".FontActivity"
+            android:name=".TypographyDemoActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible"/>
         <activity
