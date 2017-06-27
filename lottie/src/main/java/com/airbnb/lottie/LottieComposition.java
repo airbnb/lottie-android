@@ -34,6 +34,7 @@ public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();
+  /** Map of font names to fonts */
   private final Map<String, Font> fonts = new HashMap<>();
   private final SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();

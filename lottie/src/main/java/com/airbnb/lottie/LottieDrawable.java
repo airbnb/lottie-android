@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.FloatRange;
@@ -43,6 +44,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   @Nullable private ImageAssetManager imageAssetManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
+  @Nullable private FontAssetManager fontAssetManager;
+  @Nullable FontAssetDelegate fontAssetDelegate;
+  @Nullable TextDelegate textDelegate;
   private boolean playAnimationWhenCompositionAdded;
   private boolean reverseAnimationWhenCompositionAdded;
   private boolean systemAnimationsAreDisabled;
@@ -387,8 +391,31 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
       @SuppressWarnings("NullableProblems") ImageAssetDelegate assetDelegate) {
     this.imageAssetDelegate = assetDelegate;
     if (imageAssetManager != null) {
-      imageAssetManager.setAssetDelegate(assetDelegate);
+      imageAssetManager.setDelegate(assetDelegate);
     }
+  }
+
+  /**
+   * Use this to manually set fonts.
+   */
+  @SuppressWarnings({"unused", "WeakerAccess"}) public void setFontAssetDelegate(
+      @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
+    this.fontAssetDelegate = assetDelegate;
+    if (fontAssetManager != null) {
+      fontAssetManager.setDelegate(assetDelegate);
+    }
+  }
+
+  public void setTextDelegate(@SuppressWarnings("NullableProblems") TextDelegate textDelegate) {
+    this.textDelegate = textDelegate;
+  }
+
+  @Nullable TextDelegate getTextDelegate() {
+    return textDelegate;
+  }
+
+  boolean useTextGlyphs() {
+    return textDelegate == null && composition.getCharacters().size() > 0;
   }
 
   @SuppressWarnings("WeakerAccess") public float getScale() {
@@ -483,6 +510,28 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     }
 
     return imageAssetManager;
+  }
+
+  @Nullable
+  Typeface getTypeface(String fontFamily, String style) {
+    FontAssetManager assetManager = getFontAssetManager();
+    if (assetManager != null) {
+      return assetManager.getTypeface(fontFamily, style);
+    }
+    return null;
+  }
+
+  private FontAssetManager getFontAssetManager() {
+    if (getCallback() == null) {
+      // We can't get a bitmap since we can't get a Context from the callback.
+      return null;
+    }
+
+    if (fontAssetManager == null) {
+      fontAssetManager = new FontAssetManager(getCallback(), fontAssetDelegate);
+    }
+
+    return fontAssetManager;
   }
 
   private @Nullable Context getContext() {

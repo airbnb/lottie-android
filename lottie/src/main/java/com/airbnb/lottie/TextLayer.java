@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 class TextLayer extends BaseLayer {
+  private final char[] tempCharArray = new char[1];
   private final RectF rectF = new RectF();
   private final Matrix matrix = new Matrix();
   private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
@@ -30,6 +32,9 @@ class TextLayer extends BaseLayer {
   @Nullable private KeyframeAnimation<Integer> strokeAnimation;
   @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
   @Nullable private KeyframeAnimation<Float> trackingAnimation;
+  /** out array to measure text advances */
+  @Nullable private float[] advances;
+  @Nullable private String advancesText;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -69,15 +74,16 @@ class TextLayer extends BaseLayer {
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
+    if (!lottieDrawable.useTextGlyphs()) {
+      canvas.setMatrix(parentMatrix);
+    }
     DocumentData documentData = textAnimation.getValue();
     Font font = composition.getFonts().get(documentData.fontName);
     if (font == null) {
       // Something is wrong.
       return;
     }
-    float fontScale = (float) documentData.size / 100f;
-    float parentScale = Utils.getScale(parentMatrix);
-    String text = documentData.text;
+
     if (colorAnimation != null) {
       fillPaint.setColor(colorAnimation.getValue());
     } else {
@@ -91,32 +97,35 @@ class TextLayer extends BaseLayer {
     if (strokeWidthAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
+      float parentScale = Utils.getScale(parentMatrix);
       strokePaint.setStrokeWidth(documentData.strokeWidth * composition.getDpScale() * parentScale);
     }
+
+    if (lottieDrawable.useTextGlyphs()) {
+      drawTextGlyphs(documentData, parentMatrix, font, canvas);
+    } else {
+      drawTextWithFont(documentData, font, parentMatrix, canvas);
+    }
+
+    canvas.restore();
+  }
+
+  private void drawTextGlyphs(
+      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
+    float fontScale = (float) documentData.size / 100f;
+    float parentScale = Utils.getScale(parentMatrix);
+    String text = documentData.text;
+
+
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
-      FontCharacter character =
-          composition.getCharacters()
-              .get(FontCharacter.hashFor(c, font.getFamily(), font.getStyle()));
+      int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
+      FontCharacter character = composition.getCharacters().get(characterHash);
       if (character == null) {
         // Something is wrong. Potentially, they didn't export the text as a glyph.
         continue;
       }
-      List<ContentGroup> contentGroups = getContentsForCharacter(character);
-      for (int j = 0; j < contentGroups.size(); j++) {
-        Path path = contentGroups.get(j).getPath();
-        path.computeBounds(rectF, false);
-        matrix.set(parentMatrix);
-        matrix.preScale(fontScale, fontScale);
-        path.transform(matrix);
-        if (documentData.strokeOverFill) {
-          drawCharacter(canvas, path, fillPaint);
-          drawCharacter(canvas, path, strokePaint);
-        } else {
-          drawCharacter(canvas, path, strokePaint);
-          drawCharacter(canvas, path, fillPaint);
-        }
-      }
+      drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
       float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
@@ -126,10 +135,65 @@ class TextLayer extends BaseLayer {
       tx += tracking * parentScale;
       canvas.translate(tx, 0);
     }
-    canvas.restore();
   }
 
-  private void drawCharacter(Canvas canvas, Path path, Paint paint) {
+  private void drawTextWithFont(
+      DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
+    float parentScale = Utils.getScale(parentMatrix);
+    Typeface typeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
+    if (typeface == null) {
+      return;
+    }
+    String text = documentData.text;
+    updateAdvancesIfNecessary(text);
+    fillPaint.setTypeface(typeface);
+    fillPaint.setTextSize(documentData.size * composition.getDpScale());
+    strokePaint.setTypeface(strokePaint.getTypeface());
+    strokePaint.setTextSize(fillPaint.getTextSize());
+    for (int i = 0; i < text.length(); i++) {
+      char character = text.charAt(i);
+      drawCharacterFromFont(character, documentData, canvas);
+      tempCharArray[0] = character;
+      float charWidth = fillPaint.measureText(tempCharArray, 0, 1);
+      //noinspection ConstantConditions
+
+      advances[i] = 0;
+
+      float tx = charWidth + advances[i] * parentScale;
+      // Add tracking
+      float tracking = documentData.tracking / 10f;
+      if (trackingAnimation != null) {
+        tracking += trackingAnimation.getValue();
+      }
+      tx += tracking * parentScale;
+      canvas.translate(tx, 0);
+    }
+  }
+
+  private void drawCharacterAsGlyph(
+      FontCharacter character,
+      Matrix parentMatrix,
+      float fontScale,
+      DocumentData documentData,
+      Canvas canvas) {
+    List<ContentGroup> contentGroups = getContentsForCharacter(character);
+    for (int j = 0; j < contentGroups.size(); j++) {
+      Path path = contentGroups.get(j).getPath();
+      path.computeBounds(rectF, false);
+      matrix.set(parentMatrix);
+      matrix.preScale(fontScale, fontScale);
+      path.transform(matrix);
+      if (documentData.strokeOverFill) {
+        drawGlyph(path, fillPaint, canvas);
+        drawGlyph(path, strokePaint, canvas);
+      } else {
+        drawGlyph(path, strokePaint, canvas);
+        drawGlyph(path, fillPaint, canvas);
+      }
+    }
+  }
+
+  private void drawGlyph(Path path, Paint paint, Canvas canvas) {
     if (paint.getColor() == Color.TRANSPARENT) {
       return;
     }
@@ -137,6 +201,21 @@ class TextLayer extends BaseLayer {
       return;
     }
     canvas.drawPath(path, paint);
+  }
+
+  private void drawCharacterFromFont(char c, DocumentData documentData, Canvas canvas) {
+    tempCharArray[0] = c;
+    if (documentData.strokeOverFill) {
+      drawCharacter(tempCharArray, fillPaint, canvas);
+      drawCharacter(tempCharArray, strokePaint, canvas);
+    } else {
+      drawCharacter(tempCharArray, strokePaint, canvas);
+      drawCharacter(tempCharArray, fillPaint, canvas);
+    }
+  }
+
+  private void drawCharacter(char[] character, Paint paint, Canvas canvas) {
+    canvas.drawText(character, 0, 1, 0, 0, paint);
   }
 
   private List<ContentGroup> getContentsForCharacter(FontCharacter character) {
@@ -152,5 +231,16 @@ class TextLayer extends BaseLayer {
     }
     contentsForCharacter.put(character, contents);
     return contents;
+  }
+
+  private void updateAdvancesIfNecessary(String text) {
+    if (text.equals(advancesText)) {
+      return;
+    }
+    if (advances == null || advances.length < text.length()) {
+      advances = new float[text.length()];
+    }
+    advancesText = text;
+    fillPaint.getTextWidths(advancesText, advances);
   }
 }

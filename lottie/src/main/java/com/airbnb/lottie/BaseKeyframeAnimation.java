@@ -18,7 +18,6 @@ abstract class BaseKeyframeAnimation<K, A> {
   // This is not a Set because we don't want to create an iterator object on every setProgress.
   final List<AnimationListener> listeners = new ArrayList<>();
   private boolean isDiscrete = false;
-  @Nullable private A previousValue;
 
   private final List<? extends Keyframe<K>> keyframes;
   private float progress = 0f;
@@ -49,12 +48,8 @@ abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
 
-    A value = getValue();
-    if (previousValue == null || !previousValue.equals(value)) {
-      previousValue = value;
-      for (int i = 0; i < listeners.size(); i++) {
-        listeners.get(i).onValueChanged();
-      }
+    for (int i = 0; i < listeners.size(); i++) {
+      listeners.get(i).onValueChanged();
     }
   }
 
