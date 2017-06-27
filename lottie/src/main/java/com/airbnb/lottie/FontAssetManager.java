@@ -19,7 +19,7 @@ class FontAssetManager {
   private final Map<String, Typeface> fontFamilies = new HashMap<>();
   private final AssetManager assetManager;
   @Nullable private FontAssetDelegate delegate;
-  private String defaultFontFileExtension = ".ttf";
+  private String defaultFontFileExtension = ".otf";
 
   FontAssetManager(Drawable.Callback callback, @Nullable FontAssetDelegate delegate) {
     this.delegate = delegate;
@@ -78,7 +78,8 @@ class FontAssetManager {
     }
 
     if (typeface == null) {
-      typeface = Typeface.createFromAsset(assetManager, "fonts/" + fontFamily + defaultFontFileExtension);
+      String path = "fonts/" + fontFamily + defaultFontFileExtension;
+      typeface = Typeface.createFromAsset(assetManager, path);
     }
 
     fontFamilies.put(fontFamily, typeface);

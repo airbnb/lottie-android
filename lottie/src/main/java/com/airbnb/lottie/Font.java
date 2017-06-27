@@ -32,8 +32,6 @@ class Font {
     return ascent;
   }
 
-
-
   static class Factory {
 
     static Font newInstance(JSONObject json) {
