@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,15 @@ public class TextDelegate {
   @Nullable private final LottieAnimationView animationView;
   @Nullable private final LottieDrawable drawable;
   private boolean cacheText = true;
+
+  /**
+   * This normally needs to be able to invalidate the view/drawable but not for the test.
+   */
+  @VisibleForTesting
+  TextDelegate() {
+    animationView = null;
+    drawable = null;
+  }
 
   public TextDelegate(
       @SuppressWarnings("NullableProblems") LottieAnimationView animationView) {

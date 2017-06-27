@@ -14,17 +14,19 @@ import java.util.concurrent.Semaphore;
 class TestRobot {
 
   static void testLinearAnimation(MainActivity activity, String fileName) {
-    testLinearAnimation(activity, fileName, null);
+    testLinearAnimation(activity, fileName, null, null);
   }
 
   static void testLinearAnimation(MainActivity activity, String fileName,
-      @Nullable String imageAssetsFolder) {
+      @Nullable String imageAssetsFolder, @Nullable TextDelegate textDelegate) {
     LottieComposition composition =
         LottieComposition.Factory.fromFileSync(activity, fileName);
     AnimationLinearLayout view = new AnimationLinearLayout(activity);
 
     view.setImageAssetsFolder(imageAssetsFolder);
     view.setComposition(composition);
+    view.setTextDelegate(textDelegate);
+
 
     ViewHelpers
         .setupView(view)
