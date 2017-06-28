@@ -37,6 +37,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
@@ -108,6 +109,8 @@ public class AnimationFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_animation, container, false);
     ButterKnife.bind(this, view);
+
+    L.setTraceEnabled(true);
 
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_back);

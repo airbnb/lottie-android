@@ -274,6 +274,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @Override public void draw(@NonNull Canvas canvas) {
+    L.beginSection("Drawable#draw");
     if (compositionLayer == null) {
       return;
     }
@@ -285,6 +286,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     matrix.reset();
     matrix.preScale(scale, scale);
     compositionLayer.draw(canvas, matrix, alpha);
+    L.endSection("Drawable#draw");
   }
 
   void systemAnimationsAreDisabled() {

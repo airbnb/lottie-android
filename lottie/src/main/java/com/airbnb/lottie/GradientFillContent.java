@@ -36,10 +36,12 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
   private final KeyframeAnimation<PointF> endPointAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
+  private final String drawTraceSectionName;
 
   GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     name = fill.getName();
     this.lottieDrawable = lottieDrawable;
+    drawTraceSectionName = layer.getName() + "#draw";
     type = fill.getGradientType();
     path.setFillType(fill.getFillType());
     cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
@@ -75,6 +77,7 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    L.beginSection(drawTraceSectionName);
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
       path.addPath(paths.get(i).getPath(), parentMatrix);
@@ -96,6 +99,7 @@ class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.Anima
     paint.setAlpha(alpha);
 
     canvas.drawPath(path, paint);
+    L.endSection(drawTraceSectionName);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

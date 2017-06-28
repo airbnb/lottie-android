@@ -13,6 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+
+  private static final class TraceSections {
+    private final String draw;
+    private final String drawTrimPath;
+    private final String drawPath;
+
+    TraceSections(String layerName) {
+      draw= layerName + "#draw";
+      drawTrimPath= layerName + "#drawTrimmedPath";
+      drawPath= layerName + "#drawPath";
+    }
+  }
+
   private final PathMeasure pm = new PathMeasure();
   private final Path path = new Path();
   private final Path trimPathPath = new Path();
@@ -20,6 +33,7 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
   private final LottieDrawable lottieDrawable;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;
+  private final TraceSections traceSections;
   final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
   private final BaseKeyframeAnimation<?, Float> widthAnimation;
@@ -31,6 +45,8 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
       Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width,
       List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
     this.lottieDrawable = lottieDrawable;
+    traceSections = new TraceSections(layer.getName());
+
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeCap(cap);
     paint.setStrokeJoin(join);
@@ -110,11 +126,13 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    L.beginSection(traceSections.draw);
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(alpha);
     paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
+      L.endSection(traceSections.draw);
       return;
     }
     applyDashPatternIfNeeded(parentMatrix);
@@ -126,17 +144,22 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
       if (pathGroup.trimPath != null) {
         applyTrimPath(canvas, pathGroup, parentMatrix);
       } else {
+        L.beginSection(traceSections.drawPath);
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
           path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
         }
         canvas.drawPath(path, paint);
       }
+      L.endSection(traceSections.drawPath);
     }
+    L.endSection(traceSections.draw);
   }
 
   private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix) {
+    L.beginSection(traceSections.drawTrimPath);
     if (pathGroup.trimPath == null) {
+      L.endSection(traceSections.drawTrimPath);
       return;
     }
     path.reset();
@@ -197,6 +220,7 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
         }
       currentLength += length;
     }
+    L.endSection(traceSections.drawTrimPath);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

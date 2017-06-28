@@ -62,6 +62,7 @@ class CompositionLayer extends BaseLayer {
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    L.beginSection("CompositionLayer#draw");
     canvas.getClipBounds(originalClipRect);
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
     parentMatrix.mapRect(newClipRect);
@@ -72,12 +73,14 @@ class CompositionLayer extends BaseLayer {
         nonEmptyClip = canvas.clipRect(newClipRect);
       }
       if (nonEmptyClip) {
-        layers.get(i).draw(canvas, parentMatrix, parentAlpha);
+        BaseLayer layer = layers.get(i);
+        layer.draw(canvas, parentMatrix, parentAlpha);
       }
     }
     if (!originalClipRect.isEmpty()) {
       canvas.clipRect(originalClipRect, Region.Op.REPLACE);
     }
+    L.endSection("CompositionLayer#draw");
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

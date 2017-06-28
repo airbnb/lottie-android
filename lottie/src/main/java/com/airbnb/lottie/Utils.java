@@ -89,13 +89,16 @@ final class Utils {
 
   static void applyTrimPathIfNeeded(
       Path path, float startValue, float endValue, float offsetValue) {
+    L.beginSection("applyTrimPathIfNeeded");
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();
     if (startValue == 1f && endValue == 0f) {
+      L.endSection("applyTrimPathIfNeeded");
       return;
     }
     if (length == 0f || Math.abs(endValue - startValue - 1) < .01) {
+      L.endSection("applyTrimPathIfNeeded");
       return;
     }
     float start = length * startValue;
@@ -123,6 +126,7 @@ final class Utils {
     // If the start and end are equals, return an empty path.
     if (newStart == newEnd) {
       path.reset();
+      L.endSection("applyTrimPathIfNeeded");
       return;
     }
 
@@ -155,6 +159,7 @@ final class Utils {
       tempPath.addPath(tempPath2);
     }
     path.set(tempPath);
+    L.endSection("applyTrimPathIfNeeded");
   }
 
   @SuppressWarnings("SameParameterValue")
