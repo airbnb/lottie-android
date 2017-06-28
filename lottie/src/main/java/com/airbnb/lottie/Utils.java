@@ -157,6 +157,7 @@ final class Utils {
     path.set(tempPath);
   }
 
+  @SuppressWarnings("SameParameterValue")
   static boolean isAtLeastVersion(LottieComposition composition, int major, int minor, int patch) {
     if (composition.getMajorVersion() < major) {
       return false;

@@ -233,9 +233,9 @@ class Layer {
         layerType = LayerType.Unknown;
       }
 
-      if (layerType == LayerType.Text && !Utils.isAtLeastVersion(composition, 4, 7, 1)) {
+      if (layerType == LayerType.Text && !Utils.isAtLeastVersion(composition, 4, 7, 0)) {
         layerType = LayerType.Unknown;
-        composition.addWarning("Text is only supported on bodymovin >= 4.7.1");
+        composition.addWarning("Text is only supported on bodymovin >= 4.7.0");
       }
 
       long parentId = json.optLong("parent", -1);

@@ -19,7 +19,7 @@ class FontAssetManager {
   private final Map<String, Typeface> fontFamilies = new HashMap<>();
   private final AssetManager assetManager;
   @Nullable private FontAssetDelegate delegate;
-  private String defaultFontFileExtension = ".otf";
+  private String defaultFontFileExtension = ".ttf";
 
   FontAssetManager(Drawable.Callback callback, @Nullable FontAssetDelegate delegate) {
     this.delegate = delegate;
