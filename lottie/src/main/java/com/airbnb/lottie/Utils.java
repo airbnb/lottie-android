@@ -156,4 +156,20 @@ final class Utils {
     }
     path.set(tempPath);
   }
+
+  static boolean isAtLeastVersion(LottieComposition composition, int major, int minor, int patch) {
+    if (composition.getMajorVersion() < major) {
+      return false;
+    } else if (composition.getMajorVersion() > major) {
+      return true;
+    }
+
+    if (composition.getMinorVersion() < minor) {
+      return false;
+    } else if (composition.getMinorVersion() > minor) {
+      return true;
+    }
+
+    return composition.getPatchVersion() >= patch;
+  }
 }

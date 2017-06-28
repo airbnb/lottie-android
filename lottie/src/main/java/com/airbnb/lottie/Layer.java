@@ -233,6 +233,11 @@ class Layer {
         layerType = LayerType.Unknown;
       }
 
+      if (layerType == LayerType.Text && !Utils.isAtLeastVersion(composition, 4, 7, 1)) {
+        layerType = LayerType.Unknown;
+        composition.addWarning("Text is only supported on bodymovin >= 4.7.1");
+      }
+
       long parentId = json.optLong("parent", -1);
 
       if (layerType == LayerType.Solid) {
