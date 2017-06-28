@@ -204,7 +204,7 @@ class Layer {
       // TODO: make sure in out keyframes work
       Rect bounds = composition.getBounds();
       return new Layer(
-          Collections.emptyList(), composition, null, -1, LayerType.PreComp, -1, null,
+          Collections.emptyList(), composition, "root", -1, LayerType.PreComp, -1, null,
           Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
           0, 0, 0, 0, 0,
           bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),

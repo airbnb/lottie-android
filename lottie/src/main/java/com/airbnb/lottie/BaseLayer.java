@@ -93,8 +93,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
-    String traceLayerName = layerModel.getName() == null ? "root" : layerModel.getName();
-    traceSections = new TraceSections(traceLayerName);
+    traceSections = new TraceSections(layerModel.getName());
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
