@@ -81,10 +81,6 @@ class Layer {
     this.textProperties = textProperties;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
-
-    if (layerType == LayerType.Text && composition.getCharacters().size() == 0) {
-      composition.addWarning("To use text, you must export text as glyphs in Bodymovin.");
-    }
   }
 
   LottieComposition getComposition() {
@@ -235,6 +231,11 @@ class Layer {
         layerType = LayerType.values()[layerTypeInt];
       } else {
         layerType = LayerType.Unknown;
+      }
+
+      if (layerType == LayerType.Text && !Utils.isAtLeastVersion(composition, 4, 7, 0)) {
+        layerType = LayerType.Unknown;
+        composition.addWarning("Text is only supported on bodymovin >= 4.7.0");
       }
 
       long parentId = json.optLong("parent", -1);

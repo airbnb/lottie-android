@@ -50,6 +50,16 @@ public class AnimationLinearLayout extends LinearLayout {
     }
   }
 
+  void setTextDelegate(TextDelegate textDelegate) {
+    for (int i = getChildCount() - 1; i >= 0; i--) {
+      View child = getChildAt(i);
+      if (!(child instanceof LottieAnimationView)) {
+        continue;
+      }
+      ((LottieAnimationView) child).setTextDelegate(textDelegate);
+    }
+  }
+
   void setComposition(LottieComposition composition) {
     for (int i = getChildCount() - 1; i >= 0; i--) {
       View child = getChildAt(i);

@@ -18,12 +18,12 @@ import java.util.Map;
 class ImageAssetManager {
   private final Context context;
   private String imagesFolder;
-  @Nullable private ImageAssetDelegate assetDelegate;
+  @Nullable private ImageAssetDelegate delegate;
   private final Map<String, LottieImageAsset> imageAssets;
   private final Map<String, Bitmap> bitmaps = new HashMap<>();
 
   ImageAssetManager(Drawable.Callback callback, String imagesFolder,
-      ImageAssetDelegate assetDelegate, Map<String, LottieImageAsset> imageAssets) {
+      ImageAssetDelegate delegate, Map<String, LottieImageAsset> imageAssets) {
     this.imagesFolder = imagesFolder;
     if (!TextUtils.isEmpty(imagesFolder) &&
         this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
@@ -39,11 +39,11 @@ class ImageAssetManager {
 
     context = ((View) callback).getContext();
     this.imageAssets = imageAssets;
-    setAssetDelegate(assetDelegate);
+    setDelegate(delegate);
   }
 
-  void setAssetDelegate(@Nullable ImageAssetDelegate assetDelegate) {
-    this.assetDelegate = assetDelegate;
+  void setDelegate(@Nullable ImageAssetDelegate assetDelegate) {
+    this.delegate = assetDelegate;
   }
 
   @Nullable
@@ -59,8 +59,8 @@ class ImageAssetManager {
       if (imageAsset == null) {
         return null;
       }
-      if (assetDelegate != null) {
-        bitmap = assetDelegate.fetchBitmap(imageAsset);
+      if (delegate != null) {
+        bitmap = delegate.fetchBitmap(imageAsset);
         if (bitmap != null) {
           bitmaps.put(id, bitmap);
         }

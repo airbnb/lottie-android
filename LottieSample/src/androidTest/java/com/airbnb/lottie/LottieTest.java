@@ -36,7 +36,11 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "PinJump.json");
     TestRobot.testLinearAnimation(activity, "TwitterHeart.json");
     TestRobot.testLinearAnimation(activity, "Hello World.json");
-    TestRobot.testLinearAnimation(activity, "WeAccept.json", "Images/WeAccept");
+    TestRobot.testLinearAnimation(activity, "WeAccept.json", "Images/WeAccept", null);
+    TextDelegate delegate = new TextDelegate();
+    delegate.setText("NAME", "Gabe");
+    TestRobot.testLinearAnimation(activity, "Name.json", null, delegate);
+    TestRobot.testLinearAnimation(activity, "Type.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Animated Graph.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Beating Heart.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Progress Success.json");

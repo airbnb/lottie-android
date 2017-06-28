@@ -10,7 +10,7 @@ import android.widget.ScrollView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class FontActivity extends AppCompatActivity {
+public class TypographyDemoActivity extends AppCompatActivity {
 
   @BindView(R.id.scroll_view) ScrollView scrollView;
   @BindView(R.id.font_view) LottieFontViewGroup fontView;
@@ -25,7 +25,7 @@ public class FontActivity extends AppCompatActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_font);
+    setContentView(R.layout.activity_typography_demo);
     ButterKnife.bind(this);
 
     fontView.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);

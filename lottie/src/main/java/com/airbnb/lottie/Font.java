@@ -7,9 +7,9 @@ class Font {
   private final String family;
   private final String name;
   private final String style;
-  private final double ascent;
+  private final float ascent;
 
-  Font(String family, String name, String style, double ascent) {
+  Font(String family, String name, String style, float ascent) {
     this.family = family;
     this.name = name;
     this.style = style;
@@ -28,7 +28,7 @@ class Font {
     return style;
   }
 
-  @SuppressWarnings("unused") double getAscent() {
+  @SuppressWarnings("unused") float getAscent() {
     return ascent;
   }
 
@@ -38,7 +38,7 @@ class Font {
       String family = json.optString("fFamily");
       String name = json.optString("fName");
       String style = json.optString("fStyle");
-      double ascent = json.optDouble("ascent");
+      float ascent = (float) json.optDouble("ascent");
       return new Font(family, name, style, ascent);
     }
   }

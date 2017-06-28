@@ -34,6 +34,7 @@ public class LottieComposition {
 
   private final Map<String, List<Layer>> precomps = new HashMap<>();
   private final Map<String, LottieImageAsset> images = new HashMap<>();
+  /** Map of font names to fonts */
   private final Map<String, Font> fonts = new HashMap<>();
   private final SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
   private final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
@@ -45,14 +46,21 @@ public class LottieComposition {
   private final long endFrame;
   private final int frameRate;
   private final float dpScale;
+  /* Bodymovin version */
+  private final int majorVersion;
+  private final int minorVersion;
+  private final int patchVersion;
 
-  private LottieComposition(
-      Rect bounds, long startFrame, long endFrame, int frameRate, float dpScale) {
+  private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate,
+      float dpScale, int major, int minor, int patch) {
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
     this.frameRate = frameRate;
     this.dpScale = dpScale;
+    this.majorVersion = major;
+    this.minorVersion = minor;
+    this.patchVersion = patch;
   }
 
   void addWarning(String warning) {
@@ -75,6 +83,18 @@ public class LottieComposition {
   @SuppressWarnings("WeakerAccess") public long getDuration() {
     long frameDuration = endFrame - startFrame;
     return (long) (frameDuration / (float) frameRate * 1000);
+  }
+
+  int getMajorVersion() {
+    return majorVersion;
+  }
+
+  int getMinorVersion() {
+    return minorVersion;
+  }
+
+  int getPatchVersion() {
+    return patchVersion;
   }
 
   long getEndFrame() {
@@ -216,8 +236,13 @@ public class LottieComposition {
       long startFrame = json.optLong("ip", 0);
       long endFrame = json.optLong("op", 0);
       int frameRate = json.optInt("fr", 0);
-      LottieComposition composition =
-          new LottieComposition(bounds, startFrame, endFrame, frameRate, scale);
+      String version = json.optString("v");
+      String[] versions = version.split("[.]");
+      int major = Integer.parseInt(versions[0]);
+      int minor = Integer.parseInt(versions[1]);
+      int patch = Integer.parseInt(versions[2]);
+      LottieComposition composition = new LottieComposition(
+          bounds, startFrame, endFrame, frameRate, scale, major, minor, patch);
       JSONArray assetsJson = json.optJSONArray("assets");
       parseImages(assetsJson, composition);
       parsePrecomps(assetsJson, composition);
