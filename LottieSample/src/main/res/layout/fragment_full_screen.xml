@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scaleType="centerCrop"
-    app:lottie_fileName="LottieBoundsTest_01.json"
+    app:lottie_fileName="Walkthrough/FullScreen.json"
     app:lottie_loop="true"
     app:lottie_autoPlay="true" />
