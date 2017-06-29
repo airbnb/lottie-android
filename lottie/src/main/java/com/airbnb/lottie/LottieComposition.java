@@ -41,6 +41,7 @@ public class LottieComposition {
   private final List<Layer> layers = new ArrayList<>();
   // This is stored as a set to avoid duplicates.
   private final HashSet<String> warnings = new HashSet<>();
+  private final PerformanceTracker performanceTracker = new PerformanceTracker();
   private final Rect bounds;
   private final long startFrame;
   private final long endFrame;
@@ -70,6 +71,14 @@ public class LottieComposition {
 
   public ArrayList<String> getWarnings() {
     return new ArrayList<>(Arrays.asList(warnings.toArray(new String[warnings.size()])));
+  }
+
+  public void setPerformanceTrackingEnabled(boolean enabled) {
+    performanceTracker.setEnabled(enabled);
+  }
+
+  public PerformanceTracker getPerformanceTracker() {
+    return performanceTracker;
   }
 
   Layer layerModelForId(long id) {

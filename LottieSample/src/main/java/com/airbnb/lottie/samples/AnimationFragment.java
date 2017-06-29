@@ -111,6 +111,7 @@ public class AnimationFragment extends Fragment {
     ButterKnife.bind(this, view);
 
     L.setTraceEnabled(true);
+    animationView.setPerformanceTrackingEnabled(true);
 
     ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
     toolbar.setNavigationIcon(R.drawable.ic_back);
@@ -136,6 +137,8 @@ public class AnimationFragment extends Fragment {
       @Override public void onAnimationEnd(Animator animation) {
         recordDroppedFrames();
         postUpdatePlayButtonText();
+        //noinspection ConstantConditions
+        animationView.getPerformanceTracker().logRenderTimes();
       }
 
       @Override public void onAnimationCancel(Animator animation) {
@@ -143,6 +146,9 @@ public class AnimationFragment extends Fragment {
       }
 
       @Override public void onAnimationRepeat(Animator animation) {
+        //noinspection ConstantConditions
+        animationView.getPerformanceTracker().logRenderTimes();
+        animationView.getPerformanceTracker().clearRenderTimes();
         recordDroppedFrames();
         startRecordingDroppedFrames();
       }

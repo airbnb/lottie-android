@@ -564,6 +564,15 @@ public class LottieAnimationView extends AppCompatImageView {
     return composition != null ? composition.getDuration() : 0;
   }
 
+  public void setPerformanceTrackingEnabled(boolean enabled) {
+    lottieDrawable.setPerformanceTrackingEnabled(enabled);
+  }
+
+  @Nullable
+  public PerformanceTracker getPerformanceTracker() {
+    return lottieDrawable.getPerformanceTracker();
+  }
+
   private void enableOrDisableHardwareLayer() {
     boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);

@@ -53,6 +53,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private boolean enableMergePaths;
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
+  private boolean performanceTrackingEnabled;
 
   @SuppressWarnings("WeakerAccess") public LottieDrawable() {
     animator.setRepeatCount(0);
@@ -163,8 +164,24 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
       reverseAnimationWhenCompositionAdded = false;
       reverseAnimation();
     }
+    composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
     return true;
+  }
+
+  public void setPerformanceTrackingEnabled(boolean enabled) {
+    performanceTrackingEnabled = enabled;
+    if (composition != null) {
+      composition.setPerformanceTrackingEnabled(enabled);
+    }
+  }
+
+  @Nullable
+  public PerformanceTracker getPerformanceTracker() {
+    if (composition != null) {
+      return composition.getPerformanceTracker();
+    }
+    return null;
   }
 
   private void buildCompositionLayer() {

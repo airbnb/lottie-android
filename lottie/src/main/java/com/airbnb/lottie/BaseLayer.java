@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
@@ -168,7 +169,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
-  @Override
+  @SuppressLint("WrongConstant") @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(traceSections.draw);
     if (!visible) {
@@ -188,7 +189,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       L.beginSection(traceSections.drawLayer);
       drawLayer(canvas, matrix, alpha);
       L.endSection(traceSections.drawLayer);
-      L.endSection(traceSections.draw);
+      recordRenderTime(L.endSection(traceSections.draw));
       return;
     }
 
@@ -232,7 +233,13 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     L.beginSection(traceSections.restoreLayer);
     canvas.restore();
     L.endSection(traceSections.restoreLayer);
-    L.endSection(traceSections.draw);
+    recordRenderTime(L.endSection(traceSections.draw));
+  }
+
+  private void recordRenderTime(float ms) {
+    lottieDrawable.getComposition()
+        .getPerformanceTracker().recordRenderTime(layerModel.getName(), ms);
+
   }
 
   private void clearCanvas(Canvas canvas) {

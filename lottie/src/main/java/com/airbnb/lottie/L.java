@@ -9,7 +9,7 @@ public class L {
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
   private static String[] sections;
-  private static long[] startTimeMillis;
+  private static long[] startTimeNs;
   private static int traceDepth = 0;
 
   public static void setTraceEnabled(boolean enabled) {
@@ -19,7 +19,7 @@ public class L {
     traceEnabled = enabled;
     if (traceEnabled) {
       sections = new String[MAX_DEPTH];
-      startTimeMillis = new long[MAX_DEPTH];
+      startTimeNs = new long[MAX_DEPTH];
     }
   }
 
@@ -28,12 +28,12 @@ public class L {
       return;
     }
     sections[traceDepth] = section;
-    startTimeMillis[traceDepth] = System.currentTimeMillis();
+    startTimeNs[traceDepth] = System.nanoTime();
     TraceCompat.beginSection(section);
     traceDepth++;
   }
 
-  static long endSection(String section) {
+  static float endSection(String section) {
     if (!traceEnabled) {
       return 0;
     }
@@ -46,6 +46,6 @@ public class L {
           ". Expected " + sections[traceDepth] + ".");
     }
     TraceCompat.endSection();
-    return System.currentTimeMillis() - startTimeMillis[traceDepth + 1];
+    return (System.nanoTime() - startTimeNs[traceDepth + 1]) / 1000000f;
   }
 }
