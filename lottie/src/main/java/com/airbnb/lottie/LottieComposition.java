@@ -45,14 +45,14 @@ public class LottieComposition {
   private final Rect bounds;
   private final long startFrame;
   private final long endFrame;
-  private final int frameRate;
+  private final float frameRate;
   private final float dpScale;
   /* Bodymovin version */
   private final int majorVersion;
   private final int minorVersion;
   private final int patchVersion;
 
-  private LottieComposition(Rect bounds, long startFrame, long endFrame, int frameRate,
+  private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate,
       float dpScale, int major, int minor, int patch) {
     this.bounds = bounds;
     this.startFrame = startFrame;
@@ -244,7 +244,7 @@ public class LottieComposition {
 
       long startFrame = json.optLong("ip", 0);
       long endFrame = json.optLong("op", 0);
-      int frameRate = json.optInt("fr", 0);
+      float frameRate = (float) json.optDouble("fr", 0);
       String version = json.optString("v");
       String[] versions = version.split("[.]");
       int major = Integer.parseInt(versions[0]);
