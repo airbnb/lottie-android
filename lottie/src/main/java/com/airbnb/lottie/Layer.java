@@ -33,7 +33,7 @@ class Layer {
     Unknown
   }
 
-  private final List<Object> shapes;
+  private final List<ContentModel> shapes;
   private final LottieComposition composition;
   private final String layerName;
   private final long layerId;
@@ -55,7 +55,7 @@ class Layer {
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
 
-  private Layer(List<Object> shapes, LottieComposition composition, String layerName, long layerId,
+  private Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
       float timeStretch, float startProgress, int preCompWidth, int preCompHeight,
@@ -137,7 +137,7 @@ class Layer {
     return parentId;
   }
 
-  List<Object> getShapes() {
+  List<ContentModel> getShapes() {
     return shapes;
   }
 
@@ -207,12 +207,11 @@ class Layer {
     }
 
     static Layer newInstance(LottieComposition composition) {
-      // TODO: make sure in out keyframes work
       Rect bounds = composition.getBounds();
       return new Layer(
-          Collections.emptyList(), composition, "root", -1, LayerType.PreComp, -1, null,
-          Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
-          0, 0, 0, 0, 0,
+          Collections.<ContentModel>emptyList(), composition, "root", -1,
+          LayerType.PreComp, -1, null, Collections.<Mask>emptyList(),
+          AnimatableTransform.Factory.newInstance(), 0, 0, 0, 0, 0,
           bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
           MatteType.None, null);
     }
@@ -269,11 +268,11 @@ class Layer {
         }
       }
 
-      List<Object> shapes = new ArrayList<>();
+      List<ContentModel> shapes = new ArrayList<>();
       JSONArray shapesJson = json.optJSONArray("shapes");
       if (shapesJson != null) {
         for (int i = 0; i < shapesJson.length(); i++) {
-          Object shape = ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition);
+          ContentModel shape = ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition);
           if (shape != null) {
             shapes.add(shape);
           }

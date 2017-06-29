@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
-class ShapeFill {
+class ShapeFill implements ContentModel {
   private final boolean fillEnabled;
   private final Path.FillType fillType;
   private final String name;
@@ -63,6 +63,10 @@ class ShapeFill {
 
   Path.FillType getFillType() {
     return fillType;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new FillContent(drawable, layer, this);
   }
 
   @Override

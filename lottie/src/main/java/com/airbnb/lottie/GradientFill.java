@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class GradientFill {
+class GradientFill implements ContentModel {
 
   private final GradientType gradientType;
   private final Path.FillType fillType;
@@ -68,6 +68,10 @@ class GradientFill {
 
   @Nullable AnimatableFloatValue getHighlightAngle() {
     return highlightAngle;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new GradientFillContent(drawable, layer, this);
   }
 
   static class Factory {

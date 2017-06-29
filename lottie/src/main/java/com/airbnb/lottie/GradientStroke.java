@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class GradientStroke {
+class GradientStroke implements ContentModel {
 
   private final String name;
   private final GradientType gradientType;
@@ -83,6 +83,10 @@ class GradientStroke {
 
   @Nullable AnimatableFloatValue getDashOffset() {
     return dashOffset;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new GradientStrokeContent(drawable, layer, this);
   }
 
   static class Factory {

@@ -1,11 +1,10 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
-class RectangleShape {
+class RectangleShape implements ContentModel {
   private final String name;
   private final AnimatableValue<PointF> position;
   private final AnimatablePointValue size;
@@ -47,6 +46,10 @@ class RectangleShape {
 
   AnimatableValue<PointF> getPosition() {
     return position;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new RectangleContent(drawable, layer, this);
   }
 
   @Override public String toString() {
