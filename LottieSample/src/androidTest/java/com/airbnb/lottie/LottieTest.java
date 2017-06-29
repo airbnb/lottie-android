@@ -41,7 +41,6 @@ public class LottieTest {
     delegate.setText("NAME", "Gabe");
     TestRobot.testLinearAnimation(activity, "Name.json", null, delegate);
     TestRobot.testLinearAnimation(activity, "Type.json");
-    TestRobot.testLinearAnimation(activity, "lottiefiles.com - Animated Graph.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Beating Heart.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Progress Success.json");
     TestRobot.testLinearAnimation(activity, "lottiefiles.com - Touch ID.json");
