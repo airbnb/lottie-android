@@ -1,11 +1,10 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 
 import org.json.JSONObject;
 
-class CircleShape {
+class CircleShape implements ContentModel {
   private final String name;
   private final AnimatableValue<PointF> position;
   private final AnimatablePointValue size;
@@ -15,6 +14,10 @@ class CircleShape {
     this.name = name;
     this.position = position;
     this.size = size;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new EllipseContent(drawable, layer, this);
   }
 
   static class Factory {

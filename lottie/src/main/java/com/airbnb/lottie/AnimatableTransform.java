@@ -1,13 +1,14 @@
 package com.airbnb.lottie;
 
 import android.graphics.PointF;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.util.Collections;
 
-class AnimatableTransform implements ModifierContent {
+class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatablePathValue anchorPoint;
   private final AnimatableValue<PointF> position;
   private final AnimatableScaleValue scale;
@@ -21,6 +22,34 @@ class AnimatableTransform implements ModifierContent {
     this.scale = scale;
     this.rotation = rotation;
     this.opacity = opacity;
+  }
+
+  AnimatablePathValue getAnchorPoint() {
+    return anchorPoint;
+  }
+
+  AnimatableValue<PointF> getPosition() {
+    return position;
+  }
+
+  AnimatableScaleValue getScale() {
+    return scale;
+  }
+
+  AnimatableFloatValue getRotation() {
+    return rotation;
+  }
+
+  AnimatableIntegerValue getOpacity() {
+    return opacity;
+  }
+
+  public TransformKeyframeAnimation createAnimation() {
+    return new TransformKeyframeAnimation(this);
+  }
+
+  @Nullable @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return null;
   }
 
   static class Factory {
@@ -94,27 +123,4 @@ class AnimatableTransform implements ModifierContent {
     }
   }
 
-  AnimatablePathValue getAnchorPoint() {
-    return anchorPoint;
-  }
-
-  AnimatableValue<PointF> getPosition() {
-    return position;
-  }
-
-  AnimatableScaleValue getScale() {
-    return scale;
-  }
-
-  AnimatableFloatValue getRotation() {
-    return rotation;
-  }
-
-  AnimatableIntegerValue getOpacity() {
-    return opacity;
-  }
-
-  public TransformKeyframeAnimation createAnimation() {
-    return new TransformKeyframeAnimation(this);
-  }
 }

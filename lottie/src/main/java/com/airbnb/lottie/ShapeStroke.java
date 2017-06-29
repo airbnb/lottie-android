@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-class ShapeStroke {
+class ShapeStroke implements ContentModel {
   enum LineCapType {
     Butt,
     Round,
@@ -67,6 +67,10 @@ class ShapeStroke {
     this.width = width;
     this.capType = capType;
     this.joinType = joinType;
+  }
+
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new StrokeContent(drawable, layer, this);
   }
 
   static class Factory {

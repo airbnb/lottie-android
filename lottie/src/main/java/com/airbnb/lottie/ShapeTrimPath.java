@@ -1,10 +1,8 @@
 package com.airbnb.lottie;
 
-import android.support.annotation.Nullable;
-
 import org.json.JSONObject;
 
-class ShapeTrimPath {
+class ShapeTrimPath implements ContentModel {
 
   enum Type {
     Simultaneously,
@@ -37,20 +35,6 @@ class ShapeTrimPath {
     this.offset = offset;
   }
 
-  static class Factory {
-    private Factory() {
-    }
-
-    static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
-      return new ShapeTrimPath(
-          json.optString("nm"),
-          Type.forId(json.optInt("m", 1)),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("s"), composition, false),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("e"), composition, false),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false));
-    }
-  }
-
   String getName() {
     return name;
   }
@@ -71,7 +55,25 @@ class ShapeTrimPath {
     return offset;
   }
 
+  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    return new TrimPathContent(layer, this);
+  }
+
   @Override public String toString() {
     return "Trim Path: {start: " + start + ", end: " + end + ", offset: " + offset + "}";
+  }
+
+  static class Factory {
+    private Factory() {
+    }
+
+    static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
+      return new ShapeTrimPath(
+          json.optString("nm"),
+          Type.forId(json.optInt("m", 1)),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("s"), composition, false),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("e"), composition, false),
+          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false));
+    }
   }
 }

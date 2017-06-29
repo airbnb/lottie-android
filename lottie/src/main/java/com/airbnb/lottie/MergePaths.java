@@ -1,11 +1,12 @@
 package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONObject;
 
 
-public class MergePaths {
+public class MergePaths implements ContentModel {
 
   enum MergePathsMode {
     Merge,
@@ -40,15 +41,6 @@ public class MergePaths {
     this.mode = mode;
   }
 
-  static class Factory {
-    private Factory() {
-    }
-
-    static MergePaths newInstance(JSONObject json) {
-      return new MergePaths(json.optString("nm"), MergePathsMode.forId(json.optInt("mm", 1)));
-    }
-  }
-
   public String getName() {
     return name;
   }
@@ -57,8 +49,25 @@ public class MergePaths {
     return mode;
   }
 
+  @Override @Nullable public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+    if (!drawable.enableMergePathsForKitKatAndAbove()) {
+      Log.w(L.TAG, "Animation contains merge paths but they are disabled.");
+      return null;
+    }
+    return new MergePathsContent(this);
+  }
+
   @Override
   public String toString() {
     return "MergePaths{" + "mode=" +  mode + '}';
+  }
+
+  static class Factory {
+    private Factory() {
+    }
+
+    static MergePaths newInstance(JSONObject json) {
+      return new MergePaths(json.optString("nm"), MergePathsMode.forId(json.optInt("mm", 1)));
+    }
   }
 }

@@ -6,7 +6,6 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +13,6 @@ import java.util.List;
 
 class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener {
-  private static final String TAG = ContentGroup.class.getSimpleName();
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
   private final RectF rect = new RectF();
@@ -28,7 +26,7 @@ class ContentGroup implements DrawingContent, PathContent,
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
     name = shapeGroup.getName();
     this.lottieDrawable = lottieDrawable;
-    List<Object> items = shapeGroup.getItems();
+    List<ContentModel> items = shapeGroup.getItems();
     if (items.isEmpty()) {
       return;
     }
@@ -36,40 +34,14 @@ class ContentGroup implements DrawingContent, PathContent,
     Object potentialTransform = items.get(items.size() - 1);
     if (potentialTransform instanceof AnimatableTransform) {
       transformAnimation = ((AnimatableTransform) potentialTransform).createAnimation();
-      //noinspection ConstantConditions
       transformAnimation.addAnimationsToLayer(layer);
       transformAnimation.addListener(this);
     }
 
     for (int i = 0; i < items.size(); i++) {
-      Object item = items.get(i);
-      if (item instanceof ShapeFill) {
-        contents.add(new FillContent(lottieDrawable, layer, (ShapeFill) item));
-      } else if (item instanceof GradientFill) {
-        contents.add(new GradientFillContent(lottieDrawable, layer, (GradientFill) item));
-      } else if (item instanceof ShapeStroke) {
-        contents.add(new StrokeContent(lottieDrawable, layer, (ShapeStroke) item));
-      } else if (item instanceof GradientStroke) {
-        contents.add(new GradientStrokeContent(lottieDrawable, layer, (GradientStroke) item));
-      } else if (item instanceof ShapeGroup) {
-        contents.add(new ContentGroup(lottieDrawable, layer, (ShapeGroup) item));
-      } else if (item instanceof RectangleShape) {
-        contents.add(new RectangleContent(lottieDrawable, layer, (RectangleShape) item));
-      } else if (item instanceof CircleShape) {
-        contents.add(new EllipseContent(lottieDrawable, layer, (CircleShape) item));
-      } else if (item instanceof ShapePath) {
-        contents.add(new ShapeContent(lottieDrawable, layer, (ShapePath) item));
-      } else if (item instanceof PolystarShape) {
-        contents.add(new PolystarContent(lottieDrawable, layer, (PolystarShape) item));
-      } else if (item instanceof ShapeTrimPath) {
-        contents.add(new TrimPathContent(layer, (ShapeTrimPath) item));
-      } else //noinspection StatementWithEmptyBody
-        if (item instanceof MergePaths) {
-          if (lottieDrawable.enableMergePathsForKitKatAndAbove()) {
-            contents.add(new MergePathsContent((MergePaths) item));
-          } else {
-            Log.w(TAG, "Animation contains merge paths but they are disabled.");
-          }
+      Content content = items.get(i).toContent(lottieDrawable, layer);
+      if (content != null) {
+        contents.add(content);
       }
     }
 
