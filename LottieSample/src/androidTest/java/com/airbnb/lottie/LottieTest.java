@@ -74,6 +74,7 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "Tests/LoopPlayOnce.json");
     TestRobot.testLinearAnimation(activity, "Tests/Parenting.json");
     TestRobot.testLinearAnimation(activity, "Tests/Precomps.json");
+    TestRobot.testLinearAnimation(activity, "Tests/Remap.json");
     TestRobot.testLinearAnimation(activity, "Tests/ShapeTypes.json");
     TestRobot.testLinearAnimation(activity, "Tests/SplitDimensions.json");
     TestRobot.testLinearAnimation(activity, "Tests/Stroke.json");
