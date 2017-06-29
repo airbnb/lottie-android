@@ -113,6 +113,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
         addAnimation(animation);
         animation.addUpdateListener(this);
       }
+      for (KeyframeAnimation<Integer> animation : mask.getOpacityAnimations()) {
+        addAnimation(animation);
+        animation.addUpdateListener(this);
+      }
     }
     setupInOutAnimations();
   }
@@ -316,7 +320,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
-  private void applyMasks(Canvas canvas, Matrix matrix) {
+  @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection(traceSections.drawMask);
     L.beginSection(traceSections.saveLayer);
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
@@ -340,6 +344,8 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
         default:
           path.setFillType(Path.FillType.WINDING);
       }
+      KeyframeAnimation<Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
+      contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
       canvas.drawPath(path, contentPaint);
     }
     L.beginSection(traceSections.restoreLayer);

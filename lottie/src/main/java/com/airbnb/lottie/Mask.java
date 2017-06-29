@@ -12,10 +12,12 @@ class Mask {
 
   private final MaskMode maskMode;
   private final AnimatableShapeValue maskPath;
+  private final AnimatableIntegerValue opacity;
 
-  private Mask(MaskMode maskMode, AnimatableShapeValue maskPath) {
+  private Mask(MaskMode maskMode, AnimatableShapeValue maskPath, AnimatableIntegerValue opacity) {
     this.maskMode = maskMode;
     this.maskPath = maskPath;
+    this.opacity = opacity;
   }
 
   static class Factory {
@@ -40,14 +42,10 @@ class Mask {
 
       AnimatableShapeValue maskPath = AnimatableShapeValue.Factory.newInstance(
           json.optJSONObject("pt"), composition);
-      // TODO: use this
-      // JSONObject opacityJson = json.optJSONObject("o");
-      // if (opacityJson != null) {
-      //   AnimatableIntegerValue opacity =
-      //       new AnimatableIntegerValue(opacityJson, composition, false, true);
-      // }
-
-      return new Mask(maskMode, maskPath);
+      JSONObject opacityJson = json.optJSONObject("o");
+      AnimatableIntegerValue opacity =
+          AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
+      return new Mask(maskMode, maskPath, opacity);
     }
   }
 
@@ -57,5 +55,9 @@ class Mask {
 
   AnimatableShapeValue getMaskPath() {
     return maskPath;
+  }
+
+  AnimatableIntegerValue getOpacity() {
+    return opacity;
   }
 }
