@@ -51,6 +51,7 @@ class Layer {
   private final int preCompHeight;
   @Nullable private final AnimatableTextFrame text;
   @Nullable private final AnimatableTextProperties textProperties;
+  @Nullable private final AnimatableFloatValue timeRemapping;
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
 
@@ -58,9 +59,9 @@ class Layer {
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
       float timeStretch, float startProgress, int preCompWidth, int preCompHeight,
-      @Nullable AnimatableTextFrame text, AnimatableTextProperties textProperties,
-      List<Keyframe<Float>> inOutKeyframes,
-      MatteType matteType) {
+      @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
+      List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
+      @Nullable AnimatableFloatValue timeRemapping) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -81,13 +82,14 @@ class Layer {
     this.textProperties = textProperties;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
+    this.timeRemapping = timeRemapping;
   }
 
   LottieComposition getComposition() {
     return composition;
   }
 
-  float getTimeStretch() {
+  @SuppressWarnings("unused") float getTimeStretch() {
     return timeStretch;
   }
 
@@ -163,6 +165,10 @@ class Layer {
     return textProperties;
   }
 
+  @Nullable AnimatableFloatValue getTimeRemapping() {
+    return timeRemapping;
+  }
+
   @Override public String toString() {
     return toString("");
   }
@@ -208,7 +214,7 @@ class Layer {
           Collections.<Mask>emptyList(), AnimatableTransform.Factory.newInstance(),
           0, 0, 0, 0, 0,
           bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-          MatteType.None);
+          MatteType.None, null);
     }
 
     static Layer newInstance(JSONObject json, LottieComposition composition) {
@@ -320,9 +326,16 @@ class Layer {
         inOutKeyframes.add(outKeyframe);
       }
 
+      AnimatableFloatValue timeRemapping = null;
+      if (json.has("tm")) {
+        timeRemapping =
+            AnimatableFloatValue.Factory.newInstance(json.optJSONObject("tm"), composition, false);
+      }
+
       return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
           masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startProgress,
-          preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType);
+          preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
+          timeRemapping);
     }
   }
 }
