@@ -150,8 +150,8 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
           path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
         }
         canvas.drawPath(path, paint);
+        L.endSection(traceSections.drawPath);
       }
-      L.endSection(traceSections.drawPath);
     }
     L.endSection(traceSections.draw);
   }
