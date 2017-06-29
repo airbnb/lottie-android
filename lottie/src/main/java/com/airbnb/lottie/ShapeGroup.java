@@ -39,6 +39,8 @@ class ShapeGroup implements ContentModel {
         return PolystarShape.Factory.newInstance(json, composition);
       case "mm":
         return MergePaths.Factory.newInstance(json);
+      case "rp":
+        return Repeater.Factory.newInstance(json, composition);
       default:
         Log.w(L.TAG, "Unknown shape type " + type);
     }
