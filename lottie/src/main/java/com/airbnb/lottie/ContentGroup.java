@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 class ContentGroup implements DrawingContent, PathContent,
@@ -38,32 +37,19 @@ class ContentGroup implements DrawingContent, PathContent,
       transformAnimation.addListener(this);
     }
 
+    List<GreedyContent> greedyContents = new ArrayList<>();
     for (int i = 0; i < items.size(); i++) {
       Content content = items.get(i).toContent(lottieDrawable, layer);
       if (content != null) {
         contents.add(content);
+        if (content instanceof GreedyContent) {
+          greedyContents.add((GreedyContent) content);
+        }
       }
     }
 
-    List<Content> contentsToRemove = new ArrayList<>();
-    MergePathsContent currentMergePathsContent = null;
-    for (int i = contents.size() - 1; i >= 0; i--) {
-      Content content = contents.get(i);
-      if (content instanceof MergePathsContent) {
-        currentMergePathsContent = (MergePathsContent) content;
-      }
-      if (currentMergePathsContent != null && content != currentMergePathsContent) {
-        currentMergePathsContent.addContentIfNeeded(content);
-        contentsToRemove.add(content);
-      }
-    }
-
-    Iterator<Content> it = contents.iterator();
-    while (it.hasNext()) {
-      Content content = it.next();
-      if (contentsToRemove.contains(content)) {
-        it.remove();
-      }
+    for (int i = greedyContents.size() - 1; i >= 0; i--) {
+      greedyContents.get(i).absorbContent(contents.listIterator(contents.size()));
     }
   }
 

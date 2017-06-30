@@ -6,9 +6,10 @@ import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
-class MergePathsContent implements PathContent {
+class MergePathsContent implements PathContent, GreedyContent {
   private final Path firstPath = new Path();
   private final Path remainderPath = new Path();
   private final Path path = new Path();
@@ -25,9 +26,16 @@ class MergePathsContent implements PathContent {
     this.mergePaths = mergePaths;
   }
 
-  void addContentIfNeeded(Content content) {
-    if (content instanceof PathContent) {
-      pathContents.add((PathContent) content);
+  @Override public void absorbContent(ListIterator<Content> contents) {
+    // Fast forward the iterator until after this content.
+    //noinspection StatementWithEmptyBody
+    while (contents.hasPrevious() && contents.previous() != this) {}
+    while (contents.hasPrevious()) {
+      Content content = contents.previous();
+      if (content instanceof PathContent) {
+        pathContents.add((PathContent) content);
+        contents.remove();
+      }
     }
   }
 
