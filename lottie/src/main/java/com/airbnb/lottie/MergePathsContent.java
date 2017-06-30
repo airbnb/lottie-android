@@ -27,16 +27,11 @@ class MergePathsContent implements PathContent, GreedyContent {
   }
 
   @Override public void absorbContent(ListIterator<Content> contents) {
-    boolean isAfter = false;
+    // Fast forward the iterator until after this content.
+    //noinspection StatementWithEmptyBody
+    while (contents.hasPrevious() && contents.previous() != this) {}
     while (contents.hasPrevious()) {
       Content content = contents.previous();
-      if (content == this) {
-        isAfter = true;
-        continue;
-      }
-      if (!isAfter) {
-        continue;
-      }
       if (content instanceof PathContent) {
         pathContents.add((PathContent) content);
         contents.remove();
