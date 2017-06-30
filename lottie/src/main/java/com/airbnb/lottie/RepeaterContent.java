@@ -44,6 +44,19 @@ public class RepeaterContent implements
   }
 
   @Override public void absorbContent(ListIterator<Content> contentsIter) {
+    // This check prevents a repeater from getting added twice.
+    // This can happen in the following situation:
+    //    RECTANGLE
+    //    REPEATER 1
+    //    FILL
+    //    REPEATER 2
+    // In this case, the expected structure would be:
+    //     REPEATER 2
+    //        REPEATER 1
+    //            RECTANGLE
+    //        FILL
+    // Without this check, REPEATER 1 will try and absorb contents once it is already inside of
+    // REPEATER 2.
     if (contentGroup != null) {
       return;
     }
@@ -85,22 +98,27 @@ public class RepeaterContent implements
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
     Matrix transform = this.transform.getMatrix();
     float copies = this.copies.getValue();
+    //noinspection ConstantConditions
+    float startOpacity = this.transform.getStartOpacity().getValue() / 100f;
+    //noinspection ConstantConditions
+    float endOpacity = this.transform.getEndOpacity().getValue() / 100f;
     for (int i = (int) copies - 1; i >= 0; i--) {
       matrix.set(parentMatrix);
       for (int j = 0; j < i; j++) {
         matrix.preConcat(transform);
       }
-      contentGroup.draw(canvas, matrix, alpha);
+      float newAlpha = alpha * MiscUtils.lerp(startOpacity, endOpacity, i / copies);
+      contentGroup.draw(canvas, matrix, (int) newAlpha);
     }
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-
+    contentGroup.getBounds(outBounds, parentMatrix);
   }
 
   @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
       @Nullable ColorFilter colorFilter) {
-
+    contentGroup.addColorFilter(layerName, contentName, colorFilter);
   }
 
   @Override public void onValueChanged() {
