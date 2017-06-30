@@ -68,25 +68,29 @@ public class RepeaterContent implements
   }
 
   @Override public Path getPath() {
-    Matrix transform = this.transform.getMatrix();
-    matrix.reset();
+    Path contentPath = contentGroup.getPath();
     path.reset();
-    Path path = contentGroup.getPath();
+    Matrix transform = this.transform.getMatrix();
     float copies = this.copies.getValue();
-    for (int i = 0; i < copies; i++) {
-      path.addPath(path, matrix);
-      matrix.preConcat(transform);
+    for (int i = (int) copies - 1; i >= 0; i--) {
+      matrix.reset();
+      for (int j = 0; j < i; j++) {
+        matrix.preConcat(transform);
+      }
+      path.addPath(contentPath, matrix);
     }
     return path;
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
     Matrix transform = this.transform.getMatrix();
-    matrix.set(parentMatrix);
     float copies = this.copies.getValue();
-    for (int i = 0; i < copies; i++) {
+    for (int i = (int) copies - 1; i >= 0; i--) {
+      matrix.set(parentMatrix);
+      for (int j = 0; j < i; j++) {
+        matrix.preConcat(transform);
+      }
       contentGroup.draw(canvas, matrix, alpha);
-      matrix.preConcat(transform);
     }
   }
 
