@@ -56,7 +56,7 @@ class AnimatablePathValue implements AnimatableValue<PointF> {
   }
 
   @Override
-  public BaseKeyframeAnimation<?, PointF> createAnimation() {
+  public KeyframeAnimation<PointF> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialPoint);
     }

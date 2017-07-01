@@ -12,39 +12,62 @@ import java.util.List;
 
 class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener {
+
+  private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
+      List<ContentModel> contentModels) {
+    List<Content> contents = new ArrayList<>(contentModels.size());
+    for (int i = 0; i < contentModels.size(); i++) {
+      Content content = contentModels.get(i).toContent(drawable, layer);
+      if (content != null) {
+        contents.add(content);
+      }
+    }
+    return contents;
+  }
+
+  @Nullable static AnimatableTransform findTransform(List<ContentModel> contentModels) {
+    for (int i = 0; i < contentModels.size(); i++) {
+      ContentModel contentModel = contentModels.get(i);
+      if (contentModel instanceof AnimatableTransform) {
+        return (AnimatableTransform) contentModel;
+      }
+    }
+    return null;
+  }
+
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
   private final RectF rect = new RectF();
 
   private final String name;
-  private final List<Content> contents = new ArrayList<>();
+  private final List<Content> contents;
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
-    name = shapeGroup.getName();
-    this.lottieDrawable = lottieDrawable;
-    List<ContentModel> items = shapeGroup.getItems();
-    if (items.isEmpty()) {
-      return;
-    }
+    this(lottieDrawable, layer, shapeGroup.getName(),
+        contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
+        findTransform(shapeGroup.getItems()));
+  }
 
-    Object potentialTransform = items.get(items.size() - 1);
-    if (potentialTransform instanceof AnimatableTransform) {
-      transformAnimation = ((AnimatableTransform) potentialTransform).createAnimation();
+  ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer,
+      String name, List<Content> contents, @Nullable AnimatableTransform transform) {
+    this.name = name;
+    this.lottieDrawable = lottieDrawable;
+    this.contents = contents;
+
+    if (transform != null) {
+      transformAnimation = transform.createAnimation();
       transformAnimation.addAnimationsToLayer(layer);
       transformAnimation.addListener(this);
     }
 
     List<GreedyContent> greedyContents = new ArrayList<>();
-    for (int i = 0; i < items.size(); i++) {
-      Content content = items.get(i).toContent(lottieDrawable, layer);
-      if (content != null) {
-        contents.add(content);
-        if (content instanceof GreedyContent) {
-          greedyContents.add((GreedyContent) content);
-        }
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof GreedyContent) {
+        greedyContents.add((GreedyContent) content);
       }
     }
 

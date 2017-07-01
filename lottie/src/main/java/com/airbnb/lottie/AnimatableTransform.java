@@ -15,13 +15,20 @@ class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
 
+  // Used for repeaters
+  @Nullable private final AnimatableFloatValue startOpacity;
+  @Nullable private final AnimatableFloatValue endOpacity;
+
   private AnimatableTransform(AnimatablePathValue anchorPoint, AnimatableValue<PointF> position,
-      AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity) {
+      AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity,
+      @Nullable AnimatableFloatValue startOpacity, @Nullable AnimatableFloatValue endOpacity) {
     this.anchorPoint = anchorPoint;
     this.position = position;
     this.scale = scale;
     this.rotation = rotation;
     this.opacity = opacity;
+    this.startOpacity = startOpacity;
+    this.endOpacity = endOpacity;
   }
 
   AnimatablePathValue getAnchorPoint() {
@@ -44,6 +51,14 @@ class AnimatableTransform implements ModifierContent, ContentModel {
     return opacity;
   }
 
+  @Nullable public AnimatableFloatValue getStartOpacity() {
+    return startOpacity;
+  }
+
+  @Nullable public AnimatableFloatValue getEndOpacity() {
+    return endOpacity;
+  }
+
   public TransformKeyframeAnimation createAnimation() {
     return new TransformKeyframeAnimation(this);
   }
@@ -62,7 +77,10 @@ class AnimatableTransform implements ModifierContent, ContentModel {
       AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance();
       AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance();
       AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
-      return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
+      AnimatableFloatValue startOpacity = AnimatableFloatValue.Factory.newInstance();
+      AnimatableFloatValue endOpacity = AnimatableFloatValue.Factory.newInstance();
+      return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity,
+          endOpacity);
     }
 
     static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
@@ -71,6 +89,8 @@ class AnimatableTransform implements ModifierContent, ContentModel {
       AnimatableScaleValue scale;
       AnimatableFloatValue rotation = null;
       AnimatableIntegerValue opacity;
+      AnimatableFloatValue startOpacity = null;
+      AnimatableFloatValue endOpacity = null;
       JSONObject anchorJson = json.optJSONObject("a");
       if (anchorJson != null) {
         anchorPoint = new AnimatablePathValue(anchorJson.opt("k"), composition);
@@ -112,10 +132,24 @@ class AnimatableTransform implements ModifierContent, ContentModel {
       if (opacityJson != null) {
         opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
       } else {
-        // Somehow some community animations don't have opacity in the transform.
+        // Repeaters have start/end opacity instead of opacity
         opacity = new AnimatableIntegerValue(Collections.<Keyframe<Integer>>emptyList(), 100);
       }
-      return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity);
+
+      JSONObject startOpacityJson = json.optJSONObject("so");
+      if (startOpacityJson != null) {
+        startOpacity =
+            AnimatableFloatValue.Factory.newInstance(startOpacityJson, composition, false);
+      }
+
+      JSONObject endOpacityJson = json.optJSONObject("eo");
+      if (endOpacityJson != null) {
+        endOpacity =
+            AnimatableFloatValue.Factory.newInstance(endOpacityJson, composition, false);
+      }
+
+      return new AnimatableTransform(
+          anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
     }
 
     private static void throwMissingTransform(String missingProperty) {
