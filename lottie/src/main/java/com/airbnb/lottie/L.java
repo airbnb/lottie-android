@@ -11,6 +11,7 @@ public class L {
   private static String[] sections;
   private static long[] startTimeNs;
   private static int traceDepth = 0;
+  private static int depthPastMaxDepth = 0;
 
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {
@@ -24,7 +25,11 @@ public class L {
   }
 
   static void beginSection(String section) {
-    if (!traceEnabled || traceDepth >= MAX_DEPTH) {
+    if (!traceEnabled) {
+      return;
+    }
+    if (traceDepth == MAX_DEPTH) {
+      depthPastMaxDepth++;
       return;
     }
     sections[traceDepth] = section;
@@ -34,6 +39,10 @@ public class L {
   }
 
   static float endSection(String section) {
+    if (depthPastMaxDepth > 0) {
+      depthPastMaxDepth--;
+      return 0;
+    }
     if (!traceEnabled) {
       return 0;
     }
@@ -46,6 +55,6 @@ public class L {
           ". Expected " + sections[traceDepth] + ".");
     }
     TraceCompat.endSection();
-    return (System.nanoTime() - startTimeNs[traceDepth + 1]) / 1000000f;
+    return (System.nanoTime() - startTimeNs[traceDepth]) / 1000000f;
   }
 }
