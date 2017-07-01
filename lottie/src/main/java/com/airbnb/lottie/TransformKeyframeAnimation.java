@@ -8,6 +8,7 @@ class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
   private final Matrix matrix2 = new Matrix();
   private final Matrix matrix3 = new Matrix();
+  private final Matrix matrix4 = new Matrix();
 
   private final KeyframeAnimation<PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
@@ -102,9 +103,24 @@ class TransformKeyframeAnimation {
     return matrix;
   }
 
-  Matrix getMatrixForRepeater(float count) {
+  Matrix getMatrixForRepeater(float count, float offset) {
+    matrix4.set(getMatrixForRepeater(offset));
+    matrix4.preConcat(getMatrixForRepeater(count));
+    return matrix4;
+  }
+
+  private Matrix getMatrixForRepeater(float count) {
     Matrix singleMatrix = getSingleMatrixForRepeater(1f);
     matrix3.reset();
+    // matrix2.reset();
+    PointF anchorPoint = this.anchorPoint.getValue();
+    // matrix3.preTranslate(anchorPoint.x, anchorPoint.y);
+    float rotation = this.rotation.getValue() * count;
+    // matrix3.setRotate(rotation, anchorPoint.x, anchorPoint.y);
+    // matrix3.preRotate(rotation);
+    // matrix3.preTranslate(anchorPoint.x, anchorPoint.y);
+    // matrix3.preConcat(matrix2);
+
     while (count > 0) {
       float amount = Math.min(count, 1f);
       if (amount == 1f) {
@@ -127,27 +143,13 @@ class TransformKeyframeAnimation {
       matrix.preTranslate(position.x * amount, position.y * amount);
     }
 
-    matrix2.reset();
     PointF anchorPoint = this.anchorPoint.getValue();
-    matrix2.preTranslate(anchorPoint.x * amount, anchorPoint.y * amount);
-
     ScaleXY scale = this.scale.getValue();
-    matrix2.preScale(
+    matrix.preScale(
         1 + (scale.getScaleX() - 1) * amount,
         1 + (scale.getScaleY() - 1) * amount);
-
-    matrix2.preTranslate(-anchorPoint.x * amount, -anchorPoint.y * amount);
-    matrix.preConcat(matrix2);
-
-    matrix2.reset();
-    matrix2.preTranslate(anchorPoint.x * amount, anchorPoint.y * amount);
     float rotation = this.rotation.getValue() * amount;
-    matrix2.preRotate(rotation);
-    matrix.preConcat(matrix2);
-
-    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      matrix.preTranslate(-anchorPoint.x * amount, -anchorPoint.y * amount);
-    }
+    matrix.setRotate(rotation, anchorPoint.x, anchorPoint.y);
     return matrix;
   }
 }
