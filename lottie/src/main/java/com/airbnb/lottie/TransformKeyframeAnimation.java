@@ -7,12 +7,13 @@ import android.support.annotation.Nullable;
 class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
   private final Matrix matrix2 = new Matrix();
+  private final Matrix matrix3 = new Matrix();
 
-  private final BaseKeyframeAnimation<?, PointF> anchorPoint;
+  private final KeyframeAnimation<PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
-  private final BaseKeyframeAnimation<?, ScaleXY> scale;
-  private final BaseKeyframeAnimation<?, Float> rotation;
-  private final BaseKeyframeAnimation<?, Integer> opacity;
+  private final KeyframeAnimation<ScaleXY> scale;
+  private final KeyframeAnimation<Float> rotation;
+  private final KeyframeAnimation<Integer> opacity;
 
   // Used for repeaters
   @Nullable private final BaseKeyframeAnimation<?, Float> startOpacity;
@@ -101,32 +102,51 @@ class TransformKeyframeAnimation {
     return matrix;
   }
 
+  Matrix getMatrixForRepeater(float count) {
+    Matrix singleMatrix = getSingleMatrixForRepeater(1f);
+    matrix3.reset();
+    while (count > 0) {
+      float amount = Math.min(count, 1f);
+      if (amount == 1f) {
+        matrix3.preConcat(singleMatrix);
+      } else {
+        matrix3.preConcat(getSingleMatrixForRepeater(amount));
+      }
+      count -= amount;
+    }
+    return matrix3;
+  }
+
   /**
    * TODO: understand why repeaters need a different transform matrix than layers.
    */
-  Matrix getMatrixForRepeater() {
+  private Matrix getSingleMatrixForRepeater(float amount) {
     matrix.reset();
     PointF position = this.position.getValue();
     if (position.x != 0 || position.y != 0) {
-      matrix.preTranslate(position.x, position.y);
+      matrix.preTranslate(position.x * amount, position.y * amount);
     }
 
-    ScaleXY scaleTransform = this.scale.getValue();
-    PointF anchorPoint = this.anchorPoint.getValue();
     matrix2.reset();
-    matrix2.preTranslate(anchorPoint.x, anchorPoint.y);
-    matrix2.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
-    matrix2.preTranslate(-anchorPoint.x, -anchorPoint.y);
+    PointF anchorPoint = this.anchorPoint.getValue();
+    matrix2.preTranslate(anchorPoint.x * amount, anchorPoint.y * amount);
+
+    ScaleXY scale = this.scale.getValue();
+    matrix2.preScale(
+        1 + (scale.getScaleX() - 1) * amount,
+        1 + (scale.getScaleY() - 1) * amount);
+
+    matrix2.preTranslate(-anchorPoint.x * amount, -anchorPoint.y * amount);
     matrix.preConcat(matrix2);
 
-    float rotation = this.rotation.getValue();
     matrix2.reset();
-    matrix2.preTranslate(anchorPoint.x, anchorPoint.y);
+    matrix2.preTranslate(anchorPoint.x * amount, anchorPoint.y * amount);
+    float rotation = this.rotation.getValue() * amount;
     matrix2.preRotate(rotation);
     matrix.preConcat(matrix2);
 
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
+      matrix.preTranslate(-anchorPoint.x * amount, -anchorPoint.y * amount);
     }
     return matrix;
   }
