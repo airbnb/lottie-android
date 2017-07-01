@@ -104,22 +104,31 @@ class TransformKeyframeAnimation {
   }
 
   Matrix getMatrixForRepeater(float count, float offset) {
-    matrix4.set(getMatrixForRepeater(offset));
-    matrix4.preConcat(getMatrixForRepeater(count));
-    return matrix4;
+    // matrix4.set(getMatrixForRepeater(offset));
+    // matrix4.preConcat(getMatrixForRepeater(count));
+    // return matrix4;
+
+
+    matrix.reset();
+    PointF position = this.position.getValue();
+    PointF anchorPoint = this.anchorPoint.getValue();
+    ScaleXY scale = this.scale.getValue();
+    float rotation = this.rotation.getValue();
+
+    float amount = count + offset;
+
+    matrix.preTranslate(position.x * amount, position.y * amount);
+    matrix.preScale(
+        (float) Math.pow(scale.getScaleX(), amount),
+         (float) Math.pow(scale.getScaleY(), amount));
+    matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
+
+    return matrix;
   }
 
   private Matrix getMatrixForRepeater(float count) {
     Matrix singleMatrix = getSingleMatrixForRepeater(1f);
     matrix3.reset();
-    // matrix2.reset();
-    PointF anchorPoint = this.anchorPoint.getValue();
-    // matrix3.preTranslate(anchorPoint.x, anchorPoint.y);
-    float rotation = this.rotation.getValue() * count;
-    // matrix3.setRotate(rotation, anchorPoint.x, anchorPoint.y);
-    // matrix3.preRotate(rotation);
-    // matrix3.preTranslate(anchorPoint.x, anchorPoint.y);
-    // matrix3.preConcat(matrix2);
 
     while (count > 0) {
       float amount = Math.min(count, 1f);
@@ -139,17 +148,16 @@ class TransformKeyframeAnimation {
   private Matrix getSingleMatrixForRepeater(float amount) {
     matrix.reset();
     PointF position = this.position.getValue();
-    if (position.x != 0 || position.y != 0) {
-      matrix.preTranslate(position.x * amount, position.y * amount);
-    }
-
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
+    float rotation = this.rotation.getValue();
+
+    matrix.preTranslate(position.x * amount, position.y * amount);
+    matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
     matrix.preScale(
         1 + (scale.getScaleX() - 1) * amount,
         1 + (scale.getScaleY() - 1) * amount);
-    float rotation = this.rotation.getValue() * amount;
-    matrix.setRotate(rotation, anchorPoint.x, anchorPoint.y);
+
     return matrix;
   }
 }
