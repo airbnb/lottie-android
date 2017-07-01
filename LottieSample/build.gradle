@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.facebook.testing.screenshot'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
   compileSdkVersion 25
@@ -24,6 +26,9 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
     targetCompatibility JavaVersion.VERSION_1_7
+  }
+  sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
   }
 }
 
@@ -53,4 +58,8 @@ dependencies {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
   compile 'com.android.support.constraint:constraint-layout:1.0.2'
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+repositories {
+  mavenCentral()
 }
