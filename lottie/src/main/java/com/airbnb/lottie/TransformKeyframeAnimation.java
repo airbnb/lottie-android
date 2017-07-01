@@ -6,9 +6,6 @@ import android.support.annotation.Nullable;
 
 class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
-  private final Matrix matrix2 = new Matrix();
-  private final Matrix matrix3 = new Matrix();
-  private final Matrix matrix4 = new Matrix();
 
   private final KeyframeAnimation<PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
@@ -103,19 +100,12 @@ class TransformKeyframeAnimation {
     return matrix;
   }
 
-  Matrix getMatrixForRepeater(float count, float offset) {
-    // matrix4.set(getMatrixForRepeater(offset));
-    // matrix4.preConcat(getMatrixForRepeater(count));
-    // return matrix4;
-
-
+  Matrix getMatrixForRepeater(float amount) {
     matrix.reset();
     PointF position = this.position.getValue();
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
     float rotation = this.rotation.getValue();
-
-    float amount = count + offset;
 
     matrix.preTranslate(position.x * amount, position.y * amount);
     matrix.preScale(
@@ -126,38 +116,4 @@ class TransformKeyframeAnimation {
     return matrix;
   }
 
-  private Matrix getMatrixForRepeater(float count) {
-    Matrix singleMatrix = getSingleMatrixForRepeater(1f);
-    matrix3.reset();
-
-    while (count > 0) {
-      float amount = Math.min(count, 1f);
-      if (amount == 1f) {
-        matrix3.preConcat(singleMatrix);
-      } else {
-        matrix3.preConcat(getSingleMatrixForRepeater(amount));
-      }
-      count -= amount;
-    }
-    return matrix3;
-  }
-
-  /**
-   * TODO: understand why repeaters need a different transform matrix than layers.
-   */
-  private Matrix getSingleMatrixForRepeater(float amount) {
-    matrix.reset();
-    PointF position = this.position.getValue();
-    PointF anchorPoint = this.anchorPoint.getValue();
-    ScaleXY scale = this.scale.getValue();
-    float rotation = this.rotation.getValue();
-
-    matrix.preTranslate(position.x * amount, position.y * amount);
-    matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
-    matrix.preScale(
-        1 + (scale.getScaleX() - 1) * amount,
-        1 + (scale.getScaleY() - 1) * amount);
-
-    return matrix;
-  }
 }
