@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
+  private final Matrix matrix2 = new Matrix();
 
   private final BaseKeyframeAnimation<?, PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
@@ -75,6 +76,7 @@ class TransformKeyframeAnimation {
     return endOpacity;
   }
 
+
   Matrix getMatrix() {
     matrix.reset();
     PointF position = this.position.getValue();
@@ -93,6 +95,36 @@ class TransformKeyframeAnimation {
     }
 
     PointF anchorPoint = this.anchorPoint.getValue();
+    if (anchorPoint.x != 0 || anchorPoint.y != 0) {
+      matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
+    }
+    return matrix;
+  }
+
+  /**
+   * TODO: understand why repeaters need a different transform matrix than layers.
+   */
+  Matrix getMatrixForRepeater() {
+    matrix.reset();
+    PointF position = this.position.getValue();
+    if (position.x != 0 || position.y != 0) {
+      matrix.preTranslate(position.x, position.y);
+    }
+
+    ScaleXY scaleTransform = this.scale.getValue();
+    PointF anchorPoint = this.anchorPoint.getValue();
+    matrix2.reset();
+    matrix2.preTranslate(anchorPoint.x, anchorPoint.y);
+    matrix2.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
+    matrix2.preTranslate(-anchorPoint.x, -anchorPoint.y);
+    matrix.preConcat(matrix2);
+
+    float rotation = this.rotation.getValue();
+    matrix2.reset();
+    matrix2.preTranslate(anchorPoint.x, anchorPoint.y);
+    matrix2.preRotate(rotation);
+    matrix.preConcat(matrix2);
+
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
       matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
     }

@@ -83,7 +83,7 @@ public class RepeaterContent implements
   @Override public Path getPath() {
     Path contentPath = contentGroup.getPath();
     path.reset();
-    Matrix transform = this.transform.getMatrix();
+    Matrix transform = this.transform.getMatrixForRepeater();
     float copies = this.copies.getValue();
     for (int i = (int) copies - 1; i >= 0; i--) {
       matrix.reset();
@@ -96,7 +96,7 @@ public class RepeaterContent implements
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
-    Matrix transform = this.transform.getMatrix();
+    Matrix transform = this.transform.getMatrixForRepeater();
     float copies = this.copies.getValue();
     //noinspection ConstantConditions
     float startOpacity = this.transform.getStartOpacity().getValue() / 100f;

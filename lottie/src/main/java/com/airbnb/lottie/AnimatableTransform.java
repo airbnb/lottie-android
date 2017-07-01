@@ -148,8 +148,8 @@ class AnimatableTransform implements ModifierContent, ContentModel {
             AnimatableFloatValue.Factory.newInstance(endOpacityJson, composition, false);
       }
 
-      return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity,
-          endOpacity);
+      return new AnimatableTransform(
+          anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
     }
 
     private static void throwMissingTransform(String missingProperty) {
