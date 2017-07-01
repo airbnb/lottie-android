@@ -62,6 +62,9 @@ public class LottieComposition {
     this.majorVersion = major;
     this.minorVersion = minor;
     this.patchVersion = patch;
+    if (!Utils.isAtLeastVersion(this, 4, 5, 0)) {
+      addWarning("Lottie only supports bodymovin >= 4.5.0");
+    }
   }
 
   void addWarning(String warning) {
