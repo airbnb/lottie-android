@@ -100,13 +100,16 @@ class TransformKeyframeAnimation {
     return matrix;
   }
 
+  /**
+   * TODO: see if we can use this for the main {@link #getMatrix()} method.
+   */
   Matrix getMatrixForRepeater(float amount) {
-    matrix.reset();
     PointF position = this.position.getValue();
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
     float rotation = this.rotation.getValue();
 
+    matrix.reset();
     matrix.preTranslate(position.x * amount, position.y * amount);
     matrix.preScale(
         (float) Math.pow(scale.getScaleX(), amount),
