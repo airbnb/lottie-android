@@ -28,7 +28,7 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.*
 
-inline fun consume(f: () -> Unit): Boolean {
+private inline fun consume(f: () -> Unit): Boolean {
     f()
     return true
 }
