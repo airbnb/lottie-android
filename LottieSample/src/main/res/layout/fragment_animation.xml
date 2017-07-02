@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/root_view"
+        android:id="@+id/rootView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipChildren="false"
@@ -25,14 +25,14 @@
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout
-            android:id="@+id/animation_container"
+            android:id="@+id/animationContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/inverted_background">
 
             <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/animation_view"
+                android:id="@+id/animationView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -55,7 +55,7 @@
                     android:text="Choose an option below"/>
 
                 <TextView
-                    android:id="@+id/qr_code"
+                    android:id="@+id/qrCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -64,7 +64,7 @@
                     android:text="Scan QR Code"/>
 
                 <TextView
-                    android:id="@+id/sample_animations"
+                    android:id="@+id/sampleAnimations"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -73,7 +73,7 @@
                     android:text="Sample animations"/>
 
                 <TextView
-                    android:id="@+id/load_animation"
+                    android:id="@+id/loadAnimation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -82,7 +82,7 @@
                     android:text="Load animation file"/>
 
                 <TextView
-                    android:id="@+id/load_from_json"
+                    android:id="@+id/loadFromJson"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="4dp"
@@ -114,7 +114,7 @@
 
             <ImageButton
                 android:background="?selectableItemBackgroundBorderless"
-                android:id="@+id/invert_colors"
+                android:id="@+id/invertColors"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -132,7 +132,7 @@
 
 
             <ImageButton
-                android:id="@+id/qrscan"
+                android:id="@+id/qrScan"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -141,17 +141,7 @@
                 app:srcCompat="@drawable/ic_qr_scan"/>
 
             <ImageButton
-                android:visibility="gone"
-                android:id="@+id/restart"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"
-                android:background="?selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_restart"/>
-
-            <ImageButton
-                android:id="@+id/play_button"
+                android:id="@+id/playButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginTop="12dp"
@@ -163,7 +153,7 @@
                 android:src="@drawable/ic_play_pause"/>
 
             <ImageButton
-                android:id="@+id/load_asset"
+                android:id="@+id/loadAsset"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -172,7 +162,7 @@
                 app:srcCompat="@drawable/ic_assets"/>
 
             <ImageButton
-                android:id="@+id/load_file"
+                android:id="@+id/loadFile"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -181,7 +171,7 @@
                 app:srcCompat="@drawable/ic_file"/>
 
             <ImageButton
-                android:id="@+id/load_url_or_json"
+                android:id="@+id/loadUrlOrJson"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -206,7 +196,7 @@
                 android:text="Progress"/>
 
             <android.support.v7.widget.AppCompatSeekBar
-                android:id="@+id/seek_bar"
+                android:id="@+id/seekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"/>
@@ -234,13 +224,13 @@
                 android:text="Scale"/>
 
             <android.support.v7.widget.AppCompatSeekBar
-                android:id="@+id/scale_seek_bar"
+                android:id="@+id/scaleSeekBar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"/>
 
             <TextView
-                android:id="@+id/scale_text"
+                android:id="@+id/scaleText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -249,7 +239,7 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/animation_name"
+            android:id="@+id/animationName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

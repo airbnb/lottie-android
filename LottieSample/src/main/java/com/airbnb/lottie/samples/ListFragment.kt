@@ -43,8 +43,8 @@ class ListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_list, container, false)
-        view.recyclerView.adapter = adapter
+        val view = container?.inflate(R.layout.fragment_list, false)
+        view!!.recyclerView.adapter = adapter
         return view
     }
 
@@ -80,8 +80,7 @@ class ListFragment : Fragment() {
     }
 
     private inner class StringViewHolder(parent: ViewGroup) :
-            RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
-                    .inflate(R.layout.view_holder_file, parent, false)) {
+            RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_file, false)) {
 
         fun bind(item: ListItem) {
             itemView.title.text = item.name
