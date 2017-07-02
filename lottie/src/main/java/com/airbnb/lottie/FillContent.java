@@ -19,12 +19,10 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
   private final KeyframeAnimation<Integer> colorAnimation;
   private final KeyframeAnimation<Integer> opacityAnimation;
   private final LottieDrawable lottieDrawable;
-  private final String drawTraceSectionName;
 
   FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
     name = fill.getName();
     this.lottieDrawable = lottieDrawable;
-    drawTraceSectionName = layer.getName() + "#draw";
     if (fill.getColor() == null || fill.getOpacity() == null ) {
       colorAnimation = null;
       opacityAnimation = null;
@@ -64,7 +62,7 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    L.beginSection(drawTraceSectionName);
+    L.beginSection("FillContent#draw");
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(alpha);
@@ -75,7 +73,7 @@ class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationList
     }
 
     canvas.drawPath(path, paint);
-    L.endSection(drawTraceSectionName);
+    L.endSection("FillContent#draw");
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

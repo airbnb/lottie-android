@@ -47,27 +47,6 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     }
   }
 
-  private static final class TraceSections {
-    /** this is cached since it is in a hot code path */
-    private final String draw;
-    private final String drawLayer;
-    private final String drawMask;
-    private final String drawMatte;
-    private final String saveLayer;
-    private final String restoreLayer;
-    private final String clearLayer;
-
-    TraceSections(String layerName) {
-      draw = layerName + "#draw";
-      drawLayer = layerName + "#drawLayer";
-      drawMask = layerName + "#drawMask";
-      drawMatte = layerName + "#drawMatte";
-      saveLayer = layerName + "#saveLayer";
-      restoreLayer = layerName + "#restoreLayer";
-      clearLayer = layerName + "#clearLayer";
-    }
-  }
-
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -78,7 +57,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   private final RectF maskBoundsRect = new RectF();
   private final RectF matteBoundsRect = new RectF();
   private final RectF tempMaskBoundsRect = new RectF();
-  private final TraceSections traceSections;
+  private final String drawTraceName;
   final Matrix boundsMatrix = new Matrix();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
@@ -94,7 +73,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
-    traceSections = new TraceSections(layerModel.getName());
+    drawTraceName = layerModel.getName() + "#draw";
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
@@ -175,9 +154,9 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
   @SuppressLint("WrongConstant") @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    L.beginSection(traceSections.draw);
+    L.beginSection(drawTraceName);
     if (!visible) {
-      L.endSection(traceSections.draw);
+      L.endSection(drawTraceName);
       return;
     }
     buildParentLayerListIfNeeded();
@@ -190,10 +169,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
         ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
-      L.beginSection(traceSections.drawLayer);
+      L.beginSection("Layer#drawLayer");
       drawLayer(canvas, matrix, alpha);
-      L.endSection(traceSections.drawLayer);
-      recordRenderTime(L.endSection(traceSections.draw));
+      L.endSection("Layer#drawLayer");
+      recordRenderTime(L.endSection(drawTraceName));
       return;
     }
 
@@ -206,38 +185,38 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
 
     rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
 
-    L.beginSection(traceSections.saveLayer);
+    L.beginSection("Layer#saveLayer");
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
-    L.endSection(traceSections.saveLayer);
+    L.endSection("Layer#saveLayer");
 
     // Clear the off screen buffer. This is necessary for some phones.
     clearCanvas(canvas);
-    L.beginSection(traceSections.drawLayer);
+    L.beginSection("Layer#drawLayer");
     drawLayer(canvas, matrix, alpha);
-    L.endSection(traceSections.drawLayer);
+    L.endSection("Layer#drawLayer");
 
     if (hasMasksOnThisLayer()) {
       applyMasks(canvas, matrix);
     }
 
     if (hasMatteOnThisLayer()) {
-      L.beginSection(traceSections.drawMatte);
-      L.beginSection(traceSections.saveLayer);
+      L.beginSection("Layer#drawMatte");
+      L.beginSection("Layer#saveLayer");
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
-      L.endSection(traceSections.saveLayer);
+      L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
       matteLayer.draw(canvas, parentMatrix, alpha);
-      L.beginSection(traceSections.restoreLayer);
+      L.beginSection("Layer#restoreLayer");
       canvas.restore();
-      L.endSection(traceSections.restoreLayer);
-      L.endSection(traceSections.drawMatte);
+      L.endSection("Layer#restoreLayer");
+      L.endSection("Layer#drawMatte");
     }
 
-    L.beginSection(traceSections.restoreLayer);
+    L.beginSection("Layer#restoreLayer");
     canvas.restore();
-    L.endSection(traceSections.restoreLayer);
-    recordRenderTime(L.endSection(traceSections.draw));
+    L.endSection("Layer#restoreLayer");
+    recordRenderTime(L.endSection(drawTraceName));
   }
 
   private void recordRenderTime(float ms) {
@@ -247,10 +226,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   }
 
   private void clearCanvas(Canvas canvas) {
-    L.beginSection(traceSections.clearLayer);
+    L.beginSection("Layer#clearLayer");
     // If we don't pad the clear draw, some phones leave a 1px border of the graphics buffer.
     canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, clearPaint);
-    L.endSection(traceSections.clearLayer);
+    L.endSection("Layer#clearLayer");
   }
 
   private void intersectBoundsWithMask(RectF rect, Matrix matrix) {
@@ -321,10 +300,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix) {
-    L.beginSection(traceSections.drawMask);
-    L.beginSection(traceSections.saveLayer);
+    L.beginSection("Layer#drawMask");
+    L.beginSection("Layer#saveLayer");
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
-    L.endSection(traceSections.saveLayer);
+    L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
 
     //noinspection ConstantConditions
@@ -348,10 +327,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
       canvas.drawPath(path, contentPaint);
     }
-    L.beginSection(traceSections.restoreLayer);
+    L.beginSection("Layer#restoreLayer");
     canvas.restore();
-    L.endSection(traceSections.restoreLayer);
-    L.endSection(traceSections.drawMask);
+    L.endSection("Layer#restoreLayer");
+    L.endSection("Layer#drawMask");
   }
 
   boolean hasMasksOnThisLayer() {
