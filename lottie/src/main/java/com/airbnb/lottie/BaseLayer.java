@@ -160,11 +160,13 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       return;
     }
     buildParentLayerListIfNeeded();
+    L.beginSection("Layer#parentMatrix");
     matrix.reset();
     matrix.set(parentMatrix);
     for (int i = parentLayers.size() - 1; i >= 0; i--) {
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
+    L.endSection("Layer#parentMatrix");
     int alpha = (int)
         ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
@@ -176,6 +178,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
       return;
     }
 
+    L.beginSection("Layer#computeBounds");
     rect.set(0, 0, 0, 0);
     getBounds(rect, matrix);
     intersectBoundsWithMatte(rect, matrix);
@@ -184,6 +187,7 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
     intersectBoundsWithMask(rect, matrix);
 
     rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
+    L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);

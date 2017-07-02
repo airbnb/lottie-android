@@ -130,11 +130,13 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
       if (pathGroup.trimPath != null) {
         applyTrimPath(canvas, pathGroup, parentMatrix);
       } else {
-        L.beginSection("StrokeContent#drawPath");
+        L.beginSection("StrokeContent#buildPath");
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
           path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
         }
+        L.endSection("StrokeContent#buildPath");
+        L.beginSection("StrokeContent#drawPath");
         canvas.drawPath(path, paint);
         L.endSection("StrokeContent#drawPath");
       }
@@ -143,9 +145,9 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
   }
 
   private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix) {
-    L.beginSection("StrokeContent#drawTrimPath");
+    L.beginSection("StrokeContent#applyTrimPath");
     if (pathGroup.trimPath == null) {
-      L.endSection("StrokeContent#drawTrimPath");
+      L.endSection("StrokeContent#applyTrimPath");
       return;
     }
     path.reset();
@@ -206,10 +208,11 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
         }
       currentLength += length;
     }
-    L.endSection("StrokeContent#drawTrimPath");
+    L.endSection("StrokeContent#applyTrimPath");
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+    L.beginSection("StrokeContent#getBounds");
     path.reset();
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
@@ -230,10 +233,13 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
         outBounds.right + 1,
         outBounds.bottom + 1
     );
+    L.endSection("StrokeContent#getBounds");
   }
 
   private void applyDashPatternIfNeeded(Matrix parentMatrix) {
+    L.beginSection("StrokeContent#applyDashPattern");
     if (dashPatternAnimations.isEmpty()) {
+      L.endSection("StrokeContent#applyDashPattern");
       return;
     }
 
@@ -257,6 +263,7 @@ abstract class BaseStrokeContent implements DrawingContent, BaseKeyframeAnimatio
     }
     float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
+    L.endSection("StrokeContent#applyDashPattern");
   }
 
   /**
