@@ -12,7 +12,7 @@
         android:paddingBottom="32dp"
         android:background="@color/colorPrimary">
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/animation_view"
+            android:id="@+id/animationView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -21,7 +21,7 @@
     </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"/>
