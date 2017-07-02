@@ -40,3 +40,5 @@ fun View.showSnackbarLong(@StringRes message: Int) =
 
 fun View.showSnackbarLong(message: String) =
     Snackbar.make(this, message, Snackbar.LENGTH_LONG).show()
+
+fun Float.lerp(other: Float, amount: Float): Float = this + amount * (other - this)
