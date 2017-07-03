@@ -349,6 +349,9 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
   }
 
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    if (layerModel.getTimeStretch() != 0) {
+      progress /= layerModel.getTimeStretch();
+    }
     if (matteLayer != null) {
       matteLayer.setProgress(progress);
     }

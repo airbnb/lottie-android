@@ -119,6 +119,9 @@ class CompositionLayer extends BaseLayer {
       long remappedTime = (long) (timeRemapping.getValue() * 1000);
       progress = remappedTime / (float) duration;
     }
+    if (layerModel.getTimeStretch() != 0) {
+      progress /= layerModel.getTimeStretch();
+    }
 
     progress -= layerModel.getStartProgress();
     for (int i = layers.size() - 1; i >= 0; i--) {

@@ -89,7 +89,7 @@ class Layer {
     return composition;
   }
 
-  @SuppressWarnings("unused") float getTimeStretch() {
+  float getTimeStretch() {
     return timeStretch;
   }
 
@@ -304,8 +304,11 @@ class Layer {
         preCompHeight = (int) (json.optInt("h") * composition.getDpScale());
       }
 
-      float inFrame = json.optLong("ip");
-      float outFrame = json.optLong("op");
+      // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
+      // cause the stretch to be double counted since the in out animation gets treated the same
+      // as all other animations and will have stretch applied to it again.
+      float inFrame = json.optLong("ip") / timeStretch;
+      float outFrame = json.optLong("op") / timeStretch;
 
       // Before the in frame
       if (inFrame > 0) {
@@ -319,11 +322,9 @@ class Layer {
           new Keyframe<>(composition, 1f, 1f, null, inFrame, outFrame);
       inOutKeyframes.add(visibleKeyframe);
 
-      if (outFrame <= composition.getDurationFrames()) {
-        Keyframe<Float> outKeyframe =
-            new Keyframe<>(composition, 0f, 0f, null, outFrame, (float) composition.getEndFrame());
-        inOutKeyframes.add(outKeyframe);
-      }
+      Keyframe<Float> outKeyframe = new Keyframe<>(
+          composition, 0f, 0f, null, outFrame, Float.MAX_VALUE);
+      inOutKeyframes.add(outKeyframe);
 
       AnimatableFloatValue timeRemapping = null;
       if (json.has("tm")) {

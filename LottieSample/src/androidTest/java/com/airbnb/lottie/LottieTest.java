@@ -78,6 +78,7 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "Tests/ShapeTypes.json");
     TestRobot.testLinearAnimation(activity, "Tests/SplitDimensions.json");
     TestRobot.testLinearAnimation(activity, "Tests/Stroke.json");
+    TestRobot.testLinearAnimation(activity, "Tests/TimeStretch.json");
     TestRobot.testLinearAnimation(activity, "Tests/TrackMattes.json");
     TestRobot.testLinearAnimation(activity, "Tests/TrimPaths.json");
     TestRobot.testChangingCompositions(activity, "TwitterHeart.json", "PinJump.json");
