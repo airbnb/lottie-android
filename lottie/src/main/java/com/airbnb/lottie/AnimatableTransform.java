@@ -157,4 +157,7 @@ class AnimatableTransform implements ModifierContent, ContentModel {
     }
   }
 
+  @Override public String toString() {
+    return super.toString();
+  }
 }

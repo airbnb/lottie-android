@@ -94,7 +94,7 @@ public class LottieComposition {
 
   @SuppressWarnings("WeakerAccess") public long getDuration() {
     long frameDuration = endFrame - startFrame;
-    return (long) (frameDuration / (float) frameRate * 1000);
+    return (long) (frameDuration / frameRate * 1000);
   }
 
   int getMajorVersion() {
@@ -107,6 +107,10 @@ public class LottieComposition {
 
   int getPatchVersion() {
     return patchVersion;
+  }
+
+  long getStartFrame() {
+    return startFrame;
   }
 
   long getEndFrame() {
@@ -139,7 +143,7 @@ public class LottieComposition {
   }
 
   float getDurationFrames() {
-    return getDuration() * (float) frameRate / 1000f;
+    return getDuration() * frameRate / 1000f;
   }
 
 

@@ -199,6 +199,7 @@ class Layer {
         sb.append(prefix).append("\t\t").append(shape).append("\n");
       }
     }
+
     return sb.toString();
   }
 
