@@ -156,8 +156,4 @@ class AnimatableTransform implements ModifierContent, ContentModel {
       throw new IllegalArgumentException("Missing transform for " + missingProperty);
     }
   }
-
-  @Override public String toString() {
-    return super.toString();
-  }
 }
