@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,6 +18,11 @@ import android.widget.EditText
 import android.widget.Toast
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
+import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import kotlinx.android.synthetic.main.fragment_animation.*
 import kotlinx.android.synthetic.main.fragment_animation.view.*
 import okhttp3.OkHttpClient
@@ -27,6 +33,7 @@ import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 private inline fun consume(f: () -> Unit): Boolean {
     f()
@@ -47,9 +54,24 @@ class AnimationFragment : Fragment() {
         }
     }
 
+    private val handler = Handler()
     private val client: OkHttpClient by lazy { OkHttpClient() }
     private val application: ILottieApplication
         get() = activity.application as ILottieApplication
+    private var renderTimeGraphRange = 4f
+    private val lineDataSet by lazy {
+        val entries = ArrayList<Entry>(101)
+        repeat(101) { i ->
+            entries.add(Entry(i.toFloat(), 0f))
+        }
+        val dataSet = LineDataSet(entries, "Render Times")
+        dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
+        dataSet.cubicIntensity = 0.3f
+        dataSet.setDrawCircles(false)
+        dataSet.lineWidth = 1.8f
+        dataSet.color = Color.BLACK
+        dataSet
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -68,6 +90,7 @@ class AnimationFragment : Fragment() {
         view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, activity)
         view.loadAnimation.setDrawableLeft(R.drawable.ic_file, activity)
         view.loadFromJson.setDrawableLeft(R.drawable.ic_network, activity)
+        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert, activity)
 
         view.animationView.addAnimatorListener(AnimatorListenerAdapter(
                 onStart = { startRecordingDroppedFrames() },
@@ -170,6 +193,27 @@ class AnimationFragment : Fragment() {
                     .show()
         }
 
+        view.renderTimesGraph.axisRight.isEnabled = false
+        view.renderTimesGraph.xAxis.isEnabled = false
+        view.renderTimesGraph.legend.isEnabled = false
+        view.renderTimesGraph.description = null
+        view.renderTimesGraph.data = LineData(lineDataSet)
+        view.renderTimesGraph.axisLeft.setDrawGridLines(false)
+        view.renderTimesGraph.axisLeft.labelCount = 4
+        val ll1 = LimitLine(16f, "60fps")
+        ll1.lineColor = Color.RED
+        ll1.lineWidth = 1.2f
+        ll1.textColor = Color.BLACK
+        ll1.textSize = 8f
+        view.renderTimesGraph.axisLeft.addLimitLine(ll1)
+
+        val ll2 = LimitLine(32f, "30fps")
+        ll2.lineColor = Color.RED
+        ll2.lineWidth = 1.2f
+        ll2.textColor = Color.BLACK
+        ll2.textSize = 8f
+        view.renderTimesGraph.axisLeft.addLimitLine(ll2)
+
         return view
     }
 
@@ -189,6 +233,9 @@ class AnimationFragment : Fragment() {
             }
             R.id.merge_paths -> consume {
                 animationView.enableMergePathsForKitKatAndAbove(item.isChecked)
+            }
+            R.id.render_times_graph -> consume {
+                renderTimesGraphContainer.setVisibleIf(item.isChecked)
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -228,6 +275,20 @@ class AnimationFragment : Fragment() {
         scaleText.text = String.format(Locale.US, "%.2f", animationView.scale)
         scaleSeekBar.progress = (animationView.scale * SCALE_SLIDER_FACTOR).toInt()
         setWarnings(composition.warnings)
+        renderTimeGraphRange = 8f
+        for (i in 1..lineDataSet.entryCount - 1) {
+            lineDataSet.getEntryForIndex(i).y = 0f
+        }
+        renderTimesGraph.invalidate()
+        animationView.performanceTracker?.addFrameListener { ms ->
+            if (renderTimesGraph == null) {
+                return@addFrameListener
+            }
+            lineDataSet.getEntryForIndex((animationView.progress * 100).toInt()).y = ms
+            renderTimeGraphRange = Math.max(renderTimeGraphRange, ms * 1.2f)
+            renderTimesGraph.setVisibleYRange(0f, renderTimeGraphRange, YAxis.AxisDependency.LEFT)
+            renderTimesGraph.invalidate()
+        }
     }
 
     private fun setWarnings(warningsList: ArrayList<String>) {
@@ -248,7 +309,11 @@ class AnimationFragment : Fragment() {
         }
     }
 
-    private fun postUpdatePlayButtonText() = Handler().post { updatePlayButtonText() }
+    private fun postUpdatePlayButtonText() = handler.post {
+        if (playButton != null) {
+            updatePlayButtonText()
+        }
+    }
 
     private fun updatePlayButtonText() {
         playButton.isActivated = animationView.isAnimating

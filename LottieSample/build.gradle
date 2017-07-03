@@ -42,6 +42,7 @@ dependencies {
   compile 'com.squareup.okhttp3:okhttp:3.7.0'
   compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
+  compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
   debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
 

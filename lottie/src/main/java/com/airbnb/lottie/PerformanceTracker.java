@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.support.v4.util.ArraySet;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
@@ -9,10 +10,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PerformanceTracker {
 
+  public interface FrameListener {
+    void onFrameRendered(float renderTimeMs);
+  }
+
   private boolean enabled = false;
+  private final Set<FrameListener> frameListeners = new ArraySet<>();
   private Map<String, MeanCalculator> layerRenderTimes = new HashMap<>();
   private final Comparator<Pair<String, Float>> floatComparator =
       new Comparator<Pair<String, Float>>() {
@@ -42,6 +49,20 @@ public class PerformanceTracker {
       layerRenderTimes.put(layerName, meanCalculator);
     }
     meanCalculator.add(millis);
+
+    if (layerName.equals("root")) {
+      for (FrameListener listener : frameListeners) {
+        listener.onFrameRendered(millis);
+      }
+    }
+  }
+
+  public void addFrameListener(FrameListener frameListener) {
+    frameListeners.add(frameListener);
+  }
+
+  public void removeFrameListener(FrameListener frameListener) {
+    frameListeners.add(frameListener);
   }
 
   public void clearRenderTimes() {

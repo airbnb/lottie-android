@@ -9,9 +9,9 @@
         android:id="@+id/rootView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/white"
         android:clipChildren="false"
-        android:orientation="vertical"
-        android:background="@android:color/white">
+        android:orientation="vertical">
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -37,8 +37,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
-                android:scaleType="centerInside"
-                android:duplicateParentState="true"/>
+                android:duplicateParentState="true"
+                android:scaleType="centerInside"/>
 
             <LinearLayout
                 android:id="@+id/instructions"
@@ -51,8 +51,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:textColor="@android:color/black"
-                    android:text="Choose an option below"/>
+                    android:text="Choose an option below"
+                    android:textColor="@android:color/black"/>
 
                 <TextView
                     android:id="@+id/qrCode"
@@ -60,8 +60,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
-                    android:textColor="@android:color/black"
-                    android:text="Scan QR Code"/>
+                    android:text="Scan QR Code"
+                    android:textColor="@android:color/black"/>
 
                 <TextView
                     android:id="@+id/sampleAnimations"
@@ -69,8 +69,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
-                    android:textColor="@android:color/black"
-                    android:text="Sample animations"/>
+                    android:text="Sample animations"
+                    android:textColor="@android:color/black"/>
 
                 <TextView
                     android:id="@+id/loadAnimation"
@@ -78,16 +78,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
-                    android:textColor="@android:color/black"
-                    android:text="Load animation file"/>
+                    android:text="Load animation file"
+                    android:textColor="@android:color/black"/>
 
                 <TextView
                     android:id="@+id/loadFromJson"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawablePadding="4dp"
-                    android:textColor="@android:color/black"
-                    android:text="Load animation from json url"/>
+                    android:text="Load animation from json url"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:id="@+id/overflowMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:text="Open the menu for more options"
+                    android:textColor="@android:color/black"/>
 
             </LinearLayout>
 
@@ -95,11 +103,38 @@
                 android:id="@+id/warnings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|left"
+                android:layout_gravity="top|right"
                 android:drawableLeft="@drawable/ic_warning"
+                android:drawablePadding="4dp"
                 android:padding="16dp"
-                android:visibility="gone"
-                android:drawablePadding="4dp"/>
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/renderTimesGraphContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:rotation="270"
+                    android:text="ms"
+                    android:textColor="@android:color/black"
+                    android:textSize="12sp"/>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/renderTimesGraph"
+                    android:layout_width="0dp"
+                    android:layout_height="128dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-4dp"
+                    android:layout_marginBottom="-16dp"/>
+            </LinearLayout>
+
         </FrameLayout>
 
         <View
@@ -110,23 +145,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="6dp">
 
             <ImageButton
-                android:background="?selectableItemBackgroundBorderless"
                 android:id="@+id/invertColors"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_invert"/>
 
             <ImageButton
                 android:id="@+id/loop"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_loop"/>
 
@@ -135,8 +170,8 @@
                 android:id="@+id/qrScan"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_qr_scan"/>
 
@@ -144,11 +179,11 @@
                 android:id="@+id/playButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginTop="12dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginBottom="12dp"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
-                android:layout_gravity="center_vertical"
+                android:layout_marginTop="12dp"
                 android:background="@drawable/play_button_background"
                 android:src="@drawable/ic_play_pause"/>
 
@@ -156,8 +191,8 @@
                 android:id="@+id/loadAsset"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_assets"/>
 
@@ -165,8 +200,8 @@
                 android:id="@+id/loadFile"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_file"/>
 
@@ -174,8 +209,8 @@
                 android:id="@+id/loadUrlOrJson"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_network"/>
 
@@ -184,14 +219,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginRight="16dp"
+                android:layout_weight="1"
                 android:gravity="right"
                 android:text="Progress"/>
 
@@ -212,14 +247,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginRight="16dp"
+                android:layout_weight="1"
                 android:gravity="right"
                 android:text="Scale"/>
 
@@ -233,8 +268,8 @@
                 android:id="@+id/scaleText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginLeft="16dp"
+                android:layout_weight="1"
                 android:gravity="left"/>
         </LinearLayout>
 
@@ -243,17 +278,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:textColor="@android:color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/black"
-            android:textSize="8sp"
             android:layout_marginBottom="8dp"
-            android:text="2.0.0"/>
+            android:text="2.0.0"
+            android:textColor="@android:color/black"
+            android:textSize="8sp"/>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
