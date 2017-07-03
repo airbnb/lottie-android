@@ -156,5 +156,4 @@ class AnimatableTransform implements ModifierContent, ContentModel {
       throw new IllegalArgumentException("Missing transform for " + missingProperty);
     }
   }
-
 }

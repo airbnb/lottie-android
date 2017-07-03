@@ -50,6 +50,9 @@ class Keyframe<T> {
   @SuppressWarnings("WeakerAccess") final float startFrame;
   @SuppressWarnings("WeakerAccess") @Nullable Float endFrame;
 
+  private float startProgress = Float.MIN_VALUE;
+  private float endProgress = Float.MIN_VALUE;
+
   public Keyframe(LottieComposition composition, @Nullable T startValue, @Nullable T endValue,
       @Nullable Interpolator interpolator, float startFrame, @Nullable Float endFrame) {
     this.composition = composition;
@@ -60,15 +63,25 @@ class Keyframe<T> {
     this.endFrame = endFrame;
   }
 
-  @FloatRange(from = 0f, to = 1f)
   float getStartProgress() {
-    return startFrame / composition.getDurationFrames();
+    if (startProgress == Float.MIN_VALUE) {
+      startProgress = (startFrame  - composition.getStartFrame()) / composition.getDurationFrames();
+    }
+    return startProgress;
   }
 
-  @FloatRange(from = 0f, to = 1f)
   float getEndProgress() {
-    //noinspection Range
-    return endFrame == null ? 1f : endFrame / composition.getDurationFrames();
+    if (endProgress == Float.MIN_VALUE) {
+      if (endFrame == null) {
+        endProgress = 1f;
+      } else {
+        float startProgress = getStartProgress();
+        float durationFrames = endFrame - startFrame;
+        float durationProgress = durationFrames / composition.getDurationFrames();
+        endProgress = startProgress + durationProgress;
+      }
+    }
+    return endProgress;
   }
 
   boolean isStatic() {
