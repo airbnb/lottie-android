@@ -148,7 +148,7 @@ class TextLayer extends BaseLayer {
     }
     fillPaint.setTypeface(typeface);
     fillPaint.setTextSize(documentData.size * composition.getDpScale());
-    strokePaint.setTypeface(strokePaint.getTypeface());
+    strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
     for (int i = 0; i < text.length(); i++) {
       char character = text.charAt(i);
