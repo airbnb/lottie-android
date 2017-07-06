@@ -1,3 +1,15 @@
+# 2.1.0
+### Features and Improvements
+* Added support for animated text (glyphs and fonts)
+* Enabled text to be set dynamically
+* Added support for repeaters
+* Added support for time stretching
+* Added support for work area (trimming start and end frames)
+* Added support for mask opacity
+* Migrated the sample app to Kotlin
+* Added a real time render performance graph in the sample app
+* Added many systrace markers to improve performance tracking
+
 # 2.0.0
 ### Features and Improvements
 * Increased version number.
@@ -31,10 +43,10 @@
 
 # 2.0.0-beta4
 ### Features and Improvements
-* Added support to load an animation by scanning a qr code with a url to the json. All 
+* Added support to load an animation by scanning a qr code with a url to the json. All
 lottiefiles.com animations now have qr codes.
 * Added support for opacity stops in gradients.
-* Exposed setScale to arbitrarily scale up or down an animation. Added a slider in Lottie Sample 
+* Exposed setScale to arbitrarily scale up or down an animation. Added a slider in Lottie Sample
 to try it.
 
 #### Bugs Fixed
@@ -48,7 +60,7 @@ to try it.
 * Vastly improved the performance of masks and mattes.
 * Support for fill types (non-zero or even-odd).
 * Support for gradient fills.
-* Some merge path support. Enable it with `enableMergePathsForKitKatAndAbove` and read the 
+* Some merge path support. Enable it with `enableMergePathsForKitKatAndAbove` and read the
 documentation before using it.
 * Support for multiple fills and strokes on shapes.
 * Expose several package private methods on `LottieAnimationView` and `LottieDrawable`
