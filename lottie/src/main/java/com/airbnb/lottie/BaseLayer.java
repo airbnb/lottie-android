@@ -328,8 +328,10 @@ abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.Animat
           path.setFillType(Path.FillType.WINDING);
       }
       KeyframeAnimation<Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
+      int alpha = contentPaint.getAlpha();
       contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
       canvas.drawPath(path, contentPaint);
+      contentPaint.setAlpha(alpha);
     }
     L.beginSection("Layer#restoreLayer");
     canvas.restore();
