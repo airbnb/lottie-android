@@ -286,7 +286,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
-            android:text="2.0.0"
+            android:text="2.1.0"
             android:textColor="@android:color/black"
             android:textSize="8sp"/>
 
