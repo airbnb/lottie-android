@@ -48,10 +48,8 @@ class AnimationFragment : Fragment() {
     private val RC_QR = 1340
     private val SCALE_SLIDER_FACTOR = 50f
 
-    private val assetFolders = object : HashMap<String, String>() {
-        init {
-            put("WeAccept.json", "Images/WeAccept")
-        }
+    private val assetFolders = HashMap<String, String>().apply {
+        put("WeAccept.json", "Images/WeAccept")
     }
 
     private val handler = Handler()

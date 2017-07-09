@@ -60,7 +60,7 @@ class AppIntroActivity : IntroActivity() {
         animationView.progress = startProgress.lerp(endProgress, positionOffset)
     }
 
-    private class EmptyFragment : Fragment() {
+    class EmptyFragment : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             return container!!.inflate(R.layout.fragment_empty, false)
