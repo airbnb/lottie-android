@@ -97,7 +97,7 @@ final class Utils {
       L.endSection("applyTrimPathIfNeeded");
       return;
     }
-    if (length == 0f || Math.abs(endValue - startValue - 1) < .01) {
+    if (length < 1f || Math.abs(endValue - startValue - 1) < .01) {
       L.endSection("applyTrimPathIfNeeded");
       return;
     }
