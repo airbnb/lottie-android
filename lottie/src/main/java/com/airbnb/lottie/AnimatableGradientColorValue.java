@@ -28,8 +28,9 @@ class AnimatableGradientColorValue extends BaseAnimatableValue<GradientColor, Gr
 
     static AnimatableGradientColorValue newInstance(
         JSONObject json, LottieComposition composition) {
+      int points = json.optInt("p", json.optJSONArray("k").length() / 4);
       AnimatableValueParser.Result<GradientColor> result = AnimatableValueParser
-          .newInstance(json, 1, composition, new ValueFactory(json.optInt("p")))
+          .newInstance(json, 1, composition, new ValueFactory(points))
           .parseJson();
       GradientColor initialValue = result.initialValue;
       return new AnimatableGradientColorValue(result.keyframes, initialValue);
