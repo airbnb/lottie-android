@@ -178,4 +178,13 @@ final class Utils {
 
     return composition.getPatchVersion() >= patch;
   }
+
+  static int hashFor(float a, float b, float c, float d) {
+    int result = 17;
+    result = (int) (31 * result * a);
+    result = (int) (31 * result * b);
+    result = (int) (31 * result * c);
+    result = (int) (31 * result * d);
+    return result;
+  }
 }
