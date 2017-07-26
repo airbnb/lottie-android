@@ -368,6 +368,7 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setCallback(this);
 
     boolean isNewComposition = lottieDrawable.setComposition(composition);
+    enableOrDisableHardwareLayer();
     if (!isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
