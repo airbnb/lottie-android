@@ -21,6 +21,7 @@ class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
     return new IntegerKeyframeAnimation(keyframes);
   }
 
+  @Override
   public Integer getInitialValue() {
     return initialValue;
   }
