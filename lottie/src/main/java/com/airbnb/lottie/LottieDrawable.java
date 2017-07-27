@@ -169,7 +169,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return true;
   }
 
-  public void setPerformanceTrackingEnabled(boolean enabled) {
+  @SuppressWarnings("WeakerAccess") public void setPerformanceTrackingEnabled(boolean enabled) {
     performanceTrackingEnabled = enabled;
     if (composition != null) {
       composition.setPerformanceTrackingEnabled(enabled);
@@ -296,13 +296,38 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
       return;
     }
     float scale = this.scale;
-    if (compositionLayer.hasMatte()) {
-      scale = Math.min(this.scale, getMaxScale(canvas));
+    float extraScale = 1f;
+    boolean hasExtraScale = false;
+    float maxScale = getMaxScale(canvas);
+    if (compositionLayer.hasMatte() || compositionLayer.hasMasks()) {
+      // Since we can only scale up the animation so much before masks and mattes get clipped, we
+      // may have to scale the canvas to fake the rest. This isn't a problem for software rendering
+      // but hardware accelerated scaling is rasterized so it will appear pixelated.
+      extraScale = scale / maxScale;
+      scale = Math.min(scale, maxScale);
+      // This check fixes some floating point rounding issues.
+      hasExtraScale = extraScale > 1.001f;
     }
 
+    if (hasExtraScale) {
+      canvas.save();
+      // This is extraScale ^2 because what happens is when the scale increases, the intrinsic size
+      // of the view increases. That causes the drawable to keep growing even though we are only
+      // rendering to the size of the view in the top left quarter, leaving the rest blank.
+      // The first scale by extraScale scales up the canvas so that we are back at the original
+      // size. The second extraScale is what actually has the scaling effect.
+      float extraScaleSquared = extraScale * extraScale;
+      int px = (int) ((composition.getBounds().width() * scale / 2f));
+      int py = (int) ((composition.getBounds().height() * scale / 2f));
+      canvas.scale(extraScaleSquared, extraScaleSquared, px, py);
+
+    }
     matrix.reset();
     matrix.preScale(scale, scale);
     compositionLayer.draw(canvas, matrix, alpha);
+    if (hasExtraScale) {
+      canvas.restore();
+    }
     L.endSection("Drawable#draw");
   }
 
@@ -425,6 +450,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     }
   }
 
+  @SuppressWarnings("WeakerAccess")
   public void setTextDelegate(@SuppressWarnings("NullableProblems") TextDelegate textDelegate) {
     this.textDelegate = textDelegate;
   }
@@ -449,6 +475,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     if (composition == null) {
       return;
     }
+    float scale = getScale();
     setBounds(0, 0, (int) (composition.getBounds().width() * scale),
         (int) (composition.getBounds().height() * scale));
   }
@@ -565,6 +592,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return null;
   }
 
+  /**
+   * If there are masks or mattes, we can't scale the animation larger than the canvas or else
+   * the off screen rendering for masks and mattes after saveLayer calls will get clipped.
+   */
   private float getMaxScale(@NonNull Canvas canvas) {
     float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
     float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();

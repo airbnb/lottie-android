@@ -375,24 +375,6 @@ public class LottieAnimationView extends AppCompatImageView {
       return;
     }
 
-    int screenWidth = Utils.getScreenWidth(getContext());
-    int screenHeight = Utils.getScreenHeight(getContext());
-    int compWidth = composition.getBounds().width();
-    int compHeight = composition.getBounds().height();
-    if (compWidth > screenWidth ||
-        compHeight > screenHeight) {
-      float xScale = screenWidth / (float) compWidth;
-      float yScale = screenHeight / (float) compHeight;
-
-      float maxScaleForScreen = Math.min(xScale, yScale);
-      setScale(Math.min(maxScaleForScreen, lottieDrawable.getScale()));
-
-      Log.w(L.TAG, String.format(
-          "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
-          compWidth, compHeight, screenWidth, screenHeight));
-    }
-
-
     // If you set a different composition on the view, the bounds will not update unless
     // the drawable is different than the original.
     setImageDrawable(null);

@@ -138,6 +138,9 @@ class CompositionLayer extends BaseLayer {
             hasMasks = true;
             return true;
           }
+        } else if (layer instanceof CompositionLayer && ((CompositionLayer) layer).hasMasks()) {
+          hasMasks = true;
+          return  true;
         }
       }
       hasMasks = false;
