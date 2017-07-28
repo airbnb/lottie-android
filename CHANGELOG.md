@@ -1,3 +1,11 @@
+# 2.1.2
+### Bugs Fixed
+* Reduced memory footprint.
+* Allowed animations with masks and mattes to scale larger than their view.
+* Respect hardware acceleration when async loading a composition.
+* Fixed a gradient point counting issue.
+* Fixed a trim path issue.
+
 # 2.1.0
 ### Features and Improvements
 * Added support for animated text (glyphs and fonts)
