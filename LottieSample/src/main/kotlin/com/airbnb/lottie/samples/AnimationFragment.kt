@@ -227,7 +227,7 @@ class AnimationFragment : Fragment() {
         item.isChecked = !item.isChecked
         return when (item.itemId) {
             R.id.hardware_acceleration -> consume {
-                animationView.useExperimentalHardwareAcceleration(item.isChecked)
+                animationView.useHardwareAcceleration(item.isChecked)
             }
             R.id.merge_paths -> consume {
                 animationView.enableMergePathsForKitKatAndAbove(item.isChecked)

@@ -265,10 +265,29 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   /**
-   * @see #useExperimentalHardwareAcceleration(boolean)
+   * @see #useHardwareAcceleration(boolean)
    */
-  @SuppressWarnings({"WeakerAccess", "unused"}) public void useExperimentalHardwareAcceleration() {
-    useExperimentalHardwareAcceleration(true);
+  @SuppressWarnings({"WeakerAccess", "unused"})
+  @Deprecated
+  public void useExperimentalHardwareAcceleration() {
+    useHardwareAcceleration(true);
+  }
+
+
+  /**
+   * @see #useHardwareAcceleration(boolean)
+   */
+  @SuppressWarnings({"WeakerAccess", "unused"})
+  @Deprecated
+  public void useExperimentalHardwareAcceleration(boolean use) {
+    useHardwareAcceleration(use);
+  }
+
+  /**
+   * @see #useHardwareAcceleration(boolean)
+   */
+  @SuppressWarnings("unused") public void useHardwareAcceleration() {
+    useHardwareAcceleration(true);
   }
 
   /**
@@ -284,7 +303,7 @@ public class LottieAnimationView extends AppCompatImageView {
    *    anything about that.
    */
   @SuppressWarnings({"WeakerAccess", "unused"})
-  public void useExperimentalHardwareAcceleration(boolean use) {
+  public void useHardwareAcceleration(boolean use) {
     useHardwareLayer = use;
     enableOrDisableHardwareLayer();
   }
