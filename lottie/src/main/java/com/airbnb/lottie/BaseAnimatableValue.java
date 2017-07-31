@@ -29,6 +29,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
     return (O) value;
   }
 
+  @Override
   public boolean hasAnimation() {
     return !keyframes.isEmpty();
   }

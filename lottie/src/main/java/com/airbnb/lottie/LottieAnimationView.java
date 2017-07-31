@@ -593,10 +593,12 @@ public class LottieAnimationView extends AppCompatImageView {
 
     public static final Parcelable.Creator<SavedState> CREATOR =
         new Parcelable.Creator<SavedState>() {
+          @Override
           public SavedState createFromParcel(Parcel in) {
             return new SavedState(in);
           }
 
+          @Override
           public SavedState[] newArray(int size) {
             return new SavedState[size];
           }

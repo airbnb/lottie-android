@@ -21,6 +21,7 @@ class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     return new FloatKeyframeAnimation(keyframes);
   }
 
+  @Override
   public Float getInitialValue() {
     return initialValue;
   }
