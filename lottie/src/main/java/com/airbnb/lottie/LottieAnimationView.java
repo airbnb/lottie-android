@@ -311,8 +311,9 @@ public class LottieAnimationView extends AppCompatImageView {
     this.animationName = animationName;
     if (weakRefCache.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
-      if (compRef.get() != null) {
-        setComposition(compRef.get());
+      LottieComposition ref = compRef.get();
+      if (ref != null) {
+        setComposition(ref);
         return;
       }
     } else if (strongRefCache.containsKey(animationName)) {
