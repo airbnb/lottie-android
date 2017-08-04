@@ -311,8 +311,9 @@ public class LottieAnimationView extends AppCompatImageView {
     this.animationName = animationName;
     if (weakRefCache.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
-      if (compRef.get() != null) {
-        setComposition(compRef.get());
+      LottieComposition ref = compRef.get();
+      if (ref != null) {
+        setComposition(ref);
         return;
       }
     } else if (strongRefCache.containsKey(animationName)) {
@@ -368,29 +369,12 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.setCallback(this);
 
     boolean isNewComposition = lottieDrawable.setComposition(composition);
+    enableOrDisableHardwareLayer();
     if (!isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
       return;
     }
-
-    int screenWidth = Utils.getScreenWidth(getContext());
-    int screenHeight = Utils.getScreenHeight(getContext());
-    int compWidth = composition.getBounds().width();
-    int compHeight = composition.getBounds().height();
-    if (compWidth > screenWidth ||
-        compHeight > screenHeight) {
-      float xScale = screenWidth / (float) compWidth;
-      float yScale = screenHeight / (float) compHeight;
-
-      float maxScaleForScreen = Math.min(xScale, yScale);
-      setScale(Math.min(maxScaleForScreen, lottieDrawable.getScale()));
-
-      Log.w(L.TAG, String.format(
-          "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
-          compWidth, compHeight, screenWidth, screenHeight));
-    }
-
 
     // If you set a different composition on the view, the bounds will not update unless
     // the drawable is different than the original.
@@ -610,10 +594,12 @@ public class LottieAnimationView extends AppCompatImageView {
 
     public static final Parcelable.Creator<SavedState> CREATOR =
         new Parcelable.Creator<SavedState>() {
+          @Override
           public SavedState createFromParcel(Parcel in) {
             return new SavedState(in);
           }
 
+          @Override
           public SavedState[] newArray(int size) {
             return new SavedState[size];
           }

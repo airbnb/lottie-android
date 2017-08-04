@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
+import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
@@ -10,6 +11,7 @@ import android.view.animation.LinearInterpolator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -102,6 +104,9 @@ class Keyframe<T> {
   }
 
   static class Factory {
+    private static final SparseArrayCompat<WeakReference<Interpolator>> pathInterpolatorCache =
+        new SparseArrayCompat<>();
+
     private Factory() {
     }
 
@@ -144,8 +149,16 @@ class Keyframe<T> {
           cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          interpolator = PathInterpolatorCompat.create(
-              cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+          int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
+          WeakReference<Interpolator> interpolatorRef = pathInterpolatorCache.get(hash);
+          if (interpolatorRef == null || interpolatorRef.get() == null) {
+            interpolator = PathInterpolatorCompat.create(
+                cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+            pathInterpolatorCache.put(hash, new WeakReference<>(interpolator));
+          } else {
+            interpolator = pathInterpolatorCache.get(hash).get();
+          }
+
         } else {
           interpolator = LINEAR_INTERPOLATOR;
         }

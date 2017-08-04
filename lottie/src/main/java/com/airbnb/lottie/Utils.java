@@ -97,7 +97,7 @@ final class Utils {
       L.endSection("applyTrimPathIfNeeded");
       return;
     }
-    if (length == 0f || Math.abs(endValue - startValue - 1) < .01) {
+    if (length < 1f || Math.abs(endValue - startValue - 1) < .01) {
       L.endSection("applyTrimPathIfNeeded");
       return;
     }
@@ -177,5 +177,22 @@ final class Utils {
     }
 
     return composition.getPatchVersion() >= patch;
+  }
+
+  static int hashFor(float a, float b, float c, float d) {
+    int result = 17;
+    if (a != 0) {
+      result = (int) (31 * result * a);
+    }
+    if (b != 0) {
+      result = (int) (31 * result * b);
+    }
+    if (c != 0) {
+      result = (int) (31 * result * c);
+    }
+    if (d != 0) {
+      result = (int) (31 * result * d);
+    }
+    return result;
   }
 }
