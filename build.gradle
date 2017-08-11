@@ -7,7 +7,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.3.1'
+    classpath 'com.android.tools.build:gradle:2.3.2'
     classpath 'com.facebook.testing.screenshot:plugin:0.4.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
@@ -17,9 +17,7 @@ buildscript {
 allprojects {
   repositories {
     jcenter()
-    maven {
-      url 'https://maven.google.com'
-    }
+    google()
     maven {
       url "https://jitpack.io"
     }

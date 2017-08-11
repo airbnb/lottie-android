@@ -55,14 +55,13 @@ public class LottieAnimationView extends AppCompatImageView {
     Strong
   }
 
-  private static final Map<String, LottieComposition> strongRefCache = new HashMap<>();
-  private static final Map<String, WeakReference<LottieComposition>> weakRefCache =
+  private static final Map<String, LottieComposition> STRONG_REF_CACHE = new HashMap<>();
+  private static final Map<String, WeakReference<LottieComposition>> WEAK_REF_CACHE =
       new HashMap<>();
 
   private final OnCompositionLoadedListener loadedListener =
       new OnCompositionLoadedListener() {
-        @Override
-        public void onCompositionLoaded(@Nullable LottieComposition composition) {
+        @Override public void onCompositionLoaded(@Nullable LottieComposition composition) {
           if (composition != null) {
             setComposition(composition);
           }
@@ -78,9 +77,7 @@ public class LottieAnimationView extends AppCompatImageView {
   private boolean useHardwareLayer = false;
 
   @Nullable private Cancellable compositionLoader;
-  /**
-   * Can be null because it is created async
-   */
+  /** Can be null because it is created async */
   @Nullable private LottieComposition composition;
 
   public LottieAnimationView(Context context) {
@@ -328,15 +325,15 @@ public class LottieAnimationView extends AppCompatImageView {
    */
   @SuppressWarnings("WeakerAccess") public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
-    if (weakRefCache.containsKey(animationName)) {
-      WeakReference<LottieComposition> compRef = weakRefCache.get(animationName);
+    if (WEAK_REF_CACHE.containsKey(animationName)) {
+      WeakReference<LottieComposition> compRef = WEAK_REF_CACHE.get(animationName);
       LottieComposition ref = compRef.get();
       if (ref != null) {
         setComposition(ref);
         return;
       }
-    } else if (strongRefCache.containsKey(animationName)) {
-      setComposition(strongRefCache.get(animationName));
+    } else if (STRONG_REF_CACHE.containsKey(animationName)) {
+      setComposition(STRONG_REF_CACHE.get(animationName));
       return;
     }
 
@@ -347,9 +344,9 @@ public class LottieAnimationView extends AppCompatImageView {
         new OnCompositionLoadedListener() {
           @Override public void onCompositionLoaded(LottieComposition composition) {
             if (cacheStrategy == CacheStrategy.Strong) {
-              strongRefCache.put(animationName, composition);
+              STRONG_REF_CACHE.put(animationName, composition);
             } else if (cacheStrategy == CacheStrategy.Weak) {
-              weakRefCache.put(animationName, new WeakReference<>(composition));
+              WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
             }
 
             setComposition(composition);
