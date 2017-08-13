@@ -136,15 +136,23 @@ public class LottieAnimationView extends AppCompatImageView {
   }
 
   @Override public void setImageResource(int resId) {
-    super.setImageResource(resId);
     recycleBitmaps();
+    cancelLoaderTask();
+    super.setImageResource(resId);
   }
 
   @Override public void setImageDrawable(Drawable drawable) {
     if (drawable != lottieDrawable) {
       recycleBitmaps();
     }
+    cancelLoaderTask();
     super.setImageDrawable(drawable);
+  }
+
+  @Override public void setImageBitmap(Bitmap bm) {
+    recycleBitmaps();
+    cancelLoaderTask();
+    super.setImageBitmap(bm);
   }
 
   /**
@@ -323,7 +331,8 @@ public class LottieAnimationView extends AppCompatImageView {
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  @SuppressWarnings("WeakerAccess") public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
+  @SuppressWarnings("WeakerAccess")
+  public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
     if (WEAK_REF_CACHE.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = WEAK_REF_CACHE.get(animationName);
