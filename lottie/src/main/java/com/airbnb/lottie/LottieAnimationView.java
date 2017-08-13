@@ -99,7 +99,7 @@ public class LottieAnimationView extends AppCompatImageView {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
     int cacheStrategy = ta.getInt(
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
-        CacheStrategy.None.ordinal());
+        CacheStrategy.Weak.ordinal());
     defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
     if (!isInEditMode() && fileName != null) {
