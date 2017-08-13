@@ -29,7 +29,7 @@ class SolidLayer extends BaseLayer {
       return;
     }
 
-    int alpha = (int) ((backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
+    int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
     paint.setAlpha(alpha);
     if (alpha > 0) {
       updateRect(parentMatrix);
