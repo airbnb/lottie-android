@@ -19,7 +19,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -33,6 +35,11 @@ import java.util.Set;
  */
 public class LottieDrawable extends Drawable implements Drawable.Callback {
   private static final String TAG = LottieDrawable.class.getSimpleName();
+
+  private interface LazyCompositionTask {
+    void run(LottieComposition composition);
+  }
+
   private final Matrix matrix = new Matrix();
   private LottieComposition composition;
   private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
@@ -41,14 +48,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private float scale = 1f;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
+  private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   @Nullable private ImageAssetManager imageAssetManager;
   @Nullable private String imageAssetsFolder;
   @Nullable private ImageAssetDelegate imageAssetDelegate;
   @Nullable private FontAssetManager fontAssetManager;
   @Nullable FontAssetDelegate fontAssetDelegate;
   @Nullable TextDelegate textDelegate;
-  private boolean playAnimationWhenCompositionAdded;
-  private boolean reverseAnimationWhenCompositionAdded;
   private boolean systemAnimationsAreDisabled;
   private boolean enableMergePaths;
   @Nullable private CompositionLayer compositionLayer;
@@ -156,13 +162,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     applyColorFilters();
 
     setProgress(progress);
-    if (playAnimationWhenCompositionAdded) {
-      playAnimationWhenCompositionAdded = false;
-      playAnimation();
-    }
-    if (reverseAnimationWhenCompositionAdded) {
-      reverseAnimationWhenCompositionAdded = false;
-      reverseAnimation();
+    Iterator<LazyCompositionTask> it = lazyCompositionTasks.iterator();
+    while (it.hasNext()) {
+      LazyCompositionTask t = it.next();
+      t.run(composition);
+      it.remove();
     }
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
@@ -357,8 +361,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   private void playAnimation(boolean setStartTime) {
     if (compositionLayer == null) {
-      playAnimationWhenCompositionAdded = true;
-      reverseAnimationWhenCompositionAdded = false;
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          playAnimation();
+        }
+      });
       return;
     }
     long playTime = setStartTime ? (long) (progress * animator.getDuration()) : 0;
@@ -378,8 +385,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   private void reverseAnimation(boolean setStartTime) {
     if (compositionLayer == null) {
-      playAnimationWhenCompositionAdded = false;
-      reverseAnimationWhenCompositionAdded = true;
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          reverseAnimation();
+        }
+      });
       return;
     }
     if (setStartTime) {
@@ -481,8 +491,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   }
 
   @SuppressWarnings("WeakerAccess") public void cancelAnimation() {
-    playAnimationWhenCompositionAdded = false;
-    reverseAnimationWhenCompositionAdded = false;
+    lazyCompositionTasks.clear();
     animator.cancel();
   }
 
