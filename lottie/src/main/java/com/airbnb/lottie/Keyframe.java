@@ -151,12 +151,13 @@ class Keyframe<T> {
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
           WeakReference<Interpolator> interpolatorRef = pathInterpolatorCache.get(hash);
-          if (interpolatorRef == null || interpolatorRef.get() == null) {
+          if (interpolatorRef != null) {
+            interpolator = interpolatorRef.get();
+          }
+          if (interpolatorRef == null || interpolator == null) {
             interpolator = PathInterpolatorCompat.create(
                 cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
             pathInterpolatorCache.put(hash, new WeakReference<>(interpolator));
-          } else {
-            interpolator = pathInterpolatorCache.get(hash).get();
           }
 
         } else {
