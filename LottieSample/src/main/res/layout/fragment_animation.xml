@@ -144,8 +144,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp">
+            android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/invertColors"
@@ -225,16 +224,30 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_marginRight="16dp"
                 android:layout_weight="1"
                 android:gravity="right"
                 android:text="Progress"/>
 
-            <android.support.v7.widget.AppCompatSeekBar
-                android:id="@+id/seekBar"
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"/>
+                android:layout_weight="3">
+                <com.airbnb.lottie.samples.TrimView
+                    android:id="@+id/trimView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"/>
+                <android.support.v7.widget.AppCompatSeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"/>
+            </FrameLayout>
+
 
             <Space
                 android:layout_width="0dp"

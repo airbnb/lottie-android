@@ -107,7 +107,7 @@ class AnimationFragment : Fragment() {
         ))
 
         view.animationView.addAnimatorUpdateListener {
-            animation -> seekBar.progress = (animation.animatedFraction * 100).toInt()
+            animation -> seekBar.progress = ((animation.animatedValue as Float) * 100f).toInt()
         }
 
         view.seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
@@ -117,6 +117,11 @@ class AnimationFragment : Fragment() {
                 }
             }
         ))
+
+        view.trimView.setCallback({ startProgress, endProgress ->
+            animationView.setMinAndMaxProgress(startProgress, endProgress)
+            animationView.progress = startProgress
+        })
 
         view.scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->

@@ -14,11 +14,6 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import java.util.*
 
-private inline fun consume(f: () -> Unit): Boolean {
-    f()
-    return true
-}
-
 class LottieFontViewGroup @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
