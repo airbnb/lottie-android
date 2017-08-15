@@ -33,7 +33,7 @@ import java.util.Set;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-public class LottieDrawable extends Drawable implements Drawable.Callback {
+@SuppressWarnings({"WeakerAccess", "unused"}) public class LottieDrawable extends Drawable implements Drawable.Callback {
   private static final String TAG = LottieDrawable.class.getSimpleName();
 
   private interface LazyCompositionTask {
@@ -42,7 +42,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
 
   private final Matrix matrix = new Matrix();
   private LottieComposition composition;
-  private final ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
+  private final LottieValueAnimator animator = new LottieValueAnimator();
   private float speed = 1f;
   private float progress = 0f;
   private float scale = 1f;
@@ -61,7 +61,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
 
-  @SuppressWarnings("WeakerAccess") public LottieDrawable() {
+  public LottieDrawable() {
     animator.setRepeatCount(0);
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -79,14 +79,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   /**
    * Returns whether or not any layers in this composition has masks.
    */
-  @SuppressWarnings({"unused", "WeakerAccess"}) public boolean hasMasks() {
+  public boolean hasMasks() {
     return compositionLayer != null && compositionLayer.hasMasks();
   }
 
   /**
    * Returns whether or not any layers in this composition has a matte layer.
    */
-  @SuppressWarnings({"unused", "WeakerAccess"}) public boolean hasMatte() {
+  public boolean hasMatte() {
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
@@ -101,7 +101,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
    * instead of using merge paths.
    */
-  @SuppressWarnings("WeakerAccess") public void enableMergePathsForKitKatAndAbove(boolean enable) {
+  public void enableMergePathsForKitKatAndAbove(boolean enable) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
       Log.w(TAG, "Merge paths are not supported pre-Kit Kat.");
       return;
@@ -125,11 +125,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * are done. Calling {@link #recycleBitmaps()} doesn't have to be final and {@link LottieDrawable}
    * will recreate the bitmaps if needed but they will leak if you don't recycle them.
    */
-  @SuppressWarnings("WeakerAccess") public void setImagesAssetsFolder(@Nullable String imageAssetsFolder) {
+  public void setImagesAssetsFolder(@Nullable String imageAssetsFolder) {
     this.imageAssetsFolder = imageAssetsFolder;
   }
 
-  @SuppressWarnings("WeakerAccess") @Nullable public String getImageAssetsFolder() {
+  @Nullable public String getImageAssetsFolder() {
     return imageAssetsFolder;
   }
 
@@ -140,7 +140,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * will recreate the bitmaps if needed but they will leak if you don't recycle them.
    *
    */
-  @SuppressWarnings("WeakerAccess") public void recycleBitmaps() {
+  public void recycleBitmaps() {
     if (imageAssetManager != null) {
       imageAssetManager.recycleBitmaps();
     }
@@ -149,7 +149,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   /**
    * @return True if the composition is different from the previously set composition, false otherwise.
    */
-  @SuppressWarnings("WeakerAccess") public boolean setComposition(LottieComposition composition) {
+  public boolean setComposition(LottieComposition composition) {
     if (this.composition == composition) {
       return false;
     }
@@ -173,7 +173,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return true;
   }
 
-  @SuppressWarnings("WeakerAccess") public void setPerformanceTrackingEnabled(boolean enabled) {
+  public void setPerformanceTrackingEnabled(boolean enabled) {
     performanceTrackingEnabled = enabled;
     if (composition != null) {
       composition.setPerformanceTrackingEnabled(enabled);
@@ -235,7 +235,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @param contentName name of the specific content that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  @SuppressWarnings("WeakerAccess") public void addColorFilterToContent(String layerName, String contentName,
+  public void addColorFilterToContent(String layerName, String contentName,
       @Nullable ColorFilter colorFilter) {
     addColorFilterInternal(layerName, contentName, colorFilter);
   }
@@ -245,7 +245,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @param layerName name of the layer that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  @SuppressWarnings("WeakerAccess") public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
+  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
     addColorFilterInternal(layerName, null, colorFilter);
   }
 
@@ -260,7 +260,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   /**
    * Clear all color filters on all layers and all content in the layers
    */
-  @SuppressWarnings("WeakerAccess") public void clearColorFilters() {
+  public void clearColorFilters() {
     colorFilterData.clear();
     addColorFilterInternal(null, null, null);
   }
@@ -339,23 +339,23 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     systemAnimationsAreDisabled = true;
   }
 
-  @SuppressWarnings("WeakerAccess") public void loop(boolean loop) {
+  public void loop(boolean loop) {
     animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
   }
 
-  @SuppressWarnings("WeakerAccess") public boolean isLooping() {
+  public boolean isLooping() {
     return animator.getRepeatCount() == ValueAnimator.INFINITE;
   }
 
-  @SuppressWarnings("WeakerAccess") public boolean isAnimating() {
+  public boolean isAnimating() {
     return animator.isRunning();
   }
 
-  @SuppressWarnings("WeakerAccess") public void playAnimation() {
+  public void playAnimation() {
     playAnimation((progress > 0.0 && progress < 1.0));
   }
 
-  @SuppressWarnings("WeakerAccess") public void resumeAnimation() {
+  public void resumeAnimation() {
     playAnimation(true);
   }
 
@@ -375,11 +375,33 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     }
   }
 
-  @SuppressWarnings({"unused", "WeakerAccess"}) public void resumeReverseAnimation() {
+  public void playAnimation(final int startFrame, final int endFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          playAnimation(startFrame / composition.getDurationFrames(),
+              endFrame / composition.getDurationFrames());
+        }
+      });
+      return;
+    }
+    playAnimation(startFrame / composition.getDurationFrames(),
+        endFrame / composition.getDurationFrames());
+  }
+
+  public void playAnimation(@FloatRange(from = 0f, to = 1f) float startProgress,
+      @FloatRange(from = 0f, to = 1f) float endProgress) {
+    animator.updateValues(startProgress, endProgress);
+    animator.setCurrentPlayTime(0);
+    setProgress(startProgress);
+    playAnimation(false);
+  }
+
+  public void resumeReverseAnimation() {
     reverseAnimation(true);
   }
 
-  @SuppressWarnings("WeakerAccess") public void reverseAnimation() {
+  public void reverseAnimation() {
     reverseAnimation((progress > 0.0 && progress < 1.0));
   }
 
@@ -398,13 +420,51 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     animator.reverse();
   }
 
-  @SuppressWarnings("WeakerAccess") public void setSpeed(float speed) {
-    this.speed = speed;
-    if (speed < 0) {
-      animator.setFloatValues(1f, 0f);
-    } else {
-      animator.setFloatValues(0f, 1f);
+  public void setMinFrame(final int startFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMinProgress(startFrame / composition.getDurationFrames());
+        }
+      });
+      return;
     }
+    setMinProgress(startFrame / composition.getDurationFrames());
+  }
+
+   public void setMinProgress(float startProgress) {
+    animator.setStartProgress(startProgress);
+  }
+
+  public void setMaxFrame(final int endFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMaxProgress(endFrame / composition.getDurationFrames());
+        }
+      });
+      return;
+    }
+    setMaxProgress(endFrame / composition.getDurationFrames());
+  }
+
+  public void setMaxProgress(float endProgress) {
+    animator.setEndProgress(endProgress);
+  }
+
+  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    setMinFrame(minFrame);
+    setMaxFrame(maxFrame);
+  }
+
+  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+    setMinProgress(minProgress);
+    setMaxProgress(maxProgress);
+  }
+
+  public void setSpeed(float speed) {
+    this.speed = speed;
+    animator.setIsReversed(speed < 0);
 
     if (composition != null) {
       animator.setDuration((long) (composition.getDuration() / Math.abs(speed)));
@@ -431,7 +491,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * with a scaleType such as centerInside will yield better performance with little perceivable
    * quality loss.
    */
-  @SuppressWarnings("WeakerAccess") public void setScale(float scale) {
+  public void setScale(float scale) {
     this.scale = scale;
     updateBounds();
   }
@@ -441,7 +501,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * animations from the network or have the images saved to an SD Card. In that case, Lottie
    * will defer the loading of the bitmap to this delegate.
    */
-  @SuppressWarnings({"unused", "WeakerAccess"}) public void setImageAssetDelegate(
+  public void setImageAssetDelegate(
       @SuppressWarnings("NullableProblems") ImageAssetDelegate assetDelegate) {
     this.imageAssetDelegate = assetDelegate;
     if (imageAssetManager != null) {
@@ -452,7 +512,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
   /**
    * Use this to manually set fonts.
    */
-  @SuppressWarnings({"unused", "WeakerAccess"}) public void setFontAssetDelegate(
+  public void setFontAssetDelegate(
       @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
     this.fontAssetDelegate = assetDelegate;
     if (fontAssetManager != null) {
@@ -460,7 +520,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     }
   }
 
-  @SuppressWarnings("WeakerAccess")
   public void setTextDelegate(@SuppressWarnings("NullableProblems") TextDelegate textDelegate) {
     this.textDelegate = textDelegate;
   }
@@ -473,11 +532,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
     return textDelegate == null && composition.getCharacters().size() > 0;
   }
 
-  @SuppressWarnings("WeakerAccess") public float getScale() {
+  public float getScale() {
     return scale;
   }
 
-  @SuppressWarnings("WeakerAccess") public LottieComposition getComposition() {
+  public LottieComposition getComposition() {
     return composition;
   }
 
@@ -490,24 +549,24 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
         (int) (composition.getBounds().height() * scale));
   }
 
-  @SuppressWarnings("WeakerAccess") public void cancelAnimation() {
+  public void cancelAnimation() {
     lazyCompositionTasks.clear();
     animator.cancel();
   }
 
-  @SuppressWarnings("WeakerAccess") public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+  public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     animator.addUpdateListener(updateListener);
   }
 
-  @SuppressWarnings("WeakerAccess") public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+  public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     animator.removeUpdateListener(updateListener);
   }
 
-  @SuppressWarnings("WeakerAccess") public void addAnimatorListener(Animator.AnimatorListener listener) {
+  public void addAnimatorListener(Animator.AnimatorListener listener) {
     animator.addListener(listener);
   }
 
-  @SuppressWarnings("WeakerAccess") public void removeAnimatorListener(Animator.AnimatorListener listener) {
+  public void removeAnimatorListener(Animator.AnimatorListener listener) {
     animator.removeListener(listener);
   }
 
@@ -526,7 +585,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback {
    * @return the previous Bitmap or null.
    */
   @Nullable
-  @SuppressWarnings({"unused", "WeakerAccess"})
   public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
     ImageAssetManager bm = getImageAssetManager();
     if (bm == null) {

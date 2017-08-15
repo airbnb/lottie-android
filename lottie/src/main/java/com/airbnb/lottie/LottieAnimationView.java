@@ -41,14 +41,13 @@ import java.util.Map;
  * You can manually set the progress of the animation with {@link #setProgress(float)} or
  * {@link R.attr#lottie_progress}
  */
-public class LottieAnimationView extends AppCompatImageView {
+@SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
   private static final String TAG = LottieAnimationView.class.getSimpleName();
 
   /**
    * Caching strategy for compositions that will be reused frequently.
    * Weak or Strong indicates the GC reference strength of the composition in the cache.
    */
-  @SuppressWarnings("WeakerAccess")
   public enum CacheStrategy {
     None,
     Weak,
@@ -161,7 +160,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * @param contentName name of the specific content that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  @SuppressWarnings("unused") public void addColorFilterToContent(
+  public void addColorFilterToContent(
       String layerName, String contentName, @Nullable ColorFilter colorFilter) {
     lottieDrawable.addColorFilterToContent(layerName, contentName, colorFilter);
   }
@@ -171,7 +170,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * @param layerName name of the layer that the color filter is to be applied
    * @param colorFilter the color filter, null to clear the color filter
    */
-  @SuppressWarnings("unused") public void addColorFilterToLayer(
+  public void addColorFilterToLayer(
       String layerName, @Nullable ColorFilter colorFilter) {
     lottieDrawable.addColorFilterToLayer(layerName, colorFilter);
   }
@@ -187,7 +186,7 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * Clear all color filters on all layers and all content in the layers
    */
-  @SuppressWarnings("unused") public void clearColorFilters() {
+  public void clearColorFilters() {
     lottieDrawable.clearColorFilters();
   }
 
@@ -264,7 +263,6 @@ public class LottieAnimationView extends AppCompatImageView {
    * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
    * instead of using merge paths.
    */
-  @SuppressWarnings({"WeakerAccess", "Unused"})
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
     lottieDrawable.enableMergePathsForKitKatAndAbove(enable);
   }
@@ -272,7 +270,6 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * @see #useHardwareAcceleration(boolean)
    */
-  @SuppressWarnings({"WeakerAccess", "unused"})
   @Deprecated
   public void useExperimentalHardwareAcceleration() {
     useHardwareAcceleration(true);
@@ -282,7 +279,6 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * @see #useHardwareAcceleration(boolean)
    */
-  @SuppressWarnings({"WeakerAccess", "unused"})
   @Deprecated
   public void useExperimentalHardwareAcceleration(boolean use) {
     useHardwareAcceleration(use);
@@ -291,7 +287,7 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * @see #useHardwareAcceleration(boolean)
    */
-  @SuppressWarnings("unused") public void useHardwareAcceleration() {
+  public void useHardwareAcceleration() {
     useHardwareAcceleration(true);
   }
 
@@ -307,7 +303,6 @@ public class LottieAnimationView extends AppCompatImageView {
    *    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
    *    anything about that.
    */
-  @SuppressWarnings({"WeakerAccess", "unused"})
   public void useHardwareAcceleration(boolean use) {
     useHardwareLayer = use;
     enableOrDisableHardwareLayer();
@@ -319,7 +314,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * <p>
    * Will not cache the composition once loaded.
    */
-  @SuppressWarnings("WeakerAccess") public void setAnimation(String animationName) {
+  public void setAnimation(String animationName) {
     setAnimation(animationName, defaultCacheStrategy);
   }
 
@@ -331,7 +326,6 @@ public class LottieAnimationView extends AppCompatImageView {
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  @SuppressWarnings("WeakerAccess")
   public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
     if (WEAK_REF_CACHE.containsKey(animationName)) {
@@ -414,14 +408,14 @@ public class LottieAnimationView extends AppCompatImageView {
   /**
    * Returns whether or not any layers in this composition has masks.
    */
-  @SuppressWarnings("unused") public boolean hasMasks() {
+  public boolean hasMasks() {
     return lottieDrawable.hasMasks();
   }
 
   /**
    * Returns whether or not any layers in this composition has a matte layer.
    */
-  @SuppressWarnings("unused") public boolean hasMatte() {
+  public boolean hasMatte() {
     return lottieDrawable.hasMatte();
   }
 
@@ -429,7 +423,6 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.addAnimatorUpdateListener(updateListener);
   }
 
-  @SuppressWarnings("unused")
   public void removeUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     lottieDrawable.removeAnimatorUpdateListener(updateListener);
   }
@@ -438,7 +431,6 @@ public class LottieAnimationView extends AppCompatImageView {
     lottieDrawable.addAnimatorListener(listener);
   }
 
-  @SuppressWarnings("unused")
   public void removeAnimatorListener(Animator.AnimatorListener listener) {
     lottieDrawable.removeAnimatorListener(listener);
   }
@@ -461,17 +453,50 @@ public class LottieAnimationView extends AppCompatImageView {
     enableOrDisableHardwareLayer();
   }
 
-  @SuppressWarnings("unused") public void reverseAnimation() {
+  public void playAnimation(final int startFrame, final int endFrame) {
+    lottieDrawable.playAnimation(startFrame, endFrame);
+  }
+
+  public void playAnimation(@FloatRange(from = 0f, to = 1f) float startProgress,
+      @FloatRange(from = 0f, to = 1f) float endProgress) {
+    lottieDrawable.playAnimation(startProgress, endProgress);
+  }
+
+  public void reverseAnimation() {
     lottieDrawable.reverseAnimation();
     enableOrDisableHardwareLayer();
   }
 
-  @SuppressWarnings("unused") public void resumeReverseAnimation() {
+  public void setMinFrame(int startFrame) {
+    lottieDrawable.setMinFrame(startFrame);
+  }
+
+  public void setMinProgress(float startProgress) {
+    lottieDrawable.setMinProgress(startProgress);
+  }
+
+  public void setMaxFrame(int endFrame) {
+    lottieDrawable.setMaxFrame(endFrame);
+  }
+
+  public void setMaxProgress(float endProgress) {
+    lottieDrawable.setMaxProgress(endProgress);
+  }
+
+  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    lottieDrawable.setMinAndMaxFrame(minFrame, maxFrame);
+  }
+
+  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+    lottieDrawable.setMinAndMaxProgress(minProgress, maxProgress);
+  }
+
+  public void resumeReverseAnimation() {
     lottieDrawable.resumeReverseAnimation();
     enableOrDisableHardwareLayer();
   }
 
-  @SuppressWarnings("unused") public void setSpeed(float speed) {
+  public void setSpeed(float speed) {
     lottieDrawable.setSpeed(speed);
   }
 
@@ -483,7 +508,7 @@ public class LottieAnimationView extends AppCompatImageView {
    * If your images are located in src/main/assets/airbnb_loader/ then call
    * `setImageAssetsFolder("airbnb_loader/");`.
    */
-  @SuppressWarnings("WeakerAccess") public void setImageAssetsFolder(String imageAssetsFolder) {
+  public void setImageAssetsFolder(String imageAssetsFolder) {
     lottieDrawable.setImagesAssetsFolder(imageAssetsFolder);
   }
 
@@ -499,7 +524,6 @@ public class LottieAnimationView extends AppCompatImageView {
    * @return the previous Bitmap or null.
    */
   @Nullable
-  @SuppressWarnings({"unused", "WeakerAccess"})
   public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
     return lottieDrawable.updateBitmap(id, bitmap);
   }
@@ -509,14 +533,14 @@ public class LottieAnimationView extends AppCompatImageView {
    * animations from the network or have the images saved to an SD Card. In that case, Lottie
    * will defer the loading of the bitmap to this delegate.
    */
-  @SuppressWarnings("unused") public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
+  public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
     lottieDrawable.setImageAssetDelegate(assetDelegate);
   }
 
   /**
    * Use this to manually set fonts.
    */
-  @SuppressWarnings({"unused", "WeakerAccess"}) public void setFontAssetDelegate(
+  public void setFontAssetDelegate(
       @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
     lottieDrawable.setFontAssetDelegate(assetDelegate);
   }
@@ -569,7 +593,7 @@ public class LottieAnimationView extends AppCompatImageView {
     return lottieDrawable.getProgress();
   }
 
-  @SuppressWarnings("unused") public long getDuration() {
+  public long getDuration() {
     return composition != null ? composition.getDuration() : 0;
   }
 
