@@ -1,3 +1,11 @@
+# 2.2.0
+### Features and Improvements
+* Added `play(startFrame, endFrame)` and `play(startProgress, endProgress)`
+* Added the ability to set a minimum and maximum frame/progress for a given animation
+* Made WeakRef the default cache strategy
+### Bugs Fixed
+* Cancel loading animations when non-Lottie animations are set
+
 # 2.1.2
 ### Bugs Fixed
 * Reduced memory footprint.
