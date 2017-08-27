@@ -225,7 +225,7 @@ import java.util.Set;
   }
 
   @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
-    // Do nothing.
+    throw new UnsupportedOperationException("Use addColorFilter instead.");
   }
 
   /**
