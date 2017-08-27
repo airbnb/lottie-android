@@ -67,7 +67,6 @@ import java.util.Set;
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         if (systemAnimationsAreDisabled) {
-          animator.cancel();
           setProgress(1f);
         } else {
           setProgress((float) animation.getAnimatedValue());
@@ -336,7 +335,7 @@ import java.util.Set;
   }
 
   void systemAnimationsAreDisabled() {
-    systemAnimationsAreDisabled = true;
+    // systemAnimationsAreDisabled = true;
   }
 
   public void loop(boolean loop) {
