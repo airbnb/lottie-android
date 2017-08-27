@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.3"
+  compileSdkVersion 26
+  buildToolsVersion "26.0.1"
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 25
+    targetSdkVersion 26
     versionCode 17
     versionName "2.2.0"
     testInstrumentationRunner "com.airbnb.lottie.TestRunner"
@@ -34,9 +34,9 @@ android {
 
 dependencies {
   compile project(':lottie')
-  compile 'com.android.support:appcompat-v7:25.3.1'
-  compile 'com.android.support:recyclerview-v7:25.3.1'
-  compile 'com.android.support:design:25.3.1'
+  compile "com.android.support:appcompat-v7:$supportLibVersion"
+  compile "com.android.support:recyclerview-v7:$supportLibVersion"
+  compile "com.android.support:design:$supportLibVersion"
   compile 'com.jakewharton:butterknife:8.5.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
   compile 'com.squareup.okhttp3:okhttp:3.7.0'
@@ -59,7 +59,7 @@ dependencies {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
   compile 'com.android.support.constraint:constraint-layout:1.0.2'
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }
 repositories {
   mavenCentral()

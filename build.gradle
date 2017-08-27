@@ -1,7 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext.kotlin_version = '1.1.4-2'
+  ext.kotlinVersion = '1.1.4-2'
+  ext.supportLibVersion = '26.0.1'
 
   repositories {
     jcenter()
@@ -9,8 +10,8 @@ buildscript {
   dependencies {
     classpath 'com.android.tools.build:gradle:2.3.2'
     classpath 'com.facebook.testing.screenshot:plugin:0.4.2'
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
   }
 }
 

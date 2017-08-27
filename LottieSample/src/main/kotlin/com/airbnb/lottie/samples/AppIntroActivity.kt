@@ -17,11 +17,11 @@ import com.matthewtamlin.sliding_intro_screen_library.core.LockableViewPager
 class AppIntroActivity : IntroActivity() {
     private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
 
-    val animationView: LottieAnimationView by lazy {
+    private val animationView: LottieAnimationView by lazy {
         rootView.inflate(R.layout.app_intro_animation_view, false) as LottieAnimationView
     }
-    val viewPager: LockableViewPager by lazy {
-        findViewById(R.id.intro_activity_viewPager) as LockableViewPager
+    private val viewPager: LockableViewPager by lazy {
+        findViewById<LockableViewPager>(R.id.intro_activity_viewPager)
     }
 
     override fun generatePages(savedInstanceState: Bundle?): Collection<Fragment> {
