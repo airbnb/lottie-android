@@ -13,13 +13,12 @@ import android.support.annotation.Nullable;
 class ImageLayer extends BaseLayer {
 
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
-  private final Rect src = new Rect();
   private final Rect dst = new Rect();
-  private final float density;
 
   ImageLayer(LottieDrawable lottieDrawable, Layer layerModel, float density) {
     super(lottieDrawable, layerModel);
-    this.density = density;
+    Bitmap bitmap = getBitmap();
+    dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
   }
 
   @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
@@ -30,9 +29,7 @@ class ImageLayer extends BaseLayer {
     paint.setAlpha(parentAlpha);
     canvas.save();
     canvas.concat(parentMatrix);
-    src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-    dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
-    canvas.drawBitmap(bitmap, src, dst , paint);
+    canvas.drawBitmap(bitmap, null, dst , paint);
     canvas.restore();
   }
 
