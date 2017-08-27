@@ -12,7 +12,7 @@ import android.support.annotation.ColorInt;
  * representation of many of the transfer modes:
  * http://ssp.impulsetrain.com/porterduff.html
  */
-public class SimpleColorFilter extends PorterDuffColorFilter {
+@SuppressWarnings("WeakerAccess") public class SimpleColorFilter extends PorterDuffColorFilter {
   public SimpleColorFilter(@ColorInt int color) {
     super(color, PorterDuff.Mode.SRC_ATOP);
   }

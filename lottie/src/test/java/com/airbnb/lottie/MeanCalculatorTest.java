@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import com.airbnb.lottie.utils.MeanCalculator;
+
 import org.junit.Before;
 import org.junit.Test;
 

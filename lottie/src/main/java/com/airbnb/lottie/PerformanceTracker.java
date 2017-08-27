@@ -4,6 +4,8 @@ import android.support.v4.util.ArraySet;
 import android.support.v4.util.Pair;
 import android.util.Log;
 
+import com.airbnb.lottie.utils.MeanCalculator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,7 +41,7 @@ public class PerformanceTracker {
     this.enabled = enabled;
   }
 
-  void recordRenderTime(String layerName, float millis) {
+  public void recordRenderTime(String layerName, float millis) {
     if (!enabled) {
       return;
     }
@@ -61,7 +63,7 @@ public class PerformanceTracker {
     frameListeners.add(frameListener);
   }
 
-  public void removeFrameListener(FrameListener frameListener) {
+  @SuppressWarnings("unused") public void removeFrameListener(FrameListener frameListener) {
     frameListeners.add(frameListener);
   }
 

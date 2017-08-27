@@ -19,6 +19,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import com.airbnb.lottie.manager.FontAssetManager;
+import com.airbnb.lottie.manager.ImageAssetManager;
+import com.airbnb.lottie.model.layer.CompositionLayer;
+import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.utils.LottieValueAnimator;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -89,7 +95,7 @@ import java.util.Set;
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
-  boolean enableMergePathsForKitKatAndAbove() {
+  public boolean enableMergePathsForKitKatAndAbove() {
     return enableMergePaths;
   }
 
@@ -523,11 +529,11 @@ import java.util.Set;
     this.textDelegate = textDelegate;
   }
 
-  @Nullable TextDelegate getTextDelegate() {
+  @Nullable public TextDelegate getTextDelegate() {
     return textDelegate;
   }
 
-  boolean useTextGlyphs() {
+  public boolean useTextGlyphs() {
     return textDelegate == null && composition.getCharacters().size() > 0;
   }
 
@@ -596,8 +602,7 @@ import java.util.Set;
     return ret;
   }
 
-  @Nullable
-  Bitmap getImageAsset(String id) {
+  @Nullable public Bitmap getImageAsset(String id) {
     ImageAssetManager bm = getImageAssetManager();
     if (bm != null) {
       return bm.bitmapForId(id);
@@ -624,8 +629,7 @@ import java.util.Set;
     return imageAssetManager;
   }
 
-  @Nullable
-  Typeface getTypeface(String fontFamily, String style) {
+  @Nullable public Typeface getTypeface(String fontFamily, String style) {
     FontAssetManager assetManager = getFontAssetManager();
     if (assetManager != null) {
       return assetManager.getTypeface(fontFamily, style);

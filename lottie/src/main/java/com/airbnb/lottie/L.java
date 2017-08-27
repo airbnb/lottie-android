@@ -1,9 +1,11 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.RestrictTo;
 import android.support.v4.os.TraceCompat;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {
-  static final String TAG = "LOTTIE";
+  public static final String TAG = "LOTTIE";
   public static final boolean DBG = false;
 
   private static final int MAX_DEPTH = 20;
@@ -24,7 +26,7 @@ public class L {
     }
   }
 
-  static void beginSection(String section) {
+  public static void beginSection(String section) {
     if (!traceEnabled) {
       return;
     }
@@ -38,7 +40,7 @@ public class L {
     traceDepth++;
   }
 
-  static float endSection(String section) {
+  public static float endSection(String section) {
     if (depthPastMaxDepth > 0) {
       depthPastMaxDepth--;
       return 0;

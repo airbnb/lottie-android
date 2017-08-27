@@ -79,7 +79,7 @@ public class TextDelegate {
     invalidate();
   }
 
-  final String getTextInternal(String input) {
+  public final String getTextInternal(String input) {
     if (cacheText && stringMap.containsKey(input)) {
       return stringMap.get(input);
     }

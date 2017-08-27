@@ -5,9 +5,17 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
+
+import com.airbnb.lottie.model.FileCompositionLoader;
+import com.airbnb.lottie.model.Font;
+import com.airbnb.lottie.model.FontCharacter;
+import com.airbnb.lottie.model.JsonCompositionLoader;
+import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import static com.airbnb.lottie.Utils.closeQuietly;
+import static com.airbnb.lottie.utils.Utils.closeQuietly;
 
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
@@ -67,7 +75,8 @@ public class LottieComposition {
     }
   }
 
-  void addWarning(String warning) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public void addWarning(String warning) {
     Log.w(L.TAG, warning);
     warnings.add(warning);
   }
@@ -84,7 +93,8 @@ public class LottieComposition {
     return performanceTracker;
   }
 
-  Layer layerModelForId(long id) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public Layer layerModelForId(long id) {
     return layerMap.get(id);
   }
 
@@ -97,40 +107,46 @@ public class LottieComposition {
     return (long) (frameDuration / frameRate * 1000);
   }
 
-  int getMajorVersion() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public int getMajorVersion() {
     return majorVersion;
   }
 
-  int getMinorVersion() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public int getMinorVersion() {
     return minorVersion;
   }
 
-  int getPatchVersion() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public int getPatchVersion() {
     return patchVersion;
   }
 
-  long getStartFrame() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public long getStartFrame() {
     return startFrame;
   }
 
-  long getEndFrame() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public long getEndFrame() {
     return endFrame;
   }
 
-  List<Layer> getLayers() {
+  public List<Layer> getLayers() {
     return layers;
   }
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   @Nullable
-  List<Layer> getPrecomps(String id) {
+  public List<Layer> getPrecomps(String id) {
     return precomps.get(id);
   }
 
-  SparseArrayCompat<FontCharacter> getCharacters() {
+  public SparseArrayCompat<FontCharacter> getCharacters() {
     return characters;
   }
 
-  Map<String, Font> getFonts() {
+  public Map<String, Font> getFonts() {
     return fonts;
   }
 
@@ -142,12 +158,12 @@ public class LottieComposition {
     return images;
   }
 
-  float getDurationFrames() {
+  public float getDurationFrames() {
     return getDuration() * frameRate / 1000f;
   }
 
 
-  float getDpScale() {
+  public float getDpScale() {
     return dpScale;
   }
 
@@ -213,8 +229,7 @@ public class LottieComposition {
     }
 
     @Nullable
-    @SuppressWarnings("WeakerAccess")
-    static LottieComposition fromInputStream(Resources res, InputStream stream) {
+    public static LottieComposition fromInputStream(Resources res, InputStream stream) {
       try {
         // TODO: It's not correct to use available() to allocate the byte array.
         int size = stream.available();
@@ -236,8 +251,7 @@ public class LottieComposition {
       return null;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    static LottieComposition fromJsonSync(Resources res, JSONObject json) {
+    public static LottieComposition fromJsonSync(Resources res, JSONObject json) {
       Rect bounds = null;
       float scale = res.getDisplayMetrics().density;
       int width = json.optInt("w", -1);
