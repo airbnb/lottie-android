@@ -1,7 +1,6 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -10,15 +9,15 @@ import android.support.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
+import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.model.animatable.AnimatableTransform;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContentGroup implements DrawingContent, PathContent,
+public class ContentGroup implements DrawingContent, PathContent, TransformableContent,
     BaseKeyframeAnimation.AnimationListener {
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
@@ -51,7 +50,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final List<Content> contents;
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
-  @Nullable private TransformKeyframeAnimation transformAnimation;
+  @Nullable private TransformKeyframeAnimation transform;
 
   public ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
     this(lottieDrawable, layer, shapeGroup.getName(),
@@ -66,9 +65,9 @@ public class ContentGroup implements DrawingContent, PathContent,
     this.contents = contents;
 
     if (transform != null) {
-      transformAnimation = transform.createAnimation();
-      transformAnimation.addAnimationsToLayer(layer);
-      transformAnimation.addListener(this);
+      this.transform = transform.createAnimation();
+      this.transform.addAnimationsToLayer(layer);
+      this.transform.addListener(this);
     }
 
     List<GreedyContent> greedyContents = new ArrayList<>();
@@ -90,21 +89,6 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   @Override public String getName() {
     return name;
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    for (int i = 0; i < contents.size(); i++) {
-      final Content content = contents.get(i);
-      if (content instanceof DrawingContent) {
-        final DrawingContent drawingContent = (DrawingContent) content;
-        if (contentName == null || contentName.equals(content.getName())) {
-          drawingContent.addColorFilter(layerName, null, colorFilter);
-        } else {
-          drawingContent.addColorFilter(layerName, contentName, colorFilter);
-        }
-      }
-    }
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
@@ -133,8 +117,8 @@ public class ContentGroup implements DrawingContent, PathContent,
   }
 
   Matrix getTransformationMatrix() {
-    if (transformAnimation != null) {
-      return transformAnimation.getMatrix();
+    if (transform != null) {
+      return transform.getMatrix();
     }
     matrix.reset();
     return matrix;
@@ -143,8 +127,8 @@ public class ContentGroup implements DrawingContent, PathContent,
   @Override public Path getPath() {
     // TODO: cache this somehow.
     matrix.reset();
-    if (transformAnimation != null) {
-      matrix.set(transformAnimation.getMatrix());
+    if (transform != null) {
+      matrix.set(transform.getMatrix());
     }
     path.reset();
     for (int i = contents.size() - 1; i >= 0; i--) {
@@ -159,10 +143,10 @@ public class ContentGroup implements DrawingContent, PathContent,
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     matrix.set(parentMatrix);
     int alpha;
-    if (transformAnimation != null) {
-      matrix.preConcat(transformAnimation.getMatrix());
+    if (transform != null) {
+      matrix.preConcat(transform.getMatrix());
       alpha =
-          (int) ((transformAnimation.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
+          (int) ((transform.getOpacity().getValue() / 100f * parentAlpha / 255f) * 255);
     } else {
       alpha = parentAlpha;
     }
@@ -178,8 +162,8 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     matrix.set(parentMatrix);
-    if (transformAnimation != null) {
-      matrix.preConcat(transformAnimation.getMatrix());
+    if (transform != null) {
+      matrix.preConcat(transform.getMatrix());
     }
     rect.set(0, 0, 0, 0);
     for (int i = contents.size() - 1; i >= 0; i--) {
@@ -196,6 +180,45 @@ public class ContentGroup implements DrawingContent, PathContent,
               Math.max(outBounds.bottom, rect.bottom)
           );
         }
+      }
+    }
+  }
+
+  @Nullable public Content contentFor(String name) {
+    if (name.equals(getName())) {
+      return this;
+    }
+    for (int i = 0; i < contents.size(); i++) {
+      Content content = contents.get(i);
+      if (name.equals(content.getName())) {
+        return content;
+      }
+    }
+    return null;
+  }
+
+  @Nullable @Override public TransformKeyframeAnimation getTransform() {
+    return transform;
+  }
+
+  public List<Content> getContents() {
+    return contents;
+  }
+
+  public void appendAllKeyPaths(StringBuilder sb, String prefix) {
+    String newPrefix;
+    if (prefix.isEmpty()) {
+      newPrefix = getName();
+    } else {
+      newPrefix = prefix + "." + getName();
+    }
+    List<Content> contents = getContents();
+    for (int i = 0; i < contents.size(); i++) {
+      Content content = contents.get(i);
+      if (content instanceof ContentGroup) {
+        ((ContentGroup) content).appendAllKeyPaths(sb, newPrefix);
+      } else {
+        sb.append("\n").append(newPrefix).append(".").append(content.getName());
       }
     }
   }

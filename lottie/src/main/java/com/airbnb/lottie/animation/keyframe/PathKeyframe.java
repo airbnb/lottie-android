@@ -55,6 +55,14 @@ public class PathKeyframe extends Keyframe<PointF> {
     }
   }
 
+  void updatePath() {
+    path = new Path();
+    //noinspection ConstantConditions
+    path.moveTo(startValue.x, startValue.y);
+    //noinspection ConstantConditions
+    path.lineTo(endValue.x, endValue.y);
+  }
+
   /** This will be null if the startValue and endValue are the same. */
   @Nullable Path getPath() {
     return path;

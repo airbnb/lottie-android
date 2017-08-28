@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
@@ -13,6 +12,7 @@ import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.model.content.ShapeGroup;
 
 import java.util.Collections;
+import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
   private final ContentGroup contentGroup;
@@ -34,8 +34,16 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.getBounds(outBounds, boundsMatrix);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    contentGroup.addColorFilter(layerName, contentName, colorFilter);
+  public List<Content> getContents() {
+    return contentGroup.getContents();
+  }
+
+  @Nullable
+  public Content contentFor(String name) {
+    return contentGroup.contentFor(name);
+  }
+
+  @Override void appendAllKeyPaths(StringBuilder sb, String prefix) {
+    contentGroup.appendAllKeyPaths(sb, prefix);
   }
 }

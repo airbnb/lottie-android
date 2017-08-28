@@ -1,11 +1,9 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -19,8 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-public class RepeaterContent implements
-    DrawingContent, PathContent, GreedyContent, BaseKeyframeAnimation.AnimationListener {
+public class RepeaterContent implements DrawingContent, PathContent, GreedyContent,
+    TransformableContent, BaseKeyframeAnimation.AnimationListener {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
 
@@ -118,12 +116,11 @@ public class RepeaterContent implements
     contentGroup.getBounds(outBounds, parentMatrix);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    contentGroup.addColorFilter(layerName, contentName, colorFilter);
-  }
-
   @Override public void onValueChanged() {
     lottieDrawable.invalidateSelf();
+  }
+
+  @Override public TransformKeyframeAnimation getTransform() {
+    return transform;
   }
 }

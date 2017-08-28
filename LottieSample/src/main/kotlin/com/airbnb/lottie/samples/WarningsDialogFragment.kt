@@ -30,7 +30,7 @@ class WarningsDialogFragment : DialogFragment() {
     }
 
     internal class VH(parent: ViewGroup) : RecyclerView.ViewHolder(
-            parent.inflate(R.layout.view_holder_warning, false)) {
+            parent.inflate(R.layout.view_holder_warning)) {
         fun bind(warning: String, showDivider: Boolean) {
             itemView.warning.text = warning
             itemView.divider.visibility = if (showDivider) View.VISIBLE else View.GONE

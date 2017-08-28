@@ -31,6 +31,8 @@ class ListFragment : Fragment() {
                 { startActivity(FullScreenActivity::class.java) },
             ListItem("Custom fonts and dynamic text")
                 { showFragment(FontFragment.newInstance()) },
+            ListItem("Dynamic properties")
+                { showFragment(DynamicPropertiesFragment.newInstance())},
             ListItem("Open lottiefiles.com")
                 { startActivity("http://www.lottiefiles.com".urlIntent()) }
     )
@@ -43,7 +45,7 @@ class ListFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = container?.inflate(R.layout.fragment_list, false)
+        val view = container?.inflate(R.layout.fragment_list)
         view!!.recyclerView.adapter = adapter
         return view
     }
@@ -80,7 +82,7 @@ class ListFragment : Fragment() {
     }
 
     private inner class StringViewHolder(parent: ViewGroup) :
-            RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_file, false)) {
+            RecyclerView.ViewHolder(parent.inflate(R.layout.view_holder_file)) {
 
         fun bind(item: ListItem) {
             itemView.title.text = item.name

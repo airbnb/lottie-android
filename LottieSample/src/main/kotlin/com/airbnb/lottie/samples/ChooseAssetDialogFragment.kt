@@ -39,7 +39,7 @@ class ChooseAssetDialogFragment : DialogFragment() {
     }
 
     internal inner class StringViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-            parent.inflate(R.layout.view_holder_file, false)) {
+            parent.inflate(R.layout.view_holder_file)) {
 
         fun bind(fileName: String) {
             itemView.title.text = fileName

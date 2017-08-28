@@ -6,11 +6,11 @@ import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.Collections;
 
-public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
-  private final A initialValue;
+public class StaticKeyframeAnimation<A> extends BaseKeyframeAnimation<A, A> {
+  private A initialValue;
 
   public StaticKeyframeAnimation(A initialValue) {
-    super(Collections.<Keyframe<K>>emptyList());
+    super(Collections.<Keyframe<A>>emptyList());
     this.initialValue = initialValue;
   }
 
@@ -26,7 +26,17 @@ public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
     return initialValue;
   }
 
-  @Override public A getValue(Keyframe<K> keyframe, float keyframeProgress) {
+  @Override public A getValue(Keyframe<A> keyframe, float keyframeProgress) {
     return initialValue;
+  }
+
+  /**
+   * This can be used to dynamically update an animation at runtime.
+   */
+  @Override public void setValue(A value, int frame, boolean updateValue) {
+    if (!value.equals(initialValue)) {
+      initialValue = value;
+      notifyListeners();
+    }
   }
 }

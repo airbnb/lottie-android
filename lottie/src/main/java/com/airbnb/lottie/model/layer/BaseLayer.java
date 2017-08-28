@@ -2,7 +2,6 @@ package com.airbnb.lottie.model.layer;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -19,6 +18,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
+import com.airbnb.lottie.animation.content.TransformableContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
@@ -30,7 +30,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public abstract class BaseLayer implements DrawingContent, TransformableContent,
+    BaseKeyframeAnimation.AnimationListener {
+  // This was only deprecated as of O.
+  @SuppressWarnings("deprecation")
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
@@ -202,6 +205,7 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
     L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
+    //noinspection deprecation
     canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
     L.endSection("Layer#saveLayer");
 
@@ -218,6 +222,7 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
     if (hasMatteOnThisLayer()) {
       L.beginSection("Layer#drawMatte");
       L.beginSection("Layer#saveLayer");
+      //noinspection deprecation
       canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
@@ -323,6 +328,7 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
   @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
+    //noinspection deprecation
     canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
     L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
@@ -405,8 +411,15 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
     // Do nothing
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    // Do nothing
+  @Override public TransformKeyframeAnimation getTransform() {
+    return transform;
+  }
+
+  void appendAllKeyPaths(StringBuilder sb, String prefix) {
+    sb.append(prefix);
+    if (!prefix.isEmpty()) {
+      sb.append(".");
+    }
+    sb.append(getName());
   }
 }

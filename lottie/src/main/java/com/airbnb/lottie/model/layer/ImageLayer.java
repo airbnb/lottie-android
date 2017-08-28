@@ -11,8 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.content.ColorFilterableContent;
 
-public class ImageLayer extends BaseLayer {
+public class ImageLayer extends BaseLayer implements ColorFilterableContent {
 
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private final Rect src = new Rect();
@@ -59,8 +60,8 @@ public class ImageLayer extends BaseLayer {
     return lottieDrawable.getImageAsset(refId);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
+  @Override
+  public void setColorFilter(ColorFilter colorFilter) {
     paint.setColorFilter(colorFilter);
   }
 }

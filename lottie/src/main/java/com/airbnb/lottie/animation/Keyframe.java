@@ -51,9 +51,9 @@ public class Keyframe<T> {
   }
 
 
-  private final LottieComposition composition;
-  @Nullable public final T startValue;
-  @Nullable public final T endValue;
+  public final LottieComposition composition;
+  @Nullable public T startValue;
+  @Nullable public T endValue;
   @Nullable public final Interpolator interpolator;
   public final int startFrame;
   @Nullable public Integer endFrame;
@@ -98,6 +98,10 @@ public class Keyframe<T> {
 
   public boolean containsProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     return progress >= getStartProgress() && progress < getEndProgress();
+  }
+
+  public boolean containsFrame(int frame) {
+    return startFrame <= frame && endFrame >= frame;
   }
 
   @Override public String toString() {

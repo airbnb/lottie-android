@@ -23,6 +23,10 @@ import android.util.SparseArray;
 
 import com.airbnb.lottie.utils.Utils;
 
+import com.airbnb.lottie.value.ColorFilterValue;
+import com.airbnb.lottie.value.KeyPath;
+import com.airbnb.lottie.value.LottieValue;
+
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -135,8 +139,9 @@ import java.util.Map;
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
-      addColorFilter(new SimpleColorFilter(ta.getColor(
-          R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
+      ColorFilter cf = new SimpleColorFilter(
+          ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
+      setValue(ColorFilterValue.forColor(cf), new KeyPath("*"));
     }
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
       lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
@@ -172,39 +177,18 @@ import java.util.Map;
   }
 
   /**
-   * Add a color filter to specific content on a specific layer.
-   * @param layerName name of the layer where the supplied content name lives
-   * @param contentName name of the specific content that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
+   * Set or update the value of any property in an animation.
+   * You can use the static factory methods in the following classes to udpate properties:
+   * {@link com.airbnb.lottie.value.FloatValue}
+   * {@link com.airbnb.lottie.value.IntegerValue}
+   * {@link ColorFilterValue}
+   * {@link com.airbnb.lottie.value.PointFValue}
+   * {@link com.airbnb.lottie.value.ScaleValue}
+   *
+   * @see KeyPath and the documentation for each setter for more information.
    */
-  public void addColorFilterToContent(
-      String layerName, String contentName, @Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilterToContent(layerName, contentName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to a whole layer
-   * @param layerName name of the layer that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToLayer(
-      String layerName, @Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilterToLayer(layerName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to all layers
-   * @param colorFilter the color filter, null to clear all color filters
-   */
-  public void addColorFilter(@Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilter(colorFilter);
-  }
-
-  /**
-   * Clear all color filters on all layers and all content in the layers
-   */
-  public void clearColorFilters() {
-    lottieDrawable.clearColorFilters();
+  public <T> void setValue(LottieValue<T> value, KeyPath keyPath) {
+    lottieDrawable.setValue(value, keyPath);
   }
 
   @Override public void invalidateDrawable(@NonNull Drawable dr) {
@@ -725,6 +709,13 @@ import java.util.Map;
   private void enableOrDisableHardwareLayer() {
     boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
+  }
+
+  /**
+   * Returns a newline separated string for all key paths in the current composition.
+   */
+  public String getAllKeyPaths() {
+    return lottieDrawable.getAllKeyPaths();
   }
 
   private static class SavedState extends BaseSavedState {

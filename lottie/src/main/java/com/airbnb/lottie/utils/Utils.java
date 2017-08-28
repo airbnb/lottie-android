@@ -169,8 +169,8 @@ public final class Utils {
   }
 
   @SuppressWarnings("SameParameterValue")
-  public static boolean isAtLeastVersion(LottieComposition composition, int major, int minor, int
-      patch) {
+  public static boolean isAtLeastVersion(LottieComposition composition,
+      int major, int minor, int patch) {
     if (composition.getMajorVersion() < major) {
       return false;
     } else if (composition.getMajorVersion() > major) {

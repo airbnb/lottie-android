@@ -6,7 +6,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
@@ -17,7 +16,8 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public class FillContent implements DrawingContent, ColorFilterableContent,
+    BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final String name;
@@ -62,8 +62,8 @@ public class FillContent implements DrawingContent, BaseKeyframeAnimation.Animat
     return name;
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
+  @Override
+  public void setColorFilter(ColorFilter colorFilter) {
     paint.setColorFilter(colorFilter);
   }
 
@@ -95,5 +95,13 @@ public class FillContent implements DrawingContent, BaseKeyframeAnimation.Animat
         outBounds.right + 1,
         outBounds.bottom + 1
     );
+  }
+
+  public BaseKeyframeAnimation<Integer, Integer> getOpacity() {
+    return opacityAnimation;
+  }
+
+  public BaseKeyframeAnimation<Integer, Integer> getColor() {
+    return colorAnimation;
   }
 }

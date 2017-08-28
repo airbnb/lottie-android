@@ -7,6 +7,11 @@ import android.support.v4.os.TraceCompat;
 public class L {
   public static final String TAG = "LOTTIE";
   public static final boolean DBG = false;
+  /**
+   * This is a cheat to get the px -> dp scale from anywhere because it requires context to get
+   * and shouldn't change.
+   */
+  private static float dpScale = -1;
 
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
@@ -58,5 +63,16 @@ public class L {
     }
     TraceCompat.endSection();
     return (System.nanoTime() - startTimeNs[traceDepth]) / 1000000f;
+  }
+
+  public static void setDpScale(float dpScale) {
+    L.dpScale = dpScale;
+  }
+
+  public static float getDpScale() {
+    if (L.dpScale == -1) {
+      throw new IllegalStateException("dpScale has not been initialized yet.");
+    }
+    return L.dpScale;
   }
 }

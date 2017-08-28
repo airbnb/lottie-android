@@ -6,7 +6,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ShapeKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticShapeKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.MiscUtils;
 
@@ -23,7 +23,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
 
   @Override public BaseKeyframeAnimation<ShapeData, Path> createAnimation() {
     if (!hasAnimation()) {
-      return new StaticKeyframeAnimation<>(convertType(initialValue));
+      return new StaticShapeKeyframeAnimation(convertType(initialValue));
     } else {
       return new ShapeKeyframeAnimation(keyframes);
     }

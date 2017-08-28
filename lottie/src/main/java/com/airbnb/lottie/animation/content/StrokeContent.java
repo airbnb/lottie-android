@@ -3,14 +3,13 @@ package com.airbnb.lottie.animation.content;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
-import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-public class StrokeContent extends BaseStrokeContent {
+public class StrokeContent extends BaseStrokeContent implements ColorFilterableContent {
 
   private final String name;
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
@@ -26,8 +25,7 @@ public class StrokeContent extends BaseStrokeContent {
   }
 
   @Override
-  public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
+  public void setColorFilter(ColorFilter colorFilter) {
     paint.setColorFilter(colorFilter);
   }
 
@@ -38,5 +36,9 @@ public class StrokeContent extends BaseStrokeContent {
 
   @Override public String getName() {
     return name;
+  }
+
+  public BaseKeyframeAnimation<Integer, Integer> getColor() {
+    return colorAnimation;
   }
 }
