@@ -341,7 +341,7 @@ import java.util.Set;
   }
 
   void systemAnimationsAreDisabled() {
-    // systemAnimationsAreDisabled = true;
+    systemAnimationsAreDisabled = true;
   }
 
   public void loop(boolean loop) {
