@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.content.Repeater;
 import com.airbnb.lottie.model.layer.BaseLayer;
@@ -28,8 +27,8 @@ public class RepeaterContent implements
   private final LottieDrawable lottieDrawable;
   private final BaseLayer layer;
   private final String name;
-  private final KeyframeAnimation<Float> copies;
-  private final KeyframeAnimation<Float> offset;
+  private final BaseKeyframeAnimation<Float, Float> copies;
+  private final BaseKeyframeAnimation<Float, Float> offset;
   private final TransformKeyframeAnimation transform;
   private ContentGroup contentGroup;
 

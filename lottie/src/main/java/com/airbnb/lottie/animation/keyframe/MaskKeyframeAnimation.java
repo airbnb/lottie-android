@@ -4,13 +4,14 @@ import android.graphics.Path;
 
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.model.content.ShapeData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MaskKeyframeAnimation {
-  private final List<BaseKeyframeAnimation<?, Path>> maskAnimations;
-  private final List<KeyframeAnimation<Integer>> opacityAnimations;
+  private final List<BaseKeyframeAnimation<ShapeData, Path>> maskAnimations;
+  private final List<BaseKeyframeAnimation<Integer, Integer>> opacityAnimations;
   private final List<Mask> masks;
 
   public MaskKeyframeAnimation(List<Mask> masks) {
@@ -28,11 +29,11 @@ public class MaskKeyframeAnimation {
     return masks;
   }
 
-  public List<BaseKeyframeAnimation<?, Path>> getMaskAnimations() {
+  public List<BaseKeyframeAnimation<ShapeData, Path>> getMaskAnimations() {
     return maskAnimations;
   }
 
-  public List<KeyframeAnimation<Integer>> getOpacityAnimations() {
+  public List<BaseKeyframeAnimation<Integer, Integer>> getOpacityAnimations() {
     return opacityAnimations;
   }
 }

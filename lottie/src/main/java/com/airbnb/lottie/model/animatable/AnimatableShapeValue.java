@@ -21,7 +21,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     super(keyframes, initialValue);
   }
 
-  @Override public BaseKeyframeAnimation<?, Path> createAnimation() {
+  @Override public BaseKeyframeAnimation<ShapeData, Path> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(convertType(initialValue));
     } else {

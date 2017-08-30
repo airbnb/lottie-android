@@ -5,15 +5,15 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
 public class StrokeContent extends BaseStrokeContent {
 
   private final String name;
-  private final KeyframeAnimation<Integer> colorAnimation;
+  private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
 
   public StrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) {
     super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseAnimatableValue<V, O> implements AnimatableValue<O> {
+public abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
   final List<Keyframe<V>> keyframes;
   final V initialValue;
 

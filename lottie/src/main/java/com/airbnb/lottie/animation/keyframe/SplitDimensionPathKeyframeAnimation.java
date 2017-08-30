@@ -6,13 +6,14 @@ import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.Collections;
 
-public class SplitDimensionPathKeyframeAnimation extends KeyframeAnimation<PointF> {
+public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<PointF, PointF> {
   private final PointF point = new PointF();
-  private final KeyframeAnimation<Float> xAnimation;
-  private final KeyframeAnimation<Float> yAnimation;
+  private final BaseKeyframeAnimation<Float, Float> xAnimation;
+  private final BaseKeyframeAnimation<Float, Float> yAnimation;
 
   public SplitDimensionPathKeyframeAnimation(
-      KeyframeAnimation<Float> xAnimation, KeyframeAnimation<Float> yAnimation) {
+      BaseKeyframeAnimation<Float, Float> xAnimation,
+      BaseKeyframeAnimation<Float, Float> yAnimation) {
     super(Collections.<Keyframe<PointF>>emptyList());
 
     this.xAnimation = xAnimation;

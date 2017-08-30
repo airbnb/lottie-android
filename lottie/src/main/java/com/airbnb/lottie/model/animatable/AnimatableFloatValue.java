@@ -2,8 +2,8 @@ package com.airbnb.lottie.model.animatable;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
@@ -20,7 +20,7 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     super(keyframes, initialValue);
   }
 
-  @Override public KeyframeAnimation<Float> createAnimation() {
+  @Override public BaseKeyframeAnimation<Float, Float> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
     }

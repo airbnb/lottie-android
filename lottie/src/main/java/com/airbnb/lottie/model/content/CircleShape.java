@@ -15,10 +15,10 @@ import org.json.JSONObject;
 
 public class CircleShape implements ContentModel {
   private final String name;
-  private final AnimatableValue<PointF> position;
+  private final AnimatableValue<PointF, PointF> position;
   private final AnimatablePointValue size;
 
-  private CircleShape(String name, AnimatableValue<PointF> position,
+  private CircleShape(String name, AnimatableValue<PointF, PointF> position,
       AnimatablePointValue size) {
     this.name = name;
     this.position = position;
@@ -46,7 +46,7 @@ public class CircleShape implements ContentModel {
     return name;
   }
 
-  public AnimatableValue<PointF> getPosition() {
+  public AnimatableValue<PointF, PointF> getPosition() {
     return position;
   }
 

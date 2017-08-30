@@ -10,17 +10,17 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompositionLayer extends BaseLayer {
-  @Nullable private final KeyframeAnimation<Float> timeRemapping;
+  @Nullable private final BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
   private final RectF rect = new RectF();
   private final Rect originalClipRect = new Rect();

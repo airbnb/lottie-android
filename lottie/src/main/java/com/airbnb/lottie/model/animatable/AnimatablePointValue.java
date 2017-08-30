@@ -4,7 +4,7 @@ import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.PointFFactory;
@@ -18,7 +18,7 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
     super(keyframes, initialValue);
   }
 
-  @Override public KeyframeAnimation<PointF> createAnimation() {
+  @Override public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
     } else {

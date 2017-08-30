@@ -16,7 +16,6 @@ import android.support.v4.util.LongSparseArray;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientFill;
 import com.airbnb.lottie.model.content.GradientType;
@@ -39,10 +38,10 @@ public class GradientFillContent implements DrawingContent, BaseKeyframeAnimatio
   private final RectF boundsRect = new RectF();
   private final List<PathContent> paths = new ArrayList<>();
   private final GradientType type;
-  private final KeyframeAnimation<GradientColor> colorAnimation;
-  private final KeyframeAnimation<Integer> opacityAnimation;
-  private final KeyframeAnimation<PointF> startPointAnimation;
-  private final KeyframeAnimation<PointF> endPointAnimation;
+  private final BaseKeyframeAnimation<GradientColor, GradientColor> colorAnimation;
+  private final BaseKeyframeAnimation<Integer, Integer> opacityAnimation;
+  private final BaseKeyframeAnimation<PointF, PointF> startPointAnimation;
+  private final BaseKeyframeAnimation<PointF, PointF> endPointAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
 

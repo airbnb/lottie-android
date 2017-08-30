@@ -13,7 +13,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.TextDelegate;
 import com.airbnb.lottie.animation.content.ContentGroup;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.model.Font;
@@ -41,10 +41,10 @@ public class TextLayer extends BaseLayer {
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
-  @Nullable private KeyframeAnimation<Integer> colorAnimation;
-  @Nullable private KeyframeAnimation<Integer> strokeAnimation;
-  @Nullable private KeyframeAnimation<Float> strokeWidthAnimation;
-  @Nullable private KeyframeAnimation<Float> trackingAnimation;
+  @Nullable private BaseKeyframeAnimation<Integer, Integer> colorAnimation;
+  @Nullable private BaseKeyframeAnimation<Integer, Integer> strokeAnimation;
+  @Nullable private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
+  @Nullable private BaseKeyframeAnimation<Float, Float> trackingAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);

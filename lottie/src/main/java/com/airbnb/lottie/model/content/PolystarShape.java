@@ -37,7 +37,7 @@ public class PolystarShape implements ContentModel {
   private final String name;
   private final Type type;
   private final AnimatableFloatValue points;
-  private final AnimatableValue<PointF> position;
+  private final AnimatableValue<PointF, PointF> position;
   private final AnimatableFloatValue rotation;
   private final AnimatableFloatValue innerRadius;
   private final AnimatableFloatValue outerRadius;
@@ -45,8 +45,7 @@ public class PolystarShape implements ContentModel {
   private final AnimatableFloatValue outerRoundedness;
 
   private PolystarShape(String name, Type type, AnimatableFloatValue points,
-      AnimatableValue<PointF>
-      position,
+      AnimatableValue<PointF, PointF> position,
       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
       AnimatableFloatValue outerRoundedness) {
@@ -73,7 +72,7 @@ public class PolystarShape implements ContentModel {
     return points;
   }
 
-  public AnimatableValue<PointF> getPosition() {
+  public AnimatableValue<PointF, PointF> getPosition() {
     return position;
   }
 
@@ -110,8 +109,8 @@ public class PolystarShape implements ContentModel {
       Type type = Type.forValue(json.optInt("sy"));
       AnimatableFloatValue points =
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("pt"), composition, false);
-      AnimatableValue<PointF> position = AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(
-          json.optJSONObject("p"), composition);
+      AnimatableValue<PointF, PointF> position = AnimatablePathValue
+          .createAnimatablePathOrSplitDimensionPath(json.optJSONObject("p"), composition);
       AnimatableFloatValue rotation =
           AnimatableFloatValue.Factory.newInstance(json.optJSONObject("r"), composition, false);
       AnimatableFloatValue outerRadius =

@@ -21,7 +21,6 @@ import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
@@ -105,7 +104,7 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
         addAnimation(animation);
         animation.addUpdateListener(this);
       }
-      for (KeyframeAnimation<Integer> animation : mask.getOpacityAnimations()) {
+      for (BaseKeyframeAnimation<Integer, Integer> animation : mask.getOpacityAnimations()) {
         addAnimation(animation);
         animation.addUpdateListener(this);
       }
@@ -345,7 +344,8 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
         default:
           path.setFillType(Path.FillType.WINDING);
       }
-      KeyframeAnimation<Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation =
+          this.mask.getOpacityAnimations().get(i);
       int alpha = contentPaint.getAlpha();
       contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
       canvas.drawPath(path, contentPaint);

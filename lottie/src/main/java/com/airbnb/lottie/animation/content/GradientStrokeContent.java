@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientStroke;
 import com.airbnb.lottie.model.content.GradientType;
@@ -31,9 +31,9 @@ public class GradientStrokeContent extends BaseStrokeContent {
 
   private final GradientType type;
   private final int cacheSteps;
-  private final KeyframeAnimation<GradientColor> colorAnimation;
-  private final KeyframeAnimation<PointF> startPointAnimation;
-  private final KeyframeAnimation<PointF> endPointAnimation;
+  private final BaseKeyframeAnimation<GradientColor, GradientColor> colorAnimation;
+  private final BaseKeyframeAnimation<PointF, PointF> startPointAnimation;
+  private final BaseKeyframeAnimation<PointF, PointF> endPointAnimation;
 
   public GradientStrokeContent(
       final LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) {

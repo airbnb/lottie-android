@@ -11,11 +11,11 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
 
-  private final KeyframeAnimation<PointF> anchorPoint;
+  private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
-  private final KeyframeAnimation<ScaleXY> scale;
-  private final KeyframeAnimation<Float> rotation;
-  private final KeyframeAnimation<Integer> opacity;
+  private final BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
+  private final BaseKeyframeAnimation<Float, Float> rotation;
+  private final BaseKeyframeAnimation<Integer, Integer> opacity;
 
   // Used for repeaters
   @Nullable private final BaseKeyframeAnimation<?, Float> startOpacity;

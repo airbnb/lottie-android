@@ -4,7 +4,7 @@ import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
@@ -16,8 +16,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnimatablePathValue implements AnimatableValue<PointF> {
-  public static AnimatableValue<PointF> createAnimatablePathOrSplitDimensionPath(
+public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
+  public static AnimatableValue<PointF, PointF> createAnimatablePathOrSplitDimensionPath(
       JSONObject json, LottieComposition composition) {
     if (json.has("k")) {
       return new AnimatablePathValue(json.opt("k"), composition);
@@ -64,7 +64,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF> {
   }
 
   @Override
-  public KeyframeAnimation<PointF> createAnimation() {
+  public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialPoint);
     }

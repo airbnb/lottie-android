@@ -7,8 +7,8 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.GradientColorKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.utils.MiscUtils;
@@ -25,7 +25,7 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
     super(keyframes, initialValue);
   }
 
-  @Override public KeyframeAnimation<GradientColor> createAnimation() {
+  @Override public BaseKeyframeAnimation<GradientColor, GradientColor> createAnimation() {
     if (!hasAnimation()) {
       return new StaticKeyframeAnimation<>(initialValue);
     }

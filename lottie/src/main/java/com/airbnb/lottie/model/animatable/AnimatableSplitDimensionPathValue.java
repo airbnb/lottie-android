@@ -2,10 +2,10 @@ package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
 
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.SplitDimensionPathKeyframeAnimation;
 
-public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF> {
+public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF, PointF> {
   private final AnimatableFloatValue animatableXDimension;
   private final AnimatableFloatValue animatableYDimension;
 
@@ -16,7 +16,7 @@ public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF
     this.animatableYDimension = animatableYDimension;
   }
 
-  @Override public KeyframeAnimation<PointF> createAnimation() {
+  @Override public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
     return new SplitDimensionPathKeyframeAnimation(
         animatableXDimension.createAnimation(), animatableYDimension.createAnimation());
   }

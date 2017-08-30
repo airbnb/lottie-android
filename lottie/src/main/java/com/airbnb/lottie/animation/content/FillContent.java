@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.KeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
@@ -23,8 +22,8 @@ public class FillContent implements DrawingContent, BaseKeyframeAnimation.Animat
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final String name;
   private final List<PathContent> paths = new ArrayList<>();
-  private final KeyframeAnimation<Integer> colorAnimation;
-  private final KeyframeAnimation<Integer> opacityAnimation;
+  private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
+  private final BaseKeyframeAnimation<Integer, Integer> opacityAnimation;
   private final LottieDrawable lottieDrawable;
 
   public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {

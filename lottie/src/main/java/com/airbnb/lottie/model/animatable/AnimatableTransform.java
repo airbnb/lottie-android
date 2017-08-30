@@ -21,7 +21,7 @@ import java.util.Collections;
 
 public class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatablePathValue anchorPoint;
-  private final AnimatableValue<PointF> position;
+  private final AnimatableValue<PointF, PointF> position;
   private final AnimatableScaleValue scale;
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
@@ -30,8 +30,9 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   @Nullable private final AnimatableFloatValue startOpacity;
   @Nullable private final AnimatableFloatValue endOpacity;
 
-  private AnimatableTransform(AnimatablePathValue anchorPoint, AnimatableValue<PointF> position,
-      AnimatableScaleValue scale, AnimatableFloatValue rotation, AnimatableIntegerValue opacity,
+  private AnimatableTransform(AnimatablePathValue anchorPoint,
+      AnimatableValue<PointF, PointF> position, AnimatableScaleValue scale,
+      AnimatableFloatValue rotation, AnimatableIntegerValue opacity,
       @Nullable AnimatableFloatValue startOpacity, @Nullable AnimatableFloatValue endOpacity) {
     this.anchorPoint = anchorPoint;
     this.position = position;
@@ -46,7 +47,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     return anchorPoint;
   }
 
-  public AnimatableValue<PointF> getPosition() {
+  public AnimatableValue<PointF, PointF> getPosition() {
     return position;
   }
 
@@ -84,7 +85,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
 
     public static AnimatableTransform newInstance() {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
-      AnimatableValue<PointF> position = new AnimatablePathValue();
+      AnimatableValue<PointF, PointF> position = new AnimatablePathValue();
       AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance();
       AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance();
       AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
@@ -96,7 +97,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
 
     public static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
       AnimatablePathValue anchorPoint;
-      AnimatableValue<PointF> position = null;
+      AnimatableValue<PointF, PointF> position = null;
       AnimatableScaleValue scale;
       AnimatableFloatValue rotation = null;
       AnimatableIntegerValue opacity;

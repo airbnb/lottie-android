@@ -6,11 +6,11 @@ import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.Collections;
 
-public class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
-  private final T initialValue;
+public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
+  private final A initialValue;
 
-  public StaticKeyframeAnimation(T initialValue) {
-    super(Collections.<Keyframe<T>>emptyList());
+  public StaticKeyframeAnimation(A initialValue) {
+    super(Collections.<Keyframe<K>>emptyList());
     this.initialValue = initialValue;
   }
 
@@ -22,11 +22,11 @@ public class StaticKeyframeAnimation<T> extends KeyframeAnimation<T> {
     // Do nothing.
   }
 
-  @Override public T getValue() {
+  @Override public A getValue() {
     return initialValue;
   }
 
-  @Override public T getValue(Keyframe<T> keyframe, float keyframeProgress) {
+  @Override public A getValue(Keyframe<K> keyframe, float keyframeProgress) {
     return initialValue;
   }
 }

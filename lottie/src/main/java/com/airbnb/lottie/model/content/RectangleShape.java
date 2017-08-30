@@ -16,11 +16,11 @@ import org.json.JSONObject;
 
 public class RectangleShape implements ContentModel {
   private final String name;
-  private final AnimatableValue<PointF> position;
+  private final AnimatableValue<PointF, PointF> position;
   private final AnimatablePointValue size;
   private final AnimatableFloatValue cornerRadius;
 
-  private RectangleShape(String name, AnimatableValue<PointF> position,
+  private RectangleShape(String name, AnimatableValue<PointF, PointF> position,
       AnimatablePointValue size, AnimatableFloatValue cornerRadius) {
     this.name = name;
     this.position = position;
@@ -54,7 +54,7 @@ public class RectangleShape implements ContentModel {
     return size;
   }
 
-  public AnimatableValue<PointF> getPosition() {
+  public AnimatableValue<PointF, PointF> getPosition() {
     return position;
   }
 
