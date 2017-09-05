@@ -99,11 +99,15 @@ public class TextLayer extends BaseLayer {
     } else {
       fillPaint.setColor(documentData.color);
     }
+
     if (strokeAnimation != null) {
       strokePaint.setColor(strokeAnimation.getValue());
     } else {
       strokePaint.setColor(documentData.strokeColor);
     }
+    fillPaint.setAlpha(transform.getOpacity().getValue());
+    strokePaint.setAlpha(transform.getOpacity().getValue());
+
     if (strokeWidthAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
