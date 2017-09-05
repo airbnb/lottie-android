@@ -61,15 +61,20 @@ public class FontCharacter {
       double width = json.optDouble("w");
       String style = json.optString("style");
       String fontFamily = json.optString("fFamily");
-      JSONArray shapesJson = json.optJSONObject("data").optJSONArray("shapes");
+      JSONObject data = json.optJSONObject("data");
       List<ShapeGroup> shapes = Collections.emptyList();
-      if (shapesJson != null) {
-        shapes = new ArrayList<>(shapesJson.length());
-        for (int i = 0; i < shapesJson.length(); i++) {
-          shapes.add(
-              (ShapeGroup) ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition));
+
+      if (data != null) {
+        JSONArray shapesJson = data.optJSONArray("shapes");
+        if (shapesJson != null) {
+          shapes = new ArrayList<>(shapesJson.length());
+          for (int i = 0; i < shapesJson.length(); i++) {
+            shapes.add(
+                (ShapeGroup) ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition));
+          }
         }
       }
+
       return new FontCharacter(shapes, character, size, width, style, fontFamily);
     }
   }
