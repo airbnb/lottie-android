@@ -163,7 +163,14 @@ public class Keyframe<T> {
           if (interpolatorRef == null || interpolator == null) {
             interpolator = PathInterpolatorCompat.create(
                 cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
-            pathInterpolatorCache.put(hash, new WeakReference<>(interpolator));
+            try {
+              pathInterpolatorCache.put(hash, new WeakReference<>(interpolator));
+            } catch (ArrayIndexOutOfBoundsException e) {
+              // It is not clear why but SparseArrayCompat sometimes fails with this:
+              //     https://github.com/airbnb/lottie-android/issues/452
+              // Because this is not a critical operation, we can safely just ignore it.
+              // I was unable to repro this to attempt a proper fix.
+            }
           }
 
         } else {
