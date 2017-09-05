@@ -31,10 +31,10 @@ class TrimView @JvmOverloads constructor(
         override fun getViewHorizontalDragRange(child: View) = width
 
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
-            if (child == leftAnchor) {
-                return maxOf(minOf(left, rightAnchor.left - leftAnchor.width), 0)
+            return if (child == leftAnchor) {
+                maxOf(minOf(left, rightAnchor.left - leftAnchor.width), 0)
             } else {
-                return minOf(maxOf(leftAnchor.right, left), width - rightAnchor.width)
+                minOf(maxOf(leftAnchor.right, left), width - rightAnchor.width)
             }
         }
 

@@ -1,6 +1,5 @@
 package com.airbnb.lottie.samples
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -106,8 +105,10 @@ class AnimationFragment : Fragment() {
                 }
         ))
 
-        view.animationView.addAnimatorUpdateListener {
-            animation -> seekBar.progress = ((animation.animatedValue as Float) * 100f).toInt()
+        view.animationView.addAnimatorUpdateListener { animation ->
+            if (animation.isRunning) {
+                seekBar.progress = (animation.animatedValue as Float * 100f).toInt()
+            }
         }
 
         view.seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
@@ -120,7 +121,6 @@ class AnimationFragment : Fragment() {
 
         view.trimView.setCallback({ startProgress, endProgress ->
             animationView.setMinAndMaxProgress(startProgress, endProgress)
-            animationView.progress = startProgress
         })
 
         view.scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
