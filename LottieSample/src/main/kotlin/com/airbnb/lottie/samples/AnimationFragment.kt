@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
