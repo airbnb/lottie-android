@@ -167,12 +167,17 @@ import java.util.Set;
     applyColorFilters();
 
     setProgress(progress);
-    Iterator<LazyCompositionTask> it = lazyCompositionTasks.iterator();
+
+    // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
+    // then there won't be two iterators iterating and removing at the same time.
+    Iterator<LazyCompositionTask> it = new ArrayList<>(lazyCompositionTasks).iterator();
     while (it.hasNext()) {
       LazyCompositionTask t = it.next();
       t.run(composition);
       it.remove();
     }
+    lazyCompositionTasks.clear();
+
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
     return true;
