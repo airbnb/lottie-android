@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -280,11 +281,17 @@ class AnimationFragment : Fragment() {
         seekBar.progress = 0
         animationView.setComposition(composition)
         animationName.text = name
+        // make sure the animation doesn't start larger than the screen
+        val screenSize = Point()
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getSize(screenSize)
+        val scale = screenSize.x / composition.bounds.width().toFloat()
+        animationView.scale = minOf(scale, 1f)
         scaleText.text = String.format(Locale.US, "%.2f", animationView.scale)
         scaleSeekBar.progress = (animationView.scale * SCALE_SLIDER_FACTOR).toInt()
         setWarnings(composition.warnings)
         renderTimeGraphRange = 8f
-        for (i in 1..lineDataSet.entryCount - 1) {
+        for (i in 1 until lineDataSet.entryCount) {
             lineDataSet.getEntryForIndex(i).y = 0f
         }
         renderTimesGraph.invalidate()
@@ -418,6 +425,7 @@ class AnimationFragment : Fragment() {
                     Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)
         } else {
 
+            @Suppress("DEPRECATION")
             Settings.System.getFloat(context.contentResolver,
                     Settings.System.ANIMATOR_DURATION_SCALE, 1.0f)
         }

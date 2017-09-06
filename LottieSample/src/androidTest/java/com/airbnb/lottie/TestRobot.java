@@ -1,7 +1,10 @@
 package com.airbnb.lottie;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.airbnb.lottie.samples.MainActivity;
 import com.airbnb.lottie.samples.R;
@@ -118,6 +121,28 @@ class TestRobot {
     Screenshot.snap(view)
         .setGroup("test_color_filter")
         .setName("null_color_filter")
+        .record();
+  }
+
+  static void testAnimationView(Context context, LottieComposition composition,
+      String name, FrameLayout.LayoutParams params, @Nullable ImageView.ScaleType scaleType) {
+    FrameLayout container = new FrameLayout(context);
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    animationView.setComposition(composition);
+    animationView.setProgress(1f);
+    if (scaleType != null) {
+      animationView.setScaleType(scaleType);
+    }
+    container.addView(animationView, params);
+
+    ViewHelpers.setupView(container)
+        .setExactWidthDp(500)
+        .setExactHeightDp(500)
+        .layout();
+
+    Screenshot.snap(container)
+        .setGroup("Container")
+        .setName(name)
         .record();
   }
 }

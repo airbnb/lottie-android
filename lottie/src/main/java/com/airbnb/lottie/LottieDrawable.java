@@ -159,6 +159,7 @@ import java.util.Set;
     clearComposition();
     this.composition = composition;
     setSpeed(speed);
+    setScale(scale);
     updateBounds();
     buildCompositionLayer();
     applyColorFilters();
@@ -306,40 +307,48 @@ import java.util.Set;
     if (compositionLayer == null) {
       return;
     }
+
     float scale = this.scale;
     float extraScale = 1f;
-    boolean hasExtraScale = false;
     float maxScale = getMaxScale(canvas);
-    if (compositionLayer.hasMatte() || compositionLayer.hasMasks()) {
-      // Since we can only scale up the animation so much before masks and mattes get clipped, we
-      // may have to scale the canvas to fake the rest. This isn't a problem for software rendering
-      // but hardware accelerated scaling is rasterized so it will appear pixelated.
-      extraScale = scale / maxScale;
-      scale = Math.min(scale, maxScale);
-      // This check fixes some floating point rounding issues.
-      hasExtraScale = extraScale > 1.001f;
+    if (scale > maxScale) {
+      scale = maxScale;
+      extraScale = this.scale / scale;
     }
 
-    if (hasExtraScale) {
+    if (extraScale > 1) {
+      // This is a bit tricky...
+      // We can't draw on a canvas larger than ViewConfiguration.get(context).getScaledMaximumDrawingCacheSize()
+      // which works out to be roughly the size of the screen because Android can't generate a
+      // bitmap large enough to render to.
+      // As a result, we cap the scale such that it will never be wider/taller than the screen
+      // and then only render in the top left corner of the canvas. We then use extraScale
+      // to scale up the rest of the scale. However, since we rendered the animation to the top
+      // left corner, we need to scale up and translate the canvas to zoom in on the top left
+      // corner.
       canvas.save();
-      // This is extraScale ^2 because what happens is when the scale increases, the intrinsic size
-      // of the view increases. That causes the drawable to keep growing even though we are only
-      // rendering to the size of the view in the top left quarter, leaving the rest blank.
-      // The first scale by extraScale scales up the canvas so that we are back at the original
-      // size. The second extraScale is what actually has the scaling effect.
+      float halfWidth = composition.getBounds().width() / 2f;
+      float halfHeight = composition.getBounds().height() / 2f;
+      float scaledHalfWidth = halfWidth * scale;
+      float scaledHalfHeight = halfHeight * scale;
+      float halfCanvasWidth = canvas.getWidth() / 2;
+      float halfCanvasHeight = canvas.getHeight() / 2;
       float extraScaleSquared = extraScale * extraScale;
-      int px = (int) ((composition.getBounds().width() * scale / 2f));
-      int py = (int) ((composition.getBounds().height() * scale / 2f));
-      canvas.scale(extraScaleSquared, extraScaleSquared, px, py);
 
+      canvas.translate(
+          getScale() * halfWidth - scaledHalfWidth,
+          getScale() * halfHeight - scaledHalfHeight);
+      canvas.scale(extraScale, extraScale, scaledHalfWidth, scaledHalfHeight);
     }
+
     matrix.reset();
     matrix.preScale(scale, scale);
     compositionLayer.draw(canvas, matrix, alpha);
-    if (hasExtraScale) {
+    L.endSection("Drawable#draw");
+
+    if (extraScale > 1) {
       canvas.restore();
     }
-    L.endSection("Drawable#draw");
   }
 
   void systemAnimationsAreDisabled() {
@@ -588,11 +597,11 @@ import java.util.Set;
   }
 
   @Override public int getIntrinsicWidth() {
-    return composition == null ? -1 : (int) (composition.getBounds().width() * scale);
+    return composition == null ? -1 : (int) (composition.getBounds().width() * getScale());
   }
 
   @Override public int getIntrinsicHeight() {
-    return composition == null ? -1 : (int) (composition.getBounds().height() * scale);
+    return composition == null ? -1 : (int) (composition.getBounds().height() * getScale());
   }
 
   /**
@@ -662,7 +671,7 @@ import java.util.Set;
     return fontAssetManager;
   }
 
-  private @Nullable Context getContext() {
+  @Nullable private Context getContext() {
     Callback callback = getCallback();
     if (callback == null) {
       return null;
@@ -672,16 +681,6 @@ import java.util.Set;
       return ((View) callback).getContext();
     }
     return null;
-  }
-
-  /**
-   * If there are masks or mattes, we can't scale the animation larger than the canvas or else
-   * the off screen rendering for masks and mattes after saveLayer calls will get clipped.
-   */
-  private float getMaxScale(@NonNull Canvas canvas) {
-    float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
-    float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
-    return Math.min(maxScaleX, maxScaleY);
   }
 
   /**
@@ -711,6 +710,42 @@ import java.util.Set;
     }
     callback.unscheduleDrawable(this, what);
   }
+
+  /**
+   * If there are masks or mattes, we can't scale the animation larger than the canvas or else
+   * the off screen rendering for masks and mattes after saveLayer calls will get clipped.
+   */
+  private float getMaxScale(@NonNull Canvas canvas) {
+    float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
+    float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
+    return Math.min(maxScaleX, maxScaleY);
+  }
+
+  // private float clampScale(float newScale) {
+  //   if (composition == null) {
+  //     return newScale;
+  //   }
+  //   int screenWidth = Utils.getScreenWidth(getContext());
+  //   int screenHeight = Utils.getScreenHeight(getContext());
+  //   int compWidth = composition.getBounds().width();
+  //   int compHeight = composition.getBounds().height();
+  //   if (compWidth > screenWidth || compHeight > screenHeight) {
+  //     float xScale = screenWidth / (float) compWidth;
+  //     float yScale = screenHeight / (float) compHeight;
+  //
+  //     float maxScaleForScreen = Math.min(xScale, yScale) - 0.02f;
+  //     if (newScale > maxScaleForScreen) {
+  //       extraScale = newScale / maxScaleForScreen;
+  //       newScale = maxScaleForScreen;
+  //       Log.w(L.TAG, String.format(
+  //           "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
+  //           compWidth, compHeight, screenWidth, screenHeight));
+  //     } else {
+  //       extraScale = 1f;
+  //     }
+  //   }
+  //   return newScale;
+  // }
 
   private static class ColorFilterData {
 

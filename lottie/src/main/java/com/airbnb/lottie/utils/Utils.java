@@ -53,7 +53,7 @@ public final class Utils {
     }
   }
 
-  static int getScreenWidth(Context context) {
+  public static int getScreenWidth(Context context) {
     if (displayMetrics == null) {
       displayMetrics = new DisplayMetrics();
     }
@@ -62,7 +62,7 @@ public final class Utils {
     return displayMetrics.widthPixels;
   }
 
-  static int getScreenHeight(Context context) {
+  public static int getScreenHeight(Context context) {
     if (displayMetrics == null) {
       displayMetrics = new DisplayMetrics();
     }
