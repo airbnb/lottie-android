@@ -105,8 +105,9 @@ public class TextLayer extends BaseLayer {
     } else {
       strokePaint.setColor(documentData.strokeColor);
     }
-    fillPaint.setAlpha(transform.getOpacity().getValue());
-    strokePaint.setAlpha(transform.getOpacity().getValue());
+    int alpha = transform.getOpacity().getValue() * 255 / 100;
+    fillPaint.setAlpha(alpha);
+    strokePaint.setAlpha(alpha);
 
     if (strokeWidthAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
@@ -227,6 +228,12 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawCharacter(char[] character, Paint paint, Canvas canvas) {
+    if (paint.getColor() == Color.TRANSPARENT) {
+      return;
+    }
+    if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0) {
+      return;
+    }
     canvas.drawText(character, 0, 1, 0, 0, paint);
   }
 
