@@ -1,3 +1,12 @@
+# 2.2.1
+### Features and Improvements
+* Text now supports opacity
+### Bugs Fixed
+* Fixed a couple of couple of concurrency crashes
+* Fixed a crash when animations are disabled
+* Fixed a crash for letters with no shapes
+
+
 # 2.2.0
 ### Features and Improvements
 * Added `play(startFrame, endFrame)` and `play(startProgress, endProgress)`
