@@ -69,6 +69,26 @@ public class LottieValueAnimator extends ValueAnimator {
     }
   }
 
+  /**
+   * Forces the animation to update even if the progress hasn't changed.
+   */
+  public void forceUpdate() {
+    setProgressInternal(getProgress());
+  }
+
+  private void setProgressInternal(@FloatRange(from = 0f, to = 1f) float progress) {
+    if (progress < minProgress) {
+      progress = minProgress;
+    } else if (progress > maxProgress) {
+      progress = maxProgress;
+    }
+    this.progress = progress;
+    if (getDuration() > 0) {
+      float offsetProgress = (progress - minProgress) / (maxProgress - minProgress);
+      setCurrentPlayTime((long) (getDuration() * offsetProgress));
+    }
+  }
+
   public float getProgress() {
     return progress;
   }

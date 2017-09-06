@@ -177,6 +177,8 @@ import java.util.Set;
 
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
+    animator.forceUpdate();
+
     return true;
   }
 
