@@ -10,6 +10,7 @@ import android.support.annotation.FloatRange;
  * easily optimizing for the fact that we know that it's a value animator with 2 floats.
  */
 public class LottieValueAnimator extends ValueAnimator {
+  private boolean systemAnimationsAreDisabled = false;
   private boolean isReversed = false;
   private float minProgress = 0f;
   private float maxProgress = 1f;
@@ -41,6 +42,10 @@ public class LottieValueAnimator extends ValueAnimator {
     });
   }
 
+  public void systemAnimationsAreDisabled() {
+    this.systemAnimationsAreDisabled = true;
+  }
+
   @Override public ValueAnimator setDuration(long duration) {
     this.originalDuration = duration;
     updateValues(minProgress, maxProgress);
@@ -63,7 +68,7 @@ public class LottieValueAnimator extends ValueAnimator {
       progress = maxProgress;
     }
     this.progress = progress;
-    if (getDuration() > 0) {
+    if (getDuration() > 0 && !systemAnimationsAreDisabled) {
       float offsetProgress = (progress - minProgress) / (maxProgress - minProgress);
       setCurrentPlayTime((long) (getDuration() * offsetProgress));
     }
