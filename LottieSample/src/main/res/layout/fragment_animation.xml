@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|right"
-                android:drawableLeft="@drawable/ic_warning"
+                android:drawableLeft="@drawable/ic_warning_wrapped"
                 android:drawablePadding="4dp"
                 android:padding="16dp"
                 android:visibility="gone"/>
@@ -153,7 +153,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_invert"/>
+                app:srcCompat="@drawable/ic_invert"/>
 
             <ImageButton
                 android:id="@+id/loop"
@@ -162,7 +162,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_loop"/>
+                app:srcCompat="@drawable/ic_loop"/>
 
 
             <ImageButton
@@ -184,7 +184,7 @@
                 android:layout_marginRight="12dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/play_button_background"
-                android:src="@drawable/ic_play_pause"/>
+                app:srcCompat="@drawable/ic_play_pause"/>
 
             <ImageButton
                 android:id="@+id/loadAsset"
