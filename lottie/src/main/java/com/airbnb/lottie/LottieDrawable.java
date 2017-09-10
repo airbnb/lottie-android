@@ -41,6 +41,7 @@ import java.util.Set;
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) public class LottieDrawable extends Drawable implements Drawable.Callback {
   private static final String TAG = LottieDrawable.class.getSimpleName();
+  private boolean systemAnimationsAreDisabled;
 
   private interface LazyCompositionTask {
     void run(LottieComposition composition);
@@ -60,7 +61,6 @@ import java.util.Set;
   @Nullable private FontAssetManager fontAssetManager;
   @Nullable FontAssetDelegate fontAssetDelegate;
   @Nullable TextDelegate textDelegate;
-  private boolean systemAnimationsAreDisabled;
   private boolean enableMergePaths;
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -71,10 +71,8 @@ import java.util.Set;
     animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        if (systemAnimationsAreDisabled) {
-          setProgress(1f);
-        } else {
-          setProgress((Float) animation.getAnimatedValue());
+        if (compositionLayer != null) {
+          compositionLayer.setProgress(animator.getProgress());
         }
       }
     });
@@ -366,7 +364,13 @@ import java.util.Set;
   }
 
   public void resumeAnimation() {
-    playAnimation(animator.getAnimatedFraction() == 1f);
+    // Reset if they try to resume from the end of the animation
+    // or if system animations are disabled.
+    // If they are disabled then LottieValueAnimator will have it jump to its
+    // max progress.
+    playAnimation(
+        animator.getAnimatedFraction() == animator.getMaxProgress() ||
+        systemAnimationsAreDisabled);
   }
 
   private void playAnimation(final boolean resetProgress) {
@@ -378,12 +382,10 @@ import java.util.Set;
       });
       return;
     }
-    float progress = animator.getProgress();
-    animator.start();
-    if (resetProgress || animator.getAnimatedFraction() == 1f) {
-      animator.setProgress(animator.getMinProgress());
+    if (resetProgress) {
+      animator.start();
     } else {
-      animator.setProgress(progress);
+      animator.resume();
     }
   }
 

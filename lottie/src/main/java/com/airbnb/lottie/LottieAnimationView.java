@@ -8,10 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.Settings;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +18,8 @@ import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+
+import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONObject;
 
@@ -123,12 +123,8 @@ import java.util.Map;
 
     ta.recycle();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      float systemAnimationScale = Settings.Global.getFloat(getContext().getContentResolver(),
-          Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
-      if (systemAnimationScale == 0f) {
-        lottieDrawable.systemAnimationsAreDisabled();
-      }
+    if (Utils.getAnimationScale(getContext()) == 0f) {
+      lottieDrawable.systemAnimationsAreDisabled();
     }
 
     enableOrDisableHardwareLayer();

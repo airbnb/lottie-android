@@ -3,12 +3,15 @@ package com.airbnb.lottie.samples
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -70,6 +73,7 @@ class AnimationFragment : Fragment() {
         dataSet.color = Color.BLACK
         dataSet
     }
+    private val systemAnimationsAreDisabled by lazy { getAnimationScale(context) == 0f }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -136,7 +140,7 @@ class AnimationFragment : Fragment() {
                 animationView.pauseAnimation()
                 postUpdatePlayButtonText()
             } else {
-                if (animationView.progress == 1f) {
+                if (animationView.progress == 1f && !systemAnimationsAreDisabled) {
                     animationView.progress = 0f
                 }
                 animationView.resumeAnimation()
@@ -403,6 +407,17 @@ class AnimationFragment : Fragment() {
     private fun recordDroppedFrames() {
         val droppedFrames = application.stopRecordingDroppedFrames()
         Log.d(TAG, "Dropped frames: " + droppedFrames.first)
+    }
+
+    private fun getAnimationScale(context: Context): Float {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Settings.Global.getFloat(context.contentResolver,
+                    Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f)
+        } else {
+
+            Settings.System.getFloat(context.contentResolver,
+                    Settings.System.ANIMATOR_DURATION_SCALE, 1.0f)
+        }
     }
 
     companion object {

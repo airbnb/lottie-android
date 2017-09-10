@@ -37,9 +37,21 @@ public class LottieValueAnimator extends ValueAnimator {
 
     addUpdateListener(new AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        progress = (float) animation.getAnimatedValue();
+        if (!systemAnimationsAreDisabled) {
+          // On older devices, getAnimatedValue and getAnimatedFraction
+          // will always return 0 if animations are disabled.
+          progress = (float) animation.getAnimatedValue();
+        }
       }
     });
+  }
+
+  @Override public void start() {
+    if (systemAnimationsAreDisabled) {
+      setProgress(getMaxProgress());
+    } else {
+      super.start();
+    }
   }
 
   public void systemAnimationsAreDisabled() {
@@ -62,16 +74,7 @@ public class LottieValueAnimator extends ValueAnimator {
     if (this.progress == progress) {
       return;
     }
-    if (progress < minProgress) {
-      progress = minProgress;
-    } else if (progress > maxProgress) {
-      progress = maxProgress;
-    }
-    this.progress = progress;
-    if (getDuration() > 0 && !systemAnimationsAreDisabled) {
-      float offsetProgress = (progress - minProgress) / (maxProgress - minProgress);
-      setCurrentPlayTime((long) (getDuration() * offsetProgress));
-    }
+    setProgressInternal(progress);
   }
 
   /**
@@ -116,6 +119,10 @@ public class LottieValueAnimator extends ValueAnimator {
 
   public float getMinProgress() {
     return minProgress;
+  }
+
+  public float getMaxProgress() {
+    return maxProgress;
   }
 
   @Override public void resume() {
