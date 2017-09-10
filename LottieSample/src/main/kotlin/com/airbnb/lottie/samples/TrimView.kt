@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
@@ -39,8 +40,8 @@ class TrimView @JvmOverloads constructor(
         }
 
         override fun onViewPositionChanged(view: View, left: Int, top: Int, dx: Int, dy: Int) {
-            val startProgress = (leftAnchor.left + leftAnchor.width / 2f) / width.toFloat()
-            val endProgress = (rightAnchor.right - leftAnchor.width / 2f) / width.toFloat()
+            val startProgress = leftAnchor.left / width.toFloat()
+            val endProgress = rightAnchor.right / width.toFloat()
             callback(startProgress, endProgress)
         }
     })
@@ -64,6 +65,7 @@ class TrimView @JvmOverloads constructor(
         return super.onInterceptTouchEvent(ev)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         dragHelper.processTouchEvent(event)
         return true
