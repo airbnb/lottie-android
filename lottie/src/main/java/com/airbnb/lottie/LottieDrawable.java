@@ -157,7 +157,6 @@ import java.util.Iterator;
     setProgress(animator.getValue());
     setScale(scale);
     updateBounds();
-    applyColorFilters();
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
     // then there won't be two iterators iterating and removing at the same time.
@@ -192,16 +191,6 @@ import java.util.Iterator;
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
-  }
-
-  private void applyColorFilters() {
-    if (compositionLayer == null) {
-      return;
-    }
-
-    for (ColorFilterData data : colorFilterData) {
-      compositionLayer.addColorFilter(data.layerName, data.contentName, data.colorFilter);
-    }
   }
 
   public void clearComposition() {
