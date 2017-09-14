@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -385,8 +386,14 @@ import java.util.Set;
     if (resetProgress) {
       animator.start();
     } else {
-      animator.resume();
+      resumeAnimator();
     }
+  }
+
+  // Workaround NewApi lint error. Lint tool cannot find LottieValueAnimator#resume and gives an
+  // error (ValueAnimator#resume was added in API level 19).
+  @SuppressLint("NewApi") private void resumeAnimator() {
+    animator.resume();
   }
 
   public void playAnimation(final int startFrame, final int endFrame) {
