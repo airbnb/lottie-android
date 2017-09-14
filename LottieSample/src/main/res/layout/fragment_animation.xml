@@ -299,7 +299,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
-            android:text="2.2.2"
+            android:text="2.2.3"
             android:textColor="@android:color/black"
             android:textSize="8sp"/>
 

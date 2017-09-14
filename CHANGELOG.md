@@ -1,7 +1,8 @@
-#2.2.2
+#2.2.3
 ### Bugs Fixed
 * Fixed some issues with progress and resume
 * Fixed a StackOverflowErrors when animations are disabled
+* Fixed a NPE in Keyframe.Factory
 
 # 2.2.1
 ### Features and Improvements
