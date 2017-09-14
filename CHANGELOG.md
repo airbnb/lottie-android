@@ -1,4 +1,4 @@
-#2.2.3
+# 2.2.3 
 ### Bugs Fixed
 * Fixed some issues with progress and resume
 * Fixed a StackOverflowErrors when animations are disabled
