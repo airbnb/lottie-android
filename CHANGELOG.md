@@ -1,3 +1,8 @@
+#2.2.2
+### Bugs Fixed
+* Fixed some issues with progress and resume
+* Fixed a StackOverflowErrors when animations are disabled
+
 # 2.2.1
 ### Features and Improvements
 * Text now supports opacity
