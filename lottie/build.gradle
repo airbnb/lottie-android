@@ -13,6 +13,8 @@ android {
   }
   lintOptions {
     abortOnError true
+    textReport true
+    textOutput 'stdout'
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
