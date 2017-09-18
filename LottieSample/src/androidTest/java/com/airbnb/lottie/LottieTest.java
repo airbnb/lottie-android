@@ -121,7 +121,7 @@ public class LottieTest {
 
     params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
     TestRobot.testAnimationView(context, composition, "300x300 centerCrop @2x", params,
-        ImageView.ScaleType.CENTER_INSIDE, 2f);
+        ImageView.ScaleType.CENTER_CROP, 2f);
 
     params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
     TestRobot.testAnimationView(context, composition, "300x300 @2x", params,
