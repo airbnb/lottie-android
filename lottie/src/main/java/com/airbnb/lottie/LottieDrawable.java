@@ -331,9 +331,6 @@ import java.util.Set;
       float halfHeight = composition.getBounds().height() / 2f;
       float scaledHalfWidth = halfWidth * scale;
       float scaledHalfHeight = halfHeight * scale;
-      float halfCanvasWidth = canvas.getWidth() / 2;
-      float halfCanvasHeight = canvas.getHeight() / 2;
-      float extraScaleSquared = extraScale * extraScale;
 
       canvas.translate(
           getScale() * halfWidth - scaledHalfWidth,
@@ -712,40 +709,14 @@ import java.util.Set;
   }
 
   /**
-   * If there are masks or mattes, we can't scale the animation larger than the canvas or else
-   * the off screen rendering for masks and mattes after saveLayer calls will get clipped.
+   * If the composition is larger than the canvas, we have to use a different method to scale it up.
+   * See the comments in {@link #draw(Canvas)} for more info.
    */
   private float getMaxScale(@NonNull Canvas canvas) {
     float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
     float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
     return Math.min(maxScaleX, maxScaleY);
   }
-
-  // private float clampScale(float newScale) {
-  //   if (composition == null) {
-  //     return newScale;
-  //   }
-  //   int screenWidth = Utils.getScreenWidth(getContext());
-  //   int screenHeight = Utils.getScreenHeight(getContext());
-  //   int compWidth = composition.getBounds().width();
-  //   int compHeight = composition.getBounds().height();
-  //   if (compWidth > screenWidth || compHeight > screenHeight) {
-  //     float xScale = screenWidth / (float) compWidth;
-  //     float yScale = screenHeight / (float) compHeight;
-  //
-  //     float maxScaleForScreen = Math.min(xScale, yScale) - 0.02f;
-  //     if (newScale > maxScaleForScreen) {
-  //       extraScale = newScale / maxScaleForScreen;
-  //       newScale = maxScaleForScreen;
-  //       Log.w(L.TAG, String.format(
-  //           "Composition larger than the screen %dx%d vs %dx%d. Scaling down.",
-  //           compWidth, compHeight, screenWidth, screenHeight));
-  //     } else {
-  //       extraScale = 1f;
-  //     }
-  //   }
-  //   return newScale;
-  // }
 
   private static class ColorFilterData {
 
