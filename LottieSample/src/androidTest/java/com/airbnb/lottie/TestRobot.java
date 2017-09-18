@@ -125,7 +125,8 @@ class TestRobot {
   }
 
   static void testAnimationView(Context context, LottieComposition composition,
-      String name, FrameLayout.LayoutParams params, @Nullable ImageView.ScaleType scaleType) {
+      String name, FrameLayout.LayoutParams params, @Nullable ImageView.ScaleType scaleType,
+      @Nullable Float scale) {
     FrameLayout container = new FrameLayout(context);
     LottieAnimationView animationView = new LottieAnimationView(context);
     animationView.setComposition(composition);
@@ -133,11 +134,12 @@ class TestRobot {
     if (scaleType != null) {
       animationView.setScaleType(scaleType);
     }
+    if (scale != null) {
+      animationView.setScale(scale);
+    }
     container.addView(animationView, params);
 
     ViewHelpers.setupView(container)
-        .setExactWidthDp(500)
-        .setExactHeightDp(500)
         .layout();
 
     Screenshot.snap(container)
