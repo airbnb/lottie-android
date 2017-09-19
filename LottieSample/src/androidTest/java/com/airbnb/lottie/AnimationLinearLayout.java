@@ -28,7 +28,7 @@ public class AnimationLinearLayout extends LinearLayout {
 
   private void addViewsFor(float progress) {
     TextView textView = new TextView(getContext());
-    textView.setText("" + progress);
+    textView.setText(Float.toString(progress));
     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
     textView.setPadding(0, 24, 0, 24);
     LinearLayout.LayoutParams lp = generateDefaultLayoutParams();

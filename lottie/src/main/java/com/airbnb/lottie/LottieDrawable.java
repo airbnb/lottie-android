@@ -385,7 +385,7 @@ import java.util.Set;
     if (resetProgress) {
       animator.start();
     } else {
-      animator.resume();
+      animator.resumeAnimation();
     }
   }
 
