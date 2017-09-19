@@ -91,6 +91,7 @@ public class TextLayer extends BaseLayer {
     Font font = composition.getFonts().get(documentData.fontName);
     if (font == null) {
       // Something is wrong.
+      canvas.restore();
       return;
     }
 

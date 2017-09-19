@@ -1,8 +1,14 @@
 package com.airbnb.lottie;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.TypedValue;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.airbnb.lottie.samples.MainActivity;
 import com.airbnb.lottie.samples.TestColorFilterActivity;
@@ -87,5 +93,58 @@ public class LottieTest {
     TestColorFilterActivity colorFilterActivity = colorFilterActivityRule.getActivity();
     TestRobot.testAddYellowColorFilterInXml(colorFilterActivity);
     TestRobot.testAddNullColorFilterInXml(colorFilterActivity);
+
+    testScaleTypes();
+  }
+
+  private void testScaleTypes() {
+    Context context = mainActivityRule.getActivity();
+
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(
+        context, "LottieLogo1.json");
+
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    TestRobot.testAnimationView(context, composition, "Wrap Content", params, null, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 @4x", params, null, 4f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 centerCrop", params,
+        ImageView.ScaleType.CENTER_CROP, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 centerInside @2x", params,
+        ImageView.ScaleType.CENTER_INSIDE, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 centerCrop @2x", params,
+        ImageView.ScaleType.CENTER_CROP, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "300x300 @2x", params,
+        null, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(600), dpToPx(300));
+    TestRobot.testAnimationView(context, composition, "600x300 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(600));
+    TestRobot.testAnimationView(context, composition, "300x600 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    TestRobot.testAnimationView(context, composition, "Match Parent", params, null, null);
+  }
+
+  private int dpToPx(int dp) {
+    Resources resources = mainActivityRule.getActivity().getResources();
+    return (int) TypedValue.applyDimension(1, (float) dp, resources.getDisplayMetrics());
   }
 }

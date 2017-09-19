@@ -31,14 +31,16 @@
             android:layout_weight="1"
             android:background="@drawable/inverted_background">
 
+            <!-- Set foreground and background because we want foreground but
+                it was only added recently -->
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/animationView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
-                android:duplicateParentState="true"
-                android:scaleType="centerInside"/>
+                android:foreground="@drawable/outline"
+                android:duplicateParentState="true"/>
 
             <LinearLayout
                 android:id="@+id/instructions"
