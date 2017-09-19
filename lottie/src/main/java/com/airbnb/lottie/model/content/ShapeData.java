@@ -195,8 +195,8 @@ public class ShapeData {
       Object x = pointArray.opt(0);
       Object y = pointArray.opt(1);
       return new PointF(
-          x instanceof Double ? new Float((Double) x) : (int) x,
-          y instanceof Double ? new Float((Double) y) : (int) y);
+          x instanceof Double ? ((Double) x).floatValue() : (int) x,
+          y instanceof Double ? ((Double) y).floatValue() : (int) y);
     }
   }
 }

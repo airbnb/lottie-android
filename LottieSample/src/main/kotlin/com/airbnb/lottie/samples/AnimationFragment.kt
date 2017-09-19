@@ -362,7 +362,10 @@ class AnimationFragment : Fragment() {
         }
     }
 
-    private fun loadJsonString(jsonString: String) {
+    private fun loadJsonString(jsonString: String?) {
+        if (jsonString == null) {
+            return
+        }
         try {
             val json = JSONObject(jsonString)
             LottieComposition.Factory.fromJson(resources, json, { composition ->
@@ -394,7 +397,7 @@ class AnimationFragment : Fragment() {
                     if (!response.isSuccessful) {
                         onLoadError()
                     } else {
-                        loadJsonString(response.body().string())
+                        loadJsonString(response.body()?.string())
                     }
 
                 }))

@@ -20,4 +20,5 @@
     <string name="shortcut_full_screen_animation">Full Screen Animation</string>
     <string name="shortcut_full_screen_animation_short">Full Screen</string>
     <string name="shortcut_disabled">Shortcut Disabled</string>
+    <string name="start_typing">Start typing!</string>
 </resources>

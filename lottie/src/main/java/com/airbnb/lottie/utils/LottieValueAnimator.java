@@ -125,7 +125,7 @@ public class LottieValueAnimator extends ValueAnimator {
     return maxProgress;
   }
 
-  @Override public void resume() {
+  public void resumeAnimation() {
     float startingProgress = progress;
     start();
     // This has to call through setCurrentPlayTime for compatibility reasons.
