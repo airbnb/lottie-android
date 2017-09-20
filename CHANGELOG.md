@@ -1,8 +1,12 @@
-# 2.2.3 
+# 2.2.5
+### Bugs Fixed
+* Call onAnimationEnd when system animations are disabled.
+
+# 2.2.4
 ### Bugs Fixed
 * Improved the reliability of scaling and using ImageView scale types.
-* Fixes a clipping issue with precomps.
-* Fixes an ArrayIndexOutOfBounds crash in the interpolator cache.
+* Fixed a clipping issue with precomps.
+* Fixed an ArrayIndexOutOfBounds crash in the interpolator cache.
 
 # 2.2.3
 ### Bugs Fixed
@@ -12,20 +16,20 @@
 
 # 2.2.1
 ### Features and Improvements
-* Text now supports opacity
+* Text now supports opacity.
 ### Bugs Fixed
-* Fixed a couple of couple of concurrency crashes
-* Fixed a crash when animations are disabled
-* Fixed a crash for letters with no shapes
+* Fixed a couple of couple of concurrency crashes.
+* Fixed a crash when animations are disabled.
+* Fixed a crash for letters with no shapes.
 
 
 # 2.2.0
 ### Features and Improvements
-* Added `play(startFrame, endFrame)` and `play(startProgress, endProgress)`
-* Added the ability to set a minimum and maximum frame/progress for a given animation
-* Made WeakRef the default cache strategy
+* Added `play(startFrame, endFrame)` and `play(startProgress, endProgress)`.
+* Added the ability to set a minimum and maximum frame/progress for a given animation.
+* Made WeakRef the default cache strategy.
 ### Bugs Fixed
-* Cancel loading animations when non-Lottie animations are set
+* Cancel loading animations when non-Lottie animations are set.
 
 # 2.1.2
 ### Bugs Fixed
@@ -100,7 +104,7 @@ to try it.
 * Some merge path support. Enable it with `enableMergePathsForKitKatAndAbove` and read the
 documentation before using it.
 * Support for multiple fills and strokes on shapes.
-* Expose several package private methods on `LottieAnimationView` and `LottieDrawable`
+* Exposed several package private methods on `LottieAnimationView` and `LottieDrawable`
 * Better support for hardware acceleration.
 * Added a ton of samples from lottiefiles.com to the sample app.
 
