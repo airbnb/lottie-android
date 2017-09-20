@@ -120,6 +120,23 @@ public class Keyframe<T> {
       return pathInterpolatorCache;
     }
 
+    @Nullable
+    private static WeakReference<Interpolator> getInterpolator(int hash) {
+      // This must be synchronized because get and put isn't thread safe because
+      // SparseArrayCompat has to create new sized arrays sometimes.
+      synchronized (Factory.class) {
+        return pathInterpolatorCache().get(hash);
+      }
+    }
+
+    private static void putInterpolator(int hash, WeakReference<Interpolator> interpolator) {
+      // This must be synchronized because get and put isn't thread safe because
+      // SparseArrayCompat has to create new sized arrays sometimes.
+      synchronized (Factory.class) {
+        pathInterpolatorCache.put(hash, interpolator);
+      }
+    }
+
     private Factory() {
     }
 
@@ -163,7 +180,7 @@ public class Keyframe<T> {
           cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
-          WeakReference<Interpolator> interpolatorRef = pathInterpolatorCache().get(hash);
+          WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
           if (interpolatorRef != null) {
             interpolator = interpolatorRef.get();
           }
@@ -171,7 +188,7 @@ public class Keyframe<T> {
             interpolator = PathInterpolatorCompat.create(
                 cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
             try {
-              pathInterpolatorCache().put(hash, new WeakReference<>(interpolator));
+              putInterpolator(hash, new WeakReference<>(interpolator));
             } catch (ArrayIndexOutOfBoundsException e) {
               // It is not clear why but SparseArrayCompat sometimes fails with this:
               //     https://github.com/airbnb/lottie-android/issues/452
