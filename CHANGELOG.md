@@ -1,5 +1,11 @@
 # 2.2.3 
 ### Bugs Fixed
+* Improved the reliability of scaling and using ImageView scale types.
+* Fixes a clipping issue with precomps.
+* Fixes an ArrayIndexOutOfBounds crash in the interpolator cache.
+
+# 2.2.3
+### Bugs Fixed
 * Fixed some issues with progress and resume
 * Fixed a StackOverflowErrors when animations are disabled
 * Fixed a NPE in Keyframe.Factory
