@@ -49,6 +49,7 @@ public class LottieValueAnimator extends ValueAnimator {
   @Override public void start() {
     if (systemAnimationsAreDisabled) {
       setProgress(getMaxProgress());
+      end();
     } else {
       super.start();
     }
