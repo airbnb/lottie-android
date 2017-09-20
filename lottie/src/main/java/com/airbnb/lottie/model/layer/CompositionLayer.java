@@ -3,9 +3,7 @@ package com.airbnb.lottie.model.layer;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
@@ -23,7 +21,6 @@ public class CompositionLayer extends BaseLayer {
   @Nullable private final BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
   private final RectF rect = new RectF();
-  private final Rect originalClipRect = new Rect();
   private final RectF newClipRect = new RectF();
 
   @Nullable private Boolean hasMatte;
@@ -79,7 +76,7 @@ public class CompositionLayer extends BaseLayer {
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("CompositionLayer#draw");
-    canvas.getClipBounds(originalClipRect);
+    canvas.save();
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
     parentMatrix.mapRect(newClipRect);
 
@@ -93,9 +90,7 @@ public class CompositionLayer extends BaseLayer {
         layer.draw(canvas, parentMatrix, parentAlpha);
       }
     }
-    if (!originalClipRect.isEmpty()) {
-      canvas.clipRect(originalClipRect, Region.Op.REPLACE);
-    }
+    canvas.restore();
     L.endSection("CompositionLayer#draw");
   }
 
