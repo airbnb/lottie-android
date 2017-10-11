@@ -337,7 +337,7 @@ import java.util.Map;
     }
 
     this.animationName = animationName;
-    lottieDrawable.cancelAnimation();
+    lottieDrawable.clearComposition();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
         new OnCompositionLoadedListener() {
@@ -415,6 +415,89 @@ import java.util.Map;
     return lottieDrawable.hasMatte();
   }
 
+  /**
+   * Plays the animation from the beginning. If speed is < 0, it will start at the end
+   * and play towards the beginning
+   */
+  public void playAnimation() {
+    lottieDrawable.playAnimation();
+    enableOrDisableHardwareLayer();
+  }
+
+  /**
+   * Continues playing the animation from its current position. If speed < 0, it will play backwards
+   * from the current position.
+   */
+  public void resumeAnimation() {
+    lottieDrawable.resumeAnimation();
+    enableOrDisableHardwareLayer();
+  }
+
+  /**
+   * Sets the minimum frame that the animation will start from when playing or looping.
+   */
+  public void setMinFrame(int startFrame) {
+    lottieDrawable.setMinFrame(startFrame);
+  }
+
+  /**
+   * Sets the minimum progress that the animation will start from when playing or looping.
+   */
+  public void setMinProgress(float startProgress) {
+    lottieDrawable.setMinProgress(startProgress);
+  }
+
+  /**
+   * Sets the maximum frame that the animation will end at when playing or looping.
+   */
+  public void setMaxFrame(int endFrame) {
+    lottieDrawable.setMaxFrame(endFrame);
+  }
+
+  /**
+   * Sets the maximum progress that the animation will end at when playing or looping.
+   */
+  public void setMaxProgress(float endProgress) {
+    lottieDrawable.setMaxProgress(endProgress);
+  }
+
+  /**
+   * @see #setMinFrame(int)
+   * @see #setMaxFrame(int)
+   */
+  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    lottieDrawable.setMinAndMaxFrame(minFrame, maxFrame);
+  }
+
+  /**
+   * @see #setMinProgress(float)
+   * @see #setMaxProgress(float)
+   */
+  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+    lottieDrawable.setMinAndMaxProgress(minProgress, maxProgress);
+  }
+
+  /**
+   * Reverses the current animation speed. This does NOT play the animation.
+   */
+  public void reverseAnimationSpeed() {
+    lottieDrawable.reverseAnimationSpeed();
+  }
+
+  /**
+   * Sets the playback speed. If speed < 0, the animation will play backwards.
+   */
+  public void setSpeed(float speed) {
+    lottieDrawable.setSpeed(speed);
+  }
+
+  /**
+   * Returns the current playback speed. This will be < 0 if the animation is playing backwards.
+   */
+  public float getSpeed() {
+    return lottieDrawable.getSpeed();
+  }
+
   public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
     lottieDrawable.addAnimatorUpdateListener(updateListener);
   }
@@ -437,63 +520,6 @@ import java.util.Map;
 
   public boolean isAnimating() {
     return lottieDrawable.isAnimating();
-  }
-
-  public void playAnimation() {
-    lottieDrawable.playAnimation();
-    enableOrDisableHardwareLayer();
-  }
-
-  public void resumeAnimation() {
-    lottieDrawable.resumeAnimation();
-    enableOrDisableHardwareLayer();
-  }
-
-  public void playAnimation(final int startFrame, final int endFrame) {
-    lottieDrawable.playAnimation(startFrame, endFrame);
-  }
-
-  public void playAnimation(@FloatRange(from = 0f, to = 1f) float startProgress,
-      @FloatRange(from = 0f, to = 1f) float endProgress) {
-    lottieDrawable.playAnimation(startProgress, endProgress);
-  }
-
-  public void reverseAnimation() {
-    lottieDrawable.reverseAnimation();
-    enableOrDisableHardwareLayer();
-  }
-
-  public void setMinFrame(int startFrame) {
-    lottieDrawable.setMinFrame(startFrame);
-  }
-
-  public void setMinProgress(float startProgress) {
-    lottieDrawable.setMinProgress(startProgress);
-  }
-
-  public void setMaxFrame(int endFrame) {
-    lottieDrawable.setMaxFrame(endFrame);
-  }
-
-  public void setMaxProgress(float endProgress) {
-    lottieDrawable.setMaxProgress(endProgress);
-  }
-
-  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
-    lottieDrawable.setMinAndMaxFrame(minFrame, maxFrame);
-  }
-
-  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
-    lottieDrawable.setMinAndMaxProgress(minProgress, maxProgress);
-  }
-
-  public void resumeReverseAnimation() {
-    lottieDrawable.resumeReverseAnimation();
-    enableOrDisableHardwareLayer();
-  }
-
-  public void setSpeed(float speed) {
-    lottieDrawable.setSpeed(speed);
   }
 
   /**
@@ -575,9 +601,7 @@ import java.util.Map;
   }
 
   public void pauseAnimation() {
-    float progress = getProgress();
-    lottieDrawable.cancelAnimation();
-    setProgress(progress);
+    lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();
   }
 

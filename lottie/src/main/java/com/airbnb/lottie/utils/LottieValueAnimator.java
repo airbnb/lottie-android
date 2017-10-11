@@ -1,9 +1,6 @@
 package com.airbnb.lottie.utils;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.support.annotation.FloatRange;
 
 /**
  * This is a slightly modified {@link ValueAnimator} that allows us to update start and end values
@@ -11,142 +8,114 @@ import android.support.annotation.FloatRange;
  */
 public class LottieValueAnimator extends ValueAnimator {
   private boolean systemAnimationsAreDisabled = false;
-  private boolean isReversed = false;
-  private float minProgress = 0f;
-  private float maxProgress = 1f;
-  private long originalDuration;
+  private long compositionDuration;
+  private float minValue = 0f;
+  private float maxValue = 1f;
+  private float speed = 1f;
 
-  private float progress = 0f;
+  private float value = 0f;
 
   public LottieValueAnimator() {
-    setFloatValues(0f, 1f);
-
-    /*
-      This allows us to reset the values if they were temporarily reset by
-      updateValues(float, float, long, boolean)
-     */
-    addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        updateValues(minProgress, maxProgress);
-      }
-
-      @Override public void onAnimationCancel(Animator animation) {
-        updateValues(minProgress, maxProgress);
-      }
-    });
-
+    setInterpolator(null);
     addUpdateListener(new AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
+        // On older devices, getAnimatedValue and getAnimatedFraction
+        // will always return 0 if animations are disabled.
         if (!systemAnimationsAreDisabled) {
-          // On older devices, getAnimatedValue and getAnimatedFraction
-          // will always return 0 if animations are disabled.
-          progress = (float) animation.getAnimatedValue();
+          value = (float) animation.getAnimatedValue();
         }
       }
     });
-  }
-
-  @Override public void start() {
-    if (systemAnimationsAreDisabled) {
-      setProgress(getMaxProgress());
-      end();
-    } else {
-      super.start();
-    }
+    updateValues();
   }
 
   public void systemAnimationsAreDisabled() {
     this.systemAnimationsAreDisabled = true;
   }
 
-  @Override public ValueAnimator setDuration(long duration) {
-    this.originalDuration = duration;
-    updateValues(minProgress, maxProgress);
-    return this;
+  public void setCompositionDuration(long compositionDuration) {
+    this.compositionDuration = compositionDuration;
+    updateValues();
   }
 
-  /**
-   * This progress is from 0 to 1 and doesn't take into account setMinProgress or setMaxProgress.
-   * In other words, if you have set the min and max progress to 0.2 and 0.4, setting this to
-   * 0.5f will set the progress to 0.5, not 0.3. However, the value will be clamped between 0.2 and
-   * 0.4 so the resulting progress would be 0.4.
-   */
-  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    if (this.progress == progress) {
-      return;
-    }
-    setProgressInternal(progress);
-  }
+  public void setValue(float value) {
+    value = MiscUtils.clamp(value, minValue, maxValue);
 
-  /**
-   * Forces the animation to update even if the progress hasn't changed.
-   */
-  public void forceUpdate() {
-    setProgressInternal(getProgress());
-  }
-
-  private void setProgressInternal(@FloatRange(from = 0f, to = 1f) float progress) {
-    if (progress < minProgress) {
-      progress = minProgress;
-    } else if (progress > maxProgress) {
-      progress = maxProgress;
-    }
-    this.progress = progress;
+    this.value = value;
+    float distFromStart = isReversed() ? (maxValue - value) : (value - minValue);
+    float range = Math.abs(maxValue - minValue);
+    float animatedPercentage = distFromStart / range;
     if (getDuration() > 0) {
-      float offsetProgress = (progress - minProgress) / (maxProgress - minProgress);
-      setCurrentPlayTime((long) (getDuration() * offsetProgress));
+      setCurrentPlayTime((long) (getDuration() * animatedPercentage));
     }
   }
 
-  public float getProgress() {
-    return progress;
+  public float getValue() {
+    return value;
   }
 
-
-  public void setIsReversed(boolean isReversed) {
-    this.isReversed = isReversed;
-    updateValues(minProgress, maxProgress);
+  public void setMinValue(float minValue) {
+    if (minValue >= maxValue) {
+      throw new IllegalArgumentException("Min value must be smaller then max value.");
+    }
+    this.minValue = minValue;
+    updateValues();
   }
 
-  public void setMinProgress(float minProgress) {
-    this.minProgress = minProgress;
-    updateValues(minProgress, maxProgress);
+  public void setMaxValue(float maxValue) {
+    if (maxValue <= minValue) {
+      throw new IllegalArgumentException("Max value must be greater than min value.");
+    }
+    this.maxValue = maxValue;
+    updateValues();
   }
 
-  public void setMaxProgress(float maxProgress) {
-    this.maxProgress = maxProgress;
-    updateValues(minProgress, maxProgress);
+  public void reverseAnimationSpeed() {
+    setSpeed(-getSpeed());
   }
 
-  public float getMinProgress() {
-    return minProgress;
+  public void setSpeed(float speed) {
+    this.speed = speed;
+    updateValues();
   }
 
-  public float getMaxProgress() {
-    return maxProgress;
+  public float getSpeed() {
+    return speed;
+  }
+
+  public void playAnimation() {
+    start();
+    setValue(isReversed() ? maxValue : minValue);
+  }
+
+  public void pauseAnimation() {
+    float value = this.value;
+    cancel();
+    setValue(value);
   }
 
   public void resumeAnimation() {
-    float startingProgress = progress;
+    float value = this.value;
+    if (isReversed() && this.value == minValue) {
+      value = maxValue;
+    } else if (!isReversed() && this.value == maxValue) {
+      value = minValue;
+    }
     start();
-    // This has to call through setCurrentPlayTime for compatibility reasons.
-    setProgress(startingProgress);
+    setValue(value);
   }
 
-  /**
-   * This lets you set the start and end progress for a single play of the animator. After the next
-   * time the animation ends or is cancelled, the values will be reset to those set by
-   * {@link #setMinProgress(float)} or {@link #setMaxProgress(float)}.
-   */
-  @SuppressWarnings("WeakerAccess")
-  public void updateValues(float startProgress, float endProgress) {
-    float minValue = Math.min(startProgress, endProgress);
-    float maxValue = Math.max(startProgress, endProgress);
+  private boolean isReversed() {
+    return speed < 0;
+  }
+
+  private void updateValues() {
+    setDuration((long) (compositionDuration * (maxValue - minValue) / Math.abs(speed)));
     setFloatValues(
-        isReversed ? maxValue : minValue,
-        isReversed ? minValue : maxValue
+        speed < 0 ? maxValue : minValue,
+        speed < 0 ? minValue : maxValue
     );
-    super.setDuration((long) (originalDuration * (maxValue - minValue)));
-    setProgress(getProgress());
+    // This will force the play time to be correct for the current value.
+    setValue(value);
   }
 }

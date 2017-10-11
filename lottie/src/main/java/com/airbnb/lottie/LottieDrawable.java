@@ -17,7 +17,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
@@ -41,7 +40,6 @@ import java.util.Set;
  */
 @SuppressWarnings({"WeakerAccess", "unused"}) public class LottieDrawable extends Drawable implements Drawable.Callback {
   private static final String TAG = LottieDrawable.class.getSimpleName();
-  private boolean systemAnimationsAreDisabled;
 
   private interface LazyCompositionTask {
     void run(LottieComposition composition);
@@ -50,7 +48,6 @@ import java.util.Set;
   private final Matrix matrix = new Matrix();
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
-  private float speed = 1f;
   private float scale = 1f;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
@@ -67,12 +64,10 @@ import java.util.Set;
   private boolean performanceTrackingEnabled;
 
   public LottieDrawable() {
-    animator.setRepeatCount(0);
-    animator.setInterpolator(new LinearInterpolator());
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         if (compositionLayer != null) {
-          compositionLayer.setProgress(animator.getProgress());
+          compositionLayer.setProgress(animator.getValue());
         }
       }
     });
@@ -156,9 +151,10 @@ import java.util.Set;
       return false;
     }
 
+    setProgress(0f);
     clearComposition();
     this.composition = composition;
-    setSpeed(speed);
+    animator.setCompositionDuration(composition.getDuration());
     setScale(scale);
     updateBounds();
     buildCompositionLayer();
@@ -175,8 +171,6 @@ import java.util.Set;
     lazyCompositionTasks.clear();
 
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
-
-    animator.forceUpdate();
 
     return true;
   }
@@ -211,8 +205,12 @@ import java.util.Set;
     }
   }
 
-  private void clearComposition() {
+  public void clearComposition() {
     recycleBitmaps();
+    if (animator.isRunning()) {
+      animator.cancel();
+    }
+    composition = null;
     compositionLayer = null;
     imageAssetManager = null;
     invalidateSelf();
@@ -348,9 +346,144 @@ import java.util.Set;
     }
   }
 
-  void systemAnimationsAreDisabled() {
-    systemAnimationsAreDisabled = true;
-    animator.systemAnimationsAreDisabled();
+// <editor-fold desc="animator">
+
+  /**
+   * Plays the animation from the beginning. If speed is < 0, it will start at the end
+   * and play towards the beginning
+   */
+  public void playAnimation() {
+    if (compositionLayer == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          playAnimation();
+        }
+      });
+      return;
+    }
+    animator.playAnimation();
+  }
+
+  /**
+   * Continues playing the animation from its current position. If speed < 0, it will play backwards
+   * from the current position.
+   */
+  public void resumeAnimation() {
+    if (compositionLayer == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          resumeAnimation();
+        }
+      });
+      return;
+    }
+    animator.resumeAnimation();
+  }
+
+  /**
+   * Sets the minimum frame that the animation will start from when playing or looping.
+   */
+  public void setMinFrame(final int minFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMinFrame(minFrame);
+        }
+      });
+      return;
+    }
+    setMinProgress(minFrame / composition.getDurationFrames());
+  }
+
+  /**
+   * Sets the minimum progress that the animation will start from when playing or looping.
+   */
+   public void setMinProgress(float minProgress) {
+    animator.setMinValue(minProgress);
+  }
+
+  /**
+   * Sets the maximum frame that the animation will end at when playing or looping.
+   */
+  public void setMaxFrame(final int maxFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMaxFrame(maxFrame);
+        }
+      });
+      return;
+    }
+    setMaxProgress(maxFrame / composition.getDurationFrames());
+  }
+
+  /**
+   * Sets the maximum progress that the animation will end at when playing or looping.
+   */
+  public void setMaxProgress(float maxProgress) {
+    animator.setMaxValue(maxProgress);
+  }
+
+  /**
+   * @see #setMinFrame(int)
+   * @see #setMaxFrame(int)
+   */
+  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    setMinFrame(minFrame);
+    setMaxFrame(maxFrame);
+  }
+
+  /**
+   * @see #setMinProgress(float)
+   * @see #setMaxProgress(float)
+   */
+  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+    setMinProgress(minProgress);
+    setMaxProgress(maxProgress);
+  }
+
+  /**
+   * Reverses the current animation speed. This does NOT play the animation.
+   */
+  public void reverseAnimationSpeed() {
+    animator.reverseAnimationSpeed();
+  }
+
+  /**
+   * Sets the playback speed. If speed < 0, the animation will play backwards.
+   */
+  public void setSpeed(float speed) {
+    animator.setSpeed(speed);
+  }
+
+  /**
+   * Returns the current playback speed. This will be < 0 if the animation is playing backwards.
+   */
+  public float getSpeed() {
+    return animator.getSpeed();
+  }
+
+  public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+    animator.addUpdateListener(updateListener);
+  }
+
+  public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
+    animator.removeUpdateListener(updateListener);
+  }
+
+  public void addAnimatorListener(Animator.AnimatorListener listener) {
+    animator.addListener(listener);
+  }
+
+  public void removeAnimatorListener(Animator.AnimatorListener listener) {
+    animator.removeListener(listener);
+  }
+
+  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    animator.setValue(progress);
+    if (compositionLayer != null) {
+      compositionLayer.setProgress(progress);
+    }
   }
 
   public void loop(boolean loop) {
@@ -365,145 +498,11 @@ import java.util.Set;
     return animator.isRunning();
   }
 
-  public void playAnimation() {
-    playAnimation(true);
+  void systemAnimationsAreDisabled() {
+    animator.systemAnimationsAreDisabled();
   }
 
-  public void resumeAnimation() {
-    // Reset if they try to resume from the end of the animation
-    // or if system animations are disabled.
-    // If they are disabled then LottieValueAnimator will have it jump to its
-    // max progress.
-    playAnimation(
-        animator.getAnimatedFraction() == animator.getMaxProgress() ||
-        systemAnimationsAreDisabled);
-  }
-
-  private void playAnimation(final boolean resetProgress) {
-    if (compositionLayer == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          playAnimation(resetProgress);
-        }
-      });
-      return;
-    }
-    if (resetProgress) {
-      animator.start();
-    } else {
-      animator.resumeAnimation();
-    }
-  }
-
-  public void playAnimation(final int startFrame, final int endFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          playAnimation(startFrame, endFrame);
-        }
-      });
-      return;
-    }
-    playAnimation(startFrame / composition.getDurationFrames(),
-        endFrame / composition.getDurationFrames());
-  }
-
-  public void playAnimation(@FloatRange(from = 0f, to = 1f) float startProgress,
-      @FloatRange(from = 0f, to = 1f) float endProgress) {
-    animator.updateValues(startProgress, endProgress);
-    animator.setCurrentPlayTime(0);
-    setProgress(startProgress);
-    playAnimation(false);
-  }
-
-  public void resumeReverseAnimation() {
-    reverseAnimation(false);
-  }
-
-  public void reverseAnimation() {
-    float progress = getProgress();
-    reverseAnimation(true);
-  }
-
-  private void reverseAnimation(final boolean resetProgress) {
-    if (compositionLayer == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          reverseAnimation(resetProgress);
-        }
-      });
-      return;
-    }
-    float progress = animator.getProgress();
-    animator.reverse();
-    if (resetProgress || getProgress() == 1f) {
-      animator.setProgress(animator.getMinProgress());
-    } else {
-      animator.setProgress(progress);
-    }
-  }
-
-  public void setMinFrame(final int minFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          setMinFrame(minFrame);
-        }
-      });
-      return;
-    }
-    setMinProgress(minFrame / composition.getDurationFrames());
-  }
-
-   public void setMinProgress(float minProgress) {
-    animator.setMinProgress(minProgress);
-  }
-
-  public void setMaxFrame(final int maxFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          setMaxFrame(maxFrame);
-        }
-      });
-      return;
-    }
-    setMaxProgress(maxFrame / composition.getDurationFrames());
-  }
-
-  public void setMaxProgress(float maxProgress) {
-    animator.setMaxProgress(maxProgress);
-  }
-
-  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
-    setMinFrame(minFrame);
-    setMaxFrame(maxFrame);
-  }
-
-  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
-    setMinProgress(minProgress);
-    setMaxProgress(maxProgress);
-  }
-
-  public void setSpeed(float speed) {
-    this.speed = speed;
-    animator.setIsReversed(speed < 0);
-
-    if (composition != null) {
-      animator.setDuration((long) (composition.getDuration() / Math.abs(speed)));
-    }
-  }
-
-  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    animator.setProgress(progress);
-    if (compositionLayer != null) {
-      compositionLayer.setProgress(progress);
-    }
-  }
-
-  public float getProgress() {
-    return animator.getProgress();
-  }
+// </editor-fold>
 
   /**
    * Set the scale on the current composition. The only cost of this function is re-rendering the
@@ -577,20 +576,13 @@ import java.util.Set;
     animator.cancel();
   }
 
-  public void addAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-    animator.addUpdateListener(updateListener);
+  public void pauseAnimation() {
+    lazyCompositionTasks.clear();
+    animator.pauseAnimation();
   }
 
-  public void removeAnimatorUpdateListener(ValueAnimator.AnimatorUpdateListener updateListener) {
-    animator.removeUpdateListener(updateListener);
-  }
-
-  public void addAnimatorListener(Animator.AnimatorListener listener) {
-    animator.addListener(listener);
-  }
-
-  public void removeAnimatorListener(Animator.AnimatorListener listener) {
-    animator.removeListener(listener);
+  public float getProgress() {
+    return animator.getValue();
   }
 
   @Override public int getIntrinsicWidth() {
