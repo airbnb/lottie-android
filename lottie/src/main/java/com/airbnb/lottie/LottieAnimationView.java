@@ -336,7 +336,6 @@ import java.util.Map;
       return;
     }
 
-    this.animationName = animationName;
     lottieDrawable.cancelAnimation();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
