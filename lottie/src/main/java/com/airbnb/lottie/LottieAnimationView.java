@@ -479,6 +479,9 @@ import java.util.Map;
 
   /**
    * Reverses the current animation speed. This does NOT play the animation.
+   * @see #setSpeed(float)
+   * @see #playAnimation()
+   * @see #resumeAnimation()
    */
   public void reverseAnimationSpeed() {
     lottieDrawable.reverseAnimationSpeed();

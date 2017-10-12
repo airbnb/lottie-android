@@ -444,6 +444,9 @@ import java.util.Set;
 
   /**
    * Reverses the current animation speed. This does NOT play the animation.
+   * @see #setSpeed(float)
+   * @see #playAnimation()
+   * @see #resumeAnimation()
    */
   public void reverseAnimationSpeed() {
     animator.reverseAnimationSpeed();
