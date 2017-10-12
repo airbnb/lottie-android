@@ -13,11 +13,13 @@ import android.os.Parcelable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.airbnb.lottie.utils.Utils;
 
@@ -54,6 +56,10 @@ import java.util.Map;
     Strong
   }
 
+  private static final SparseArray<LottieComposition> RAW_RES_STRONG_REF_CACHE = new SparseArray<>();
+  private static final SparseArray<WeakReference<LottieComposition>> RAW_RES_WEAK_REF_CACHE =
+      new SparseArray<>();
+
   private static final Map<String, LottieComposition> STRONG_REF_CACHE = new HashMap<>();
   private static final Map<String, WeakReference<LottieComposition>> WEAK_REF_CACHE =
       new HashMap<>();
@@ -71,6 +77,7 @@ import java.util.Map;
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private CacheStrategy defaultCacheStrategy;
   private String animationName;
+  private @RawRes int animationResId;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private boolean useHardwareLayer = false;
@@ -100,9 +107,23 @@ import java.util.Map;
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
         CacheStrategy.Weak.ordinal());
     defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
-    String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
-    if (!isInEditMode() && fileName != null) {
-      setAnimation(fileName);
+    if (!isInEditMode()) {
+      boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
+      boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
+      if (hasRawRes && hasFileName) {
+        throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
+            "the same time. Please use use only one at once.");
+      } else if (hasRawRes) {
+        int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
+        if (rawResId != 0) {
+          setAnimation(rawResId);
+        }
+      } else if (hasFileName) {
+        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
+        if (fileName != null) {
+          setAnimation(fileName);
+        }
+      }
     }
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
       lottieDrawable.playAnimation();
@@ -201,6 +222,7 @@ import java.util.Map;
     Parcelable superState = super.onSaveInstanceState();
     SavedState ss = new SavedState(superState);
     ss.animationName = animationName;
+    ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
     ss.isAnimating = lottieDrawable.isAnimating();
     ss.isLooping = lottieDrawable.isLooping();
@@ -219,6 +241,10 @@ import java.util.Map;
     animationName = ss.animationName;
     if (!TextUtils.isEmpty(animationName)) {
       setAnimation(animationName);
+    }
+    animationResId = ss.animationResId;
+    if (animationResId != 0) {
+      setAnimation(animationResId);
     }
     setProgress(ss.progress);
     loop(ss.isLooping);
@@ -305,6 +331,55 @@ import java.util.Map;
   }
 
   /**
+   * Sets the animation from a file in the raw directory.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * Will not cache the composition once loaded.
+   */
+  public void setAnimation(@RawRes int animationResId) {
+    setAnimation(animationResId, defaultCacheStrategy);
+  }
+
+  /**
+   * Sets the animation from a file in the raw directory.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a
+   * strong reference to the composition once it is loaded
+   * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
+   */
+  public void setAnimation(@RawRes final int animationResId, final CacheStrategy cacheStrategy) {
+    this.animationResId = animationResId;
+    animationName = null;
+    if (RAW_RES_WEAK_REF_CACHE.indexOfKey(animationResId) > 0) {
+      WeakReference<LottieComposition> compRef = RAW_RES_WEAK_REF_CACHE.get(animationResId);
+      LottieComposition ref = compRef.get();
+      if (ref != null) {
+        setComposition(ref);
+        return;
+      }
+    } else if (RAW_RES_STRONG_REF_CACHE.indexOfKey(animationResId) > 0) {
+      setComposition(RAW_RES_STRONG_REF_CACHE.get(animationResId));
+      return;
+    }
+
+    lottieDrawable.cancelAnimation();
+    cancelLoaderTask();
+    compositionLoader = LottieComposition.Factory.fromRawFile(getContext(), animationResId,
+        new OnCompositionLoadedListener() {
+          @Override public void onCompositionLoaded(LottieComposition composition) {
+            if (cacheStrategy == CacheStrategy.Strong) {
+              RAW_RES_STRONG_REF_CACHE.put(animationResId, composition);
+            } else if (cacheStrategy == CacheStrategy.Weak) {
+              RAW_RES_WEAK_REF_CACHE.put(animationResId, new WeakReference<>(composition));
+            }
+
+            setComposition(composition);
+          }
+        });
+  }
+
+  /**
    * Sets the animation from a file in the assets directory.
    * This will load and deserialize the file asynchronously.
    * <p>
@@ -324,6 +399,7 @@ import java.util.Map;
    */
   public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
+    animationResId = -1;
     if (WEAK_REF_CACHE.containsKey(animationName)) {
       WeakReference<LottieComposition> compRef = WEAK_REF_CACHE.get(animationName);
       LottieComposition ref = compRef.get();
@@ -637,6 +713,7 @@ import java.util.Map;
 
   private static class SavedState extends BaseSavedState {
     String animationName;
+    int animationResId;
     float progress;
     boolean isAnimating;
     boolean isLooping;
