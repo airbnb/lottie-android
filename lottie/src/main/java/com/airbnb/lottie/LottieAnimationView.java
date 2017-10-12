@@ -216,7 +216,7 @@ import java.util.Map;
 
     SavedState ss = (SavedState) state;
     super.onRestoreInstanceState(ss.getSuperState());
-    this.animationName = ss.animationName;
+    animationName = ss.animationName;
     if (!TextUtils.isEmpty(animationName)) {
       setAnimation(animationName);
     }
