@@ -60,8 +60,8 @@ import java.util.Map;
   private static final SparseArray<WeakReference<LottieComposition>> RAW_RES_WEAK_REF_CACHE =
       new SparseArray<>();
 
-  private static final Map<String, LottieComposition> STRONG_REF_CACHE = new HashMap<>();
-  private static final Map<String, WeakReference<LottieComposition>> WEAK_REF_CACHE =
+  private static final Map<String, LottieComposition> ASSET_STRONG_REF_CACHE = new HashMap<>();
+  private static final Map<String, WeakReference<LottieComposition>> ASSET_WEAK_REF_CACHE =
       new HashMap<>();
 
   private final OnCompositionLoadedListener loadedListener =
@@ -399,16 +399,16 @@ import java.util.Map;
    */
   public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
     this.animationName = animationName;
-    animationResId = -1;
-    if (WEAK_REF_CACHE.containsKey(animationName)) {
-      WeakReference<LottieComposition> compRef = WEAK_REF_CACHE.get(animationName);
+    animationResId = 0;
+    if (ASSET_WEAK_REF_CACHE.containsKey(animationName)) {
+      WeakReference<LottieComposition> compRef = ASSET_WEAK_REF_CACHE.get(animationName);
       LottieComposition ref = compRef.get();
       if (ref != null) {
         setComposition(ref);
         return;
       }
-    } else if (STRONG_REF_CACHE.containsKey(animationName)) {
-      setComposition(STRONG_REF_CACHE.get(animationName));
+    } else if (ASSET_STRONG_REF_CACHE.containsKey(animationName)) {
+      setComposition(ASSET_STRONG_REF_CACHE.get(animationName));
       return;
     }
 
@@ -418,9 +418,9 @@ import java.util.Map;
         new OnCompositionLoadedListener() {
           @Override public void onCompositionLoaded(LottieComposition composition) {
             if (cacheStrategy == CacheStrategy.Strong) {
-              STRONG_REF_CACHE.put(animationName, composition);
+              ASSET_STRONG_REF_CACHE.put(animationName, composition);
             } else if (cacheStrategy == CacheStrategy.Weak) {
-              WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
+              ASSET_WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
             }
 
             setComposition(composition);
