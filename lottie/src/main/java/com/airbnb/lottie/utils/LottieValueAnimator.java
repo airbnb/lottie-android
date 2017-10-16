@@ -67,6 +67,10 @@ public class LottieValueAnimator extends ValueAnimator {
     updateValues();
   }
 
+  public float getMinValue() {
+    return minValue;
+  }
+
   public void setMaxValue(@FloatRange(from = 0f, to = 1f) float maxValue) {
     if (maxValue <= minValue) {
       throw new IllegalArgumentException("Max value must be greater than min value.");

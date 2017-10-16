@@ -151,10 +151,10 @@ import java.util.Set;
       return false;
     }
 
-    setProgress(0f);
     clearComposition();
     this.composition = composition;
     animator.setCompositionDuration(composition.getDuration());
+    setProgress(animator.getMinValue());
     setScale(scale);
     updateBounds();
     buildCompositionLayer();
