@@ -216,7 +216,7 @@ import java.util.Map;
 
     SavedState ss = (SavedState) state;
     super.onRestoreInstanceState(ss.getSuperState());
-    this.animationName = ss.animationName;
+    animationName = ss.animationName;
     if (!TextUtils.isEmpty(animationName)) {
       setAnimation(animationName);
     }
@@ -248,7 +248,7 @@ import java.util.Map;
     // AppCompatImageView constructor will set the image when set from xml
     // before LottieDrawable has been initialized
     if (lottieDrawable != null) {
-        lottieDrawable.recycleBitmaps();
+      lottieDrawable.recycleBitmaps();
     }
   }
 
@@ -336,8 +336,7 @@ import java.util.Map;
       return;
     }
 
-    this.animationName = animationName;
-    lottieDrawable.clearComposition();
+    lottieDrawable.cancelAnimation();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
         new OnCompositionLoadedListener() {
