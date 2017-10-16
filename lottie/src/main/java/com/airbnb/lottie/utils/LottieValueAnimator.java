@@ -1,6 +1,7 @@
 package com.airbnb.lottie.utils;
 
 import android.animation.ValueAnimator;
+import android.support.annotation.FloatRange;
 
 /**
  * This is a slightly modified {@link ValueAnimator} that allows us to update start and end values
@@ -9,11 +10,10 @@ import android.animation.ValueAnimator;
 public class LottieValueAnimator extends ValueAnimator {
   private boolean systemAnimationsAreDisabled = false;
   private long compositionDuration;
-  private float minValue = 0f;
-  private float maxValue = 1f;
   private float speed = 1f;
-
-  private float value = 0f;
+  @FloatRange(from = 0f, to = 1f) private float value = 0f;
+  @FloatRange(from = 0f, to = 1f) private float minValue = 0f;
+  @FloatRange(from = 0f, to = 1f) private float maxValue = 1f;
 
   public LottieValueAnimator() {
     setInterpolator(null);
@@ -38,7 +38,12 @@ public class LottieValueAnimator extends ValueAnimator {
     updateValues();
   }
 
-  public void setValue(float value) {
+  /**
+   * Sets the current animator value. This will update the play time as well.
+   * It will also be clamped to the values set with {@link #setMinValue(float)} and
+   * {@link #setMaxValue(float)}.
+   */
+  public void setValue(@FloatRange(from = 0f, to = 1f) float value) {
     value = MiscUtils.clamp(value, minValue, maxValue);
 
     this.value = value;
@@ -54,7 +59,7 @@ public class LottieValueAnimator extends ValueAnimator {
     return value;
   }
 
-  public void setMinValue(float minValue) {
+  public void setMinValue(@FloatRange(from = 0f, to = 1f) float minValue) {
     if (minValue >= maxValue) {
       throw new IllegalArgumentException("Min value must be smaller then max value.");
     }
@@ -62,7 +67,7 @@ public class LottieValueAnimator extends ValueAnimator {
     updateValues();
   }
 
-  public void setMaxValue(float maxValue) {
+  public void setMaxValue(@FloatRange(from = 0f, to = 1f) float maxValue) {
     if (maxValue <= minValue) {
       throw new IllegalArgumentException("Max value must be greater than min value.");
     }
@@ -109,6 +114,10 @@ public class LottieValueAnimator extends ValueAnimator {
     return speed < 0;
   }
 
+  /**
+   * Update the float values of the animator, scales the duration for the current min/max range
+   * and updates the play time so that it matches the new min/max range.
+   */
   private void updateValues() {
     setDuration((long) (compositionDuration * (maxValue - minValue) / Math.abs(speed)));
     setFloatValues(

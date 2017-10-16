@@ -457,7 +457,7 @@ import java.util.Map;
   /**
    * Sets the maximum progress that the animation will end at when playing or looping.
    */
-  public void setMaxProgress(float endProgress) {
+  public void setMaxProgress(@FloatRange(from = 0f, to = 1f) float endProgress) {
     lottieDrawable.setMaxProgress(endProgress);
   }
 
@@ -473,7 +473,9 @@ import java.util.Map;
    * @see #setMinProgress(float)
    * @see #setMaxProgress(float)
    */
-  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+  public void setMinAndMaxProgress(
+      @FloatRange(from = 0f, to = 1f) float minProgress,
+      @FloatRange(from = 0f, to = 1f) float maxProgress) {
     lottieDrawable.setMinAndMaxProgress(minProgress, maxProgress);
   }
 

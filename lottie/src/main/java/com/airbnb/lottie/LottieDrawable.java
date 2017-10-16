@@ -420,7 +420,7 @@ import java.util.Set;
   /**
    * Sets the maximum progress that the animation will end at when playing or looping.
    */
-  public void setMaxProgress(float maxProgress) {
+  public void setMaxProgress(@FloatRange(from = 0f, to = 1f) float maxProgress) {
     animator.setMaxValue(maxProgress);
   }
 
@@ -437,7 +437,9 @@ import java.util.Set;
    * @see #setMinProgress(float)
    * @see #setMaxProgress(float)
    */
-  public void setMinAndMaxProgress(float minProgress, float maxProgress) {
+  public void setMinAndMaxProgress(
+      @FloatRange(from = 0f, to = 1f) float minProgress,
+      @FloatRange(from = 0f, to = 1f) float maxProgress) {
     setMinProgress(minProgress);
     setMaxProgress(maxProgress);
   }
@@ -584,6 +586,7 @@ import java.util.Set;
     animator.pauseAnimation();
   }
 
+  @FloatRange(from = 0f, to = 1f)
   public float getProgress() {
     return animator.getValue();
   }
