@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.support.annotation.RestrictTo;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SparseArrayCompat;
@@ -191,6 +192,14 @@ public class LottieComposition {
         throw new IllegalStateException("Unable to find file " + fileName, e);
       }
       return fromInputStream(context, stream, loadedListener);
+    }
+
+    /**
+     * Loads a composition from a file stored in res/raw.
+     */
+    public static Cancellable fromRawFile(Context context, @RawRes int resId,
+        OnCompositionLoadedListener loadedListener) {
+      return fromInputStream(context, context.getResources().openRawResource(resId), loadedListener);
     }
 
     /**

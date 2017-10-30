@@ -5,4 +5,4 @@
     android:id="@+id/animation_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:lottie_fileName="Walkthrough/Walkthrough.json"/>
+    app:lottie_rawRes="@raw/walkthrough"/>
