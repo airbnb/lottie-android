@@ -18,8 +18,8 @@ public class PathKeyframe extends Keyframe<PointF> {
   @Nullable private Path path;
 
   private PathKeyframe(LottieComposition composition, @Nullable PointF startValue,
-      @Nullable PointF endValue, @Nullable Interpolator interpolator, float startFrame,
-      @Nullable Float endFrame) {
+      @Nullable PointF endValue, @Nullable Interpolator interpolator, int startFrame,
+      @Nullable Integer endFrame) {
     super(composition, startValue, endValue, interpolator, startFrame, endFrame);
   }
 

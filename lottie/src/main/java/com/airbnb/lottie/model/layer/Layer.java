@@ -324,13 +324,13 @@ public class Layer {
       // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
       // cause the stretch to be double counted since the in out animation gets treated the same
       // as all other animations and will have stretch applied to it again.
-      float inFrame = json.optLong("ip") / timeStretch;
-      float outFrame = json.optLong("op") / timeStretch;
+      int inFrame = (int) (json.optLong("ip") / timeStretch);
+      int outFrame = (int) (json.optLong("op") / timeStretch);
 
       List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
       // Before the in frame
       if (inFrame > 0) {
-        Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0f, 0f, null, 0f, inFrame);
+        Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0f, 0f, null, 0, inFrame);
         inOutKeyframes.add(preKeyframe);
       }
 
@@ -341,7 +341,7 @@ public class Layer {
       inOutKeyframes.add(visibleKeyframe);
 
       Keyframe<Float> outKeyframe = new Keyframe<>(
-          composition, 0f, 0f, null, outFrame, Float.MAX_VALUE);
+          composition, 0f, 0f, null, outFrame, Integer.MAX_VALUE);
       inOutKeyframes.add(outKeyframe);
 
       AnimatableFloatValue timeRemapping = null;

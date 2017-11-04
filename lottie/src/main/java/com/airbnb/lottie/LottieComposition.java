@@ -52,8 +52,8 @@ public class LottieComposition {
   private final HashSet<String> warnings = new HashSet<>();
   private final PerformanceTracker performanceTracker = new PerformanceTracker();
   private final Rect bounds;
-  private final long startFrame;
-  private final long endFrame;
+  private final int startFrame;
+  private final int endFrame;
   private final float frameRate;
   private final float dpScale;
   /* Bodymovin version */
@@ -61,7 +61,7 @@ public class LottieComposition {
   private final int minorVersion;
   private final int patchVersion;
 
-  private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate,
+  private LottieComposition(Rect bounds, int startFrame, int endFrame, float frameRate,
       float dpScale, int major, int minor, int patch) {
     this.bounds = bounds;
     this.startFrame = startFrame;
@@ -124,12 +124,12 @@ public class LottieComposition {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public long getStartFrame() {
+  public int getStartFrame() {
     return startFrame;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public long getEndFrame() {
+  public int getEndFrame() {
     return endFrame;
   }
 
@@ -272,8 +272,8 @@ public class LottieComposition {
         bounds = new Rect(0, 0, scaledWidth, scaledHeight);
       }
 
-      long startFrame = json.optLong("ip", 0);
-      long endFrame = json.optLong("op", 0);
+      int startFrame = json.optInt("ip", 0);
+      int endFrame = json.optInt("op", 0);
       float frameRate = (float) json.optDouble("fr", 0);
       String version = json.optString("v");
       String[] versions = version.split("[.]");
