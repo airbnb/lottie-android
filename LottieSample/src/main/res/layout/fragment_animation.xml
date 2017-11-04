@@ -297,11 +297,11 @@
             android:textColor="@android:color/black"/>
 
         <TextView
+            android:id="@+id/version"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
-            android:text="2.2.5"
             android:textColor="@android:color/black"
             android:textSize="8sp"/>
 

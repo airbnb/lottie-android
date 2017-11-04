@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
+import com.airbnb.lottie.BuildConfig
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
 import com.github.mikephil.charting.components.LimitLine
@@ -89,6 +90,7 @@ class AnimationFragment : Fragment() {
         setHasOptionsMenu(true)
         postUpdatePlayButtonText()
 
+        view.version.text = BuildConfig.VERSION_NAME
         view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan, activity)
         view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, activity)
         view.loadAnimation.setDrawableLeft(R.drawable.ic_file, activity)
