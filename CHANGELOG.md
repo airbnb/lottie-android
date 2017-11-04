@@ -1,3 +1,13 @@
+# 2.3.0-SNAPSHOT
+### Features and Improvements
+* Set animations from res/raw. Thanks @cyrilmottier!
+* Added setFrame and getFrame apis.
+* Improved warnings for compositions with unsupported layer effects.
+### Bugs Fixed
+* Overhaul to underlying animator. This should make animator apis like play/pause/resume/cancel
+  behave as expected in cases with unexpected behavior before.
+* Fixed a few keyframe issues where keyframe start/end values would be off by 1 frame.
+
 # 2.2.5
 ### Bugs Fixed
 * Call onAnimationEnd when system animations are disabled.

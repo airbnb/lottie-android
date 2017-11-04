@@ -38,3 +38,9 @@ dependencies {
   compile 'com.airbnb.android:lottie:2.2.5'
 }
 ```
+OR
+```groovy
+dependencies {
+  compile 'com.airbnb.android:lottie:2.3.0-SNAPSHOT'
+}
+```
