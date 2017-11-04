@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -301,9 +302,14 @@ public class Layer {
       }
 
       if (json.has("ef")) {
+        JSONArray effects = json.optJSONArray("ef");
+        String[] effectNames = new String[effects.length()];
+        for (int i = 0; i < effects.length(); i++) {
+          effectNames[i] = effects.optJSONObject(i).optString("nm");
+        }
         composition.addWarning("Lottie doesn't support layer effects. If you are using them for " +
             " fills, strokes, trim paths etc. then try adding them directly as contents " +
-            " in your shape.");
+            " in your shape. Found: " + Arrays.toString(effectNames));
       }
 
       float timeStretch = (float) json.optDouble("sr", 1.0);
