@@ -685,6 +685,22 @@ import java.util.Map;
     enableOrDisableHardwareLayer();
   }
 
+  /**
+   * Sets the progress to the specified frame.
+   * If the composition isn't set yet, the progress will be set to the frame when
+   * it is.
+   */
+  public void setFrame(int frame) {
+    lottieDrawable.setFrame(frame);
+  }
+
+  /**
+   * Get the currently rendered frame.
+   */
+  public int getFrame() {
+    return lottieDrawable.getFrame();
+  }
+
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     lottieDrawable.setProgress(progress);
   }

@@ -484,6 +484,35 @@ import java.util.Set;
     animator.removeListener(listener);
   }
 
+  /**
+   * Sets the progress to the specified frame.
+   * If the composition isn't set yet, the progress will be set to the frame when
+   * it is.
+   */
+  public void setFrame(final int frame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setFrame(frame);
+        }
+      });
+      return;
+    }
+
+    setProgress(frame / composition.getDurationFrames());
+  }
+
+  /**
+   * Get the currently rendered frame.
+   */
+  public int getFrame() {
+    if (composition == null) {
+      return 0;
+    }
+
+    return (int) (getProgress() * composition.getDurationFrames());
+  }
+
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     animator.setValue(progress);
     if (compositionLayer != null) {

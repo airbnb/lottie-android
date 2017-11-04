@@ -95,6 +95,7 @@ public class LottieTest {
     TestRobot.testAddNullColorFilterInXml(colorFilterActivity);
 
     testScaleTypes();
+    testFrameBoundary();
   }
 
   private void testScaleTypes() {
@@ -142,6 +143,24 @@ public class LottieTest {
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     TestRobot.testAnimationView(context, composition, "Match Parent", params, null, null);
   }
+
+  private void testFrameBoundary() {
+    Context context = mainActivityRule.getActivity();
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(context, "Tests/Frame.json");
+    animationView.setComposition(composition);
+
+    animationView.setFrame(16);
+    TestRobot.snapshotView(animationView, "Frame 16 Red");
+    animationView.setFrame(17);
+    TestRobot.snapshotView(animationView, "Frame 17 Blue");
+    animationView.setFrame(50);
+    TestRobot.snapshotView(animationView, "Frame 50 Blue");
+    animationView.setFrame(51);
+    TestRobot.snapshotView(animationView, "Frame 51 Green");
+  }
+
 
   private int dpToPx(int dp) {
     Resources resources = mainActivityRule.getActivity().getResources();

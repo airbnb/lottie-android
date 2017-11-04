@@ -139,10 +139,14 @@ class TestRobot {
     }
     container.addView(animationView, params);
 
-    ViewHelpers.setupView(container)
+    snapshotView(container, name);
+  }
+
+  static void snapshotView(View view, String name) {
+    ViewHelpers.setupView(view)
         .layout();
 
-    Screenshot.snap(container)
+    Screenshot.snap(view)
         .setGroup("Container")
         .setName(name)
         .record();
