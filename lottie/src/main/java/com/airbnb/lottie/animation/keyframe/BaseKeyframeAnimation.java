@@ -64,17 +64,16 @@ public abstract class BaseKeyframeAnimation<K, A> {
       return cachedKeyframe;
     }
 
-    int i = 0;
-    Keyframe<K> keyframe = keyframes.get(0);
+    Keyframe<K> keyframe = keyframes.get(keyframes.size() - 1);
     if (progress < keyframe.getStartProgress()) {
-      cachedKeyframe = keyframe;
-      return keyframe;
+      for (int i = keyframes.size() - 1; i >= 0; i--) {
+        keyframe = keyframes.get(i);
+        if (keyframe.containsProgress(progress)) {
+          break;
+        }
+      }
     }
 
-    while (!keyframe.containsProgress(progress) && i < keyframes.size()) {
-      keyframe = keyframes.get(i);
-      i++;
-    }
     cachedKeyframe = keyframe;
     return keyframe;
   }

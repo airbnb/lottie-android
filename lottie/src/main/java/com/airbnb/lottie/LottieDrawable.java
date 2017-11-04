@@ -153,11 +153,11 @@ import java.util.Set;
 
     clearComposition();
     this.composition = composition;
+    buildCompositionLayer();
     animator.setCompositionDuration(composition.getDuration());
-    setProgress(animator.getMinValue());
+    setProgress(animator.getValue());
     setScale(scale);
     updateBounds();
-    buildCompositionLayer();
     applyColorFilters();
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,

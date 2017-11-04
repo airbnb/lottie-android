@@ -32,6 +32,13 @@ public class LottieTest {
       TestColorFilterActivity.class);
 
   @Test public void testAll() {
+    testAnimations();
+    testColorFilters();
+    testScaleTypes();
+    testFrameBoundary();
+  }
+
+  private void testAnimations() {
     MainActivity activity = mainActivityRule.getActivity();
     TestRobot.testLinearAnimation(activity, "9squares-AlBoardman.json");
     TestRobot.testLinearAnimation(activity, "EmptyState.json");
@@ -89,13 +96,12 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "Tests/TrimPaths.json");
     TestRobot.testChangingCompositions(activity, "TwitterHeart.json", "PinJump.json");
     TestRobot.testSettingSameComposition(activity, "PinJump.json");
+  }
 
+  private void testColorFilters() {
     TestColorFilterActivity colorFilterActivity = colorFilterActivityRule.getActivity();
     TestRobot.testAddYellowColorFilterInXml(colorFilterActivity);
     TestRobot.testAddNullColorFilterInXml(colorFilterActivity);
-
-    testScaleTypes();
-    testFrameBoundary();
   }
 
   private void testScaleTypes() {

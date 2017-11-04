@@ -272,7 +272,6 @@ public class Layer {
           composition);
       MatteType matteType = MatteType.values()[json.optInt("tt")];
       List<Mask> masks = new ArrayList<>();
-      List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
       JSONArray jsonMasks = json.optJSONArray("masksProperties");
       if (jsonMasks != null) {
         for (int i = 0; i < jsonMasks.length(); i++) {
@@ -328,6 +327,7 @@ public class Layer {
       float inFrame = json.optLong("ip") / timeStretch;
       float outFrame = json.optLong("op") / timeStretch;
 
+      List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
       // Before the in frame
       if (inFrame > 0) {
         Keyframe<Float> preKeyframe = new Keyframe<>(composition, 0f, 0f, null, 0f, inFrame);
@@ -335,7 +335,7 @@ public class Layer {
       }
 
       // The + 1 is because the animation should be visible on the out frame itself.
-      outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame() + 1);
+      outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame()) + 1;
       Keyframe<Float> visibleKeyframe =
           new Keyframe<>(composition, 1f, 1f, null, inFrame, outFrame);
       inOutKeyframes.add(visibleKeyframe);

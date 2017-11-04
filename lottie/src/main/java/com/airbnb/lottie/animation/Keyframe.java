@@ -97,7 +97,7 @@ public class Keyframe<T> {
   }
 
   public boolean containsProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    return progress >= getStartProgress() && progress <= getEndProgress();
+    return progress >= getStartProgress() && progress < getEndProgress();
   }
 
   @Override public String toString() {
