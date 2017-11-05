@@ -373,7 +373,9 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
       progress /= layerModel.getTimeStretch();
     }
     if (matteLayer != null) {
-      matteLayer.setProgress(progress);
+      // The matte layer's time stretch is pre-calculated.
+      float matteTimeStretch = matteLayer.layerModel.getTimeStretch();
+      matteLayer.setProgress(progress * matteTimeStretch);
     }
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
