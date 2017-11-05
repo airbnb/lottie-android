@@ -22,6 +22,7 @@ public class EllipseContent implements PathContent, BaseKeyframeAnimation.Animat
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
+  private final CircleShape circleShape;
 
   @Nullable private TrimPathContent trimPath;
   private boolean isPathValid;
@@ -31,6 +32,7 @@ public class EllipseContent implements PathContent, BaseKeyframeAnimation.Animat
     this.lottieDrawable = lottieDrawable;
     sizeAnimation = circleShape.getSize().createAnimation();
     positionAnimation = circleShape.getPosition().createAnimation();
+    this.circleShape = circleShape;
 
     layer.addAnimation(sizeAnimation);
     layer.addAnimation(positionAnimation);
@@ -80,11 +82,19 @@ public class EllipseContent implements PathContent, BaseKeyframeAnimation.Animat
     float cpH = halfHeight * ELLIPSE_CONTROL_POINT_PERCENTAGE;
 
     path.reset();
-    path.moveTo(0, -halfHeight);
-    path.cubicTo(0 + cpW, -halfHeight, halfWidth, 0 - cpH, halfWidth, 0);
-    path.cubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
-    path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
-    path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
+    if (circleShape.isReversed()) {
+      path.moveTo(0, -halfHeight);
+      path.cubicTo(0 - cpW, -halfHeight, -halfWidth, 0 - cpH, -halfWidth, 0);
+      path.cubicTo(-halfWidth, 0 + cpH, 0 - cpW, halfHeight, 0, halfHeight);
+      path.cubicTo(0 + cpW, halfHeight, halfWidth, 0 + cpH, halfWidth, 0);
+      path.cubicTo(halfWidth, 0 - cpH, 0 + cpW, -halfHeight, 0, -halfHeight);
+    } else {
+      path.moveTo(0, -halfHeight);
+      path.cubicTo(0 + cpW, -halfHeight, halfWidth, 0 - cpH, halfWidth, 0);
+      path.cubicTo(halfWidth, 0 + cpH, 0 + cpW, halfHeight, 0, halfHeight);
+      path.cubicTo(0 - cpW, halfHeight, -halfWidth, 0 + cpH, -halfWidth, 0);
+      path.cubicTo(-halfWidth, 0 - cpH, 0 - cpW, -halfHeight, 0, -halfHeight);
+    }
 
     PointF position = positionAnimation.getValue();
     path.offset(position.x, position.y);

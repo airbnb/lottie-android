@@ -17,12 +17,14 @@ public class CircleShape implements ContentModel {
   private final String name;
   private final AnimatableValue<PointF, PointF> position;
   private final AnimatablePointValue size;
+  private final boolean isReversed;
 
   private CircleShape(String name, AnimatableValue<PointF, PointF> position,
-      AnimatablePointValue size) {
+      AnimatablePointValue size, boolean isReversed) {
     this.name = name;
     this.position = position;
     this.size = size;
+    this.isReversed = isReversed;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
@@ -38,7 +40,9 @@ public class CircleShape implements ContentModel {
           json.optString("nm"),
           AnimatablePathValue
               .createAnimatablePathOrSplitDimensionPath(json.optJSONObject("p"), composition),
-          AnimatablePointValue.Factory.newInstance(json.optJSONObject("s"), composition));
+          AnimatablePointValue.Factory.newInstance(json.optJSONObject("s"), composition),
+          // "d" is 2 for normal and 3 for reversed.
+          json.optInt("d", 2) == 3);
     }
   }
 
@@ -52,5 +56,9 @@ public class CircleShape implements ContentModel {
 
   public AnimatablePointValue getSize() {
     return size;
+  }
+
+  public boolean isReversed() {
+    return isReversed;
   }
 }

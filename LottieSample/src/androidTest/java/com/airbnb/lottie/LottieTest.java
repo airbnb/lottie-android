@@ -49,6 +49,8 @@ public class LottieTest {
     TestRobot.testLinearAnimation(activity, "PinJump.json");
     TestRobot.testLinearAnimation(activity, "TwitterHeart.json");
     TestRobot.testLinearAnimation(activity, "Hello World.json");
+    TestRobot.testLinearAnimation(activity, "CircleForward.json");
+    TestRobot.testLinearAnimation(activity, "CircleReversed.json");
     TestRobot.testLinearAnimation(activity, "WeAccept.json", "Images/WeAccept", null);
     TextDelegate delegate = new TextDelegate();
     delegate.setText("NAME", "Gabe");
