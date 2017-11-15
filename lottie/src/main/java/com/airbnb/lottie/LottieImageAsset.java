@@ -11,12 +11,14 @@ public class LottieImageAsset {
   private final int height;
   private final String id;
   private final String fileName;
+  private final String dirName;
 
-  private LottieImageAsset(int width, int height, String id, String fileName) {
+  private LottieImageAsset(int width, int height, String id, String fileName, String dirName) {
     this.width = width;
     this.height = height;
     this.id = id;
     this.fileName = fileName;
+    this.dirName = dirName;
   }
 
   static class Factory {
@@ -25,7 +27,7 @@ public class LottieImageAsset {
 
     static LottieImageAsset newInstance(JSONObject imageJson) {
       return new LottieImageAsset(imageJson.optInt("w"), imageJson.optInt("h"), imageJson.optString("id"),
-          imageJson.optString("p"));
+          imageJson.optString("p"), imageJson.optString("u"));
     }
   }
 
@@ -43,5 +45,9 @@ public class LottieImageAsset {
 
   public String getFileName() {
     return fileName;
+  }
+
+  public String getDirName() {
+    return dirName;
   }
 }
