@@ -55,14 +55,14 @@ public class Keyframe<T> {
   @Nullable public final T startValue;
   @Nullable public final T endValue;
   @Nullable public final Interpolator interpolator;
-  public final int startFrame;
-  @Nullable public Integer endFrame;
+  public final float startFrame;
+  @Nullable public Float endFrame;
 
   private float startProgress = Float.MIN_VALUE;
   private float endProgress = Float.MIN_VALUE;
 
   public Keyframe(LottieComposition composition, @Nullable T startValue, @Nullable T endValue,
-      @Nullable Interpolator interpolator, int startFrame, @Nullable Integer endFrame) {
+      @Nullable Interpolator interpolator, float startFrame, @Nullable Float endFrame) {
     this.composition = composition;
     this.startValue = startValue;
     this.endValue = endValue;
@@ -144,13 +144,13 @@ public class Keyframe<T> {
         AnimatableValue.Factory<T> valueFactory) {
       PointF cp1 = null;
       PointF cp2 = null;
-      int startFrame = 0;
+      float startFrame = 0;
       T startValue = null;
       T endValue = null;
       Interpolator interpolator = null;
 
       if (json.has("t")) {
-        startFrame = (int) json.optDouble("t", 0);
+        startFrame = (float) json.optDouble("t", 0);
         Object startValueJson = json.opt("s");
         if (startValueJson != null) {
           startValue = valueFactory.valueFromObject(startValueJson, scale);
