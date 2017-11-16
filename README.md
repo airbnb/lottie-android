@@ -35,12 +35,12 @@ Gradle is the only supported build configuration, so just add the dependency to 
 
 ```groovy
 dependencies {  
-  compile 'com.airbnb.android:lottie:2.3'
+  compile 'com.airbnb.android:lottie:2.3.0'
 }
 ```
 OR
 ```groovy
 dependencies {
-  compile 'com.airbnb.android:lottie:2.3.0-SNAPSHOT'
+  compile 'com.airbnb.android:lottie:2.3.1-SNAPSHOT'
 }
 ```
