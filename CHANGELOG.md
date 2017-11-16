@@ -1,11 +1,22 @@
-# 2.3.0-SNAPSHOT
+# 2.3.0
 ### Features and Improvements
-* Set animations from res/raw. Thanks @cyrilmottier!
-* Added setFrame and getFrame apis.
-* Improved warnings for compositions with unsupported layer effects.
+* Animator fixes:
+    * Previously, some usages of lottie animator apis/api listeners would cause unexpected 
+    behavior, especially calling apis from listener callbacks.
+    * This is breaking change if you use `playAnimation(start, end)`. It has been removed in 
+    favor of explicit methods for `setMinFrame/Progress`, `setMaxFrame/Progress` and 
+    `setMinAndMaxFrame/Progress` followed by an explicit call to `playAnimation` or 
+    `resumeAnimation`. 
+    * `reverseAnimation` and `resumeReverseAnimation` apis have been removed in favor of 
+    `play` and `resume` with `speed` < 0.
+    * If you have created hack around these limitations or complex animator chaining, please test
+     your animations after updating.
+* Set an animation from R.raw (res/raw) if you want static references to your animation files. 
+This can help prevent mismatches between api calls and file names. Thanks @cyrilmottier!
+* Support for ellipse direction.
+* Expose image directory name if set from bodymovin.
 ### Bugs Fixed
-* Overhaul to underlying animator. This should make animator apis like play/pause/resume/cancel
-  behave as expected in cases with unexpected behavior before.
+* Fixed a bug with animations that use both mattes and time stretch.
 * Fixed a few keyframe issues where keyframe start/end values would be off by 1 frame.
 
 # 2.2.5
