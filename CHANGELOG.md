@@ -1,3 +1,7 @@
+# 2.3.1
+### Features and Improvements
+* Expose `LottieComposition#getImages()` to aid in preloading images.
+
 # 2.3.0
 ### Features and Improvements
 * Animator fixes:
