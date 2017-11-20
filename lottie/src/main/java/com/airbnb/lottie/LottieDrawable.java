@@ -428,9 +428,18 @@ import java.util.Set;
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */
-  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
-    setMinFrame(minFrame);
-    setMaxFrame(maxFrame);
+  public void setMinAndMaxFrame(final int minFrame, final int maxFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMinAndMaxFrame(minFrame, maxFrame);
+        }
+      });
+      return;
+    }
+    animator.setMinAndMaxValues(
+        minFrame / composition.getDurationFrames(),
+        maxFrame / composition.getDurationFrames());
   }
 
   /**
@@ -440,8 +449,7 @@ import java.util.Set;
   public void setMinAndMaxProgress(
       @FloatRange(from = 0f, to = 1f) float minProgress,
       @FloatRange(from = 0f, to = 1f) float maxProgress) {
-    setMinProgress(minProgress);
-    setMaxProgress(maxProgress);
+    animator.setMinAndMaxValues(minProgress, maxProgress);
   }
 
   /**
