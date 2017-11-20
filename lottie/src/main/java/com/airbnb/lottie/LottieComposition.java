@@ -22,8 +22,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -240,13 +242,13 @@ public class LottieComposition {
     @Nullable
     public static LottieComposition fromInputStream(Resources res, InputStream stream) {
       try {
-        // TODO: It's not correct to use available() to allocate the byte array.
-        int size = stream.available();
-        byte[] buffer = new byte[size];
-        //noinspection ResultOfMethodCallIgnored
-        stream.read(buffer);
-        String json = new String(buffer, "UTF-8");
-        JSONObject jsonObject = new JSONObject(json);
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder total = new StringBuilder();
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+          total.append(line);
+        }
+        JSONObject jsonObject = new JSONObject(total.toString());
         return fromJsonSync(res, jsonObject);
       } catch (IOException e) {
         Log.e(L.TAG, "Failed to load composition.",
