@@ -33,10 +33,10 @@ public abstract class BaseStrokeContent implements DrawingContent,
   private final float[] dashPatternValues;
   final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-  private final BaseKeyframeAnimation<?, Float> widthAnimation;
-  private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
-  private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
-  @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
+  private final BaseKeyframeAnimation<Float, Float> widthAnimation;
+  private final BaseKeyframeAnimation<Integer, Integer> opacityAnimation;
+  private final List<BaseKeyframeAnimation<Float, Float>> dashPatternAnimations;
+  @Nullable private final BaseKeyframeAnimation<Float, Float> dashPatternOffsetAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width,
@@ -274,6 +274,14 @@ public abstract class BaseStrokeContent implements DrawingContent,
     float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     L.endSection("StrokeContent#applyDashPattern");
+  }
+
+  public BaseKeyframeAnimation<Float, Float> getWidth() {
+    return widthAnimation;
+  }
+
+  public BaseKeyframeAnimation<Integer, Integer> getOpacity() {
+    return opacityAnimation;
   }
 
   /**

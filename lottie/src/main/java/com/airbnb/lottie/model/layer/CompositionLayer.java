@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.support.annotation.FloatRange;
@@ -13,6 +12,8 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.value.KeyPath;
+import com.airbnb.lottie.value.LottieValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +114,27 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
+  public <T> void setValue(LottieValue<T> value, KeyPath keyPath) {
+    value.apply(this, keyPath);
+  }
+
+  public List<BaseLayer> getLayers() {
+    return layers;
+  }
+
+  @Nullable public BaseLayer layerFor(String name) {
+    if (name.equals(getName())) {
+      return this;
+    }
+    for (int i = 0; i < layers.size(); i++) {
+      BaseLayer layer = layers.get(i);
+      if (name.equals(layer.getName())) {
+        return layer;
+      }
+    }
+    return null;
+  }
+
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     super.setProgress(progress);
     if (timeRemapping != null) {
@@ -167,16 +189,11 @@ public class CompositionLayer extends BaseLayer {
     return hasMatte;
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    for (int i = 0; i < layers.size(); ++i) {
-      final BaseLayer layer = layers.get(i);
-      final String name = layer.getLayerModel().getName();
-      if (layerName == null) {
-        layer.addColorFilter(null, null, colorFilter);
-      } else if (name.equals(layerName)) {
-        layer.addColorFilter(layerName, contentName, colorFilter);
-      }
+  public String getAllKeyPaths() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < layers.size(); i++) {
+      layers.get(i).appendAllKeyPaths(sb, "");
     }
+    return sb.toString();
   }
 }

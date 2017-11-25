@@ -5,7 +5,7 @@ import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ScaleKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
-import com.airbnb.lottie.model.ScaleXY;
+import com.airbnb.lottie.value.ScaleXY;
 
 import org.json.JSONObject;
 

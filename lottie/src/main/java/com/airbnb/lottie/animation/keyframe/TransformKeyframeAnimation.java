@@ -4,7 +4,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.model.ScaleXY;
+import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
@@ -12,14 +12,14 @@ public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
 
   private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
-  private final BaseKeyframeAnimation<?, PointF> position;
+  private final BaseKeyframeAnimation<PointF, PointF> position;
   private final BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
   private final BaseKeyframeAnimation<Float, Float> rotation;
   private final BaseKeyframeAnimation<Integer, Integer> opacity;
 
   // Used for repeaters
-  @Nullable private final BaseKeyframeAnimation<?, Float> startOpacity;
-  @Nullable private final BaseKeyframeAnimation<?, Float> endOpacity;
+  @Nullable private final BaseKeyframeAnimation<Float, Float> startOpacity;
+  @Nullable private final BaseKeyframeAnimation<Float, Float> endOpacity;
 
   public TransformKeyframeAnimation(AnimatableTransform animatableTransform) {
     anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
@@ -67,18 +67,33 @@ public class TransformKeyframeAnimation {
     }
   }
 
-  public BaseKeyframeAnimation<?, Integer> getOpacity() {
+  public BaseKeyframeAnimation<Integer, Integer> getOpacity()  {
     return opacity;
   }
 
-  @Nullable public BaseKeyframeAnimation<?, Float> getStartOpacity() {
+  @Nullable public BaseKeyframeAnimation<Float, Float> getStartOpacity() {
     return startOpacity;
   }
 
-  @Nullable public BaseKeyframeAnimation<?, Float> getEndOpacity() {
+  @Nullable public BaseKeyframeAnimation<Float, Float> getEndOpacity() {
     return endOpacity;
   }
 
+  public BaseKeyframeAnimation<PointF, PointF> getPosition() {
+    return position;
+  }
+
+  public BaseKeyframeAnimation<PointF, PointF> getAnchorPoint() {
+    return anchorPoint;
+  }
+
+  public BaseKeyframeAnimation<ScaleXY, ScaleXY> getScale() {
+    return scale;
+  }
+
+  public BaseKeyframeAnimation<Float, Float> getRotation() {
+    return rotation;
+  }
 
   public Matrix getMatrix() {
     matrix.reset();

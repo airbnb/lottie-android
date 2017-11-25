@@ -65,6 +65,7 @@ public class LottieComposition {
 
   private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate,
       float dpScale, int major, int minor, int patch) {
+    L.setDpScale(dpScale);
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;

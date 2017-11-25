@@ -78,8 +78,8 @@ class AnimationFragment : Fragment() {
     private val systemAnimationsAreDisabled by lazy { getAnimationScale(context) == 0f }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = container!!.inflate(R.layout.fragment_animation, false)
+            inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = container!!.inflate(R.layout.fragment_animation)
 
         L.setTraceEnabled(true)
         view.animationView.setPerformanceTrackingEnabled(true)

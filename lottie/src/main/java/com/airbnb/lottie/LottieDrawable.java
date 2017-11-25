@@ -23,11 +23,11 @@ import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
+import com.airbnb.lottie.value.KeyPath;
+import com.airbnb.lottie.value.LottieValue;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -50,7 +50,6 @@ import java.util.Set;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
 
-  private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   @Nullable private ImageAssetManager imageAssetManager;
   @Nullable private String imageAssetsFolder;
@@ -158,7 +157,6 @@ import java.util.Set;
     setProgress(animator.getValue());
     setScale(scale);
     updateBounds();
-    applyColorFilters();
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
     // then there won't be two iterators iterating and removing at the same time.
@@ -195,16 +193,6 @@ import java.util.Set;
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
   }
 
-  private void applyColorFilters() {
-    if (compositionLayer == null) {
-      return;
-    }
-
-    for (ColorFilterData data : colorFilterData) {
-      compositionLayer.addColorFilter(data.layerName, data.contentName, data.colorFilter);
-    }
-  }
-
   public void clearComposition() {
     recycleBitmaps();
     if (animator.isRunning()) {
@@ -236,64 +224,27 @@ import java.util.Set;
   }
 
   /**
-   * Add a color filter to specific content on a specific layer.
-   * @param layerName name of the layer where the supplied content name lives
-   * @param contentName name of the specific content that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
+   * Set or update the value of any property in an animation.
+   * You can use the static factory methods in the following classes to udpate properties:
+   * {@link com.airbnb.lottie.value.FloatValue}
+   * {@link com.airbnb.lottie.value.IntegerValue}
+   * {@link com.airbnb.lottie.value.ColorFilterValue}
+   * {@link com.airbnb.lottie.value.PointFValue}
+   * {@link com.airbnb.lottie.value.ScaleValue}
+   *
+   * @see KeyPath and the documentation for each setter for more information.
    */
-  public void addColorFilterToContent(String layerName, String contentName,
-      @Nullable ColorFilter colorFilter) {
-    addColorFilterInternal(layerName, contentName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to a whole layer
-   * @param layerName name of the layer that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
-    addColorFilterInternal(layerName, null, colorFilter);
-  }
-
-  /**
-   * Add a color filter to all layers
-   * @param colorFilter the color filter, null to clear all color filters
-   */
-  public void addColorFilter(ColorFilter colorFilter) {
-    addColorFilterInternal(null, null, colorFilter);
-  }
-
-  /**
-   * Clear all color filters on all layers and all content in the layers
-   */
-  public void clearColorFilters() {
-    colorFilterData.clear();
-    addColorFilterInternal(null, null, null);
-  }
-
-  /**
-   * Private method to capture all color filter additions.
-   * There are 3 different behaviors here.
-   * 1. layerName is null. All layers supporting color filters will apply the passed in color filter
-   * 2. layerName is not null, contentName is null. This will apply the passed in color filter
-   *    to the whole layer
-   * 3. layerName is not null, contentName is not null. This will apply the pass in color filter
-   *    to a specific composition content.
-   */
-  private void addColorFilterInternal(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    final ColorFilterData data = new ColorFilterData(layerName, contentName, colorFilter);
-    if (colorFilter == null && colorFilterData.contains(data)) {
-      colorFilterData.remove(data);
-    } else {
-      colorFilterData.add(new ColorFilterData(layerName, contentName, colorFilter));
-    }
-
+  public <T> void setValue(final LottieValue<T> value, final KeyPath keyPath) {
     if (compositionLayer == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          compositionLayer.setValue(value, keyPath);
+        }
+      });
       return;
     }
-
-    compositionLayer.addColorFilter(layerName, contentName, colorFilter);
+    compositionLayer.setValue(value, keyPath);
+    invalidateSelf();
   }
 
   @Override public int getOpacity() {
@@ -751,6 +702,16 @@ import java.util.Set;
     float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
     float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
     return Math.min(maxScaleX, maxScaleY);
+  }
+
+  /**
+   * Returns a newline separated string for all key paths in the current composition.
+   */
+  public String getAllKeyPaths() {
+    if (compositionLayer == null) {
+      return "";
+    }
+    return compositionLayer.getAllKeyPaths();
   }
 
   private static class ColorFilterData {

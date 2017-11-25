@@ -12,6 +12,13 @@ import android.widget.ImageView;
 
 import com.airbnb.lottie.samples.MainActivity;
 import com.airbnb.lottie.samples.TestColorFilterActivity;
+import com.airbnb.lottie.value.ColorFilterValue;
+import com.airbnb.lottie.value.FloatValue;
+import com.airbnb.lottie.value.IntegerValue;
+import com.airbnb.lottie.value.KeyPath;
+import com.airbnb.lottie.value.PointFValue;
+import com.airbnb.lottie.value.ScaleValue;
+import com.airbnb.lottie.value.ScaleXY;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -106,6 +113,76 @@ public class LottieTest {
     TestColorFilterActivity colorFilterActivity = colorFilterActivityRule.getActivity();
     TestRobot.testAddYellowColorFilterInXml(colorFilterActivity);
     TestRobot.testAddNullColorFilterInXml(colorFilterActivity);
+
+    testDynamicProperties(activity);
+  }
+
+  private void testDynamicProperties(MainActivity activity) {
+    LottieAnimationView view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(IntegerValue.forColor(Color.BLUE),
+        new KeyPath("*"));
+    TestRobot.setupAndRecord("DynamicSquares", "Wildcard Color", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(ColorFilterValue.forColor(new SimpleColorFilter(Color.GREEN)),
+         new KeyPath("*"));
+    TestRobot.setupAndRecord("DynamicSquares", "Wildcard ColorFilter", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(ColorFilterValue.forColor(new SimpleColorFilter(Color.GREEN)),
+        new KeyPath("Shape Layer 1", "*"));
+    TestRobot.setupAndRecord("DynamicSquares", "Wildcard ColorFilter For Layer", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(ColorFilterValue.forColor(new SimpleColorFilter(Color.GREEN)),
+        new KeyPath("Shape Layer 1", "Group 2", "Rectangle", "Stroke"));
+    TestRobot.setupAndRecord("DynamicSquares", "Wildcard ColorFilter For Single Rectangle", view);
+
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    PorterDuffColorFilter cf = new PorterDuffColorFilter(Color.BLUE, PorterDuff.Mode.ADD);
+    view.setValue(ColorFilterValue.forColor(cf),
+        new KeyPath("*", "Group 1", "Rectangle", "Stroke"));
+    TestRobot.setupAndRecord("DynamicSquares", "Additive ColorFilters", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(FloatValue.forRotation(45f), new KeyPath("*", "*", "Rectangle"));
+    TestRobot.setupAndRecord("DynamicSquares", "Rotate All Squares 45 Degrees", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(FloatValue.forRotation(180f, 60, true), new KeyPath("*", "*", "Rectangle"));
+    view.setProgress(1 / 8f);
+    TestRobot.setupAndRecord("DynamicSquares", "Update the rotation value 12", view);
+    view.setProgress(0.5f);
+    TestRobot.setupAndRecord("DynamicSquares", "Update the rotation value 50", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(FloatValue.forStrokeWidth(2f), new KeyPath("*", "*", "*", "Stroke"));
+    TestRobot.setupAndRecord("DynamicSquares", "Make stroke width smaller", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(IntegerValue.forOpacity(50), new KeyPath("Shape Layer 1", "*", "Rectangle"));
+    TestRobot.setupAndRecord("DynamicSquares", "Half opacity on shape", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(IntegerValue.forOpacity(50), new KeyPath("Shape Layer 1", "*", "*", "Stroke"));
+    TestRobot.setupAndRecord("DynamicSquares", "Half opacity on stroke", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicSquares.json");
+    view.setValue(
+        ScaleValue.forScale(new ScaleXY(0.5f)),
+        new KeyPath("Shape Layer 1", "Group 1", "Rectangle"));
+    view.setValue(
+        ScaleValue.forScale(new ScaleXY(2f)),
+        new KeyPath("Shape Layer 2", "Group 1", "Rectangle"));
+    TestRobot.setupAndRecord("DynamicSquares", "Scale up and down", view);
+
+    view = TestRobot.viewForAnimation(activity, "Tests/DynamicMovingSquare.json");
+    view.setValue(
+        PointFValue.forPosition(new PointF(-80f, 80f), 30, true),
+        new KeyPath("Shape Layer 1", "Rectangle 1"));
+    view.setProgress(0.5f);
+    TestRobot.setupAndRecord("DynamicMovingSquare", "Update position on keyframe", view);
   }
 
   private void testScaleTypes() {

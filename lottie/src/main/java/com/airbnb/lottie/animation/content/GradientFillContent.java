@@ -1,7 +1,6 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -10,7 +9,6 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
 
 import com.airbnb.lottie.L;
@@ -123,11 +121,6 @@ public class GradientFillContent implements DrawingContent, BaseKeyframeAnimatio
         outBounds.right + 1,
         outBounds.bottom + 1
     );
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    // Do nothing
   }
 
   @Override public String getName() {

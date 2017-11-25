@@ -18,7 +18,7 @@ class AppIntroActivity : IntroActivity() {
     private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
 
     private val animationView: LottieAnimationView by lazy {
-        rootView.inflate(R.layout.app_intro_animation_view, false) as LottieAnimationView
+        rootView.inflate(R.layout.app_intro_animation_view) as LottieAnimationView
     }
     private val viewPager: LockableViewPager by lazy {
         findViewById<LockableViewPager>(R.id.intro_activity_viewPager)

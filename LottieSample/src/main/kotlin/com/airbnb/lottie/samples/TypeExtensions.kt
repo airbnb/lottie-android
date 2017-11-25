@@ -24,7 +24,7 @@ fun Fragment.startActivity(cls: Class<*>) {
 fun String.urlIntent(): Intent =
         Intent(Intent.ACTION_VIEW).setData(Uri.parse(this))
 
-fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = true): View =
+fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = false): View =
         LayoutInflater.from(context).inflate(layout, this, attachToRoot)
 
 fun String.hasPermission(context: Context): Boolean =

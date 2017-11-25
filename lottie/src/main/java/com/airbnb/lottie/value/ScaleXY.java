@@ -1,12 +1,21 @@
-package com.airbnb.lottie.model;
+package com.airbnb.lottie.value;
 
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 
 import org.json.JSONArray;
 
+/**
+ * Similar to {@link android.graphics.PointF} but with parsing to handle scale.
+ *
+ * TODO:
+ */
 public class ScaleXY {
   private final float scaleX;
   private final float scaleY;
+
+  public ScaleXY(float s) {
+    this(s, s);
+  }
 
   public ScaleXY(float sx, float sy) {
     this.scaleX = sx;

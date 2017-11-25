@@ -11,7 +11,7 @@ import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ModifierContent;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
-import com.airbnb.lottie.model.ScaleXY;
+import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.layer.BaseLayer;
 

@@ -6,12 +6,11 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.content.ColorFilterableContent;
 
-public class SolidLayer extends BaseLayer {
+public class SolidLayer extends BaseLayer implements ColorFilterableContent {
 
   private final RectF rect = new RectF();
   private final Paint paint = new Paint();
@@ -51,8 +50,8 @@ public class SolidLayer extends BaseLayer {
     matrix.mapRect(rect);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
+  @Override
+  public void setColorFilter(ColorFilter colorFilter) {
     paint.setColorFilter(colorFilter);
   }
 }

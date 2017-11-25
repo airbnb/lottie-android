@@ -34,4 +34,10 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
     point.set(pos[0], pos[1]);
     return point;
   }
+
+  @Override public void setValue(PointF value, int frame, boolean updateValue) {
+    super.setValue(value, frame, updateValue);
+    pathMeasure = null;
+    pathMeasureKeyframe = null;
+  }
 }

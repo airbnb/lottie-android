@@ -50,9 +50,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
 
-    for (int i = 0; i < listeners.size(); i++) {
-      listeners.get(i).onValueChanged();
-    }
+    notifyListeners();
   }
 
   private Keyframe<K> getCurrentKeyframe() {
@@ -113,6 +111,78 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   public float getProgress() {
     return progress;
+  }
+
+  void notifyListeners() {
+    for (int i = 0; i < listeners.size(); i++) {
+      listeners.get(i).onValueChanged();
+    }
+  }
+
+  /**
+   * This will traverse the keyframes and either update the value in an exiting keyframe if
+   * updateValue is true or add a new keyframe if updateValue is false.
+   */
+  public void setValue(K value, int frame, boolean updateValue) {
+    if (updateValue) {
+      updateValue(value, frame);
+    }
+  }
+
+  /**
+   * Traverses the keyframes. When it finds the keyframe that contains the given frame, it will
+   * determine whether it is closer to the beginning or end of the keyframe. It will then update
+   * the closer of the two. If the neighboring value in the previous/next keyframe was identical
+   * to the original value, it will be updated as well to keep the values contiguous.
+   */
+  private void updateValue(K value, int frame) {
+    for (int i = 0; i < keyframes.size(); i++) {
+      Keyframe<K> keyframe = keyframes.get(i);
+      if (keyframe.containsFrame(frame)) {
+        // We found the keyframe that has the desired keyframe.
+        if (Math.abs(frame - keyframe.startFrame) < Math.abs(frame - keyframe.endFrame)) {
+          // We are closer to the beginning of the frame.
+          if (i > 0) {
+            Keyframe<K> lastKeyframe = keyframes.get(i - 1);
+            // If the previous keyframe had the same end value as the keyframe start value, make
+            // sure it gets updated to the new value as well.
+            //noinspection ConstantConditions
+            if (lastKeyframe.endValue.equals(keyframe.startValue)) {
+              lastKeyframe.endValue = value;
+            }
+            updatePathIfNeeded(lastKeyframe);
+          }
+          keyframe.startValue = value;
+          updatePathIfNeeded(keyframe);
+          notifyListeners();
+        } else {
+          // We are closer to the end of the keyframe.
+          if (i < keyframes.size() - 1) {
+            Keyframe<K> nextKeyframe = keyframes.get(i + 1);
+            // If the next keyframe had the same start value as the keyframe end value, make sure
+            // it gets updated to the new value as well.
+            //noinspection ConstantConditions
+            if (nextKeyframe.startValue.equals(keyframe.endValue)) {
+              nextKeyframe.startValue = value;
+            }
+            updatePathIfNeeded(nextKeyframe);
+          }
+          keyframe.endValue = value;
+          updatePathIfNeeded(keyframe);
+          notifyListeners();
+        }
+      }
+    }
+  }
+
+  /**
+   * PathKeyframes generates a path at the beginning and then just uses that instead of
+   * startValue and endValue like other keyframes.
+   */
+  private void updatePathIfNeeded(Keyframe<K> keyframe) {
+    if (keyframe instanceof PathKeyframe) {
+      ((PathKeyframe) keyframe).updatePath();
+    }
   }
 
   /**
