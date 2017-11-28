@@ -23,6 +23,7 @@ import android.widget.Toast
 import com.airbnb.lottie.BuildConfig
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieDrawable
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -153,7 +154,11 @@ class AnimationFragment : Fragment() {
 
         view.loop.setOnClickListener {
             view.loop.isActivated = !view.loop.isActivated
-            view.animationView.loop(view.loop.isActivated)
+            if (view.loop.isActivated)
+                view.animationView.loopMode = LottieDrawable.RESTART
+            else
+                view.animationView.loopMode = LottieDrawable.NONE
+
         }
         view.loop.callOnClick()
 

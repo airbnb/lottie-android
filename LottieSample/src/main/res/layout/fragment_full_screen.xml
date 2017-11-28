@@ -5,5 +5,5 @@
     android:layout_height="match_parent"
     android:scaleType="centerCrop"
     app:lottie_rawRes="@raw/full_screen"
-    app:lottie_loop="true"
+    app:lottie_loopMode="restart"
     app:lottie_autoPlay="true" />

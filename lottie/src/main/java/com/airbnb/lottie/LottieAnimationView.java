@@ -130,6 +130,8 @@ import java.util.Map;
       autoPlay = true;
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
+    lottieDrawable.setLoopMode(ta.getInt(R.styleable.LottieAnimationView_lottie_loopMode,
+        LottieDrawable.NONE));
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -225,8 +227,8 @@ import java.util.Map;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
     ss.isAnimating = lottieDrawable.isAnimating();
-    ss.isLooping = lottieDrawable.isLooping();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
+    ss.loopMode = lottieDrawable.getLoopMode();
     return ss;
   }
 
@@ -247,11 +249,11 @@ import java.util.Map;
       setAnimation(animationResId);
     }
     setProgress(ss.progress);
-    loop(ss.isLooping);
     if (ss.isAnimating) {
       playAnimation();
     }
     lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
+    setLoopMode(ss.loopMode);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -594,8 +596,35 @@ import java.util.Map;
     lottieDrawable.removeAnimatorListener(listener);
   }
 
+  /**
+   * @see #setLoopMode(int)
+   */
+  @Deprecated
   public void loop(boolean loop) {
-    lottieDrawable.loop(loop);
+    lottieDrawable.setLoopMode( loop ? LottieDrawable.RESTART : LottieDrawable.NONE );
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end. This
+   * setting is applied only when loop is enabled
+   * Defaults to {@link LottieDrawable#NONE}.
+   *
+   * @param loopMode {@link LottieDrawable#NONE}, {@link LottieDrawable#RESTART} or
+   * {@link LottieDrawable#REVERSE}
+   */
+  public void setLoopMode(@LottieDrawable.LoopMode int loopMode) {
+    lottieDrawable.setLoopMode(loopMode);
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end.
+   *
+   * @return either one of {@link LottieDrawable#NONE}, {@link LottieDrawable#RESTART} or
+   * {@link LottieDrawable#REVERSE}
+   */
+  @LottieDrawable.LoopMode
+  public int getLoopMode() {
+    return lottieDrawable.getLoopMode();
   }
 
   public boolean isAnimating() {
@@ -732,8 +761,8 @@ import java.util.Map;
     int animationResId;
     float progress;
     boolean isAnimating;
-    boolean isLooping;
     String imageAssetsFolder;
+    int loopMode;
 
     SavedState(Parcelable superState) {
       super(superState);
@@ -744,8 +773,8 @@ import java.util.Map;
       animationName = in.readString();
       progress = in.readFloat();
       isAnimating = in.readInt() == 1;
-      isLooping = in.readInt() == 1;
       imageAssetsFolder = in.readString();
+      loopMode = in.readInt();
     }
 
     @Override
@@ -754,8 +783,8 @@ import java.util.Map;
       out.writeString(animationName);
       out.writeFloat(progress);
       out.writeInt(isAnimating ? 1 : 0);
-      out.writeInt(isLooping ? 1 : 0);
       out.writeString(imageAssetsFolder);
+      out.writeInt(loopMode);
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =

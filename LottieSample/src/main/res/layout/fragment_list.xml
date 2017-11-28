@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             app:lottie_fileName="Logo/LogoSmall.json"
-            app:lottie_loop="true" />
+            app:lottie_loopMode="restart" />
     </FrameLayout>
 
     <android.support.v7.widget.RecyclerView

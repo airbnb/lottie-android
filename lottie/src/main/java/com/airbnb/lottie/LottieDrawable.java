@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.FloatRange;
+import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,8 @@ import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +65,29 @@ import java.util.Set;
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+
+
+  /** @hide */
+  @IntDef({NONE, RESTART, REVERSE})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface LoopMode {}
+
+  /**
+   *  When the animation reaches the end and <code>loopMode</code> is NONE
+   *  the animation stop
+   */
+  public static final int NONE = 0;
+  /**
+   * When the animation reaches the end and <code>loopMode</code> is RESTART
+   * the animation restarts from the beginning.
+   */
+  public static final int RESTART = 1;
+  /**
+   * When the animation reaches the end and <code>loopMode</code> is RESTART
+   * the animation reverses direction on every iteration.
+   */
+  public static final int REVERSE = 2;
+
 
   public LottieDrawable() {
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -528,8 +554,38 @@ import java.util.Set;
     }
   }
 
+  /**
+   * @see #setLoopMode(int)
+   */
+  @Deprecated
   public void loop(boolean loop) {
     animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end. This
+   * setting is applied only when loop is enabled
+   * Defaults to {@link #NONE}.
+   *
+   * @param loopMode {@link #NONE}, {@link #RESTART} or {@link #REVERSE}
+   */
+  public void setLoopMode(@LoopMode int loopMode) {
+    if (loopMode == NONE) {
+      animator.setRepeatCount(0);
+    } else {
+      animator.setRepeatCount(ValueAnimator.INFINITE);
+      animator.setRepeatMode(loopMode);
+    }
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end.
+   *
+   * @return either one of {@link #NONE}, {@link #RESTART} or {@link #REVERSE}
+   */
+  @LoopMode
+  public int getLoopMode() {
+    return animator.getRepeatMode();
   }
 
   public boolean isLooping() {
