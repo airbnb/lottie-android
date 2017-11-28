@@ -66,15 +66,13 @@ import java.util.Set;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
 
-
-  /** @hide */
   @IntDef({NONE, RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
   public @interface LoopMode {}
 
   /**
-   *  When the animation reaches the end and <code>loopMode</code> is NONE
-   *  the animation stop
+   * When the animation reaches the end and <code>loopMode</code> is NONE
+   * the animation stop
    */
   public static final int NONE = 0;
   /**

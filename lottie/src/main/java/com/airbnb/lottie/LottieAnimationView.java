@@ -601,7 +601,7 @@ import java.util.Map;
    */
   @Deprecated
   public void loop(boolean loop) {
-    lottieDrawable.setLoopMode( loop ? LottieDrawable.RESTART : LottieDrawable.NONE );
+    lottieDrawable.setLoopMode(loop ? LottieDrawable.RESTART : LottieDrawable.NONE);
   }
 
   /**
