@@ -181,8 +181,11 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
     L.endSection("Layer#parentMatrix");
-    int alpha = (int)
-        ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
+    if(this.parentLayer != null) {
+      alpha =(int) ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
+    } else {
+      alpha = (int) ((float) transform.getOpacity().getValue() / 100f * 255);
+    }
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
       L.beginSection("Layer#drawLayer");
