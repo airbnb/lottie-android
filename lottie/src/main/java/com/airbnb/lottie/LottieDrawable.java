@@ -86,6 +86,11 @@ import java.util.Set;
    */
   public static final int REVERSE = 2;
 
+  /**
+   * This value used used with the {@link #setLoopCount(int)} property to loop
+   * the animation indefinitely.
+   */
+  public static final int INFINITE = -1;
 
   public LottieDrawable() {
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -571,7 +576,7 @@ import java.util.Set;
     if (loopMode == NONE) {
       animator.setRepeatCount(0);
     } else {
-      animator.setRepeatCount(ValueAnimator.INFINITE);
+      if (animator.getRepeatCount() == 0) animator.setRepeatCount(ValueAnimator.INFINITE);
       animator.setRepeatMode(loopMode);
     }
   }
@@ -585,6 +590,29 @@ import java.util.Set;
   public int getLoopMode() {
     return animator.getRepeatMode();
   }
+
+  /**
+   * Sets how many times the animation should be looped. If the loop
+   * count is 0, the animation is never looped. If the loop count is
+   * greater than 0 or {@link #INFINITE}, the loop mode will be taken
+   * into account. The loop count is 0 by default.
+   *
+   * @param count the number of times the animation should be looped
+   */
+  public void setLoopCount(int count) {
+    animator.setRepeatCount(count);
+  }
+
+  /**
+   * Defines how many times the animation should loop. The default value
+   * is 0.
+   *
+   * @return the number of times the animation should loop, or {@link #INFINITE}
+   */
+  public int getLoopCount() {
+    return animator.getRepeatCount();
+  }
+
 
   public boolean isLooping() {
     return animator.getRepeatCount() == ValueAnimator.INFINITE;

@@ -10,6 +10,7 @@
             <enum name="restart" value="1" />
             <enum name="reverse" value="2" />
         </attr>
+        <attr name="lottie_loopCount" format="integer" />
         <attr name="lottie_imageAssetsFolder" format="string" />
         <attr name="lottie_progress" format="float" />
         <attr name="lottie_enableMergePathsForKitKatAndAbove" format="boolean" />

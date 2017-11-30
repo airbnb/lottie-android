@@ -130,8 +130,14 @@ import java.util.Map;
       autoPlay = true;
     }
     lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
-    lottieDrawable.setLoopMode(ta.getInt(R.styleable.LottieAnimationView_lottie_loopMode,
+    setLoopMode(ta.getInt(R.styleable.LottieAnimationView_lottie_loopMode,
         LottieDrawable.NONE));
+
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_loopCount)) {
+      setLoopCount(ta.getInt(R.styleable.LottieAnimationView_lottie_loopCount,
+          LottieDrawable.INFINITE));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -229,6 +235,7 @@ import java.util.Map;
     ss.isAnimating = lottieDrawable.isAnimating();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     ss.loopMode = lottieDrawable.getLoopMode();
+    ss.loopCount = lottieDrawable.getLoopCount();
     return ss;
   }
 
@@ -254,6 +261,7 @@ import java.util.Map;
     }
     lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
     setLoopMode(ss.loopMode);
+    setLoopCount(ss.loopCount);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -627,6 +635,28 @@ import java.util.Map;
     return lottieDrawable.getLoopMode();
   }
 
+  /**
+   * Sets how many times the animation should be looped. If the loop
+   * count is 0, the animation is never looped. If the loop count is
+   * greater than 0 or {@link LottieDrawable#INFINITE}, the loop mode will be taken
+   * into account. The loop count is 0 by default.
+   *
+   * @param count the number of times the animation should be looped
+   */
+  public void setLoopCount(int count) {
+    lottieDrawable.setLoopCount(count);
+  }
+
+  /**
+   * Defines how many times the animation should loop. The default value
+   * is 0.
+   *
+   * @return the number of times the animation should loop, or {@link LottieDrawable#INFINITE}
+   */
+  public int getLoopCount() {
+    return lottieDrawable.getLoopCount();
+  }
+
   public boolean isAnimating() {
     return lottieDrawable.isAnimating();
   }
@@ -763,6 +793,7 @@ import java.util.Map;
     boolean isAnimating;
     String imageAssetsFolder;
     int loopMode;
+    int loopCount;
 
     SavedState(Parcelable superState) {
       super(superState);
@@ -775,6 +806,7 @@ import java.util.Map;
       isAnimating = in.readInt() == 1;
       imageAssetsFolder = in.readString();
       loopMode = in.readInt();
+      loopCount = in.readInt();
     }
 
     @Override
@@ -785,6 +817,7 @@ import java.util.Map;
       out.writeInt(isAnimating ? 1 : 0);
       out.writeString(imageAssetsFolder);
       out.writeInt(loopMode);
+      out.writeInt(loopCount);
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =
