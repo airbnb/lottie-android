@@ -20,5 +20,5 @@
         android:background="@drawable/outline"
         android:orientation="vertical"
         app:lottie_autoPlay="true"
-        app:lottie_loopMode="restart" />
+        app:lottie_loop="true" />
 </LinearLayout>

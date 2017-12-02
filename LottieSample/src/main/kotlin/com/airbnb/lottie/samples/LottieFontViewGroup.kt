@@ -35,7 +35,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
                     ViewGroup.LayoutParams.WRAP_CONTENT
             )
             cursorView.setComposition(composition)
-            cursorView.loopMode = LottieDrawable.RESTART
+            cursorView.repeatCount = LottieDrawable.INFINITE
             cursorView.playAnimation()
             addView(cursorView)
         }

@@ -154,11 +154,11 @@ class AnimationFragment : Fragment() {
 
         view.loop.setOnClickListener {
             view.loop.isActivated = !view.loop.isActivated
-            if (view.loop.isActivated)
-                view.animationView.loopMode = LottieDrawable.RESTART
-            else
-                view.animationView.loopMode = LottieDrawable.NONE
-
+            if (view.loop.isActivated) {
+                view.animationView.repeatCount = LottieDrawable.INFINITE
+            } else {
+                view.animationView.repeatCount = 0
+            }
         }
         view.loop.callOnClick()
 

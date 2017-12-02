@@ -129,12 +129,18 @@ import java.util.Map;
       lottieDrawable.playAnimation();
       autoPlay = true;
     }
-    lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
-    setLoopMode(ta.getInt(R.styleable.LottieAnimationView_lottie_loopMode,
-        LottieDrawable.NONE));
 
-    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_loopCount)) {
-      setLoopCount(ta.getInt(R.styleable.LottieAnimationView_lottie_loopCount,
+    if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false)) {
+      lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
+    }
+
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatMode)) {
+      setRepeatMode(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatMode,
+          LottieDrawable.RESTART));
+    }
+
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatCount)) {
+      setRepeatCount(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatCount,
           LottieDrawable.INFINITE));
     }
 
@@ -234,8 +240,8 @@ import java.util.Map;
     ss.progress = lottieDrawable.getProgress();
     ss.isAnimating = lottieDrawable.isAnimating();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
-    ss.loopMode = lottieDrawable.getLoopMode();
-    ss.loopCount = lottieDrawable.getLoopCount();
+    ss.repeatMode = lottieDrawable.getRepeatMode();
+    ss.repeatCount = lottieDrawable.getRepeatCount();
     return ss;
   }
 
@@ -260,8 +266,8 @@ import java.util.Map;
       playAnimation();
     }
     lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
-    setLoopMode(ss.loopMode);
-    setLoopCount(ss.loopCount);
+    setRepeatMode(ss.repeatMode);
+    setRepeatCount(ss.repeatCount);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -605,56 +611,54 @@ import java.util.Map;
   }
 
   /**
-   * @see #setLoopMode(int)
+   * @see #setRepeatCount(int)
    */
   @Deprecated
   public void loop(boolean loop) {
-    lottieDrawable.setLoopMode(loop ? LottieDrawable.RESTART : LottieDrawable.NONE);
+    lottieDrawable.loop(loop);
   }
 
   /**
    * Defines what this animation should do when it reaches the end. This
-   * setting is applied only when loop is enabled
-   * Defaults to {@link LottieDrawable#NONE}.
+   * setting is applied only when the repeat count is either greater than
+   * 0 or {@link LottieDrawable#INFINITE}. Defaults to {@link LottieDrawable#RESTART}.
    *
-   * @param loopMode {@link LottieDrawable#NONE}, {@link LottieDrawable#RESTART} or
-   * {@link LottieDrawable#REVERSE}
+   * @param mode {@link LottieDrawable#RESTART} or {@link LottieDrawable#REVERSE}
    */
-  public void setLoopMode(@LottieDrawable.LoopMode int loopMode) {
-    lottieDrawable.setLoopMode(loopMode);
+  public void setRepeatMode(@LottieDrawable.RepeatMode int mode) {
+    lottieDrawable.setRepeatMode(mode);
   }
 
   /**
    * Defines what this animation should do when it reaches the end.
    *
-   * @return either one of {@link LottieDrawable#NONE}, {@link LottieDrawable#RESTART} or
-   * {@link LottieDrawable#REVERSE}
+   * @return either one of {@link LottieDrawable#REVERSE} or {@link LottieDrawable#RESTART}
    */
-  @LottieDrawable.LoopMode
-  public int getLoopMode() {
-    return lottieDrawable.getLoopMode();
+  @LottieDrawable.RepeatMode
+  public int getRepeatMode() {
+    return lottieDrawable.getRepeatMode();
   }
 
   /**
-   * Sets how many times the animation should be looped. If the loop
-   * count is 0, the animation is never looped. If the loop count is
-   * greater than 0 or {@link LottieDrawable#INFINITE}, the loop mode will be taken
-   * into account. The loop count is 0 by default.
+   * Sets how many times the animation should be repeated. If the repeat
+   * count is 0, the animation is never repeated. If the repeat count is
+   * greater than 0 or {@link LottieDrawable#INFINITE}, the repeat mode will be taken
+   * into account. The repeat count is 0 by default.
    *
-   * @param count the number of times the animation should be looped
+   * @param count the number of times the animation should be repeated
    */
-  public void setLoopCount(int count) {
-    lottieDrawable.setLoopCount(count);
+  public void setRepeatCount(int count) {
+    lottieDrawable.setRepeatCount(count);
   }
 
   /**
-   * Defines how many times the animation should loop. The default value
+   * Defines how many times the animation should repeat. The default value
    * is 0.
    *
-   * @return the number of times the animation should loop, or {@link LottieDrawable#INFINITE}
+   * @return the number of times the animation should repeat, or {@link LottieDrawable#INFINITE}
    */
-  public int getLoopCount() {
-    return lottieDrawable.getLoopCount();
+  public int getRepeatCount() {
+    return lottieDrawable.getRepeatCount();
   }
 
   public boolean isAnimating() {
@@ -792,8 +796,8 @@ import java.util.Map;
     float progress;
     boolean isAnimating;
     String imageAssetsFolder;
-    int loopMode;
-    int loopCount;
+    int repeatMode;
+    int repeatCount;
 
     SavedState(Parcelable superState) {
       super(superState);
@@ -805,8 +809,8 @@ import java.util.Map;
       progress = in.readFloat();
       isAnimating = in.readInt() == 1;
       imageAssetsFolder = in.readString();
-      loopMode = in.readInt();
-      loopCount = in.readInt();
+      repeatMode = in.readInt();
+      repeatCount = in.readInt();
     }
 
     @Override
@@ -816,8 +820,8 @@ import java.util.Map;
       out.writeFloat(progress);
       out.writeInt(isAnimating ? 1 : 0);
       out.writeString(imageAssetsFolder);
-      out.writeInt(loopMode);
-      out.writeInt(loopCount);
+      out.writeInt(repeatMode);
+      out.writeInt(repeatCount);
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =

@@ -66,28 +66,22 @@ import java.util.Set;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
 
-  @IntDef({NONE, RESTART, REVERSE})
+  @IntDef({RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
-  public @interface LoopMode {}
+  public @interface RepeatMode {}
 
   /**
-   * When the animation reaches the end and <code>loopMode</code> is NONE
-   * the animation stop
-   */
-  public static final int NONE = 0;
-  /**
-   * When the animation reaches the end and <code>loopMode</code> is RESTART
-   * the animation restarts from the beginning.
+   * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+   * or a positive value, the animation restarts from the beginning.
    */
   public static final int RESTART = 1;
   /**
-   * When the animation reaches the end and <code>loopMode</code> is RESTART
-   * the animation reverses direction on every iteration.
+   * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+   * or a positive value, the animation reverses direction on every iteration.
    */
   public static final int REVERSE = 2;
-
   /**
-   * This value used used with the {@link #setLoopCount(int)} property to loop
+   * This value used used with the {@link #setRepeatCount(int)} property to repeat
    * the animation indefinitely.
    */
   public static final int INFINITE = -1;
@@ -558,7 +552,8 @@ import java.util.Set;
   }
 
   /**
-   * @see #setLoopMode(int)
+   *
+   * @see #setRepeatCount(int)
    */
   @Deprecated
   public void loop(boolean loop) {
@@ -567,49 +562,44 @@ import java.util.Set;
 
   /**
    * Defines what this animation should do when it reaches the end. This
-   * setting is applied only when loop is enabled
-   * Defaults to {@link #NONE}.
+   * setting is applied only when the repeat count is either greater than
+   * 0 or {@link #INFINITE}. Defaults to {@link #RESTART}.
    *
-   * @param loopMode {@link #NONE}, {@link #RESTART} or {@link #REVERSE}
+   * @param mode {@link #RESTART} or {@link #REVERSE}
    */
-  public void setLoopMode(@LoopMode int loopMode) {
-    if (loopMode == NONE) {
-      animator.setRepeatCount(0);
-    } else {
-      if (animator.getRepeatCount() == 0) animator.setRepeatCount(ValueAnimator.INFINITE);
-      animator.setRepeatMode(loopMode);
-    }
+  public void setRepeatMode(@RepeatMode int mode) {
+      animator.setRepeatMode(mode);
   }
 
   /**
    * Defines what this animation should do when it reaches the end.
    *
-   * @return either one of {@link #NONE}, {@link #RESTART} or {@link #REVERSE}
+   * @return either one of {@link #REVERSE} or {@link #RESTART}
    */
-  @LoopMode
-  public int getLoopMode() {
+  @RepeatMode
+  public int getRepeatMode() {
     return animator.getRepeatMode();
   }
 
   /**
-   * Sets how many times the animation should be looped. If the loop
-   * count is 0, the animation is never looped. If the loop count is
-   * greater than 0 or {@link #INFINITE}, the loop mode will be taken
-   * into account. The loop count is 0 by default.
+   * Sets how many times the animation should be repeated. If the repeat
+   * count is 0, the animation is never repeated. If the repeat count is
+   * greater than 0 or {@link #INFINITE}, the repeat mode will be taken
+   * into account. The repeat count is 0 by default.
    *
-   * @param count the number of times the animation should be looped
+   * @param count the number of times the animation should be repeated
    */
-  public void setLoopCount(int count) {
+  public void setRepeatCount(int count) {
     animator.setRepeatCount(count);
   }
 
   /**
-   * Defines how many times the animation should loop. The default value
+   * Defines how many times the animation should repeat. The default value
    * is 0.
    *
-   * @return the number of times the animation should loop, or {@link #INFINITE}
+   * @return the number of times the animation should repeat, or {@link #INFINITE}
    */
-  public int getLoopCount() {
+  public int getRepeatCount() {
     return animator.getRepeatCount();
   }
 
