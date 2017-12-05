@@ -195,6 +195,7 @@ public class TextLayer extends BaseLayer {
       Path path = contentGroups.get(j).getPath();
       path.computeBounds(rectF, false);
       matrix.set(parentMatrix);
+      matrix.preTranslate(0, (float) -documentData.baselineShift * composition.getDpScale());
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
       if (documentData.strokeOverFill) {
