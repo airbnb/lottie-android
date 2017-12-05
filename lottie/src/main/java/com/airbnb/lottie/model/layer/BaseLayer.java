@@ -98,7 +98,6 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
 
     this.transform = layerModel.getTransform().createAnimation();
     transform.addListener(this);
-    transform.addAnimationsToLayer(this);
 
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
       this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
@@ -390,6 +389,8 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
   }
 
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    // Time stretch should not be applied to the layer transform.
+    transform.setProgress(progress);
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }
