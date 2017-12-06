@@ -1,6 +1,13 @@
 # 2.3.1
 ### Features and Improvements
 * Expose `LottieComposition#getImages()` to aid in preloading images.
+* Added support for text baseline.
+### Bugs Fixed
+* Prevented a crash when setting min frame > previous max frame.
+* Fixed some bugs in subtract masks.
+* Fixed some animation clamping when an animation was longer than its parent and time stretched.
+* Stopped applying time stretch to a layer transform.
+
 
 # 2.3.0
 ### Features and Improvements
