@@ -1,0 +1,15 @@
+<manifest package="com.airbnb.lottie.samples"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <application>
+
+        <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true"
+            android:exported="true"/>
+
+    </application>
+
+</manifest>

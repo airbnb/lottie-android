@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.facebook.testing.screenshot'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
@@ -12,8 +11,14 @@ android {
     targetSdkVersion 26
     versionCode 28
     versionName "2.3.2-SNAPSHOT"
-    testInstrumentationRunner "com.airbnb.lottie.TestRunner"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
+    buildConfigField("String", "S3AccessKey", "\"" + System.getenv("LOTTIE_S3_API_KEY") + "\"")
+    buildConfigField("String", "S3SecretKey", "\"" + System.getenv("LOTTIE_S3_SECRET_KEY") + "\"")
+    buildConfigField("String", "HappoApiKey", "\"" + System.getenv("LOTTIE_HAPPO_API_KEY") + "\"")
+    buildConfigField("String", "HappoSecretKey", "\"" + System.getenv("LOTTIE_HAPPO_SECRET_KEY") + "\"")
+    buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")
+    buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
   }
   buildTypes {
     release {
@@ -32,6 +37,12 @@ android {
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
   }
+  packagingOptions {
+    exclude 'META-INF/LICENSE.txt'
+    exclude 'META-INF/NOTICE.txt'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+  }
 }
 
 dependencies {
@@ -41,7 +52,7 @@ dependencies {
   compile "com.android.support:design:$supportLibVersion"
   compile 'com.jakewharton:butterknife:8.5.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-  compile 'com.squareup.okhttp3:okhttp:3.8.1'
+  compile 'com.squareup.okhttp3:okhttp:3.9.0'
   compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
@@ -50,7 +61,20 @@ dependencies {
 
   testCompile 'junit:junit:4.12'
 
-  androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+  androidTestCompile 'com.airbnb.android:happo:0.0.13@aar'
+  // TODO: figure out why transitive deps of happo are needed
+  androidTestCompile 'com.android.support:appcompat-v7:26.1.0'
+  androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestCompile "com.android.support.test:runner:1.0.1"
+  androidTestCompile 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
+  androidTestCompile 'io.reactivex.rxjava2:rxjava:2.1.5'
+  androidTestCompile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+  androidTestCompile 'com.squareup.okhttp3:okhttp:3.9.0'
+  androidTestCompile 'com.amazonaws:aws-android-sdk-core:2.6.5'
+  androidTestCompile 'com.amazonaws:aws-android-sdk-s3:2.6.5'
+  androidTestCompile 'io.jsonwebtoken:jjwt:0.8.0'
+
+  androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
     exclude group: 'com.android.support', module: 'support-annotations'
     exclude group: 'org.hamcrest', module: 'hamcrest-integration'
   })

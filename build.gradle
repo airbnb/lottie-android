@@ -1,4 +1,4 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext.kotlinVersion = '1.1.4-3'
@@ -8,10 +8,11 @@ buildscript {
     jcenter()
   }
   dependencies {
+    classpath 'org.ajoberstar:grgit:1.9.3'
     classpath 'com.android.tools.build:gradle:2.3.3'
-    classpath 'com.facebook.testing.screenshot:plugin:0.4.2'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
+    classpath 'org.ajoberstar:grgit:1.9.3'
   }
 }
 
@@ -22,7 +23,16 @@ allprojects {
     maven {
       url "https://jitpack.io"
     }
+    flatDir {
+      dirs 'libs'
+    }
   }
+}
+
+ext {
+  git = Grgit.open()
+  gitSha = git.head().id
+  gitBranch = git.branch.getCurrent().name
 }
 
 task clean(type: Delete) {
