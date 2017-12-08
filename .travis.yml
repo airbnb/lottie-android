@@ -35,5 +35,7 @@ notifications:
   email: false
 script:
   - ./gradlew check
+  - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
+  - ls LottieSample/build/outputs/apk
   - gcloud firebase test android run --type instrumentation --device model=sailfish,version=26 --app LottieSample/build/outputs/apk/LottieSample-debug.apk --test LottieSample/build/outputs/apk/LottieSample-debug-androidTest.apk
 sudo: false
