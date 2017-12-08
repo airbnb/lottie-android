@@ -1,12 +1,16 @@
 #! /usr/bin/env node
 
+if (!process.env.TRAVIS_REPO_SLUG) {
+  process.exit(0);
+}
+
 const https = require('https');
 
 const postData = `{\"body\": \"Happo Results: https://happo.io/compare?q=lottie-master-android26..lottie-${process.env.GIT_SHA}-android26\"}`
 
 const options = {
   hostname: 'api.github.com',
-  path: `/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments`,
+  path: `/repos/${process.env.TRAVIS_REPO_SLUG}/issues/${process.env.TRAVIS_PULL_REQUEST}/comments`,
   port: 443,
   method: 'POST',
   headers: {
