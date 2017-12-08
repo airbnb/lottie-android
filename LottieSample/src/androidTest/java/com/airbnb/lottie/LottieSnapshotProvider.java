@@ -3,6 +3,11 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
+import android.support.annotation.Nullable;
+import android.util.TypedValue;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 
@@ -38,8 +43,6 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       return;
     }
 
-//    animations = Arrays.copyOfRange(animations, 10, 30);
-
     File dir = new File(Environment.getExternalStorageDirectory() + "/Snapshots");
     //noinspection ResultOfMethodCallIgnored
     dir.mkdirs();
@@ -60,6 +63,9 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         }
       });
     }
+
+    testFrameBoundary();
+    testScaleTypes();
   }
 
   private void runAnimation(final String name) {
@@ -93,5 +99,91 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     if (remainingTasks == 0) {
       onComplete();
     }
+  }
+
+  private void testScaleTypes() {
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(
+        context, "LottieLogo1.json");
+
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    testScaleTypeView(context, composition, "Wrap Content", params, null, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 @4x", params, null, 4f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 centerCrop", params,
+        ImageView.ScaleType.CENTER_CROP, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 centerInside @2x", params,
+        ImageView.ScaleType.CENTER_INSIDE, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 centerCrop @2x", params,
+        ImageView.ScaleType.CENTER_CROP, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(300));
+    testScaleTypeView(context, composition, "300x300 @2x", params,
+        null, 2f);
+
+    params = new FrameLayout.LayoutParams(dpToPx(600), dpToPx(300));
+    testScaleTypeView(context, composition, "600x300 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(dpToPx(300), dpToPx(600));
+    testScaleTypeView(context, composition, "300x600 centerInside", params,
+        ImageView.ScaleType.CENTER_INSIDE, null);
+
+    params = new FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    testScaleTypeView(context, composition, "Match Parent", params, null, null);
+  }
+
+  private void testScaleTypeView(Context context, LottieComposition composition,
+      String name, FrameLayout.LayoutParams params, @Nullable ImageView.ScaleType scaleType,
+      @Nullable Float scale) {
+    FrameLayout container = new FrameLayout(context);
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    animationView.setComposition(composition);
+    animationView.setProgress(1f);
+    if (scaleType != null) {
+      animationView.setScaleType(scaleType);
+    }
+    if (scale != null) {
+      animationView.setScale(scale);
+    }
+    container.addView(animationView, params);
+
+    recordSnapshot(container, 1080, "android", "Scale Types", name, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+  }
+
+  private void testFrameBoundary() {
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(context, "Tests/Frame.json");
+    animationView.setComposition(composition);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    animationView.setFrame(16);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 16 Red", params);
+    animationView.setFrame(17);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 17 Blue", params);
+    animationView.setFrame(50);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 50 Blue", params);
+    animationView.setFrame(51);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 51 Green", params);
+  }
+
+  private int dpToPx(int dp) {
+    Resources resources = context.getResources();
+    return (int) TypedValue.applyDimension(1, (float) dp, resources.getDisplayMetrics());
   }
 }
