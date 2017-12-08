@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.Manifest;
 import android.content.res.Resources;
+import android.os.Build;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
@@ -46,9 +47,10 @@ public class LottieTest {
         com.airbnb.lottie.samples.BuildConfig.HappoApiKey,
         com.airbnb.lottie.samples.BuildConfig.HappoSecretKey,
         "lottie",
-        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH == null ? "BRANCH" : com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH,
-        com.airbnb.lottie.samples.BuildConfig.GIT_SHA == null ? "SHA" : com.airbnb.lottie.samples.BuildConfig.GIT_SHA,
-        com.airbnb.lottie.BuildConfig.VERSION_NAME);
+        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH,
+        com.airbnb.lottie.samples.BuildConfig.GIT_SHA,
+        com.airbnb.lottie.BuildConfig.VERSION_NAME,
+        "android" + Build.VERSION.SDK_INT);
   }
 
   private int dpToPx(int dp) {
