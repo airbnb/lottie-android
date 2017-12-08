@@ -15,7 +15,10 @@ before_install:
   - gcloud components update
   - gcloud config set project lottie-snapshots
   - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - echo CURRENT BRANCH $TRAVIS_GIT_BRANCH
+  - export GIT_SHA=$(git rev-parse HEAD)
+  - export GIT_MERGE_BASE=$(git merge-base origin/master)
+  - echo GIT_SHA $GIT_SHA
+  - echo GIT_MERGE_BASE $GIT_MERGE_BASE
 android:
   components:
     - tools
@@ -34,7 +37,12 @@ branches:
 notifications:
   email: false
 script:
-  - ./gradlew check
-  - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
-  - gcloud firebase test android run --type instrumentation --device model=sailfish,version=26 --app LottieSample/build/outputs/apk/LottieSample-debug.apk --test LottieSample/build/outputs/apk/LottieSample-debug-androidTest.apk
+  # - ./gradlew check
+  # - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
+  # - gcloud firebase test android run --type instrumentation --device model=sailfish,version=26 --app LottieSample/build/outputs/apk/LottieSample-debug.apk --test LottieSample/build/outputs/apk/LottieSample-debug-androidTest.apk
+  - >
+    curl -H "Authorization: token 2370e8b9923204cc02735365c80df917e7a3fde4" -X POST -d \
+    "{\"body\"\: \"Happo Tests Complete\: https\\\\://happo.io/compare?q=lottie-${GIT_MERGE_BASE}..lottie-${GIT_SHA}\"}" \
+    "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
+
 sudo: false
