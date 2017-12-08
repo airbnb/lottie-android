@@ -1,61 +1,38 @@
 language: android
-
-addons:
-  apt:
-    packages:
-      - lynx
-
-android:
-  components:
-    - tools
-    - platform-tools
-    - build-tools-26.0.1
-    - android-22
-    - android-26
-    - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-22
-  licenses:
-    - android-sdk-license-.+
-    - '.+'
-
-after_success:
-  - .buildscript/deploy_snapshot.sh
-
-after_failure:
-  - if [ -f /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html ]; then lynx -dump /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html; fi
-  - if [ -f /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/com.airbnb.lottie.LottieTest.html ]; then lynx -dump /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/com.airbnb.lottie.LottieTest.html; fi
-
-jdk:
-  - oraclejdk8
-
-branches:
-  except:
-    - gh-pages
-
-notifications:
-  email: false
-
-
-before_script:
-  - echo TARGETS
-  - echo android list targets
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
-  - emulator -avd test -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
-
-script:
-  - ./gradlew check
-  - ./gradlew connectedCheck
-
-sudo: false
-
 cache:
   directories:
-    - $HOME/.m2
-
-
+  - "$HOME/google-cloud-sdk/"
+  - "$HOME/.m2"
 before_install:
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+- openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv
+  -in credentials.tar.gz.enc -out credentials.tar.gz -d
+- mkdir "$ANDROID_HOME/licenses" || true
+- echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
+- echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-26.0.1
+  - android-26
+  - extra-android-m2repository
+  licenses:
+  - android-sdk-license-.+
+  - ".+"
+jdk:
+- oraclejdk8
+branches:
+  except:
+  - gh-pages
+notifications:
+  email: false
+env:
+- PATH=$PATH:${HOME}/google-cloud-sdk/bin CLOUDSDK_CORE_DISABLE_PROMPTS=1
+- if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;
+  fi
+install:
+- gcloud config set project lottie-snapshots
+script:
+- "./gradlew check"
+- "./gradlew connectedCheck"
+sudo: false
