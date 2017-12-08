@@ -46,8 +46,8 @@ public class LottieTest {
         com.airbnb.lottie.samples.BuildConfig.HappoApiKey,
         com.airbnb.lottie.samples.BuildConfig.HappoSecretKey,
         "lottie",
-        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH,
-        com.airbnb.lottie.samples.BuildConfig.GIT_SHA,
+        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH == null ? "BRANCH" : com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH,
+        com.airbnb.lottie.samples.BuildConfig.GIT_SHA == null ? "SHA" : com.airbnb.lottie.samples.BuildConfig.GIT_SHA,
         com.airbnb.lottie.BuildConfig.VERSION_NAME);
   }
 

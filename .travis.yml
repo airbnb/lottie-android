@@ -1,5 +1,10 @@
 language: android
 
+addons:
+  apt:
+    packages:
+      - lynx
+
 android:
   components:
     - tools
@@ -15,6 +20,9 @@ android:
 
 after_success:
   - .buildscript/deploy_snapshot.sh
+
+after_failure:
+  - if [ -f /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html ]; then lynx -dump /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html; fi
 
 jdk:
   - oraclejdk8
