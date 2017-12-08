@@ -10,6 +10,7 @@ before_install:
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
   - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
   - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+  - gcloud components update
   - gcloud config set project lottie-snapshots
 android:
   components:
@@ -31,8 +32,6 @@ notifications:
 env:
   - PATH=$PATH:${HOME}/google-cloud-sdk/bin CLOUDSDK_CORE_DISABLE_PROMPTS=1
   - if [ ! -d ${HOME}/google-cloud-sdk ]; then curl https://sdk.cloud.google.com | bash;  fi
-install:
-  - gcloud config set project lottie-snapshots
 script:
   - ./gradlew check
   - gcloud firebase test android run --type instrumentation --device model=sailfish,version=26 --app LottieSample/build/outputs/apk/LottieSample-debug.apk --test LottieSample/build/outputs/apk/LottieSample-debug-androidTest.apk
