@@ -5,7 +5,7 @@ cache:
   - "$HOME/.m2"
 env:
   - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
-  - export TRAVIS_GIT_BRANCH=$(${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH})
+  - export TRAVIS_GIT_BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
 before_install:
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
