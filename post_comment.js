@@ -10,7 +10,7 @@ const options = {
   port: 443,
   method: 'POST',
   headers: {
-    Authorization: `token #{process.env.GITHUB_ACCESS_TOKEN}`,
+    Authorization: `token ${process.env.GITHUB_ACCESS_TOKEN}`,
     'Content-Length': postData.length,
     'User-Agent': 'Travis/1.6.8 (Mac OS X 10.9.2 like Darwin; Ruby 2.1.1; RubyGems 2.0.14) Faraday/0.8.9 Typhoeus/0.6.7.'
  }
