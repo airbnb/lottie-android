@@ -7,6 +7,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.text.TextUtils;
 import android.util.TypedValue;
 
 import com.airbnb.happo.HappoRunner;
@@ -38,6 +39,10 @@ public class LottieTest {
   );
 
   @Test public void testAll() {
+    String androidVersion = "-android" + Build.VERSION.SDK_INT;
+    String branch = TextUtils.isEmpty(com.airbnb.lottie.samples.BuildConfig.TRAVIS_GIT_BRANCH) ?
+        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH :
+        com.airbnb.lottie.samples.BuildConfig.TRAVIS_GIT_BRANCH;
     HappoRunner.runTests(
         mainActivityRule.getActivity(),
         new LottieSnapshotProvider(mainActivityRule.getActivity()),
@@ -47,10 +52,9 @@ public class LottieTest {
         com.airbnb.lottie.samples.BuildConfig.HappoApiKey,
         com.airbnb.lottie.samples.BuildConfig.HappoSecretKey,
         "lottie",
-        com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH,
-        com.airbnb.lottie.samples.BuildConfig.GIT_SHA,
-        com.airbnb.lottie.BuildConfig.VERSION_NAME,
-        "android" + Build.VERSION.SDK_INT);
+        branch + androidVersion,
+        com.airbnb.lottie.samples.BuildConfig.GIT_SHA + androidVersion,
+        com.airbnb.lottie.BuildConfig.VERSION_NAME + androidVersion);
   }
 
   private int dpToPx(int dp) {
