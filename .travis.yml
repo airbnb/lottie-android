@@ -1,13 +1,15 @@
+# https://cloud.google.com/solutions/continuous-delivery-with-travis-ci
 language: android
 cache:
   directories:
   - "$HOME/google-cloud-sdk/"
   - "$HOME/.m2"
 before_install:
-  - openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+  - openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
+  - tar -xzf credentials.tar.gz
   - gcloud auth activate-service-account --key-file client-secret.json
 android:
   components:
