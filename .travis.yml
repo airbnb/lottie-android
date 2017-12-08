@@ -5,17 +5,17 @@ cache:
   - "$HOME/.m2"
 env:
   - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
-  - export TRAVIS_GIT_BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}
 before_install:
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
   - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
-  - echo CURRENT BRANCH $TRAVIS_GIT_BRANCH
   - curl https://sdk.cloud.google.com | bash
   - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
   - gcloud components update
   - gcloud config set project lottie-snapshots
+  - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - echo CURRENT BRANCH $TRAVIS_GIT_BRANCH
 android:
   components:
     - tools
