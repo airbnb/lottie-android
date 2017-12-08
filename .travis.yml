@@ -23,6 +23,7 @@ after_success:
 
 after_failure:
   - if [ -f /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html ]; then lynx -dump /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/index.html; fi
+  - if [ -f /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/com.airbnb.lottie.LottieTest.html ]; then lynx -dump /home/travis/build/airbnb/lottie-android/LottieSample/build/reports/androidTests/connected/com.airbnb.lottie.LottieTest.html; fi
 
 jdk:
   - oraclejdk8
