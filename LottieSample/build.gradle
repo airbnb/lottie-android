@@ -62,7 +62,7 @@ dependencies {
 
   testCompile 'junit:junit:4.12'
 
-  androidTestCompile 'com.airbnb.android:happo:0.0.13@aar'
+  androidTestCompile 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed
   androidTestCompile 'com.android.support:appcompat-v7:26.1.0'
   androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
