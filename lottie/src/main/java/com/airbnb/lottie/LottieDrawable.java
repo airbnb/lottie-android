@@ -74,17 +74,17 @@ import java.util.Set;
    * When the animation reaches the end and <code>repeatCount</code> is INFINITE
    * or a positive value, the animation restarts from the beginning.
    */
-  public static final int RESTART = 1;
+  public static final int RESTART = ValueAnimator.RESTART;
   /**
    * When the animation reaches the end and <code>repeatCount</code> is INFINITE
    * or a positive value, the animation reverses direction on every iteration.
    */
-  public static final int REVERSE = 2;
+  public static final int REVERSE = ValueAnimator.REVERSE;
   /**
    * This value used used with the {@link #setRepeatCount(int)} property to repeat
    * the animation indefinitely.
    */
-  public static final int INFINITE = -1;
+  public static final int INFINITE = ValueAnimator.INFINITE;
 
   public LottieDrawable() {
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
