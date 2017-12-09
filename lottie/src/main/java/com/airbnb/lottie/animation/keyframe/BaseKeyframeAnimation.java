@@ -40,9 +40,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     if (progress < getStartDelayProgress()) {
-      progress = 0f;
+      progress = getStartDelayProgress();
     } else if (progress > getEndProgress()) {
-      progress = 1f;
+      progress = getEndProgress();
     }
 
     if (progress == this.progress) {

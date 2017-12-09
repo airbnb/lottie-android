@@ -62,7 +62,8 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint addMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint subtractMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new Paint();
   private final RectF rect = new RectF();
@@ -87,7 +88,8 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-    maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+    addMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+    subtractMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
@@ -96,7 +98,6 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
 
     this.transform = layerModel.getTransform().createAnimation();
     transform.addListener(this);
-    transform.addAnimationsToLayer(this);
 
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
       this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
@@ -320,30 +321,49 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
-  @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix) {
-    L.beginSection("Layer#drawMask");
-    L.beginSection("Layer#saveLayer");
-    canvas.saveLayer(rect, maskPaint, SAVE_FLAGS);
-    L.endSection("Layer#saveLayer");
-    clearCanvas(canvas);
+  private void applyMasks(Canvas canvas, Matrix matrix) {
+    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);
+    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
+  }
+
+  @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix,
+      Mask.MaskMode maskMode) {
+    Paint paint;
+    if (maskMode == Mask.MaskMode.MaskModeSubtract) {
+      paint = subtractMaskPaint;
+    } else {
+      paint = addMaskPaint;
+    }
 
     //noinspection ConstantConditions
     int size = mask.getMasks().size();
+
+    boolean hasMask = false;
+    for (int i = 0; i < size; i++) {
+      if (mask.getMasks().get(i).getMaskMode() == maskMode) {
+        hasMask = true;
+        break;
+      }
+    }
+    if (!hasMask) {
+      return;
+    }
+
+    L.beginSection("Layer#drawMask");
+    L.beginSection("Layer#saveLayer");
+    canvas.saveLayer(rect, paint, SAVE_FLAGS);
+    L.endSection("Layer#saveLayer");
+    clearCanvas(canvas);
+
     for (int i = 0; i < size; i++) {
       Mask mask = this.mask.getMasks().get(i);
+      if (mask.getMaskMode() != maskMode) {
+        continue;
+      }
       BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
       Path maskPath = maskAnimation.getValue();
       path.set(maskPath);
       path.transform(matrix);
-
-      switch (mask.getMaskMode()) {
-        case MaskModeSubtract:
-          path.setFillType(Path.FillType.INVERSE_WINDING);
-          break;
-        case MaskModeAdd:
-        default:
-          path.setFillType(Path.FillType.WINDING);
-      }
       BaseKeyframeAnimation<Integer, Integer> opacityAnimation =
           this.mask.getOpacityAnimations().get(i);
       int alpha = contentPaint.getAlpha();
@@ -369,6 +389,8 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
   }
 
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    // Time stretch should not be applied to the layer transform.
+    transform.setProgress(progress);
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }

@@ -14,6 +14,7 @@ public class DocumentData {
   @SuppressWarnings("WeakerAccess") int justification;
   public int tracking;
   @SuppressWarnings("WeakerAccess") double lineHeight;
+  public double baselineShift;
   @ColorInt public int color;
   @ColorInt public int strokeColor;
   public int strokeWidth;
@@ -21,28 +22,19 @@ public class DocumentData {
 
 
   DocumentData(String text, String fontName, int size, int justification, int tracking,
-      double lineHeight, @ColorInt int color, @ColorInt int strokeColor, int strokeWidth,
-      boolean strokeOverFill) {
+      double lineHeight, double baselineShift, @ColorInt int color, @ColorInt int strokeColor,
+      int strokeWidth, boolean strokeOverFill) {
     this.text = text;
     this.fontName = fontName;
     this.size = size;
     this.justification = justification;
     this.tracking = tracking;
     this.lineHeight = lineHeight;
+    this.baselineShift = baselineShift;
     this.color = color;
     this.strokeColor = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOverFill = strokeOverFill;
-  }
-
-  void set(DocumentData documentData) {
-    text = documentData.text;
-    fontName = documentData.fontName;
-    size = documentData.size;
-    justification = documentData.justification;
-    tracking = documentData.tracking;
-    lineHeight = documentData.lineHeight;
-    color = documentData.color;
   }
 
 
@@ -58,6 +50,7 @@ public class DocumentData {
       int justification = json.optInt("j");
       int tracking = json.optInt("tr");
       double lineHeight = json.optDouble("lh");
+      double baselineShift = json.optDouble("ls");
       JSONArray colorArray = json.optJSONArray("fc");
       int color = Color.argb(
           255,
@@ -77,8 +70,8 @@ public class DocumentData {
       int strokeWidth = json.optInt("sw");
       boolean strokeOverFill = json.optBoolean("of");
 
-      return new DocumentData(text, fontName, size, justification, tracking, lineHeight, color,
-          strokeColor, strokeWidth, strokeOverFill);
+      return new DocumentData(text, fontName, size, justification, tracking, lineHeight,
+          baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
     }
   }
 

@@ -67,6 +67,20 @@ public class TransformKeyframeAnimation {
     }
   }
 
+  public void setProgress(float progress) {
+    anchorPoint.setProgress(progress);
+    position.setProgress(progress);
+    scale.setProgress(progress);
+    rotation.setProgress(progress);
+    opacity.setProgress(progress);
+    if (startOpacity != null) {
+      startOpacity.setProgress(progress);
+    }
+    if (endOpacity != null) {
+      endOpacity.setProgress(progress);
+    }
+  }
+
   public BaseKeyframeAnimation<?, Integer> getOpacity() {
     return opacity;
   }
