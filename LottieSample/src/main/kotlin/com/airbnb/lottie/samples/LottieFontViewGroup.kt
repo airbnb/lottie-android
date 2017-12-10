@@ -12,6 +12,7 @@ import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieDrawable
 import java.util.*
 
 class LottieFontViewGroup @JvmOverloads constructor(
@@ -34,7 +35,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
                     ViewGroup.LayoutParams.WRAP_CONTENT
             )
             cursorView.setComposition(composition)
-            cursorView.loop(true)
+            cursorView.repeatCount = LottieDrawable.INFINITE
             cursorView.playAnimation()
             addView(cursorView)
         }

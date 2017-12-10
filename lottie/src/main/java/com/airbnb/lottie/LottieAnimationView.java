@@ -129,7 +129,21 @@ import java.util.Map;
       lottieDrawable.playAnimation();
       autoPlay = true;
     }
-    lottieDrawable.loop(ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false));
+
+    if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_loop, false)) {
+      lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
+    }
+
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatMode)) {
+      setRepeatMode(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatMode,
+          LottieDrawable.RESTART));
+    }
+
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatCount)) {
+      setRepeatCount(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatCount,
+          LottieDrawable.INFINITE));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -225,8 +239,9 @@ import java.util.Map;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
     ss.isAnimating = lottieDrawable.isAnimating();
-    ss.isLooping = lottieDrawable.isLooping();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
+    ss.repeatMode = lottieDrawable.getRepeatMode();
+    ss.repeatCount = lottieDrawable.getRepeatCount();
     return ss;
   }
 
@@ -247,11 +262,12 @@ import java.util.Map;
       setAnimation(animationResId);
     }
     setProgress(ss.progress);
-    loop(ss.isLooping);
     if (ss.isAnimating) {
       playAnimation();
     }
     lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
+    setRepeatMode(ss.repeatMode);
+    setRepeatCount(ss.repeatCount);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -594,8 +610,55 @@ import java.util.Map;
     lottieDrawable.removeAnimatorListener(listener);
   }
 
+  /**
+   * @see #setRepeatCount(int)
+   */
+  @Deprecated
   public void loop(boolean loop) {
     lottieDrawable.loop(loop);
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end. This
+   * setting is applied only when the repeat count is either greater than
+   * 0 or {@link LottieDrawable#INFINITE}. Defaults to {@link LottieDrawable#RESTART}.
+   *
+   * @param mode {@link LottieDrawable#RESTART} or {@link LottieDrawable#REVERSE}
+   */
+  public void setRepeatMode(@LottieDrawable.RepeatMode int mode) {
+    lottieDrawable.setRepeatMode(mode);
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end.
+   *
+   * @return either one of {@link LottieDrawable#REVERSE} or {@link LottieDrawable#RESTART}
+   */
+  @LottieDrawable.RepeatMode
+  public int getRepeatMode() {
+    return lottieDrawable.getRepeatMode();
+  }
+
+  /**
+   * Sets how many times the animation should be repeated. If the repeat
+   * count is 0, the animation is never repeated. If the repeat count is
+   * greater than 0 or {@link LottieDrawable#INFINITE}, the repeat mode will be taken
+   * into account. The repeat count is 0 by default.
+   *
+   * @param count the number of times the animation should be repeated
+   */
+  public void setRepeatCount(int count) {
+    lottieDrawable.setRepeatCount(count);
+  }
+
+  /**
+   * Defines how many times the animation should repeat. The default value
+   * is 0.
+   *
+   * @return the number of times the animation should repeat, or {@link LottieDrawable#INFINITE}
+   */
+  public int getRepeatCount() {
+    return lottieDrawable.getRepeatCount();
   }
 
   public boolean isAnimating() {
@@ -732,8 +795,9 @@ import java.util.Map;
     int animationResId;
     float progress;
     boolean isAnimating;
-    boolean isLooping;
     String imageAssetsFolder;
+    int repeatMode;
+    int repeatCount;
 
     SavedState(Parcelable superState) {
       super(superState);
@@ -744,8 +808,9 @@ import java.util.Map;
       animationName = in.readString();
       progress = in.readFloat();
       isAnimating = in.readInt() == 1;
-      isLooping = in.readInt() == 1;
       imageAssetsFolder = in.readString();
+      repeatMode = in.readInt();
+      repeatCount = in.readInt();
     }
 
     @Override
@@ -754,8 +819,9 @@ import java.util.Map;
       out.writeString(animationName);
       out.writeFloat(progress);
       out.writeInt(isAnimating ? 1 : 0);
-      out.writeInt(isLooping ? 1 : 0);
       out.writeString(imageAssetsFolder);
+      out.writeInt(repeatMode);
+      out.writeInt(repeatCount);
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =

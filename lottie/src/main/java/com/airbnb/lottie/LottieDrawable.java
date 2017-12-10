@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.FloatRange;
+import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,8 @@ import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,6 +65,26 @@ import java.util.Set;
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+
+  @IntDef({RESTART, REVERSE})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface RepeatMode {}
+
+  /**
+   * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+   * or a positive value, the animation restarts from the beginning.
+   */
+  public static final int RESTART = ValueAnimator.RESTART;
+  /**
+   * When the animation reaches the end and <code>repeatCount</code> is INFINITE
+   * or a positive value, the animation reverses direction on every iteration.
+   */
+  public static final int REVERSE = ValueAnimator.REVERSE;
+  /**
+   * This value used used with the {@link #setRepeatCount(int)} property to repeat
+   * the animation indefinitely.
+   */
+  public static final int INFINITE = ValueAnimator.INFINITE;
 
   public LottieDrawable() {
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -528,9 +551,58 @@ import java.util.Set;
     }
   }
 
+  /**
+   *
+   * @see #setRepeatCount(int)
+   */
+  @Deprecated
   public void loop(boolean loop) {
     animator.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
   }
+
+  /**
+   * Defines what this animation should do when it reaches the end. This
+   * setting is applied only when the repeat count is either greater than
+   * 0 or {@link #INFINITE}. Defaults to {@link #RESTART}.
+   *
+   * @param mode {@link #RESTART} or {@link #REVERSE}
+   */
+  public void setRepeatMode(@RepeatMode int mode) {
+      animator.setRepeatMode(mode);
+  }
+
+  /**
+   * Defines what this animation should do when it reaches the end.
+   *
+   * @return either one of {@link #REVERSE} or {@link #RESTART}
+   */
+  @RepeatMode
+  public int getRepeatMode() {
+    return animator.getRepeatMode();
+  }
+
+  /**
+   * Sets how many times the animation should be repeated. If the repeat
+   * count is 0, the animation is never repeated. If the repeat count is
+   * greater than 0 or {@link #INFINITE}, the repeat mode will be taken
+   * into account. The repeat count is 0 by default.
+   *
+   * @param count the number of times the animation should be repeated
+   */
+  public void setRepeatCount(int count) {
+    animator.setRepeatCount(count);
+  }
+
+  /**
+   * Defines how many times the animation should repeat. The default value
+   * is 0.
+   *
+   * @return the number of times the animation should repeat, or {@link #INFINITE}
+   */
+  public int getRepeatCount() {
+    return animator.getRepeatCount();
+  }
+
 
   public boolean isLooping() {
     return animator.getRepeatCount() == ValueAnimator.INFINITE;

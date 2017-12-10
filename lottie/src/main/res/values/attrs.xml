@@ -5,6 +5,11 @@
         <attr name="lottie_rawRes" format="reference" />
         <attr name="lottie_autoPlay" format="boolean" />
         <attr name="lottie_loop" format="boolean" />
+        <attr name="lottie_repeatMode" format="enum">
+            <enum name="restart" value="1" />
+            <enum name="reverse" value="2" />
+        </attr>
+        <attr name="lottie_repeatCount" format="integer" />
         <attr name="lottie_imageAssetsFolder" format="string" />
         <attr name="lottie_progress" format="float" />
         <attr name="lottie_enableMergePathsForKitKatAndAbove" format="boolean" />
