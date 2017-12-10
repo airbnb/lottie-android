@@ -37,7 +37,11 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   public void beginSnapshotting() {
     try {
       snapshotAssets(context.getAssets().list(""));
-      snapshotAssets(context.getAssets().list("Tests"));
+      String[] tests = context.getAssets().list("Tests");
+      for (int i = 0; i < tests.length; i++) {
+        tests[i] = "Tests/" + tests[i];
+      }
+      snapshotAssets(tests);
     } catch (IOException e) {
       onError(e);
     }
