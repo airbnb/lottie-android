@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LottieSnapshotProvider extends SnapshotProvider {
 
-  private static final float[] PROGRESS = {0f, 0.01f, 0.25f, 0.5f, 0.75f, 0.99f, 1f};
+  private static final float[] PROGRESS = {0f, 0.25f, 0.5f, 0.75f, 1f};
   private static final int CORES = Runtime.getRuntime().availableProcessors();
 
   private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
@@ -35,14 +35,15 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   @Override
   public void beginSnapshotting() {
-    String[] animations;
     try {
-      animations = context.getAssets().list("");
+      snapshotAssets(context.getAssets().list(""));
+      snapshotAssets(context.getAssets().list("Tests"));
     } catch (IOException e) {
       onError(e);
-      return;
     }
+  }
 
+  private void snapshotAssets(String[] animations) {
     File dir = new File(Environment.getExternalStorageDirectory() + "/Snapshots");
     //noinspection ResultOfMethodCallIgnored
     dir.mkdirs();
