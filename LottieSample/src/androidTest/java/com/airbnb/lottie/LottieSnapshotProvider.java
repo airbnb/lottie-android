@@ -46,6 +46,8 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     } catch (IOException e) {
       onError(e);
     }
+    testFrameBoundary();
+    testScaleTypes();
   }
 
   private void snapshotAssets(String[] animations) {
@@ -69,9 +71,6 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         }
       });
     }
-
-    testFrameBoundary();
-    testScaleTypes();
   }
 
   private void runAnimation(final String name) {
