@@ -1,14 +1,12 @@
 package com.airbnb.lottie;
 
 import android.Manifest;
-import android.content.res.Resources;
 import android.os.Build;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
-import android.util.TypedValue;
 
 import com.airbnb.happo.HappoRunner;
 import com.airbnb.lottie.samples.MainActivity;
@@ -57,8 +55,4 @@ public class LottieTest {
         com.airbnb.lottie.BuildConfig.VERSION_NAME + androidVersion);
   }
 
-  private int dpToPx(int dp) {
-    Resources resources = mainActivityRule.getActivity().getResources();
-    return (int) TypedValue.applyDimension(1, (float) dp, resources.getDisplayMetrics());
-  }
 }
