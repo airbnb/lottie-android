@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class LottieSnapshotProvider extends SnapshotProvider {
 
   private static final float[] PROGRESS = {0f, 0.25f, 0.5f, 0.75f, 1f};
-  private static final int CORES = Runtime.getRuntime().availableProcessors();
+  private static final int CORES = 1; //Runtime.getRuntime().availableProcessors();
 
   private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
   private final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORES, CORES, 15, TimeUnit.MINUTES, queue);
@@ -98,6 +99,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void decrementAndCompleteIfDone() {
     remainingTasks--;
+    Log.d("Happo", "There are " + remainingTasks + " remaining tasks.");
     if (remainingTasks < 0) {
       throw new IllegalStateException("Remaining tasks cannot be negative.");
     }
