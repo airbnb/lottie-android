@@ -36,7 +36,8 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   LottieSnapshotProvider(Context context) {
     this.context = context;
-    dummyBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.airbnb);
+    dummyBitmap = BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R
+        .drawable.airbnb);
   }
 
   @Override
