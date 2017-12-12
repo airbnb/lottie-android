@@ -278,7 +278,7 @@ public class LottieComposition {
       long endFrame = json.optLong("op", 0);
       float frameRate = (float) json.optDouble("fr", 0);
       String version = json.optString("v");
-      String[] versions = version.split("[.]");
+      String[] versions = version.split("\\.");
       int major = Integer.parseInt(versions[0]);
       int minor = Integer.parseInt(versions[1]);
       int patch = Integer.parseInt(versions[2]);
