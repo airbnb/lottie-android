@@ -440,22 +440,22 @@ public abstract class BaseLayer
 
   @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
       KeyPath currentPartialKeyPath) {
-
     if (!keyPath.matches(getName(), depth)) {
       return;
     }
 
     if (!"__container".equals(getName())) {
-      currentPartialKeyPath.addKey(getName());
+      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
+
+      if (keyPath.fullyResolvesTo(getName(), depth)) {
+        accumulator.add(currentPartialKeyPath.resolve(this));
+      }
     }
 
-    if (keyPath.isLastElement(depth)) {
-      accumulator.add(currentPartialKeyPath.resolve(this));
-      return;
+    if (keyPath.propagateToChildren(getName(), depth)) {
+      int newDepth = depth + keyPath.incrementDepthBy(getName(), depth);
+      resolveChildKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
     }
-
-    int newDepth = keyPath.incrementDepth(getName(), depth) ? depth + 1 : depth;
-    resolveChildKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
   }
 
   protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,

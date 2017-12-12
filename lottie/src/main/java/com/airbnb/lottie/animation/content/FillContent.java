@@ -110,9 +110,9 @@ public class FillContent
       return;
     }
 
-    currentPartialKeyPath.addKey(getName());
+    currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
 
-    if (keyPath.isLastElement(depth)) {
+    if (keyPath.fullyResolvesTo(getName(), depth)) {
       accumulator.add(currentPartialKeyPath.resolve(this));
     }
   }

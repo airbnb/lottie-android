@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -43,13 +44,24 @@ public class KeyPath {
     this.keys = new ArrayList<>(Arrays.asList(keys));
   }
 
+  private KeyPath(KeyPath keyPath) {
+    keys = new ArrayList<>(keyPath.keys);
+    resolvedElement = keyPath.resolvedElement;
+  }
+
   private KeyPath(List<String> keys, @NonNull KeyPathElement resolvedElement) {
     this.keys = keys;
     this.resolvedElement = resolvedElement;
   }
 
-  public void addKey(String key) {
-    keys.add(key);
+  /**
+   * Returns a new KeyPath with the key added.
+   */
+  @CheckResult
+  public KeyPath addKey(String key) {
+    KeyPath newKeyPath = new KeyPath(this);
+    newKeyPath.keys.add(key);
+    return newKeyPath;
   }
 
   public KeyPath resolve(KeyPathElement element) {
@@ -60,6 +72,10 @@ public class KeyPath {
     return resolvedElement;
   }
 
+  /**
+   * Returns whether they key matches at the specified depth.
+   */
+  @SuppressWarnings("RedundantIfStatement")
   public boolean matches(String key, int depth) {
     if (isContainer(key)) {
       // This is an artificial layer we programatically create.
@@ -68,24 +84,62 @@ public class KeyPath {
     if (depth >= keys.size()) {
       return false;
     }
-    if (keys.get(depth).equals(key) || keys.get(depth).equals("**")) {
+    if (keys.get(depth).equals(key) ||
+        keys.get(depth).equals("**") ||
+        keys.get(depth).equals("*")) {
       return true;
     }
     return false;
   }
 
-  public boolean incrementDepth(String key, int depth) {
-    //noinspection SimplifiableIfStatement
+  public int incrementDepthBy(String key, int depth) {
     if (isContainer(key)) {
-      return false;
+      // If it's a container then we added programatically and it isn't a part of the keypath.
+      return 0;
     }
-    return !(keys.get(depth).equals("**") &&
-        depth < keys.size() - 2 &&
-        !keys.get(depth + 1).equals(key));
+    if (!keys.get(depth).equals("**")) {
+      // If it's not a globstar then it is part of the keypath.
+      return 1;
+    }
+    if (fullyResolvesTo(key, depth)) {
+      // We are a globstar can't increment past the last element.
+      return 0;
+    }
+    if (depth == keys.size() - 1) {
+      // The last key is a globstar.
+      return 0;
+    }
+    if (keys.get(depth + 1).equals(key)) {
+      // We are a globstar and the next key is our current key so consume both.
+      return 2;
+    }
+    return 0;
   }
 
-  public boolean isLastElement(int depth) {
-    return depth == keys.size() - 1;
+  public boolean fullyResolvesTo(String key, int depth) {
+    boolean lastDepth = depth == keys.size() - 1;
+    String keyAtDepth = keys.get(depth);
+    if (!keyAtDepth.equals("**")) {
+      return lastDepth && (keyAtDepth.equals(key) || keyAtDepth.equals("*"));
+    }
+
+    if (keyAtDepth.equals("**") && lastDepth) {
+      return true;
+    }
+    if (depth + 1 < keys.size() - 1) {
+      // We are a globstar but there is more than 1 key after the globstar we we can't fully match.
+      return false;
+    }
+    // Return whether the next key (which we now know is the last one) is the same as the current
+    // key.
+    return keys.get(depth + 1).equals(key);
+  }
+
+  @SuppressWarnings("SimplifiableIfStatement") public boolean propagateToChildren(String key, int depth) {
+    if (key.equals("__container")) {
+      return true;
+    }
+    return depth < keys.size() - 1 || keys.get(depth).equals("**");
   }
 
   /**

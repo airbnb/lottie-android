@@ -210,22 +210,22 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
 
     if (!"__container".equals(getName())) {
-      currentPartialKeyPath.addKey(getName());
+      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
+
+      if (keyPath.fullyResolvesTo(getName(), depth)) {
+        accumulator.add(currentPartialKeyPath.resolve(this));
+      }
     }
 
-    if (keyPath.isLastElement(depth)) {
-      accumulator.add(currentPartialKeyPath.resolve(this));
-      return;
-    }
-
-    int newDepth = keyPath.incrementDepth(getName(), depth) ? depth + 1 : depth;
-
-    for (int i = 0; i < contents.size(); i++) {
-      Content content = contents.get(i);
-      // TODO: all contents should implement KeyPathElement
-      if (content instanceof KeyPathElement) {
-        KeyPathElement element = (KeyPathElement) content;
-        element.resolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+    if (keyPath.propagateToChildren(getName(), depth)) {
+      int newDepth = depth + keyPath.incrementDepthBy(getName(), depth);
+      for (int i = 0; i < contents.size(); i++) {
+        Content content = contents.get(i);
+        // TODO: all contents should implement KeyPathElement
+        if (content instanceof KeyPathElement) {
+          KeyPathElement element = (KeyPathElement) content;
+          element.resolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+        }
       }
     }
   }
