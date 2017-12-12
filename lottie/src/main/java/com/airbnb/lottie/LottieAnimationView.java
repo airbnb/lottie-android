@@ -14,6 +14,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
@@ -719,6 +720,13 @@ import java.util.Map;
     lottieDrawable.setTextDelegate(textDelegate);
   }
 
+  /**
+   * Take a keypath, potentially with wildcards or globstars and resolve it to a list of zero or
+   * more actual keypaths that exist in the current animation.
+   *
+   * This API is not ready for public use yet.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     return lottieDrawable.resolveKeyPath(keyPath);
   }

@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * Any item that can be a part of a {@link KeyPath} should implement this.
  */
-
 public interface KeyPathElement {
 
   @IntDef({ COLOR })

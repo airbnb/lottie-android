@@ -712,8 +712,10 @@ import java.util.Set;
   }
 
   /**
-   * Takes a KeyPath (potentially with wildcards) and returns a list of fully qualified ones.
-   * This list may be empty if there are no matches.
+   * Take a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
+   * zero or more actual {@link KeyPath Keypaths} that exist in the current animation.
+   *
+   * This API is not ready for public use yet.
    */
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {

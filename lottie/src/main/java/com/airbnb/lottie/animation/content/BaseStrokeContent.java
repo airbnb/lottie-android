@@ -8,7 +8,6 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
@@ -284,20 +283,15 @@ public abstract class BaseStrokeContent implements DrawingContent,
 
   @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
       KeyPath currentPartialKeyPath) {
-    if (!keyPath.matches(getName(), depth)) {
-      return;
-    }
-
-    currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
-
     if (keyPath.fullyResolvesTo(getName(), depth)) {
+      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
       accumulator.add(currentPartialKeyPath.resolve(this));
     }
   }
 
   @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
     if (property == COLOR) {
-      Log.d("Gabe", "Applying COLOR to " + getName());
+      // TODO use the value callback.
     }
   }
 

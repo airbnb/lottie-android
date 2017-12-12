@@ -9,9 +9,6 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.model.KeyPath;
-
-import java.util.List;
 
 public class SolidLayer extends BaseLayer {
 

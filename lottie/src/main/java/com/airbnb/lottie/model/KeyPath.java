@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Defines which content to target.
  * The keypath can contain wildcards ('*') with match exactly 1 item.
- * or globstars ('**') which match 1 or more items.
+ * or globstars ('**') which match 0 or more items.
  *
  * For example, if your content were arranged like this:
  * Gabriel (Shape Layer)
@@ -29,11 +29,11 @@ import java.util.List;
  *
  *
  * You could:
- *     Match Gabriel left hand fill: new KeyPath(COLOR, "Gabriel", "Body", "Left Hand", "Fill");
+ *     Match Gabriel left hand fill: new KeyPath("Gabriel", "Body", "Left Hand", "Fill");
  *     Match Gabriel and Brandon's left hand fill:
- *        new KeyPath(COLOR, "*", "Body", Left Hand", "Fill");
- *     Match all colors:
- *        new KeyPath(COLOR, "**");
+ *        new KeyPath("*", "Body", Left Hand", "Fill");
+ *     Match anything with the name Fill:
+ *        new KeyPath("**", "Fill");
  */
 public class KeyPath {
 
