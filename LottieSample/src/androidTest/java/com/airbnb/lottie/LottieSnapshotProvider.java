@@ -2,6 +2,8 @@ package com.airbnb.lottie;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -27,11 +29,15 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
   private final ThreadPoolExecutor executor = new ThreadPoolExecutor(CORES, CORES, 15, TimeUnit.MINUTES, queue);
   private final Context context;
+  // Bitmap to return from an ImageAssetDelegate to make testing animations with images easier.
+  private final Bitmap dummyBitmap;
 
   private int remainingTasks = 0;
 
   LottieSnapshotProvider(Context context) {
     this.context = context;
+    dummyBitmap = BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R
+        .drawable.airbnb);
   }
 
   @Override
@@ -43,6 +49,12 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         tests[i] = "Tests/" + tests[i];
       }
       snapshotAssets(tests);
+
+      String[] lottiefiles = context.getAssets().list("lottiefiles");
+      for (int i = 0; i < lottiefiles.length; i++) {
+        lottiefiles[i] = "lottiefiles/" + lottiefiles[i];
+      }
+      snapshotAssets(lottiefiles);
     } catch (IOException e) {
       onError(e);
     }
@@ -84,6 +96,11 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void drawComposition(LottieComposition composition, String name) {
     LottieAnimationView view = new LottieAnimationView(context);
+    view.setImageAssetDelegate(new ImageAssetDelegate() {
+      @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
+        return dummyBitmap;
+      }
+    });
     view.setComposition(composition);
     for (float progress : PROGRESS) {
       view.setProgress(progress);
