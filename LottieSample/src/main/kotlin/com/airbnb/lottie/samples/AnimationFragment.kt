@@ -24,6 +24,7 @@ import com.airbnb.lottie.BuildConfig
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.model.KeyPath
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -311,6 +312,11 @@ class AnimationFragment : Fragment() {
             renderTimesGraph.setVisibleYRange(0f, renderTimeGraphRange, YAxis.AxisDependency.LEFT)
             renderTimesGraph.invalidate()
         }
+
+
+        val resolvedKeyPaths =
+            animationView.resolveKeyPath(KeyPath("Shape Layer 1", "Group 1", "Rectangle", "Stroke"))
+        Log.d("Gabe", "Resolved to " + resolvedKeyPaths)
     }
 
     private fun setWarnings(warningsList: ArrayList<String>) {

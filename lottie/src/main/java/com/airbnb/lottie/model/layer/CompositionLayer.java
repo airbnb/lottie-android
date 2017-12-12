@@ -12,6 +12,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 
 import java.util.ArrayList;
@@ -192,6 +193,14 @@ public class CompositionLayer extends BaseLayer {
       } else if (name.equals(layerName)) {
         layer.addColorFilter(layerName, contentName, colorFilter);
       }
+    }
+  }
+
+  @Override
+  protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+    for (int i = 0; i < layers.size(); i++) {
+      layers.get(i).resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
     }
   }
 }

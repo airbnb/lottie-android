@@ -8,8 +8,11 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
@@ -19,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContentGroup implements DrawingContent, PathContent,
-    BaseKeyframeAnimation.AnimationListener {
+    BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
       List<ContentModel> contentModels) {
@@ -198,5 +201,36 @@ public class ContentGroup implements DrawingContent, PathContent,
         }
       }
     }
+  }
+
+  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+    if (!keyPath.matches(getName(), depth)) {
+      return;
+    }
+
+    if (!"__container".equals(getName())) {
+      currentPartialKeyPath.addKey(getName());
+    }
+
+    if (keyPath.isLastElement(depth)) {
+      accumulator.add(currentPartialKeyPath.resolve(this));
+      return;
+    }
+
+    int newDepth = keyPath.incrementDepth(getName(), depth) ? depth + 1 : depth;
+
+    for (int i = 0; i < contents.size(); i++) {
+      Content content = contents.get(i);
+      // TODO: all contents should implement KeyPathElement
+      if (content instanceof KeyPathElement) {
+        KeyPathElement element = (KeyPathElement) content;
+        element.resolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+      }
+    }
+  }
+
+  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
+    // TODO (keypath)
   }
 }

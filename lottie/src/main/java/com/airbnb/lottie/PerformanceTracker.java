@@ -52,7 +52,7 @@ public class PerformanceTracker {
     }
     meanCalculator.add(millis);
 
-    if (layerName.equals("root")) {
+    if (layerName.equals("__container")) {
       for (FrameListener listener : frameListeners) {
         listener.onFrameRendered(millis);
       }

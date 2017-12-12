@@ -10,9 +10,11 @@ import android.support.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ContentGroup;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeGroup;
 
 import java.util.Collections;
+import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
   private final ContentGroup contentGroup;
@@ -20,7 +22,8 @@ public class ShapeLayer extends BaseLayer {
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
 
-    ShapeGroup shapeGroup = new ShapeGroup(layerModel.getName(), layerModel.getShapes());
+    // Naming this __container allows it to be ignored in KeyPath matching.
+    ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes());
     contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }
@@ -37,5 +40,11 @@ public class ShapeLayer extends BaseLayer {
   @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
       @Nullable ColorFilter colorFilter) {
     contentGroup.addColorFilter(layerName, contentName, colorFilter);
+  }
+
+  @Override
+  protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+    contentGroup.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
   }
 }

@@ -7,10 +7,14 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
@@ -19,7 +23,8 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
-public class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public class FillContent
+    implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final String name;
@@ -97,5 +102,24 @@ public class FillContent implements DrawingContent, BaseKeyframeAnimation.Animat
         outBounds.right + 1,
         outBounds.bottom + 1
     );
+  }
+
+  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+    if (!keyPath.matches(getName(), depth)) {
+      return;
+    }
+
+    currentPartialKeyPath.addKey(getName());
+
+    if (keyPath.isLastElement(depth)) {
+      accumulator.add(currentPartialKeyPath.resolve(this));
+    }
+  }
+
+  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
+    if (property == COLOR) {
+      Log.d("Gabe", "Applying COLOR to " + getName());
+    }
   }
 }

@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
@@ -28,8 +29,10 @@ import com.airbnb.lottie.utils.LottieValueAnimator;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -706,6 +709,19 @@ import java.util.Set;
 
   @Override public int getIntrinsicHeight() {
     return composition == null ? -1 : (int) (composition.getBounds().height() * getScale());
+  }
+
+  /**
+   * Takes a KeyPath (potentially with wildcards) and returns a list of fully qualified ones.
+   * This list may be empty if there are no matches.
+   */
+  public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
+    if (compositionLayer == null) {
+      return Collections.emptyList();
+    }
+    List<KeyPath> keyPaths = new ArrayList<>();
+    compositionLayer.resolveKeyPath(keyPath, 0, keyPaths, new KeyPath());
+    return keyPaths;
   }
 
   /**
