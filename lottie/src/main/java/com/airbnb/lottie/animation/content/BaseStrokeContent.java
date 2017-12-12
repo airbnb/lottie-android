@@ -21,6 +21,8 @@ import com.airbnb.lottie.utils.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 public abstract class BaseStrokeContent implements DrawingContent,
     BaseKeyframeAnimation.AnimationListener {
 
@@ -124,7 +126,7 @@ public abstract class BaseStrokeContent implements DrawingContent,
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("StrokeContent#draw");
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(alpha);
+    paint.setAlpha(clamp(alpha, 0, 255));
     paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
