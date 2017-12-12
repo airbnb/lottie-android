@@ -118,13 +118,14 @@ public class KeyPath {
     boolean isGlobstar = keyAtDepth.equals("**");
 
     if (!isGlobstar) {
-      return isLastDepth && (keyAtDepth.equals(key) || keyAtDepth.equals("*"));
+      boolean matches = keyAtDepth.equals(key) || keyAtDepth.equals("*");
+      return (isLastDepth || (depth == keys.size() - 2 && endsWithGlobstar())) && matches;
     }
 
     boolean isGlobstarButNextKeyMatches = !isLastDepth && keys.get(depth + 1).equals(key);
     if (isGlobstarButNextKeyMatches) {
       return depth == keys.size() - 2 ||
-          (depth == keys.size() - 3 && keys.get(depth + 2).equals("**"));
+          (depth == keys.size() - 3 && endsWithGlobstar());
     }
 
     if (isLastDepth) {
@@ -152,6 +153,10 @@ public class KeyPath {
    */
   private boolean isContainer(String key) {
     return key.equals("__container");
+  }
+
+  private boolean endsWithGlobstar() {
+    return keys.get(keys.size() - 1).equals("**");
   }
 
   @Override public String toString() {

@@ -131,7 +131,6 @@ public class KeyPathTest {
   @Test public void testGV0() { assertSize(1, G, V[0]); }
   @Test public void testGV0V0() { assertSize(0, G, V[0], V[0]); }
   @Test public void testGV1() { assertSize(2, G, V[1]); }
-  @Test public void testGV1W() { assertSize(2, G, V[1], W); }
   @Test public void testGV2() { assertSize(4, G, V[2]); }
   @Test public void testGV3() { assertSize(4, G, V[3]); }
   //</editor-fold>
@@ -140,7 +139,17 @@ public class KeyPathTest {
   @Test public void testGV0G() { assertSize(7, G, V[0], G); }
   @Test public void testGV1G() { assertSize(6, G, V[1], G); }
   @Test public void testGV2G() { assertSize(8, G, V[2], G); }
-  @Test public void testGIG() { assertSize(0, G, I, G); }
+  @Test public void testGIG() {  assertSize(0, G, I,    G); }
+  //</editor-fold>
+
+  //<editor-fold desc="Wildcard and Globstar">
+  @Test public void testWG() {   assertSize(14, W, G); }
+  @Test public void testGV0W() { assertSize(2,  G, V[0], W); }
+  @Test public void testWV0I() { assertSize(0,  W, V[0], I); }
+  @Test public void testGV1W() { assertSize(2,  G, V[1], W); }
+  @Test public void testWV1I() { assertSize(0,  W, V[1], I); }
+  @Test public void testGV2W() { assertSize(4,  G, V[2], W); }
+  @Test public void testWV2I() { assertSize(0,  W, V[2], I); }
   //</editor-fold>
 
   private void assertSize(int size, String... keys) {
