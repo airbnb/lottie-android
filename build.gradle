@@ -1,7 +1,7 @@
 import org.ajoberstar.grgit.Grgit
 
 buildscript {
-  ext.kotlinVersion = '1.1.4-3'
+  ext.kotlinVersion = '1.2.0'
   ext.supportLibVersion = '26.1.0'
 
   repositories {
