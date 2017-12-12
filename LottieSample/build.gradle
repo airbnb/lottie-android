@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
   compileSdkVersion 26
-  buildToolsVersion "26.0.1"
+  buildToolsVersion "26.0.2"
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
@@ -47,42 +47,42 @@ android {
 }
 
 dependencies {
-  compile project(':lottie')
-  compile "com.android.support:appcompat-v7:$supportLibVersion"
-  compile "com.android.support:recyclerview-v7:$supportLibVersion"
-  compile "com.android.support:design:$supportLibVersion"
-  compile 'com.jakewharton:butterknife:8.5.1'
+  implementation project(':lottie')
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+  implementation "com.android.support:design:$supportLibVersion"
+  implementation 'com.jakewharton:butterknife:8.5.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-  compile 'com.squareup.okhttp3:okhttp:3.9.0'
-  compile 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
-  compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
-  compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
+  implementation 'com.squareup.okhttp3:okhttp:3.9.0'
+  implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
+  implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
+  implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 
-  debugCompile 'com.github.brianPlummer:tinydancer:0.0.9'
+  debugImplementation 'com.github.brianPlummer:tinydancer:0.0.9'
 
-  testCompile 'junit:junit:4.12'
+  testImplementation 'junit:junit:4.12'
 
-  androidTestCompile 'com.airbnb.android:happo:0.0.15@aar'
+  androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed
-  androidTestCompile 'com.android.support:appcompat-v7:26.1.0'
-  androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
-  androidTestCompile "com.android.support.test:runner:1.0.1"
-  androidTestCompile 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
-  androidTestCompile 'io.reactivex.rxjava2:rxjava:2.1.5'
-  androidTestCompile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-  androidTestCompile 'com.squareup.okhttp3:okhttp:3.9.0'
-  androidTestCompile 'com.amazonaws:aws-android-sdk-core:2.6.5'
-  androidTestCompile 'com.amazonaws:aws-android-sdk-s3:2.6.5'
-  androidTestCompile 'io.jsonwebtoken:jjwt:0.8.0'
+  androidTestImplementation 'com.android.support:appcompat-v7:26.1.0'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+  androidTestImplementation "com.android.support.test:runner:1.0.1"
+  androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
+  androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.5'
+  androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+  androidTestImplementation 'com.squareup.okhttp3:okhttp:3.9.0'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.5'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.5'
+  androidTestImplementation 'io.jsonwebtoken:jjwt:0.8.0'
 
-  androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
+  androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
     exclude group: 'com.android.support', module: 'support-annotations'
     exclude group: 'org.hamcrest', module: 'hamcrest-integration'
   })
-  androidTestCompile('com.android.support.test:runner:0.5', {
+  androidTestImplementation('com.android.support.test:runner:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  androidTestCompile('com.android.support.test:rules:0.5', {
+  androidTestImplementation('com.android.support.test:rules:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
   compile 'com.android.support.constraint:constraint-layout:1.0.2'

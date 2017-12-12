@@ -3,7 +3,7 @@ apply from: 'gradle-maven-push.gradle'
 
 android {
   compileSdkVersion 26
-  buildToolsVersion "26.0.1"
+  buildToolsVersion "26.0.2"
   resourcePrefix 'lottie_'
 
   defaultConfig {
@@ -24,9 +24,9 @@ android {
 }
 
 dependencies {
-  compile "com.android.support:appcompat-v7:$supportLibVersion"
-  testCompile 'junit:junit:4.12'
-  testCompile "org.robolectric:robolectric:3.4.2"
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  testImplementation 'junit:junit:4.12'
+  testImplementation "org.robolectric:robolectric:3.4.2"
 }
 
 task javadoc(type: Javadoc) {
