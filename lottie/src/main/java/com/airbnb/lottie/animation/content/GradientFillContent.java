@@ -24,6 +24,8 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 public class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   /**
    * Cache the gradients such that it runs at 30fps.
@@ -103,7 +105,7 @@ public class GradientFillContent implements DrawingContent, BaseKeyframeAnimatio
     paint.setShader(shader);
 
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(alpha);
+    paint.setAlpha(clamp(alpha, 0, 255));
 
     canvas.drawPath(path, paint);
     L.endSection("GradientFillContent#draw");

@@ -17,6 +17,8 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 public class FillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -71,7 +73,7 @@ public class FillContent implements DrawingContent, BaseKeyframeAnimation.Animat
     L.beginSection("FillContent#draw");
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(alpha);
+    paint.setAlpha(clamp(alpha, 0, 255));
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
