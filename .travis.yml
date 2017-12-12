@@ -4,19 +4,20 @@ group: travis_lts
 cache:
   directories:
   - "$HOME/.m2"
-  - "$HOME/google-cloud-sdk/"
+  - "$HOME/.gradle"
+  - "$HOME/gcloud-sdk/"
 env:
-  - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
   - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
-  - if [ ! -d ${HOME}/google-cloud-sdk ]; then
-      curl https://sdk.cloud.google.com | bash;
-    fi
+  - curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-182.0.0-linux-x86_64.tar.gz -o gcloud.tar.gz
+  - tar xzf gcloud.tar.gz -C ${HOME}
+  - ${HOME}/google-cloud-sdk/install.sh --quiet --usage-reporting false
   - gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
-  - gcloud components update
+  # - gcloud components update
   - gcloud config set project lottie-snapshots
   - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - export GIT_SHA=$(git rev-parse HEAD)
