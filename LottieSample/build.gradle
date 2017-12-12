@@ -51,6 +51,8 @@ dependencies {
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
   implementation "com.android.support:recyclerview-v7:$supportLibVersion"
   implementation "com.android.support:design:$supportLibVersion"
+  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation 'com.jakewharton:butterknife:8.8.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
   implementation 'com.squareup.okhttp3:okhttp:3.9.0'
@@ -85,8 +87,6 @@ dependencies {
   androidTestImplementation('com.android.support.test:rules:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  compile 'com.android.support.constraint:constraint-layout:1.0.2'
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }
 repositories {
   mavenCentral()
