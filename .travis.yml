@@ -4,6 +4,7 @@ group: travis_lts
 cache:
   directories:
   - "$HOME/.m2"
+  - "$HOME/.gradle"
   - "$HOME/gcloud-sdk/"
 env:
   - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
