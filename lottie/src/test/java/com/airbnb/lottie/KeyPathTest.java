@@ -137,9 +137,9 @@ public class KeyPathTest {
   //</editor-fold>
 
   //<editor-fold desc="Two Globstars">
-  @Test public void testGV0G() { assertSize(6, G, V[0], G); }
+  @Test public void testGV0G() { assertSize(7, G, V[0], G); }
   @Test public void testGV1G() { assertSize(6, G, V[1], G); }
-  @Test public void testGV2G() { assertSize(6, G, V[2], G); }
+  @Test public void testGV2G() { assertSize(8, G, V[2], G); }
   @Test public void testGIG() { assertSize(0, G, I, G); }
   //</editor-fold>
 

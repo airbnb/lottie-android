@@ -101,10 +101,6 @@ public class KeyPath {
       // If it's not a globstar then it is part of the keypath.
       return 1;
     }
-    if (fullyResolvesTo(key, depth)) {
-      // We are a globstar can't increment past the last element.
-      return 0;
-    }
     if (depth == keys.size() - 1) {
       // The last key is a globstar.
       return 0;
@@ -117,13 +113,21 @@ public class KeyPath {
   }
 
   public boolean fullyResolvesTo(String key, int depth) {
-    boolean lastDepth = depth == keys.size() - 1;
+    boolean isLastDepth = depth == keys.size() - 1;
     String keyAtDepth = keys.get(depth);
-    if (!keyAtDepth.equals("**")) {
-      return lastDepth && (keyAtDepth.equals(key) || keyAtDepth.equals("*"));
+    boolean isGlobstar = keyAtDepth.equals("**");
+
+    if (!isGlobstar) {
+      return isLastDepth && (keyAtDepth.equals(key) || keyAtDepth.equals("*"));
     }
 
-    if (keyAtDepth.equals("**") && lastDepth) {
+    boolean isGlobstarButNextKeyMatches = !isLastDepth && keys.get(depth + 1).equals(key);
+    if (isGlobstarButNextKeyMatches) {
+      return depth == keys.size() - 2 ||
+          (depth == keys.size() - 3 && keys.get(depth + 2).equals("**"));
+    }
+
+    if (isLastDepth) {
       return true;
     }
     if (depth + 1 < keys.size() - 1) {
