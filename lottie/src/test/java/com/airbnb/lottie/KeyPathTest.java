@@ -44,7 +44,7 @@ public class KeyPathTest {
 
     Writer writer = new StringWriter();
     char[] buffer = new char[1024];
-    try (InputStream is = context.getResources().openRawResource(R.raw.squares)) {
+    try (InputStream is = context.getResources().openRawResource(R.raw.lottie_squares)) {
       Reader reader = new BufferedReader(new InputStreamReader(is));
       int n;
       while ((n = reader.read(buffer)) != -1) {
