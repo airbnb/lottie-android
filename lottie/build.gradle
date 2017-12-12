@@ -26,7 +26,7 @@ android {
 dependencies {
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
   testImplementation 'junit:junit:4.12'
-  testImplementation "org.robolectric:robolectric:3.4.2"
+  testImplementation "org.robolectric:robolectric:3.5.1"
 }
 
 task javadoc(type: Javadoc) {
