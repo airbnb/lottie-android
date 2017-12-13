@@ -222,7 +222,7 @@ public class Layer {
     public static Layer newInstance(LottieComposition composition) {
       Rect bounds = composition.getBounds();
       return new Layer(
-          Collections.<ContentModel>emptyList(), composition, "root", -1,
+          Collections.<ContentModel>emptyList(), composition, "__container", -1,
           LayerType.PreComp, -1, null, Collections.<Mask>emptyList(),
           AnimatableTransform.Factory.newInstance(), 0, 0, 0, 0, 0,
           bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),

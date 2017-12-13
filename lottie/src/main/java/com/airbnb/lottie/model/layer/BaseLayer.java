@@ -17,6 +17,7 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -24,13 +25,16 @@ import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public abstract class BaseLayer
+    implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
@@ -432,5 +436,33 @@ public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation
   @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
       @Nullable ColorFilter colorFilter) {
     // Do nothing
+  }
+
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    if (!keyPath.matches(getName(), depth)) {
+      return;
+    }
+
+    if (!"__container".equals(getName())) {
+      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
+
+      if (keyPath.fullyResolvesTo(getName(), depth)) {
+        accumulator.add(currentPartialKeyPath.resolve(this));
+      }
+    }
+
+    if (keyPath.propagateToChildren(getName(), depth)) {
+      int newDepth = depth + keyPath.incrementDepthBy(getName(), depth);
+      resolveChildKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
+    }
+  }
+
+  protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+  }
+
+  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
+    // TODO (keypath): apply to transform and subclasses.
   }
 }

@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.LottieDrawable;
 

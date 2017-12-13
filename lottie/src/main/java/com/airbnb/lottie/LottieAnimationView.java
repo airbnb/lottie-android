@@ -14,6 +14,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
@@ -21,12 +22,14 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -718,14 +721,25 @@ import java.util.Map;
   }
 
   /**
-   * Set the scale on the current composition. The only cost of this function is re-rendering the
-   * current frame so you may call it frequent to scale something up or down.
+   * Take a keypath, potentially with wildcards or globstars and resolve it to a list of zero or
+   * more actual keypaths that exist in the current animation.
    *
-   * The smaller the animation is, the better the performance will be. You may find that scaling an
-   * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
-   * with a scaleType such as centerInside will yield better performance with little perceivable
-   * quality loss.
+   * This API is not ready for public use yet.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
+    return lottieDrawable.resolveKeyPath(keyPath);
+  }
+
+    /**
+     * Set the scale on the current composition. The only cost of this function is re-rendering the
+     * current frame so you may call it frequent to scale something up or down.
+     *
+     * The smaller the animation is, the better the performance will be. You may find that scaling an
+     * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
+     * with a scaleType such as centerInside will yield better performance with little perceivable
+     * quality loss.
+     */
   public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {

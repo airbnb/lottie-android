@@ -11,7 +11,10 @@ import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
@@ -24,7 +27,7 @@ import java.util.List;
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public abstract class BaseStrokeContent implements DrawingContent,
-    BaseKeyframeAnimation.AnimationListener {
+    BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
   private final PathMeasure pm = new PathMeasure();
   private final Path path = new Path();
@@ -276,6 +279,20 @@ public abstract class BaseStrokeContent implements DrawingContent,
     float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     L.endSection("StrokeContent#applyDashPattern");
+  }
+
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    if (keyPath.fullyResolvesTo(getName(), depth)) {
+      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
+      accumulator.add(currentPartialKeyPath.resolve(this));
+    }
+  }
+
+  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
+    if (property == COLOR) {
+      // TODO use the value callback.
+    }
   }
 
   /**
