@@ -12,13 +12,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -41,22 +34,9 @@ public class KeyPathTest {
   public void setupDrawable() {
     Application context = RuntimeEnvironment.application;
     lottieDrawable = new LottieDrawable();
-
-    Writer writer = new StringWriter();
-    char[] buffer = new char[1024];
-    try (InputStream is = context.getResources().openRawResource(R.raw.lottie_squares)) {
-      Reader reader = new BufferedReader(new InputStreamReader(is));
-      int n;
-      while ((n = reader.read(buffer)) != -1) {
-        writer.write(buffer, 0, n);
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    }
-
     try {
       LottieComposition composition = LottieComposition.Factory
-          .fromJsonSync(context.getResources(), new JSONObject(writer.toString()));
+          .fromJsonSync(context.getResources(), new JSONObject(Fixtures.SQUARES));
       lottieDrawable.setComposition(composition);
     } catch (JSONException e) {
       throw new IllegalStateException(e);
