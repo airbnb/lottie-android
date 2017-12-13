@@ -366,7 +366,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
     testDynamicProperty(
         "Repeater transform position",
-        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1", "Repeater"),
         LottieProperty.TRANSFORM_POSITION,
         new LottieStaticValueCallback<>(new PointF(200f, 200f)));
 
