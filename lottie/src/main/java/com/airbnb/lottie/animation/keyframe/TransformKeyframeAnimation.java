@@ -4,9 +4,16 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.model.ScaleXY;
+import com.airbnb.lottie.value.LottieValueCallback;
+import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.layer.BaseLayer;
+
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_ANCHOR_POINT;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_OPACITY;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_POSITION;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_SCALE;
 
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
@@ -135,5 +142,20 @@ public class TransformKeyframeAnimation {
     matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
 
     return matrix;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (property == TRANSFORM_ANCHOR_POINT) {
+      anchorPoint.setValueCallback((LottieValueCallback<PointF>) callback);
+    } else if (property == TRANSFORM_POSITION) {
+      position.setValueCallback((LottieValueCallback<PointF>) callback);
+    } else if (property == TRANSFORM_SCALE) {
+      scale.setValueCallback((LottieValueCallback<ScaleXY>) callback);
+    } else if (property == TRANSFORM_ROTATION) {
+      rotation.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == TRANSFORM_OPACITY) {
+      opacity.setValueCallback((LottieValueCallback<Integer>) callback);
+    }
   }
 }

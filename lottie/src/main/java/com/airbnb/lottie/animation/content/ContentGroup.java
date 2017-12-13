@@ -8,16 +8,15 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
+import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.model.animatable.AnimatableTransform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,8 +230,8 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
-  @Override public <T> void applyValueCallback(
-      @LottieProperty int property, @Nullable LottieValueCallback<T> callback) {
-    // TODO (keypath)
+  @Override
+  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    transformAnimation.applyValueCallback(property, callback);
   }
 }

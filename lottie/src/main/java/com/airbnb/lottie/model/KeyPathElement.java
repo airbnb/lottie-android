@@ -2,8 +2,7 @@ package com.airbnb.lottie.model;
 
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
@@ -27,6 +26,5 @@ public interface KeyPathElement {
   void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath);
 
-  <T> void applyValueCallback(
-      @LottieProperty int property, @Nullable LottieValueCallback<T> callback);
+  <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback);
 }

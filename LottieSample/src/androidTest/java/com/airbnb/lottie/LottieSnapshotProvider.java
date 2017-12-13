@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PointF;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -13,6 +15,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.value.LottieStaticPositionOffsetValueCallback;
+import com.airbnb.lottie.value.LottieStaticValueCallback;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +66,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     }
     testFrameBoundary();
     testScaleTypes();
+    testDynamicProperties();
   }
 
   private void snapshotAssets(String[] animations) {
@@ -203,6 +210,44 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 50 Blue", params);
     animationView.setFrame(51);
     recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 51 Green", params);
+  }
+
+  private void testDynamicProperties() {
+    testDynamicProperty(
+        "Color 1",
+        new KeyPath("Shape Layer 1", "**", "Stroke"),
+        LottieProperty.COLOR,
+        new LottieStaticValueCallback<>(Color.GREEN));
+
+    testDynamicProperty(
+        "Color",
+        new KeyPath("*", "Group 1", "**", "Stroke"),
+        LottieProperty.COLOR,
+        new LottieStaticValueCallback<>(Color.GREEN));
+
+    testDynamicProperty(
+        "Opacity",
+        new KeyPath("*", "Group 1"),
+        LottieProperty.TRANSFORM_OPACITY,
+        new LottieStaticValueCallback<>(50));
+
+    testDynamicProperty(
+        "Position",
+        new KeyPath("Shape Layer 1"),
+       LottieProperty.TRANSFORM_POSITION,
+       new LottieStaticPositionOffsetValueCallback(new PointF(100f, 100f)));
+  }
+
+  private <T> void testDynamicProperty(
+      String name, KeyPath keyPath, T property, LottieValueCallback<T> callback) {
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(context, "Tests/Square.json");
+    animationView.setComposition(composition);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    animationView.addValueCallback(keyPath, property, callback);
+    recordSnapshot(animationView, 1080, "android", "Dynamic Properties", name, params);
   }
 
   private int dpToPx(int dp) {

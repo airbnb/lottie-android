@@ -24,6 +24,7 @@ import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import org.json.JSONObject;
 
@@ -731,16 +732,19 @@ import java.util.Map;
     return lottieDrawable.resolveKeyPath(keyPath);
   }
 
-  public <T> void setValueCallback(
-      KeyPath keyPath, @LottieProperty int property, LottieValueCallback<T> callback) {
+  public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
     if (keyPath.getResolvedElement() != null) {
       keyPath.getResolvedElement().applyValueCallback(property, callback);
+      invalidate();
     } else {
       List<KeyPath> elements = resolveKeyPath(keyPath);
 
       for (int i = 0; i < elements.size(); i++) {
         //noinspection ConstantConditions
         elements.get(i).getResolvedElement().applyValueCallback(property, callback);
+      }
+      if (!elements.isEmpty()) {
+        invalidate();
       }
     }
   }

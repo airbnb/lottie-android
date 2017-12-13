@@ -3,7 +3,7 @@ package com.airbnb.lottie.animation.keyframe;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.ArrayList;
@@ -52,6 +52,10 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
 
+    notifyListeners();
+  }
+
+  void notifyListeners() {
     for (int i = 0; i < listeners.size(); i++) {
       listeners.get(i).onValueChanged();
     }
@@ -117,7 +121,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   @FloatRange(from = 0f, to = 1f)
-  private float getEndProgress() {
+  float getEndProgress() {
     return keyframes.isEmpty() ? 1f : keyframes.get(keyframes.size() - 1).getEndProgress();
   }
 

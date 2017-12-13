@@ -1,4 +1,4 @@
-package com.airbnb.lottie;
+package com.airbnb.lottie.value;
 
 
 import android.support.annotation.RestrictTo;

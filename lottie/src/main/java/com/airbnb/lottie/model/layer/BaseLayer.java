@@ -17,18 +17,16 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -160,9 +158,7 @@ public abstract class BaseLayer
   }
 
   public void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
-    if (!(newAnimation instanceof StaticKeyframeAnimation)) {
-      animations.add(newAnimation);
-    }
+    animations.add(newAnimation);
   }
 
   @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
@@ -463,8 +459,8 @@ public abstract class BaseLayer
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
   }
 
-  @Override public <T> void applyValueCallback(
-      @LottieProperty int property, @Nullable LottieValueCallback<T> callback) {
-    // TODO (keypath): apply to transform and subclasses.
+  @Override
+  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    transform.applyValueCallback(property, callback);
   }
 }

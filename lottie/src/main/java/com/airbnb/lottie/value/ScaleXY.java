@@ -1,4 +1,4 @@
-package com.airbnb.lottie.model;
+package com.airbnb.lottie.value;
 
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 
