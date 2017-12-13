@@ -281,8 +281,8 @@ public abstract class BaseStrokeContent implements DrawingContent,
     L.endSection("StrokeContent#applyDashPattern");
   }
 
-  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     if (keyPath.fullyResolvesTo(getName(), depth)) {
       currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
       accumulator.add(currentPartialKeyPath.resolve(this));

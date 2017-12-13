@@ -113,6 +113,9 @@ public class KeyPath {
   }
 
   public boolean fullyResolvesTo(String key, int depth) {
+    if (depth >= keys.size()) {
+      return false;
+    }
     boolean isLastDepth = depth == keys.size() - 1;
     String keyAtDepth = keys.get(depth);
     boolean isGlobstar = keyAtDepth.equals("**");
