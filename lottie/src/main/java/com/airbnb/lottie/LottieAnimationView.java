@@ -731,6 +731,20 @@ import java.util.Map;
     return lottieDrawable.resolveKeyPath(keyPath);
   }
 
+  public <T> void setValueCallback(
+      KeyPath keyPath, @LottieProperty int property, LottieValueCallback<T> callback) {
+    if (keyPath.getResolvedElement() != null) {
+      keyPath.getResolvedElement().applyValueCallback(property, callback);
+    } else {
+      List<KeyPath> elements = resolveKeyPath(keyPath);
+
+      for (int i = 0; i < elements.size(); i++) {
+        //noinspection ConstantConditions
+        elements.get(i).getResolvedElement().applyValueCallback(property, callback);
+      }
+    }
+  }
+
     /**
      * Set the scale on the current composition. The only cost of this function is re-rendering the
      * current frame so you may call it frequent to scale something up or down.

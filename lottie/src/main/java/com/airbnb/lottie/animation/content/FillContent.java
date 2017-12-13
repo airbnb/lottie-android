@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -116,8 +117,9 @@ public class FillContent
     }
   }
 
-  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
-    if (property == COLOR) {
+  @Override public <T> void applyValueCallback(
+      @LottieProperty int property, @Nullable LottieValueCallback<T> callback) {
+    if (property == LottieProperty.COLOR) {
       // TODO use the value callback.
     }
   }

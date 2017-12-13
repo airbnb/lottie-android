@@ -3,6 +3,7 @@ package com.airbnb.lottie.animation.keyframe;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   private final List<? extends Keyframe<K>> keyframes;
   private float progress = 0f;
+  @Nullable protected LottieValueCallback<A> valueCallback;
 
   @Nullable private Keyframe<K> cachedKeyframe;
 
@@ -79,10 +81,10 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   /**
-   * This wil be [0, 1] unless the interpolator has overshoot in which case getValue() should be
-   * able to handle values outside of that range.
+   * Returns the progress into the current keyframe between 0 and 1. This does not take into account
+   * any interpolation that the keyframe may have.
    */
-  private float getCurrentKeyframeProgress() {
+  float getLinearCurrentKeyframeProgress() {
     if (isDiscrete) {
       return 0f;
     }
@@ -93,8 +95,20 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
     float progressIntoFrame = progress - keyframe.getStartProgress();
     float keyframeProgress = keyframe.getEndProgress() - keyframe.getStartProgress();
+    return progressIntoFrame / keyframeProgress;
+  }
+
+  /**
+   * Takes the value of {@link #getLinearCurrentKeyframeProgress()} and interpolates it with
+   * the current keyframe's interpolator.
+   */
+  private float getInterpolatedCurrentKeyframeProgress() {
+    Keyframe<K> keyframe = getCurrentKeyframe();
+    if (keyframe.isStatic()) {
+      return 0f;
+    }
     //noinspection ConstantConditions
-    return keyframe.interpolator.getInterpolation(progressIntoFrame / keyframeProgress);
+    return keyframe.interpolator.getInterpolation(getLinearCurrentKeyframeProgress());
   }
 
   @FloatRange(from = 0f, to = 1f)
@@ -108,11 +122,17 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public A getValue() {
-    return getValue(getCurrentKeyframe(), getCurrentKeyframeProgress());
+    Keyframe<K> currentKeyframe = getCurrentKeyframe();
+    float currentKeyframeProgress = getInterpolatedCurrentKeyframeProgress();
+    return getValue(currentKeyframe, currentKeyframeProgress);
   }
 
   public float getProgress() {
     return progress;
+  }
+
+  public void setValueCallback(@Nullable LottieValueCallback<A> valueCallback) {
+    this.valueCallback = valueCallback;
   }
 
   /**

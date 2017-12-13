@@ -3,6 +3,7 @@ package com.airbnb.lottie.model;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +77,9 @@ public class KeyPath {
    * Returns a {@link KeyPathElement} that this has been resolved to. KeyPaths get resolved with
    * resolveKeyPath on LottieDrawable or LottieAnimationView.
    */
-  @Nullable KeyPathElement getResolvedElement() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @Nullable
+  public KeyPathElement getResolvedElement() {
     return resolvedElement;
   }
 

@@ -17,6 +17,7 @@ import android.util.Log;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
@@ -458,11 +459,12 @@ public abstract class BaseLayer
     }
   }
 
-  protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
+  protected void resolveChildKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
   }
 
-  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
+  @Override public <T> void applyValueCallback(
+      @LottieProperty int property, @Nullable LottieValueCallback<T> callback) {
     // TODO (keypath): apply to transform and subclasses.
   }
 }

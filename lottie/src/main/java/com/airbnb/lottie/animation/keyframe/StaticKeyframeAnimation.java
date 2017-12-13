@@ -23,6 +23,9 @@ public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
   }
 
   @Override public A getValue() {
+    if (valueCallback != null) {
+      return valueCallback.getValue(0f, 0f, initialValue, initialValue, 0f, 0f, 0f);
+    }
     return initialValue;
   }
 

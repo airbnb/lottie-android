@@ -6,9 +6,13 @@ import android.graphics.Matrix;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
+
+import static com.airbnb.lottie.LottieProperty.COLOR;
 
 public class StrokeContent extends BaseStrokeContent {
 
@@ -38,5 +42,14 @@ public class StrokeContent extends BaseStrokeContent {
 
   @Override public String getName() {
     return name;
+  }
+
+  @Override
+  public <T> void applyValueCallback(
+      @LottieProperty int property, @Nullable LottieValueCallback<T> callback) {
+    if (property == COLOR) {
+      //noinspection unchecked
+      colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+    }
   }
 }
