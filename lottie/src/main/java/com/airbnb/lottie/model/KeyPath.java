@@ -56,6 +56,10 @@ public class KeyPath {
 
   /**
    * Returns a new KeyPath with the key added.
+   * This is used during keypath resolution. Children normally don't know about all of their parent
+   * elements so this is used to keep track of the fully qualified keypath.
+   * This returns a key keypath because during resolution, the full keypath element tree is walked
+   * and if this modified the original copy, it would remain after popping back up the element tree.
    */
   @CheckResult
   public KeyPath addKey(String key) {
@@ -68,6 +72,10 @@ public class KeyPath {
     return new KeyPath(new ArrayList<>(keys), element);
   }
 
+  /**
+   * Returns a {@link KeyPathElement} that this has been resolved to. KeyPaths get resolved with
+   * resolveKeyPath on LottieDrawable or LottieAnimationView.
+   */
   @Nullable KeyPathElement getResolvedElement() {
     return resolvedElement;
   }
@@ -92,6 +100,13 @@ public class KeyPath {
     return false;
   }
 
+  /**
+   * For a given key and depth, returns how much the depth should be incremented by when
+   * resolving a keypath to children.
+   *
+   * This can be 0 or 2 when there is a globstar and the next key either matches or doesn't match
+   * the current key.
+   */
   public int incrementDepthBy(String key, int depth) {
     if (isContainer(key)) {
       // If it's a container then we added programatically and it isn't a part of the keypath.
@@ -112,6 +127,10 @@ public class KeyPath {
     return 0;
   }
 
+  /**
+   * Returns whether the key at specified depth is fully specific enough to match the full set of
+   * keys in this keypath.
+   */
   public boolean fullyResolvesTo(String key, int depth) {
     if (depth >= keys.size()) {
       return false;
@@ -143,11 +162,20 @@ public class KeyPath {
     return keys.get(depth + 1).equals(key);
   }
 
+  /**
+   * Returns whether the keypath resolution should propagate to children. Some keypaths resolve
+   * to content other than leaf contents (such as a layer or content group transform) so sometimes
+   * this will return false.
+   */
   @SuppressWarnings("SimplifiableIfStatement") public boolean propagateToChildren(String key, int depth) {
     if (key.equals("__container")) {
       return true;
     }
     return depth < keys.size() - 1 || keys.get(depth).equals("**");
+  }
+
+  public int size() {
+    return keys.size();
   }
 
   /**
@@ -164,7 +192,7 @@ public class KeyPath {
 
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder("KeyPath{");
-    sb.append("keys=[").append(keys).append("]");
+    sb.append("keys=[").append(keys).append("],resolved=").append(resolvedElement != null);
     sb.append('}');
     return sb.toString();
   }

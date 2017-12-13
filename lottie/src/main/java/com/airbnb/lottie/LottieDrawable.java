@@ -16,6 +16,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 import android.view.View;
 
@@ -717,6 +718,7 @@ import java.util.Set;
    *
    * This API is not ready for public use yet.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {
       return Collections.emptyList();

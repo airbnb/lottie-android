@@ -203,8 +203,8 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
-  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     if (!keyPath.matches(getName(), depth)) {
       return;
     }
