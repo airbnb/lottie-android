@@ -15,6 +15,7 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -103,17 +104,9 @@ public class FillContent
     );
   }
 
-  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
-    if (!keyPath.matches(getName(), depth)) {
-      return;
-    }
-
-    currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
-
-    if (keyPath.fullyResolvesTo(getName(), depth)) {
-      accumulator.add(currentPartialKeyPath.resolve(this));
-    }
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
 
   @SuppressWarnings("unchecked")

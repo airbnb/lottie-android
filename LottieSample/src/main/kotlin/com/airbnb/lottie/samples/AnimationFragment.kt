@@ -20,9 +20,10 @@ import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
-import com.airbnb.lottie.*
 import com.airbnb.lottie.BuildConfig
-import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieDrawable
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -310,19 +311,6 @@ class AnimationFragment : Fragment() {
             renderTimesGraph.setVisibleYRange(0f, renderTimeGraphRange, YAxis.AxisDependency.LEFT)
             renderTimesGraph.invalidate()
         }
-
-
-
-        animationView.addValueCallback(
-                KeyPath("**", "Repeater"),
-                LottieProperty.REPEATER_OFFSET) {
-                    startFrame, endFrame,
-                    startValue, endValue,
-                    linearProgress, interpolatedProgress,
-                    overallProgress ->
-            overallProgress * 4 - 2
-        }
-
     }
 
     private fun setWarnings(warningsList: ArrayList<String>) {

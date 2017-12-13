@@ -284,7 +284,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Ellipse position",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticValueCallback<>(new PointF(35f, -10f)));
+        new LottieStaticValueCallback<>(new PointF(300f, 300f)));
 
     testDynamicProperty(
         "Ellipse size",
@@ -294,87 +294,99 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
     testDynamicProperty(
         "Star points",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_POINTS,
         new LottieStaticValueCallback<>(8f));
 
     testDynamicProperty(
         "Star rotation",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_ROTATION,
         new LottieStaticValueCallback<>(10f));
 
     testDynamicProperty(
         "Star position",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POSITION,
         new LottieStaticValueCallback<>(new PointF(-100, -100)));
 
     testDynamicProperty(
         "Star inner radius",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_INNER_RADIUS,
         new LottieStaticValueCallback<>(10f));
 
     testDynamicProperty(
         "Star inner roundedness",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_INNER_ROUNDEDNESS,
         new LottieStaticValueCallback<>(100f));
 
     testDynamicProperty(
         "Star outer radius",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_RADIUS,
         new LottieStaticValueCallback<>(60f));
 
     testDynamicProperty(
         "Star outer roundedness",
-        new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
         new LottieStaticValueCallback<>(100f));
 
     testDynamicProperty(
         "Polygon points",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_POINTS,
         new LottieStaticValueCallback<>(8f));
 
     testDynamicProperty(
         "Polygon rotation",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_ROTATION,
         new LottieStaticValueCallback<>(10f));
 
     testDynamicProperty(
         "Polygon position",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POSITION,
         new LottieStaticValueCallback<>(new PointF(-100, -100)));
 
     testDynamicProperty(
-        "Polygon inner radius",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
-        LottieProperty.POLYSTAR_INNER_RADIUS,
-        new LottieStaticValueCallback<>(10f));
-
-    testDynamicProperty(
-        "Polygon inner roundedness",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
-        LottieProperty.POLYSTAR_INNER_ROUNDEDNESS,
-        new LottieStaticValueCallback<>(100f));
-
-    testDynamicProperty(
         "Polygon outer radius",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_RADIUS,
         new LottieStaticValueCallback<>(60f));
 
     testDynamicProperty(
         "Polygon outer roundedness",
-        new KeyPath("Shape Layer 1", "Polygon", "Ellipse Path 1"),
+        new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
         new LottieStaticValueCallback<>(100f));
+
+    testDynamicProperty(
+        "Repeater transform position",
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        LottieProperty.TRANSFORM_POSITION,
+        new LottieStaticValueCallback<>(new PointF(200f, 200f)));
+
+    testDynamicProperty(
+        "Repeater transform opacity",
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        LottieProperty.TRANSFORM_OPACITY,
+        new LottieStaticValueCallback<>(50));
+
+    testDynamicProperty(
+        "Repeater transform rotation",
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        LottieProperty.TRANSFORM_ROTATION,
+        new LottieStaticValueCallback<>(45f));
+
+    testDynamicProperty(
+        "Repeater transform scale",
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        LottieProperty.TRANSFORM_SCALE,
+        new LottieStaticValueCallback<>(new ScaleXY(2f, 2f)));
   }
 
   private <T> void testDynamicProperty(
