@@ -83,13 +83,13 @@ public class KeyPathTest {
   @Test public void testWVVV() { assertSize(2, W,    V[1], V[2], V[3]); }
   @Test public void testVWVV() { assertSize(2, V[0], W,    V[2], V[3]); }
   @Test public void testVVWV() { assertSize(1, V[0], V[1], W,    V[3]); }
-  @Test public void testVVVW() { assertSize(1, V[0], V[1], V[2], W); }
+  @Test public void testVVVW() { assertSize(2, V[0], V[1], V[2], W); }
   //</editor-fold>
 
   //<editor-fold desc="Two Wildcards">
   @Test public void testWWVV() { assertSize(4, W, W,    V[2], V[3]); }
   @Test public void testWVWV() { assertSize(2, W, V[1], W,    V[3]); }
-  @Test public void testWVVW() { assertSize(2, W, V[1], V[2], W); }
+  @Test public void testWVVW() { assertSize(4, W, V[1], V[2], W); }
   @Test public void testWWIV() { assertSize(0, W, W,    I,    V[3]); }
   @Test public void testWWVI() { assertSize(0, W, W,    V[2], I); }
   @Test public void testWVW() { assertSize(2, W,  V[1], W); }
@@ -102,11 +102,11 @@ public class KeyPathTest {
   //</editor-fold>
 
   //<editor-fold desc="Four Wildcards">
-  @Test public void testWWWW() { assertSize(4, W, W, W, W); }
+  @Test public void testWWWW() { assertSize(8, W, W, W, W); }
   //</editor-fold>
 
   //<editor-fold desc="One Globstar">
-  @Test public void testG() { assertSize(14, G); }
+  @Test public void testG() { assertSize(18, G); }
   @Test public void testGI() { assertSize(0, G, I); }
   @Test public void testGV0() { assertSize(1, G, V[0]); }
   @Test public void testGV0V0() { assertSize(0, G, V[0], V[0]); }
@@ -116,19 +116,19 @@ public class KeyPathTest {
   //</editor-fold>
 
   //<editor-fold desc="Two Globstars">
-  @Test public void testGV0G() { assertSize(7, G, V[0], G); }
-  @Test public void testGV1G() { assertSize(6, G, V[1], G); }
-  @Test public void testGV2G() { assertSize(8, G, V[2], G); }
+  @Test public void testGV0G() { assertSize(9, G, V[0], G); }
+  @Test public void testGV1G() { assertSize(8, G, V[1], G); }
+  @Test public void testGV2G() { assertSize(12, G, V[2], G); }
   @Test public void testGIG() {  assertSize(0, G, I,    G); }
   //</editor-fold>
 
   //<editor-fold desc="Wildcard and Globstar">
-  @Test public void testWG() {   assertSize(14, W, G); }
+  @Test public void testWG() {   assertSize(18, W, G); }
   @Test public void testGV0W() { assertSize(2,  G, V[0], W); }
   @Test public void testWV0I() { assertSize(0,  W, V[0], I); }
   @Test public void testGV1W() { assertSize(2,  G, V[1], W); }
   @Test public void testWV1I() { assertSize(0,  W, V[1], I); }
-  @Test public void testGV2W() { assertSize(4,  G, V[2], W); }
+  @Test public void testGV2W() { assertSize(8,  G, V[2], W); }
   @Test public void testWV2I() { assertSize(0,  W, V[2], I); }
   //</editor-fold>
 
