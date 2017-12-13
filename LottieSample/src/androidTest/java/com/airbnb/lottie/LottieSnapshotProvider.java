@@ -242,7 +242,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       String name, KeyPath keyPath, T property, LottieValueCallback<T> callback) {
     LottieAnimationView animationView = new LottieAnimationView(context);
     LottieComposition composition =
-        LottieComposition.Factory.fromFileSync(context, "Tests/Square.json");
+        LottieComposition.Factory.fromFileSync(context, "Tests/Squares.json");
     animationView.setComposition(composition);
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
