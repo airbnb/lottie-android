@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
@@ -119,7 +118,7 @@ public class FillContent
 
   @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
     if (property == COLOR) {
-      Log.d("Gabe", "Applying COLOR to " + getName());
+      // TODO use the value callback.
     }
   }
 }
