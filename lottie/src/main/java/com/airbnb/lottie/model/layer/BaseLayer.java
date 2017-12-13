@@ -459,8 +459,9 @@ public abstract class BaseLayer
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
   }
 
+  @CallSuper
   @Override
-  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     transform.applyValueCallback(property, callback);
   }
 }

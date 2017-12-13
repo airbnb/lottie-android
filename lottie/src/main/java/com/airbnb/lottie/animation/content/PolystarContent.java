@@ -5,15 +5,20 @@ import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.PolystarShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
-public class PolystarContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
+public class PolystarContent
+    implements PathContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
   /**
    * This was empirically derived by creating polystars, converting them to
    * curves, and calculating a scale factor.
@@ -284,5 +289,34 @@ public class PolystarContent implements PathContent, BaseKeyframeAnimation.Anima
     PointF position = positionAnimation.getValue();
     path.offset(position.x, position.y);
     path.close();
+  }
+
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (property == LottieProperty.POLYSTAR_POINTS) {
+      pointsAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.POLYSTAR_ROTATION) {
+      rotationAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == positionAnimation) {
+      positionAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
+    } else if (property == LottieProperty.POLYSTAR_INNER_RADIUS) {
+      if (innerRadiusAnimation != null) {
+        innerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+      }
+    } else if (property == LottieProperty.POLYSTAR_OUTER_RADIUS) {
+      outerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.POLYSTAR_INNER_ROUNDEDNESS) {
+      if (innerRoundednessAnimation != null) {
+        innerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+      }
+    } else if (property == LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS) {
+      outerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    }
   }
 }

@@ -734,14 +734,14 @@ import java.util.Map;
 
   public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
     if (keyPath.getResolvedElement() != null) {
-      keyPath.getResolvedElement().applyValueCallback(property, callback);
+      keyPath.getResolvedElement().addValueCallback(property, callback);
       invalidate();
     } else {
       List<KeyPath> elements = resolveKeyPath(keyPath);
 
       for (int i = 0; i < elements.size(); i++) {
         //noinspection ConstantConditions
-        elements.get(i).getResolvedElement().applyValueCallback(property, callback);
+        elements.get(i).getResolvedElement().addValueCallback(property, callback);
       }
       if (!elements.isEmpty()) {
         invalidate();

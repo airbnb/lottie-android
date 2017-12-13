@@ -44,7 +44,7 @@ public class StrokeContent extends BaseStrokeContent {
   }
 
   @Override
-  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     if (property == COLOR) {
       //noinspection unchecked
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);

@@ -231,7 +231,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   }
 
   @Override
-  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     transformAnimation.applyValueCallback(property, callback);
   }
 }

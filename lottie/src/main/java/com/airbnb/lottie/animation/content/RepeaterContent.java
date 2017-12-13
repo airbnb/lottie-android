@@ -8,19 +8,22 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.Repeater;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-public class RepeaterContent implements
-    DrawingContent, PathContent, GreedyContent, BaseKeyframeAnimation.AnimationListener {
+public class RepeaterContent implements DrawingContent, PathContent, GreedyContent,
+    BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
 
@@ -125,5 +128,24 @@ public class RepeaterContent implements
 
   @Override public void onValueChanged() {
     lottieDrawable.invalidateSelf();
+  }
+
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (transform.applyValueCallback(property, callback)) {
+      return;
+    }
+
+    if (property == LottieProperty.REPEATER_COPIES) {
+      copies.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.REPEATER_OFFSET) {
+      offset.setValueCallback((LottieValueCallback<Float>) callback);
+    }
   }
 }

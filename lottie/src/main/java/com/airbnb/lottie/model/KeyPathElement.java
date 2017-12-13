@@ -14,6 +14,9 @@ public interface KeyPathElement {
   /**
    * Called recursively during keypath resolution.
    *
+   * The overridden method should just call:
+   *        MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+   *
    * @param keyPath The full keypath being resolved.
    * @param depth The current depth that this element should be checked at in the keypath.
    * @param accumulator A list of fully resolved keypaths. If this element fully matches the
@@ -26,5 +29,9 @@ public interface KeyPathElement {
   void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath);
 
-  <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback);
+  /**
+   * The overridden method should handle appropriate properties and set value callbacks on their
+   * animations.
+   */
+  <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback);
 }

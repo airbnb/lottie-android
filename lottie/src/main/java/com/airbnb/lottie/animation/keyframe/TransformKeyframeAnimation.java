@@ -144,8 +144,11 @@ public class TransformKeyframeAnimation {
     return matrix;
   }
 
+  /**
+   * Returns whether the callback was applied.
+   */
   @SuppressWarnings("unchecked")
-  public <T> void applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  public <T> boolean applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     if (property == TRANSFORM_ANCHOR_POINT) {
       anchorPoint.setValueCallback((LottieValueCallback<PointF>) callback);
     } else if (property == TRANSFORM_POSITION) {
@@ -156,6 +159,9 @@ public class TransformKeyframeAnimation {
       rotation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == TRANSFORM_OPACITY) {
       opacity.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else {
+      return false;
     }
+    return true;
   }
 }
