@@ -6,7 +6,7 @@ if (!process.env.TRAVIS_REPO_SLUG) {
 
 const https = require('https');
 
-let postData =
+let postData;
 if (process.env.FIREBASE_EXIT_CODE) {
   postData = `{\"body\": \"Firebase tests failed.\"}`
 } else {
