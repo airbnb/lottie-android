@@ -8,7 +8,7 @@ android {
 
   defaultConfig {
     minSdkVersion 14
-    targetSdkVersion 26
+    targetSdkVersion 27
     versionCode 100
     versionName "2.3.2-SNAPSHOT"
   }

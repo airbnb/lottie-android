@@ -8,7 +8,7 @@ android {
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 26
+    targetSdkVersion 27
     versionCode 28
     versionName "2.3.2-SNAPSHOT"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
