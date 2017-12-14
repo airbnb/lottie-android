@@ -88,6 +88,14 @@ public class MiscUtils {
     return Math.max(min, Math.min(max, number));
   }
 
+  /**
+   * Helper method for any {@link KeyPathElementContent} that will check if the content
+   * fully matches the keypath then will add itself as the final key, resolve it, and add
+   * it to the accumulator list.
+   *
+   * Any {@link KeyPathElementContent} should call through to this as its implementation of
+   * {@link KeyPathElementContent#resolveKeyPath(KeyPath, int, List, KeyPath)}.
+   */
   public static void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
       KeyPath currentPartialKeyPath, KeyPathElementContent content) {
     if (keyPath.fullyResolvesTo(content.getName(), depth)) {

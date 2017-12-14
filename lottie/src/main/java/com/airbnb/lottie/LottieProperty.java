@@ -49,21 +49,28 @@ import com.airbnb.lottie.value.LottieValueCallback;
  *    {@link #TRANSFORM_END_OPACITY}
  */
 public interface LottieProperty {
+  /** ColorInt **/
   Integer COLOR = 1;
   Integer STROKE_COLOR = 2;
   /** Opacity value are 0-100 to match after effects **/
   Integer TRANSFORM_OPACITY = 3;
+  /** [0,100] */
   Integer OPACITY = 4;
 
+  /** In Px */
   PointF TRANSFORM_ANCHOR_POINT = new PointF();
+  /** In Px */
   PointF TRANSFORM_POSITION = new PointF();
+  /** In Px */
   PointF ELLIPSE_SIZE = new PointF();
+  /** In Px */
   PointF POSITION = new PointF();
 
   ScaleXY TRANSFORM_SCALE = new ScaleXY();
 
   /** In degrees */
   Float TRANSFORM_ROTATION = 1f;
+  /** In Px */
   Float STROKE_WIDTH = 2f;
   Float TEXT_TRACKING = 3f;
   Float REPEATER_COPIES = 4f;
@@ -71,12 +78,16 @@ public interface LottieProperty {
   Float POLYSTAR_POINTS = 6f;
   /** In degrees */
   Float POLYSTAR_ROTATION = 7f;
+  /** In Px */
   Float POLYSTAR_INNER_RADIUS = 8f;
+  /** In Px */
   Float POLYSTAR_OUTER_RADIUS = 9f;
   /** [0,100] */
   Float POLYSTAR_INNER_ROUNDEDNESS = 10f;
   /** [0,100] */
   Float POLYSTAR_OUTER_ROUNDEDNESS = 11f;
+  /** [0,100] */
   Float TRANSFORM_START_OPACITY = 12f;
+  /** [0,100] */
   Float TRANSFORM_END_OPACITY = 12f;
 }

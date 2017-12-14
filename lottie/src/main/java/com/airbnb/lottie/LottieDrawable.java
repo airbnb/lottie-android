@@ -16,7 +16,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.util.Log;
 import android.view.View;
 
@@ -26,6 +25,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -713,12 +713,13 @@ import java.util.Set;
   }
 
   /**
-   * Take a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
+   * Takes a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
    * zero or more actual {@link KeyPath Keypaths} that exist in the current animation.
    *
-   * This API is not ready for public use yet.
+   * If you want to set value callbacks for any of these values, it is recommend to use the
+   * returned {@link KeyPath} objects because they will be internally resolved to their content
+   * and won't trigger a tree walk of the animation contents when applied.
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {
       return Collections.emptyList();
@@ -726,6 +727,30 @@ import java.util.Set;
     List<KeyPath> keyPaths = new ArrayList<>();
     compositionLayer.resolveKeyPath(keyPath, 0, keyPaths, new KeyPath());
     return keyPaths;
+  }
+
+  /**
+   * Add an property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
+   * to multiple contents. In that case, the callbacks's value will apply to all of them.
+   *
+   * Internally, this will check if the {@link KeyPath} has already been resolved with
+   * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
+   */
+  public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
+    if (keyPath.getResolvedElement() != null) {
+      keyPath.getResolvedElement().addValueCallback(property, callback);
+      invalidateSelf();
+    } else {
+      List<KeyPath> elements = resolveKeyPath(keyPath);
+
+      for (int i = 0; i < elements.size(); i++) {
+        //noinspection ConstantConditions
+        elements.get(i).getResolvedElement().addValueCallback(property, callback);
+      }
+      if (!elements.isEmpty()) {
+        invalidateSelf();
+      }
+    }
   }
 
   /**

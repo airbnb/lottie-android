@@ -126,9 +126,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public A getValue() {
-    Keyframe<K> currentKeyframe = getCurrentKeyframe();
-    float currentKeyframeProgress = getInterpolatedCurrentKeyframeProgress();
-    return getValue(currentKeyframe, currentKeyframeProgress);
+    return getValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
   }
 
   public float getProgress() {

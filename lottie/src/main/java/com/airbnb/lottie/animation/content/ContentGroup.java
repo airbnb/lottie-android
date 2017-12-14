@@ -221,7 +221,6 @@ public class ContentGroup implements DrawingContent, PathContent,
       int newDepth = depth + keyPath.incrementDepthBy(getName(), depth);
       for (int i = 0; i < contents.size(); i++) {
         Content content = contents.get(i);
-        // TODO: all contents should implement KeyPathElement
         if (content instanceof KeyPathElement) {
           KeyPathElement element = (KeyPathElement) content;
           element.resolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
@@ -232,6 +231,8 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
-    transformAnimation.applyValueCallback(property, callback);
+    if (transformAnimation != null) {
+      transformAnimation.applyValueCallback(property, callback);
+    }
   }
 }

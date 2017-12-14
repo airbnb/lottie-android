@@ -354,13 +354,13 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
-        "Polygon outer radius",
+        "Polygon radius",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_RADIUS,
-        new LottieStaticValueCallback<>(60f));
+        new LottieStaticFloatRelativeValueCallback(60f));
 
     testDynamicProperty(
-        "Polygon outer roundedness",
+        "Polygon roundedness",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
         new LottieStaticValueCallback<>(100f));

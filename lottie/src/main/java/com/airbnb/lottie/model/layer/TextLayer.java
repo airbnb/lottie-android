@@ -256,16 +256,17 @@ public class TextLayer extends BaseLayer {
     return contents;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
-    if (property == LottieProperty.COLOR) {
+    if (property == LottieProperty.COLOR && colorAnimation != null) {
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_COLOR) {
+    } else if (property == LottieProperty.STROKE_COLOR && strokeColorAnimation != null) {
       strokeColorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_WIDTH) {
+    } else if (property == LottieProperty.STROKE_WIDTH && strokeWidthAnimation != null) {
       strokeWidthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.TEXT_TRACKING) {
+    } else if (property == LottieProperty.TEXT_TRACKING && trackingAnimation != null) {
       trackingAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     }
   }
