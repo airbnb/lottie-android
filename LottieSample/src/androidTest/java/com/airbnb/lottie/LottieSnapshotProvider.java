@@ -394,6 +394,19 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_SCALE,
         new LottieStaticValueCallback<>(new ScaleXY(2f, 2f)));
+
+    testDynamicProperty(
+        "Time remapping",
+        new KeyPath("Circle 1"),
+        LottieProperty.TIME_REMAP,
+        new LottieValueCallback<Float>() {
+          @Override
+          public Float getValue(float startFrame, float endFrame, Float startValue, Float endValue,
+              float linearKeyframeProgress, float interpolatedKeyframeProgress,
+              float overallProgress) {
+            return overallProgress < 0.5 ? overallProgress * 4 : 2 - (overallProgress - 0.5f) * 4;  
+          }
+        });
   }
 
   private <T> void testDynamicProperty(

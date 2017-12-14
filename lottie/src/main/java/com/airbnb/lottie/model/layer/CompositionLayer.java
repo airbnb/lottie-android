@@ -11,15 +11,18 @@ import android.support.v4.util.LongSparseArray;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompositionLayer extends BaseLayer {
-  @Nullable private final BaseKeyframeAnimation<Float, Float> timeRemapping;
+  @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
@@ -201,6 +204,20 @@ public class CompositionLayer extends BaseLayer {
       KeyPath currentPartialKeyPath) {
     for (int i = 0; i < layers.size(); i++) {
       layers.get(i).resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    super.addValueCallback(property, callback);
+
+    if (property == LottieProperty.TIME_REMAP) {
+      if (timeRemapping == null) {
+        timeRemapping = new StaticKeyframeAnimation<>(1f);
+        addAnimation(timeRemapping);
+      }
+      timeRemapping.setValueCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

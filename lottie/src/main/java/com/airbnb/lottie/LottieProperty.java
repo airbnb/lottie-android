@@ -47,6 +47,10 @@ import com.airbnb.lottie.value.LottieValueCallback;
  *    {@link #TRANSFORM_ROTATION}
  *    {@link #TRANSFORM_START_OPACITY}
  *    {@link #TRANSFORM_END_OPACITY}
+ *
+ * Layers:
+ *    All transform properties
+ *    {@link #TIME_REMAP} (composition layers only)
  */
 public interface LottieProperty {
   /** ColorInt **/
@@ -90,4 +94,6 @@ public interface LottieProperty {
   Float TRANSFORM_START_OPACITY = 12f;
   /** [0,100] */
   Float TRANSFORM_END_OPACITY = 12f;
+  /** The time value in seconds */
+  Float TIME_REMAP = 13f;
 }
