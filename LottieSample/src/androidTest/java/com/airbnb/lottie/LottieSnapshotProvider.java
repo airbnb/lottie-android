@@ -7,8 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -404,13 +402,11 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         LottieProperty.TIME_REMAP,
         new LottieStaticValueCallback<>(1f));
 
-    PorterDuffColorFilter colorFilter =
-        new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
     testDynamicProperty(
         "Color Filter",
         new KeyPath("**"),
         LottieProperty.COLOR_FILTER,
-        new LottieStaticValueCallback<ColorFilter>(colorFilter));
+        new LottieStaticValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
   }
 
   private <T> void testDynamicProperty(
