@@ -8,16 +8,16 @@ import com.airbnb.lottie.utils.MiscUtils;
  */
 public abstract class LottieIntegerRelativeValueCallback implements LottieValueCallback<Integer> {
   @Override
-  public Integer getValue(float startFrame, float endFrame, Integer startValue, Integer endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
-    int originalValue = MiscUtils.lerp(startValue, endValue, interpolatedKeyframeProgress);
-    int newValue = getOffset(startFrame, endFrame, startValue, endValue,
-        linearKeyframeProgress, interpolatedKeyframeProgress, overallProgress);
+  public Integer getValue(
+      float sf, float ef, Integer sv, Integer ev, float lkp, float ikp, float p) {
+    int originalValue = MiscUtils.lerp(sv, ev, ikp);
+    int newValue = getOffset(sf, ef, sv, ev, lkp, ikp, p);
     return originalValue + newValue;
   }
 
   public abstract Integer getOffset(
       float startFrame, float endFrame,
       Integer startValue, Integer endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress);
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress);
 }

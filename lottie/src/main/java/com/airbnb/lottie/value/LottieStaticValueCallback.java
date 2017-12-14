@@ -8,8 +8,11 @@ public class LottieStaticValueCallback<T> implements LottieValueCallback<T> {
     this.value = value;
   }
 
-  @Override public T getValue(float startFrame, float endFrame, T startValue, T endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
+  @Override public T getValue(
+      float startFrame, float endFrame,
+      T startValue, T endValue,
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress) {
     return value;
   }
 }

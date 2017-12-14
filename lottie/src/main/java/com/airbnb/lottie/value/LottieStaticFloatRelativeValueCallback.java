@@ -12,8 +12,11 @@ public class LottieStaticFloatRelativeValueCallback extends LottieFloatRelativeV
   }
 
   @Override
-  public Float getOffset(float startFrame, float endFrame, Float startValue, Float endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
+  public Float getOffset(
+      float startFrame, float endFrame,
+      Float startValue, Float endValue,
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress) {
     return offset;
   }
 }

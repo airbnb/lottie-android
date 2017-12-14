@@ -2,6 +2,8 @@ package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
 
+import com.airbnb.lottie.utils.MiscUtils;
+
 /**
  * {@link LottieValueCallback} that provides a value offset from the original animation
  * rather than an absolute value.
@@ -11,13 +13,10 @@ public abstract class LottiePointRelativeValueCallback implements LottieValueCal
 
   @Override
   public final PointF getValue(
-      float startFrame, float endFrame,
-      PointF startValue, PointF endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
-    PointF offset = getOffset(startFrame, endFrame, startValue, endValue,
-        linearKeyframeProgress, interpolatedKeyframeProgress, overallProgress);
-    point.set(startValue.x + interpolatedKeyframeProgress * (endValue.x - startValue.x),
-        startValue.y + interpolatedKeyframeProgress * (endValue.y - startValue.y));
+      float sf, float ef, PointF sv, PointF ev, float lkp, float ikp, float p) {
+    point.set(MiscUtils.lerp(sv.x, ev.x, ikp), MiscUtils.lerp(sv.y, sv.y, ikp));
+
+    PointF offset = getOffset(sf, ef, sv, ev, lkp, ikp, p);
     point.offset(offset.x, offset.y);
     return point;
   }

@@ -14,5 +14,6 @@ public interface LottieValueCallback<T> {
   T getValue(
       float startFrame, float endFrame,
       T startValue, T endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress);
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress);
 }

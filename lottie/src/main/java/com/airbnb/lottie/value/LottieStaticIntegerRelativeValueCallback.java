@@ -13,8 +13,11 @@ public class LottieStaticIntegerRelativeValueCallback extends LottieIntegerRelat
 
 
   @Override
-  public Integer getOffset(float startFrame, float endFrame, Integer startValue, Integer endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
+  public Integer getOffset(
+      float startFrame, float endFrame,
+      Integer startValue, Integer endValue,
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress) {
     return offset;
   }
 }
