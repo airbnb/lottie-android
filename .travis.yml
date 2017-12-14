@@ -9,9 +9,7 @@ cache:
 env:
   - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
+  - yes | sdkmanager "platforms;android-27"
   - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
   - curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-182.0.0-linux-x86_64.tar.gz -o gcloud.tar.gz
   - tar xzf gcloud.tar.gz -C ${HOME}
@@ -33,8 +31,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-26.0.2
-    - android-26
+    - build-tools-27.0.2
+    - android-27
     - extra-android-m2repository
   licenses:
     - android-sdk-license-.+
@@ -50,5 +48,6 @@ script:
   - ./gradlew check
   - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
   - gcloud firebase test android run --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/debug/LottieSample-debug.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
+  - export FIREBASE_EXIT_CODE=$?
   - ./post_pr_comment.js
 sudo: false

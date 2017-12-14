@@ -37,7 +37,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textScanPrompt"
         app:layout_constraintVertical_bias="0.4"
-        app:srcCompat="@drawable/ic_qr_overlay"/>
+        app:srcCompat="@drawable/ic_qr_overlay"
+        android:contentDescription="@string/qr_code_overlay"/>
 
 
 </android.support.constraint.ConstraintLayout>

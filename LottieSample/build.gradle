@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion "26.0.2"
+  compileSdkVersion 27
+  buildToolsVersion "27.0.2"
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 26
+    targetSdkVersion 27
     versionCode 28
     versionName "2.3.2-SNAPSHOT"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,6 +30,7 @@ android {
     ignore 'InvalidPackage'
     textReport true
     textOutput 'stdout'
+    baseline file("lint-baseline.xml")
   }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_7
@@ -66,7 +67,6 @@ dependencies {
 
   androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed
-  androidTestImplementation 'com.android.support:appcompat-v7:26.1.0'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
   androidTestImplementation "com.android.support.test:runner:1.0.1"
   androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'

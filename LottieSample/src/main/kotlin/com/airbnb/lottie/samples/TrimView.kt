@@ -58,7 +58,7 @@ class TrimView @JvmOverloads constructor(
         addView(rightAnchor)
     }
 
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         if (dragHelper.shouldInterceptTouchEvent(ev)) {
             return true
         }
@@ -66,7 +66,7 @@ class TrimView @JvmOverloads constructor(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         dragHelper.processTouchEvent(event)
         return true
     }

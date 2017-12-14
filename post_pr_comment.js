@@ -6,7 +6,13 @@ if (!process.env.TRAVIS_REPO_SLUG) {
 
 const https = require('https');
 
-const postData = `{\"body\": \"Snapshot Test Results: https://happo.io/compare?q=lottie-master-android26..lottie-${process.env.GIT_SHA}-android26&a=4\"}`
+let postData;
+console.log('Firebase exit code: ' + process.env.FIREBASE_EXIT_CODE);
+if (process.env.FIREBASE_EXIT_CODE) {
+  postData = `{\"body\": \"Firebase tests failed.\"}`
+} else {
+  postData = `{\"body\": \"Snapshot Test Results: https://happo.io/compare?q=lottie-master-android26..lottie-${process.env.GIT_SHA}-android26&a=4\"}`
+}
 
 const options = {
   hostname: 'api.github.com',

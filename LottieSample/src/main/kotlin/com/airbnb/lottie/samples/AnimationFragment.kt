@@ -60,8 +60,9 @@ class AnimationFragment : Fragment() {
 
     private val handler = Handler()
     private val client: OkHttpClient by lazy { OkHttpClient() }
+    private lateinit var myActivity: AppCompatActivity
     private val application: ILottieApplication
-        get() = activity.application as ILottieApplication
+        get() = activity!!.application as ILottieApplication
     private var renderTimeGraphRange = 4f
     private val lineDataSet by lazy {
         val entries = ArrayList<Entry>(101)
@@ -76,27 +77,28 @@ class AnimationFragment : Fragment() {
         dataSet.color = Color.BLACK
         dataSet
     }
-    private val systemAnimationsAreDisabled by lazy { getAnimationScale(context) == 0f }
+    private val systemAnimationsAreDisabled by lazy { getAnimationScale(myActivity) == 0f }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        myActivity = activity!! as AppCompatActivity
         val view = container!!.inflate(R.layout.fragment_animation, false)
 
         L.setTraceEnabled(true)
         view.animationView.setPerformanceTrackingEnabled(true)
 
-        (activity as AppCompatActivity).setSupportActionBar(view.toolbar)
+        myActivity.setSupportActionBar(view.toolbar)
         view.toolbar.setNavigationIcon(R.drawable.ic_back)
-        view.toolbar.setNavigationOnClickListener { fragmentManager.popBackStack() }
+        view.toolbar.setNavigationOnClickListener { fragmentManager!!.popBackStack() }
         setHasOptionsMenu(true)
         postUpdatePlayButtonText()
 
         view.version.text = BuildConfig.VERSION_NAME
-        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan, activity)
-        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, activity)
-        view.loadAnimation.setDrawableLeft(R.drawable.ic_file, activity)
-        view.loadFromJson.setDrawableLeft(R.drawable.ic_network, activity)
-        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert, activity)
+        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan, myActivity)
+        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, myActivity)
+        view.loadAnimation.setDrawableLeft(R.drawable.ic_file, myActivity)
+        view.loadFromJson.setDrawableLeft(R.drawable.ic_network, myActivity)
+        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert, myActivity)
 
         view.animationView.addAnimatorListener(AnimatorListenerAdapter(
                 onStart = { startRecordingDroppedFrames() },
@@ -164,7 +166,7 @@ class AnimationFragment : Fragment() {
 
         view.qrScan.setOnClickListener {
             animationView.cancelAnimation()
-            if (!Manifest.permission.CAMERA.hasPermission(context)) {
+            if (!Manifest.permission.CAMERA.hasPermission(myActivity)) {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA), RC_CAMERA)
 
             } else {
@@ -290,7 +292,7 @@ class AnimationFragment : Fragment() {
         animationName.text = name
         // make sure the animation doesn't start larger than the screen
         val screenSize = Point()
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val wm = myActivity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         wm.defaultDisplay.getSize(screenSize)
         val scale = screenSize.x / composition.bounds.width().toFloat()
         animationView.scale = minOf(scale, 1f)
@@ -347,7 +349,7 @@ class AnimationFragment : Fragment() {
         try {
             when (uri.scheme) {
                 "file" -> fis = FileInputStream(uri.path)
-                "content" -> fis = context.contentResolver.openInputStream(uri)
+                "content" -> fis = myActivity.contentResolver.openInputStream(uri)
                 else -> {
                     onLoadError()
                     return
