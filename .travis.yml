@@ -33,8 +33,8 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-26.0.2
-    - android-26
+    - build-tools-27.0.2
+    - android-27
     - extra-android-m2repository
   licenses:
     - android-sdk-license-.+
@@ -50,5 +50,6 @@ script:
   - ./gradlew check
   - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
   - gcloud firebase test android run --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/debug/LottieSample-debug.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
+  - export FIREBASE_EXIT_CODE=$?
   - ./post_pr_comment.js
 sudo: false
