@@ -23,6 +23,7 @@ import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieStaticValueCallback;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import org.json.JSONObject;
@@ -152,8 +153,12 @@ import java.util.Map;
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
-      addColorFilter(new SimpleColorFilter(ta.getColor(
-          R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT)));
+      SimpleColorFilter filter = new SimpleColorFilter(
+          ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
+      KeyPath keyPath = new KeyPath("**");
+      LottieStaticValueCallback<ColorFilter> callback =
+          new LottieStaticValueCallback<ColorFilter>(filter);
+      addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
     }
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
       lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
@@ -186,42 +191,6 @@ import java.util.Map;
     recycleBitmaps();
     cancelLoaderTask();
     super.setImageBitmap(bm);
-  }
-
-  /**
-   * Add a color filter to specific content on a specific layer.
-   * @param layerName name of the layer where the supplied content name lives
-   * @param contentName name of the specific content that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToContent(
-      String layerName, String contentName, @Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilterToContent(layerName, contentName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to a whole layer
-   * @param layerName name of the layer that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToLayer(
-      String layerName, @Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilterToLayer(layerName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to all layers
-   * @param colorFilter the color filter, null to clear all color filters
-   */
-  public void addColorFilter(@Nullable ColorFilter colorFilter) {
-    lottieDrawable.addColorFilter(colorFilter);
-  }
-
-  /**
-   * Clear all color filters on all layers and all content in the layers
-   */
-  public void clearColorFilters() {
-    lottieDrawable.clearColorFilters();
   }
 
   @Override public void invalidateDrawable(@NonNull Drawable dr) {

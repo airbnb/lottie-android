@@ -2,7 +2,6 @@ package com.airbnb.lottie.model.layer;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -427,11 +426,6 @@ public abstract class BaseLayer
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
-    // Do nothing
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
     // Do nothing
   }
 

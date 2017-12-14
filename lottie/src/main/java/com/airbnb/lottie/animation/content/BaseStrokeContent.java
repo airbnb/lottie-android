@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -14,6 +15,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
@@ -44,6 +46,7 @@ public abstract class BaseStrokeContent
   private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
   @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
+  @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width,
@@ -139,6 +142,10 @@ public abstract class BaseStrokeContent
       return;
     }
     applyDashPatternIfNeeded(parentMatrix);
+
+    if (colorFilterAnimation != null) {
+      paint.setColorFilter(colorFilterAnimation.getValue());
+    }
 
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
@@ -296,6 +303,11 @@ public abstract class BaseStrokeContent
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.STROKE_WIDTH) {
       widthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation == null) {
+        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      }
+      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
     }
   }
 

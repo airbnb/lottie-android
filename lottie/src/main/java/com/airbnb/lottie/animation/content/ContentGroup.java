@@ -1,14 +1,12 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -17,6 +15,7 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,21 +92,6 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   @Override public String getName() {
     return name;
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    for (int i = 0; i < contents.size(); i++) {
-      final Content content = contents.get(i);
-      if (content instanceof DrawingContent) {
-        final DrawingContent drawingContent = (DrawingContent) content;
-        if (contentName == null || contentName.equals(content.getName())) {
-          drawingContent.addColorFilter(layerName, null, colorFilter);
-        } else {
-          drawingContent.addColorFilter(layerName, contentName, colorFilter);
-        }
-      }
-    }
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

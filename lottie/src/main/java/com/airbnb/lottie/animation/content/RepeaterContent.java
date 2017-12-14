@@ -1,7 +1,6 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -119,11 +118,6 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     contentGroup.getBounds(outBounds, parentMatrix);
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    contentGroup.addColorFilter(layerName, contentName, colorFilter);
   }
 
   @Override public void onValueChanged() {
