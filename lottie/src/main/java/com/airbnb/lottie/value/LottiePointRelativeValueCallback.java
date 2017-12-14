@@ -2,7 +2,11 @@ package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
 
-public abstract class LottiePositionOffsetValueCallback implements LottieValueCallback<PointF> {
+/**
+ * {@link LottieValueCallback} that provides a value offset from the original animation
+ * rather than an absolute value.
+ */
+public abstract class LottiePointRelativeValueCallback implements LottieValueCallback<PointF> {
   private final PointF point = new PointF();
 
   @Override

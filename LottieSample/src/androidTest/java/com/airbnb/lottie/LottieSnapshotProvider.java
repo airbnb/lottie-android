@@ -16,7 +16,8 @@ import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.value.LottieStaticPositionOffsetValueCallback;
+import com.airbnb.lottie.value.LottieStaticFloatRelativeValueCallback;
+import com.airbnb.lottie.value.LottieStaticPointRelativeValueCallback;
 import com.airbnb.lottie.value.LottieStaticValueCallback;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
@@ -236,7 +237,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Stroke width",
         new KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
         LottieProperty.STROKE_WIDTH,
-        new LottieStaticValueCallback<>(100f));
+        new LottieStaticFloatRelativeValueCallback(50f));
 
     testDynamicProperty(
         "Stroke opacity",
@@ -248,19 +249,19 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Transform anchor point",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_ANCHOR_POINT,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position (relative)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform opacity",
@@ -284,13 +285,13 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Ellipse position",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Ellipse size",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.ELLIPSE_SIZE,
-        new LottieStaticValueCallback<>(new PointF(40f, 60f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(40f, 60f)));
 
     testDynamicProperty(
         "Star points",
@@ -308,7 +309,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Star position",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Star inner radius",
@@ -350,7 +351,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Polygon position",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Polygon outer radius",
@@ -368,7 +369,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Repeater transform position",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(100f, 100f)));
+        new LottieStaticPointRelativeValueCallback(new PointF(100f, 100f)));
 
     testDynamicProperty(
         "Repeater transform start opacity",
