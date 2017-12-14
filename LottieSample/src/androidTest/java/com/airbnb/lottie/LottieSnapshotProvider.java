@@ -236,7 +236,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Stroke width",
         new KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
         LottieProperty.STROKE_WIDTH,
-        new LottieStaticValueCallback<>(30f));
+        new LottieStaticValueCallback<>(100f));
 
     testDynamicProperty(
         "Stroke opacity",
@@ -248,19 +248,19 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Transform anchor point",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_ANCHOR_POINT,
-        new LottieStaticValueCallback<>(new PointF(100f, 100f)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticValueCallback<>(new PointF(0f, 0f)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position (relative)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticPositionOffsetValueCallback(new PointF(-30, -20)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform opacity",
@@ -284,7 +284,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Ellipse position",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticValueCallback<>(new PointF(300f, 300f)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Ellipse size",
@@ -308,7 +308,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Star position",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticValueCallback<>(new PointF(-100, -100)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Star inner radius",
@@ -350,7 +350,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Polygon position",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticValueCallback<>(new PointF(-300, 300)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Polygon outer radius",
@@ -366,9 +366,9 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
     testDynamicProperty(
         "Repeater transform position",
-        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1", "Repeater"),
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticValueCallback<>(new PointF(200f, 200f)));
+        new LottieStaticPositionOffsetValueCallback(new PointF(100f, 100f)));
 
     testDynamicProperty(
         "Repeater transform start opacity",
