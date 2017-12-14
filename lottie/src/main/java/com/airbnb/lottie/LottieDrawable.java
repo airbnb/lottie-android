@@ -737,9 +737,10 @@ import java.util.Set;
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
    */
   public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
+    boolean invalidate = false;
     if (keyPath.getResolvedElement() != null) {
       keyPath.getResolvedElement().addValueCallback(property, callback);
-      invalidateSelf();
+      invalidate = true;
     } else {
       List<KeyPath> elements = resolveKeyPath(keyPath);
 
@@ -747,8 +748,15 @@ import java.util.Set;
         //noinspection ConstantConditions
         elements.get(i).getResolvedElement().addValueCallback(property, callback);
       }
-      if (!elements.isEmpty()) {
-        invalidateSelf();
+      invalidate = !elements.isEmpty();
+    }
+    if (invalidate) {
+      invalidateSelf();
+      if (property == LottieProperty.TIME_REMAP) {
+        // Time remapping values are read in setProgress. In order for the new value
+        // to apply, we have to re-set the progress with the current progress so that the
+        // time remapping can be reapplied.
+        setProgress(getProgress());
       }
     }
   }
