@@ -27,7 +27,7 @@ class ChooseAssetDialogFragment : DialogFragment() {
     }
 
     internal inner class AssetsAdapter : RecyclerView.Adapter<StringViewHolder>() {
-        private val files = context.assets.list("").filter { it.toLowerCase().endsWith(".json") }
+        private val files = context!!.assets.list("").filter { it.toLowerCase().endsWith(".json") }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StringViewHolder =
             StringViewHolder(parent)
@@ -44,7 +44,7 @@ class ChooseAssetDialogFragment : DialogFragment() {
         fun bind(fileName: String) {
             itemView.title.text = fileName
             itemView.setOnClickListener {
-                targetFragment.onActivityResult(targetRequestCode, Activity.RESULT_OK,
+                targetFragment!!.onActivityResult(targetRequestCode, Activity.RESULT_OK,
                         Intent().putExtra(AnimationFragment.EXTRA_ANIMATION_NAME, fileName))
                 dismiss()
             }

@@ -39,7 +39,7 @@ class ListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        items.find { it.shortcut == activity.intent.action }?.onClick?.invoke()
+        items.find { it.shortcut == activity!!.intent.action }?.onClick?.invoke()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,7 +60,7 @@ class ListFragment : Fragment() {
     }
 
     private fun showFragment(fragment: Fragment) {
-        fragmentManager.beginTransaction()
+        fragmentManager!!.beginTransaction()
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
                 .remove(this)

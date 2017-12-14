@@ -8,7 +8,7 @@
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="false"/>
 
     </application>
 
