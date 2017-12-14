@@ -350,7 +350,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Polygon position",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticValueCallback<>(new PointF(-100, -100)));
+        new LottieStaticValueCallback<>(new PointF(-300, 300)));
 
     testDynamicProperty(
         "Polygon outer radius",
@@ -371,10 +371,16 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new LottieStaticValueCallback<>(new PointF(200f, 200f)));
 
     testDynamicProperty(
-        "Repeater transform opacity",
+        "Repeater transform start opacity",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-        LottieProperty.TRANSFORM_OPACITY,
-        new LottieStaticValueCallback<>(50));
+        LottieProperty.TRANSFORM_START_OPACITY,
+        new LottieStaticValueCallback<>(25f));
+
+    testDynamicProperty(
+        "Repeater transform end opacity",
+        new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+        LottieProperty.TRANSFORM_END_OPACITY,
+        new LottieStaticValueCallback<>(25f));
 
     testDynamicProperty(
         "Repeater transform rotation",

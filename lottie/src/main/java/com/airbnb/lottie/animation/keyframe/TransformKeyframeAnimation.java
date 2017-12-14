@@ -10,10 +10,12 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_ANCHOR_POINT;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_END_OPACITY;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_OPACITY;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_POSITION;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_SCALE;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
@@ -159,6 +161,10 @@ public class TransformKeyframeAnimation {
       rotation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == TRANSFORM_OPACITY) {
       opacity.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == TRANSFORM_START_OPACITY && startOpacity != null) {
+      startOpacity.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == TRANSFORM_END_OPACITY && endOpacity != null) {
+      endOpacity.setValueCallback((LottieValueCallback<Float>) callback);
     } else {
       return false;
     }

@@ -303,18 +303,15 @@ public class PolystarContent
       pointsAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.POLYSTAR_ROTATION) {
       rotationAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == positionAnimation) {
+    } else if (property == LottieProperty.POSITION) {
       positionAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
-    } else if (property == LottieProperty.POLYSTAR_INNER_RADIUS) {
-      if (innerRadiusAnimation != null) {
-        innerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-      }
+    } else if (property == LottieProperty.POLYSTAR_INNER_RADIUS && innerRadiusAnimation != null) {
+      innerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.POLYSTAR_OUTER_RADIUS) {
       outerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.POLYSTAR_INNER_ROUNDEDNESS) {
-      if (innerRoundednessAnimation != null) {
-        innerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-      }
+    } else if (property == LottieProperty.POLYSTAR_INNER_ROUNDEDNESS &&
+        innerRoundednessAnimation != null) {
+      innerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS) {
       outerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     }

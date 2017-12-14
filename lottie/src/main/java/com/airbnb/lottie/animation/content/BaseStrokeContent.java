@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -289,6 +290,7 @@ public abstract class BaseStrokeContent
 
   @SuppressWarnings("unchecked")
   @Override
+  @CallSuper
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);

@@ -44,6 +44,9 @@ import com.airbnb.lottie.value.LottieValueCallback;
  *    All transform properties
  *    {@link #REPEATER_COPIES}
  *    {@link #REPEATER_OFFSET}
+ *    {@link #TRANSFORM_ROTATION}
+ *    {@link #TRANSFORM_START_OPACITY}
+ *    {@link #TRANSFORM_END_OPACITY}
  */
 public interface LottieProperty {
   Integer COLOR = 1;
@@ -74,4 +77,6 @@ public interface LottieProperty {
   Float POLYSTAR_INNER_ROUNDEDNESS = 10f;
   /** [0,100] */
   Float POLYSTAR_OUTER_ROUNDEDNESS = 11f;
+  Float TRANSFORM_START_OPACITY = 12f;
+  Float TRANSFORM_END_OPACITY = 12f;
 }
