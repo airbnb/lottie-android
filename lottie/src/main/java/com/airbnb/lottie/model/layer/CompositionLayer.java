@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.support.annotation.FloatRange;
@@ -184,19 +183,6 @@ public class CompositionLayer extends BaseLayer {
       hasMatte = false;
     }
     return hasMatte;
-  }
-
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    for (int i = 0; i < layers.size(); ++i) {
-      final BaseLayer layer = layers.get(i);
-      final String name = layer.getLayerModel().getName();
-      if (layerName == null) {
-        layer.addColorFilter(null, null, colorFilter);
-      } else if (name.equals(layerName)) {
-        layer.addColorFilter(layerName, contentName, colorFilter);
-      }
-    }
   }
 
   @Override

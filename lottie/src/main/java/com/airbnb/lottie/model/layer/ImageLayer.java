@@ -11,9 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.model.KeyPath;
-
-import java.util.List;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 public class ImageLayer extends BaseLayer {
 
@@ -21,6 +22,7 @@ public class ImageLayer extends BaseLayer {
   private final Rect src = new Rect();
   private final Rect dst = new Rect();
   private final float density;
+  @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
   ImageLayer(LottieDrawable lottieDrawable, Layer layerModel, float density) {
     super(lottieDrawable, layerModel);
@@ -33,6 +35,9 @@ public class ImageLayer extends BaseLayer {
       return;
     }
     paint.setAlpha(parentAlpha);
+    if (colorFilterAnimation != null) {
+      paint.setColorFilter(colorFilterAnimation.getValue());
+    }
     canvas.save();
     canvas.concat(parentMatrix);
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -62,8 +67,14 @@ public class ImageLayer extends BaseLayer {
     return lottieDrawable.getImageAsset(refId);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    paint.setColorFilter(colorFilter);
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    super.addValueCallback(property, callback);
+     if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation == null) {
+        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      }
+      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
+    }
   }
 }

@@ -9,12 +9,17 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 public class SolidLayer extends BaseLayer {
 
   private final RectF rect = new RectF();
   private final Paint paint = new Paint();
   private final Layer layerModel;
+  @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
   SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -33,6 +38,9 @@ public class SolidLayer extends BaseLayer {
 
     int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
     paint.setAlpha(alpha);
+    if (colorFilterAnimation != null) {
+      paint.setColorFilter(colorFilterAnimation.getValue());
+    }
     if (alpha > 0) {
       updateRect(parentMatrix);
       canvas.drawRect(rect, paint);
@@ -50,8 +58,14 @@ public class SolidLayer extends BaseLayer {
     matrix.mapRect(rect);
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    paint.setColorFilter(colorFilter);
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    super.addValueCallback(property, callback);
+    if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation == null) {
+        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      }
+      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
+    }
   }
 }

@@ -185,7 +185,6 @@ import java.util.Set;
     setProgress(animator.getValue());
     setScale(scale);
     updateBounds();
-    applyColorFilters();
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
     // then there won't be two iterators iterating and removing at the same time.
@@ -222,16 +221,6 @@ import java.util.Set;
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
   }
 
-  private void applyColorFilters() {
-    if (compositionLayer == null) {
-      return;
-    }
-
-    for (ColorFilterData data : colorFilterData) {
-      compositionLayer.addColorFilter(data.layerName, data.contentName, data.colorFilter);
-    }
-  }
-
   public void clearComposition() {
     recycleBitmaps();
     if (animator.isRunning()) {
@@ -260,67 +249,6 @@ import java.util.Set;
 
   @Override public void setColorFilter(@Nullable ColorFilter colorFilter) {
     Log.w(L.TAG, "Use addColorFilter instead.");
-  }
-
-  /**
-   * Add a color filter to specific content on a specific layer.
-   * @param layerName name of the layer where the supplied content name lives
-   * @param contentName name of the specific content that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToContent(String layerName, String contentName,
-      @Nullable ColorFilter colorFilter) {
-    addColorFilterInternal(layerName, contentName, colorFilter);
-  }
-
-  /**
-   * Add a color filter to a whole layer
-   * @param layerName name of the layer that the color filter is to be applied
-   * @param colorFilter the color filter, null to clear the color filter
-   */
-  public void addColorFilterToLayer(String layerName, @Nullable ColorFilter colorFilter) {
-    addColorFilterInternal(layerName, null, colorFilter);
-  }
-
-  /**
-   * Add a color filter to all layers
-   * @param colorFilter the color filter, null to clear all color filters
-   */
-  public void addColorFilter(ColorFilter colorFilter) {
-    addColorFilterInternal(null, null, colorFilter);
-  }
-
-  /**
-   * Clear all color filters on all layers and all content in the layers
-   */
-  public void clearColorFilters() {
-    colorFilterData.clear();
-    addColorFilterInternal(null, null, null);
-  }
-
-  /**
-   * Private method to capture all color filter additions.
-   * There are 3 different behaviors here.
-   * 1. layerName is null. All layers supporting color filters will apply the passed in color filter
-   * 2. layerName is not null, contentName is null. This will apply the passed in color filter
-   *    to the whole layer
-   * 3. layerName is not null, contentName is not null. This will apply the pass in color filter
-   *    to a specific composition content.
-   */
-  private void addColorFilterInternal(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    final ColorFilterData data = new ColorFilterData(layerName, contentName, colorFilter);
-    if (colorFilter == null && colorFilterData.contains(data)) {
-      colorFilterData.remove(data);
-    } else {
-      colorFilterData.add(new ColorFilterData(layerName, contentName, colorFilter));
-    }
-
-    if (compositionLayer == null) {
-      return;
-    }
-
-    compositionLayer.addColorFilter(layerName, contentName, colorFilter);
   }
 
   @Override public int getOpacity() {
@@ -722,6 +650,7 @@ import java.util.Set;
    */
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {
+      Log.w(L.TAG, "Cannot resolve KeyPath. Composition is not set yet.");
       return Collections.emptyList();
     }
     List<KeyPath> keyPaths = new ArrayList<>();
@@ -736,8 +665,17 @@ import java.util.Set;
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
    */
-  public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
-    boolean invalidate = false;
+  public <T> void addValueCallback(
+      final KeyPath keyPath, final T property, final LottieValueCallback<T> callback) {
+    if (compositionLayer == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          addValueCallback(keyPath, property, callback);
+        }
+      });
+      return;
+    }
+    boolean invalidate;
     if (keyPath.getResolvedElement() != null) {
       keyPath.getResolvedElement().addValueCallback(property, callback);
       invalidate = true;

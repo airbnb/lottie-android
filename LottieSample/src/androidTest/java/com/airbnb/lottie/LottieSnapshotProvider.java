@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -400,6 +401,12 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new KeyPath("Circle 1"),
         LottieProperty.TIME_REMAP,
         new LottieStaticValueCallback<>(1f));
+
+    testDynamicProperty(
+        "Color Filter",
+        new KeyPath("**"),
+        LottieProperty.COLOR_FILTER,
+        new LottieStaticValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
   }
 
   private <T> void testDynamicProperty(

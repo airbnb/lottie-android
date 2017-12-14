@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.graphics.ColorFilter;
 import android.graphics.PointF;
 
 import com.airbnb.lottie.value.ScaleXY;
@@ -21,11 +22,13 @@ import com.airbnb.lottie.value.LottieValueCallback;
  * Fill:
  *    {@link #COLOR} (non-gradient)
  *    {@link #OPACITY}
+ *    {@link #COLOR_FILTER}
  *
  * Stroke:
  *    {@link #COLOR} (non-gradient)
  *    {@link #STROKE_WIDTH}
  *    {@link #OPACITY}
+ *    {@link #COLOR_FILTER}
  *
  * Ellipse:
  *    {@link #POSITION}
@@ -96,4 +99,6 @@ public interface LottieProperty {
   Float TRANSFORM_END_OPACITY = 12f;
   /** The time value in seconds */
   Float TIME_REMAP = 13f;
+
+  ColorFilter COLOR_FILTER = new ColorFilter();
 }

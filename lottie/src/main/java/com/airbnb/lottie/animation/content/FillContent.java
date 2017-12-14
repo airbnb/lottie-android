@@ -12,6 +12,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
@@ -31,6 +32,7 @@ public class FillContent
   private final List<PathContent> paths = new ArrayList<>();
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   private final BaseKeyframeAnimation<Integer, Integer> opacityAnimation;
+  @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   private final LottieDrawable lottieDrawable;
 
   public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
@@ -69,16 +71,15 @@ public class FillContent
     return name;
   }
 
-  @Override public void addColorFilter(@Nullable String layerName, @Nullable String contentName,
-      @Nullable ColorFilter colorFilter) {
-    paint.setColorFilter(colorFilter);
-  }
-
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("FillContent#draw");
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
+
+    if (colorFilterAnimation != null) {
+      paint.setColorFilter(colorFilterAnimation.getValue());
+    }
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
@@ -116,6 +117,11 @@ public class FillContent
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation == null) {
+        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      }
+      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
     }
   }
 }
