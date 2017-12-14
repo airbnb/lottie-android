@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply from: 'gradle-maven-push.gradle'
 
 android {
-  compileSdkVersion 26
-  buildToolsVersion "26.0.2"
+  compileSdkVersion 27
+  buildToolsVersion "27.0.2"
   resourcePrefix 'lottie_'
 
   defaultConfig {
