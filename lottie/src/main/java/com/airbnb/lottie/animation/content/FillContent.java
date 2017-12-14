@@ -115,7 +115,7 @@ public class FillContent
     if (property == LottieProperty.COLOR) {
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.OPACITY) {
-      colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+      opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     }
   }
 }
