@@ -26,7 +26,8 @@ import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
-public class GradientFillContent implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
+public class GradientFillContent
+    implements DrawingContent, BaseKeyframeAnimation.AnimationListener {
   /**
    * Cache the gradients such that it runs at 30fps.
    */

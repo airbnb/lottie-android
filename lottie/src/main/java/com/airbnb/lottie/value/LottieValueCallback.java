@@ -1,4 +1,4 @@
-package com.airbnb.lottie;
+package com.airbnb.lottie.value;
 
 
 import android.support.annotation.RestrictTo;
@@ -11,6 +11,9 @@ import android.support.annotation.RestrictTo;
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public interface LottieValueCallback<T> {
-  T getValue(int startFrame, int endFrame, T startValue, T endValue, float linearKeyframeProgress,
-      float interpolatedKeyframeProgress, float overallProgress);
+  T getValue(
+      float startFrame, float endFrame,
+      T startValue, T endValue,
+      float linearKeyframeProgress, float interpolatedKeyframeProgress,
+      float overallProgress);
 }

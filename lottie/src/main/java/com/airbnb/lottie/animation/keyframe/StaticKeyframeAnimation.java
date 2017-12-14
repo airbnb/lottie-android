@@ -1,7 +1,5 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import android.support.annotation.FloatRange;
-
 import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.Collections;
@@ -14,15 +12,31 @@ public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
     this.initialValue = initialValue;
   }
 
-  @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    // Do nothing
+  @Override public void setProgress(float progress) {
+    super.setProgress(progress);
   }
 
-  @Override public void addUpdateListener(AnimationListener listener) {
-    // Do nothing.
+  /**
+   * If this doesn't return 1, then {@link #setProgress(float)} will always clamp the progress
+   * to 0.
+   */
+  @Override float getEndProgress() {
+    return 1f;
+  }
+
+  @Override void notifyListeners() {
+    if (this.valueCallback != null) {
+      super.notifyListeners();
+    }
   }
 
   @Override public A getValue() {
+    if (valueCallback != null) {
+      return valueCallback.getValue(
+          0f, 0f,
+          initialValue, initialValue,
+          getProgress(), getProgress(), getProgress());
+    }
     return initialValue;
   }
 

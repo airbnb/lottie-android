@@ -8,15 +8,15 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
+import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.model.animatable.AnimatableTransform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,7 +221,6 @@ public class ContentGroup implements DrawingContent, PathContent,
       int newDepth = depth + keyPath.incrementDepthBy(getName(), depth);
       for (int i = 0; i < contents.size(); i++) {
         Content content = contents.get(i);
-        // TODO: all contents should implement KeyPathElement
         if (content instanceof KeyPathElement) {
           KeyPathElement element = (KeyPathElement) content;
           element.resolveKeyPath(keyPath, newDepth, accumulator, currentPartialKeyPath);
@@ -230,7 +229,10 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
-  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
-    // TODO (keypath)
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (transformAnimation != null) {
+      transformAnimation.applyValueCallback(property, callback);
+    }
   }
 }

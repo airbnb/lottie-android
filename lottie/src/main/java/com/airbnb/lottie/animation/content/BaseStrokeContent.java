@@ -7,27 +7,29 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
+import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
-public abstract class BaseStrokeContent implements DrawingContent,
-    BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+public abstract class BaseStrokeContent
+    implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, DrawingContent {
 
   private final PathMeasure pm = new PathMeasure();
   private final Path path = new Path();
@@ -283,15 +285,17 @@ public abstract class BaseStrokeContent implements DrawingContent,
 
   @Override public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
-    if (keyPath.fullyResolvesTo(getName(), depth)) {
-      currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
-      accumulator.add(currentPartialKeyPath.resolve(this));
-    }
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
 
-  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
-    if (property == COLOR) {
-      // TODO use the value callback.
+  @SuppressWarnings("unchecked")
+  @Override
+  @CallSuper
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (property == LottieProperty.OPACITY) {
+      opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.STROKE_WIDTH) {
+      widthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     }
   }
 

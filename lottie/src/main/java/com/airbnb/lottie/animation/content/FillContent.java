@@ -7,16 +7,16 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieValueCallback;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public class FillContent
-    implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+    implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
   private final Path path = new Path();
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final String name;
@@ -104,22 +104,18 @@ public class FillContent
     );
   }
 
-  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
-    if (!keyPath.matches(getName(), depth)) {
-      return;
-    }
-
-    currentPartialKeyPath = currentPartialKeyPath.addKey(getName());
-
-    if (keyPath.fullyResolvesTo(getName(), depth)) {
-      accumulator.add(currentPartialKeyPath.resolve(this));
-    }
+  @Override public void resolveKeyPath(
+      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
 
-  @Override public <T> void applyValueCallback(int property, LottieValueCallback<T> callback) {
-    if (property == COLOR) {
-      Log.d("Gabe", "Applying COLOR to " + getName());
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (property == LottieProperty.COLOR) {
+      colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.OPACITY) {
+      opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     }
   }
 }

@@ -4,8 +4,12 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
 
+import com.airbnb.lottie.animation.content.KeyPathElementContent;
 import com.airbnb.lottie.model.CubicCurveData;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeData;
+
+import java.util.List;
 
 public class MiscUtils {
   public static PointF addPoints(PointF p1, PointF p2) {
@@ -82,5 +86,21 @@ public class MiscUtils {
 
   public static float clamp(float number, float min, float max) {
     return Math.max(min, Math.min(max, number));
+  }
+
+  /**
+   * Helper method for any {@link KeyPathElementContent} that will check if the content
+   * fully matches the keypath then will add itself as the final key, resolve it, and add
+   * it to the accumulator list.
+   *
+   * Any {@link KeyPathElementContent} should call through to this as its implementation of
+   * {@link KeyPathElementContent#resolveKeyPath(KeyPath, int, List, KeyPath)}.
+   */
+  public static void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath, KeyPathElementContent content) {
+    if (keyPath.fullyResolvesTo(content.getName(), depth)) {
+      currentPartialKeyPath = currentPartialKeyPath.addKey(content.getName());
+      accumulator.add(currentPartialKeyPath.resolve(content));
+    }
   }
 }

@@ -7,14 +7,18 @@ import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.RectangleShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
-public class RectangleContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
+public class RectangleContent
+    implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, PathContent {
   private final Path path = new Path();
   private final RectF rect = new RectF();
 
@@ -133,5 +137,15 @@ public class RectangleContent implements PathContent, BaseKeyframeAnimation.Anim
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+      KeyPath currentPartialKeyPath) {
+    MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+  }
+
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+
   }
 }

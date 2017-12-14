@@ -1,8 +1,8 @@
 package com.airbnb.lottie.model;
 
 import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,11 +29,16 @@ import java.util.List;
  *
  *
  * You could:
- *     Match Gabriel left hand fill: new KeyPath("Gabriel", "Body", "Left Hand", "Fill");
+ *     Match Gabriel left hand fill:
+ *        new KeyPath("Gabriel", "Body", "Left Hand", "Fill");
  *     Match Gabriel and Brandon's left hand fill:
  *        new KeyPath("*", "Body", Left Hand", "Fill");
  *     Match anything with the name Fill:
  *        new KeyPath("**", "Fill");
+ *
+ *
+ * NOTE: Content that are part of merge paths or repeaters cannot currently be resolved with
+ * a {@link KeyPath}. This may be fixed in the future.
  */
 public class KeyPath {
 
@@ -44,14 +49,12 @@ public class KeyPath {
     this.keys = new ArrayList<>(Arrays.asList(keys));
   }
 
+  /**
+   * Copy constructor. Copies keys as well.
+   */
   private KeyPath(KeyPath keyPath) {
     keys = new ArrayList<>(keyPath.keys);
     resolvedElement = keyPath.resolvedElement;
-  }
-
-  private KeyPath(List<String> keys, @NonNull KeyPathElement resolvedElement) {
-    this.keys = keys;
-    this.resolvedElement = resolvedElement;
   }
 
   /**
@@ -62,21 +65,30 @@ public class KeyPath {
    * and if this modified the original copy, it would remain after popping back up the element tree.
    */
   @CheckResult
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public KeyPath addKey(String key) {
     KeyPath newKeyPath = new KeyPath(this);
     newKeyPath.keys.add(key);
     return newKeyPath;
   }
 
+  /**
+   * Return a new KeyPath with the element resolved to the specified {@link KeyPathElement}.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public KeyPath resolve(KeyPathElement element) {
-    return new KeyPath(new ArrayList<>(keys), element);
+    KeyPath keyPath = new KeyPath(this);
+    keyPath.resolvedElement = element;
+    return keyPath;
   }
 
   /**
    * Returns a {@link KeyPathElement} that this has been resolved to. KeyPaths get resolved with
    * resolveKeyPath on LottieDrawable or LottieAnimationView.
    */
-  @Nullable KeyPathElement getResolvedElement() {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @Nullable
+  public KeyPathElement getResolvedElement() {
     return resolvedElement;
   }
 
@@ -84,6 +96,7 @@ public class KeyPath {
    * Returns whether they key matches at the specified depth.
    */
   @SuppressWarnings("RedundantIfStatement")
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public boolean matches(String key, int depth) {
     if (isContainer(key)) {
       // This is an artificial layer we programatically create.
@@ -107,6 +120,7 @@ public class KeyPath {
    * This can be 0 or 2 when there is a globstar and the next key either matches or doesn't match
    * the current key.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public int incrementDepthBy(String key, int depth) {
     if (isContainer(key)) {
       // If it's a container then we added programatically and it isn't a part of the keypath.
@@ -131,6 +145,7 @@ public class KeyPath {
    * Returns whether the key at specified depth is fully specific enough to match the full set of
    * keys in this keypath.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public boolean fullyResolvesTo(String key, int depth) {
     if (depth >= keys.size()) {
       return false;
@@ -167,7 +182,9 @@ public class KeyPath {
    * to content other than leaf contents (such as a layer or content group transform) so sometimes
    * this will return false.
    */
-  @SuppressWarnings("SimplifiableIfStatement") public boolean propagateToChildren(String key, int depth) {
+  @SuppressWarnings("SimplifiableIfStatement")
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public boolean propagateToChildren(String key, int depth) {
     if (key.equals("__container")) {
       return true;
     }
@@ -192,7 +209,7 @@ public class KeyPath {
 
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder("KeyPath{");
-    sb.append("keys=[").append(keys).append("],resolved=").append(resolvedElement != null);
+    sb.append("keys=").append(keys).append(",resolved=").append(resolvedElement != null);
     sb.append('}');
     return sb.toString();
   }

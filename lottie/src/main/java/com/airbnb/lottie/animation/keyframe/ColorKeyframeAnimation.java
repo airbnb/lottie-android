@@ -18,6 +18,12 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     int startColor = keyframe.startValue;
     int endColor = keyframe.endValue;
 
+    if (valueCallback != null) {
+      //noinspection ConstantConditions
+      return valueCallback.getValue(keyframe.startFrame, keyframe.endFrame, startColor, endColor,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+    }
+
     return GammaEvaluator.evaluate(keyframeProgress, startColor, endColor);
   }
 }

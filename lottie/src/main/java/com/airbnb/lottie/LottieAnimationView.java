@@ -14,7 +14,6 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
-import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
@@ -24,6 +23,7 @@ import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import org.json.JSONObject;
 
@@ -721,14 +721,26 @@ import java.util.Map;
   }
 
   /**
-   * Take a keypath, potentially with wildcards or globstars and resolve it to a list of zero or
-   * more actual keypaths that exist in the current animation.
+   * Takes a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
+   * zero or more actual {@link KeyPath Keypaths} that exist in the current animation.
    *
-   * This API is not ready for public use yet.
+   * If you want to set value callbacks for any of these values, it is recommend to use the
+   * returned {@link KeyPath} objects because they will be internally resolved to their content
+   * and won't trigger a tree walk of the animation contents when applied.
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     return lottieDrawable.resolveKeyPath(keyPath);
+  }
+
+  /**
+   * Add an property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
+   * to multiple contents. In that case, the callbacks's value will apply to all of them.
+   *
+   * Internally, this will check if the {@link KeyPath} has already been resolved with
+   * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
+   */
+  public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
+    lottieDrawable.addValueCallback(keyPath, property, callback);
   }
 
     /**

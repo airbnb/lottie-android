@@ -15,6 +15,14 @@ public class FloatKeyframeAnimation extends KeyframeAnimation<Float> {
     if (keyframe.startValue == null || keyframe.endValue == null) {
       throw new IllegalStateException("Missing values for keyframe.");
     }
+
+    if (valueCallback != null) {
+      //noinspection ConstantConditions
+      return valueCallback.getValue(keyframe.startFrame, keyframe.endFrame,
+          keyframe.startValue, keyframe.endValue,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+    }
+
     return MiscUtils.lerp(keyframe.startValue, keyframe.endValue, keyframeProgress);
   }
 }
