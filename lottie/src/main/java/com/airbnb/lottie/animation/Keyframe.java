@@ -80,7 +80,8 @@ public class Keyframe<T> {
     startValue = value;
     endValue = value;
     interpolator = null;
-    startFrame = 0;
+    startFrame = Float.MIN_VALUE;
+    endFrame = Float.MAX_VALUE;
   }
 
   public float getStartProgress() {
