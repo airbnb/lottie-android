@@ -80,9 +80,7 @@ public class ShapeFill implements ContentModel {
   @Override
   public String toString() {
     return "ShapeFill{" + "color=" +
-        (color == null ? "null" :  Integer.toHexString(color.getInitialValue())) +
         ", fillEnabled=" + fillEnabled +
-        ", opacity=" + (opacity == null ? "null" : opacity.getInitialValue()) +
         '}';
   }
 }

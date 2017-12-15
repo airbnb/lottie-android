@@ -127,7 +127,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
         scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition);
       } else {
         // Somehow some community animations don't have scale in the transform.
-        scale = new AnimatableScaleValue(Collections.<Keyframe<ScaleXY>>emptyList(), new ScaleXY());
+        scale = new AnimatableScaleValue(Collections.<Keyframe<ScaleXY>>emptyList());
       }
 
       JSONObject rotationJson = json.optJSONObject("r");
@@ -145,7 +145,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
         opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
       } else {
         // Repeaters have start/end opacity instead of opacity
-        opacity = new AnimatableIntegerValue(Collections.<Keyframe<Integer>>emptyList(), 100);
+        opacity = new AnimatableIntegerValue(Collections.<Keyframe<Integer>>emptyList());
       }
 
       JSONObject startOpacityJson = json.optJSONObject("so");

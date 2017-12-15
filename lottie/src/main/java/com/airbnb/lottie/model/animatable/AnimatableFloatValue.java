@@ -4,7 +4,6 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
 import org.json.JSONObject;
@@ -12,25 +11,21 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
+
   private AnimatableFloatValue() {
-    super(0f);
+    this(0f);
   }
 
-  private AnimatableFloatValue(List<Keyframe<Float>> keyframes, Float initialValue) {
-    super(keyframes, initialValue);
+  private AnimatableFloatValue(Float value) {
+    super(value);
+  }
+
+  private AnimatableFloatValue(List<Keyframe<Float>> keyframes) {
+    super(keyframes);
   }
 
   @Override public BaseKeyframeAnimation<Float, Float> createAnimation() {
-    if (!hasAnimation()) {
-      return new StaticKeyframeAnimation<>(initialValue);
-    }
-
     return new FloatKeyframeAnimation(keyframes);
-  }
-
-  @Override
-  public Float getInitialValue() {
-    return initialValue;
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<Float> {
@@ -56,16 +51,14 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
       return newInstance(json, composition, true);
     }
 
-    public static AnimatableFloatValue newInstance(JSONObject json, LottieComposition composition,
-        boolean isDp) {
+    public static AnimatableFloatValue newInstance(
+        JSONObject json, LottieComposition composition, boolean isDp) {
       float scale = isDp ? composition.getDpScale() : 1f;
       if (json != null && json.has("x")) {
         composition.addWarning("Lottie doesn't support expressions.");
       }
-      AnimatableValueParser.Result<Float> result = AnimatableValueParser
-          .newInstance(json, scale, composition, ValueFactory.INSTANCE)
-          .parseJson();
-      return new AnimatableFloatValue(result.keyframes, result.initialValue);
+      return new AnimatableFloatValue(
+          AnimatableValueParser.newInstance(json, scale, composition, ValueFactory.INSTANCE));
     }
   }
 }

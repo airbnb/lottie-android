@@ -12,7 +12,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -134,9 +134,9 @@ public class CompositionLayer extends BaseLayer {
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     super.setProgress(progress);
     if (timeRemapping != null) {
-      long duration = lottieDrawable.getComposition().getDuration();
+      float duration = lottieDrawable.getComposition().getDuration();
       long remappedTime = (long) (timeRemapping.getValue() * 1000);
-      progress = remappedTime / (float) duration;
+      progress = remappedTime / duration;
     }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
@@ -199,11 +199,11 @@ public class CompositionLayer extends BaseLayer {
     super.addValueCallback(property, callback);
 
     if (property == LottieProperty.TIME_REMAP) {
-      if (timeRemapping == null) {
-        timeRemapping = new StaticKeyframeAnimation<>(1f);
-        addAnimation(timeRemapping);
+      if (callback == null) {
+        timeRemapping = null;
+      } else {
+        timeRemapping = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
       }
-      timeRemapping.setValueCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

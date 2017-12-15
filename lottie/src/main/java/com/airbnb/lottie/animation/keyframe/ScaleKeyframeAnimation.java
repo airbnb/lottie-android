@@ -17,6 +17,14 @@ public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
     }
     ScaleXY startTransform = keyframe.startValue;
     ScaleXY endTransform = keyframe.endValue;
+
+    if (valueCallback != null) {
+      //noinspection ConstantConditions
+      return valueCallback.getValue(keyframe.startFrame, keyframe.endFrame,
+          startTransform, endTransform,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+    }
+
     return new ScaleXY(
         MiscUtils.lerp(startTransform.getScaleX(), endTransform.getScaleX(), keyframeProgress),
         MiscUtils.lerp(startTransform.getScaleY(), endTransform.getScaleY(), keyframeProgress));

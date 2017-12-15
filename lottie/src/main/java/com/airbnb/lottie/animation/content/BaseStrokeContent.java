@@ -15,7 +15,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
@@ -304,10 +304,12 @@ public abstract class BaseStrokeContent
     } else if (property == LottieProperty.STROKE_WIDTH) {
       widthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
-      if (colorFilterAnimation == null) {
-        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      if (callback == null) {
+        colorFilterAnimation = null;
+      } else {
+        colorFilterAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
       }
-      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
     }
   }
 

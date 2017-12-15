@@ -1,15 +1,15 @@
 package com.airbnb.lottie.animation.keyframe;
 
 import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.Collections;
 
-public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
-  private final A initialValue;
+public class ValueCallbackKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
 
-  public StaticKeyframeAnimation(A initialValue) {
+  public ValueCallbackKeyframeAnimation(LottieValueCallback<A> valueCallback) {
     super(Collections.<Keyframe<K>>emptyList());
-    this.initialValue = initialValue;
+    setValueCallback(valueCallback);
   }
 
   @Override public void setProgress(float progress) {
@@ -31,16 +31,12 @@ public class StaticKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
   }
 
   @Override public A getValue() {
-    if (valueCallback != null) {
-      return valueCallback.getValue(
-          0f, 0f,
-          initialValue, initialValue,
-          getProgress(), getProgress(), getProgress());
-    }
-    return initialValue;
+    //noinspection ConstantConditions
+    return valueCallback.getValue(
+        0f, 0f, null, null, getProgress(), getProgress(), getProgress());
   }
 
-  @Override public A getValue(Keyframe<K> keyframe, float keyframeProgress) {
-    return initialValue;
+  @Override A getValue(Keyframe<K> keyframe, float keyframeProgress) {
+    return getValue();
   }
 }

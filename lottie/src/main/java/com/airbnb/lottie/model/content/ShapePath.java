@@ -35,7 +35,6 @@ public class ShapePath implements ContentModel {
   @Override public String toString() {
     return "ShapePath{" + "name=" + name +
         ", index=" + index +
-        ", hasAnimation=" + shapePath.hasAnimation() +
         '}';
   }
 

@@ -50,8 +50,7 @@ public class Keyframe<T> {
     }
   }
 
-
-  private final LottieComposition composition;
+  @Nullable private final LottieComposition composition;
   @Nullable public final T startValue;
   @Nullable public final T endValue;
   @Nullable public final Interpolator interpolator;
@@ -61,7 +60,9 @@ public class Keyframe<T> {
   private float startProgress = Float.MIN_VALUE;
   private float endProgress = Float.MIN_VALUE;
 
-  public Keyframe(LottieComposition composition, @Nullable T startValue, @Nullable T endValue,
+
+  public Keyframe(@SuppressWarnings("NullableProblems") LottieComposition composition,
+      @Nullable T startValue, @Nullable T endValue,
       @Nullable Interpolator interpolator, float startFrame, @Nullable Float endFrame) {
     this.composition = composition;
     this.startValue = startValue;
@@ -71,7 +72,22 @@ public class Keyframe<T> {
     this.endFrame = endFrame;
   }
 
+  /**
+   * Non-animated value.
+   */
+  public Keyframe(@SuppressWarnings("NullableProblems") T value) {
+    composition = null;
+    startValue = value;
+    endValue = value;
+    interpolator = null;
+    startFrame = Float.MIN_VALUE;
+    endFrame = Float.MAX_VALUE;
+  }
+
   public float getStartProgress() {
+    if (composition == null) {
+      return 0f;
+    }
     if (startProgress == Float.MIN_VALUE) {
       startProgress = (startFrame  - composition.getStartFrame()) / composition.getDurationFrames();
     }
@@ -79,6 +95,9 @@ public class Keyframe<T> {
   }
 
   public float getEndProgress() {
+    if (composition == null) {
+      return 1f;
+    }
     if (endProgress == Float.MIN_VALUE) {
       if (endFrame == null) {
         endProgress = 1f;

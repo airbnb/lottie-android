@@ -12,7 +12,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
@@ -87,6 +87,7 @@ public class FillContent
     }
 
     canvas.drawPath(path, paint);
+
     L.endSection("FillContent#draw");
   }
 
@@ -118,10 +119,12 @@ public class FillContent
     } else if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
-      if (colorFilterAnimation == null) {
-        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      if (callback == null) {
+        colorFilterAnimation = null;
+      } else {
+        colorFilterAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
       }
-      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
     }
   }
 }

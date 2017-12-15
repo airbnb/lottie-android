@@ -8,7 +8,7 @@ import java.util.List;
 public class GradientColorKeyframeAnimation extends KeyframeAnimation<GradientColor> {
   private final GradientColor gradientColor;
 
-  public GradientColorKeyframeAnimation(List<? extends Keyframe<GradientColor>> keyframes) {
+  public GradientColorKeyframeAnimation(List<Keyframe<GradientColor>> keyframes) {
     super(keyframes);
     GradientColor startValue = keyframes.get(0).startValue;
     int size = startValue == null ? 0 : startValue.getSize();
