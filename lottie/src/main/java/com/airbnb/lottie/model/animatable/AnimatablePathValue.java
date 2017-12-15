@@ -53,8 +53,6 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
     }
   }
 
-
-
   private boolean hasKeyframes(Object json) {
     if (!(json instanceof JSONArray)) {
       return false;

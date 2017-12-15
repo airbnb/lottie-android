@@ -35,7 +35,7 @@ public class Keyframe<T> {
    * The json doesn't include end frames. The data can be taken from the start frame of the next
    * keyframe though.
    */
-  public static void setEndFrames(List<? extends  Keyframe<?>> keyframes) {
+  public static void setEndFrames(List<? extends Keyframe<?>> keyframes) {
     int size = keyframes.size();
     for (int i = 0; i < size - 1; i++) {
       // In the json, the keyframes only contain their starting frame.
@@ -49,7 +49,6 @@ public class Keyframe<T> {
       keyframes.remove(lastKeyframe);
     }
   }
-
 
   @Nullable private final LottieComposition composition;
   @Nullable public final T startValue;
