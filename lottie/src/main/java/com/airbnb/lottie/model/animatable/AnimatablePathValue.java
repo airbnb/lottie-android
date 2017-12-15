@@ -6,6 +6,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
+import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
@@ -64,7 +65,10 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
 
   @Override
   public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
-    return new PointKeyframeAnimation(keyframes);
+    if (keyframes.get(0).isStatic()) {
+      return new PointKeyframeAnimation(keyframes);
+    }
+    return new PathKeyframeAnimation(keyframes);
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<PointF> {
