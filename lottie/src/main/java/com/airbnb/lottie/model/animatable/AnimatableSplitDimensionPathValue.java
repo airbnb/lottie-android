@@ -21,8 +21,4 @@ public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF
         animatableXDimension.createAnimation(), animatableYDimension.createAnimation());
   }
 
-  @Override public boolean hasAnimation() {
-    return animatableXDimension.hasAnimation() || animatableYDimension.hasAnimation();
-  }
-
 }

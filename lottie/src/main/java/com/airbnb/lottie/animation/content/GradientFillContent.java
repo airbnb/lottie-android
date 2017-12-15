@@ -17,7 +17,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientFill;
@@ -206,10 +206,12 @@ public class GradientFillContent
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
      if (property == LottieProperty.COLOR_FILTER) {
-      if (colorFilterAnimation == null) {
-        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
-      }
-      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
+       if (callback == null) {
+         colorFilterAnimation = null;
+       } else {
+         colorFilterAnimation =
+             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+       }
     }
   }
 }

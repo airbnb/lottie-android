@@ -11,13 +11,13 @@ import org.json.JSONObject;
 import java.util.Collections;
 import java.util.List;
 
-public class AnimatableValueParser<T> {
-  @Nullable private final JSONObject json;
+class AnimatableValueParser<T> {
+  private final JSONObject json;
   private final float scale;
   private final LottieComposition composition;
   private final AnimatableValue.Factory<T> valueFactory;
 
-  private AnimatableValueParser(@Nullable JSONObject json, float scale, LottieComposition
+  private AnimatableValueParser(JSONObject json, float scale, LottieComposition
       composition, AnimatableValue.Factory<T> valueFactory) {
     this.json = json;
     this.scale = scale;
@@ -25,40 +25,25 @@ public class AnimatableValueParser<T> {
     this.valueFactory = valueFactory;
   }
 
-  static <T> AnimatableValueParser<T> newInstance(@Nullable JSONObject json, float scale,
+  static <T> List<Keyframe<T>> newInstance(@Nullable JSONObject json, float scale,
       LottieComposition composition, AnimatableValue.Factory<T> valueFactory) {
-    return new AnimatableValueParser<>(json, scale, composition, valueFactory);
-  }
-
-  Result<T> parseJson() {
-    List<Keyframe<T>> keyframes = parseKeyframes();
-    T initialValue = parseInitialValue(keyframes);
-    return new Result<>(keyframes, initialValue);
+    AnimatableValueParser<T> parser =
+        new AnimatableValueParser<>(json, scale, composition, valueFactory);
+    return parser.parseKeyframes();
   }
 
   private List<Keyframe<T>> parseKeyframes() {
-    if (json != null) {
-      Object k = json.opt("k");
-      if (hasKeyframes(k)) {
-        return Keyframe.Factory.parseKeyframes((JSONArray) k, composition, scale, valueFactory);
-      } else {
-        return Collections.emptyList();
-      }
+    Object k = json.opt("k");
+    if (hasKeyframes(k)) {
+      return Keyframe.Factory.parseKeyframes((JSONArray) k, composition, scale, valueFactory);
     } else {
-      return Collections.emptyList();
+      return parseStaticValue();
     }
   }
 
-  @Nullable private T parseInitialValue(List<Keyframe<T>> keyframes) {
-    if (json != null) {
-      if (!keyframes.isEmpty()) {
-        return keyframes.get(0).startValue;
-      } else {
-        return valueFactory.valueFromObject(json.opt("k"), scale);
-      }
-    } else {
-      return null;
-    }
+  private List<Keyframe<T>> parseStaticValue() {
+    T initialValue = valueFactory.valueFromObject(json.opt("k"), scale);
+    return Collections.singletonList(new Keyframe<>(initialValue));
   }
 
   private static boolean hasKeyframes(Object json) {
@@ -67,16 +52,6 @@ public class AnimatableValueParser<T> {
     } else {
       Object firstObject = ((JSONArray) json).opt(0);
       return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
-    }
-  }
-
-  static class Result<T> {
-    final List<Keyframe<T>> keyframes;
-    final @Nullable T initialValue;
-
-    Result(List<Keyframe<T>> keyframes, @Nullable T initialValue) {
-      this.keyframes = keyframes;
-      this.initialValue = initialValue;
     }
   }
 }

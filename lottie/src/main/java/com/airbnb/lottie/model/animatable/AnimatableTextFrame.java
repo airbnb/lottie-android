@@ -11,8 +11,8 @@ import java.util.List;
 
 public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, DocumentData> {
 
-  AnimatableTextFrame(List<Keyframe<DocumentData>> keyframes, DocumentData initialValue) {
-    super(keyframes, initialValue);
+  AnimatableTextFrame(List<Keyframe<DocumentData>> keyframes) {
+    super(keyframes);
   }
 
   @Override public TextKeyframeAnimation createAnimation() {
@@ -27,10 +27,9 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
       if (json != null && json.has("x")) {
         composition.addWarning("Lottie doesn't support expressions.");
       }
-      AnimatableValueParser.Result<DocumentData> result = AnimatableValueParser
-          .newInstance(json, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE)
-          .parseJson();
-      return new AnimatableTextFrame(result.keyframes, result.initialValue);
+      return new AnimatableTextFrame(
+          AnimatableValueParser
+              .newInstance(json, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE));
     }
   }
 

@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -47,10 +47,12 @@ public class StrokeContent extends BaseStrokeContent {
     if (property == STROKE_COLOR) {
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
-      if (colorFilterAnimation == null) {
-        colorFilterAnimation = new StaticKeyframeAnimation<>(null);
+      if (callback == null) {
+        colorFilterAnimation = null;
+      } else {
+        colorFilterAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
       }
-      colorFilterAnimation.setValueCallback((LottieValueCallback<ColorFilter>) callback);
     }
   }
 }

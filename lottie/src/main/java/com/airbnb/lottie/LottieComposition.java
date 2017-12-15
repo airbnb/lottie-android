@@ -54,8 +54,8 @@ public class LottieComposition {
   private final HashSet<String> warnings = new HashSet<>();
   private final PerformanceTracker performanceTracker = new PerformanceTracker();
   private final Rect bounds;
-  private final long startFrame;
-  private final long endFrame;
+  private final float startFrame;
+  private final float endFrame;
   private final float frameRate;
   private final float dpScale;
   /* Bodymovin version */
@@ -105,8 +105,8 @@ public class LottieComposition {
     return bounds;
   }
 
-  @SuppressWarnings("WeakerAccess") public long getDuration() {
-    long frameDuration = endFrame - startFrame;
+  @SuppressWarnings("WeakerAccess") public float getDuration() {
+    float frameDuration = endFrame - startFrame;
     return (long) (frameDuration / frameRate * 1000);
   }
 
@@ -126,12 +126,12 @@ public class LottieComposition {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public long getStartFrame() {
+  public float getStartFrame() {
     return startFrame;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public long getEndFrame() {
+  public float getEndFrame() {
     return endFrame;
   }
 

@@ -9,7 +9,6 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.GradientColorKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.utils.MiscUtils;
 
@@ -21,14 +20,11 @@ import java.util.List;
 public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientColor,
     GradientColor> {
   private AnimatableGradientColorValue(
-      List<Keyframe<GradientColor>> keyframes, GradientColor initialValue) {
-    super(keyframes, initialValue);
+      List<Keyframe<GradientColor>> keyframes) {
+    super(keyframes);
   }
 
   @Override public BaseKeyframeAnimation<GradientColor, GradientColor> createAnimation() {
-    if (!hasAnimation()) {
-      return new StaticKeyframeAnimation<>(initialValue);
-    }
     return new GradientColorKeyframeAnimation(keyframes);
   }
 
@@ -39,11 +35,9 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
     public static AnimatableGradientColorValue newInstance(
         JSONObject json, LottieComposition composition) {
       int points = json.optInt("p", json.optJSONArray("k").length() / 4);
-      AnimatableValueParser.Result<GradientColor> result = AnimatableValueParser
-          .newInstance(json, 1, composition, new ValueFactory(points))
-          .parseJson();
-      GradientColor initialValue = result.initialValue;
-      return new AnimatableGradientColorValue(result.keyframes, initialValue);
+      return new AnimatableGradientColorValue(
+          AnimatableValueParser.newInstance(json, 1, composition, new ValueFactory(points))
+      );
     }
   }
 

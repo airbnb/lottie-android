@@ -9,7 +9,7 @@ import android.support.annotation.FloatRange;
  */
 public class LottieValueAnimator extends ValueAnimator {
   private boolean systemAnimationsAreDisabled = false;
-  private long compositionDuration;
+  private float compositionDuration;
   private float speed = 1f;
   @FloatRange(from = 0f, to = 1f) private float value = 0f;
   @FloatRange(from = 0f, to = 1f) private float minValue = 0f;
@@ -33,7 +33,7 @@ public class LottieValueAnimator extends ValueAnimator {
     this.systemAnimationsAreDisabled = true;
   }
 
-  public void setCompositionDuration(long compositionDuration) {
+  public void setCompositionDuration(float compositionDuration) {
     this.compositionDuration = compositionDuration;
     updateValues();
   }

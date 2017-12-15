@@ -4,7 +4,6 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
 import org.json.JSONObject;
@@ -12,25 +11,21 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
+
   private AnimatableIntegerValue() {
-    super(100);
+    this(100);
   }
 
-  AnimatableIntegerValue(List<Keyframe<Integer>> keyframes, Integer initialValue) {
-    super(keyframes, initialValue);
+  private AnimatableIntegerValue(Integer value) {
+    super(value);
+  }
+
+  AnimatableIntegerValue(List<Keyframe<Integer>> keyframes) {
+    super(keyframes);
   }
 
   @Override public BaseKeyframeAnimation<Integer, Integer> createAnimation() {
-    if (!hasAnimation()) {
-      return new StaticKeyframeAnimation<>(initialValue);
-    }
-
     return new IntegerKeyframeAnimation(keyframes);
-  }
-
-  @Override
-  public Integer getInitialValue() {
-    return initialValue;
   }
 
   public static final class Factory {
@@ -46,11 +41,9 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
       if (json != null && json.has("x")) {
         composition.addWarning("Lottie doesn't support expressions.");
       }
-      AnimatableValueParser.Result<Integer> result = AnimatableValueParser
-          .newInstance(json, 1, composition, ValueFactory.INSTANCE)
-          .parseJson();
-      Integer initialValue = result.initialValue;
-      return new AnimatableIntegerValue(result.keyframes, initialValue);
+      return new AnimatableIntegerValue(
+          AnimatableValueParser.newInstance(json, 1, composition, ValueFactory.INSTANCE)
+      );
     }
   }
 

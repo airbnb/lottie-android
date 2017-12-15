@@ -6,8 +6,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
-import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.StaticKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
 import org.json.JSONArray;
@@ -28,14 +27,13 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
     }
   }
 
-  private final List<PathKeyframe> keyframes = new ArrayList<>();
-  private PointF initialPoint;
+  private final List<Keyframe<PointF>> keyframes = new ArrayList<>();
 
   /**
    * Create a default static animatable path.
    */
   AnimatablePathValue() {
-    this.initialPoint = new PointF(0, 0);
+    keyframes.add(new Keyframe<>(new PointF(0, 0)));
   }
 
   AnimatablePathValue(Object json, LottieComposition composition) {
@@ -50,9 +48,12 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
       }
       Keyframe.setEndFrames(keyframes);
     } else {
-      initialPoint = JsonUtils.pointFromJsonArray((JSONArray) json, composition.getDpScale());
+      keyframes.add(
+          new Keyframe<>(JsonUtils.pointFromJsonArray((JSONArray) json, composition.getDpScale())));
     }
   }
+
+
 
   private boolean hasKeyframes(Object json) {
     if (!(json instanceof JSONArray)) {
@@ -65,21 +66,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
 
   @Override
   public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
-    if (!hasAnimation()) {
-      return new StaticKeyframeAnimation<>(initialPoint);
-    }
-
-    return new PathKeyframeAnimation(keyframes);
-  }
-
-  @Override
-  public boolean hasAnimation() {
-    return !keyframes.isEmpty();
-  }
-
-  @Override
-  public String toString() {
-    return "initialPoint=" + initialPoint;
+    return new PointKeyframeAnimation(keyframes);
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<PointF> {

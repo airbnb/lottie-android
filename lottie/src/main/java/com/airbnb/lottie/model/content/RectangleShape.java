@@ -63,8 +63,7 @@ public class RectangleShape implements ContentModel {
   }
 
   @Override public String toString() {
-    return "RectangleShape{" + "cornerRadius=" + cornerRadius.getInitialValue() +
-        ", position=" + position +
+    return "RectangleShape{position=" + position +
         ", size=" + size +
         '}';
   }

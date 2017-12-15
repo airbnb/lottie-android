@@ -768,7 +768,7 @@ import java.util.Map;
   }
 
   public long getDuration() {
-    return composition != null ? composition.getDuration() : 0;
+    return composition != null ? (long) composition.getDuration() : 0;
   }
 
   public void setPerformanceTrackingEnabled(boolean enabled) {
