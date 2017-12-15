@@ -97,8 +97,10 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void runAnimation(final String name) {
     LottieComposition composition = LottieComposition.Factory.fromFileSync(context, name);
-    if (composition.getBounds().width() > Resources.getSystem().getDisplayMetrics().widthPixels ||
-        composition.getBounds().height() > Resources.getSystem().getDisplayMetrics().heightPixels) {
+    if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
+        composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
+      Log.d("Happo", "" + name + " is too large. Skipping (" + composition.getBounds().width() +
+          "x" + composition.getBounds().height() + ")");
       return;
     }
     drawComposition(composition, name);
