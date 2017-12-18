@@ -9,8 +9,8 @@ android {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
     targetSdkVersion 27
-    versionCode 28
-    versionName "2.3.2-SNAPSHOT"
+    versionCode 29
+    versionName "2.5.0-beta1"
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
     buildConfigField("String", "S3AccessKey", "\"" + System.getenv("LOTTIE_S3_API_KEY") + "\"")
