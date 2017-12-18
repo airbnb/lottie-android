@@ -77,10 +77,11 @@ public class EllipseContent
 
     path.reset();
 
+    float density = Utils.density();
 
     PointF size = sizeAnimation.getValue();
-    float halfWidth = size.x / 2f;
-    float halfHeight = size.y / 2f;
+    float halfWidth = size.x * density / 2f;
+    float halfHeight = size.y * density / 2f;
     // TODO: handle bounds
 
     float cpW = halfWidth * ELLIPSE_CONTROL_POINT_PERCENTAGE;
@@ -102,7 +103,7 @@ public class EllipseContent
     }
 
     PointF position = positionAnimation.getValue();
-    path.offset(position.x, position.y);
+    path.offset(position.x * density, position.y * density);
 
     path.close();
 

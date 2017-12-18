@@ -29,7 +29,7 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
       }
       return new AnimatableTextFrame(
           AnimatableValueParser
-              .newInstance(json, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE));
+              .newInstance(json, composition, AnimatableTextFrame.ValueFactory.INSTANCE));
     }
   }
 
@@ -40,7 +40,7 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
     private ValueFactory() {
     }
 
-    @Override public DocumentData valueFromObject(Object object, float scale) {
+    @Override public DocumentData valueFromObject(Object object) {
       return DocumentData.Factory.newInstance((JSONObject) object);
     }
   }

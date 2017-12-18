@@ -9,19 +9,16 @@ public class JsonUtils {
   private JsonUtils() {
   }
 
-  public static PointF pointFromJsonObject(JSONObject values, float scale) {
+  public static PointF pointFromJsonObject(JSONObject values) {
     return new PointF(
-        valueFromObject(values.opt("x")) * scale,
-        valueFromObject(values.opt("y")) * scale);
+        valueFromObject(values.opt("x")), valueFromObject(values.opt("y")));
   }
 
-  public static PointF pointFromJsonArray(JSONArray values, float scale) {
+  public static PointF pointFromJsonArray(JSONArray values) {
     if (values.length() < 2) {
       throw new IllegalArgumentException("Unable to parse point for " + values);
     }
-    return new PointF(
-        (float) values.optDouble(0, 1) * scale,
-        (float) values.optDouble(1, 1) * scale);
+    return new PointF((float) values.optDouble(0, 1), (float) values.optDouble(1, 1));
   }
 
   public static float valueFromObject(Object object) {

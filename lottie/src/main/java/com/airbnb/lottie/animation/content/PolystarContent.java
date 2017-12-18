@@ -146,9 +146,11 @@ public class PolystarContent
       currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
     }
 
-    float outerRadius = outerRadiusAnimation.getValue();
+    float density = Utils.density();
+
+    float outerRadius = outerRadiusAnimation.getValue() * density;
     //noinspection ConstantConditions
-    float innerRadius = innerRadiusAnimation.getValue();
+    float innerRadius = innerRadiusAnimation.getValue() * density;
 
     float innerRoundedness = 0f;
     if (innerRoundednessAnimation != null) {
@@ -248,7 +250,7 @@ public class PolystarContent
     float anglePerPoint = (float) (2 * Math.PI / points);
 
     float roundedness = outerRoundednessAnimation.getValue() / 100f;
-    float radius = outerRadiusAnimation.getValue();
+    float radius = outerRadiusAnimation.getValue() * Utils.density();
     float x;
     float y;
     float previousX;

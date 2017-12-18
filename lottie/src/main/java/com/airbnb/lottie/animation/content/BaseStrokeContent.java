@@ -133,9 +133,10 @@ public abstract class BaseStrokeContent
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("StrokeContent#draw");
+    float density = Utils.density();
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
-    paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
+    paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix) * density);
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
       L.endSection("StrokeContent#draw");

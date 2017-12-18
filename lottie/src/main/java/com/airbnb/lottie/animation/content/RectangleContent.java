@@ -78,9 +78,11 @@ public class RectangleContent
 
     path.reset();
 
+    float density = Utils.density();
+
     PointF size = sizeAnimation.getValue();
-    float halfWidth = size.x / 2f;
-    float halfHeight = size.y / 2f;
+    float halfWidth = size.x * density / 2f;
+    float halfHeight = size.y * density / 2f;
     float radius = cornerRadiusAnimation == null ? 0f : cornerRadiusAnimation.getValue();
     float maxRadius = Math.min(halfWidth, halfHeight);
     if (radius > maxRadius) {
@@ -89,46 +91,48 @@ public class RectangleContent
 
     // Draw the rectangle top right to bottom left.
     PointF position = positionAnimation.getValue();
+    float px = position.x * density;
+    float py = position.y * density;
 
-    path.moveTo(position.x + halfWidth, position.y - halfHeight + radius);
+    path.moveTo(px + halfWidth, py - halfHeight + radius);
 
-    path.lineTo(position.x + halfWidth, position.y + halfHeight - radius);
+    path.lineTo(px + halfWidth, py + halfHeight - radius);
 
     if (radius > 0) {
-      rect.set(position.x + halfWidth - 2 * radius,
-          position.y + halfHeight - 2 * radius,
-          position.x + halfWidth,
-          position.y + halfHeight);
+      rect.set(px + halfWidth - 2 * radius,
+          py + halfHeight - 2 * radius,
+          px + halfWidth,
+          py + halfHeight);
       path.arcTo(rect, 0, 90, false);
     }
 
-    path.lineTo(position.x - halfWidth + radius, position.y + halfHeight);
+    path.lineTo(px - halfWidth + radius, py + halfHeight);
 
     if (radius > 0) {
-      rect.set(position.x - halfWidth,
-          position.y + halfHeight - 2 * radius,
-          position.x - halfWidth + 2 * radius,
-          position.y + halfHeight);
+      rect.set(px - halfWidth,
+          py + halfHeight - 2 * radius,
+          px - halfWidth + 2 * radius,
+          py + halfHeight);
       path.arcTo(rect, 90, 90, false);
     }
 
-    path.lineTo(position.x - halfWidth, position.y - halfHeight + radius);
+    path.lineTo(px - halfWidth, py - halfHeight + radius);
 
     if (radius > 0) {
-      rect.set(position.x - halfWidth,
-          position.y - halfHeight,
-          position.x - halfWidth + 2 * radius,
-          position.y - halfHeight + 2 * radius);
+      rect.set(px - halfWidth,
+          py - halfHeight,
+          px - halfWidth + 2 * radius,
+          py - halfHeight + 2 * radius);
       path.arcTo(rect, 180, 90, false);
     }
 
-    path.lineTo(position.x + halfWidth - radius, position.y - halfHeight);
+    path.lineTo(px + halfWidth - radius, py - halfHeight);
 
     if (radius > 0) {
-      rect.set(position.x + halfWidth - 2 * radius,
-          position.y - halfHeight,
-          position.x + halfWidth,
-          position.y - halfHeight + 2 * radius);
+      rect.set(px + halfWidth - 2 * radius,
+          py - halfHeight,
+          px + halfWidth,
+          py - halfHeight + 2 * radius);
       path.arcTo(rect, 270, 90, false);
     }
     path.close();

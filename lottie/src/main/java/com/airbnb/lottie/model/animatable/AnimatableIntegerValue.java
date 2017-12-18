@@ -42,7 +42,7 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
         composition.addWarning("Lottie doesn't support expressions.");
       }
       return new AnimatableIntegerValue(
-          AnimatableValueParser.newInstance(json, 1, composition, ValueFactory.INSTANCE)
+          AnimatableValueParser.newInstance(json, composition, ValueFactory.INSTANCE)
       );
     }
   }
@@ -53,8 +53,8 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     private ValueFactory() {
     }
 
-    @Override public Integer valueFromObject(Object object, float scale) {
-      return Math.round(JsonUtils.valueFromObject(object) * scale);
+    @Override public Integer valueFromObject(Object object) {
+      return Math.round(JsonUtils.valueFromObject(object));
     }
   }
 }

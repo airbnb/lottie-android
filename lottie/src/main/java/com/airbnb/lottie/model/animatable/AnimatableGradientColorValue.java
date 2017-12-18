@@ -36,7 +36,7 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
         JSONObject json, LottieComposition composition) {
       int points = json.optInt("p", json.optJSONArray("k").length() / 4);
       return new AnimatableGradientColorValue(
-          AnimatableValueParser.newInstance(json, 1, composition, new ValueFactory(points))
+          AnimatableValueParser.newInstance(json, composition, new ValueFactory(points))
       );
     }
   }
@@ -68,7 +68,7 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
      *     ...
      * ]
      */
-    @Override public GradientColor valueFromObject(Object object, float scale) {
+    @Override public GradientColor valueFromObject(Object object) {
       JSONArray array = (JSONArray) object;
       float[] positions = new float[colorPoints];
       int[] colors = new int[colorPoints];

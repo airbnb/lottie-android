@@ -29,15 +29,14 @@ public class PathKeyframe extends Keyframe<PointF> {
 
     public static PathKeyframe newInstance(JSONObject json, LottieComposition composition,
         AnimatableValue.Factory<PointF> valueFactory) {
-      Keyframe<PointF> keyframe = Keyframe.Factory.newInstance(json, composition,
-          composition.getDpScale(), valueFactory);
+      Keyframe<PointF> keyframe = Keyframe.Factory.newInstance(json, composition, valueFactory);
       PointF cp1 = null;
       PointF cp2 = null;
       JSONArray tiJson = json.optJSONArray("ti");
       JSONArray toJson = json.optJSONArray("to");
       if (tiJson != null && toJson != null) {
-        cp1 = JsonUtils.pointFromJsonArray(toJson, composition.getDpScale());
-        cp2 = JsonUtils.pointFromJsonArray(tiJson, composition.getDpScale());
+        cp1 = JsonUtils.pointFromJsonArray(toJson);
+        cp2 = JsonUtils.pointFromJsonArray(tiJson);
       }
 
       PathKeyframe pathKeyframe = new PathKeyframe(composition, keyframe.startValue,

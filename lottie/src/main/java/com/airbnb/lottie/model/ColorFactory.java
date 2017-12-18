@@ -9,7 +9,7 @@ import org.json.JSONArray;
 public class ColorFactory implements AnimatableValue.Factory<Integer> {
   public static final ColorFactory INSTANCE = new ColorFactory();
 
-  @Override public Integer valueFromObject(Object object, float scale) {
+  @Override public Integer valueFromObject(Object object) {
     JSONArray colorArray = (JSONArray) object;
     if (colorArray.length() == 4) {
       boolean shouldUse255 = true;

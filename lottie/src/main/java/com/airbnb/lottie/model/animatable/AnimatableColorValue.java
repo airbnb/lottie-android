@@ -25,7 +25,7 @@ public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> 
 
     public static AnimatableColorValue newInstance(JSONObject json, LottieComposition composition) {
       return new AnimatableColorValue(
-          AnimatableValueParser.newInstance(json, 1f, composition, ColorFactory.INSTANCE));
+          AnimatableValueParser.newInstance(json, composition, ColorFactory.INSTANCE));
     }
   }
 }

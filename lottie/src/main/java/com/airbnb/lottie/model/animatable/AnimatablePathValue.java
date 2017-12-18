@@ -49,8 +49,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
       }
       Keyframe.setEndFrames(keyframes);
     } else {
-      keyframes.add(
-          new Keyframe<>(JsonUtils.pointFromJsonArray((JSONArray) json, composition.getDpScale())));
+      keyframes.add(new Keyframe<>(JsonUtils.pointFromJsonArray((JSONArray) json)));
     }
   }
 
@@ -77,8 +76,8 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
     private ValueFactory() {
     }
 
-    @Override public PointF valueFromObject(Object object, float scale) {
-      return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
+    @Override public PointF valueFromObject(Object object) {
+      return JsonUtils.pointFromJsonArray((JSONArray) object);
     }
   }
 }

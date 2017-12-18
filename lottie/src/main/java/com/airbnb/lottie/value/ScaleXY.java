@@ -35,11 +35,11 @@ public class ScaleXY {
     private Factory() {
     }
 
-    @Override public ScaleXY valueFromObject(Object object, float scale) {
+    @Override public ScaleXY valueFromObject(Object object) {
       JSONArray array = (JSONArray) object;
       return new ScaleXY(
-          (float) array.optDouble(0, 1) / 100f * scale,
-          (float) array.optDouble(1, 1) / 100f * scale);
+          (float) array.optDouble(0, 1) / 100f,
+          (float) array.optDouble(1, 1) / 100f);
     }
   }
 }

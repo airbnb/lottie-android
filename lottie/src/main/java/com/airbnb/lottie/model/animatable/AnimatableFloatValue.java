@@ -34,8 +34,8 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     private ValueFactory() {
     }
 
-    @Override public Float valueFromObject(Object object, float scale) {
-      return JsonUtils.valueFromObject(object) * scale;
+    @Override public Float valueFromObject(Object object) {
+      return JsonUtils.valueFromObject(object);
     }
   }
 
@@ -58,7 +58,7 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
         composition.addWarning("Lottie doesn't support expressions.");
       }
       return new AnimatableFloatValue(
-          AnimatableValueParser.newInstance(json, scale, composition, ValueFactory.INSTANCE));
+          AnimatableValueParser.newInstance(json, composition, ValueFactory.INSTANCE));
     }
   }
 }

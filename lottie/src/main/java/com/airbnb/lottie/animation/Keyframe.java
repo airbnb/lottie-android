@@ -159,7 +159,7 @@ public class Keyframe<T> {
     private Factory() {
     }
 
-    public static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition, float scale,
+    public static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition,
         AnimatableValue.Factory<T> valueFactory) {
       PointF cp1 = null;
       PointF cp2 = null;
@@ -172,19 +172,19 @@ public class Keyframe<T> {
         startFrame = (float) json.optDouble("t", 0);
         Object startValueJson = json.opt("s");
         if (startValueJson != null) {
-          startValue = valueFactory.valueFromObject(startValueJson, scale);
+          startValue = valueFactory.valueFromObject(startValueJson);
         }
 
         Object endValueJson = json.opt("e");
         if (endValueJson != null) {
-          endValue = valueFactory.valueFromObject(endValueJson, scale);
+          endValue = valueFactory.valueFromObject(endValueJson);
         }
 
         JSONObject cp1Json = json.optJSONObject("o");
         JSONObject cp2Json = json.optJSONObject("i");
         if (cp1Json != null && cp2Json != null) {
-          cp1 = JsonUtils.pointFromJsonObject(cp1Json, scale);
-          cp2 = JsonUtils.pointFromJsonObject(cp2Json, scale);
+          cp1 = JsonUtils.pointFromJsonObject(cp1Json);
+          cp2 = JsonUtils.pointFromJsonObject(cp2Json);
         }
 
         boolean hold = json.optInt("h", 0) == 1;
@@ -194,9 +194,9 @@ public class Keyframe<T> {
           // TODO: create a HoldInterpolator so progress changes don't invalidate.
           interpolator = LINEAR_INTERPOLATOR;
         } else if (cp1 != null) {
-          cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
+          cp1.x = MiscUtils.clamp(cp1.x, -1, 1);
           cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
+          cp2.x = MiscUtils.clamp(cp2.x, -1, 1);
           cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
           int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
           WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
@@ -204,8 +204,7 @@ public class Keyframe<T> {
             interpolator = interpolatorRef.get();
           }
           if (interpolatorRef == null || interpolator == null) {
-            interpolator = PathInterpolatorCompat.create(
-                cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+            interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
             try {
               putInterpolator(hash, new WeakReference<>(interpolator));
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -220,23 +219,22 @@ public class Keyframe<T> {
           interpolator = LINEAR_INTERPOLATOR;
         }
       } else {
-        startValue = valueFactory.valueFromObject(json, scale);
+        startValue = valueFactory.valueFromObject(json);
         endValue = startValue;
       }
       return new Keyframe<>(composition, startValue, endValue, interpolator, startFrame, null);
     }
 
-    public static <T> List<Keyframe<T>> parseKeyframes(JSONArray json,
-        LottieComposition composition,
-        float scale, AnimatableValue.Factory<T> valueFactory) {
+    public static <T> List<Keyframe<T>> parseKeyframes(
+        JSONArray json, LottieComposition composition, AnimatableValue.Factory<T> valueFactory) {
       int length = json.length();
       if (length == 0) {
         return Collections.emptyList();
       }
       List<Keyframe<T>> keyframes = new ArrayList<>();
       for (int i = 0; i < length; i++) {
-        keyframes.add(Keyframe.Factory.newInstance(json.optJSONObject(i), composition, scale,
-            valueFactory));
+        keyframes.add(
+            Keyframe.Factory.newInstance(json.optJSONObject(i), composition, valueFactory));
       }
 
       setEndFrames(keyframes);

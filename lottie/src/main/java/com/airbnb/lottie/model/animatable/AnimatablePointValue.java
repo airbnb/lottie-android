@@ -28,7 +28,7 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
     public static AnimatablePointValue newInstance(JSONObject json, LottieComposition composition) {
       return new AnimatablePointValue(
           AnimatableValueParser
-              .newInstance(json, composition.getDpScale(), composition, PointFFactory.INSTANCE)
+              .newInstance(json, composition, PointFFactory.INSTANCE)
       );
     }
   }

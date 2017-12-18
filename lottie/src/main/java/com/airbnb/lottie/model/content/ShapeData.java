@@ -108,7 +108,7 @@ public class ShapeData {
     private Factory() {
     }
 
-    @Override public ShapeData valueFromObject(Object object, float scale) {
+    @Override public ShapeData valueFromObject(Object object) {
       JSONObject pointsData = null;
       if (object instanceof JSONArray) {
         Object firstObject = ((JSONArray) object).opt(0);
@@ -139,8 +139,6 @@ public class ShapeData {
 
       int length = pointsArray.length();
       PointF vertex = vertexAtIndex(0, pointsArray);
-      vertex.x *= scale;
-      vertex.y *= scale;
       PointF initialPoint = vertex;
       List<CubicCurveData> curves = new ArrayList<>(length);
 
@@ -151,13 +149,6 @@ public class ShapeData {
         PointF cp2 = vertexAtIndex(i, inTangents);
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
-
-        shapeCp1.x *= scale;
-        shapeCp1.y *= scale;
-        shapeCp2.x *= scale;
-        shapeCp2.y *= scale;
-        vertex.x *= scale;
-        vertex.y *= scale;
 
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }
@@ -170,15 +161,6 @@ public class ShapeData {
 
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
-
-        if (scale != 1f) {
-          shapeCp1.x *= scale;
-          shapeCp1.y *= scale;
-          shapeCp2.x *= scale;
-          shapeCp2.y *= scale;
-          vertex.x *= scale;
-          vertex.y *= scale;
-        }
 
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }

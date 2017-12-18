@@ -6,6 +6,8 @@ import com.airbnb.lottie.animation.Keyframe;
 
 import java.util.List;
 
+import static com.airbnb.lottie.utils.MiscUtils.lerp;
+
 public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
   private final PointF point = new PointF();
 
@@ -27,8 +29,9 @@ public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
           keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
     }
 
-    point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
-        startPoint.y + keyframeProgress * (endPoint.y - startPoint.y));
+    point.set(
+        lerp(startPoint.x, endPoint.x, keyframeProgress),
+        lerp(startPoint.y, endPoint.y, keyframeProgress));
     return point;
   }
 }

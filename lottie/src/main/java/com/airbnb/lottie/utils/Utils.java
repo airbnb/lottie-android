@@ -1,6 +1,7 @@
 package com.airbnb.lottie.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -212,5 +213,16 @@ public final class Utils {
       return Settings.System.getFloat(context.getContentResolver(),
           Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
     }
+  }
+
+  public static float density() {
+    return Resources.getSystem().getDisplayMetrics().density;
+  }
+
+  public static PointF multiplyDensity(PointF point) {
+    float density = Utils.density();
+    point.x *= density;
+    point.y *= density;
+    return point;
   }
 }
