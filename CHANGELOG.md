@@ -1,7 +1,6 @@
 # 2.5.0-beta1
 ### Features and Improvements
-* Added the ability to dynamically change properties at runtime. See [docs](http://airbnb
-.io/lottie/android/dynamic.html) for more info.
+* Added the ability to dynamically change properties at runtime. See [docs](http://airbnb.io/lottie/android/dynamic.html) for more info.
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
 ### Bugs Fixed
 * Fixed a bug when an opacity animation time interpolator was >1.
