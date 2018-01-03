@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -9,7 +10,7 @@ import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.MergePathsContent;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
 
 public class MergePaths implements ContentModel {
@@ -72,8 +73,26 @@ public class MergePaths implements ContentModel {
     private Factory() {
     }
 
-    static MergePaths newInstance(JSONObject json) {
-      return new MergePaths(json.optString("nm"), MergePathsMode.forId(json.optInt("mm", 1)));
+    static MergePaths newInstance(JsonReader reader) throws IOException {
+      String name = null;
+      MergePathsMode mode = null;
+
+      // reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "mm":
+            mode =  MergePathsMode.forId(reader.nextInt());
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      // reader.endObject();
+
+      return new MergePaths(name, mode);
     }
   }
 }

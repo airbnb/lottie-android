@@ -62,10 +62,6 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   private Keyframe<K> getCurrentKeyframe() {
-    if (keyframes.isEmpty()) {
-      throw new IllegalStateException("There are no keyframes");
-    }
-
     if (cachedKeyframe != null && cachedKeyframe.containsProgress(progress)) {
       return cachedKeyframe;
     }

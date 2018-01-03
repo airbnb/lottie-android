@@ -9,6 +9,7 @@ import android.support.annotation.RawRes;
 import android.support.annotation.RestrictTo;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SparseArrayCompat;
+import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.model.FileCompositionLoader;
@@ -18,14 +19,12 @@ import com.airbnb.lottie.model.JsonCompositionLoader;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,30 +52,14 @@ public class LottieComposition {
   // This is stored as a set to avoid duplicates.
   private final HashSet<String> warnings = new HashSet<>();
   private final PerformanceTracker performanceTracker = new PerformanceTracker();
-  private final Rect bounds;
-  private final float startFrame;
-  private final float endFrame;
-  private final float frameRate;
-  private final float dpScale;
+  private Rect bounds;
+  private float startFrame;
+  private float endFrame;
+  private float frameRate;
   /* Bodymovin version */
-  private final int majorVersion;
-  private final int minorVersion;
-  private final int patchVersion;
-
-  private LottieComposition(Rect bounds, long startFrame, long endFrame, float frameRate,
-      float dpScale, int major, int minor, int patch) {
-    this.bounds = bounds;
-    this.startFrame = startFrame;
-    this.endFrame = endFrame;
-    this.frameRate = frameRate;
-    this.dpScale = dpScale;
-    this.majorVersion = major;
-    this.minorVersion = minor;
-    this.patchVersion = patch;
-    if (!Utils.isAtLeastVersion(this, 4, 5, 0)) {
-      addWarning("Lottie only supports bodymovin >= 4.5.0");
-    }
-  }
+  private int majorVersion;
+  private int minorVersion;
+  private int patchVersion;
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void addWarning(String warning) {
@@ -88,7 +71,7 @@ public class LottieComposition {
     return new ArrayList<>(Arrays.asList(warnings.toArray(new String[warnings.size()])));
   }
 
-  public void setPerformanceTrackingEnabled(boolean enabled) {
+  @SuppressWarnings("WeakerAccess") public void setPerformanceTrackingEnabled(boolean enabled) {
     performanceTracker.setEnabled(enabled);
   }
 
@@ -166,10 +149,6 @@ public class LottieComposition {
   }
 
 
-  public float getDpScale() {
-    return dpScale;
-  }
-
   @Override public String toString() {
     final StringBuilder sb = new StringBuilder("LottieComposition:\n");
     for (Layer layer : layers) {
@@ -199,8 +178,8 @@ public class LottieComposition {
     /**
      * Loads a composition from a file stored in res/raw.
      */
-    public static Cancellable fromRawFile(Context context, @RawRes int resId,
-        OnCompositionLoadedListener loadedListener) {
+    @SuppressWarnings("WeakerAccess") public static Cancellable fromRawFile(
+        Context context, @RawRes int resId, OnCompositionLoadedListener loadedListener) {
       return fromInputStream(context, context.getResources().openRawResource(resId), loadedListener);
     }
 
@@ -234,7 +213,7 @@ public class LottieComposition {
      */
     public static Cancellable fromJson(Resources res, JSONObject json,
         OnCompositionLoadedListener loadedListener) {
-      JsonCompositionLoader loader = new JsonCompositionLoader(res, loadedListener);
+      JsonCompositionLoader loader = new JsonCompositionLoader(loadedListener);
       loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, json);
       return loader;
     }
@@ -242,149 +221,199 @@ public class LottieComposition {
     @Nullable
     public static LottieComposition fromInputStream(Resources res, InputStream stream) {
       try {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder total = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-          total.append(line);
-        }
-        JSONObject jsonObject = new JSONObject(total.toString());
-        return fromJsonSync(res, jsonObject);
+        return fromJsonSync(new JsonReader(new InputStreamReader(stream)));
       } catch (IOException e) {
         Log.e(L.TAG, "Failed to load composition.",
             new IllegalStateException("Unable to find file.", e));
-      } catch (JSONException e) {
-        Log.e(L.TAG, "Failed to load composition.",
-            new IllegalStateException("Unable to load JSON.", e));
       } finally {
         closeQuietly(stream);
       }
       return null;
     }
 
+    /**
+     * Use {@link #fromJsonSync(JsonReader)}
+     */
+    @Deprecated
     public static LottieComposition fromJsonSync(Resources res, JSONObject json) {
-      Rect bounds = null;
-      float scale = res.getDisplayMetrics().density;
-      int width = json.optInt("w", -1);
-      int height = json.optInt("h", -1);
-
-      if (width != -1 && height != -1) {
-        int scaledWidth = (int) (width * scale);
-        int scaledHeight = (int) (height * scale);
-        bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+      try {
+        return fromJsonSync(res, new JsonReader(new StringReader(json.toString())));
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Unable to parse json", e);
       }
+    }
 
-      long startFrame = json.optLong("ip", 0);
-      long endFrame = json.optLong("op", 0);
-      float frameRate = (float) json.optDouble("fr", 0);
-      String version = json.optString("v");
-      String[] versions = version.split("\\.");
-      int major = Integer.parseInt(versions[0]);
-      int minor = Integer.parseInt(versions[1]);
-      int patch = Integer.parseInt(versions[2]);
-      LottieComposition composition = new LottieComposition(
-          bounds, startFrame, endFrame, frameRate, scale, major, minor, patch);
-      JSONArray assetsJson = json.optJSONArray("assets");
-      parseImages(assetsJson, composition);
-      parsePrecomps(assetsJson, composition);
-      parseFonts(json.optJSONObject("fonts"), composition);
-      parseChars(json.optJSONArray("chars"), composition);
-      parseLayers(json, composition);
+    /**
+     * Use {@link #fromJsonSync(JsonReader)}
+     */
+    @Deprecated
+    public static LottieComposition fromJsonSync(
+        @SuppressWarnings("unused") Resources res, JsonReader reader) throws IOException {
+      return fromJsonSync(reader);
+    }
+
+    public static LottieComposition fromJsonSync(JsonReader reader) throws IOException {
+      float scale = Utils.dpScale();
+      int width = -1;
+      LottieComposition composition = new LottieComposition();
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "w":
+            width = reader.nextInt();
+            break;
+          case "h":
+            int height = reader.nextInt();
+            int scaledWidth = (int) (width * scale);
+            int scaledHeight = (int) (height * scale);
+            composition.bounds = new Rect(0, 0, scaledWidth, scaledHeight);
+            break;
+          case "ip":
+            composition.startFrame = (float) reader.nextDouble();
+            break;
+          case "op":
+            composition.endFrame = (float) reader.nextDouble();
+            break;
+          case "fr":
+            composition.frameRate = (float) reader.nextDouble();
+            break;
+          case "v":
+            String version = reader.nextString();
+            String[] versions = version.split("\\.");
+            composition.majorVersion = Integer.parseInt(versions[0]);
+            composition.minorVersion = Integer.parseInt(versions[1]);
+            composition.patchVersion = Integer.parseInt(versions[2]);
+            if (!Utils.isAtLeastVersion(composition, 4, 5, 0)) {
+              composition.addWarning("Lottie only supports bodymovin >= 4.5.0");
+            }
+            break;
+          case "layers":
+            parseLayers(reader, composition);
+            break;
+          case "assets":
+            parseAssets(reader, composition);
+            break;
+          case "fonts":
+            parseFonts(reader, composition);
+            break;
+          case "chars":
+            parseChars(reader, composition);
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
       return composition;
     }
 
-    private static void parseLayers(JSONObject json, LottieComposition composition) {
-      JSONArray jsonLayers = json.optJSONArray("layers");
-      // This should never be null. Bodymovin always exports at least an empty array.
-      // However, it seems as if the unmarshalling from the React Native library sometimes
-      // causes this to be null. The proper fix should be done there but this will prevent a crash.
-      // https://github.com/airbnb/lottie-android/issues/279
-      if (jsonLayers == null) {
-        return;
-      }
-      int length = jsonLayers.length();
+    private static void parseLayers(JsonReader reader, LottieComposition composition)
+        throws IOException {
       int imageCount = 0;
-      for (int i = 0; i < length; i++) {
-        Layer layer = Layer.Factory.newInstance(jsonLayers.optJSONObject(i), composition);
+      reader.beginArray();
+      while (reader.hasNext()) {
+        Layer layer = Layer.Factory.newInstance(reader, composition);
         if (layer.getLayerType() == Layer.LayerType.Image) {
           imageCount++;
         }
         addLayer(composition.layers, composition.layerMap, layer);
-      }
 
-      if (imageCount > 4) {
-        composition.addWarning("You have " + imageCount + " images. Lottie should primarily be " +
-            "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
-            " to shape layers.");
+        if (imageCount > 4) {
+          composition.warnings.add("You have " + imageCount + " images. Lottie should primarily be " +
+              "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
+              " to shape layers.");
+        }
       }
+      reader.endArray();
     }
 
-    private static void parsePrecomps(
-        @Nullable JSONArray assetsJson, LottieComposition composition) {
-      if (assetsJson == null) {
-        return;
-      }
-      int length = assetsJson.length();
-      for (int i = 0; i < length; i++) {
-        JSONObject assetJson = assetsJson.optJSONObject(i);
-        JSONArray layersJson = assetJson.optJSONArray("layers");
-        if (layersJson == null) {
-          continue;
-        }
-        List<Layer> layers = new ArrayList<>(layersJson.length());
+    private static void parseAssets(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      reader.beginArray();
+      while (reader.hasNext()) {
+        String id = null;
+        // For precomps
+        List<Layer> layers = new ArrayList<>();
         LongSparseArray<Layer> layerMap = new LongSparseArray<>();
-        for (int j = 0; j < layersJson.length(); j++) {
-          Layer layer = Layer.Factory.newInstance(layersJson.optJSONObject(j), composition);
-          layerMap.put(layer.getId(), layer);
-          layers.add(layer);
+        // For images
+        int width = 0;
+        int height = 0;
+        String imageFileName = null;
+        String relativeFolder = null;
+        reader.beginObject();
+        while (reader.hasNext()) {
+          switch (reader.nextName()) {
+            case "id":
+              id = reader.nextString();
+              break;
+            case "layers":
+              reader.beginArray();
+              while (reader.hasNext()) {
+                Layer layer = Layer.Factory.newInstance(reader, composition);
+                layerMap.put(layer.getId(), layer);
+                layers.add(layer);
+              }
+              reader.endArray();
+              break;
+            case "w":
+              width = reader.nextInt();
+              break;
+            case "h":
+              height = reader.nextInt();
+              break;
+            case "p":
+              imageFileName = reader.nextString();
+              break;
+            case "u":
+              relativeFolder = reader.nextString();
+              break;
+            default:
+              reader.skipValue();
+          }
         }
-        String id = assetJson.optString("id");
-        composition.precomps.put(id, layers);
-      }
-    }
-
-    private static void parseImages(
-        @Nullable JSONArray assetsJson, LottieComposition composition) {
-      if (assetsJson == null) {
-        return;
-      }
-      int length = assetsJson.length();
-      for (int i = 0; i < length; i++) {
-        JSONObject assetJson = assetsJson.optJSONObject(i);
-        if (!assetJson.has("p")) {
-          continue;
+        reader.endObject();
+        if (!layers.isEmpty()) {
+          composition.precomps.put(id, layers);
+        } else if (imageFileName != null) {
+          LottieImageAsset image =
+              new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
+          composition.images.put(image.getId(), image);
         }
-        LottieImageAsset image = LottieImageAsset.Factory.newInstance(assetJson);
-        composition.images.put(image.getId(), image);
       }
+      reader.endArray();
     }
 
-    private static void parseFonts(@Nullable JSONObject fonts, LottieComposition composition) {
-      if (fonts == null) {
-        return;
+    private static void parseFonts(
+        JsonReader reader, LottieComposition composition) throws IOException {
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "list":
+            reader.beginArray();
+            while (reader.hasNext()) {
+              Font font = Font.Factory.newInstance(reader);
+              composition.fonts.put(font.getName(), font);
+            }
+            reader.endArray();
+            break;
+          default:
+            reader.skipValue();
+        }
       }
-      JSONArray fontsList = fonts.optJSONArray("list");
-      if (fontsList == null) {
-        return;
-      }
-      int length = fontsList.length();
-      for (int i = 0; i < length; i++) {
-        Font font = Font.Factory.newInstance(fontsList.optJSONObject(i));
-        composition.fonts.put(font.getName(), font);
-      }
+      reader.endObject();
     }
 
-    private static void parseChars(@Nullable JSONArray charsJson, LottieComposition composition) {
-      if (charsJson == null) {
-        return;
-      }
-
-      int length = charsJson.length();
-      for (int i = 0; i < length; i++) {
+    private static void parseChars(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      reader.beginArray();
+      while (reader.hasNext()) {
         FontCharacter character =
-            FontCharacter.Factory.newInstance(charsJson.optJSONObject(i), composition);
+            FontCharacter.Factory.newInstance(reader, composition);
         composition.characters.put(character.hashCode(), character);
       }
+      reader.endArray();
     }
 
     private static void addLayer(List<Layer> layers, LongSparseArray<Layer> layerMap, Layer layer) {

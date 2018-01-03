@@ -2,6 +2,8 @@ package com.airbnb.lottie.model.animatable;
 
 import android.graphics.Color;
 import android.support.annotation.IntRange;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -12,9 +14,8 @@ import com.airbnb.lottie.animation.keyframe.GradientColorKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.utils.MiscUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientColor,
@@ -33,16 +34,16 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
     }
 
     public static AnimatableGradientColorValue newInstance(
-        JSONObject json, LottieComposition composition) {
-      int points = json.optInt("p", json.optJSONArray("k").length() / 4);
+        JsonReader reader, LottieComposition composition, int points) throws IOException {
       return new AnimatableGradientColorValue(
-          AnimatableValueParser.newInstance(json, 1, composition, new ValueFactory(points))
+          AnimatableValueParser.newInstance(reader, 1, composition, new ValueFactory(points))
       );
     }
   }
 
   private static class ValueFactory implements AnimatableValue.Factory<GradientColor> {
-    private final int colorPoints;
+    /** The number of colors if it exists in the json or -1 if it doesn't (legacy bodymovin) */
+    private int colorPoints;
 
     private ValueFactory(int colorPoints) {
       this.colorPoints = colorPoints;
@@ -68,22 +69,39 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
      *     ...
      * ]
      */
-    @Override public GradientColor valueFromObject(Object object, float scale) {
-      JSONArray array = (JSONArray) object;
-      float[] positions = new float[colorPoints];
-      int[] colors = new int[colorPoints];
-      GradientColor gradientColor = new GradientColor(positions, colors);
+    @Override public GradientColor valueFromObject(JsonReader reader, float scale)
+        throws IOException {
+      List<Float> array = new ArrayList<>();
+      // The array was started by Keyframe because it thought that this may be an array of keyframes
+      // but peek returned a number so it considered it a static array of numbers.
+      boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
+      if (isArray) {
+        reader.beginArray();
+      }
+      while (reader.hasNext()) {
+        array.add((float) reader.nextDouble());
+      }
+      if(isArray) {
+        reader.endArray();
+      }
+      if (colorPoints == -1) {
+        colorPoints = array.size() / 4;
+      }
+
+      float[] positions = new float[array.size()];
+      int[] colors = new int[array.size()];
+
       int r = 0;
       int g = 0;
-      if (array.length() != colorPoints * 4) {
-        Log.w(L.TAG, "Unexpected gradient length: " + array.length() +
+      if (array.size() != colorPoints * 4) {
+        Log.w(L.TAG, "Unexpected gradient length: " + array.size() +
             ". Expected " + (colorPoints * 4) + ". This may affect the appearance of the gradient. " +
             "Make sure to save your After Effects file before exporting an animation with " +
             "gradients.");
       }
       for (int i = 0; i < colorPoints * 4; i++) {
         int colorIndex = i / 4;
-        double value = array.optDouble(i);
+        double value = array.get(i);
         switch (i % 4) {
           case 0:
             // position
@@ -102,6 +120,7 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
         }
       }
 
+      GradientColor gradientColor = new GradientColor(positions, colors);
       addOpacityStopsToGradientIfNeeded(gradientColor, array);
       return gradientColor;
     }
@@ -115,21 +134,21 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
      * This should be a good approximation is nearly all cases. However, if there are many more
      * opacity stops than color stops, information will be lost.
      */
-    private void addOpacityStopsToGradientIfNeeded(GradientColor gradientColor, JSONArray array) {
+    private void addOpacityStopsToGradientIfNeeded(GradientColor gradientColor, List<Float> array) {
       int startIndex = colorPoints * 4;
-      if (array.length() <= startIndex) {
+      if (array.size() <= startIndex) {
         return;
       }
 
-      int opacityStops = (array.length() - startIndex) / 2;
+      int opacityStops = (array.size() - startIndex) / 2;
       double[] positions = new double[opacityStops];
       double[] opacities = new double[opacityStops];
 
-      for (int i = startIndex, j = 0; i < array.length(); i++) {
+      for (int i = startIndex, j = 0; i < array.size(); i++) {
         if (i % 2 == 0) {
-          positions[j] = array.optDouble(i);
+          positions[j] = array.get(i);
         } else {
-          opacities[j] = array.optDouble(i);
+          opacities[j] = array.get(i);
           j++;
         }
       }

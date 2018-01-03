@@ -37,6 +37,7 @@ public class CompositionLayer extends BaseLayer {
     if (timeRemapping != null) {
       this.timeRemapping = timeRemapping.createAnimation();
       addAnimation(this.timeRemapping);
+      //noinspection ConstantConditions
       this.timeRemapping.addUpdateListener(this);
     } else {
       this.timeRemapping = null;

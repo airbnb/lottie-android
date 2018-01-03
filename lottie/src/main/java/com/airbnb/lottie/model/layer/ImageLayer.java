@@ -14,6 +14,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 public class ImageLayer extends BaseLayer {
@@ -21,12 +22,10 @@ public class ImageLayer extends BaseLayer {
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private final Rect src = new Rect();
   private final Rect dst = new Rect();
-  private final float density;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
-  ImageLayer(LottieDrawable lottieDrawable, Layer layerModel, float density) {
+  ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
-    this.density = density;
   }
 
   @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
@@ -34,6 +33,8 @@ public class ImageLayer extends BaseLayer {
     if (bitmap == null) {
       return;
     }
+    float density = Utils.dpScale();
+
     paint.setAlpha(parentAlpha);
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());

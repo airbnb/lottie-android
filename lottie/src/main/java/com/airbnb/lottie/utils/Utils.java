@@ -1,6 +1,7 @@
 package com.airbnb.lottie.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
@@ -24,6 +25,7 @@ public final class Utils {
   private static DisplayMetrics displayMetrics;
   private static final float[] points = new float[4];
   private static final float SQRT_2 = (float) Math.sqrt(2);
+  private static float dpScale = -1;
 
   private Utils() {}
 
@@ -212,5 +214,12 @@ public final class Utils {
       return Settings.System.getFloat(context.getContentResolver(),
           Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
     }
+  }
+
+  public static float dpScale() {
+    if (dpScale == -1) {
+      dpScale = Resources.getSystem().getDisplayMetrics().density;
+    }
+    return dpScale;
   }
 }

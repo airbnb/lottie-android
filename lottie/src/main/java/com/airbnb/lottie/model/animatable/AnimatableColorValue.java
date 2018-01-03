@@ -1,13 +1,14 @@
 package com.airbnb.lottie.model.animatable;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ColorKeyframeAnimation;
 import com.airbnb.lottie.model.ColorFactory;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 
 public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> {
@@ -23,9 +24,10 @@ public class AnimatableColorValue extends BaseAnimatableValue<Integer, Integer> 
     private Factory() {
     }
 
-    public static AnimatableColorValue newInstance(JSONObject json, LottieComposition composition) {
+    public static AnimatableColorValue newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
       return new AnimatableColorValue(
-          AnimatableValueParser.newInstance(json, 1f, composition, ColorFactory.INSTANCE));
+          AnimatableValueParser.newInstance(reader, 1f, composition, ColorFactory.INSTANCE));
     }
   }
 }

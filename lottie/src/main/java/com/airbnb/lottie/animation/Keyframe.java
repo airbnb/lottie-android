@@ -5,6 +5,8 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.animation.PathInterpolatorCompat;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -14,12 +16,9 @@ import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Keyframe<T> {
@@ -59,6 +58,11 @@ public class Keyframe<T> {
 
   private float startProgress = Float.MIN_VALUE;
   private float endProgress = Float.MIN_VALUE;
+
+  // Used by PathKeyframe but it has to be parsed by KeyFrame because we use a JsonReader to
+  // deserialzie the data so we have to parse everything in order
+  protected PointF pathCp1 = null;
+  protected PointF pathCp2 = null;
 
 
   public Keyframe(@SuppressWarnings("NullableProblems") LottieComposition composition,
@@ -159,85 +163,146 @@ public class Keyframe<T> {
     private Factory() {
     }
 
-    public static <T> Keyframe<T> newInstance(JSONObject json, LottieComposition composition, float scale,
-        AnimatableValue.Factory<T> valueFactory) {
+    public static <T> Keyframe<T> newInstance(JsonReader reader, LottieComposition composition,
+        float scale, AnimatableValue.Factory<T> valueFactory, boolean animated) throws IOException {
+
+      if (animated) {
+        return parseKeyframe(composition, reader, scale, valueFactory);
+      } else {
+        return parseStaticValue(reader, scale, valueFactory);
+      }
+    }
+
+    /**
+     * beginObject will already be called on the keyframe so it can be differentiated with
+     * a non animated value.
+     */
+    private static <T> Keyframe<T> parseKeyframe(LottieComposition composition, JsonReader reader,
+        float scale, AnimatableValue.Factory<T> valueFactory) throws IOException {
       PointF cp1 = null;
       PointF cp2 = null;
       float startFrame = 0;
       T startValue = null;
       T endValue = null;
+      boolean hold = false;
       Interpolator interpolator = null;
 
-      if (json.has("t")) {
-        startFrame = (float) json.optDouble("t", 0);
-        Object startValueJson = json.opt("s");
-        if (startValueJson != null) {
-          startValue = valueFactory.valueFromObject(startValueJson, scale);
+      // Only used by PathKeyframe
+      PointF pathCp1 = null;
+      PointF pathCp2 = null;
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "t":
+            startFrame = (float) reader.nextDouble();
+            break;
+          case "s":
+            startValue = valueFactory.valueFromObject(reader, scale);
+            break;
+          case "e":
+            endValue = valueFactory.valueFromObject(reader, scale);
+            break;
+          case "o":
+            cp1 = JsonUtils.jsonToPoint(reader, scale);
+            break;
+          case "i":
+            cp2 = JsonUtils.jsonToPoint(reader, scale);
+            break;
+          case "h":
+            hold = reader.nextInt() == 1;
+            break;
+          case "ti":
+            pathCp1 = JsonUtils.jsonToPoint(reader, scale);
+            break;
+          case "to":
+            pathCp2 = JsonUtils.jsonToPoint(reader, scale);
+            break;
+          default:
+            reader.skipValue();
         }
-
-        Object endValueJson = json.opt("e");
-        if (endValueJson != null) {
-          endValue = valueFactory.valueFromObject(endValueJson, scale);
-        }
-
-        JSONObject cp1Json = json.optJSONObject("o");
-        JSONObject cp2Json = json.optJSONObject("i");
-        if (cp1Json != null && cp2Json != null) {
-          cp1 = JsonUtils.pointFromJsonObject(cp1Json, scale);
-          cp2 = JsonUtils.pointFromJsonObject(cp2Json, scale);
-        }
-
-        boolean hold = json.optInt("h", 0) == 1;
-
-        if (hold) {
-          endValue = startValue;
-          // TODO: create a HoldInterpolator so progress changes don't invalidate.
-          interpolator = LINEAR_INTERPOLATOR;
-        } else if (cp1 != null) {
-          cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
-          cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
-          cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-          int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
-          WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
-          if (interpolatorRef != null) {
-            interpolator = interpolatorRef.get();
-          }
-          if (interpolatorRef == null || interpolator == null) {
-            interpolator = PathInterpolatorCompat.create(
-                cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
-            try {
-              putInterpolator(hash, new WeakReference<>(interpolator));
-            } catch (ArrayIndexOutOfBoundsException e) {
-              // It is not clear why but SparseArrayCompat sometimes fails with this:
-              //     https://github.com/airbnb/lottie-android/issues/452
-              // Because this is not a critical operation, we can safely just ignore it.
-              // I was unable to repro this to attempt a proper fix.
-            }
-          }
-
-        } else {
-          interpolator = LINEAR_INTERPOLATOR;
-        }
-      } else {
-        startValue = valueFactory.valueFromObject(json, scale);
-        endValue = startValue;
       }
-      return new Keyframe<>(composition, startValue, endValue, interpolator, startFrame, null);
+      reader.endObject();
+
+      if (hold) {
+        endValue = startValue;
+        // TODO: create a HoldInterpolator so progress changes don't invalidate.
+        interpolator = LINEAR_INTERPOLATOR;
+      } else if (cp1 != null) {
+        cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
+        cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
+        cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
+        cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
+        int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
+        WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
+        if (interpolatorRef != null) {
+          interpolator = interpolatorRef.get();
+        }
+        if (interpolatorRef == null || interpolator == null) {
+          interpolator = PathInterpolatorCompat.create(
+              cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+          try {
+            putInterpolator(hash, new WeakReference<>(interpolator));
+          } catch (ArrayIndexOutOfBoundsException e) {
+            // It is not clear why but SparseArrayCompat sometimes fails with this:
+            //     https://github.com/airbnb/lottie-android/issues/452
+            // Because this is not a critical operation, we can safely just ignore it.
+            // I was unable to repro this to attempt a proper fix.
+          }
+        }
+
+      } else {
+        interpolator = LINEAR_INTERPOLATOR;
+      }
+
+      Keyframe<T> keyframe =
+          new Keyframe<>(composition, startValue, endValue, interpolator, startFrame, null);
+      keyframe.pathCp1 = pathCp1;
+      keyframe.pathCp2 = pathCp2;
+      return keyframe;
     }
 
-    public static <T> List<Keyframe<T>> parseKeyframes(JSONArray json,
-        LottieComposition composition,
-        float scale, AnimatableValue.Factory<T> valueFactory) {
-      int length = json.length();
-      if (length == 0) {
-        return Collections.emptyList();
-      }
+    private static <T> Keyframe<T> parseStaticValue(JsonReader reader,
+        float scale, AnimatableValue.Factory<T> valueFactory) throws IOException {
+      T value = valueFactory.valueFromObject(reader, scale);
+      return new Keyframe<>(value);
+    }
+
+    public static <T> List<Keyframe<T>> parseKeyframes(JsonReader reader,
+        LottieComposition composition, float scale, AnimatableValue.Factory<T> valueFactory)
+        throws IOException {
       List<Keyframe<T>> keyframes = new ArrayList<>();
-      for (int i = 0; i < length; i++) {
-        keyframes.add(Keyframe.Factory.newInstance(json.optJSONObject(i), composition, scale,
-            valueFactory));
+
+      if (reader.peek() == JsonToken.STRING) {
+        composition.addWarning("Lottie doesn't support expressions.");
+        return keyframes;
       }
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "k":
+            if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+              reader.beginArray();
+
+              if (reader.peek() == JsonToken.NUMBER) {
+                // For properties in which the static value is an array of numbers.
+                keyframes.add(Keyframe.Factory.newInstance(reader, composition, scale, valueFactory, false));
+              } else {
+                while (reader.hasNext()) {
+                  keyframes.add(Keyframe.Factory.newInstance(reader, composition, scale, valueFactory, true));
+                }
+              }
+              reader.endArray();
+            } else {
+              keyframes.add(Keyframe.Factory.newInstance(reader, composition, scale, valueFactory, false));
+            }
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
 
       setEndFrames(keyframes);
       return keyframes;

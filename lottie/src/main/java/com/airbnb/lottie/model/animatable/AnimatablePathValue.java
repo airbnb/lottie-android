@@ -1,6 +1,8 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
+import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
@@ -9,23 +11,58 @@ import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
+import com.airbnb.lottie.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
   public static AnimatableValue<PointF, PointF> createAnimatablePathOrSplitDimensionPath(
-      JSONObject json, LottieComposition composition) {
-    if (json.has("k")) {
-      return new AnimatablePathValue(json.opt("k"), composition);
-    } else {
-      return new AnimatableSplitDimensionPathValue(
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("x"), composition),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("y"), composition));
+      JsonReader reader, LottieComposition composition) throws IOException {
+
+    AnimatablePathValue pathAnimation = null;
+    AnimatableFloatValue xAnimation = null;
+    AnimatableFloatValue yAnimation = null;
+
+    boolean hasExpressions = false;
+
+    reader.beginObject();
+    while (reader.peek() != JsonToken.END_OBJECT) {
+      switch (reader.nextName()) {
+        case "k":
+          pathAnimation = new AnimatablePathValue(reader, composition);
+          break;
+        case "x":
+          if (reader.peek() == JsonToken.STRING) {
+            hasExpressions = true;
+            reader.skipValue();
+          } else {
+            xAnimation = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          }
+          break;
+        case "y":
+          if (reader.peek() == JsonToken.STRING) {
+            hasExpressions = true;
+            reader.skipValue();
+          } else {
+            yAnimation = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          }
+          break;
+        default:
+          reader.skipValue();
+      }
     }
+    reader.endObject();
+
+    if (hasExpressions) {
+      composition.addWarning("Lottie doesn't support expressions.");
+    }
+
+    if (pathAnimation != null) {
+      return pathAnimation;
+    }
+    return new AnimatableSplitDimensionPathValue(xAnimation, yAnimation);
   }
 
   private final List<Keyframe<PointF>> keyframes = new ArrayList<>();
@@ -37,30 +74,19 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
     keyframes.add(new Keyframe<>(new PointF(0, 0)));
   }
 
-  AnimatablePathValue(Object json, LottieComposition composition) {
-    if (hasKeyframes(json)) {
-      JSONArray jsonArray = (JSONArray) json;
-      int length = jsonArray.length();
-      for (int i = 0; i < length; i++) {
-        JSONObject jsonKeyframe = jsonArray.optJSONObject(i);
-        PathKeyframe keyframe = PathKeyframe.Factory.newInstance(jsonKeyframe, composition,
-            ValueFactory.INSTANCE);
+  AnimatablePathValue(JsonReader reader, LottieComposition composition) throws IOException {
+    if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+      reader.beginArray();
+      while (reader.hasNext()) {
+        PathKeyframe keyframe =
+            PathKeyframe.Factory.newInstance(reader, composition, ValueFactory.INSTANCE);
         keyframes.add(keyframe);
       }
+      reader.endArray();
       Keyframe.setEndFrames(keyframes);
     } else {
-      keyframes.add(
-          new Keyframe<>(JsonUtils.pointFromJsonArray((JSONArray) json, composition.getDpScale())));
+      keyframes.add(new Keyframe<>(JsonUtils.jsonToPoint(reader, Utils.dpScale())));
     }
-  }
-
-  private boolean hasKeyframes(Object json) {
-    if (!(json instanceof JSONArray)) {
-      return false;
-    }
-
-    Object firstObject = ((JSONArray) json).opt(0);
-    return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
   }
 
   @Override
@@ -77,8 +103,8 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
     private ValueFactory() {
     }
 
-    @Override public PointF valueFromObject(Object object, float scale) {
-      return JsonUtils.pointFromJsonArray((JSONArray) object, scale);
+    @Override public PointF valueFromObject(JsonReader reader, float scale) throws IOException {
+      return JsonUtils.jsonToPoint(reader, scale);
     }
   }
 }

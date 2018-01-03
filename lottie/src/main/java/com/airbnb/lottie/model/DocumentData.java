@@ -1,16 +1,17 @@
 package com.airbnb.lottie.model;
 
-import android.graphics.Color;
 import android.support.annotation.ColorInt;
+import android.util.JsonReader;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.airbnb.lottie.utils.JsonUtils;
+
+import java.io.IOException;
 
 public class DocumentData {
 
   public String text;
   @SuppressWarnings("WeakerAccess") public String fontName;
-  public int size;
+  public double size;
   @SuppressWarnings("WeakerAccess") int justification;
   public int tracking;
   @SuppressWarnings("WeakerAccess") double lineHeight;
@@ -21,7 +22,7 @@ public class DocumentData {
   public boolean strokeOverFill;
 
 
-  DocumentData(String text, String fontName, int size, int justification, int tracking,
+  DocumentData(String text, String fontName, double size, int justification, int tracking,
       double lineHeight, double baselineShift, @ColorInt int color, @ColorInt int strokeColor,
       int strokeWidth, boolean strokeOverFill) {
     this.text = text;
@@ -43,35 +44,63 @@ public class DocumentData {
     private Factory() {
     }
 
-    public static DocumentData newInstance(JSONObject json) {
-      String text = json.optString("t");
-      String fontName = json.optString("f");
-      int size = json.optInt("s");
-      int justification = json.optInt("j");
-      int tracking = json.optInt("tr");
-      double lineHeight = json.optDouble("lh");
-      double baselineShift = json.optDouble("ls");
-      JSONArray colorArray = json.optJSONArray("fc");
-      int color = Color.argb(
-          255,
-          (int) (colorArray.optDouble(0) * 255),
-          (int) (colorArray.optDouble(1) * 255),
-          (int) (colorArray.optDouble(2) * 255));
-      JSONArray strokeArray = json.optJSONArray("sc");
+    public static DocumentData newInstance(JsonReader reader) throws IOException {
+      String text = null;
+      String fontName = null;
+      double size = 0;
+      int justification = 0;
+      int tracking = 0;
+      double lineHeight = 0;
+      double baselineShift = 0;
+      int fillColor = 0;
       int strokeColor = 0;
-      if (strokeArray != null) {
-        strokeColor = Color.argb(
-            255,
-            (int) (strokeArray.optDouble(0) * 255),
-            (int) (strokeArray.optDouble(1) * 255),
-            (int) (strokeArray.optDouble(2) * 255));
-      }
+      int strokeWidth = 0;
+      boolean strokeOverFill = true;
 
-      int strokeWidth = json.optInt("sw");
-      boolean strokeOverFill = json.optBoolean("of");
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "t":
+            text = reader.nextString();
+            break;
+          case "f":
+            fontName = reader.nextString();
+            break;
+          case "s":
+            size = reader.nextDouble();
+            break;
+          case "j":
+            justification = reader.nextInt();
+            break;
+          case "tr":
+            tracking = reader.nextInt();
+            break;
+          case "lh":
+            lineHeight = reader.nextDouble();
+            break;
+          case "ls":
+            baselineShift = reader.nextDouble();
+            break;
+          case "fc":
+            fillColor = JsonUtils.jsonToColor(reader);
+            break;
+          case "sc":
+            strokeColor = JsonUtils.jsonToColor(reader);
+            break;
+          case "sw":
+            strokeWidth = reader.nextInt();
+            break;
+          case "of":
+            strokeOverFill = reader.nextBoolean();
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
 
       return new DocumentData(text, fontName, size, justification, tracking, lineHeight,
-          baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
+          baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill);
     }
   }
 
@@ -80,7 +109,7 @@ public class DocumentData {
     long temp;
     result = text.hashCode();
     result = 31 * result + fontName.hashCode();
-    result = 31 * result + size;
+    result = (int) (31 * result + size);
     result = 31 * result + justification;
     result = 31 * result + tracking;
     temp = Double.doubleToLongBits(lineHeight);

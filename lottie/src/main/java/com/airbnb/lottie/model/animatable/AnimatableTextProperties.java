@@ -1,10 +1,11 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
 public class AnimatableTextProperties {
 
@@ -27,34 +28,52 @@ public class AnimatableTextProperties {
     private Factory() {
     }
 
-    public static AnimatableTextProperties newInstance(JSONObject json,
-        LottieComposition composition) {
-      if (json == null || !json.has("a")) {
+    public static AnimatableTextProperties newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      AnimatableTextProperties anim = null;
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "a":
+          anim = parseAnimatableTextProperties(reader, composition);
+          break;
+        default:
+          reader.skipValue();
+        }
+      }
+      reader.endObject();
+      if (anim == null) {
         return new AnimatableTextProperties(null, null, null, null);
       }
-      JSONObject animatablePropertiesJson = json.optJSONObject("a");
-      JSONObject colorJson = animatablePropertiesJson.optJSONObject("fc");
+      return anim;
+    }
+
+    private static AnimatableTextProperties parseAnimatableTextProperties(
+        JsonReader reader, LottieComposition composition) throws IOException {
       AnimatableColorValue color = null;
-      if (colorJson != null) {
-        color = AnimatableColorValue.Factory.newInstance(colorJson, composition);
-      }
-
-      JSONObject strokeJson = animatablePropertiesJson.optJSONObject("sc");
       AnimatableColorValue stroke = null;
-      if (strokeJson != null) {
-        stroke = AnimatableColorValue.Factory.newInstance(strokeJson, composition);
-      }
-
-      JSONObject strokeWidthJson = animatablePropertiesJson.optJSONObject("sw");
       AnimatableFloatValue strokeWidth = null;
-      if (strokeWidthJson != null) {
-        strokeWidth = AnimatableFloatValue.Factory.newInstance(strokeWidthJson, composition);
-      }
-
-      JSONObject trackingJson = animatablePropertiesJson.optJSONObject("t");
       AnimatableFloatValue tracking = null;
-      if (trackingJson != null) {
-        tracking = AnimatableFloatValue.Factory.newInstance(trackingJson, composition);
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "fc":
+            color = AnimatableColorValue.Factory.newInstance(reader, composition);
+            break;
+          case "sc":
+            stroke = AnimatableColorValue.Factory.newInstance(reader, composition);
+            break;
+          case "sw":
+            strokeWidth = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            break;
+          case "t":
+            tracking = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            break;
+          default:
+            reader.skipValue();
+        }
       }
 
       return new AnimatableTextProperties(color, stroke, strokeWidth, tracking);

@@ -2,14 +2,15 @@ package com.airbnb.lottie.model.content;
 
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;
+import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
+import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.MiscUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,95 +109,78 @@ public class ShapeData {
     private Factory() {
     }
 
-    @Override public ShapeData valueFromObject(Object object, float scale) {
-      JSONObject pointsData = null;
-      if (object instanceof JSONArray) {
-        Object firstObject = ((JSONArray) object).opt(0);
-        if (firstObject instanceof JSONObject && ((JSONObject) firstObject).has("v")) {
-          pointsData = (JSONObject) firstObject;
+    @Override public ShapeData valueFromObject(JsonReader reader, float scale) throws IOException {
+      // Sometimes the points data is in a array of length 1. Sometimes the data is at the top
+      // level.
+      if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+        reader.beginArray();
+      }
+
+      boolean closed = true;
+      List<PointF> pointsArray = null;
+      List<PointF> inTangents = null;
+      List<PointF> outTangents = null;
+      reader.beginObject();
+
+      while (reader.peek() == JsonToken.NAME) {
+        String name = reader.nextName();
+        switch (name) {
+          case "c":
+            closed = reader.nextBoolean();
+            break;
+          case "v":
+            pointsArray =  JsonUtils.jsonToPoints(reader, scale);
+            break;
+          case "i":
+            inTangents =  JsonUtils.jsonToPoints(reader, scale);
+            break;
+          case "o":
+            outTangents =  JsonUtils.jsonToPoints(reader, scale);
+            break;
         }
-      } else if (object instanceof JSONObject && ((JSONObject) object).has("v")) {
-        pointsData = (JSONObject) object;
       }
 
-      if (pointsData == null) {
-        return null;
+      reader.endObject();
+
+      if (reader.peek() == JsonToken.END_ARRAY) {
+        reader.endArray();
       }
 
-      JSONArray pointsArray = pointsData.optJSONArray("v");
-      JSONArray inTangents = pointsData.optJSONArray("i");
-      JSONArray outTangents = pointsData.optJSONArray("o");
-      boolean closed = pointsData.optBoolean("c", false);
+      if (pointsArray == null || inTangents == null || outTangents == null) {
+        throw new IllegalArgumentException("Shape data was missing information.");
+      }
 
-      if (pointsArray == null || inTangents == null || outTangents == null ||
-          pointsArray.length() != inTangents.length() ||
-          pointsArray.length() != outTangents.length()) {
-        throw new IllegalStateException(
-            "Unable to process points array or tangents. " + pointsData);
-      } else if (pointsArray.length() == 0) {
+      if (pointsArray.isEmpty()) {
         return new ShapeData(new PointF(), false, Collections.<CubicCurveData>emptyList());
       }
 
-      int length = pointsArray.length();
-      PointF vertex = vertexAtIndex(0, pointsArray);
-      vertex.x *= scale;
-      vertex.y *= scale;
+      int length = pointsArray.size();
+      PointF vertex = pointsArray.get(0);
       PointF initialPoint = vertex;
       List<CubicCurveData> curves = new ArrayList<>(length);
 
       for (int i = 1; i < length; i++) {
-        vertex = vertexAtIndex(i, pointsArray);
-        PointF previousVertex = vertexAtIndex(i - 1, pointsArray);
-        PointF cp1 = vertexAtIndex(i - 1, outTangents);
-        PointF cp2 = vertexAtIndex(i, inTangents);
+        vertex = pointsArray.get(i);
+        PointF previousVertex = pointsArray.get(i - 1);
+        PointF cp1 = outTangents.get(i - 1);
+        PointF cp2 = inTangents.get(i);
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
-
-        shapeCp1.x *= scale;
-        shapeCp1.y *= scale;
-        shapeCp2.x *= scale;
-        shapeCp2.y *= scale;
-        vertex.x *= scale;
-        vertex.y *= scale;
-
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }
 
       if (closed) {
-        vertex = vertexAtIndex(0, pointsArray);
-        PointF previousVertex = vertexAtIndex(length - 1, pointsArray);
-        PointF cp1 = vertexAtIndex(length - 1, outTangents);
-        PointF cp2 = vertexAtIndex(0, inTangents);
+        vertex = pointsArray.get(0);
+        PointF previousVertex = pointsArray.get(length - 1);
+        PointF cp1 = outTangents.get(length - 1);
+        PointF cp2 = inTangents.get(0);
 
         PointF shapeCp1 = MiscUtils.addPoints(previousVertex, cp1);
         PointF shapeCp2 = MiscUtils.addPoints(vertex, cp2);
 
-        if (scale != 1f) {
-          shapeCp1.x *= scale;
-          shapeCp1.y *= scale;
-          shapeCp2.x *= scale;
-          shapeCp2.y *= scale;
-          vertex.x *= scale;
-          vertex.y *= scale;
-        }
-
         curves.add(new CubicCurveData(shapeCp1, shapeCp2, vertex));
       }
       return new ShapeData(initialPoint, closed, curves);
-    }
-
-    private static PointF vertexAtIndex(int idx, JSONArray points) {
-      if (idx >= points.length()) {
-        throw new IllegalArgumentException(
-            "Invalid index " + idx + ". There are only " + points.length() + " points.");
-      }
-
-      JSONArray pointArray = points.optJSONArray(idx);
-      Object x = pointArray.opt(0);
-      Object y = pointArray.opt(1);
-      return new PointF(
-          x instanceof Double ? ((Double) x).floatValue() : (int) x,
-          y instanceof Double ? ((Double) y).floatValue() : (int) y);
     }
   }
 }

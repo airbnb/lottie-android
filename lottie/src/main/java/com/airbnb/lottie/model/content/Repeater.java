@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -10,7 +11,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
 public class Repeater implements ContentModel {
   private final String name;
@@ -51,14 +52,33 @@ public class Repeater implements ContentModel {
     private Factory() {
     }
 
-    static Repeater newInstance(JSONObject json, LottieComposition composition) {
-      String name = json.optString("nm");
-      AnimatableFloatValue copies =
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("c"), composition, false);
-      AnimatableFloatValue offset =
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false);
-      AnimatableTransform transform =
-          AnimatableTransform.Factory.newInstance(json.optJSONObject("tr"), composition);
+    static Repeater newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      String name = null;
+      AnimatableFloatValue copies = null;
+      AnimatableFloatValue offset = null;
+      AnimatableTransform transform = null;
+
+      // reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "c":
+            copies = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "o":
+            offset = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "tr":
+            transform = AnimatableTransform.Factory.newInstance(reader, composition);
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      // reader.endObject();
 
       return new Repeater(name, copies, offset, transform);
     }

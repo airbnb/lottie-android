@@ -274,7 +274,9 @@ class AnimationFragment : Fragment() {
                             if (composition == null) {
                                 onLoadError()
                             } else {
+                                val start = System.currentTimeMillis()
                                 setComposition(composition, assetName)
+                                Log.d("Gabe", "setComp=\t" + (System.currentTimeMillis() - start))
                             }
                         })
             }

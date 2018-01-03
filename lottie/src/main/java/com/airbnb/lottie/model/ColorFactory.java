@@ -1,32 +1,36 @@
 package com.airbnb.lottie.model;
 
 import android.graphics.Color;
+import android.util.JsonReader;
+import android.util.JsonToken;
 
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 
-import org.json.JSONArray;
+import java.io.IOException;
 
 public class ColorFactory implements AnimatableValue.Factory<Integer> {
   public static final ColorFactory INSTANCE = new ColorFactory();
 
-  @Override public Integer valueFromObject(Object object, float scale) {
-    JSONArray colorArray = (JSONArray) object;
-    if (colorArray.length() == 4) {
-      boolean shouldUse255 = true;
-      for (int i = 0; i < colorArray.length(); i++) {
-        double colorChannel = colorArray.optDouble(i);
-        if (colorChannel > 1f) {
-          shouldUse255 = false;
-        }
-      }
-
-      float multiplier = shouldUse255 ? 255f : 1f;
-      return Color.argb(
-          (int) (colorArray.optDouble(3) * multiplier),
-          (int) (colorArray.optDouble(0) * multiplier),
-          (int) (colorArray.optDouble(1) * multiplier),
-          (int) (colorArray.optDouble(2) * multiplier));
+  @Override public Integer valueFromObject(JsonReader reader, float scale) throws IOException {
+    boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
+    if (isArray) {
+      reader.beginArray();
     }
-    return Color.BLACK;
+    double r = reader.nextDouble();
+    double g = reader.nextDouble();
+    double b = reader.nextDouble();
+    double a = reader.nextDouble();
+    if (isArray) {
+      reader.endArray();
+    }
+
+    if (r <= 1 && g <= 1 && b <= 1 && a <= 1) {
+      r *= 255;
+      g *= 255;
+      b *= 255;
+      a *= 255;
+    }
+
+    return Color.argb((int) a, (int) r, (int) g, (int) b);
   }
 }

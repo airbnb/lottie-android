@@ -2,6 +2,7 @@ package com.airbnb.lottie.model.content;
 
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -12,9 +13,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,39 +85,85 @@ public class ShapeStroke implements ContentModel {
     private Factory() {
     }
 
-    static ShapeStroke newInstance(JSONObject json, LottieComposition composition) {
-      final String name = json.optString("nm");
-      List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
-      AnimatableColorValue color = AnimatableColorValue.Factory.newInstance(json.optJSONObject("c"),
-          composition);
-      AnimatableFloatValue width = AnimatableFloatValue.Factory.newInstance(json.optJSONObject("w"),
-          composition);
-      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance(
-          json.optJSONObject("o"), composition);
-      LineCapType capType = LineCapType.values()[json.optInt("lc") - 1];
-      LineJoinType joinType = LineJoinType.values()[json.optInt("lj") - 1];
+    static ShapeStroke newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      String name = null;
+      AnimatableColorValue color = null;
+      AnimatableFloatValue width = null;
+      AnimatableIntegerValue opacity = null;
+      LineCapType capType = null;
+      LineJoinType joinType = null;
       AnimatableFloatValue offset = null;
 
-      if (json.has("d")) {
-        JSONArray dashesJson = json.optJSONArray("d");
-        for (int i = 0; i < dashesJson.length(); i++) {
-          JSONObject dashJson = dashesJson.optJSONObject(i);
-          String n = dashJson.optString("n");
-          if (n.equals("o")) {
-            JSONObject value = dashJson.optJSONObject("v");
-            offset = AnimatableFloatValue.Factory.newInstance(value, composition);
-          } else if (n.equals("d") || n.equals("g")) {
-            JSONObject value = dashJson.optJSONObject("v");
-            lineDashPattern.add(AnimatableFloatValue.Factory.newInstance(value, composition));
-          }
-        }
-        if (lineDashPattern.size() == 1) {
-          // If there is only 1 value then it is assumed to be equal parts on and off.
-          lineDashPattern.add(lineDashPattern.get(0));
+      List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
+
+      // reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "c":
+            color = AnimatableColorValue.Factory.newInstance(reader, composition);
+            break;
+          case "w":
+            width = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            break;
+          case "o":
+            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            break;
+          case "lc":
+            capType = LineCapType.values()[reader.nextInt() - 1];
+            break;
+          case "lj":
+            joinType = LineJoinType.values()[reader.nextInt() - 1];
+            break;
+          case "d":
+            reader.beginArray();
+            while (reader.hasNext()) {
+              String n = null;
+              AnimatableFloatValue val = null;
+
+              reader.beginObject();
+              while (reader.hasNext()) {
+                switch (reader.nextName()) {
+                  case "n":
+                    n = reader.nextString();
+                    break;
+                  case "v":
+                    val = AnimatableFloatValue.Factory.newInstance(reader, composition);
+                    break;
+                  default:
+                    reader.skipValue();
+                }
+              }
+              reader.endObject();
+
+              switch (n) {
+                case "o":
+                  offset = val;
+                  break;
+                case "d":
+                case "g":
+                  lineDashPattern.add(val);
+                  break;
+              }
+            }
+            reader.endArray();
+
+            if (lineDashPattern.size() == 1) {
+              // If there is only 1 value then it is assumed to be equal parts on and off.
+              lineDashPattern.add(lineDashPattern.get(0));
+            }
+            break;
+          default:
+            reader.skipValue();
         }
       }
-      return new ShapeStroke(name, offset, lineDashPattern, color, opacity, width, capType,
-          joinType);
+      // reader.endObject();
+
+      return new ShapeStroke(
+          name, offset, lineDashPattern, color, opacity, width, capType, joinType);
     }
   }
 

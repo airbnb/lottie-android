@@ -1,8 +1,11 @@
 package com.airbnb.lottie.value;
 
+import android.util.JsonReader;
+import android.util.JsonToken;
+
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 
-import org.json.JSONArray;
+import java.io.IOException;
 
 public class ScaleXY {
   private final float scaleX;
@@ -35,11 +38,20 @@ public class ScaleXY {
     private Factory() {
     }
 
-    @Override public ScaleXY valueFromObject(Object object, float scale) {
-      JSONArray array = (JSONArray) object;
-      return new ScaleXY(
-          (float) array.optDouble(0, 1) / 100f * scale,
-          (float) array.optDouble(1, 1) / 100f * scale);
+    @Override public ScaleXY valueFromObject(JsonReader reader, float scale) throws IOException {
+      boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
+      if (isArray) {
+        reader.beginArray();
+      }
+      float sx = (float) reader.nextDouble();
+      float sy = (float) reader.nextDouble();
+      while (reader.hasNext()) {
+        reader.skipValue();
+      }
+      if (isArray) {
+        reader.endArray();
+      }
+      return new ScaleXY(sx / 100f * scale, sy / 100f * scale);
     }
   }
 }

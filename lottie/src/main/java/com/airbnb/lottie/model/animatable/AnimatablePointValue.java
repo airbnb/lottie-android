@@ -1,15 +1,16 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.model.PointFFactory;
+import com.airbnb.lottie.utils.Utils;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 
 public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
@@ -25,10 +26,10 @@ public class AnimatablePointValue extends BaseAnimatableValue<PointF, PointF> {
     private Factory() {
     }
 
-    public static AnimatablePointValue newInstance(JSONObject json, LottieComposition composition) {
-      return new AnimatablePointValue(
-          AnimatableValueParser
-              .newInstance(json, composition.getDpScale(), composition, PointFFactory.INSTANCE)
+    public static AnimatablePointValue newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      return new AnimatablePointValue(AnimatableValueParser
+              .newInstance(reader, Utils.dpScale(), composition, PointFFactory.INSTANCE)
       );
     }
   }
