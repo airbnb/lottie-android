@@ -9,6 +9,7 @@ import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.FloatRange;
@@ -45,7 +46,8 @@ import java.util.Set;
  * handles bitmap recycling and asynchronous loading
  * of compositions.
  */
-@SuppressWarnings({"WeakerAccess", "unused"}) public class LottieDrawable extends Drawable implements Drawable.Callback {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class LottieDrawable extends Drawable implements Drawable.Callback, Animatable {
   private static final String TAG = LottieDrawable.class.getSimpleName();
 
   private interface LazyCompositionTask {
@@ -302,6 +304,19 @@ import java.util.Set;
   }
 
 // <editor-fold desc="animator">
+
+  @Override public void start() {
+    playAnimation();
+  }
+
+  @Override public void stop() {
+    lazyCompositionTasks.clear();
+    animator.end();
+  }
+
+  @Override public boolean isRunning() {
+    return isAnimating();
+  }
 
   /**
    * Plays the animation from the beginning. If speed is < 0, it will start at the end
