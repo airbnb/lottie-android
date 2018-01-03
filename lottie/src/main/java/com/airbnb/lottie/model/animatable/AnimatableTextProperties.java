@@ -36,10 +36,10 @@ public class AnimatableTextProperties {
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "a":
-          anim = parseAnimatableTextProperties(reader, composition);
-          break;
-        default:
-          reader.skipValue();
+            anim = parseAnimatableTextProperties(reader, composition);
+            break;
+          default:
+            reader.skipValue();
         }
       }
       reader.endObject();
@@ -75,6 +75,7 @@ public class AnimatableTextProperties {
             reader.skipValue();
         }
       }
+      reader.endObject();
 
       return new AnimatableTextProperties(color, stroke, strokeWidth, tracking);
     }

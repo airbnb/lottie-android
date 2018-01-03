@@ -5,7 +5,6 @@ import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.util.JsonReader;
 import android.util.JsonToken;
-import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
@@ -17,10 +16,9 @@ import java.io.IOException;
 public class PathKeyframe extends Keyframe<PointF> {
   @Nullable private Path path;
 
-  private PathKeyframe(LottieComposition composition, @Nullable PointF startValue,
-      @Nullable PointF endValue, @Nullable Interpolator interpolator,
-      float startFrame, @Nullable Float endFrame) {
-    super(composition, startValue, endValue, interpolator, startFrame, endFrame);
+  private PathKeyframe(LottieComposition composition, Keyframe<PointF> keyframe) {
+    super(composition, keyframe.startValue, keyframe.endValue, keyframe.interpolator,
+        keyframe.startFrame, keyframe.endFrame);
 
     // This must use equals(float, float) because PointF didn't have an equals(PathF) method
     // until KitKat...
@@ -28,7 +26,7 @@ public class PathKeyframe extends Keyframe<PointF> {
         startValue.equals(endValue.x, endValue.y);
     //noinspection ConstantConditions
     if (endValue != null && !equals) {
-      path = Utils.createPath(startValue, endValue, pathCp1, pathCp2);
+      path = Utils.createPath(startValue, endValue, keyframe.pathCp1, keyframe.pathCp2);
     }
   }
 
@@ -42,9 +40,7 @@ public class PathKeyframe extends Keyframe<PointF> {
       Keyframe<PointF> keyframe = Keyframe.Factory.newInstance(
           reader, composition, Utils.dpScale(), valueFactory, animated);
 
-
-      return new PathKeyframe(composition, keyframe.startValue,
-          keyframe.endValue, keyframe.interpolator, keyframe.startFrame, keyframe.endFrame);
+      return new PathKeyframe(composition, keyframe);
     }
   }
 

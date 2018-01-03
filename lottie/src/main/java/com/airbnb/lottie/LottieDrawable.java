@@ -220,7 +220,6 @@ import java.util.Set;
     long start = System.currentTimeMillis();
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
-    Log.d("Gabe", "Layer t=" + (System.currentTimeMillis() - start));
   }
 
   public void clearComposition() {

@@ -61,8 +61,8 @@ public class Keyframe<T> {
 
   // Used by PathKeyframe but it has to be parsed by KeyFrame because we use a JsonReader to
   // deserialzie the data so we have to parse everything in order
-  protected PointF pathCp1 = null;
-  protected PointF pathCp2 = null;
+  public PointF pathCp1 = null;
+  public PointF pathCp2 = null;
 
 
   public Keyframe(@SuppressWarnings("NullableProblems") LottieComposition composition,
@@ -228,7 +228,7 @@ public class Keyframe<T> {
         endValue = startValue;
         // TODO: create a HoldInterpolator so progress changes don't invalidate.
         interpolator = LINEAR_INTERPOLATOR;
-      } else if (cp1 != null) {
+      } else if (cp1 != null && cp2 != null) {
         cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
         cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
         cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
