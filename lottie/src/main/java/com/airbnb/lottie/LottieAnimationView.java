@@ -574,12 +574,20 @@ import java.util.Map;
     lottieDrawable.removeAnimatorUpdateListener(updateListener);
   }
 
+  public void removeAllUpdateListeners() {
+    lottieDrawable.removeAllUpdateListeners();
+  }
+
   public void addAnimatorListener(Animator.AnimatorListener listener) {
     lottieDrawable.addAnimatorListener(listener);
   }
 
   public void removeAnimatorListener(Animator.AnimatorListener listener) {
     lottieDrawable.removeAnimatorListener(listener);
+  }
+
+  public void removeAllAnimatorListeners() {
+    lottieDrawable.removeAllAnimatorListeners();
   }
 
   /**
