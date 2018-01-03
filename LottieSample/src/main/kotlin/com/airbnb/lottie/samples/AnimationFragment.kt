@@ -78,6 +78,7 @@ class AnimationFragment : Fragment() {
         dataSet
     }
     private val systemAnimationsAreDisabled by lazy { getAnimationScale(myActivity) == 0f }
+    private var lastAnimationAssetName: String? = null
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -181,7 +182,7 @@ class AnimationFragment : Fragment() {
 
         view.loadAsset.setOnClickListener {
             animationView.cancelAnimation()
-            val assetFragment = ChooseAssetDialogFragment.newInstance()
+            val assetFragment = ChooseAssetDialogFragment.newInstance(lastAnimationAssetName)
             assetFragment.setTargetFragment(this, RC_ASSET)
             assetFragment.show(fragmentManager, "assets")
         }
@@ -267,6 +268,7 @@ class AnimationFragment : Fragment() {
         when (requestCode) {
             RC_ASSET -> {
                 val assetName = data.getStringExtra(EXTRA_ANIMATION_NAME)
+                lastAnimationAssetName = assetName
                 animationView.imageAssetsFolder = assetFolders[assetName]
                 LottieComposition.Factory.fromAssetFileName(context, assetName, { composition ->
                             if (composition == null) {

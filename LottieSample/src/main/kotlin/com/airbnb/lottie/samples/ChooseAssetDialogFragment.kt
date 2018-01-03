@@ -12,12 +12,21 @@ import kotlinx.android.synthetic.main.fragment_choose_asset.view.*
 import kotlinx.android.synthetic.main.view_holder_file.view.*
 
 class ChooseAssetDialogFragment : DialogFragment() {
+    private val files by lazy {
+        context!!.assets.list("").filter { it.toLowerCase().endsWith(".json") }
+    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
         val view = LayoutInflater.from(context)
                 .inflate(R.layout.fragment_choose_asset, container, false)
         dialog.setTitle("Choose an Asset")
-        view!!.recyclerView.adapter = AssetsAdapter()
+        view.recyclerView.adapter = AssetsAdapter()
+        val position = files.indexOf(arguments?.getString(ARG_ASSET_NAME))
+        view.recyclerView.scrollToPosition(position)
         return view
     }
 
@@ -27,10 +36,9 @@ class ChooseAssetDialogFragment : DialogFragment() {
     }
 
     internal inner class AssetsAdapter : RecyclerView.Adapter<StringViewHolder>() {
-        private val files = context!!.assets.list("").filter { it.toLowerCase().endsWith(".json") }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StringViewHolder =
-            StringViewHolder(parent)
+                StringViewHolder(parent)
 
         override fun onBindViewHolder(holder: StringViewHolder, position: Int) =
                 holder.bind(files[position])
@@ -52,8 +60,14 @@ class ChooseAssetDialogFragment : DialogFragment() {
     }
 
     companion object {
-        internal fun newInstance(): ChooseAssetDialogFragment {
-            return ChooseAssetDialogFragment()
+        private val ARG_ASSET_NAME = "asset_name"
+
+        internal fun newInstance(lastAssetName: String?): ChooseAssetDialogFragment {
+            return ChooseAssetDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_ASSET_NAME, lastAssetName)
+                }
+            }
         }
     }
 }
