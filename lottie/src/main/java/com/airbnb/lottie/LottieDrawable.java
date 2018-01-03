@@ -439,12 +439,20 @@ import java.util.Set;
     animator.removeUpdateListener(updateListener);
   }
 
+  public void removeAllUpdateListeners() {
+    animator.removeAllUpdateListeners();
+  }
+
   public void addAnimatorListener(Animator.AnimatorListener listener) {
     animator.addListener(listener);
   }
 
   public void removeAnimatorListener(Animator.AnimatorListener listener) {
     animator.removeListener(listener);
+  }
+
+  public void removeAllAnimatorListeners() {
+    animator.removeAllListeners();
   }
 
   /**
