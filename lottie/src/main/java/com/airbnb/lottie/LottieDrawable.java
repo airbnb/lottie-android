@@ -217,7 +217,6 @@ import java.util.Set;
   }
 
   private void buildCompositionLayer() {
-    long start = System.currentTimeMillis();
     compositionLayer = new CompositionLayer(
         this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
   }
