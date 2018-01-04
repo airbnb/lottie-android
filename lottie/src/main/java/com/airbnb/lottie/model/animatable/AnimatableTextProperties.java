@@ -44,6 +44,7 @@ public class AnimatableTextProperties {
       }
       reader.endObject();
       if (anim == null) {
+        // Not sure if this is possible.
         return new AnimatableTextProperties(null, null, null, null);
       }
       return anim;

@@ -39,10 +39,6 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
 
     public static AnimatableIntegerValue newInstance(
         JsonReader reader, LottieComposition composition) throws IOException {
-      // TODO (json)
-      // if (reader != null && reader.has("x")) {
-      //   composition.addWarning("Lottie doesn't support expressions.");
-      // }
       return new AnimatableIntegerValue(
           AnimatableValueParser.newInstance(reader, 1, composition, ValueFactory.INSTANCE)
       );

@@ -117,7 +117,6 @@ public class PolystarShape implements ContentModel {
       AnimatableFloatValue innerRadius = null;
       AnimatableFloatValue innerRoundedness = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -151,7 +150,6 @@ public class PolystarShape implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new PolystarShape(
           name, type, points, position, rotation, innerRadius, outerRadius, innerRoundedness, outerRoundedness);

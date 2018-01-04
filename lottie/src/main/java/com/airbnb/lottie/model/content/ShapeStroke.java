@@ -97,7 +97,6 @@ public class ShapeStroke implements ContentModel {
 
       List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -160,7 +159,6 @@ public class ShapeStroke implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new ShapeStroke(
           name, offset, lineDashPattern, color, opacity, width, capType, joinType);

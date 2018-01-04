@@ -59,7 +59,6 @@ public class Repeater implements ContentModel {
       AnimatableFloatValue offset = null;
       AnimatableTransform transform = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -78,7 +77,6 @@ public class Repeater implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new Repeater(name, copies, offset, transform);
     }

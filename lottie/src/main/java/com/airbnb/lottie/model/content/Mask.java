@@ -13,7 +13,7 @@ public class Mask {
     MaskModeAdd,
     MaskModeSubtract,
     MaskModeIntersect,
-    MaskModeUnknown;
+    MaskModeUnknown
   }
 
   private final MaskMode maskMode;

@@ -122,9 +122,8 @@ public class ShapeData {
       List<PointF> outTangents = null;
       reader.beginObject();
 
-      while (reader.peek() == JsonToken.NAME) {
-        String name = reader.nextName();
-        switch (name) {
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
           case "c":
             closed = reader.nextBoolean();
             break;

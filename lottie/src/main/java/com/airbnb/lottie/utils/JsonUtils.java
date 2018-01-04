@@ -94,22 +94,20 @@ public class JsonUtils {
   }
 
   public static float valueFromObject(JsonReader reader) throws IOException {
-    boolean endArray;
-    try {
-      reader.beginArray();
-      endArray = true;
-    } catch (IllegalStateException e) {
-      // This value is either an array or a double. However, peek will throw if it's a double.
-      return (float) reader.nextDouble();
+    JsonToken token = reader.peek();
+    switch (token) {
+      case NUMBER:
+        return (float) reader.nextDouble();
+      case BEGIN_ARRAY:
+        reader.beginArray();
+        float val = (float) reader.nextDouble();
+        while (reader.hasNext()) {
+          reader.skipValue();
+        }
+        reader.endArray();
+        return val;
+      default:
+        throw new IllegalArgumentException("Unknown value for token of type " + token);
     }
-    float value = (float) reader.nextDouble();
-    //noinspection ConstantConditions
-    if (endArray) {
-      while (reader.peek() != JsonToken.END_ARRAY) {
-        reader.skipValue();
-      }
-      reader.endArray();
-    }
-    return value;
   }
 }

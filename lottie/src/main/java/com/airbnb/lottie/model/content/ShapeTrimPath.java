@@ -84,7 +84,6 @@ public class ShapeTrimPath implements ContentModel {
       AnimatableFloatValue end = null;
       AnimatableFloatValue offset = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "s":
@@ -106,7 +105,6 @@ public class ShapeTrimPath implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new ShapeTrimPath(name, type, start, end, offset);
     }

@@ -26,10 +26,6 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
 
     public static AnimatableTextFrame newInstance(
         JsonReader reader, LottieComposition composition) throws IOException {
-      // TODO (json)
-      // if (json != null && json.has("x")) {
-      //   composition.addWarning("Lottie doesn't support expressions.");
-      // }
       return new AnimatableTextFrame(
           AnimatableValueParser
               .newInstance(reader, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE));

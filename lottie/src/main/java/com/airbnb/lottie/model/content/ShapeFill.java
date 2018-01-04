@@ -42,7 +42,6 @@ public class ShapeFill implements ContentModel {
       String name = null;
       int fillTypeInt = 1;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -64,7 +63,6 @@ public class ShapeFill implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
       return new ShapeFill(name, fillEnabled, fillType, color, opacity);

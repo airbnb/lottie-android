@@ -40,7 +40,6 @@ public class RectangleShape implements ContentModel {
       AnimatablePointValue size = null;
       AnimatableFloatValue roundedness = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -60,7 +59,6 @@ public class RectangleShape implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new RectangleShape(name, position, size, roundedness);
     }

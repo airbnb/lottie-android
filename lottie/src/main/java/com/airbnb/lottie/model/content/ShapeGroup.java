@@ -33,8 +33,8 @@ public class ShapeGroup implements ContentModel {
       }
     }
 
-
     ContentModel model = null;
+    //noinspection ConstantConditions
     switch (type) {
       case "gr":
         model = ShapeGroup.Factory.newInstance(reader, composition);
@@ -104,7 +104,6 @@ public class ShapeGroup implements ContentModel {
       String name = null;
       List<ContentModel> items = new ArrayList<>();
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -124,7 +123,6 @@ public class ShapeGroup implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new ShapeGroup(name, items);
     }

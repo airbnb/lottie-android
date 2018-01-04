@@ -43,7 +43,6 @@ public class CircleShape implements ContentModel {
       AnimatablePointValue size = null;
       boolean reversed = false;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -64,7 +63,6 @@ public class CircleShape implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new CircleShape(name, position, size, reversed);
     }

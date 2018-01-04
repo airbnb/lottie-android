@@ -77,7 +77,6 @@ public class MergePaths implements ContentModel {
       String name = null;
       MergePathsMode mode = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -90,7 +89,6 @@ public class MergePaths implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new MergePaths(name, mode);
     }

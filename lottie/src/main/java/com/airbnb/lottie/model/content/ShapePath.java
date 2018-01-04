@@ -50,7 +50,6 @@ public class ShapePath implements ContentModel {
       int ind = 0;
       AnimatableShapeValue shape = null;
 
-      // reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "nm":
@@ -66,7 +65,6 @@ public class ShapePath implements ContentModel {
             reader.skipValue();
         }
       }
-      // reader.endObject();
 
       return new ShapePath(name, ind, shape);
     }
