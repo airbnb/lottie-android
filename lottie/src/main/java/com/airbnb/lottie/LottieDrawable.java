@@ -310,8 +310,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   @Override public void stop() {
-    lazyCompositionTasks.clear();
-    animator.end();
+    endAnimation();
   }
 
   @Override public boolean isRunning() {
@@ -332,6 +331,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     animator.playAnimation();
+  }
+
+  public void endAnimation() {
+    lazyCompositionTasks.clear();
+    animator.endAnimation();
   }
 
   /**
