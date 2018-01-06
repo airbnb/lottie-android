@@ -105,6 +105,10 @@ public class LottieValueAnimator extends ValueAnimator {
     setValue(isReversed() ? maxValue : minValue);
   }
 
+  public void endAnimation() {
+    end();
+  }
+
   public void pauseAnimation() {
     float value = this.value;
     cancel();
