@@ -35,7 +35,7 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
     static AnimatableScaleValue newInstance(
         JSONObject json, LottieComposition composition) {
       return new AnimatableScaleValue(
-          AnimatableValueParser.newInstance(json, 1, composition, ScaleXY.Factory.INSTANCE)
+          AnimatableValueParser.newInstance(json, composition, ScaleXY.Factory.INSTANCE)
       );
     }
 

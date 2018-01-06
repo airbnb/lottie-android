@@ -4,6 +4,7 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
@@ -104,10 +105,12 @@ public class TransformKeyframeAnimation {
 
 
   public Matrix getMatrix() {
+    float density = Utils.density();
+
     matrix.reset();
     PointF position = this.position.getValue();
     if (position.x != 0 || position.y != 0) {
-      matrix.preTranslate(position.x, position.y);
+      matrix.preTranslate(position.x * density, position.y * density);
     }
 
     float rotation = this.rotation.getValue();
@@ -122,7 +125,7 @@ public class TransformKeyframeAnimation {
 
     PointF anchorPoint = this.anchorPoint.getValue();
     if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-      matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
+      matrix.preTranslate(-anchorPoint.x * density, -anchorPoint.y * density);
     }
     return matrix;
   }
@@ -131,17 +134,18 @@ public class TransformKeyframeAnimation {
    * TODO: see if we can use this for the main {@link #getMatrix()} method.
    */
   public Matrix getMatrixForRepeater(float amount) {
+    float density = Utils.density();
     PointF position = this.position.getValue();
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
     float rotation = this.rotation.getValue();
 
     matrix.reset();
-    matrix.preTranslate(position.x * amount, position.y * amount);
+    matrix.preTranslate(position.x * amount * density, position.y * amount * density);
     matrix.preScale(
         (float) Math.pow(scale.getScaleX(), amount),
          (float) Math.pow(scale.getScaleY(), amount));
-    matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
+    matrix.preRotate(rotation * amount * density, anchorPoint.x, anchorPoint.y * density);
 
     return matrix;
   }

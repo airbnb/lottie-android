@@ -13,36 +13,34 @@ import java.util.List;
 
 class AnimatableValueParser<T> {
   private final JSONObject json;
-  private final float scale;
   private final LottieComposition composition;
   private final AnimatableValue.Factory<T> valueFactory;
 
-  private AnimatableValueParser(JSONObject json, float scale, LottieComposition
-      composition, AnimatableValue.Factory<T> valueFactory) {
+  private AnimatableValueParser(
+      JSONObject json, LottieComposition composition, AnimatableValue.Factory<T> valueFactory) {
     this.json = json;
-    this.scale = scale;
     this.composition = composition;
     this.valueFactory = valueFactory;
   }
 
-  static <T> List<Keyframe<T>> newInstance(@Nullable JSONObject json, float scale,
+  static <T> List<Keyframe<T>> newInstance(@Nullable JSONObject json,
       LottieComposition composition, AnimatableValue.Factory<T> valueFactory) {
     AnimatableValueParser<T> parser =
-        new AnimatableValueParser<>(json, scale, composition, valueFactory);
+        new AnimatableValueParser<>(json, composition, valueFactory);
     return parser.parseKeyframes();
   }
 
   private List<Keyframe<T>> parseKeyframes() {
     Object k = json.opt("k");
     if (hasKeyframes(k)) {
-      return Keyframe.Factory.parseKeyframes((JSONArray) k, composition, scale, valueFactory);
+      return Keyframe.Factory.parseKeyframes((JSONArray) k, composition, valueFactory);
     } else {
       return parseStaticValue();
     }
   }
 
   private List<Keyframe<T>> parseStaticValue() {
-    T initialValue = valueFactory.valueFromObject(json.opt("k"), scale);
+    T initialValue = valueFactory.valueFromObject(json.opt("k"));
     return Collections.singletonList(new Keyframe<>(initialValue));
   }
 

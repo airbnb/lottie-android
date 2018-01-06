@@ -28,9 +28,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
 
     public static AnimatableShapeValue newInstance(JSONObject json, LottieComposition composition) {
       return new AnimatableShapeValue(
-          AnimatableValueParser
-              .newInstance(json, composition.getDpScale(), composition, ShapeData.Factory.INSTANCE)
-      );
+          AnimatableValueParser.newInstance(json, composition, ShapeData.Factory.INSTANCE));
     }
   }
 }

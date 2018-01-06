@@ -17,10 +17,12 @@ public class MiscUtils {
   }
 
   public static void getPathFromData(ShapeData shapeData, Path outPath) {
+    float density = Utils.density();
+
     outPath.reset();
     PointF initialPoint = shapeData.getInitialPoint();
-    outPath.moveTo(initialPoint.x, initialPoint.y);
-    PointF currentPoint = new PointF(initialPoint.x, initialPoint.y);
+    outPath.moveTo(initialPoint.x * density, initialPoint.y * density);
+    PointF currentPoint = new PointF(initialPoint.x * density, initialPoint.y * density);
     for (int i = 0; i < shapeData.getCurves().size(); i++) {
       CubicCurveData curveData = shapeData.getCurves().get(i);
       PointF cp1 = curveData.getControlPoint1();
@@ -34,11 +36,14 @@ public class MiscUtils {
         // This does its best to add a tiny value to the vertex without affecting the final
         // animation as much as possible.
         // outPath.rMoveTo(0.01f, 0.01f);
-        outPath.lineTo(vertex.x, vertex.y);
+        outPath.lineTo(vertex.x * density, vertex.y * density);
       } else {
-        outPath.cubicTo(cp1.x, cp1.y, cp2.x, cp2.y, vertex.x, vertex.y);
+        outPath.cubicTo(
+            cp1.x * density, cp1.y * density,
+            cp2.x * density, cp2.y * density,
+            vertex.x * density, vertex.y * density);
       }
-      currentPoint.set(vertex.x, vertex.y);
+      currentPoint.set(vertex.x * density, vertex.y * density);
     }
     if (shapeData.isClosed()) {
       outPath.close();
@@ -57,14 +62,14 @@ public class MiscUtils {
     return (int) (a + percentage * (b - a));
   }
 
-  public static int floorMod(float x, float y) {
+  static int floorMod(float x, float y) {
     return floorMod((int) x, (int) y);
   }
 
   /**
    * Copied from Math.floorMod in the Android platform.
    */
-  public static int floorMod(int x, int y) {
+  private static int floorMod(int x, int y) {
     return x - floorDiv(x, y) * y;
   }
 

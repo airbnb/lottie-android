@@ -6,6 +6,6 @@ public interface AnimatableValue<K, A> {
   BaseKeyframeAnimation<K, A> createAnimation();
 
   interface Factory<V> {
-    V valueFromObject(Object object, float scale);
+    V valueFromObject(Object object);
   }
 }
