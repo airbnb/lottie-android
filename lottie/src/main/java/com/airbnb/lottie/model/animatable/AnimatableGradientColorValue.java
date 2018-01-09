@@ -88,8 +88,8 @@ public class AnimatableGradientColorValue extends BaseAnimatableValue<GradientCo
         colorPoints = array.size() / 4;
       }
 
-      float[] positions = new float[array.size()];
-      int[] colors = new int[array.size()];
+      float[] positions = new float[colorPoints];
+      int[] colors = new int[colorPoints];
 
       int r = 0;
       int g = 0;
