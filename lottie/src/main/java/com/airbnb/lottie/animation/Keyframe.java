@@ -212,10 +212,10 @@ public class Keyframe<T> {
           case "h":
             hold = reader.nextInt() == 1;
             break;
-          case "ti":
+          case "to":
             pathCp1 = JsonUtils.jsonToPoint(reader, scale);
             break;
-          case "to":
+          case "ti":
             pathCp2 = JsonUtils.jsonToPoint(reader, scale);
             break;
           default:
