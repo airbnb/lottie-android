@@ -6,7 +6,7 @@ import com.airbnb.lottie.utils.MiscUtils;
  * {@link LottieValueCallback} that provides a value offset from the original animation
  * rather than an absolute value.
  */
-public abstract class LottieFloatRelativeValueCallback implements LottieValueCallback<Float> {
+public abstract class LottieRelativeFloatValueCallback implements LottieValueCallback<Float> {
   @Override
   public Float getValue(float sf, float ef, Float sv, Float ev, float lkp, float ikp, float p) {
     float originalValue = MiscUtils.lerp(sv, ev, ikp);

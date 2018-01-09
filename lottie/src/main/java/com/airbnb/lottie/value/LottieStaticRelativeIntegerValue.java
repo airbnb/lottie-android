@@ -1,9 +1,9 @@
 package com.airbnb.lottie.value;
 
 /**
- * Static value version of {@link LottieIntegerRelativeValueCallback}.
+ * Static value version of {@link LottieRelativeIntegerValueCallback}.
  */
-public class LottieStaticRelativeIntegerValue extends LottieIntegerRelativeValueCallback {
+public class LottieStaticRelativeIntegerValue extends LottieRelativeIntegerValueCallback {
 
   private final Integer offset;
 

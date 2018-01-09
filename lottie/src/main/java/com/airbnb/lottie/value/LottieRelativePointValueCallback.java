@@ -8,7 +8,7 @@ import com.airbnb.lottie.utils.MiscUtils;
  * {@link LottieValueCallback} that provides a value offset from the original animation
  * rather than an absolute value.
  */
-public abstract class LottiePointRelativeValueCallback implements LottieValueCallback<PointF> {
+public abstract class LottieRelativePointValueCallback implements LottieValueCallback<PointF> {
   private final PointF point = new PointF();
 
   @Override
