@@ -3,13 +3,13 @@ package com.airbnb.lottie.value;
 import android.graphics.PointF;
 
 /**
- * Static value version of {@link LottiePointRelativeValueCallback}.
+ * Static value version of {@link LottieRelativePointValueCallback}.
  */
-public class LottieStaticPointRelativeValueCallback extends LottiePointRelativeValueCallback {
+public class LottieStaticRelativePointValue extends LottieRelativePointValueCallback {
 
   private final PointF offset;
 
-  public LottieStaticPointRelativeValueCallback(PointF offset) {
+  public LottieStaticRelativePointValue(PointF offset) {
     this.offset = offset;
   }
 

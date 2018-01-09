@@ -1,13 +1,13 @@
 package com.airbnb.lottie.value;
 
 /**
- * Static value version of {@link LottieFloatRelativeValueCallback}.
+ * Static value version of {@link LottieRelativeFloatValueCallback}.
  */
-public class LottieStaticFloatRelativeValueCallback extends LottieFloatRelativeValueCallback {
+public class LottieStaticRelativeFloatValue extends LottieRelativeFloatValueCallback {
 
   private final float offset;
 
-  public LottieStaticFloatRelativeValueCallback(float offset) {
+  public LottieStaticRelativeFloatValue(float offset) {
     this.offset = offset;
   }
 

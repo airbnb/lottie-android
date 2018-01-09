@@ -55,7 +55,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     notifyListeners();
   }
 
-  void notifyListeners() {
+  public void notifyListeners() {
     for (int i = 0; i < listeners.size(); i++) {
       listeners.get(i).onValueChanged();
     }
@@ -130,7 +130,13 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setValueCallback(@Nullable LottieValueCallback<A> valueCallback) {
+    if (this.valueCallback != null) {
+      this.valueCallback.setAnimation(null);
+    }
     this.valueCallback = valueCallback;
+    if (valueCallback != null) {
+      valueCallback.setAnimation(this);
+    }
   }
 
   /**
