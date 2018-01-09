@@ -116,7 +116,7 @@ public class ShapeData {
         reader.beginArray();
       }
 
-      boolean closed = true;
+      boolean closed = false;
       List<PointF> pointsArray = null;
       List<PointF> inTangents = null;
       List<PointF> outTangents = null;
