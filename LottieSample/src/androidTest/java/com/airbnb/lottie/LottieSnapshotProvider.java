@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.value.LottieStaticInterpolatedIntegerValue;
 import com.airbnb.lottie.value.LottieStaticRelativeFloatValue;
 import com.airbnb.lottie.value.LottieStaticRelativePointValue;
 import com.airbnb.lottie.value.LottieStaticValue;
@@ -417,14 +418,41 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new KeyPath("**"),
         LottieProperty.COLOR_FILTER,
         new LottieStaticValue<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
+
+    testDynamicProperty(
+        "Opacity interpolation (0)",
+        new KeyPath("Shape Layer 1", "Rectangle"),
+        LottieProperty.TRANSFORM_OPACITY,
+        new LottieStaticInterpolatedIntegerValue(10, 100),
+        0f);
+
+    testDynamicProperty(
+        "Opacity interpolation (0.5)",
+        new KeyPath("Shape Layer 1", "Rectangle"),
+        LottieProperty.TRANSFORM_OPACITY,
+        new LottieStaticInterpolatedIntegerValue(10, 100),
+        0.5f);
+
+    testDynamicProperty(
+        "Opacity interpolation (1)",
+        new KeyPath("Shape Layer 1", "Rectangle"),
+        LottieProperty.TRANSFORM_OPACITY,
+        new LottieStaticInterpolatedIntegerValue(10, 100),
+        1f);
   }
 
   private <T> void testDynamicProperty(
       String name, KeyPath keyPath, T property, LottieValueCallback<T> callback) {
+    testDynamicProperty(name, keyPath, property, callback, 0f);
+  }
+
+  private <T> void testDynamicProperty(
+      String name, KeyPath keyPath, T property, LottieValueCallback<T> callback, float progress) {
     LottieAnimationView animationView = new LottieAnimationView(context);
     LottieComposition composition =
         LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
     animationView.setComposition(composition);
+    animationView.setProgress(progress);
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     animationView.addValueCallback(keyPath, property, callback);
