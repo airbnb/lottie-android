@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -12,9 +13,7 @@ import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,62 +102,100 @@ public class GradientStroke implements ContentModel {
     private Factory() {
     }
 
-    static GradientStroke newInstance(JSONObject json, LottieComposition composition) {
-      final String name = json.optString("nm");
-      JSONObject jsonColor = json.optJSONObject("g");
-      if (jsonColor != null && jsonColor.has("k")) {
-        jsonColor = jsonColor.optJSONObject("k");
-      }
+    static GradientStroke newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      String name = null;
       AnimatableGradientColorValue color = null;
-      if (jsonColor != null) {
-        color = AnimatableGradientColorValue.Factory.newInstance(jsonColor, composition);
-      }
-
-      JSONObject jsonOpacity = json.optJSONObject("o");
       AnimatableIntegerValue opacity = null;
-      if (jsonOpacity != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition);
-      }
-
-      int gradientTypeInt = json.optInt("t", 1);
-      GradientType gradientType = gradientTypeInt == 1 ? GradientType.Linear : GradientType.Radial;
-
-      JSONObject jsonStartPoint = json.optJSONObject("s");
+      GradientType gradientType = null;
       AnimatablePointValue startPoint = null;
-      if (jsonStartPoint != null) {
-        startPoint = AnimatablePointValue.Factory.newInstance(jsonStartPoint, composition);
-      }
-
-      JSONObject jsonEndPoint = json.optJSONObject("e");
       AnimatablePointValue endPoint = null;
-      if (jsonEndPoint != null) {
-        endPoint = AnimatablePointValue.Factory.newInstance(jsonEndPoint, composition);
-      }
-      AnimatableFloatValue width = AnimatableFloatValue.Factory.newInstance(json.optJSONObject("w"),
-          composition);
-
-
-      ShapeStroke.LineCapType capType = ShapeStroke.LineCapType.values()[json.optInt("lc") - 1];
-      ShapeStroke.LineJoinType joinType = ShapeStroke.LineJoinType.values()[json.optInt("lj") - 1];
-
+      AnimatableFloatValue width = null;
+      ShapeStroke.LineCapType capType = null;
+      ShapeStroke.LineJoinType joinType = null;
       AnimatableFloatValue offset = null;
+
+
       List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
-      if (json.has("d")) {
-        JSONArray dashesJson = json.optJSONArray("d");
-        for (int i = 0; i < dashesJson.length(); i++) {
-          JSONObject dashJson = dashesJson.optJSONObject(i);
-          String n = dashJson.optString("n");
-          if (n.equals("o")) {
-            JSONObject value = dashJson.optJSONObject("v");
-            offset = AnimatableFloatValue.Factory.newInstance(value, composition);
-          } else if (n.equals("d") || n.equals("g")) {
-            JSONObject value = dashJson.optJSONObject("v");
-            lineDashPattern.add(AnimatableFloatValue.Factory.newInstance(value, composition));
-          }
-        }
-        if (lineDashPattern.size() == 1) {
-          // If there is only 1 value then it is assumed to be equal parts on and off.
-          lineDashPattern.add(lineDashPattern.get(0));
+
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "g":
+            int points = -1;
+            reader.beginObject();
+            while (reader.hasNext()) {
+              switch (reader.nextName()) {
+                case "p":
+                  points = reader.nextInt();
+                  break;
+                case "k":
+                  color = AnimatableGradientColorValue.Factory
+                      .newInstance(reader, composition, points);
+                  break;
+                default:
+                  reader.skipValue();
+              }
+            }
+            reader.endObject();
+            break;
+          case "o":
+            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            break;
+          case "t":
+            gradientType = reader.nextInt() == 1 ? GradientType.Linear : GradientType.Radial;
+            break;
+          case "s":
+            startPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+            break;
+          case "e":
+            endPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+            break;
+          case "w":
+            width = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            break;
+          case "lc":
+            capType = ShapeStroke.LineCapType.values()[reader.nextInt() - 1];
+            break;
+          case "lj":
+            joinType = ShapeStroke.LineJoinType.values()[reader.nextInt() - 1];
+            break;
+          case "d":
+            reader.beginArray();
+            while (reader.hasNext()) {
+              String n = null;
+              AnimatableFloatValue val = null;
+              reader.beginObject();
+              while (reader.hasNext()) {
+                switch (reader.nextName()) {
+                  case "n":
+                    n = reader.nextString();
+                    break;
+                  case "v":
+                    val =  AnimatableFloatValue.Factory.newInstance(reader, composition);
+                    break;
+                  default:
+                    reader.skipValue();
+                }
+              }
+              reader.endObject();
+
+              if (n.equals("o")) {
+                offset = val;
+              } else if (n.equals("d") || n.equals("g")) {
+                lineDashPattern.add(val);
+              }
+            }
+            reader.endArray();
+            if (lineDashPattern.size() == 1) {
+              // If there is only 1 value then it is assumed to be equal parts on and off.
+              lineDashPattern.add(lineDashPattern.get(0));
+            }
+            break;
+          default:
+            reader.skipValue();
         }
       }
 

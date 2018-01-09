@@ -1,13 +1,12 @@
 package com.airbnb.lottie.model;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.content.ShapeGroup;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FontCharacter {
@@ -55,25 +54,53 @@ public class FontCharacter {
 
   public static class Factory {
 
-    public static FontCharacter newInstance(JSONObject json, LottieComposition composition) {
-      char character = json.optString("ch").charAt(0);
-      int size = json.optInt("size");
-      double width = json.optDouble("w");
-      String style = json.optString("style");
-      String fontFamily = json.optString("fFamily");
-      JSONObject data = json.optJSONObject("data");
-      List<ShapeGroup> shapes = Collections.emptyList();
+    public static FontCharacter newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      char character = '\0';
+      int size = 0;
+      double width = 0;
+      String style = null;
+      String fontFamily = null;
+      List<ShapeGroup> shapes = new ArrayList<>();
 
-      if (data != null) {
-        JSONArray shapesJson = data.optJSONArray("shapes");
-        if (shapesJson != null) {
-          shapes = new ArrayList<>(shapesJson.length());
-          for (int i = 0; i < shapesJson.length(); i++) {
-            shapes.add(
-                (ShapeGroup) ShapeGroup.shapeItemWithJson(shapesJson.optJSONObject(i), composition));
-          }
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "ch":
+            character = reader.nextString().charAt(0);
+            break;
+          case "size":
+            size = reader.nextInt();
+            break;
+          case "w":
+            width = reader.nextDouble();
+            break;
+          case "style":
+            style = reader.nextString();
+            break;
+          case "fFamily":
+            fontFamily = reader.nextString();
+            break;
+          case "data":
+            reader.beginObject();
+            while (reader.hasNext()) {
+              if ("shapes".equals(reader.nextName())) {
+                reader.beginArray();
+                while (reader.hasNext()) {
+                  shapes.add((ShapeGroup) ShapeGroup.shapeItemWithJson(reader, composition));
+                }
+                reader.endArray();
+              } else {
+                reader.skipValue();
+              }
+            }
+            reader.endObject();
+            break;
+          default:
+            reader.skipValue();
         }
       }
+      reader.endObject();
 
       return new FontCharacter(shapes, character, size, width, style, fontFamily);
     }

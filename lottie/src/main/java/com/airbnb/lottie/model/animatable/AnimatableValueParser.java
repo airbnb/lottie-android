@@ -1,57 +1,42 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 
 class AnimatableValueParser<T> {
-  private final JSONObject json;
+  private final JsonReader reader;
   private final float scale;
   private final LottieComposition composition;
   private final AnimatableValue.Factory<T> valueFactory;
 
-  private AnimatableValueParser(JSONObject json, float scale, LottieComposition
+  private AnimatableValueParser(JsonReader reader, float scale, LottieComposition
       composition, AnimatableValue.Factory<T> valueFactory) {
-    this.json = json;
+    this.reader = reader;
     this.scale = scale;
     this.composition = composition;
     this.valueFactory = valueFactory;
   }
 
-  static <T> List<Keyframe<T>> newInstance(@Nullable JSONObject json, float scale,
-      LottieComposition composition, AnimatableValue.Factory<T> valueFactory) {
+  /**
+   * Will return null if the animation can't be played such as if it has expressions.
+   */
+  @Nullable static <T> List<Keyframe<T>> newInstance(JsonReader reader, float scale,
+      LottieComposition composition, AnimatableValue.Factory<T> valueFactory) throws IOException {
     AnimatableValueParser<T> parser =
-        new AnimatableValueParser<>(json, scale, composition, valueFactory);
+        new AnimatableValueParser<>(reader, scale, composition, valueFactory);
     return parser.parseKeyframes();
   }
 
-  private List<Keyframe<T>> parseKeyframes() {
-    Object k = json.opt("k");
-    if (hasKeyframes(k)) {
-      return Keyframe.Factory.parseKeyframes((JSONArray) k, composition, scale, valueFactory);
-    } else {
-      return parseStaticValue();
-    }
-  }
-
-  private List<Keyframe<T>> parseStaticValue() {
-    T initialValue = valueFactory.valueFromObject(json.opt("k"), scale);
-    return Collections.singletonList(new Keyframe<>(initialValue));
-  }
-
-  private static boolean hasKeyframes(Object json) {
-    if (!(json instanceof JSONArray)) {
-      return false;
-    } else {
-      Object firstObject = ((JSONArray) json).opt(0);
-      return firstObject instanceof JSONObject && ((JSONObject) firstObject).has("t");
-    }
+  /**
+   * Will return null if the animation can't be played such as if it has expressions.
+   */
+  private List<Keyframe<T>> parseKeyframes() throws IOException {
+    return Keyframe.Factory.parseKeyframes(reader, composition, scale, valueFactory);
   }
 }

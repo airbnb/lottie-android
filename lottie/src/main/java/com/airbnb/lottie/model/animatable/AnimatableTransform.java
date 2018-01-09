@@ -2,22 +2,21 @@ package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ModifierContent;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
-import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.value.ScaleXY;
 
-import org.json.JSONObject;
-
-import java.util.Collections;
+import java.io.IOException;
 
 public class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatablePathValue anchorPoint;
@@ -95,18 +94,65 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
           endOpacity);
     }
 
-    public static AnimatableTransform newInstance(JSONObject json, LottieComposition composition) {
-      AnimatablePathValue anchorPoint;
+    public static AnimatableTransform newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      AnimatablePathValue anchorPoint = null;
       AnimatableValue<PointF, PointF> position = null;
-      AnimatableScaleValue scale;
+      AnimatableScaleValue scale = null;
       AnimatableFloatValue rotation = null;
-      AnimatableIntegerValue opacity;
+      AnimatableIntegerValue opacity = null;
       AnimatableFloatValue startOpacity = null;
       AnimatableFloatValue endOpacity = null;
-      JSONObject anchorJson = json.optJSONObject("a");
-      if (anchorJson != null) {
-        anchorPoint = new AnimatablePathValue(anchorJson.opt("k"), composition);
-      } else {
+
+      boolean isObject = reader.peek() == JsonToken.BEGIN_OBJECT;
+      if (isObject) {
+        reader.beginObject();
+      }
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "a":
+            reader.beginObject();
+            while (reader.hasNext()) {
+              if (reader.nextName().equals("k")) {
+                anchorPoint = new AnimatablePathValue(reader, composition);
+              } else {
+                reader.skipValue();
+              }
+            }
+            reader.endObject();
+            break;
+          case "p":
+            position =
+                AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(reader, composition);
+            break;
+          case "s":
+            scale = AnimatableScaleValue.Factory.newInstance(reader, composition);
+            break;
+          case "rz":
+            composition.addWarning("Lottie doesn't support 3D layers.");
+          case "r":
+            rotation = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "o":
+            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            break;
+          case "so":
+            startOpacity =
+                AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "eo":
+            endOpacity =
+                AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      if (isObject) {
+        reader.endObject();
+      }
+
+      if (anchorPoint == null) {
         // Cameras don't have an anchor point property. Although we don't support them, at least
         // we won't crash.
         Log.w(L.TAG, "Layer has no transform property. You may be using an unsupported " +
@@ -114,58 +160,18 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
         anchorPoint = new AnimatablePathValue();
       }
 
-      JSONObject positionJson = json.optJSONObject("p");
-      if (positionJson != null) {
-        position =
-            AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(positionJson, composition);
-      } else {
-        throwMissingTransform("position");
-      }
-
-      JSONObject scaleJson = json.optJSONObject("s");
-      if (scaleJson != null) {
-        scale = AnimatableScaleValue.Factory.newInstance(scaleJson, composition);
-      } else {
+      if (scale == null) {
         // Somehow some community animations don't have scale in the transform.
-        scale = new AnimatableScaleValue(Collections.<Keyframe<ScaleXY>>emptyList());
+        scale = new AnimatableScaleValue(new ScaleXY(1f, 1f));
       }
 
-      JSONObject rotationJson = json.optJSONObject("r");
-      if (rotationJson == null) {
-        rotationJson = json.optJSONObject("rz");
-      }
-      if (rotationJson != null) {
-        rotation = AnimatableFloatValue.Factory.newInstance(rotationJson, composition, false);
-      } else {
-        throwMissingTransform("rotation");
-      }
-
-      JSONObject opacityJson = json.optJSONObject("o");
-      if (opacityJson != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(opacityJson, composition);
-      } else {
+      if (opacity == null) {
         // Repeaters have start/end opacity instead of opacity
-        opacity = new AnimatableIntegerValue(Collections.<Keyframe<Integer>>emptyList());
-      }
-
-      JSONObject startOpacityJson = json.optJSONObject("so");
-      if (startOpacityJson != null) {
-        startOpacity =
-            AnimatableFloatValue.Factory.newInstance(startOpacityJson, composition, false);
-      }
-
-      JSONObject endOpacityJson = json.optJSONObject("eo");
-      if (endOpacityJson != null) {
-        endOpacity =
-            AnimatableFloatValue.Factory.newInstance(endOpacityJson, composition, false);
+        opacity = new AnimatableIntegerValue(100);
       }
 
       return new AnimatableTransform(
           anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
-    }
-
-    private static void throwMissingTransform(String missingProperty) {
-      throw new IllegalArgumentException("Missing transform for " + missingProperty);
     }
   }
 }

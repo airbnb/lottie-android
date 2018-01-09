@@ -2,6 +2,7 @@ package com.airbnb.lottie.model.content;
 
 import android.graphics.Path;
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -11,7 +12,7 @@ import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
 public class ShapeFill implements ContentModel {
   private final boolean fillEnabled;
@@ -33,26 +34,37 @@ public class ShapeFill implements ContentModel {
     private Factory() {
     }
 
-    static ShapeFill newInstance(JSONObject json, LottieComposition composition) {
+    static ShapeFill newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
       AnimatableColorValue color = null;
-      boolean fillEnabled;
+      boolean fillEnabled = false;
       AnimatableIntegerValue opacity = null;
-      final String name = json.optString("nm");
+      String name = null;
+      int fillTypeInt = 1;
 
-      JSONObject jsonColor = json.optJSONObject("c");
-      if (jsonColor != null) {
-        color = AnimatableColorValue.Factory.newInstance(jsonColor, composition);
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "c":
+            color = AnimatableColorValue.Factory.newInstance(reader, composition);
+            break;
+          case "o":
+            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            break;
+          case "fillEnabled":
+            fillEnabled = reader.nextBoolean();
+            break;
+          case "r":
+            fillTypeInt = reader.nextInt();
+            break;
+          default:
+            reader.skipValue();
+        }
       }
 
-      JSONObject jsonOpacity = json.optJSONObject("o");
-      if (jsonOpacity != null) {
-        opacity = AnimatableIntegerValue.Factory.newInstance(jsonOpacity, composition);
-      }
-      fillEnabled = json.optBoolean("fillEnabled");
-
-      int fillTypeInt = json.optInt("r", 1);
       Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
-
       return new ShapeFill(name, fillEnabled, fillType, color, opacity);
     }
   }

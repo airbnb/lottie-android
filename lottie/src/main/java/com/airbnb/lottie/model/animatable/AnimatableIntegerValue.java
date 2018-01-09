@@ -1,13 +1,14 @@
 package com.airbnb.lottie.model.animatable;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
@@ -16,7 +17,7 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     this(100);
   }
 
-  private AnimatableIntegerValue(Integer value) {
+  AnimatableIntegerValue(Integer value) {
     super(value);
   }
 
@@ -37,12 +38,9 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     }
 
     public static AnimatableIntegerValue newInstance(
-        JSONObject json, LottieComposition composition) {
-      if (json != null && json.has("x")) {
-        composition.addWarning("Lottie doesn't support expressions.");
-      }
+        JsonReader reader, LottieComposition composition) throws IOException {
       return new AnimatableIntegerValue(
-          AnimatableValueParser.newInstance(json, 1, composition, ValueFactory.INSTANCE)
+          AnimatableValueParser.newInstance(reader, 1, composition, ValueFactory.INSTANCE)
       );
     }
   }
@@ -53,8 +51,8 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     private ValueFactory() {
     }
 
-    @Override public Integer valueFromObject(Object object, float scale) {
-      return Math.round(JsonUtils.valueFromObject(object) * scale);
+    @Override public Integer valueFromObject(JsonReader reader, float scale) throws IOException {
+      return Math.round(JsonUtils.valueFromObject(reader) * scale);
     }
   }
 }

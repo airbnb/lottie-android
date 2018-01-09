@@ -1,13 +1,15 @@
 package com.airbnb.lottie.model.animatable;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.utils.JsonUtils;
+import com.airbnb.lottie.utils.Utils;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
@@ -34,8 +36,8 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
     private ValueFactory() {
     }
 
-    @Override public Float valueFromObject(Object object, float scale) {
-      return JsonUtils.valueFromObject(object) * scale;
+    @Override public Float valueFromObject(JsonReader reader, float scale) throws IOException {
+      return JsonUtils.valueFromObject(reader) * scale;
     }
   }
 
@@ -47,18 +49,16 @@ public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
       return new AnimatableFloatValue();
     }
 
-    public static AnimatableFloatValue newInstance(JSONObject json, LottieComposition composition) {
-      return newInstance(json, composition, true);
+    public static AnimatableFloatValue newInstance(JsonReader reader, LottieComposition composition)
+        throws IOException {
+      return newInstance(reader, composition, true);
     }
 
     public static AnimatableFloatValue newInstance(
-        JSONObject json, LottieComposition composition, boolean isDp) {
-      float scale = isDp ? composition.getDpScale() : 1f;
-      if (json != null && json.has("x")) {
-        composition.addWarning("Lottie doesn't support expressions.");
-      }
+        JsonReader reader, LottieComposition composition, boolean isDp) throws IOException {
+      float scale = isDp ? Utils.dpScale() : 1f;
       return new AnimatableFloatValue(
-          AnimatableValueParser.newInstance(json, scale, composition, ValueFactory.INSTANCE));
+          AnimatableValueParser.newInstance(reader, scale, composition, ValueFactory.INSTANCE));
     }
   }
 }

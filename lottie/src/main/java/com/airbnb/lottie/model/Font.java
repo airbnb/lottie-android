@@ -1,6 +1,8 @@
 package com.airbnb.lottie.model;
 
-import org.json.JSONObject;
+import android.util.JsonReader;
+
+import java.io.IOException;
 
 public class Font {
 
@@ -34,11 +36,33 @@ public class Font {
 
   public static class Factory {
 
-    public static Font newInstance(JSONObject json) {
-      String family = json.optString("fFamily");
-      String name = json.optString("fName");
-      String style = json.optString("fStyle");
-      float ascent = (float) json.optDouble("ascent");
+    public static Font newInstance(JsonReader reader) throws IOException {
+      String family = null;
+      String name = null;
+      String style = null;
+      float ascent = 0;
+
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "fFamily":
+            family = reader.nextString();
+            break;
+          case "fName":
+            name = reader.nextString();
+            break;
+          case "fStyle":
+            style = reader.nextString();
+            break;
+          case "ascent":
+            ascent = (float) reader.nextDouble();
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
+
       return new Font(family, name, style, ascent);
     }
   }

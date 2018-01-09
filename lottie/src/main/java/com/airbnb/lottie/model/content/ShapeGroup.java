@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.support.annotation.Nullable;
+import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -11,49 +12,79 @@ import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ShapeGroup implements ContentModel {
   @Nullable
-  public static ContentModel shapeItemWithJson(JSONObject json, LottieComposition composition) {
-    String type = json.optString("ty");
+  public static ContentModel shapeItemWithJson(JsonReader reader, LottieComposition composition)
+      throws IOException {
+    String type = null;
 
+    reader.beginObject();
+    while (reader.hasNext()) {
+      if (reader.nextName().equals("ty")) {
+        type = reader.nextString();
+        break;
+      } else {
+        reader.skipValue();
+      }
+    }
+
+    ContentModel model = null;
+    //noinspection ConstantConditions
     switch (type) {
       case "gr":
-        return ShapeGroup.Factory.newInstance(json, composition);
+        model = ShapeGroup.Factory.newInstance(reader, composition);
+        break;
       case "st":
-        return ShapeStroke.Factory.newInstance(json, composition);
+        model = ShapeStroke.Factory.newInstance(reader, composition);
+        break;
       case "gs":
-        return GradientStroke.Factory.newInstance(json, composition);
+        model = GradientStroke.Factory.newInstance(reader, composition);
+        break;
       case "fl":
-        return ShapeFill.Factory.newInstance(json, composition);
+        model = ShapeFill.Factory.newInstance(reader, composition);
+        break;
       case "gf":
-        return GradientFill.Factory.newInstance(json, composition);
+        model = GradientFill.Factory.newInstance(reader, composition);
+        break;
       case "tr":
-        return AnimatableTransform.Factory.newInstance(json, composition);
+        model = AnimatableTransform.Factory.newInstance(reader, composition);
+        break;
       case "sh":
-        return ShapePath.Factory.newInstance(json, composition);
+        model = ShapePath.Factory.newInstance(reader, composition);
+        break;
       case "el":
-        return CircleShape.Factory.newInstance(json, composition);
+        model = CircleShape.Factory.newInstance(reader, composition);
+        break;
       case "rc":
-        return RectangleShape.Factory.newInstance(json, composition);
+        model = RectangleShape.Factory.newInstance(reader, composition);
+        break;
       case "tm":
-        return ShapeTrimPath.Factory.newInstance(json, composition);
+        model = ShapeTrimPath.Factory.newInstance(reader, composition);
+        break;
       case "sr":
-        return PolystarShape.Factory.newInstance(json, composition);
+        model = PolystarShape.Factory.newInstance(reader, composition);
+        break;
       case "mm":
-        return MergePaths.Factory.newInstance(json);
+        model = MergePaths.Factory.newInstance(reader);
+        break;
       case "rp":
-        return Repeater.Factory.newInstance(json, composition);
+        model = Repeater.Factory.newInstance(reader, composition);
+        break;
       default:
         Log.w(L.TAG, "Unknown shape type " + type);
     }
-    return null;
+
+    while (reader.hasNext()) {
+      reader.skipValue();
+    }
+    reader.endObject();
+
+    return model;
   }
 
   private final String name;
@@ -68,17 +99,31 @@ public class ShapeGroup implements ContentModel {
     private Factory() {
     }
 
-    private static ShapeGroup newInstance(JSONObject json, LottieComposition composition) {
-      JSONArray jsonItems = json.optJSONArray("it");
-      String name = json.optString("nm");
+    private static ShapeGroup newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      String name = null;
       List<ContentModel> items = new ArrayList<>();
 
-      for (int i = 0; i < jsonItems.length(); i++) {
-        ContentModel newItem = shapeItemWithJson(jsonItems.optJSONObject(i), composition);
-        if (newItem != null) {
-          items.add(newItem);
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "it":
+            reader.beginArray();
+            while (reader.hasNext()) {
+              ContentModel newItem = shapeItemWithJson(reader, composition);
+              if (newItem != null) {
+                items.add(newItem);
+              }
+            }
+            reader.endArray();
+            break;
+          default:
+            reader.skipValue();
         }
       }
+
       return new ShapeGroup(name, items);
     }
   }

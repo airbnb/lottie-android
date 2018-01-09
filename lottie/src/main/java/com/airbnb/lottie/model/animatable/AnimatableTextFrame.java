@@ -1,12 +1,13 @@
 package com.airbnb.lottie.model.animatable;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
 
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.List;
 
 public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, DocumentData> {
@@ -23,13 +24,11 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
     private Factory() {
     }
 
-    public static AnimatableTextFrame newInstance(JSONObject json, LottieComposition composition) {
-      if (json != null && json.has("x")) {
-        composition.addWarning("Lottie doesn't support expressions.");
-      }
+    public static AnimatableTextFrame newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
       return new AnimatableTextFrame(
           AnimatableValueParser
-              .newInstance(json, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE));
+              .newInstance(reader, 1, composition, AnimatableTextFrame.ValueFactory.INSTANCE));
     }
   }
 
@@ -40,8 +39,9 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
     private ValueFactory() {
     }
 
-    @Override public DocumentData valueFromObject(Object object, float scale) {
-      return DocumentData.Factory.newInstance((JSONObject) object);
+    @Override
+    public DocumentData valueFromObject(JsonReader reader, float scale) throws IOException {
+      return DocumentData.Factory.newInstance(reader);
     }
   }
 }

@@ -1,5 +1,7 @@
 package com.airbnb.lottie.model.content;
 
+import android.util.JsonReader;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
@@ -7,7 +9,7 @@ import com.airbnb.lottie.animation.content.TrimPathContent;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
-import org.json.JSONObject;
+import java.io.IOException;
 
 public class ShapeTrimPath implements ContentModel {
 
@@ -74,13 +76,37 @@ public class ShapeTrimPath implements ContentModel {
     private Factory() {
     }
 
-    static ShapeTrimPath newInstance(JSONObject json, LottieComposition composition) {
-      return new ShapeTrimPath(
-          json.optString("nm"),
-          Type.forId(json.optInt("m", 1)),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("s"), composition, false),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("e"), composition, false),
-          AnimatableFloatValue.Factory.newInstance(json.optJSONObject("o"), composition, false));
+    static ShapeTrimPath newInstance(
+        JsonReader reader, LottieComposition composition) throws IOException {
+      String name = null;
+      Type type = null;
+      AnimatableFloatValue start = null;
+      AnimatableFloatValue end = null;
+      AnimatableFloatValue offset = null;
+
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "s":
+            start = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "e":
+            end = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "o":
+            offset = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            break;
+          case "nm":
+            name = reader.nextString();
+            break;
+          case "m":
+            type = Type.forId(reader.nextInt());
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+
+      return new ShapeTrimPath(name, type, start, end, offset);
     }
   }
 }

@@ -116,7 +116,7 @@ public class TextLayer extends BaseLayer {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
       float parentScale = Utils.getScale(parentMatrix);
-      strokePaint.setStrokeWidth(documentData.strokeWidth * composition.getDpScale() * parentScale);
+      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
     }
 
     if (lottieDrawable.useTextGlyphs()) {
@@ -144,7 +144,7 @@ public class TextLayer extends BaseLayer {
         continue;
       }
       drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
-      float tx = (float) character.getWidth() * fontScale * composition.getDpScale() * parentScale;
+      float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
@@ -168,7 +168,7 @@ public class TextLayer extends BaseLayer {
       text = textDelegate.getTextInternal(text);
     }
     fillPaint.setTypeface(typeface);
-    fillPaint.setTextSize(documentData.size * composition.getDpScale());
+    fillPaint.setTextSize((float) (documentData.size * Utils.dpScale()));
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
     for (int i = 0; i < text.length(); i++) {
@@ -197,7 +197,7 @@ public class TextLayer extends BaseLayer {
       Path path = contentGroups.get(j).getPath();
       path.computeBounds(rectF, false);
       matrix.set(parentMatrix);
-      matrix.preTranslate(0, (float) -documentData.baselineShift * composition.getDpScale());
+      matrix.preTranslate(0, (float) -documentData.baselineShift * Utils.dpScale());
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
       if (documentData.strokeOverFill) {
