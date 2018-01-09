@@ -20,7 +20,7 @@ public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
 
     if (valueCallback != null) {
       //noinspection ConstantConditions
-      return valueCallback.getValue(keyframe.startFrame, keyframe.endFrame,
+      return valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
           startTransform, endTransform,
           keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
     }

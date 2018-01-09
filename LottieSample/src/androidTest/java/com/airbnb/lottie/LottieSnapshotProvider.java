@@ -218,11 +218,19 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void testDynamicProperties() {
+    LottieStaticValue<Integer> value = new LottieStaticValue<>(Color.GREEN);
     testDynamicProperty(
-        "Fill color",
+        "Fill color (Green)",
         new KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
         LottieProperty.COLOR,
-        new LottieStaticValue<>(Color.GREEN));
+        value);
+
+    value.setValue(Color.YELLOW);
+    testDynamicProperty(
+        "Fill color (Yellow)",
+        new KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
+        LottieProperty.COLOR,
+        value);
 
     testDynamicProperty(
         "Fill opacity",

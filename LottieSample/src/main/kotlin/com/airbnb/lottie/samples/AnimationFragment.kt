@@ -20,10 +20,10 @@ import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
+import com.airbnb.lottie.*
 import com.airbnb.lottie.BuildConfig
-import com.airbnb.lottie.L
-import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.value.LottieStaticValue
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry

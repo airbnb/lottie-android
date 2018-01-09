@@ -24,7 +24,7 @@ public class ValueCallbackKeyframeAnimation<K, A> extends BaseKeyframeAnimation<
     return 1f;
   }
 
-  @Override void notifyListeners() {
+  @Override public void notifyListeners() {
     if (this.valueCallback != null) {
       super.notifyListeners();
     }
