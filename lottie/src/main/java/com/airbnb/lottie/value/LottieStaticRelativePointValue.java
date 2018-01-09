@@ -5,11 +5,11 @@ import android.graphics.PointF;
 /**
  * Static value version of {@link LottiePointRelativeValueCallback}.
  */
-public class LottieStaticPointRelativeValueCallback extends LottiePointRelativeValueCallback {
+public class LottieStaticRelativePointValue extends LottiePointRelativeValueCallback {
 
   private final PointF offset;
 
-  public LottieStaticPointRelativeValueCallback(PointF offset) {
+  public LottieStaticRelativePointValue(PointF offset) {
     this.offset = offset;
   }
 

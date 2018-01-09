@@ -1,10 +1,10 @@
 package com.airbnb.lottie.value;
 
-public class LottieStaticValueCallback<T> implements LottieValueCallback<T> {
+public class LottieStaticValue<T> implements LottieValueCallback<T> {
 
   private final T value;
 
-  public LottieStaticValueCallback(T value) {
+  public LottieStaticValue(T value) {
     this.value = value;
   }
 
