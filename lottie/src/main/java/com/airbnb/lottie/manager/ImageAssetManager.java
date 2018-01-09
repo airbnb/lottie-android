@@ -50,7 +50,13 @@ public class ImageAssetManager {
     this.delegate = assetDelegate;
   }
 
+  /**
+   * Returns the previously set bitmap or null.
+   */
   @Nullable public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
+    if (bitmap == null) {
+      return bitmaps.remove(id);
+    }
     return bitmaps.put(id, bitmap);
   }
 
