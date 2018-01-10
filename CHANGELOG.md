@@ -1,3 +1,16 @@
+# 2.5.0-beta2
+### Features and Improvements
+* Completely overhauled json deserialization. Deserializing a composition takes half as long and 
+can deserialize much larger json files (tested 50mb) without ooming.
+* Added a new LottieInterpolatedValue class in which you set start, end, and interpolator values 
+for a property.
+* Added setValue methods to all LottieValue classes.
+* Renamed some of the LottieValue classes for clarity.
+* API to add all animator listeners.
+* Adhere to the Animatable interface.
+### Bugs Fixed
+* Prevent a crash trying to recycle a null bitmap.
+
 # 2.5.0-beta1
 ### Features and Improvements
 * Added the ability to dynamically change properties at runtime. See [docs](http://airbnb.io/lottie/android/dynamic.html) for more info.
