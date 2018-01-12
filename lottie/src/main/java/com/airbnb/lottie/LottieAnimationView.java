@@ -420,7 +420,10 @@ import java.util.Map;
 
   /**
    * @see #setAnimation(JsonReader) which is more efficient than using a JSONObject.
-   * For animations loaded from the network, use {@link #setAnimationFromJson(String)}
+   * For animations loaded from the network, use {@link #setAnimationFromJson(String)}.
+   *
+   * If you must use a JSONObject, you can convert it to a StreamReader with:
+   *    `new JsonReader(new StringReader(json.toString()));`
    */
   @Deprecated
   public void setAnimation(JSONObject json) {

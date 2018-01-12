@@ -37,7 +37,7 @@ import static com.airbnb.lottie.utils.Utils.closeQuietly;
  */
 public class LottieComposition {
 
-  final PerformanceTracker performanceTracker = new PerformanceTracker();
+  private final PerformanceTracker performanceTracker = new PerformanceTracker();
   final Map<String, List<Layer>> precomps = new HashMap<>();
   final Map<String, LottieImageAsset> images = new HashMap<>();
   /** Map of font names to fonts */
@@ -152,7 +152,7 @@ public class LottieComposition {
     return sb.toString();
   }
 
-  @SuppressWarnings({"WeakerAccess", "unused"})
+  @SuppressWarnings({"WeakerAccess"})
   public static class Factory {
     private Factory() {
     }
