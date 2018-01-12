@@ -1,3 +1,8 @@
+# 2.5.0-beta3
+* Cleaned up some of the LottieComposition APIs.
+* Fixed some setFrame/getFrame calculations.
+* Fixed a regressions with unknown masks modes.
+
 # 2.5.0-beta2
 ### Features and Improvements
 * Completely overhauled json deserialization. Deserializing a composition takes half as long and 
