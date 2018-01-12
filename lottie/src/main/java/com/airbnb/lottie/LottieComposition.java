@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -169,9 +168,7 @@ public class LottieComposition {
       } catch (IOException e) {
         throw new IllegalArgumentException("Unable to find file " + fileName, e);
       }
-      Cancellable cancellable = fromInputStream(stream, listener);
-      closeQuietly(stream);
-      return cancellable;
+      return fromInputStream(stream, listener);
     }
 
     /**
@@ -223,26 +220,24 @@ public class LottieComposition {
 
     @Nullable
     public static LottieComposition fromFileSync(Context context, String fileName) {
-      InputStream stream = null;
+      try {
+        return fromInputStreamSync(context.getAssets().open(fileName));
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Unable to open asset " + fileName, e);
+      }
+    }
+
+    @Nullable
+    public static LottieComposition fromInputStreamSync(InputStream stream) {
       LottieComposition composition;
       try {
-        stream = context.getAssets().open(fileName);
         composition = fromJsonSync(new JsonReader(new InputStreamReader(stream)));
       } catch (IOException e) {
-        throw new IllegalStateException("Unable to find file " + fileName, e);
+        throw new IllegalArgumentException("Unable to parse composition.", e);
       } finally {
         closeQuietly(stream);
       }
       return composition;
-    }
-
-    @Nullable
-    public static LottieComposition fromInputStreamSync(Resources res, InputStream stream) {
-      try {
-        return fromJsonSync(new JsonReader(new InputStreamReader(stream)));
-      } catch (IOException e) {
-        return null;
-      }
     }
 
     public static LottieComposition fromJsonSync(JsonReader reader) throws IOException {
