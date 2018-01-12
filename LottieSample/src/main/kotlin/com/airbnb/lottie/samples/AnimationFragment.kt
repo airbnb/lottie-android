@@ -20,10 +20,10 @@ import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
-import com.airbnb.lottie.*
 import com.airbnb.lottie.BuildConfig
-import com.airbnb.lottie.model.KeyPath
-import com.airbnb.lottie.value.LottieStaticValue
+import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieDrawable
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -34,7 +34,6 @@ import kotlinx.android.synthetic.main.fragment_animation.view.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONException
-import org.json.JSONObject
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -362,7 +361,7 @@ class AnimationFragment : Fragment() {
             return
         }
 
-        LottieComposition.Factory.fromInputStream(context, fis, { composition ->
+        LottieComposition.Factory.fromInputStream(fis, { composition ->
                     if (composition == null) {
                         onLoadError()
                     } else {
@@ -385,8 +384,7 @@ class AnimationFragment : Fragment() {
             return
         }
         try {
-            val json = JSONObject(jsonString)
-            LottieComposition.Factory.fromJson(resources, json, { composition ->
+            LottieComposition.Factory.fromJsonString(jsonString, { composition ->
                         if (composition == null) {
                             onLoadError()
                         } else {
