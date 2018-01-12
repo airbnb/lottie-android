@@ -25,7 +25,6 @@ import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -271,8 +270,6 @@ public abstract class BaseLayer
           return;
         case MaskModeIntersect:
           // TODO
-          return;
-        case MaskModeUnknown:
           return;
         case MaskModeAdd:
         default:

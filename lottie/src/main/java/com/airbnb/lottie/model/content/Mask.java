@@ -1,7 +1,9 @@
 package com.airbnb.lottie.model.content;
 
 import android.util.JsonReader;
+import android.util.Log;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
@@ -12,8 +14,7 @@ public class Mask {
   public enum MaskMode {
     MaskModeAdd,
     MaskModeSubtract,
-    MaskModeIntersect,
-    MaskModeUnknown
+    MaskModeIntersect
   }
 
   private final MaskMode maskMode;
@@ -38,7 +39,8 @@ public class Mask {
 
       reader.beginObject();
       while (reader.hasNext()) {
-        switch (reader.nextName()) {
+        String mode = reader.nextName();
+        switch (mode) {
           case "mode":
             switch (reader.nextString()) {
               case "a":
@@ -51,7 +53,8 @@ public class Mask {
                 maskMode = MaskMode.MaskModeIntersect;
                 break;
               default:
-                maskMode = MaskMode.MaskModeUnknown;
+                Log.w(L.TAG, "Unknown mask mode " + mode + ". Defaulting to Add.");
+                maskMode = MaskMode.MaskModeAdd;
             }
             break;
           case "pt":
