@@ -500,7 +500,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return 0;
     }
 
-    return (int) (getProgress() * composition.getDurationFrames());
+    return Math.round((getProgress() * composition.getDurationFrames()));
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {

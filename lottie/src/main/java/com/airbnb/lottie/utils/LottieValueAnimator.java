@@ -51,7 +51,7 @@ public class LottieValueAnimator extends ValueAnimator {
     float range = Math.abs(maxValue - minValue);
     float animatedPercentage = distFromStart / range;
     if (getDuration() > 0) {
-      setCurrentPlayTime((long) (getDuration() * animatedPercentage));
+      setCurrentPlayTime(Math.round(getDuration() * animatedPercentage));
     }
   }
 
