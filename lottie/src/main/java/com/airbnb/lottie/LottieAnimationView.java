@@ -18,6 +18,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.JsonReader;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -28,6 +29,7 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import org.json.JSONObject;
 
+import java.io.StringReader;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -417,15 +419,33 @@ import java.util.Map;
   }
 
   /**
-   * Sets the animation from a JSONObject.
+   * @see #setAnimation(JsonReader) which is more efficient than using a JSONObject.
+   * For animations loaded from the network, use {@link #setAnimationFromJson(String)}
+   */
+  @Deprecated
+  public void setAnimation(JSONObject json) {
+    setAnimation(new JsonReader(new StringReader(json.toString())));
+  }
+
+  /**
+   * Sets the animation from json string. This is the ideal API to use when loading an animation
+   * over the network because you can use the raw response body here and a converstion to a
+   * JSONObject never has to be done.
+   */
+  public void setAnimationFromJson(String jsonString) {
+    setAnimation(new JsonReader(new StringReader(jsonString)));
+  }
+
+  /**
+   * Sets the animation from a JSONReader.
    * This will load and deserialize the file asynchronously.
    * <p>
    * This is particularly useful for animations loaded from the network. You can fetch the
    * bodymovin json from the network and pass it directly here.
    */
-  public void setAnimation(final JSONObject json) {
+  public void setAnimation(JsonReader reader) {
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromJson(getResources(), json, loadedListener);
+    compositionLoader = LottieComposition.Factory.fromJsonReader(reader, loadedListener);
   }
 
   private void cancelLoaderTask() {
