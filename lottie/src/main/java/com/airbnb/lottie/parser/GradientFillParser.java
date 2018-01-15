@@ -40,8 +40,7 @@ public class GradientFillParser {
                 points = reader.nextInt();
                 break;
               case "k":
-                color = AnimatableGradientColorValue.Factory
-                    .newInstance(reader, composition, points);
+                color = AnimatableValueParser.parseGradientColor(reader, composition, points);
                 break;
               default:
                 reader.skipValue();
@@ -50,16 +49,16 @@ public class GradientFillParser {
           reader.endObject();
           break;
         case "o":
-          opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+          opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "t":
           gradientType = reader.nextInt() == 1 ? GradientType.Linear : GradientType.Radial;
           break;
         case "s":
-          startPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+          startPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "e":
-          endPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+          endPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "r":
           fillType = reader.nextInt() == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;

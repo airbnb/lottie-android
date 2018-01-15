@@ -32,7 +32,7 @@ public class CircleShapeParser {
               .createAnimatablePathOrSplitDimensionPath(reader, composition);
           break;
         case "s":
-          size = AnimatablePointValue.Factory.newInstance(reader, composition);
+          size = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "d":
           // "d" is 2 for normal and 3 for reversed.

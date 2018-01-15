@@ -33,10 +33,10 @@ public class RectangleShapeParser {
               AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(reader, composition);
           break;
         case "s":
-          size = AnimatablePointValue.Factory.newInstance(reader, composition);
+          size = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "r":
-          roundedness = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          roundedness = AnimatableValueParser.parseFloat(reader, composition);
           break;
         default:
           reader.skipValue();

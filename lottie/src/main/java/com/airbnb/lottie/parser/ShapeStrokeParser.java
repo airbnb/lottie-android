@@ -34,13 +34,13 @@ public class ShapeStrokeParser {
           name = reader.nextString();
           break;
         case "c":
-          color = AnimatableColorValue.Factory.newInstance(reader, composition);
+          color = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "w":
-          width = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          width = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "o":
-          opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+          opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "lc":
           capType = ShapeStroke.LineCapType.values()[reader.nextInt() - 1];
@@ -61,7 +61,7 @@ public class ShapeStrokeParser {
                   n = reader.nextString();
                   break;
                 case "v":
-                  val = AnimatableFloatValue.Factory.newInstance(reader, composition);
+                  val = AnimatableValueParser.parseFloat(reader, composition);
                   break;
                 default:
                   reader.skipValue();

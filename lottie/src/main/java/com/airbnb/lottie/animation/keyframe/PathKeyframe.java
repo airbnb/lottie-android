@@ -8,8 +8,8 @@ import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.parser.KeyframeParser;
+import com.airbnb.lottie.parser.ValueParser;
 import com.airbnb.lottie.utils.Utils;
 
 import java.io.IOException;
@@ -36,10 +36,10 @@ public class PathKeyframe extends Keyframe<PointF> {
     }
 
     public static PathKeyframe newInstance(JsonReader reader, LottieComposition composition,
-        AnimatableValue.Factory<PointF> valueFactory) throws IOException {
+        ValueParser<PointF> valueParser) throws IOException {
       boolean animated = reader.peek() == JsonToken.BEGIN_OBJECT;
       Keyframe<PointF> keyframe = KeyframeParser.parse(
-          reader, composition, Utils.dpScale(), valueFactory, animated);
+          reader, composition, Utils.dpScale(), valueParser, animated);
 
       return new PathKeyframe(composition, keyframe);
     }

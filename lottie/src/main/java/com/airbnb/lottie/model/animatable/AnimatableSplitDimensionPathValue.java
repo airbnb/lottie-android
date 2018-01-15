@@ -20,5 +20,4 @@ public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF
     return new SplitDimensionPathKeyframeAnimation(
         animatableXDimension.createAnimation(), animatableYDimension.createAnimation());
   }
-
 }

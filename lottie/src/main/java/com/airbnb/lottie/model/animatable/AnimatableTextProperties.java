@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.parser.AnimatableValueParser;
 
 import java.io.IOException;
 
@@ -61,16 +62,16 @@ public class AnimatableTextProperties {
       while (reader.hasNext()) {
         switch (reader.nextName()) {
           case "fc":
-            color = AnimatableColorValue.Factory.newInstance(reader, composition);
+            color = AnimatableValueParser.parseColor(reader, composition);
             break;
           case "sc":
-            stroke = AnimatableColorValue.Factory.newInstance(reader, composition);
+            stroke = AnimatableValueParser.parseColor(reader, composition);
             break;
           case "sw":
-            strokeWidth = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
             break;
           case "t":
-            tracking = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            tracking = AnimatableValueParser.parseFloat(reader, composition);
             break;
           default:
             reader.skipValue();

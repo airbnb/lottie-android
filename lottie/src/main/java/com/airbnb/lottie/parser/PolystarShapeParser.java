@@ -36,26 +36,26 @@ public class PolystarShapeParser {
           type = PolystarShape.Type.forValue(reader.nextInt());
           break;
         case "pt":
-          points = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          points = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "p":
           position = AnimatablePathValue
               .createAnimatablePathOrSplitDimensionPath(reader, composition);
           break;
         case "r":
-          rotation = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          rotation = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "or":
-          outerRadius = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          outerRadius = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "os":
-          outerRoundedness = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          outerRoundedness = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "ir":
-          innerRadius = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          innerRadius = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "is":
-          innerRoundedness = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          innerRoundedness = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         default:
           reader.skipValue();

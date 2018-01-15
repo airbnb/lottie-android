@@ -27,7 +27,7 @@ public class ShapePathParser {
           ind = reader.nextInt();
           break;
         case "ks":
-          shape = AnimatableShapeValue.Factory.newInstance(reader, composition);
+          shape = AnimatableValueParser.parseShapeData(reader, composition);
           break;
         default:
           reader.skipValue();

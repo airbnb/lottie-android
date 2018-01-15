@@ -26,10 +26,10 @@ public class RepeaterParser {
           name = reader.nextString();
           break;
         case "c":
-          copies = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          copies = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "o":
-          offset = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          offset = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "tr":
           transform = AnimatableTransform.Factory.newInstance(reader, composition);

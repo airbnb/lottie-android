@@ -1,21 +1,19 @@
-package com.airbnb.lottie.model;
+package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
-import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.utils.JsonUtils;
 
 import java.io.IOException;
 
-public class PointFFactory implements AnimatableValue.Factory<PointF> {
-  public static final PointFFactory INSTANCE = new PointFFactory();
+public class PointFParser implements ValueParser<PointF> {
+  public static final PointFParser INSTANCE = new PointFParser();
 
-  private PointFFactory() {
-  }
+  private PointFParser() {}
 
-  @Override public PointF valueFromObject(JsonReader reader, float scale) throws IOException {
+  @Override public PointF parse(JsonReader reader, float scale) throws IOException {
     JsonToken token = reader.peek();
     if (token == JsonToken.BEGIN_ARRAY) {
       return JsonUtils.jsonToPoint(reader, scale);

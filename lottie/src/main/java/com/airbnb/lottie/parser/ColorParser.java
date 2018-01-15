@@ -1,17 +1,17 @@
-package com.airbnb.lottie.model;
+package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
-import com.airbnb.lottie.model.animatable.AnimatableValue;
-
 import java.io.IOException;
 
-public class ColorFactory implements AnimatableValue.Factory<Integer> {
-  public static final ColorFactory INSTANCE = new ColorFactory();
+public class ColorParser implements ValueParser<Integer> {
+  public static final ColorParser INSTANCE = new ColorParser();
 
-  @Override public Integer valueFromObject(JsonReader reader, float scale) throws IOException {
+  private ColorParser() {}
+
+  @Override public Integer parse(JsonReader reader, float scale) throws IOException {
     boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
     if (isArray) {
       reader.beginArray();
