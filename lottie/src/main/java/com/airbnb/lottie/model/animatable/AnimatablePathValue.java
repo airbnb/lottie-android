@@ -10,6 +10,7 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
+import com.airbnb.lottie.parser.KeyframesParser;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.Utils;
 
@@ -83,7 +84,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
         keyframes.add(keyframe);
       }
       reader.endArray();
-      Keyframe.setEndFrames(keyframes);
+      KeyframesParser.setEndFrames(keyframes);
     } else {
       keyframes.add(new Keyframe<>(JsonUtils.jsonToPoint(reader, Utils.dpScale())));
     }

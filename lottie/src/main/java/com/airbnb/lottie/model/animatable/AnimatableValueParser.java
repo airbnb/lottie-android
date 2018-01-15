@@ -5,6 +5,7 @@ import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.parser.KeyframesParser;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,6 +38,6 @@ class AnimatableValueParser<T> {
    * Will return null if the animation can't be played such as if it has expressions.
    */
   private List<Keyframe<T>> parseKeyframes() throws IOException {
-    return Keyframe.Factory.parseKeyframes(reader, composition, scale, valueFactory);
+    return KeyframesParser.parse(reader, composition, scale, valueFactory);
   }
 }
