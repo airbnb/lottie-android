@@ -12,7 +12,6 @@ import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
-import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.Utils;
 
@@ -22,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class LayerParser {
+
+  private LayerParser() {}
 
   public static Layer parse(LottieComposition composition) {
     Rect bounds = composition.getBounds();
@@ -107,7 +108,7 @@ public class LayerParser {
         case "shapes":
           reader.beginArray();
           while (reader.hasNext()) {
-            ContentModel shape = ShapeGroup.shapeItemWithJson(reader, composition);
+            ContentModel shape = ContentModelParser.parse(reader, composition);
             if (shape != null) {
               shapes.add(shape);
             }

@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 public class LottieCompositionParser {
+
+  private LottieCompositionParser() {}
+
   public static LottieComposition parse(JsonReader reader) throws IOException {
     float scale = Utils.dpScale();
     float startFrame = 0f;
@@ -180,7 +183,7 @@ public class LottieCompositionParser {
         case "list":
           reader.beginArray();
           while (reader.hasNext()) {
-            Font font = Font.Factory.newInstance(reader);
+            Font font = FontParser.parse(reader);
             fonts.put(font.getName(), font);
           }
           reader.endArray();
@@ -197,7 +200,7 @@ public class LottieCompositionParser {
       SparseArrayCompat<FontCharacter> characters) throws IOException {
     reader.beginArray();
     while (reader.hasNext()) {
-      FontCharacter character = FontCharacter.Factory.newInstance(reader, composition);
+      FontCharacter character = FontCharacterParser.parse(reader, composition);
       characters.put(character.hashCode(), character);
     }
     reader.endArray();

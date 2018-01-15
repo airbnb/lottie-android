@@ -6,6 +6,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
+import com.airbnb.lottie.parser.DocumentDataParser;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +42,7 @@ public class AnimatableTextFrame extends BaseAnimatableValue<DocumentData, Docum
 
     @Override
     public DocumentData valueFromObject(JsonReader reader, float scale) throws IOException {
-      return DocumentData.Factory.newInstance(reader);
+      return DocumentDataParser.parse(reader);
     }
   }
 }

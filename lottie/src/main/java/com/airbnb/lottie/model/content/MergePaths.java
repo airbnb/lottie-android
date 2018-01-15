@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model.content;
 
 import android.support.annotation.Nullable;
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
@@ -9,8 +8,6 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.MergePathsContent;
 import com.airbnb.lottie.model.layer.BaseLayer;
-
-import java.io.IOException;
 
 
 public class MergePaths implements ContentModel {
@@ -22,7 +19,7 @@ public class MergePaths implements ContentModel {
     Intersect,
     ExcludeIntersections;
 
-    private static MergePathsMode forId(int id) {
+    public static MergePathsMode forId(int id) {
       switch (id) {
         case 1:
           return Merge;
@@ -43,7 +40,7 @@ public class MergePaths implements ContentModel {
   private final String name;
   private final MergePathsMode mode;
 
-  private MergePaths(String name, MergePathsMode mode) {
+  public MergePaths(String name, MergePathsMode mode) {
     this.name = name;
     this.mode = mode;
   }
@@ -67,30 +64,5 @@ public class MergePaths implements ContentModel {
   @Override
   public String toString() {
     return "MergePaths{" + "mode=" +  mode + '}';
-  }
-
-  static class Factory {
-    private Factory() {
-    }
-
-    static MergePaths newInstance(JsonReader reader) throws IOException {
-      String name = null;
-      MergePathsMode mode = null;
-
-      while (reader.hasNext()) {
-        switch (reader.nextName()) {
-          case "nm":
-            name = reader.nextString();
-            break;
-          case "mm":
-            mode =  MergePathsMode.forId(reader.nextInt());
-            break;
-          default:
-            reader.skipValue();
-        }
-      }
-
-      return new MergePaths(name, mode);
-    }
   }
 }

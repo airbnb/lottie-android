@@ -2,9 +2,7 @@ package com.airbnb.lottie.model.content;
 
 import android.graphics.Path;
 import android.support.annotation.Nullable;
-import android.util.JsonReader;
 
-import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.GradientFillContent;
@@ -13,8 +11,6 @@ import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.layer.BaseLayer;
-
-import java.io.IOException;
 
 public class GradientFill implements ContentModel {
 
@@ -28,7 +24,7 @@ public class GradientFill implements ContentModel {
   @Nullable private final AnimatableFloatValue highlightLength;
   @Nullable private final AnimatableFloatValue highlightAngle;
 
-  private GradientFill(String name, GradientType gradientType, Path.FillType fillType,
+  public GradientFill(String name, GradientType gradientType, Path.FillType fillType,
       AnimatableGradientColorValue gradientColor,
       AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
       AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
@@ -84,65 +80,4 @@ public class GradientFill implements ContentModel {
     return new GradientFillContent(drawable, layer, this);
   }
 
-  static class Factory {
-    private Factory() {
-    }
-
-    static GradientFill newInstance(
-        JsonReader reader, LottieComposition composition) throws IOException {
-      String name = null;
-      AnimatableGradientColorValue color = null;
-      AnimatableIntegerValue opacity = null;
-      GradientType gradientType = null;
-      AnimatablePointValue startPoint = null;
-      AnimatablePointValue endPoint = null;
-      Path.FillType fillType = null;
-
-      while (reader.hasNext()) {
-        switch (reader.nextName()) {
-          case "nm":
-            name = reader.nextString();
-            break;
-          case "g":
-            int points = -1;
-            reader.beginObject();
-            while (reader.hasNext()) {
-              switch (reader.nextName()) {
-                case "p":
-                  points = reader.nextInt();
-                  break;
-                case "k":
-                  color = AnimatableGradientColorValue.Factory
-                      .newInstance(reader, composition, points);
-                  break;
-                default:
-                  reader.skipValue();
-              }
-            }
-            reader.endObject();
-            break;
-          case "o":
-            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
-            break;
-          case "t":
-            gradientType = reader.nextInt() == 1 ? GradientType.Linear : GradientType.Radial;
-            break;
-          case "s":
-            startPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
-            break;
-          case "e":
-            endPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
-            break;
-          case "r":
-            fillType = reader.nextInt() == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
-            break;
-          default:
-            reader.skipValue();
-        }
-      }
-
-      return new GradientFill(name, gradientType, fillType, color, opacity, startPoint, endPoint,
-          null, null);
-    }
-  }
 }
