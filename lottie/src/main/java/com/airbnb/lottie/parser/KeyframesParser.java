@@ -5,7 +5,6 @@ import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.model.animatable.AnimatableValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class KeyframesParser {
   private KeyframesParser() {}
 
   public static <T> List<Keyframe<T>> parse(JsonReader reader,
-      LottieComposition composition, float scale, AnimatableValue.Factory<T> valueFactory)
+      LottieComposition composition, float scale, ValueParser<T> valueParser)
       throws IOException {
     List<Keyframe<T>> keyframes = new ArrayList<>();
 
@@ -35,15 +34,15 @@ public class KeyframesParser {
             if (reader.peek() == JsonToken.NUMBER) {
               // For properties in which the static value is an array of numbers.
               keyframes.add(
-                  KeyframeParser.parse(reader, composition, scale, valueFactory, false));
+                  KeyframeParser.parse(reader, composition, scale, valueParser, false));
             } else {
               while (reader.hasNext()) {
-                keyframes.add(KeyframeParser.parse(reader, composition, scale, valueFactory, true));
+                keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, true));
               }
             }
             reader.endArray();
           } else {
-            keyframes.add(KeyframeParser.parse(reader, composition, scale, valueFactory, false));
+            keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false));
           }
           break;
         default:

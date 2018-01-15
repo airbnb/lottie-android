@@ -23,13 +23,13 @@ public class ShapeTrimPathParser {
     while (reader.hasNext()) {
       switch (reader.nextName()) {
         case "s":
-          start = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          start = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "e":
-          end = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          end = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "o":
-          offset = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          offset = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "nm":
           name = reader.nextString();

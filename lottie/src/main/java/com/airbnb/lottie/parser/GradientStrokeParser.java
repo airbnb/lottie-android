@@ -49,8 +49,7 @@ public class GradientStrokeParser {
                 points = reader.nextInt();
                 break;
               case "k":
-                color = AnimatableGradientColorValue.Factory
-                    .newInstance(reader, composition, points);
+                color = AnimatableValueParser.parseGradientColor(reader, composition, points);
                 break;
               default:
                 reader.skipValue();
@@ -59,19 +58,19 @@ public class GradientStrokeParser {
           reader.endObject();
           break;
         case "o":
-          opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+          opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "t":
           gradientType = reader.nextInt() == 1 ? GradientType.Linear : GradientType.Radial;
           break;
         case "s":
-          startPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+          startPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "e":
-          endPoint = AnimatablePointValue.Factory.newInstance(reader, composition);
+          endPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "w":
-          width = AnimatableFloatValue.Factory.newInstance(reader, composition);
+          width = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "lc":
           capType = ShapeStroke.LineCapType.values()[reader.nextInt() - 1];
@@ -91,7 +90,7 @@ public class GradientStrokeParser {
                   n = reader.nextString();
                   break;
                 case "v":
-                  val =  AnimatableFloatValue.Factory.newInstance(reader, composition);
+                  val = AnimatableValueParser.parseFloat(reader, composition);
                   break;
                 default:
                   reader.skipValue();

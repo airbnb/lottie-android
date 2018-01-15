@@ -10,7 +10,9 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
+import com.airbnb.lottie.parser.AnimatableValueParser;
 import com.airbnb.lottie.parser.KeyframesParser;
+import com.airbnb.lottie.parser.PathParser;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.Utils;
 
@@ -39,7 +41,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
             hasExpressions = true;
             reader.skipValue();
           } else {
-            xAnimation = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            xAnimation = AnimatableValueParser.parseFloat(reader, composition);
           }
           break;
         case "y":
@@ -47,7 +49,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
             hasExpressions = true;
             reader.skipValue();
           } else {
-            yAnimation = AnimatableFloatValue.Factory.newInstance(reader, composition);
+            yAnimation = AnimatableValueParser.parseFloat(reader, composition);
           }
           break;
         default:
@@ -80,7 +82,7 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
       reader.beginArray();
       while (reader.hasNext()) {
         PathKeyframe keyframe =
-            PathKeyframe.Factory.newInstance(reader, composition, ValueFactory.INSTANCE);
+            PathKeyframe.Factory.newInstance(reader, composition, PathParser.INSTANCE);
         keyframes.add(keyframe);
       }
       reader.endArray();
@@ -96,16 +98,5 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
       return new PointKeyframeAnimation(keyframes);
     }
     return new PathKeyframeAnimation(keyframes);
-  }
-
-  private static class ValueFactory implements AnimatableValue.Factory<PointF> {
-    private static final Factory<PointF> INSTANCE = new ValueFactory();
-
-    private ValueFactory() {
-    }
-
-    @Override public PointF valueFromObject(JsonReader reader, float scale) throws IOException {
-      return JsonUtils.jsonToPoint(reader, scale);
-    }
   }
 }

@@ -120,7 +120,7 @@ public class LayerParser {
           while (reader.hasNext()) {
             switch (reader.nextName()) {
               case "d":
-                text = AnimatableTextFrame.Factory.newInstance(reader, composition);
+                text = AnimatableValueParser.parseDocumentData(reader, composition);
                 break;
               case "a":
                 reader.beginArray();
@@ -179,7 +179,7 @@ public class LayerParser {
           outFrame = (float) reader.nextDouble();
           break;
         case "tm":
-          timeRemapping = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+          timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "cl":
           cl = reader.nextString();

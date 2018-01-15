@@ -14,6 +14,7 @@ import com.airbnb.lottie.animation.content.ModifierContent;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.parser.AnimatableValueParser;
 import com.airbnb.lottie.value.ScaleXY;
 
 import java.io.IOException;
@@ -85,11 +86,11 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     public static AnimatableTransform newInstance() {
       AnimatablePathValue anchorPoint = new AnimatablePathValue();
       AnimatableValue<PointF, PointF> position = new AnimatablePathValue();
-      AnimatableScaleValue scale = AnimatableScaleValue.Factory.newInstance();
-      AnimatableFloatValue rotation = AnimatableFloatValue.Factory.newInstance();
-      AnimatableIntegerValue opacity = AnimatableIntegerValue.Factory.newInstance();
-      AnimatableFloatValue startOpacity = AnimatableFloatValue.Factory.newInstance();
-      AnimatableFloatValue endOpacity = AnimatableFloatValue.Factory.newInstance();
+      AnimatableScaleValue scale = new AnimatableScaleValue();
+      AnimatableFloatValue rotation = new AnimatableFloatValue();
+      AnimatableIntegerValue opacity = new AnimatableIntegerValue();
+      AnimatableFloatValue startOpacity = new AnimatableFloatValue();
+      AnimatableFloatValue endOpacity = new AnimatableFloatValue();
       return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity,
           endOpacity);
     }
@@ -126,23 +127,21 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
                 AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(reader, composition);
             break;
           case "s":
-            scale = AnimatableScaleValue.Factory.newInstance(reader, composition);
+            scale = AnimatableValueParser.parseScale(reader, composition);
             break;
           case "rz":
             composition.addWarning("Lottie doesn't support 3D layers.");
           case "r":
-            rotation = AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            rotation = AnimatableValueParser.parseFloat(reader, composition, false);
             break;
           case "o":
-            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            opacity = AnimatableValueParser.parseInteger(reader, composition);
             break;
           case "so":
-            startOpacity =
-                AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            startOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
             break;
           case "eo":
-            endOpacity =
-                AnimatableFloatValue.Factory.newInstance(reader, composition, false);
+            endOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
             break;
           default:
             reader.skipValue();

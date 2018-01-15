@@ -10,7 +10,6 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
@@ -54,12 +53,12 @@ public class KeyframeParser {
   }
 
   public static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
-      float scale, AnimatableValue.Factory<T> valueFactory, boolean animated) throws IOException {
+      float scale, ValueParser<T> valueParser, boolean animated) throws IOException {
 
     if (animated) {
-      return parseKeyframe(composition, reader, scale, valueFactory);
+      return parseKeyframe(composition, reader, scale, valueParser);
     } else {
-      return parseStaticValue(reader, scale, valueFactory);
+      return parseStaticValue(reader, scale, valueParser);
     }
   }
 
@@ -68,7 +67,7 @@ public class KeyframeParser {
    * a non animated value.
    */
   private static <T> Keyframe<T> parseKeyframe(LottieComposition composition, JsonReader reader,
-      float scale, AnimatableValue.Factory<T> valueFactory) throws IOException {
+      float scale, ValueParser<T> valueParser) throws IOException {
     PointF cp1 = null;
     PointF cp2 = null;
     float startFrame = 0;
@@ -88,10 +87,10 @@ public class KeyframeParser {
           startFrame = (float) reader.nextDouble();
           break;
         case "s":
-          startValue = valueFactory.valueFromObject(reader, scale);
+          startValue = valueParser.parse(reader, scale);
           break;
         case "e":
-          endValue = valueFactory.valueFromObject(reader, scale);
+          endValue = valueParser.parse(reader, scale);
           break;
         case "o":
           cp1 = JsonUtils.jsonToPoint(reader, scale);
@@ -153,8 +152,8 @@ public class KeyframeParser {
   }
 
   private static <T> Keyframe<T> parseStaticValue(JsonReader reader,
-      float scale, AnimatableValue.Factory<T> valueFactory) throws IOException {
-    T value = valueFactory.valueFromObject(reader, scale);
+      float scale, ValueParser<T> valueParser) throws IOException {
+    T value = valueParser.parse(reader, scale);
     return new Keyframe<>(value);
   }
 }

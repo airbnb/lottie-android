@@ -7,6 +7,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
+import com.airbnb.lottie.parser.AnimatableValueParser;
 
 import java.io.IOException;
 
@@ -58,10 +59,10 @@ public class Mask {
             }
             break;
           case "pt":
-            maskPath = AnimatableShapeValue.Factory.newInstance(reader, composition);
+            maskPath = AnimatableValueParser.parseShapeData(reader, composition);
             break;
           case "o":
-            opacity = AnimatableIntegerValue.Factory.newInstance(reader, composition);
+            opacity = AnimatableValueParser.parseInteger(reader, composition);
             break;
           default:
             reader.skipValue();
