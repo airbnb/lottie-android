@@ -13,7 +13,7 @@ public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> 
     this(new ScaleXY(1f, 1f));
   }
 
-  AnimatableScaleValue(ScaleXY value) {
+  public AnimatableScaleValue(ScaleXY value) {
     super(value);
   }
 

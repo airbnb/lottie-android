@@ -32,7 +32,7 @@ public class RepeaterParser {
           offset = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "tr":
-          transform = AnimatableTransform.Factory.newInstance(reader, composition);
+          transform = AnimatableTransformParser.parse(reader, composition);
           break;
         default:
           reader.skipValue();

@@ -7,11 +7,11 @@ import android.util.JsonToken;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.PointKeyframeAnimation;
 import com.airbnb.lottie.parser.AnimatableValueParser;
 import com.airbnb.lottie.parser.KeyframesParser;
+import com.airbnb.lottie.parser.PathKeyframeParser;
 import com.airbnb.lottie.parser.PathParser;
 import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.Utils;
@@ -73,17 +73,15 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
   /**
    * Create a default static animatable path.
    */
-  AnimatablePathValue() {
+  public AnimatablePathValue() {
     keyframes.add(new Keyframe<>(new PointF(0, 0)));
   }
 
-  AnimatablePathValue(JsonReader reader, LottieComposition composition) throws IOException {
+  public AnimatablePathValue(JsonReader reader, LottieComposition composition) throws IOException {
     if (reader.peek() == JsonToken.BEGIN_ARRAY) {
       reader.beginArray();
       while (reader.hasNext()) {
-        PathKeyframe keyframe =
-            PathKeyframe.Factory.newInstance(reader, composition, PathParser.INSTANCE);
-        keyframes.add(keyframe);
+        keyframes.add(PathKeyframeParser.parse(reader, composition, PathParser.INSTANCE));
       }
       reader.endArray();
       KeyframesParser.setEndFrames(keyframes);

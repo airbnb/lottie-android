@@ -13,7 +13,7 @@ import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
-import com.airbnb.lottie.model.JsonCompositionLoader;
+import com.airbnb.lottie.parser.AsyncCompositionLoader;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
@@ -232,7 +232,7 @@ public class LottieComposition {
      */
     public static Cancellable fromJsonReader(
         JsonReader reader, OnCompositionLoadedListener listener) {
-      JsonCompositionLoader loader = new JsonCompositionLoader(listener);
+      AsyncCompositionLoader loader = new AsyncCompositionLoader(listener);
       loader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, reader);
       return loader;
     }

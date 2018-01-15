@@ -29,7 +29,7 @@ public class LayerParser {
     return new Layer(
         Collections.<ContentModel>emptyList(), composition, "__container", -1,
         Layer.LayerType.PreComp, -1, null, Collections.<Mask>emptyList(),
-        AnimatableTransform.Factory.newInstance(), 0, 0, 0, 0, 0,
+        new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
         Layer.MatteType.None, null);
   }
@@ -93,7 +93,7 @@ public class LayerParser {
           solidColor = Color.parseColor(reader.nextString());
           break;
         case "ks":
-          transform = AnimatableTransform.Factory.newInstance(reader, composition);
+          transform = AnimatableTransformParser.parse(reader, composition);
           break;
         case "tt":
           matteType = Layer.MatteType.values()[reader.nextInt()];
@@ -101,7 +101,7 @@ public class LayerParser {
         case "masksProperties":
           reader.beginArray();
           while (reader.hasNext()) {
-            masks.add(Mask.Factory.newMask(reader, composition));
+            masks.add(MaskParser.parse(reader, composition));
           }
           reader.endArray();
           break;
@@ -125,7 +125,7 @@ public class LayerParser {
               case "a":
                 reader.beginArray();
                 if (reader.hasNext()) {
-                  textProperties = AnimatableTextProperties.Factory.newInstance(reader, composition);
+                  textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
                 }
                 while (reader.hasNext()) {
                   reader.skipValue();

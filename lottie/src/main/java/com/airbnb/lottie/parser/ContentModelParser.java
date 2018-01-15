@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class ContentModelParser {
         model = GradientFillParser.parse(reader, composition);
         break;
       case "tr":
-        model = AnimatableTransform.Factory.newInstance(reader, composition);
+        model = AnimatableTransformParser.parse(reader, composition);
         break;
       case "sh":
         model = ShapePathParser.parse(reader, composition);

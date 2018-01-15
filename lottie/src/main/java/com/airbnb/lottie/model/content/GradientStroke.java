@@ -93,11 +93,4 @@ public class GradientStroke implements ContentModel {
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
     return new GradientStrokeContent(drawable, layer, this);
   }
-
-  static class Factory {
-    private Factory() {
-    }
-
-
-  }
 }

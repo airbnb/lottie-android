@@ -12,7 +12,7 @@ public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer
     this(100);
   }
 
-  AnimatableIntegerValue(Integer value) {
+  public AnimatableIntegerValue(Integer value) {
     super(value);
   }
 

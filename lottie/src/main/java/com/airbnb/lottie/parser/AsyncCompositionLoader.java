@@ -1,16 +1,19 @@
-package com.airbnb.lottie.model;
+package com.airbnb.lottie.parser;
 
+import android.os.AsyncTask;
 import android.util.JsonReader;
 
+import com.airbnb.lottie.Cancellable;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import java.io.IOException;
 
-public final class JsonCompositionLoader extends CompositionLoader<JsonReader> {
+public final class AsyncCompositionLoader
+    extends AsyncTask<JsonReader, Void, LottieComposition> implements Cancellable {
   private final OnCompositionLoadedListener loadedListener;
 
-  @SuppressWarnings("WeakerAccess") public JsonCompositionLoader(OnCompositionLoadedListener loadedListener) {
+  @SuppressWarnings("WeakerAccess") public AsyncCompositionLoader(OnCompositionLoadedListener loadedListener) {
     this.loadedListener = loadedListener;
   }
 
@@ -24,5 +27,9 @@ public final class JsonCompositionLoader extends CompositionLoader<JsonReader> {
 
   @Override protected void onPostExecute(LottieComposition composition) {
     loadedListener.onCompositionLoaded(composition);
+  }
+
+  @Override  public void cancel() {
+    cancel(true);
   }
 }
