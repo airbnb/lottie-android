@@ -24,7 +24,7 @@ import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.layer.CompositionLayer;
-import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.LayerParser;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -220,7 +220,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
-        this, Layer.Factory.newInstance(composition), composition.getLayers(), composition);
+        this, LayerParser.parse(composition), composition.getLayers(), composition);
   }
 
   public void clearComposition() {

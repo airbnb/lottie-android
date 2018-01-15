@@ -100,7 +100,7 @@ public class LottieCompositionParser {
     int imageCount = 0;
     reader.beginArray();
     while (reader.hasNext()) {
-      Layer layer = Layer.Factory.newInstance(reader, composition);
+      Layer layer = LayerParser.parse(reader, composition);
       if (layer.getLayerType() == Layer.LayerType.Image) {
         imageCount++;
       }
@@ -138,7 +138,7 @@ public class LottieCompositionParser {
           case "layers":
             reader.beginArray();
             while (reader.hasNext()) {
-              Layer layer = Layer.Factory.newInstance(reader, composition);
+              Layer layer = LayerParser.parse(reader, composition);
               layerMap.put(layer.getId(), layer);
               layers.add(layer);
             }
