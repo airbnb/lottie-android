@@ -10,7 +10,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.view.WindowManager;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -53,24 +52,6 @@ public final class Utils {
       } catch (Exception ignored) {
       }
     }
-  }
-
-  public static int getScreenWidth(Context context) {
-    if (displayMetrics == null) {
-      displayMetrics = new DisplayMetrics();
-    }
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    wm.getDefaultDisplay().getMetrics(displayMetrics);
-    return displayMetrics.widthPixels;
-  }
-
-  public static int getScreenHeight(Context context) {
-    if (displayMetrics == null) {
-      displayMetrics = new DisplayMetrics();
-    }
-    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-    wm.getDefaultDisplay().getMetrics(displayMetrics);
-    return displayMetrics.heightPixels;
   }
 
   public static float getScale(Matrix matrix) {

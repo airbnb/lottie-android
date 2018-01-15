@@ -191,10 +191,6 @@ public class KeyPath {
     return depth < keys.size() - 1 || keys.get(depth).equals("**");
   }
 
-  public int size() {
-    return keys.size();
-  }
-
   /**
    * We artificially create some container groups (like a root ContentGroup for the entire animation
    * and for the contents of a ShapeLayer).

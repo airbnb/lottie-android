@@ -11,10 +11,6 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
 
   private DocumentDataParser() {}
 
-  public static DocumentData parse(JsonReader reader) throws IOException {
-    return INSTANCE.parse(reader, 1f);
-  }
-
   @Override public DocumentData parse(JsonReader reader, float scale) throws IOException {
     String text = null;
     String fontName = null;
