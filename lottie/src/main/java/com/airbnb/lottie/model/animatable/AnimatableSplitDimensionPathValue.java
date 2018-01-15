@@ -9,7 +9,7 @@ public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF
   private final AnimatableFloatValue animatableXDimension;
   private final AnimatableFloatValue animatableYDimension;
 
-  AnimatableSplitDimensionPathValue(
+  public AnimatableSplitDimensionPathValue(
       AnimatableFloatValue animatableXDimension,
       AnimatableFloatValue animatableYDimension) {
     this.animatableXDimension = animatableXDimension;

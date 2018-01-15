@@ -6,7 +6,6 @@ import android.util.JsonToken;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.content.ShapeData;
-import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import java.io.IOException;

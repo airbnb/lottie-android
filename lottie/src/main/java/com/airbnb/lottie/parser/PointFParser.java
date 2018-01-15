@@ -4,8 +4,6 @@ import android.graphics.PointF;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
-import com.airbnb.lottie.utils.JsonUtils;
-
 import java.io.IOException;
 
 public class PointFParser implements ValueParser<PointF> {

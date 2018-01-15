@@ -10,7 +10,6 @@ import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.Keyframe;
-import com.airbnb.lottie.utils.JsonUtils;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
 

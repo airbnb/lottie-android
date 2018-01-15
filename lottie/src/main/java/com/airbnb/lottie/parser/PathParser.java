@@ -3,8 +3,6 @@ package com.airbnb.lottie.parser;
 import android.graphics.PointF;
 import android.util.JsonReader;
 
-import com.airbnb.lottie.utils.JsonUtils;
-
 import java.io.IOException;
 
 public class PathParser implements ValueParser<PointF> {

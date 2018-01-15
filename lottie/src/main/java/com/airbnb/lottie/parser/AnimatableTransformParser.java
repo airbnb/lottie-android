@@ -41,7 +41,7 @@ public class AnimatableTransformParser {
           reader.beginObject();
           while (reader.hasNext()) {
             if (reader.nextName().equals("k")) {
-              anchorPoint = new AnimatablePathValue(reader, composition);
+              anchorPoint = AnimatablePathValueParser.parse(reader, composition);
             } else {
               reader.skipValue();
             }
@@ -50,7 +50,7 @@ public class AnimatableTransformParser {
           break;
         case "p":
           position =
-              AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(reader, composition);
+              AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case "s":
           scale = AnimatableValueParser.parseScale(reader, composition);

@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonUtils {
+class JsonUtils {
   private JsonUtils() {
   }
 
   /**
    * [r,g,b]
    */
-  @ColorInt public static int jsonToColor(JsonReader reader) throws IOException {
+  @ColorInt static int jsonToColor(JsonReader reader) throws IOException {
     reader.beginArray();
     int r = (int) (reader.nextDouble() * 255);
     int g = (int) (reader.nextDouble() * 255);
@@ -29,7 +29,7 @@ public class JsonUtils {
     return Color.argb(255, r, g, b);
   }
 
-  public static List<PointF> jsonToPoints(JsonReader reader, float scale) throws IOException {
+  static List<PointF> jsonToPoints(JsonReader reader, float scale) throws IOException {
     List<PointF> points = new ArrayList<>();
 
     reader.beginArray();
@@ -42,7 +42,7 @@ public class JsonUtils {
     return points;
   }
 
-  public static PointF jsonToPoint(JsonReader reader, float scale) throws IOException {
+  static PointF jsonToPoint(JsonReader reader, float scale) throws IOException {
     switch (reader.peek()) {
       case NUMBER: return jsonNumbersToPoint(reader, scale);
       case BEGIN_ARRAY: return jsonArrayToPoint(reader, scale);
@@ -93,7 +93,7 @@ public class JsonUtils {
     return new PointF(x * scale, y * scale);
   }
 
-  public static float valueFromObject(JsonReader reader) throws IOException {
+  static float valueFromObject(JsonReader reader) throws IOException {
     JsonToken token = reader.peek();
     switch (token) {
       case NUMBER:

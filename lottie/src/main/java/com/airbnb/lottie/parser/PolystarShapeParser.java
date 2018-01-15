@@ -5,7 +5,6 @@ import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.model.content.PolystarShape;
 
@@ -39,8 +38,7 @@ public class PolystarShapeParser {
           points = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case "p":
-          position = AnimatablePathValue
-              .createAnimatablePathOrSplitDimensionPath(reader, composition);
+          position = AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case "r":
           rotation = AnimatableValueParser.parseFloat(reader, composition, false);

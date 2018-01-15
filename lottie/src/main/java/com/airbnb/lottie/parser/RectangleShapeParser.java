@@ -5,7 +5,6 @@ import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.model.content.RectangleShape;
@@ -30,7 +29,7 @@ public class RectangleShapeParser {
           break;
         case "p":
           position =
-              AnimatablePathValue.createAnimatablePathOrSplitDimensionPath(reader, composition);
+              AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case "s":
           size = AnimatableValueParser.parsePoint(reader, composition);
