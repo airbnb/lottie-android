@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapeGroupParser {
+class ShapeGroupParser {
 
   private ShapeGroupParser() {}
 
-  public static ShapeGroup parse(
+  static ShapeGroup parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     List<ContentModel> items = new ArrayList<>();

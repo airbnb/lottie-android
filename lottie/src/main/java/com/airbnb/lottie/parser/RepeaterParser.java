@@ -9,11 +9,11 @@ import com.airbnb.lottie.model.content.Repeater;
 
 import java.io.IOException;
 
-public class RepeaterParser {
+class RepeaterParser {
 
   private RepeaterParser() {}
 
-  public static Repeater parse(
+  static Repeater parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableFloatValue copies = null;

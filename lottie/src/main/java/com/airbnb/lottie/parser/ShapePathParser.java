@@ -8,11 +8,11 @@ import com.airbnb.lottie.model.content.ShapePath;
 
 import java.io.IOException;
 
-public class ShapePathParser {
+class ShapePathParser {
 
   private ShapePathParser() {}
 
-  public static ShapePath parse(
+  static ShapePath parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     int ind = 0;

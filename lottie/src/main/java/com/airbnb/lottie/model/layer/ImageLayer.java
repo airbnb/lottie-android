@@ -76,6 +76,7 @@ public class ImageLayer extends BaseLayer {
        if (callback == null) {
          colorFilterAnimation = null;
        } else {
+         //noinspection unchecked
          colorFilterAnimation =
              new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
        }

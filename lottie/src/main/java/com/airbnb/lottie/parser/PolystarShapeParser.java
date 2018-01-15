@@ -10,11 +10,11 @@ import com.airbnb.lottie.model.content.PolystarShape;
 
 import java.io.IOException;
 
-public class PolystarShapeParser {
+class PolystarShapeParser {
 
   private PolystarShapeParser() {}
 
-  public static PolystarShape parse(
+  static PolystarShape parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     PolystarShape.Type type = null;

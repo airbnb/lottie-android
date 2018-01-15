@@ -9,11 +9,7 @@ import java.util.List;
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
   AnimatableFloatValue() {
-    this(0f);
-  }
-
-  private AnimatableFloatValue(Float value) {
-    super(value);
+    super(0f);
   }
 
   public AnimatableFloatValue(List<Keyframe<Float>> keyframes) {

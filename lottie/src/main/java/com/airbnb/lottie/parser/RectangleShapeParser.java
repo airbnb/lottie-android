@@ -11,11 +11,11 @@ import com.airbnb.lottie.model.content.RectangleShape;
 
 import java.io.IOException;
 
-public class RectangleShapeParser {
+class RectangleShapeParser {
 
   private RectangleShapeParser() {}
 
-  public static RectangleShape parse(
+  static RectangleShape parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableValue<PointF, PointF> position = null;

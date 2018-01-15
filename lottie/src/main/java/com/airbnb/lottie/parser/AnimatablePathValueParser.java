@@ -26,7 +26,7 @@ public class AnimatablePathValueParser {
     if (reader.peek() == JsonToken.BEGIN_ARRAY) {
       reader.beginArray();
       while (reader.hasNext()) {
-        keyframes.add(PathKeyframeParser.parse(reader, composition, PathParser.INSTANCE));
+        keyframes.add(PathKeyframeParser.parse(reader, composition));
       }
       reader.endArray();
       KeyframesParser.setEndFrames(keyframes);
@@ -39,7 +39,7 @@ public class AnimatablePathValueParser {
   /**
    * Returns either an {@link AnimatablePathValue} or an {@link AnimatableSplitDimensionPathValue}.
    */
-  public static AnimatableValue<PointF, PointF> parseSplitPath(
+  static AnimatableValue<PointF, PointF> parseSplitPath(
       JsonReader reader, LottieComposition composition) throws IOException {
 
     AnimatablePathValue pathAnimation = null;

@@ -57,14 +57,14 @@ public class MiscUtils {
     return (int) (a + percentage * (b - a));
   }
 
-  public static int floorMod(float x, float y) {
+  static int floorMod(float x, float y) {
     return floorMod((int) x, (int) y);
   }
 
   /**
    * Copied from Math.floorMod in the Android platform.
    */
-  public static int floorMod(int x, int y) {
+  private static int floorMod(int x, int y) {
     return x - floorDiv(x, y) * y;
   }
 

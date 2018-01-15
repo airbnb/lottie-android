@@ -6,11 +6,11 @@ import com.airbnb.lottie.model.content.MergePaths;
 
 import java.io.IOException;
 
-public class MergePathsParser {
+class MergePathsParser {
 
   private MergePathsParser() {}
 
-  public static MergePaths parse(JsonReader reader) throws IOException {
+  static MergePaths parse(JsonReader reader) throws IOException {
     String name = null;
     MergePaths.MergePathsMode mode = null;
 

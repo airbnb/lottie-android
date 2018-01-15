@@ -92,7 +92,7 @@ public class AnimatableTransformParser {
 
     if (opacity == null) {
       // Repeaters have start/end opacity instead of opacity
-      opacity = new AnimatableIntegerValue(100);
+      opacity = new AnimatableIntegerValue();
     }
 
     return new AnimatableTransform(

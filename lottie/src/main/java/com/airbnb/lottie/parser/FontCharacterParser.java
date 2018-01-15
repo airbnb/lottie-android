@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FontCharacterParser {
+class FontCharacterParser {
 
   private FontCharacterParser() {}
 
-  public static FontCharacter parse(
+  static FontCharacter parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     char character = '\0';
     int size = 0;

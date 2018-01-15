@@ -15,11 +15,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GradientStrokeParser {
+class GradientStrokeParser {
 
   private GradientStrokeParser() {}
 
-  public static GradientStroke parse(
+  static GradientStroke parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableGradientColorValue color = null;

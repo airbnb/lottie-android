@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class LottieTest {
-  @Rule public ActivityTestRule<MainActivity> mainActivityRule = new ActivityTestRule<>(
+  @Rule public final ActivityTestRule<MainActivity> mainActivityRule = new ActivityTestRule<>(
       MainActivity.class);
 
   @Rule public ActivityTestRule<TestColorFilterActivity> colorFilterActivityRule =

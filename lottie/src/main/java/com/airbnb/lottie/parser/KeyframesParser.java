@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyframesParser {
+class KeyframesParser {
 
   private KeyframesParser() {}
 
-  public static <T> List<Keyframe<T>> parse(JsonReader reader,
+  static <T> List<Keyframe<T>> parse(JsonReader reader,
       LottieComposition composition, float scale, ValueParser<T> valueParser)
       throws IOException {
     List<Keyframe<T>> keyframes = new ArrayList<>();

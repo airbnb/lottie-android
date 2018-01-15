@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapeStrokeParser {
+class ShapeStrokeParser {
 
   private ShapeStrokeParser() {}
 
-  public static ShapeStroke parse(
+  static ShapeStroke parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableColorValue color = null;

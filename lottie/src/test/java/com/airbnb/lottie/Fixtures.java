@@ -1,6 +1,6 @@
 package com.airbnb.lottie;
 
-public class Fixtures {
+class Fixtures {
   static final String SQUARES = "{\"v\":\"4.11.1\",\"fr\":29.9700012207031,\"ip\":0," +
       "\"op\":61.0000024845809,\"w\":600,\"h\":300,\"nm\":\"Squares\",\"ddd\":0,\"assets\":[]," +
       "\"layers\":[{\"ddd\":0,\"ind\":1,\"ty\":4,\"nm\":\"Shape Layer 1\",\"sr\":1," +

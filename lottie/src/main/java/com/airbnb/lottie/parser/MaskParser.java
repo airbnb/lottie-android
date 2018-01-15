@@ -11,11 +11,11 @@ import com.airbnb.lottie.model.content.Mask;
 
 import java.io.IOException;
 
-public class MaskParser {
+class MaskParser {
 
   private MaskParser() {}
 
-  public static Mask parse(
+  static Mask parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     Mask.MaskMode maskMode = null;
     AnimatableShapeValue maskPath = null;

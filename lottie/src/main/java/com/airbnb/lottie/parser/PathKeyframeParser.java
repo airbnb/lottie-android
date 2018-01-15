@@ -11,15 +11,15 @@ import com.airbnb.lottie.utils.Utils;
 
 import java.io.IOException;
 
-public class PathKeyframeParser {
+class PathKeyframeParser {
 
   private PathKeyframeParser() {}
 
-  public static PathKeyframe parse(JsonReader reader, LottieComposition composition,
-      ValueParser<PointF> valueParser) throws IOException {
+  static PathKeyframe parse(
+      JsonReader reader, LottieComposition composition) throws IOException {
     boolean animated = reader.peek() == JsonToken.BEGIN_OBJECT;
     Keyframe<PointF> keyframe = KeyframeParser.parse(
-        reader, composition, Utils.dpScale(), valueParser, animated);
+        reader, composition, Utils.dpScale(), PathParser.INSTANCE, animated);
 
     return new PathKeyframe(composition, keyframe);
   }

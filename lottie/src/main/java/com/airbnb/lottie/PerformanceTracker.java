@@ -22,7 +22,7 @@ public class PerformanceTracker {
 
   private boolean enabled = false;
   private final Set<FrameListener> frameListeners = new ArraySet<>();
-  private Map<String, MeanCalculator> layerRenderTimes = new HashMap<>();
+  private final Map<String, MeanCalculator> layerRenderTimes = new HashMap<>();
   private final Comparator<Pair<String, Float>> floatComparator =
       new Comparator<Pair<String, Float>>() {
     @Override public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {

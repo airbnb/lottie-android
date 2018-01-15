@@ -10,11 +10,11 @@ import com.airbnb.lottie.model.content.CircleShape;
 
 import java.io.IOException;
 
-public class CircleShapeParser {
+class CircleShapeParser {
 
   private CircleShapeParser() {}
 
-  public static CircleShape parse(
+  static CircleShape parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableValue<PointF, PointF> position = null;

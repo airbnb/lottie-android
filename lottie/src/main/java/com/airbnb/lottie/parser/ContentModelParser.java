@@ -10,12 +10,12 @@ import com.airbnb.lottie.model.content.ContentModel;
 
 import java.io.IOException;
 
-public class ContentModelParser {
+class ContentModelParser {
 
   private ContentModelParser() {}
 
   @Nullable
-  public static ContentModel parse(JsonReader reader, LottieComposition composition)
+  static ContentModel parse(JsonReader reader, LottieComposition composition)
       throws IOException {
     String type = null;
 

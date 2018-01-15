@@ -16,7 +16,7 @@ import com.airbnb.lottie.utils.Utils;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-public class KeyframeParser {
+class KeyframeParser {
   /**
    * Some animations get exported with insane cp values in the tens of thousands.
    * PathInterpolator fails to create the interpolator in those cases and hangs.
@@ -51,7 +51,7 @@ public class KeyframeParser {
     }
   }
 
-  public static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
+  static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
       float scale, ValueParser<T> valueParser, boolean animated) throws IOException {
 
     if (animated) {

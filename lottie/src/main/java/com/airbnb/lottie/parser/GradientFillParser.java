@@ -12,11 +12,11 @@ import com.airbnb.lottie.model.content.GradientType;
 
 import java.io.IOException;
 
-public class GradientFillParser {
+class GradientFillParser {
 
   private GradientFillParser() {}
 
-  public static GradientFill parse(
+  static GradientFill parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableGradientColorValue color = null;

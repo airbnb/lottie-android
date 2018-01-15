@@ -4,17 +4,17 @@ import android.support.annotation.ColorInt;
 
 public class DocumentData {
 
-  public String text;
-  @SuppressWarnings("WeakerAccess") public String fontName;
-  public double size;
-  @SuppressWarnings("WeakerAccess") int justification;
-  public int tracking;
-  @SuppressWarnings("WeakerAccess") double lineHeight;
-  public double baselineShift;
-  @ColorInt public int color;
-  @ColorInt public int strokeColor;
-  public int strokeWidth;
-  public boolean strokeOverFill;
+  public final String text;
+  @SuppressWarnings("WeakerAccess") public final String fontName;
+  public final double size;
+  @SuppressWarnings("WeakerAccess") final int justification;
+  public final int tracking;
+  @SuppressWarnings("WeakerAccess") final double lineHeight;
+  public final double baselineShift;
+  @ColorInt public final int color;
+  @ColorInt public final int strokeColor;
+  public final int strokeWidth;
+  public final boolean strokeOverFill;
 
 
   public DocumentData(String text, String fontName, double size, int justification, int tracking,

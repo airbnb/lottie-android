@@ -10,11 +10,11 @@ import com.airbnb.lottie.model.content.ShapeFill;
 
 import java.io.IOException;
 
-public class ShapeFillParser {
+class ShapeFillParser {
 
   private ShapeFillParser() {}
 
-  public static ShapeFill parse(
+  static ShapeFill parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     AnimatableColorValue color = null;
     boolean fillEnabled = false;

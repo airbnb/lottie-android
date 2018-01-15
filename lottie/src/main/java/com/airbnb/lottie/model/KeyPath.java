@@ -208,9 +208,6 @@ public class KeyPath {
   }
 
   @Override public String toString() {
-    final StringBuilder sb = new StringBuilder("KeyPath{");
-    sb.append("keys=").append(keys).append(",resolved=").append(resolvedElement != null);
-    sb.append('}');
-    return sb.toString();
+    return "KeyPath{" + "keys=" + keys + ",resolved=" + (resolvedElement != null) + '}';
   }
 }

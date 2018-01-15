@@ -446,7 +446,7 @@ public abstract class BaseLayer
     }
   }
 
-  protected void resolveChildKeyPath(
+  void resolveChildKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
   }
 

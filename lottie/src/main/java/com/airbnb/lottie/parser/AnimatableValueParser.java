@@ -33,39 +33,39 @@ public class AnimatableValueParser {
         parse(reader, isDp ? Utils.dpScale() : 1f, composition, FloatParser.INSTANCE));
   }
 
-  public static AnimatableIntegerValue parseInteger(
+  static AnimatableIntegerValue parseInteger(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableIntegerValue(parse(reader, composition, IntegerParser.INSTANCE));
   }
 
-  public static AnimatablePointValue parsePoint(
+  static AnimatablePointValue parsePoint(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatablePointValue(
         parse(reader, Utils.dpScale(), composition, PointFParser.INSTANCE));
   }
 
-  public static AnimatableScaleValue parseScale(
+  static AnimatableScaleValue parseScale(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableScaleValue(parse(reader, composition, ScaleXYParser.INSTANCE));
   }
 
-  public static AnimatableShapeValue parseShapeData(
+  static AnimatableShapeValue parseShapeData(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableShapeValue(
         parse(reader, Utils.dpScale(), composition, ShapeDataParser.INSTANCE));
   }
 
-  public static AnimatableTextFrame parseDocumentData(
+  static AnimatableTextFrame parseDocumentData(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableTextFrame(parse(reader, composition, DocumentDataParser.INSTANCE));
   }
 
-  public static AnimatableColorValue parseColor(
+  static AnimatableColorValue parseColor(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableColorValue(parse(reader, composition, ColorParser.INSTANCE));
   }
 
-  public static AnimatableGradientColorValue parseGradientColor(
+  static AnimatableGradientColorValue parseGradientColor(
       JsonReader reader, LottieComposition composition, int points) throws IOException {
     return new AnimatableGradientColorValue(
         parse(reader, composition, new GradientColorParser(points)));

@@ -5,9 +5,6 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.model.KeyPath;
-
-import java.util.List;
 
 public class NullLayer extends BaseLayer {
   NullLayer(LottieDrawable lottieDrawable, Layer layerModel) {

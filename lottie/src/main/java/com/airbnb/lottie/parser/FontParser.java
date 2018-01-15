@@ -6,11 +6,11 @@ import com.airbnb.lottie.model.Font;
 
 import java.io.IOException;
 
-public class FontParser {
+class FontParser {
 
   private FontParser() {}
 
-  public static Font parse(JsonReader reader) throws IOException {
+  static Font parse(JsonReader reader) throws IOException {
     String family = null;
     String name = null;
     String style = null;

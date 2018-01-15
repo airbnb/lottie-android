@@ -8,11 +8,11 @@ import com.airbnb.lottie.model.content.ShapeTrimPath;
 
 import java.io.IOException;
 
-public class ShapeTrimPathParser {
+class ShapeTrimPathParser {
 
   private ShapeTrimPathParser() {}
 
-  public static ShapeTrimPath parse(
+  static ShapeTrimPath parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     ShapeTrimPath.Type type = null;

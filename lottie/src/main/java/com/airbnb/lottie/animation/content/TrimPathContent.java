@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TrimPathContent implements Content, BaseKeyframeAnimation.AnimationListener {
 
-  private String name;
+  private final String name;
   private final List<BaseKeyframeAnimation.AnimationListener> listeners = new ArrayList<>();
   private final ShapeTrimPath.Type type;
   private final BaseKeyframeAnimation<?, Float> startAnimation;

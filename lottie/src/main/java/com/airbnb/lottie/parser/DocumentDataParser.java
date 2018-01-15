@@ -7,7 +7,7 @@ import com.airbnb.lottie.model.DocumentData;
 import java.io.IOException;
 
 public class DocumentDataParser implements ValueParser<DocumentData> {
-  public static DocumentDataParser INSTANCE = new DocumentDataParser();
+  public static final DocumentDataParser INSTANCE = new DocumentDataParser();
 
   private DocumentDataParser() {}
 
