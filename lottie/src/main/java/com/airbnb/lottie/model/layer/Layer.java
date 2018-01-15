@@ -251,7 +251,6 @@ public class Layer {
       List<Mask> masks = new ArrayList<>();
       List<ContentModel> shapes = new ArrayList<>();
 
-
       reader.beginObject();
       while (reader.hasNext()) {
         switch (reader.nextName()) {
@@ -407,11 +406,6 @@ public class Layer {
 
       if (layerName.endsWith(".ai") || "ai".equals(cl)) {
         composition.addWarning("Convert your Illustrator layers to shape layers.");
-      }
-
-      if (layerType == LayerType.Text && !Utils.isAtLeastVersion(composition, 4, 8, 0)) {
-        layerType = LayerType.Unknown;
-        composition.addWarning("Text is only supported on bodymovin >= 4.8.0");
       }
 
       return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,

@@ -15,6 +15,7 @@ import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.JsonCompositionLoader;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.LottieCompositionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,23 +38,42 @@ import static com.airbnb.lottie.utils.Utils.closeQuietly;
 public class LottieComposition {
 
   private final PerformanceTracker performanceTracker = new PerformanceTracker();
-  final Map<String, List<Layer>> precomps = new HashMap<>();
-  final Map<String, LottieImageAsset> images = new HashMap<>();
+  private final HashSet<String> warnings = new HashSet<>();
+  private Map<String, List<Layer>> precomps;
+  private Map<String, LottieImageAsset> images;
   /** Map of font names to fonts */
-  final Map<String, Font> fonts = new HashMap<>();
-  final SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
-  final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
-  final List<Layer> layers = new ArrayList<>();
+  private Map<String, Font> fonts;
+  private SparseArrayCompat<FontCharacter> characters;
+  private LongSparseArray<Layer> layerMap;
+  private List<Layer> layers;
   // This is stored as a set to avoid duplicates.
-  final HashSet<String> warnings = new HashSet<>();
-  Rect bounds;
-  float startFrame;
-  float endFrame;
-  float frameRate;
+  private Rect bounds;
+  private float startFrame;
+  private float endFrame;
+  private float frameRate;
   /* Bodymovin version */
-  int majorVersion;
-  int minorVersion;
-  int patchVersion;
+  private int majorVersion;
+  private int minorVersion;
+  private int patchVersion;
+
+  public void init(Rect bounds, float startFrame, float endFrame, float frameRate, int majorVersion,
+      int minorVersion, int patchVersion, List<Layer> layers, LongSparseArray<Layer> layerMap,
+      Map<String, List<Layer>> precomps, Map<String, LottieImageAsset> images,
+      SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts) {
+    this.bounds = bounds;
+    this.startFrame = startFrame;
+    this.endFrame = endFrame;
+    this.frameRate = frameRate;
+    this.majorVersion = majorVersion;
+    this.minorVersion = minorVersion;
+    this.patchVersion = patchVersion;
+    this.layers = layers;
+    this.layerMap = layerMap;
+    this.precomps = precomps;
+    this.images = images;
+    this.characters = characters;
+    this.fonts = fonts;
+  }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void addWarning(String warning) {

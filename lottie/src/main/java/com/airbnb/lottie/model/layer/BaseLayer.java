@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.support.annotation.CallSuper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -56,7 +55,7 @@ public abstract class BaseLayer
       case Unknown:
       default:
         // Do nothing
-        Log.w(L.TAG, "Unknown layer type " + layerModel.getLayerType());
+        L.warn("Unknown layer type " + layerModel.getLayerType());
         return null;
     }
   }

@@ -1,9 +1,10 @@
 package com.airbnb.lottie;
 
+import android.support.annotation.RestrictTo;
+
 /**
  * Data class describing an image asset exported by bodymovin.
  */
-@SuppressWarnings("WeakerAccess")
 public class LottieImageAsset {
   private final int width;
   private final int height;
@@ -11,7 +12,8 @@ public class LottieImageAsset {
   private final String fileName;
   private final String dirName;
 
-  LottieImageAsset(int width, int height, String id, String fileName, String dirName) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public LottieImageAsset(int width, int height, String id, String fileName, String dirName) {
     this.width = width;
     this.height = height;
     this.id = id;
@@ -19,11 +21,11 @@ public class LottieImageAsset {
     this.dirName = dirName;
   }
 
-  @SuppressWarnings("WeakerAccess") public int getWidth() {
+  public int getWidth() {
     return width;
   }
 
-  @SuppressWarnings("WeakerAccess")public int getHeight() {
+  public int getHeight() {
     return height;
   }
 
