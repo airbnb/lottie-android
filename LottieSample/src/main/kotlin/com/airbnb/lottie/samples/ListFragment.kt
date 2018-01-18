@@ -29,8 +29,10 @@ class ListFragment : Fragment() {
                 { startActivity(AppIntroActivity::class.java) },
             ListItem("Full Screen Animation", SHORTCUT_FULLSCREEN)
                 { startActivity(FullScreenActivity::class.java) },
+            ListItem("Dynamic Properties")
+            { showFragment(DynamicFragment()) },
             ListItem("Custom fonts and dynamic text")
-                { showFragment(FontFragment.newInstance()) },
+            { showFragment(FontFragment.newInstance()) },
             ListItem("Open lottiefiles.com")
                 { startActivity("http://www.lottiefiles.com".urlIntent()) }
     )
