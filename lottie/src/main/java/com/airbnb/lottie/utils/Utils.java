@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
 import com.airbnb.lottie.L;
-import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.content.TrimPathContent;
 
 import java.io.Closeable;
@@ -152,21 +151,21 @@ public final class Utils {
   }
 
   @SuppressWarnings("SameParameterValue")
-  public static boolean isAtLeastVersion(LottieComposition composition, int major, int minor, int
-      patch) {
-    if (composition.getMajorVersion() < major) {
+  public static boolean isAtLeastVersion(int major, int minor, int patch, int minMajor, int minMinor, int
+      minPatch) {
+    if (major < minMajor) {
       return false;
-    } else if (composition.getMajorVersion() > major) {
+    } else if (major > minMajor) {
       return true;
     }
 
-    if (composition.getMinorVersion() < minor) {
+    if (minor < minMinor) {
       return false;
-    } else if (composition.getMinorVersion() > minor) {
+    } else if (minor > minMinor) {
       return true;
     }
 
-    return composition.getPatchVersion() >= patch;
+    return patch >= minPatch;
   }
 
   public static int hashFor(float a, float b, float c, float d) {
