@@ -51,22 +51,15 @@ public class LottieComposition {
   private float startFrame;
   private float endFrame;
   private float frameRate;
-  /* Bodymovin version */
-  private int majorVersion;
-  private int minorVersion;
-  private int patchVersion;
 
-  public void init(Rect bounds, float startFrame, float endFrame, float frameRate, int majorVersion,
-      int minorVersion, int patchVersion, List<Layer> layers, LongSparseArray<Layer> layerMap,
-      Map<String, List<Layer>> precomps, Map<String, LottieImageAsset> images,
+  public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
+      List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
+      List<Layer>> precomps, Map<String, LottieImageAsset> images,
       SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts) {
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
     this.frameRate = frameRate;
-    this.majorVersion = majorVersion;
-    this.minorVersion = minorVersion;
-    this.patchVersion = patchVersion;
     this.layers = layers;
     this.layerMap = layerMap;
     this.precomps = precomps;
@@ -105,21 +98,6 @@ public class LottieComposition {
   @SuppressWarnings("WeakerAccess") public float getDuration() {
     float frameDuration = endFrame - startFrame;
     return (long) (frameDuration / frameRate * 1000);
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public int getMajorVersion() {
-    return majorVersion;
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public int getMinorVersion() {
-    return minorVersion;
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public int getPatchVersion() {
-    return patchVersion;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)

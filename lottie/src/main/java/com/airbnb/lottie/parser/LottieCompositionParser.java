@@ -28,9 +28,6 @@ public class LottieCompositionParser {
     float startFrame = 0f;
     float endFrame = 0f;
     float frameRate = 0f;
-    int majorVersion = 0;
-    int minorVersion = 0;
-    int patchVersion = 0;
     final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
     final List<Layer> layers = new ArrayList<>();
     int width = 0;
@@ -63,10 +60,11 @@ public class LottieCompositionParser {
         case "v":
           String version = reader.nextString();
           String[] versions = version.split("\\.");
-          majorVersion = Integer.parseInt(versions[0]);
-          minorVersion = Integer.parseInt(versions[1]);
-          patchVersion = Integer.parseInt(versions[2]);
-          if (!Utils.isAtLeastVersion(composition, 4, 5, 0)) {
+          int majorVersion = Integer.parseInt(versions[0]);
+          int minorVersion = Integer.parseInt(versions[1]);
+          int patchVersion = Integer.parseInt(versions[2]);
+          if (!Utils.isAtLeastVersion(majorVersion, minorVersion, patchVersion,
+              4, 5, 0)) {
             composition.addWarning("Lottie only supports bodymovin >= 4.5.0");
           }
           break;
@@ -92,8 +90,8 @@ public class LottieCompositionParser {
     int scaledHeight = (int) (height * scale);
     Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
-    composition.init(bounds, startFrame, endFrame, frameRate, majorVersion, minorVersion,
-        patchVersion, layers, layerMap, precomps, images, characters, fonts);
+    composition.init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
+        images, characters, fonts);
 
     return composition;
   }
