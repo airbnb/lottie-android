@@ -162,12 +162,12 @@ public class LottieCompositionParser {
         }
       }
       reader.endObject();
-      if (!layers.isEmpty()) {
-        precomps.put(id, layers);
-      } else if (imageFileName != null) {
+      if (imageFileName != null) {
         LottieImageAsset image =
             new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
         images.put(image.getId(), image);
+      } else {
+        precomps.put(id, layers);
       }
     }
     reader.endArray();
