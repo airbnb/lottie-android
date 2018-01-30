@@ -1,29 +1,15 @@
-# 2.5.0-beta3
-* Cleaned up some of the LottieComposition APIs.
-* Fixed some setFrame/getFrame calculations.
-* Fixed a regressions with unknown masks modes.
-
-# 2.5.0-beta2
-### Features and Improvements
-* Completely overhauled json deserialization. Deserializing a composition takes half as long and 
-can deserialize much larger json files (tested 50mb) without ooming.
-* Added a new LottieInterpolatedValue class in which you set start, end, and interpolator values 
-for a property.
-* Added setValue methods to all LottieValue classes.
-* Renamed some of the LottieValue classes for clarity.
-* API to add all animator listeners.
-* Adhere to the Animatable interface.
-### Bugs Fixed
-* Prevent a crash trying to recycle a null bitmap.
-
-# 2.5.0-beta1
-### Features and Improvements
+# 2.5.0
 * Added the ability to dynamically change properties at runtime. See [docs](http://airbnb.io/lottie/android/dynamic.html) for more info.
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
+* Completely overhauled json deserialization. Deserializing a composition takes half as long and 
+can deserialize much larger json files (tested 50mb) without ooming.
+* API to remove all animator listeners.
+* Adhere to the Animatable interface.
 ### Bugs Fixed
+* Fixed some setFrame/getFrame calculations.
+* Fixed a regression with unknown masks modes.
+* Fixed a crash trying to recycle a null bitmap.
 * Fixed a bug when an opacity animation time interpolator was >1.
-* 
-
 
 # 2.3.1
 ### Features and Improvements
