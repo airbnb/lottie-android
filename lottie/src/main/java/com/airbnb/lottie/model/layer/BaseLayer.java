@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.support.annotation.CallSuper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -320,16 +321,26 @@ public abstract class BaseLayer
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     applyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);
+    // Treat intersect masks like add masks. This is not correct but it's closer.
+    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeIntersect);
     applyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
   }
 
   @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix,
       Mask.MaskMode maskMode) {
     Paint paint;
-    if (maskMode == Mask.MaskMode.MaskModeSubtract) {
-      paint = subtractMaskPaint;
-    } else {
-      paint = addMaskPaint;
+    switch (maskMode) {
+      case MaskModeSubtract:
+        paint = subtractMaskPaint;
+        break;
+      case MaskModeIntersect:
+        Log.w(L.TAG, "Animation contains intersect masks. They are not supported but will be " +
+            "treated like intersect masks.");
+      case MaskModeAdd:
+      default:
+        // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
+        // better than nothing.
+        paint = addMaskPaint;
     }
 
     //noinspection ConstantConditions
