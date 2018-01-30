@@ -335,7 +335,7 @@ public abstract class BaseLayer
         break;
       case MaskModeIntersect:
         Log.w(L.TAG, "Animation contains intersect masks. They are not supported but will be " +
-            "treated like intersect masks.");
+            "treated like add masks.");
       case MaskModeAdd:
       default:
         // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
