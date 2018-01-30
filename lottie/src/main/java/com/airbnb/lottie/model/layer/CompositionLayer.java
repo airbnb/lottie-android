@@ -71,25 +71,16 @@ public class CompositionLayer extends BaseLayer {
     for (int i = 0; i < layerMap.size(); i++) {
       long key = layerMap.keyAt(i);
       BaseLayer layerView = layerMap.get(key);
-      assertNonNullForGitHubIssue(layerMap, layerView);
+      // This shouldn't happen but it appears as if sometimes on pre-lollipop devices when
+      // compiled with d8, layerView is null sometimes.
+      // https://github.com/airbnb/lottie-android/issues/524
+      if (layerView == null) {
+        continue;
+      }
       BaseLayer parentLayer = layerMap.get(layerView.getLayerModel().getParentId());
       if (parentLayer != null) {
         layerView.setParentLayer(parentLayer);
       }
-    }
-  }
-
-  /**
-   * Extra logging for https://github.com/airbnb/lottie-android/issues/524
-   */
-  private void assertNonNullForGitHubIssue(
-      LongSparseArray<BaseLayer> layerMap, BaseLayer layerView) {
-    if (layerMap == null) {
-      throw new NullPointerException("layerMap is null!");
-    } else if (layerView == null) {
-      throw new NullPointerException("layerView is null!");
-    } else if (layerView.getLayerModel() == null) {
-      throw new NullPointerException("layerModel is null!");
     }
   }
 
