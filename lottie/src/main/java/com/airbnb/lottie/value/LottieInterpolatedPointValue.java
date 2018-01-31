@@ -5,14 +5,15 @@ import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.utils.MiscUtils;
 
-public class LottieStaticInterpolatedPointValue extends LottieStaticInterpolatedValue<PointF> {
+@SuppressWarnings("unused")
+public class LottieInterpolatedPointValue extends LottieInterpolatedValue<PointF> {
   private final PointF point = new PointF();
 
-  public LottieStaticInterpolatedPointValue(PointF startValue, PointF endValue) {
+  public LottieInterpolatedPointValue(PointF startValue, PointF endValue) {
     super(startValue, endValue);
   }
 
-  public LottieStaticInterpolatedPointValue(PointF startValue, PointF endValue,
+  public LottieInterpolatedPointValue(PointF startValue, PointF endValue,
       Interpolator interpolator) {
     super(startValue, endValue, interpolator);
   }

@@ -4,13 +4,14 @@ import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.utils.MiscUtils;
 
-public class LottieStaticInterpolatedFloatValue extends LottieStaticInterpolatedValue<Float> {
+@SuppressWarnings("unused")
+public class LottieInterpolatedFloatValue extends LottieInterpolatedValue<Float> {
 
-  public LottieStaticInterpolatedFloatValue(Float startValue, Float endValue) {
+  public LottieInterpolatedFloatValue(Float startValue, Float endValue) {
     super(startValue, endValue);
   }
 
-  public LottieStaticInterpolatedFloatValue(Float startValue, Float endValue,
+  public LottieInterpolatedFloatValue(Float startValue, Float endValue,
       Interpolator interpolator) {
     super(startValue, endValue, interpolator);
   }

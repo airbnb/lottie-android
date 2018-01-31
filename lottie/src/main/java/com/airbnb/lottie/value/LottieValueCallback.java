@@ -10,8 +10,6 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 /**
  * Allows you to set a callback on a resolved {@link com.airbnb.lottie.model.KeyPath} to modify
  * its animation values at runtime.
- *
- * This API is not ready for public use yet.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class LottieValueCallback<T> {
@@ -22,7 +20,7 @@ public class LottieValueCallback<T> {
    * This can be set with {@link #setValue(Object)} to use a value instead of deferring
    * to the callback.
    **/
-  @Nullable private T value = null;
+  @Nullable protected T value = null;
 
   public LottieValueCallback() {
   }
@@ -59,9 +57,6 @@ public class LottieValueCallback<T> {
       float interpolatedKeyframeProgress,
       float overallProgress
   ) {
-    if (value != null) {
-      return value;
-    }
     return getValue(
         frameInfo.set(
             startFrame,
