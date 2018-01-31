@@ -19,9 +19,8 @@ abstract class LottieStaticInterpolatedValue<T> extends LottieValueCallback<T> {
     this.interpolator = interpolator;
   }
 
-  @Override public T getValue(float startFrame, float endFrame, T startValue, T endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress) {
-    float progress = interpolator.getInterpolation(overallProgress);
+  @Override public T getValue(LottieFrameInfo<T> frameInfo) {
+    float progress = interpolator.getInterpolation(frameInfo.getOverallProgress());
     return interpolateValue(this.startValue, this.endValue, progress);
   }
 

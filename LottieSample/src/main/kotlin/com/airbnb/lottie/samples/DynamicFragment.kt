@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
-import com.airbnb.lottie.value.LottieValueCallback
 import kotlinx.android.synthetic.main.fragment_dynamic.*
 import kotlinx.android.synthetic.main.fragment_dynamic.view.*
 
@@ -53,44 +52,31 @@ class DynamicFragment : Fragment() {
     }
 
     private fun setupValueCallbacks() {
-        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP, object : LottieValueCallback<Float?>() {
-            override fun getValue(startFrame: Float,
-                                  endFrame: Float,
-                                  startValue: Float?,
-                                  endValue: Float?,
-                                  linearKeyframeProgress: Float,
-                                  interpolatedKeyframeProgress: Float,
-                                  overallProgress: Float
-            ): Float {
-                return 2 * speed.toFloat() * overallProgress
-            }
-        })
-
-        val colorCallback = object : LottieValueCallback<Int?>() {
-            override fun getValue(startFrame: Float, endFrame: Float, startValue: Int?, endValue: Int?, linearKeyframeProgress: Float, interpolatedKeyframeProgress: Float, overallProgress: Float): Int? {
-                return COLORS[colorIndex]
-            }
+        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
+            2 * speed.toFloat() * frameInfo.overallProgress
         }
-        animationView.addValueCallback(KeyPath("Shirt", "Group 5", "Fill 1"), LottieProperty.COLOR, colorCallback)
-        animationView.addValueCallback(KeyPath("LeftArmWave", "LeftArm", "Group 6", "Fill 1"), LottieProperty.COLOR, colorCallback)
-        animationView.addValueCallback(KeyPath("RightArm", "Group 6", "Fill 1"), LottieProperty.COLOR, colorCallback)
+
+        val shirt = KeyPath("Shirt", "Group 5", "Fill 1")
+        val leftArm = KeyPath("LeftArmWave", "LeftArm", "Group 6", "Fill 1")
+        val rightArm = KeyPath("RightArm", "Group 6", "Fill 1")
+
+        animationView.addValueCallback(shirt, LottieProperty.COLOR) { COLORS[colorIndex] }
+        animationView.addValueCallback(leftArm, LottieProperty.COLOR) { COLORS[colorIndex] }
+        animationView.addValueCallback(rightArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         val point = PointF()
-        animationView.addValueCallback(KeyPath("Body"), LottieProperty.TRANSFORM_POSITION, object: LottieValueCallback<PointF>() {
-            override fun getValue(startFrame: Float, endFrame: Float, startValue: PointF, endValue: PointF, linearKeyframeProgress: Float, interpolatedKeyframeProgress: Float, overallProgress: Float): PointF {
-                var startY = startValue.y
-                var endY = endValue.y
+        animationView.addValueCallback(KeyPath("Body"), LottieProperty.TRANSFORM_POSITION) { frameInfo ->
+            val startX = frameInfo.startValue.x
+            var startY = frameInfo.startValue.y
+            var endY = frameInfo.endValue.y
 
-                if (startY == 140.29837f) {
-                    startY += EXTRA_JUMP[extraJumpIndex]
-                }
-                if (endY == 140.29837f) {
-                    endY += EXTRA_JUMP[extraJumpIndex]
-                }
-                point.set(startValue.x, MiscUtils.lerp(startY, endY, interpolatedKeyframeProgress))
-
-                return point
+            if (startY > endY) {
+                startY += EXTRA_JUMP[extraJumpIndex]
+            } else if (endY > startY) {
+                endY += EXTRA_JUMP[extraJumpIndex]
             }
-        })
+            point.set(startX, MiscUtils.lerp(startY, endY, frameInfo.interpolatedKeyframeProgress))
+            point
+        }
     }
 
     private fun updateButtonText() {

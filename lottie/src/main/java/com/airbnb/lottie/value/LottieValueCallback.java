@@ -1,6 +1,7 @@
 package com.airbnb.lottie.value;
 
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
@@ -13,25 +14,35 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
  * This API is not ready for public use yet.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-public abstract class LottieValueCallback<T> {
+public class LottieValueCallback<T> {
+  private final LottieFrameInfo<T> frameInfo = new LottieFrameInfo<>();
   @Nullable BaseKeyframeAnimation<?, ?> animation;
 
   /**
    * This can be set with {@link #setValue(Object)} to use a value instead of deferring
    * to the callback.
-   * */
+   **/
   @Nullable private T value = null;
 
-  public abstract T getValue(
-      float startFrame,
-      float endFrame,
-      T startValue,
-      T endValue,
-      float linearKeyframeProgress,
-      float interpolatedKeyframeProgress,
-      float overallProgress);
+  public LottieValueCallback() {
+  }
 
-  public void setValue(@Nullable T value) {
+  public LottieValueCallback(@NonNull T staticValue) {
+    value = staticValue;
+  }
+
+  /**
+   * Override this if you haven't set a static value in the constructor or with setValue.
+   */
+  public T getValue(LottieFrameInfo<T> frameInfo) {
+    if (value == null) {
+      throw new IllegalArgumentException("You must provide a static value in the constructor " +
+          ", call setValue, or override getValue.");
+    }
+    return value;
+  }
+
+  public final void setValue(@Nullable T value) {
     if (animation != null) {
       this.value = value;
       animation.notifyListeners();
@@ -39,7 +50,7 @@ public abstract class LottieValueCallback<T> {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public T getValueInternal(
+  public final T getValueInternal(
       float startFrame,
       float endFrame,
       T startValue,
@@ -51,12 +62,21 @@ public abstract class LottieValueCallback<T> {
     if (value != null) {
       return value;
     }
-    return getValue(startFrame, endFrame, startValue, endValue, linearKeyframeProgress,
-        interpolatedKeyframeProgress, overallProgress);
+    return getValue(
+        frameInfo.set(
+            startFrame,
+            endFrame,
+            startValue,
+            endValue,
+            linearKeyframeProgress,
+            interpolatedKeyframeProgress,
+            overallProgress
+        )
+    );
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public void setAnimation(@Nullable BaseKeyframeAnimation<?, ?> animation) {
+  public final void setAnimation(@Nullable BaseKeyframeAnimation<?, ?> animation) {
     this.animation = animation;
   }
 }

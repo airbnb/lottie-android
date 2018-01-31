@@ -24,8 +24,10 @@ import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieStaticValue;
 import com.airbnb.lottie.value.LottieValueCallback;
+import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import org.json.JSONObject;
 
@@ -741,6 +743,20 @@ import java.util.Map;
    */
   public <T> void addValueCallback(KeyPath keyPath, T property, LottieValueCallback<T> callback) {
     lottieDrawable.addValueCallback(keyPath, property, callback);
+  }
+
+  /**
+   * Overload of {@link #addValueCallback(KeyPath, Object, LottieValueCallback)} that takes an interface. This allows you to use a single abstract
+   * method code block in Kotlin such as:
+   * animationView.addValueCallback(yourKeyPath, LottieProperty.COLOR) { yourColor }
+   */
+  public <T> void addValueCallback(KeyPath keyPath, T property,
+      final SimpleLottieValueCallback<T> callback) {
+    lottieDrawable.addValueCallback(keyPath, property, new LottieValueCallback<T>() {
+      @Override public T getValue(LottieFrameInfo<T> frameInfo) {
+        return callback.getValue(frameInfo);
+      }
+    });
   }
 
     /**

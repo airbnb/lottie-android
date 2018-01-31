@@ -12,17 +12,22 @@ public abstract class LottieRelativePointValueCallback extends LottieValueCallba
   private final PointF point = new PointF();
 
   @Override
-  public final PointF getValue(
-      float sf, float ef, PointF sv, PointF ev, float lkp, float ikp, float p) {
-    point.set(MiscUtils.lerp(sv.x, ev.x, ikp), MiscUtils.lerp(sv.y, sv.y, ikp));
+  public final PointF getValue(LottieFrameInfo<PointF> frameInfo) {
+    point.set(
+        MiscUtils.lerp(
+            frameInfo.getStartValue().x,
+            frameInfo.getEndValue().x,
+            frameInfo.getInterpolatedKeyframeProgress()),
+        MiscUtils.lerp(
+            frameInfo.getStartValue().y,
+            frameInfo.getEndValue().y,
+            frameInfo.getInterpolatedKeyframeProgress())
+    );
 
-    PointF offset = getOffset(sf, ef, sv, ev, lkp, ikp, p);
+    PointF offset = getOffset(frameInfo);
     point.offset(offset.x, offset.y);
     return point;
   }
 
-  public abstract PointF getOffset(
-      float startFrame, float endFrame,
-      PointF startValue, PointF endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress, float overallProgress);
+  public abstract PointF getOffset(LottieFrameInfo<PointF> frameInfo);
 }

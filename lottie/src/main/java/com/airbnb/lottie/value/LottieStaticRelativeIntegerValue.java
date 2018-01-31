@@ -13,11 +13,7 @@ public class LottieStaticRelativeIntegerValue extends LottieRelativeIntegerValue
 
 
   @Override
-  public Integer getOffset(
-      float startFrame, float endFrame,
-      Integer startValue, Integer endValue,
-      float linearKeyframeProgress, float interpolatedKeyframeProgress,
-      float overallProgress) {
+  public Integer getOffset(LottieFrameInfo<Integer> frameInfo) {
     return offset;
   }
 }

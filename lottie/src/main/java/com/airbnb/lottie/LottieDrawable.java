@@ -26,7 +26,9 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.parser.LayerParser;
 import com.airbnb.lottie.utils.LottieValueAnimator;
+import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
+import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -725,6 +727,21 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
   }
+
+  /**
+   * Overload of {@link #addValueCallback(KeyPath, Object, LottieValueCallback)} that takes an interface. This allows you to use a single abstract
+   * method code block in Kotlin such as:
+   * drawable.addValueCallback(yourKeyPath, LottieProperty.COLOR) { yourColor }
+   */
+  public <T> void addValueCallback(KeyPath keyPath, T property,
+      final SimpleLottieValueCallback<T> callback) {
+    addValueCallback(keyPath, property, new LottieValueCallback<T>() {
+      @Override public T getValue(LottieFrameInfo<T> frameInfo) {
+        return callback.getValue(frameInfo);
+      }
+    });
+  }
+
 
   /**
    * Allows you to modify or clear a bitmap that was loaded for an image either automatically
