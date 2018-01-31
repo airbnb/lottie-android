@@ -25,7 +25,6 @@ import android.util.SparseArray;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
-import com.airbnb.lottie.value.LottieStaticValue;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
@@ -160,8 +159,7 @@ import java.util.Map;
       SimpleColorFilter filter = new SimpleColorFilter(
           ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
       KeyPath keyPath = new KeyPath("**");
-      LottieStaticValue<ColorFilter> callback =
-          new LottieStaticValue<ColorFilter>(filter);
+      LottieValueCallback<ColorFilter> callback = new LottieValueCallback<ColorFilter>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
     }
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {

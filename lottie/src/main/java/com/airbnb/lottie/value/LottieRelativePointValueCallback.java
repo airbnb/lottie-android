@@ -1,6 +1,7 @@
 package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
+import android.support.annotation.NonNull;
 
 import com.airbnb.lottie.utils.MiscUtils;
 
@@ -8,8 +9,16 @@ import com.airbnb.lottie.utils.MiscUtils;
  * {@link LottieValueCallback} that provides a value offset from the original animation
  * rather than an absolute value.
  */
-public abstract class LottieRelativePointValueCallback extends LottieValueCallback<PointF> {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class LottieRelativePointValueCallback extends LottieValueCallback<PointF> {
   private final PointF point = new PointF();
+
+  public LottieRelativePointValueCallback() {
+  }
+
+  public LottieRelativePointValueCallback(@NonNull PointF staticValue) {
+    super(staticValue);
+  }
 
   @Override
   public final PointF getValue(LottieFrameInfo<PointF> frameInfo) {
@@ -29,5 +38,14 @@ public abstract class LottieRelativePointValueCallback extends LottieValueCallba
     return point;
   }
 
-  public abstract PointF getOffset(LottieFrameInfo<PointF> frameInfo);
+  /**
+   * Override this to provide your own offset on every frame.
+   */
+  public PointF getOffset(LottieFrameInfo<PointF> frameInfo) {
+    if (value == null) {
+      throw new IllegalArgumentException("You must provide a static value in the constructor " +
+          ", call setValue, or override getValue.");
+    }
+    return value;
+  }
 }

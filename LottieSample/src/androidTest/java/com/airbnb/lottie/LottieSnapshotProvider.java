@@ -17,9 +17,9 @@ import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.value.LottieStaticInterpolatedIntegerValue;
-import com.airbnb.lottie.value.LottieStaticRelativeFloatValue;
-import com.airbnb.lottie.value.LottieStaticRelativePointValue;
+import com.airbnb.lottie.value.LottieRelativeFloatValueCallback;
+import com.airbnb.lottie.value.LottieRelativePointValueCallback;
+import com.airbnb.lottie.value.LottieInterpolatedIntegerValue;
 import com.airbnb.lottie.value.LottieStaticValue;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
@@ -219,199 +219,197 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void testDynamicProperties() {
-    LottieStaticValue<Integer> value = new LottieStaticValue<>(Color.GREEN);
     testDynamicProperty(
         "Fill color (Green)",
         new KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
         LottieProperty.COLOR,
-        value);
+        new LottieValueCallback<>(Color.GREEN));
 
-    value.setValue(Color.YELLOW);
     testDynamicProperty(
         "Fill color (Yellow)",
         new KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
         LottieProperty.COLOR,
-        value);
+        new LottieValueCallback<>(Color.YELLOW));
 
     testDynamicProperty(
         "Fill opacity",
         new KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
         LottieProperty.OPACITY,
-        new LottieStaticValue<>(50));
+        new LottieValueCallback<>(50));
 
     testDynamicProperty(
         "Stroke color",
         new KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
         LottieProperty.STROKE_COLOR,
-        new LottieStaticValue<>(Color.GREEN));
+        new LottieValueCallback<>(Color.GREEN));
 
     testDynamicProperty(
         "Stroke width",
         new KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
         LottieProperty.STROKE_WIDTH,
-        new LottieStaticRelativeFloatValue(50f));
+        new LottieRelativeFloatValueCallback(50f));
 
     testDynamicProperty(
         "Stroke opacity",
         new KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
         LottieProperty.OPACITY,
-        new LottieStaticValue<>(50));
+        new LottieValueCallback<>(50));
 
     testDynamicProperty(
         "Transform anchor point",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_ANCHOR_POINT,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform position (relative)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Transform opacity",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_OPACITY,
-        new LottieStaticValue<>(50));
+        new LottieValueCallback<>(50));
 
     testDynamicProperty(
         "Transform rotation",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_ROTATION,
-        new LottieStaticValue<>(45f));
+        new LottieValueCallback<>(45f));
 
     testDynamicProperty(
         "Transform scale",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_SCALE,
-        new LottieStaticValue<>(new ScaleXY(0.5f, 0.5f)));
+        new LottieValueCallback<>(new ScaleXY(0.5f, 0.5f)));
 
     testDynamicProperty(
         "Ellipse position",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Ellipse size",
         new KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
         LottieProperty.ELLIPSE_SIZE,
-        new LottieStaticRelativePointValue(new PointF(40f, 60f)));
+        new LottieRelativePointValueCallback(new PointF(40f, 60f)));
 
     testDynamicProperty(
         "Star points",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_POINTS,
-        new LottieStaticValue<>(8f));
+        new LottieValueCallback<>(8f));
 
     testDynamicProperty(
         "Star rotation",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_ROTATION,
-        new LottieStaticValue<>(10f));
+        new LottieValueCallback<>(10f));
 
     testDynamicProperty(
         "Star position",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Star inner radius",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_INNER_RADIUS,
-        new LottieStaticValue<>(10f));
+        new LottieValueCallback<>(10f));
 
     testDynamicProperty(
         "Star inner roundedness",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_INNER_ROUNDEDNESS,
-        new LottieStaticValue<>(100f));
+        new LottieValueCallback<>(100f));
 
     testDynamicProperty(
         "Star outer radius",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_RADIUS,
-        new LottieStaticValue<>(60f));
+        new LottieValueCallback<>(60f));
 
     testDynamicProperty(
         "Star outer roundedness",
         new KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
-        new LottieStaticValue<>(100f));
+        new LottieValueCallback<>(100f));
 
     testDynamicProperty(
         "Polygon points",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_POINTS,
-        new LottieStaticValue<>(8f));
+        new LottieValueCallback<>(8f));
 
     testDynamicProperty(
         "Polygon rotation",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_ROTATION,
-        new LottieStaticValue<>(10f));
+        new LottieValueCallback<>(10f));
 
     testDynamicProperty(
         "Polygon position",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POSITION,
-        new LottieStaticRelativePointValue(new PointF(20f, 20f)));
+        new LottieRelativePointValueCallback(new PointF(20f, 20f)));
 
     testDynamicProperty(
         "Polygon radius",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_RADIUS,
-        new LottieStaticRelativeFloatValue(60f));
+        new LottieRelativeFloatValueCallback(60f));
 
     testDynamicProperty(
         "Polygon roundedness",
         new KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
         LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
-        new LottieStaticValue<>(100f));
+        new LottieValueCallback<>(100f));
 
     testDynamicProperty(
         "Repeater transform position",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_POSITION,
-        new LottieStaticRelativePointValue(new PointF(100f, 100f)));
+        new LottieRelativePointValueCallback(new PointF(100f, 100f)));
 
     testDynamicProperty(
         "Repeater transform start opacity",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_START_OPACITY,
-        new LottieStaticValue<>(25f));
+        new LottieValueCallback<>(25f));
 
     testDynamicProperty(
         "Repeater transform end opacity",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_END_OPACITY,
-        new LottieStaticValue<>(25f));
+        new LottieValueCallback<>(25f));
 
     testDynamicProperty(
         "Repeater transform rotation",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_ROTATION,
-        new LottieStaticValue<>(45f));
+        new LottieValueCallback<>(45f));
 
     testDynamicProperty(
         "Repeater transform scale",
         new KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
         LottieProperty.TRANSFORM_SCALE,
-        new LottieStaticValue<>(new ScaleXY(2f, 2f)));
+        new LottieValueCallback<>(new ScaleXY(2f, 2f)));
 
     testDynamicProperty(
         "Time remapping",
         new KeyPath("Circle 1"),
         LottieProperty.TIME_REMAP,
-        new LottieStaticValue<>(1f));
+        new LottieValueCallback<>(1f));
 
     testDynamicProperty(
         "Color Filter",
@@ -423,21 +421,21 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Opacity interpolation (0)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_OPACITY,
-        new LottieStaticInterpolatedIntegerValue(10, 100),
+        new LottieInterpolatedIntegerValue(10, 100),
         0f);
 
     testDynamicProperty(
         "Opacity interpolation (0.5)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_OPACITY,
-        new LottieStaticInterpolatedIntegerValue(10, 100),
+        new LottieInterpolatedIntegerValue(10, 100),
         0.5f);
 
     testDynamicProperty(
         "Opacity interpolation (1)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_OPACITY,
-        new LottieStaticInterpolatedIntegerValue(10, 100),
+        new LottieInterpolatedIntegerValue(10, 100),
         1f);
   }
 

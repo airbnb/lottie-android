@@ -1,12 +1,23 @@
 package com.airbnb.lottie.value;
 
+import android.support.annotation.NonNull;
+
 import com.airbnb.lottie.utils.MiscUtils;
 
 /**
  * {@link LottieValueCallback} that provides a value offset from the original animation
  * rather than an absolute value.
  */
-public abstract class LottieRelativeFloatValueCallback extends LottieValueCallback<Float> {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class LottieRelativeFloatValueCallback extends LottieValueCallback<Float> {
+
+  public LottieRelativeFloatValueCallback() {
+  }
+
+  public LottieRelativeFloatValueCallback(@NonNull Float staticValue) {
+    super(staticValue);
+  }
+
   @Override
   public Float getValue(LottieFrameInfo<Float> frameInfo) {
     float originalValue = MiscUtils.lerp(
@@ -18,5 +29,11 @@ public abstract class LottieRelativeFloatValueCallback extends LottieValueCallba
     return originalValue + offset;
   }
 
-  public abstract Float getOffset(LottieFrameInfo<Float> frameInfo);
+  public Float getOffset(LottieFrameInfo<Float> frameInfo) {
+    if (value == null) {
+      throw new IllegalArgumentException("You must provide a static value in the constructor " +
+          ", call setValue, or override getValue.");
+    }
+    return value;
+  }
 }
