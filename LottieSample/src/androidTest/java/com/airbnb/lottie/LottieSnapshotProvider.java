@@ -17,10 +17,9 @@ import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.value.LottieInterpolatedIntegerValue;
 import com.airbnb.lottie.value.LottieRelativeFloatValueCallback;
 import com.airbnb.lottie.value.LottieRelativePointValueCallback;
-import com.airbnb.lottie.value.LottieInterpolatedIntegerValue;
-import com.airbnb.lottie.value.LottieStaticValue;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
 
@@ -415,7 +414,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         "Color Filter",
         new KeyPath("**"),
         LottieProperty.COLOR_FILTER,
-        new LottieStaticValue<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
+        new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
 
     testDynamicProperty(
         "Opacity interpolation (0)",

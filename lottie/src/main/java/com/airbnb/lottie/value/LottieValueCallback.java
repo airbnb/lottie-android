@@ -57,9 +57,6 @@ public class LottieValueCallback<T> {
       float interpolatedKeyframeProgress,
       float overallProgress
   ) {
-    if (value != null) {
-      return value;
-    }
     return getValue(
         frameInfo.set(
             startFrame,
