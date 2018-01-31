@@ -79,6 +79,7 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="JAVA">
+          <option name="RIGHT_MARGIN" value="150" />
           <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
           <option name="LINE_COMMENT_ADD_SPACE" value="true" />
           <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
