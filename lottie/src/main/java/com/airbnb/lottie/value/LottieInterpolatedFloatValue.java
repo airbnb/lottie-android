@@ -11,8 +11,7 @@ public class LottieInterpolatedFloatValue extends LottieInterpolatedValue<Float>
     super(startValue, endValue);
   }
 
-  public LottieInterpolatedFloatValue(Float startValue, Float endValue,
-      Interpolator interpolator) {
+  public LottieInterpolatedFloatValue(Float startValue, Float endValue, Interpolator interpolator) {
     super(startValue, endValue, interpolator);
   }
 

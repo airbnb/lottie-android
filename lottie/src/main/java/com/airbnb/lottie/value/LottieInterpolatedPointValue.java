@@ -13,8 +13,7 @@ public class LottieInterpolatedPointValue extends LottieInterpolatedValue<PointF
     super(startValue, endValue);
   }
 
-  public LottieInterpolatedPointValue(PointF startValue, PointF endValue,
-      Interpolator interpolator) {
+  public LottieInterpolatedPointValue(PointF startValue, PointF endValue, Interpolator interpolator) {
     super(startValue, endValue, interpolator);
   }
 

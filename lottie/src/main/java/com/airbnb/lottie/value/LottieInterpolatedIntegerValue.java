@@ -11,8 +11,7 @@ public class LottieInterpolatedIntegerValue extends LottieInterpolatedValue<Inte
     super(startValue, endValue);
   }
 
-  public LottieInterpolatedIntegerValue(Integer startValue, Integer endValue,
-      Interpolator interpolator) {
+  public LottieInterpolatedIntegerValue(Integer startValue, Integer endValue, Interpolator interpolator) {
     super(startValue, endValue, interpolator);
   }
 
