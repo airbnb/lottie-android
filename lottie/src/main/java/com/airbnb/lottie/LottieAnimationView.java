@@ -41,7 +41,7 @@ import java.util.Map;
  * bodymovin (https://github.com/bodymovin/bodymovin).
  * <p>
  * You may set the animation in one of two ways:
- * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
+ * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_setAnimation}
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
  * or {@link #setAnimation(JSONObject)}.
  * <p>
@@ -116,9 +116,9 @@ import java.util.Map;
     defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
     if (!isInEditMode()) {
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
-      boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
+      boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_setAnimation);
       if (hasRawRes && hasFileName) {
-        throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
+        throw new IllegalArgumentException("lottie_rawRes and lottie_setAnimation cannot be used at " +
             "the same time. Please use use only one at once.");
       } else if (hasRawRes) {
         int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
@@ -126,7 +126,7 @@ import java.util.Map;
           setAnimation(rawResId);
         }
       } else if (hasFileName) {
-        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
+        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_setAnimation);
         if (fileName != null) {
           setAnimation(fileName);
         }
