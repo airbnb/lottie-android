@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
@@ -13,9 +14,11 @@ import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
-import com.airbnb.lottie.parser.AsyncCompositionLoader;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.AsyncCompositionLoader;
 import com.airbnb.lottie.parser.LottieCompositionParser;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -235,6 +238,28 @@ public class LottieComposition {
         closeQuietly(stream);
       }
       return composition;
+    }
+
+    /**
+     * Lottie now uses a streaming json parser. Prefer {@link #fromJsonSync(JsonReader)} if possible.
+     * <p>
+     * This will call toString() on your entire JSONObject.
+     */
+    @Deprecated
+    public static LottieComposition fromJsonSync(@SuppressWarnings("unused") Resources res, JSONObject json) {
+      return fromJsonSync(json.toString());
+    }
+
+    /**
+     * Prefer using a JsonReader directly when possible. Reference the source for the async
+     * factory methods above.
+     */
+    public static LottieComposition fromJsonSync(String string) {
+      try {
+        return fromJsonSync(new JsonReader(new StringReader(string)));
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e);
+      }
     }
 
     public static LottieComposition fromJsonSync(JsonReader reader) throws IOException {
