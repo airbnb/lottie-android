@@ -29,7 +29,16 @@ public class LottieValueAnimatorUnitTest {
 
   @Before
   public void setup() {
-    animator = new LottieValueAnimator();
+    // Choreographer#postFrameCallback hangs with robolectric.
+    animator = new LottieValueAnimator() {
+      @Override public void postFrameCallback() {
+        isRunning = true;
+      }
+
+      @Override public void removeFrameCallback() {
+        isRunning = false;
+      }
+    };
     LottieComposition composition = new LottieComposition();
     composition.init(new Rect(), 0, 1000, 1000, new ArrayList<Layer>(),
         new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
@@ -47,7 +56,7 @@ public class LottieValueAnimatorUnitTest {
   public void testResumingMaintainsValue() {
     animator.setFrame(500);
     animator.resumeAnimation();
-    assertEquals(500, animator.getFrame());
+    assertEquals(500f, animator.getFrame());
   }
 
   @Test
@@ -61,7 +70,7 @@ public class LottieValueAnimatorUnitTest {
     public void testPlayingResetsValue() {
     animator.setFrame(500);
     animator.playAnimation();
-    assertEquals(0, animator.getFrame());
+    assertEquals(0f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
@@ -69,7 +78,7 @@ public class LottieValueAnimatorUnitTest {
   public void testReversingMaintainsValue() {
     animator.setFrame(250);
     animator.reverseAnimationSpeed();
-    assertEquals(250, animator.getFrame());
+    assertEquals(250f, animator.getFrame());
     assertEquals(0.75f, animator.getAnimatedFraction());
   }
 
@@ -78,7 +87,7 @@ public class LottieValueAnimatorUnitTest {
     animator.setMinFrame(100);
     animator.setFrame(1000);
     animator.reverseAnimationSpeed();
-    assertEquals(1000, animator.getFrame());
+    assertEquals(1000f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
@@ -86,7 +95,7 @@ public class LottieValueAnimatorUnitTest {
   public void testReversingWithMaxValueMaintainsValue() {
     animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
-    assertEquals(0, animator.getFrame());
+    assertEquals(0f, animator.getFrame());
     assertEquals(1f, animator.getAnimatedFraction());
   }
 
@@ -95,7 +104,7 @@ public class LottieValueAnimatorUnitTest {
     animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
     animator.resumeAnimation();
-    assertEquals(900, animator.getFrame());
+    assertEquals(900f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
@@ -104,7 +113,7 @@ public class LottieValueAnimatorUnitTest {
     animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
     animator.playAnimation();
-    assertEquals(900, animator.getFrame());
+    assertEquals(900f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
@@ -115,13 +124,13 @@ public class LottieValueAnimatorUnitTest {
     animator.setFrame(400);
     assertEquals(0.33f, animator.getAnimatedFraction(), 0.01);
     animator.reverseAnimationSpeed();
-    assertEquals(400, animator.getFrame());
+    assertEquals(400f, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
     animator.resumeAnimation();
-    assertEquals(400, animator.getFrame());
+    assertEquals(400f, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
     animator.playAnimation();
-    assertEquals(800, animator.getFrame());
+    assertEquals(800f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 }
