@@ -1,5 +1,12 @@
 package com.airbnb.lottie;
 
+import android.graphics.Rect;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
+
+import com.airbnb.lottie.model.Font;
+import com.airbnb.lottie.model.FontCharacter;
+import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 
 import org.junit.Before;
@@ -7,6 +14,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -19,86 +30,98 @@ public class LottieValueAnimatorUnitTest {
   @Before
   public void setup() {
     animator = new LottieValueAnimator();
-    animator.setCompositionDuration(1000);
+    LottieComposition composition = new LottieComposition();
+    composition.init(new Rect(), 0, 1000, 1000, new ArrayList<Layer>(),
+        new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
+        new HashMap<String, LottieImageAsset>(0), new SparseArrayCompat<FontCharacter>(0),
+        new HashMap<String, Font>(0));
+    animator.setComposition(composition);
   }
 
   @Test
   public void testInitialState() {
-    assertEquals(0f, animator.getValue());
+    assertEquals(0f, animator.getFrame());
   }
 
   @Test
-    public void testResumingMaintainsValue() {
-    animator.setValue(0.5f);
+  public void testResumingMaintainsValue() {
+    animator.setFrame(500);
     animator.resumeAnimation();
-    assertEquals(0.5f, animator.getValue());
+    assertEquals(500, animator.getFrame());
+  }
+
+  @Test
+  public void testFrameConvertsToAnimatedFraction() {
+    animator.setFrame(500);
+    animator.resumeAnimation();
+    assertEquals(0.5f, animator.getAnimatedFraction());
   }
 
   @Test
     public void testPlayingResetsValue() {
-    animator.setValue(0.5f);
+    animator.setFrame(500);
     animator.playAnimation();
-    assertEquals(0f, animator.getValue());
+    assertEquals(0, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
   @Test
   public void testReversingMaintainsValue() {
-    animator.setValue(0.25f);
+    animator.setFrame(250);
     animator.reverseAnimationSpeed();
-    assertEquals(0.25f, animator.getValue());
+    assertEquals(250, animator.getFrame());
     assertEquals(0.75f, animator.getAnimatedFraction());
   }
 
   @Test
     public void testReversingWithMinValueMaintainsValue() {
-    animator.setMinValue(0.1f);
-    animator.setValue(1f);
+    animator.setMinFrame(100);
+    animator.setFrame(1000);
     animator.reverseAnimationSpeed();
-    assertEquals(1f, animator.getValue());
+    assertEquals(1000, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
   @Test
   public void testReversingWithMaxValueMaintainsValue() {
-    animator.setMaxValue(0.9f);
+    animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
-    assertEquals(0f, animator.getValue());
+    assertEquals(0, animator.getFrame());
     assertEquals(1f, animator.getAnimatedFraction());
   }
 
   @Test
   public void testResumeReversingWithMinValueMaintainsValue() {
-    animator.setMaxValue(0.9f);
+    animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
     animator.resumeAnimation();
-    assertEquals(0.9f, animator.getValue());
+    assertEquals(900, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
   @Test
   public void testPlayReversingWithMinValueMaintainsValue() {
-    animator.setMaxValue(0.9f);
+    animator.setMaxFrame(900);
     animator.reverseAnimationSpeed();
     animator.playAnimation();
-    assertEquals(0.9f, animator.getValue());
+    assertEquals(900, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 
   @Test
   public void testMinAndMaxBothSet() {
-    animator.setMinValue(0.2f);
-    animator.setMaxValue(0.8f);
-    animator.setValue(0.4f);
+    animator.setMinFrame(200);
+    animator.setMaxFrame(800);
+    animator.setFrame(400);
     assertEquals(0.33f, animator.getAnimatedFraction(), 0.01);
     animator.reverseAnimationSpeed();
-    assertEquals(0.4f, animator.getValue(), 0.01);
+    assertEquals(400, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
     animator.resumeAnimation();
-    assertEquals(0.4f, animator.getValue(), 0.01);
+    assertEquals(400, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
     animator.playAnimation();
-    assertEquals(0.8f, animator.getValue());
+    assertEquals(800, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
   }
 }

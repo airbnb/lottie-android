@@ -9,7 +9,6 @@ import android.graphics.PointF;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.content.TrimPathContent;
@@ -17,10 +16,11 @@ import com.airbnb.lottie.animation.content.TrimPathContent;
 import java.io.Closeable;
 
 public final class Utils {
+  public static final int SECOND_IN_NANOS = 1000000000;
+
   private static final PathMeasure pathMeasure = new PathMeasure();
   private static final Path tempPath = new Path();
   private static final Path tempPath2 = new Path();
-  private static DisplayMetrics displayMetrics;
   private static final float[] points = new float[4];
   private static final float SQRT_2 = (float) Math.sqrt(2);
   private static float dpScale = -1;

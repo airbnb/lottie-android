@@ -7,7 +7,7 @@ android {
   resourcePrefix 'lottie_'
 
   defaultConfig {
-    minSdkVersion 14
+    minSdkVersion 16
     targetSdkVersion 27
     versionCode 100
     versionName "2.5.0-rc1"

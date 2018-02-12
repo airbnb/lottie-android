@@ -68,6 +68,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       onError(e);
     }
     testFrameBoundary();
+    testFrameBoundary2();
     testScaleTypes();
     testDynamicProperties();
   }
@@ -215,6 +216,22 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 50 Blue", params);
     animationView.setFrame(51);
     recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 51 Green", params);
+  }
+
+  private void testFrameBoundary2() {
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition =
+        LottieComposition.Factory.fromFileSync(context, "Tests/RGB.json");
+    animationView.setComposition(composition);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    animationView.setFrame(0);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 0 Red", params);
+    animationView.setFrame(1);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 1 Green", params);
+    animationView.setFrame(2);
+    recordSnapshot(animationView, 1080, "android", "Frame Boundary", "Frame 2 Blue", params);
   }
 
   private void testDynamicProperties() {

@@ -158,6 +158,7 @@ class AnimationFragment : Fragment() {
             view.loop.isActivated = !view.loop.isActivated
             if (view.loop.isActivated) {
                 view.animationView.repeatCount = LottieDrawable.INFINITE
+                view.animationView.repeatMode = LottieDrawable.RESTART
             } else {
                 view.animationView.repeatCount = 0
             }

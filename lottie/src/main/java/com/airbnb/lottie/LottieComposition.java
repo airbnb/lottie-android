@@ -113,6 +113,10 @@ public class LottieComposition {
     return endFrame;
   }
 
+  public float getFrameRate() {
+    return frameRate;
+  }
+
   public List<Layer> getLayers() {
     return layers;
   }
