@@ -53,9 +53,10 @@ public abstract class BaseLottieAnimator extends ValueAnimator {
 
   void notifyStart(boolean isReverse) {
     for (Animator.AnimatorListener listener : listeners) {
-      listener.onAnimationStart(this);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         listener.onAnimationStart(this, isReverse);
+      } else {
+        listener.onAnimationStart(this);
       }
     }
   }
@@ -68,9 +69,10 @@ public abstract class BaseLottieAnimator extends ValueAnimator {
 
   void notifyEnd(boolean isReverse) {
     for (Animator.AnimatorListener listener : listeners) {
-      listener.onAnimationEnd(this);
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         listener.onAnimationEnd(this, isReverse);
+      } else {
+        listener.onAnimationEnd(this);
       }
     }
   }

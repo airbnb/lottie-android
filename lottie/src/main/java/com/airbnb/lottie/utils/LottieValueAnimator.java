@@ -58,8 +58,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   @Override public void doFrame(long frameTimeNanos) {
-    Choreographer.getInstance().postFrameCallback(this);
-    if (composition == null) {
+    postFrameCallback();
+    if (composition == null || !isRunning()) {
       return;
     }
 
@@ -78,10 +78,12 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     float partialFramesDuration = (frames - wholeFrames) * frameDuration;
     frameTime = (long) (now - partialFramesDuration);
 
+    notifyUpdate();
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
         frame = getMaxFrame();
         notifyEnd(isReversed());
+        removeFrameCallback();
       } else {
         notifyRepeat();
         repeatCount++;
@@ -93,8 +95,6 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
         frameTime = now;
       }
     }
-
-    notifyUpdate();
   }
 
   private float getFrameDurationNs() {
