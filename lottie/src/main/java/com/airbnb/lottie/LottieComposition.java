@@ -99,8 +99,7 @@ public class LottieComposition {
   }
 
   @SuppressWarnings("WeakerAccess") public float getDuration() {
-    float frameDuration = endFrame - startFrame;
-    return (long) (frameDuration / frameRate * 1000);
+    return (long) (getDurationFrames() / frameRate * 1000);
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -144,7 +143,7 @@ public class LottieComposition {
   }
 
   public float getDurationFrames() {
-    return getDuration() * frameRate / 1000f;
+    return endFrame - startFrame;
   }
 
 

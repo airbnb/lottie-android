@@ -1,13 +1,10 @@
 package com.airbnb.lottie.utils;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
-import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -183,17 +180,6 @@ public final class Utils {
       result = (int) (31 * result * d);
     }
     return result;
-  }
-
-  public static float getAnimationScale(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      return Settings.Global.getFloat(context.getContentResolver(),
-          Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
-    } else {
-      //noinspection deprecation
-      return Settings.System.getFloat(context.getContentResolver(),
-          Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
-    }
   }
 
   public static float dpScale() {

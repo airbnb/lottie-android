@@ -53,10 +53,6 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return isRunning;
   }
 
-  public void systemAnimationsAreDisabled() {
-    // Delete me?
-  }
-
   @Override public void doFrame(long frameTimeNanos) {
     postFrameCallback();
     if (composition == null || !isRunning()) {
@@ -166,7 +162,6 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
   public void pauseAnimation() {
     removeFrameCallback();
-    // TODO: do we have to call cancel?
   }
 
   public void resumeAnimation() {

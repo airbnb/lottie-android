@@ -23,7 +23,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -167,10 +166,6 @@ import java.util.Map;
     }
 
     ta.recycle();
-
-    if (Utils.getAnimationScale(getContext()) == 0f) {
-      lottieDrawable.systemAnimationsAreDisabled();
-    }
 
     enableOrDisableHardwareLayer();
   }

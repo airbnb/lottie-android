@@ -117,14 +117,14 @@ class AnimationFragment : Fragment() {
         ))
 
         view.animationView.addAnimatorUpdateListener { animation ->
-            if (animation.isRunning) {
+            if (!seekBar.isPressed) {
                 seekBar.progress = (animation.animatedValue as Float * 100f).toInt()
             }
         }
 
         view.seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
             onProgressChanged = { _, progress, _ ->
-                if (!animationView.isAnimating) {
+                if (seekBar.isPressed) {
                     animationView.progress = progress / 100f
                 }
             }
