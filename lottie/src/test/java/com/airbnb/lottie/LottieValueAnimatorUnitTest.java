@@ -79,6 +79,7 @@ public class LottieValueAnimatorUnitTest {
     animator.setFrame(500);
     animator.resumeAnimation();
     assertEquals(0.5f, animator.getAnimatedFraction());
+    assertEquals(0.5f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -95,6 +96,7 @@ public class LottieValueAnimatorUnitTest {
     animator.reverseAnimationSpeed();
     assertEquals(250f, animator.getFrame());
     assertEquals(0.75f, animator.getAnimatedFraction());
+    assertEquals(0.25f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -104,6 +106,7 @@ public class LottieValueAnimatorUnitTest {
     animator.reverseAnimationSpeed();
     assertEquals(1000f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
+    assertEquals(1f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -112,6 +115,7 @@ public class LottieValueAnimatorUnitTest {
     animator.reverseAnimationSpeed();
     assertEquals(0f, animator.getFrame());
     assertEquals(1f, animator.getAnimatedFraction());
+    assertEquals(0f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -121,6 +125,7 @@ public class LottieValueAnimatorUnitTest {
     animator.resumeAnimation();
     assertEquals(900f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
+    assertEquals(0.9f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -130,6 +135,7 @@ public class LottieValueAnimatorUnitTest {
     animator.playAnimation();
     assertEquals(900f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
+    assertEquals(0.9f, animator.getAnimatedValueAbsolute());
   }
 
   @Test
@@ -138,15 +144,19 @@ public class LottieValueAnimatorUnitTest {
     animator.setMaxFrame(800);
     animator.setFrame(400);
     assertEquals(0.33f, animator.getAnimatedFraction(), 0.01);
+    assertEquals(0.4f, animator.getAnimatedValueAbsolute());
     animator.reverseAnimationSpeed();
     assertEquals(400f, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
+    assertEquals(0.4f, animator.getAnimatedValueAbsolute());
     animator.resumeAnimation();
     assertEquals(400f, animator.getFrame());
     assertEquals(0.66f, animator.getAnimatedFraction(), 0.01);
+    assertEquals(0.4f, animator.getAnimatedValueAbsolute());
     animator.playAnimation();
     assertEquals(800f, animator.getFrame());
     assertEquals(0f, animator.getAnimatedFraction());
+    assertEquals(0.8f, animator.getAnimatedValueAbsolute());
   }
 
   @Test

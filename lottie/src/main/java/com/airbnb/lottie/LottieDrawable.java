@@ -98,7 +98,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         if (compositionLayer != null) {
-          compositionLayer.setProgress(animator.getAnimatedFraction());
+          compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
         }
       }
     });
@@ -656,7 +656,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @FloatRange(from = 0f, to = 1f)
   public float getProgress() {
-    return animator.getAnimatedFraction();
+    return animator.getAnimatedValueAbsolute();
   }
 
   @Override public int getIntrinsicWidth() {

@@ -42,7 +42,7 @@ import java.util.Map;
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
- * or {@link #setAnimation(JSONObject)}.
+ * or {@link #setAnimation(JsonReader)}.
  * <p>
  * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
  * <p>
@@ -482,6 +482,10 @@ import java.util.Map;
     requestLayout();
   }
 
+  @Nullable public LottieComposition getComposition() {
+    return composition;
+  }
+
   /**
    * Returns whether or not any layers in this composition has masks.
    */
@@ -613,7 +617,7 @@ import java.util.Map;
    */
   @Deprecated
   public void loop(boolean loop) {
-    lottieDrawable.loop(loop);
+    lottieDrawable.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
   }
 
   /**
