@@ -353,7 +353,7 @@ import java.util.Map;
       return;
     }
 
-    lottieDrawable.cancelAnimation();
+    clearComposition();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromRawFile(getContext(), animationResId,
         new OnCompositionLoadedListener() {
@@ -402,7 +402,7 @@ import java.util.Map;
       return;
     }
 
-    lottieDrawable.cancelAnimation();
+    clearComposition();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
         new OnCompositionLoadedListener() {
@@ -447,6 +447,7 @@ import java.util.Map;
    * bodymovin json from the network and pass it directly here.
    */
   public void setAnimation(JsonReader reader) {
+    clearComposition();
     cancelLoaderTask();
     compositionLoader = LottieComposition.Factory.fromJsonReader(reader, loadedListener);
   }
@@ -823,6 +824,11 @@ import java.util.Map;
   @Nullable
   public PerformanceTracker getPerformanceTracker() {
     return lottieDrawable.getPerformanceTracker();
+  }
+
+  private void clearComposition() {
+    composition = null;
+    lottieDrawable.clearComposition();
   }
 
   private void enableOrDisableHardwareLayer() {
