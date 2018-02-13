@@ -4,7 +4,7 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.util.ArrayList;

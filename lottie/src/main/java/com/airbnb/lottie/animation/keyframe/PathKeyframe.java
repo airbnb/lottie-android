@@ -5,7 +5,7 @@ import android.graphics.PointF;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.Utils;
 
 public class PathKeyframe extends Keyframe<PointF> {

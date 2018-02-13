@@ -4,7 +4,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.value.LottieValueCallback;
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.ArrayList;
 import java.util.List;

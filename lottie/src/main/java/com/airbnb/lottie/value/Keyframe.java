@@ -1,4 +1,4 @@
-package com.airbnb.lottie.animation;
+package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
 import android.support.annotation.FloatRange;

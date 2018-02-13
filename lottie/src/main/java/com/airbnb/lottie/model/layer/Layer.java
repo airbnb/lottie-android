@@ -3,7 +3,7 @@ package com.airbnb.lottie.model.layer;
 import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;

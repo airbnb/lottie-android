@@ -1,6 +1,6 @@
 package com.airbnb.lottie.model.animatable;
 
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.Arrays;
 import java.util.Collections;

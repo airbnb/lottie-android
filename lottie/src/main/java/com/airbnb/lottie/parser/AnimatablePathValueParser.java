@@ -5,7 +5,7 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatableSplitDimensionPathValue;

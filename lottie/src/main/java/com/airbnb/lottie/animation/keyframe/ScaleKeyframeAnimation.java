@@ -1,6 +1,6 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import com.airbnb.lottie.animation.Keyframe;
+import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.ScaleXY;
 import com.airbnb.lottie.utils.MiscUtils;
 
