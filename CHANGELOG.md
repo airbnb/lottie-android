@@ -5,10 +5,16 @@ changing the color dynamically with a color filter. Refer to the docs for migrat
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
 * Completely overhauled json deserialization. Deserializing a composition takes half as long and 
 can deserialize much larger json files (tested 50mb) without ooming.
+* Overhauled the underlying time animator. It now:
+    * More accurately handles setFrame/getFrame/minFrame/maxFrame APIs. There were cases where they
+    could be off by one before.
+    * Renders at the fps specified by After Effects.
+    * Added docs and clearer rules around animatedValue and animatedFraction in animator callbacks.
 * API to remove all animator listeners.
 * Adhere to the Animatable interface.
+* Bumped the minSdk from 14 to 16 to use Choreographer in the animator mentioned above.
 ### Bugs Fixed
-* Fixed some setFrame/getFrame calculations.
+* Fixed a bug that made it difficult to chain animations in onAnimationEnd callbacks.
 * Fixed a regression with unknown masks modes.
 * Fixed a crash trying to recycle a null bitmap.
 * Fixed a bug when an opacity animation time interpolator was >1.
