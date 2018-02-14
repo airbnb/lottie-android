@@ -117,14 +117,14 @@ class AnimationFragment : Fragment() {
         ))
 
         view.animationView.addAnimatorUpdateListener { animation ->
-            if (animation.isRunning) {
-                seekBar.progress = (animation.animatedValue as Float * 100f).toInt()
+            if (!seekBar.isPressed) {
+                seekBar.progress = (animation.animatedValue as Float * 100).toInt()
             }
         }
 
         view.seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
             onProgressChanged = { _, progress, _ ->
-                if (!animationView.isAnimating) {
+                if (seekBar.isPressed) {
                     animationView.progress = progress / 100f
                 }
             }
@@ -158,6 +158,7 @@ class AnimationFragment : Fragment() {
             view.loop.isActivated = !view.loop.isActivated
             if (view.loop.isActivated) {
                 view.animationView.repeatCount = LottieDrawable.INFINITE
+                view.animationView.repeatMode = LottieDrawable.RESTART
             } else {
                 view.animationView.repeatCount = 0
             }

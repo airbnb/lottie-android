@@ -88,6 +88,10 @@ public class MiscUtils {
     return Math.max(min, Math.min(max, number));
   }
 
+  public static boolean contains(float number, float rangeMin, float rangeMax) {
+    return number >= rangeMin && number <= rangeMax;
+  }
+
   /**
    * Helper method for any {@link KeyPathElementContent} that will check if the content
    * fully matches the keypath then will add itself as the final key, resolve it, and add

@@ -2,89 +2,161 @@ package com.airbnb.lottie.utils;
 
 import android.animation.ValueAnimator;
 import android.support.annotation.FloatRange;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.view.Choreographer;
+
+import com.airbnb.lottie.LottieComposition;
 
 /**
  * This is a slightly modified {@link ValueAnimator} that allows us to update start and end values
  * easily optimizing for the fact that we know that it's a value animator with 2 floats.
  */
-public class LottieValueAnimator extends ValueAnimator {
-  private boolean systemAnimationsAreDisabled = false;
-  private float compositionDuration;
+public class LottieValueAnimator extends BaseLottieAnimator implements Choreographer.FrameCallback {
+
+
   private float speed = 1f;
-  @FloatRange(from = 0f, to = 1f) private float value = 0f;
-  @FloatRange(from = 0f, to = 1f) private float minValue = 0f;
-  @FloatRange(from = 0f, to = 1f) private float maxValue = 1f;
+  private long frameTime = 0;
+  private float frame = 0;
+  private int repeatCount = 0;
+  private float minFrame = Integer.MIN_VALUE;
+  private float maxFrame = Integer.MAX_VALUE;
+  @Nullable private LottieComposition composition;
+  @VisibleForTesting protected boolean isRunning = false;
 
   public LottieValueAnimator() {
-    setInterpolator(null);
-    addUpdateListener(new AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        // On older devices, getAnimatedValue and getAnimatedFraction
-        // will always return 0 if animations are disabled.
-        if (!systemAnimationsAreDisabled) {
-          value = (float) animation.getAnimatedValue();
-        }
-      }
-    });
-    updateValues();
-  }
-
-  public void systemAnimationsAreDisabled() {
-    this.systemAnimationsAreDisabled = true;
-  }
-
-  public void setCompositionDuration(float compositionDuration) {
-    this.compositionDuration = compositionDuration;
-    updateValues();
   }
 
   /**
-   * Sets the current animator value. This will update the play time as well.
-   * It will also be clamped to the values set with {@link #setMinValue(float)} and
-   * {@link #setMaxValue(float)}.
+   * Returns a float representing the current value of the animation from 0 to 1
+   * regardless of the animation speed, direction, or min and max frames.
    */
-  public void setValue(@FloatRange(from = 0f, to = 1f) float value) {
-    value = MiscUtils.clamp(value, minValue, maxValue);
+  @Override public Object getAnimatedValue() {
+    return getAnimatedValueAbsolute();
+  }
 
-    this.value = value;
-    float distFromStart = isReversed() ? (maxValue - value) : (value - minValue);
-    float range = Math.abs(maxValue - minValue);
-    float animatedPercentage = distFromStart / range;
-    if (getDuration() > 0) {
-      setCurrentPlayTime(Math.round(getDuration() * animatedPercentage));
+  /**
+   * Returns the current value of the animation from 0 to 1 regardless
+   * of the animation speed, direction, or min and max frames.
+   */
+  @FloatRange(from = 0f, to = 1f) public float getAnimatedValueAbsolute() {
+    if (composition == null) {
+      return 0;
+    }
+    return (frame - composition.getStartFrame()) / (composition.getEndFrame() - composition.getStartFrame());
+
+  }
+
+  /**
+   * Returns the current value of the currently playing animation taking into
+   * account direction, min and max frames.
+   */
+  @Override @FloatRange(from = 0f, to = 1f) public float getAnimatedFraction() {
+    if (composition == null) {
+      return 0;
+    }
+    if (isReversed()) {
+      return (getMaxFrame() - frame) / (getMaxFrame() - getMinFrame());
+    } else {
+      return (frame - getMinFrame()) / (getMaxFrame() - getMinFrame());
     }
   }
 
-  public float getValue() {
-    return value;
+  @Override public long getDuration() {
+    return composition == null ? 0 : (long) composition.getDuration();
   }
 
-  public void setMinAndMaxValues(
-      @FloatRange(from = 0f, to = 1f) float minValue,
-      @FloatRange(from = 0f, to = 1f) float maxValue) {
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    updateValues();
+  public float getFrame() {
+    return frame;
   }
 
-  public void setMinValue(@FloatRange(from = 0f, to = 1f) float minValue) {
-    if (minValue >= maxValue) {
-      throw new IllegalArgumentException("Min value must be smaller then max value.");
+  @Override public boolean isRunning() {
+    return isRunning;
+  }
+
+  @Override public void doFrame(long frameTimeNanos) {
+    postFrameCallback();
+    if (composition == null || !isRunning()) {
+      return;
     }
-    this.minValue = minValue;
-    updateValues();
-  }
 
-  public float getMinValue() {
-    return minValue;
-  }
-
-  public void setMaxValue(@FloatRange(from = 0f, to = 1f) float maxValue) {
-    if (maxValue <= minValue) {
-      throw new IllegalArgumentException("Max value must be greater than min value.");
+    long now = System.nanoTime();
+    long timeSinceFrame = now - frameTime;
+    float frameDuration = getFrameDurationNs();
+    float frames = timeSinceFrame / frameDuration;
+    int wholeFrames = (int) frames;
+    if (wholeFrames == 0) {
+      return;
     }
-    this.maxValue = maxValue;
-    updateValues();
+    frame += isReversed() ? -wholeFrames : wholeFrames;
+    boolean ended = !MiscUtils.contains(frame, getMinFrame(), getMaxFrame());
+    frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
+
+    float partialFramesDuration = (frames - wholeFrames) * frameDuration;
+    frameTime = (long) (now - partialFramesDuration);
+
+    notifyUpdate();
+    if (ended) {
+      if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
+        frame = getMaxFrame();
+        notifyEnd(isReversed());
+        removeFrameCallback();
+      } else {
+        notifyRepeat();
+        repeatCount++;
+        if (getRepeatMode() == REVERSE) {
+          reverseAnimationSpeed();
+        } else {
+          frame = getMinFrame();
+        }
+        frameTime = now;
+      }
+    }
+
+    verifyFrame();
+  }
+
+  private float getFrameDurationNs() {
+    if (composition == null) {
+      return Float.MAX_VALUE;
+    }
+    return Utils.SECOND_IN_NANOS / composition.getFrameRate() / Math.abs(speed);
+  }
+
+  public void setComposition(LottieComposition composition) {
+    this.composition = composition;
+    frame = getMinFrame();
+    frameTime = System.nanoTime();
+  }
+
+  public void setFrame(int frame) {
+    if (this.frame == frame) {
+      return;
+    }
+    this.frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
+    verifyFrame();
+    frameTime = System.nanoTime();
+    notifyUpdate();
+  }
+
+  public void setMinFrame(int minFrame) {
+    this.minFrame = minFrame;
+    if (frame < minFrame) {
+      frame = minFrame;
+    }
+  }
+
+  public void setMaxFrame(int maxFrame) {
+    this.maxFrame = maxFrame;
+    if (frame > maxFrame) {
+      frame = maxFrame;
+    }
+  }
+
+  public void setMinAndMaxFrames(int minFrame, int maxFrame) {
+    this.minFrame = minFrame;
+    this.maxFrame = maxFrame;
+    frame = MiscUtils.clamp(frame, minFrame, maxFrame);
   }
 
   public void reverseAnimationSpeed() {
@@ -93,7 +165,6 @@ public class LottieValueAnimator extends ValueAnimator {
 
   public void setSpeed(float speed) {
     this.speed = speed;
-    updateValues();
   }
 
   public float getSpeed() {
@@ -101,46 +172,72 @@ public class LottieValueAnimator extends ValueAnimator {
   }
 
   public void playAnimation() {
-    start();
-    setValue(isReversed() ? maxValue : minValue);
+    frame = isReversed() ? getMaxFrame() : getMinFrame();
+    frameTime = System.nanoTime();
+    repeatCount = 0;
+    postFrameCallback();
+    notifyStart(isReversed());
   }
 
   public void endAnimation() {
-    end();
+    removeFrameCallback();
+    notifyEnd(isReversed());
   }
 
   public void pauseAnimation() {
-    float value = this.value;
-    cancel();
-    setValue(value);
+    removeFrameCallback();
   }
 
   public void resumeAnimation() {
-    float value = this.value;
-    if (isReversed() && this.value == minValue) {
-      value = maxValue;
-    } else if (!isReversed() && this.value == maxValue) {
-      value = minValue;
+    postFrameCallback();
+    frameTime = System.nanoTime();
+    if (isReversed() && getFrame() == getMinFrame()) {
+      frame = getMaxFrame();
+    } else if (!isReversed() && getFrame() == getMaxFrame()) {
+      frame = getMinFrame();
     }
-    start();
-    setValue(value);
+  }
+
+  @Override public void cancel() {
+    notifyCancel();
+    removeFrameCallback();
   }
 
   private boolean isReversed() {
     return speed < 0;
   }
 
-  /**
-   * Update the float values of the animator, scales the duration for the current min/max range
-   * and updates the play time so that it matches the new min/max range.
-   */
-  private void updateValues() {
-    setDuration((long) (compositionDuration * (maxValue - minValue) / Math.abs(speed)));
-    setFloatValues(
-        speed < 0 ? maxValue : minValue,
-        speed < 0 ? minValue : maxValue
-    );
-    // This will force the play time to be correct for the current value.
-    setValue(value);
+  private float getMinFrame() {
+    if (composition == null) {
+      return 0;
+    }
+    return minFrame == Integer.MIN_VALUE ? 0 : minFrame;
+  }
+
+  private float getMaxFrame() {
+    if (composition == null) {
+      return 0;
+    }
+    return maxFrame == Integer.MAX_VALUE ? composition.getEndFrame() : maxFrame;
+  }
+
+  protected void postFrameCallback() {
+    removeFrameCallback();
+    Choreographer.getInstance().postFrameCallback(this);
+    isRunning = true;
+  }
+
+  protected void removeFrameCallback() {
+    Choreographer.getInstance().removeFrameCallback(this);
+    isRunning = false;
+  }
+
+  private void verifyFrame() {
+    if (composition == null) {
+      return;
+    }
+    if (frame < minFrame || frame > maxFrame) {
+      throw new IllegalStateException(String.format("Frame must be [%f,%f]. It is %f", minFrame, maxFrame, frame));
+    }
   }
 }

@@ -98,7 +98,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         if (compositionLayer != null) {
-          compositionLayer.setProgress(animator.getValue());
+          compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
         }
       }
     });
@@ -185,8 +185,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     clearComposition();
     this.composition = composition;
     buildCompositionLayer();
-    animator.setCompositionDuration(composition.getDuration());
-    setProgress(animator.getValue());
+    animator.setComposition(composition);
+    setProgress(animator.getAnimatedFraction());
     setScale(scale);
     updateBounds();
 
@@ -360,62 +360,52 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Sets the minimum frame that the animation will start from when playing or looping.
    */
   public void setMinFrame(final int minFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          setMinFrame(minFrame);
-        }
-      });
-      return;
-    }
-    setMinProgress(minFrame / composition.getDurationFrames());
+    animator.setMinFrame(minFrame);
   }
 
   /**
    * Sets the minimum progress that the animation will start from when playing or looping.
    */
-   public void setMinProgress(float minProgress) {
-    animator.setMinValue(minProgress);
+   public void setMinProgress(final float minProgress) {
+     if (composition == null) {
+       lazyCompositionTasks.add(new LazyCompositionTask() {
+         @Override public void run(LottieComposition composition) {
+           setMinProgress(minProgress);
+         }
+       });
+       return;
+     }
+    setMinFrame((int) (minProgress * composition.getDurationFrames()));
   }
 
   /**
    * Sets the maximum frame that the animation will end at when playing or looping.
    */
   public void setMaxFrame(final int maxFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          setMaxFrame(maxFrame);
-        }
-      });
-      return;
-    }
-    setMaxProgress(maxFrame / composition.getDurationFrames());
+    animator.setMaxFrame(maxFrame);
   }
 
   /**
    * Sets the maximum progress that the animation will end at when playing or looping.
    */
-  public void setMaxProgress(@FloatRange(from = 0f, to = 1f) float maxProgress) {
-    animator.setMaxValue(maxProgress);
+  public void setMaxProgress(@FloatRange(from = 0f, to = 1f) final float maxProgress) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMaxProgress(maxProgress);
+        }
+      });
+      return;
+    }
+    setMaxFrame((int) (maxProgress * composition.getDurationFrames()));
   }
 
   /**
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */
-  public void setMinAndMaxFrame(final int minFrame, final int maxFrame) {
-    if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override public void run(LottieComposition composition) {
-          setMinAndMaxFrame(minFrame, maxFrame);
-        }
-      });
-      return;
-    }
-    animator.setMinAndMaxValues(
-        minFrame / composition.getDurationFrames(),
-        maxFrame / composition.getDurationFrames());
+  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    animator.setMinAndMaxFrames(minFrame, maxFrame);
   }
 
   /**
@@ -423,9 +413,20 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see #setMaxProgress(float)
    */
   public void setMinAndMaxProgress(
-      @FloatRange(from = 0f, to = 1f) float minProgress,
-      @FloatRange(from = 0f, to = 1f) float maxProgress) {
-    animator.setMinAndMaxValues(minProgress, maxProgress);
+      @FloatRange(from = 0f, to = 1f) final float minProgress,
+      @FloatRange(from = 0f, to = 1f) final float maxProgress) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setMinAndMaxProgress(minProgress, maxProgress);
+        }
+      });
+      return;
+    }
+    setMinAndMaxFrame(
+        (int) (minProgress * composition.getDurationFrames()),
+        (int) (maxProgress * composition.getDurationFrames())
+    );
   }
 
   /**
@@ -498,18 +499,19 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Get the currently rendered frame.
    */
   public int getFrame() {
-    if (composition == null) {
-      return 0;
-    }
-
-    return Math.round((getProgress() * composition.getDurationFrames()));
+    return (int) animator.getFrame();
   }
 
-  public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    animator.setValue(progress);
-    if (compositionLayer != null) {
-      compositionLayer.setProgress(progress);
+  public void setProgress(@FloatRange(from = 0f, to = 1f) final float progress) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override public void run(LottieComposition composition) {
+          setProgress(progress);
+        }
+      });
+      return;
     }
+    animator.setFrame((int) (progress * composition.getDurationFrames()));
   }
 
   /**
@@ -571,10 +573,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public boolean isAnimating() {
     return animator.isRunning();
-  }
-
-  void systemAnimationsAreDisabled() {
-    animator.systemAnimationsAreDisabled();
   }
 
 // </editor-fold>
@@ -658,7 +656,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @FloatRange(from = 0f, to = 1f)
   public float getProgress() {
-    return animator.getValue();
+    return animator.getAnimatedValueAbsolute();
   }
 
   @Override public int getIntrinsicWidth() {

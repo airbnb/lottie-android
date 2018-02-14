@@ -23,7 +23,6 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -43,7 +42,7 @@ import java.util.Map;
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
  * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
- * or {@link #setAnimation(JSONObject)}.
+ * or {@link #setAnimation(JsonReader)}.
  * <p>
  * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
  * <p>
@@ -167,10 +166,6 @@ import java.util.Map;
     }
 
     ta.recycle();
-
-    if (Utils.getAnimationScale(getContext()) == 0f) {
-      lottieDrawable.systemAnimationsAreDisabled();
-    }
 
     enableOrDisableHardwareLayer();
   }
@@ -488,6 +483,10 @@ import java.util.Map;
     requestLayout();
   }
 
+  @Nullable public LottieComposition getComposition() {
+    return composition;
+  }
+
   /**
    * Returns whether or not any layers in this composition has masks.
    */
@@ -619,7 +618,7 @@ import java.util.Map;
    */
   @Deprecated
   public void loop(boolean loop) {
-    lottieDrawable.loop(loop);
+    lottieDrawable.setRepeatCount(loop ? ValueAnimator.INFINITE : 0);
   }
 
   /**

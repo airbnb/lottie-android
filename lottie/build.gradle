@@ -7,7 +7,7 @@ android {
   resourcePrefix 'lottie_'
 
   defaultConfig {
-    minSdkVersion 14
+    minSdkVersion 16
     targetSdkVersion 27
     versionCode 100
     versionName "2.5.0-rc1"
@@ -30,6 +30,7 @@ android {
 
 dependencies {
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
+  testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:3.5.1"
 }
