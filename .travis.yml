@@ -9,8 +9,12 @@ cache:
 env:
   - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  - yes | sdkmanager "platforms;android-27"
   - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
+  - echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage
+  - echo $HOME
+  - echo $TEST_KEY | base64 --decode --ignore-garbage
+  - cat ${HOME}/gcloud-service-key.json
+  - yes | sdkmanager "platforms;android-27"
   - curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-182.0.0-linux-x86_64.tar.gz -o gcloud.tar.gz
   - tar xzf gcloud.tar.gz -C ${HOME}
   - ${HOME}/google-cloud-sdk/install.sh --quiet --usage-reporting false
