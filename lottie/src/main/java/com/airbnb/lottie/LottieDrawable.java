@@ -511,7 +511,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.setFrame((int) (progress * composition.getDurationFrames()));
+    animator.setFrame((int) (progress * composition.getDurationFrames() + composition.getStartFrame()));
   }
 
   /**
