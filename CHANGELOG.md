@@ -19,6 +19,8 @@ can deserialize much larger json files (tested 50mb) without ooming.
 * Fixed a crash trying to recycle a null bitmap.
 * Fixed a bug when an opacity animation time interpolator was >1.
 
+
+
 # 2.3.1
 ### Features and Improvements
 * Expose `LottieComposition#getImages()` to aid in preloading images.
