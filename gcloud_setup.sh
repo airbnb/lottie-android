@@ -1,6 +1,6 @@
 #! /bin/bash
 echo Slug $TRAVIS_PULL_REQUEST_SLUG
-if [ "$TRAVIS_PULL_REQUEST_SLUG" != "airbnb/lottie-android" ]
+if [ "$TRAVIS_PULL_REQUEST_SLUG" != "airbnb/lottie-android" ]; then
   echo "Skipping gcloud setup for PR because api keys are not available from forks."
   exit 0
 fi
