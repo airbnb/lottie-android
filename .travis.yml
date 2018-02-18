@@ -36,6 +36,4 @@ script:
   - ./gradlew check
   - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
   - ./gcloud_run.sh
-  - export FIREBASE_EXIT_CODE=$?
-  - ./post_pr_comment.js
 sudo: false

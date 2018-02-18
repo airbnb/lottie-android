@@ -1,9 +1,9 @@
 # 2.5.0
 * Added the ability to dynamically change properties at runtime. See [docs](http://airbnb
-.io/lottie/android/dynamic.html) for more info. This feature removed the existing APIs for 
+.io/lottie/android/dynamic.html) for more info. This feature removed the existing APIs for
 changing the color dynamically with a color filter. Refer to the docs for migration info.
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
-* Completely overhauled json deserialization. Deserializing a composition takes half as long and 
+* Completely overhauled json deserialization. Deserializing a composition takes half as long and
 can deserialize much larger json files (tested 50mb) without ooming.
 * Overhauled the underlying time animator. It now:
     * More accurately handles setFrame/getFrame/minFrame/maxFrame APIs. There were cases where they
@@ -19,8 +19,6 @@ can deserialize much larger json files (tested 50mb) without ooming.
 * Fixed a crash trying to recycle a null bitmap.
 * Fixed a bug when an opacity animation time interpolator was >1.
 
-
-
 # 2.3.1
 ### Features and Improvements
 * Expose `LottieComposition#getImages()` to aid in preloading images.
@@ -35,17 +33,17 @@ can deserialize much larger json files (tested 50mb) without ooming.
 # 2.3.0
 ### Features and Improvements
 * Animator fixes:
-    * Previously, some usages of lottie animator apis/api listeners would cause unexpected 
+    * Previously, some usages of lottie animator apis/api listeners would cause unexpected
     behavior, especially calling apis from listener callbacks.
-    * This is breaking change if you use `playAnimation(start, end)`. It has been removed in 
-    favor of explicit methods for `setMinFrame/Progress`, `setMaxFrame/Progress` and 
-    `setMinAndMaxFrame/Progress` followed by an explicit call to `playAnimation` or 
-    `resumeAnimation`. 
-    * `reverseAnimation` and `resumeReverseAnimation` apis have been removed in favor of 
+    * This is breaking change if you use `playAnimation(start, end)`. It has been removed in
+    favor of explicit methods for `setMinFrame/Progress`, `setMaxFrame/Progress` and
+    `setMinAndMaxFrame/Progress` followed by an explicit call to `playAnimation` or
+    `resumeAnimation`.
+    * `reverseAnimation` and `resumeReverseAnimation` apis have been removed in favor of
     `play` and `resume` with `speed` < 0.
     * If you have created hack around these limitations or complex animator chaining, please test
      your animations after updating.
-* Set an animation from R.raw (res/raw) if you want static references to your animation files. 
+* Set an animation from R.raw (res/raw) if you want static references to your animation files.
 This can help prevent mismatches between api calls and file names. Thanks @cyrilmottier!
 * Support for ellipse direction.
 * Expose image directory name if set from bodymovin.
