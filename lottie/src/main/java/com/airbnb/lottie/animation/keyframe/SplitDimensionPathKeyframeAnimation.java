@@ -18,6 +18,8 @@ public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<P
 
     this.xAnimation = xAnimation;
     this.yAnimation = yAnimation;
+    // We need to call an initial setProgress so point gets set with the initial value.
+    setProgress(getProgress());
   }
 
   @Override public void setProgress(float progress) {
