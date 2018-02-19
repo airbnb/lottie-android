@@ -1,7 +1,8 @@
 # 2.5.0
 * Added the ability to dynamically change properties at runtime. See [docs](http://airbnb
 .io/lottie/android/dynamic.html) for more info. This feature removed the existing APIs for
-changing the color dynamically with a color filter. Refer to the docs for migration info.
+changing the color dynamically with a color filter. Refer to the docs for migration info from 
+existing ColorFilter APIs.
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
 * Completely overhauled json deserialization. Deserializing a composition takes half as long and
 can deserialize much larger json files (tested 50mb) without ooming.
