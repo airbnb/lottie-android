@@ -46,7 +46,7 @@ public class KeyPath {
   @Nullable private KeyPathElement resolvedElement;
 
   public KeyPath(String... keys) {
-    this.keys = new ArrayList<>(Arrays.asList(keys));
+    this.keys = Arrays.asList(keys);
   }
 
   /**
