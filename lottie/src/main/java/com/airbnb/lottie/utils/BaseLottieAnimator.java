@@ -5,12 +5,12 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.os.Build;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class BaseLottieAnimator extends ValueAnimator {
-  private final Set<ValueAnimator.AnimatorUpdateListener> updateListeners = new HashSet<>();
-  private final Set<AnimatorListener> listeners = new HashSet<>();
+  private final Set<ValueAnimator.AnimatorUpdateListener> updateListeners = new CopyOnWriteArraySet<>();
+  private final Set<AnimatorListener> listeners = new CopyOnWriteArraySet<>();
 
   @Override public long getStartDelay() {
     throw new UnsupportedOperationException("LottieAnimator does not support getStartDelay.");
