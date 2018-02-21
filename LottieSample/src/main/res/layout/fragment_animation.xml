@@ -50,11 +50,12 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/instructionsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Choose an option below"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
                 <TextView
                     android:id="@+id/qrCode"
@@ -63,7 +64,7 @@
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
                     android:text="Scan QR Code"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
                 <TextView
                     android:id="@+id/sampleAnimations"
@@ -72,7 +73,7 @@
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
                     android:text="Sample animations"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
                 <TextView
                     android:id="@+id/loadAnimation"
@@ -81,7 +82,7 @@
                     android:layout_marginBottom="8dp"
                     android:drawablePadding="4dp"
                     android:text="Load animation file"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
                 <TextView
                     android:id="@+id/loadFromJson"
@@ -89,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="4dp"
                     android:text="Load animation from json url"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
                 <TextView
                     android:id="@+id/overflowMenu"
@@ -97,7 +98,7 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="4dp"
                     android:text="Open the menu for more options"
-                    android:textColor="@android:color/black"/>
+                    android:textColor="@color/inverted_text"/>
 
             </LinearLayout>
 

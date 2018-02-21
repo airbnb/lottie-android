@@ -94,11 +94,11 @@ class AnimationFragment : Fragment() {
         postUpdatePlayButtonText()
 
         view.version.text = BuildConfig.VERSION_NAME
-        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan, myActivity)
-        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, myActivity)
-        view.loadAnimation.setDrawableLeft(R.drawable.ic_file, myActivity)
-        view.loadFromJson.setDrawableLeft(R.drawable.ic_network, myActivity)
-        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert, myActivity)
+        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan_selector, myActivity)
+        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets_selector, myActivity)
+        view.loadAnimation.setDrawableLeft(R.drawable.ic_file_selector, myActivity)
+        view.loadFromJson.setDrawableLeft(R.drawable.ic_network_selector, myActivity)
+        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert_selector, myActivity)
 
         view.animationView.addAnimatorListener(AnimatorListenerAdapter(
                 onStart = { startRecordingDroppedFrames() },
@@ -178,6 +178,14 @@ class AnimationFragment : Fragment() {
         view.invertColors.setOnClickListener {
             animationContainer.isActivated = !animationContainer.isActivated
             invertColors.isActivated = animationContainer.isActivated
+
+            instructionsTitle.isActivated = invertColors.isActivated
+            qrCode.isActivated = invertColors.isActivated
+            sampleAnimations.isActivated = invertColors.isActivated
+            loadAnimation.isActivated = invertColors.isActivated
+            loadFromJson.isActivated = invertColors.isActivated
+            overflowMenu.isActivated = invertColors.isActivated
+
             val textAndLineColor = if (invertColors.isActivated) Color.WHITE else Color.BLACK
             for (limitLine: LimitLine in renderTimesGraph.axisLeft.limitLines) {
                 limitLine.textColor = textAndLineColor
