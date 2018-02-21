@@ -39,8 +39,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
-                android:foreground="@drawable/outline"
-                android:duplicateParentState="true"/>
+                android:duplicateParentState="true"
+                android:foreground="@drawable/outline"/>
 
             <LinearLayout
                 android:id="@+id/instructions"
@@ -109,6 +109,7 @@
                 android:drawableLeft="@drawable/ic_warning_wrapped"
                 android:drawablePadding="4dp"
                 android:padding="16dp"
+                android:textColor="#ff7e7e7e"
                 android:visibility="gone"/>
 
             <LinearLayout
@@ -120,6 +121,7 @@
                 android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/renderTimesGraphUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -132,9 +134,9 @@
                     android:id="@+id/renderTimesGraph"
                     android:layout_width="0dp"
                     android:layout_height="128dp"
-                    android:layout_weight="1"
+                    android:layout_marginBottom="-16dp"
                     android:layout_marginLeft="-4dp"
-                    android:layout_marginBottom="-16dp"/>
+                    android:layout_weight="1"/>
             </LinearLayout>
 
         </FrameLayout>
@@ -236,11 +238,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3">
+
                 <com.airbnb.lottie.samples.TrimView
                     android:id="@+id/trimView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"/>
+
                 <android.support.v7.widget.AppCompatSeekBar
                     android:id="@+id/seekBar"
                     android:layout_width="match_parent"
