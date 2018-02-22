@@ -94,11 +94,11 @@ class AnimationFragment : Fragment() {
         postUpdatePlayButtonText()
 
         view.version.text = BuildConfig.VERSION_NAME
-        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan, myActivity)
-        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets, myActivity)
-        view.loadAnimation.setDrawableLeft(R.drawable.ic_file, myActivity)
-        view.loadFromJson.setDrawableLeft(R.drawable.ic_network, myActivity)
-        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert, myActivity)
+        view.qrCode.setDrawableLeft(R.drawable.ic_qr_scan_selector, myActivity)
+        view.sampleAnimations.setDrawableLeft(R.drawable.ic_assets_selector, myActivity)
+        view.loadAnimation.setDrawableLeft(R.drawable.ic_file_selector, myActivity)
+        view.loadFromJson.setDrawableLeft(R.drawable.ic_network_selector, myActivity)
+        view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert_selector, myActivity)
 
         view.animationView.addAnimatorListener(AnimatorListenerAdapter(
                 onStart = { startRecordingDroppedFrames() },
@@ -108,7 +108,7 @@ class AnimationFragment : Fragment() {
                     animationView.performanceTracker?.logRenderTimes()
                 },
                 onCancel = { postUpdatePlayButtonText() },
-                onRepeat =  {
+                onRepeat = {
                     animationView.performanceTracker?.logRenderTimes()
                     animationView.performanceTracker?.clearRenderTimes()
                     recordDroppedFrames()
@@ -123,11 +123,11 @@ class AnimationFragment : Fragment() {
         }
 
         view.seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
-            onProgressChanged = { _, progress, _ ->
-                if (seekBar.isPressed) {
-                    animationView.progress = progress / 100f
+                onProgressChanged = { _, progress, _ ->
+                    if (seekBar.isPressed) {
+                        animationView.progress = progress / 100f
+                    }
                 }
-            }
         ))
 
         view.trimView.setCallback({ startProgress, endProgress ->
@@ -178,6 +178,21 @@ class AnimationFragment : Fragment() {
         view.invertColors.setOnClickListener {
             animationContainer.isActivated = !animationContainer.isActivated
             invertColors.isActivated = animationContainer.isActivated
+
+            instructionsTitle.isActivated = invertColors.isActivated
+            qrCode.isActivated = invertColors.isActivated
+            sampleAnimations.isActivated = invertColors.isActivated
+            loadAnimation.isActivated = invertColors.isActivated
+            loadFromJson.isActivated = invertColors.isActivated
+            overflowMenu.isActivated = invertColors.isActivated
+
+            val textAndLineColor = if (invertColors.isActivated) Color.WHITE else Color.BLACK
+            for (limitLine: LimitLine in renderTimesGraph.axisLeft.limitLines) {
+                limitLine.textColor = textAndLineColor
+            }
+            lineDataSet.color = textAndLineColor
+            renderTimesGraphUnit.setTextColor(textAndLineColor)
+            renderTimesGraph.axisLeft.textColor = textAndLineColor
         }
 
         view.loadAsset.setOnClickListener {
@@ -242,7 +257,7 @@ class AnimationFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
-        inflater.inflate(R.menu.fragment_animation, menu)
+            inflater.inflate(R.menu.fragment_animation, menu)
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         item.isChecked = !item.isChecked
@@ -271,12 +286,12 @@ class AnimationFragment : Fragment() {
                 lastAnimationAssetName = assetName
                 animationView.imageAssetsFolder = assetFolders[assetName]
                 LottieComposition.Factory.fromAssetFileName(context, assetName, { composition ->
-                            if (composition == null) {
-                                onLoadError()
-                            } else {
-                                setComposition(composition, assetName)
-                            }
-                        })
+                    if (composition == null) {
+                        onLoadError()
+                    } else {
+                        setComposition(composition, assetName)
+                    }
+                })
             }
             RC_FILE -> onFileLoaded(data.data)
             RC_QR -> loadUrl(data.extras.getString(EXTRA_URL))
@@ -363,12 +378,12 @@ class AnimationFragment : Fragment() {
         }
 
         LottieComposition.Factory.fromInputStream(fis, { composition ->
-                    if (composition == null) {
-                        onLoadError()
-                    } else {
-                        setComposition(composition, uri.path)
-                    }
-                })
+            if (composition == null) {
+                onLoadError()
+            } else {
+                setComposition(composition, uri.path)
+            }
+        })
     }
 
     private fun loadUrlOrJson(text: String) {
@@ -386,12 +401,12 @@ class AnimationFragment : Fragment() {
         }
         try {
             LottieComposition.Factory.fromJsonString(jsonString, { composition ->
-                        if (composition == null) {
-                            onLoadError()
-                        } else {
-                            setComposition(composition, "Animation")
-                        }
-                    })
+                if (composition == null) {
+                    onLoadError()
+                } else {
+                    setComposition(composition, "Animation")
+                }
+            })
         } catch (e: JSONException) {
             onLoadError()
         }
