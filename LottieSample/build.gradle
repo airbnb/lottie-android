@@ -64,15 +64,12 @@ dependencies {
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-
   debugImplementation 'com.github.brianPlummer:tinydancer:0.0.9'
-
   testImplementation 'junit:junit:4.12'
-
   androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-  androidTestImplementation "com.android.support.test:runner:1.0.1"
+  androidTestImplementation 'com.android.support.test:runner:1.0.1'
   androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
   androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.5'
   androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
@@ -80,7 +77,6 @@ dependencies {
   androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.5'
   androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.5'
   androidTestImplementation 'io.jsonwebtoken:jjwt:0.8.0'
-
   androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
     exclude group: 'com.android.support', module: 'support-annotations'
     exclude group: 'org.hamcrest', module: 'hamcrest-integration'
@@ -91,6 +87,7 @@ dependencies {
   androidTestImplementation('com.android.support.test:rules:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
+  implementation 'com.android.support:design:27.1.0'
 }
 repositories {
   mavenCentral()

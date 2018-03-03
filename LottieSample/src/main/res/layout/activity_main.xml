@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <FrameLayout
-        android:id="@+id/content_1"
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
-    <FrameLayout
-        android:id="@+id/content_2"
+
+    <com.airbnb.lottie.samples.views.NoShiftBottomNavigationView
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="56dp"
+        app:menu="@menu/bottom_bar"
+        app:itemIconTint="@drawable/bottom_bar_tint_list"
+        app:itemTextColor="#3D4246"
+        android:background="#F7F7F7"
+        android:elevation="8dp"/>
 
-</FrameLayout>
+</LinearLayout>

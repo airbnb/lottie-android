@@ -26,4 +26,9 @@
     <string name="scale">Scale</string>
     <string name="background">Background</string>
     <string name="ms">ms</string>
+
+    <string name="bottom_bar_showcase">Showcase</string>
+    <string name="bottom_bar_preview">Preview</string>
+    <string name="bottom_bar_lottiefiles">Lottiefiles</string>
+    <string name="bottom_bar_learn">Learn</string>
 </resources>

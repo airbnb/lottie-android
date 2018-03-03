@@ -66,7 +66,7 @@ class ListFragment : Fragment() {
                 .addToBackStack(null)
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.hold, R.anim.hold, R.anim.slide_out_right)
                 .remove(this)
-                .replace(R.id.content_2, fragment)
+                .replace(R.id.content, fragment)
                 .commit()
     }
 
