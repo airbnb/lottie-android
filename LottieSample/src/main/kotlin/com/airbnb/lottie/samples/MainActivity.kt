@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.showcase -> showFragment(ListFragment.newInstance())
-            R.id.preview -> showFragment(TodoFragment())
+            R.id.preview -> showFragment(PreviewFragment())
             R.id.lottiefiles -> showFragment(TodoFragment())
             R.id.learn -> showFragment(TodoFragment())
             else -> return false

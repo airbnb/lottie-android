@@ -31,4 +31,12 @@
     <string name="bottom_bar_preview">Preview</string>
     <string name="bottom_bar_lottiefiles">Lottiefiles</string>
     <string name="bottom_bar_learn">Learn</string>
+
+    <string name="preview_title">Preview your animation</string>
+    <string name="preview_qr">Scan a QR code</string>
+    <string name="preview_qr_action">Scan</string>
+    <string name="preview_file">Open a file</string>
+    <string name="preview_file_action">Open</string>
+    <string name="preview_url">Enter a URL</string>
+    <string name="preview_url_action">Enter</string>
 </resources>
