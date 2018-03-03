@@ -16,7 +16,6 @@ import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
-import android.util.Log
 import android.view.*
 import android.widget.EditText
 import android.widget.Toast
@@ -60,8 +59,6 @@ class AnimationFragment : Fragment() {
     private val handler = Handler()
     private val client: OkHttpClient by lazy { OkHttpClient() }
     private lateinit var myActivity: AppCompatActivity
-    private val application: ILottieApplication
-        get() = activity!!.application as ILottieApplication
     private var renderTimeGraphRange = 4f
     private val lineDataSet by lazy {
         val entries = ArrayList<Entry>(101)
@@ -101,9 +98,7 @@ class AnimationFragment : Fragment() {
         view.overflowMenu.setDrawableLeft(R.drawable.ic_more_vert_selector, myActivity)
 
         view.animationView.addAnimatorListener(AnimatorListenerAdapter(
-                onStart = { startRecordingDroppedFrames() },
                 onEnd = {
-                    recordDroppedFrames()
                     postUpdatePlayButtonText()
                     animationView.performanceTracker?.logRenderTimes()
                 },
@@ -111,8 +106,6 @@ class AnimationFragment : Fragment() {
                 onRepeat = {
                     animationView.performanceTracker?.logRenderTimes()
                     animationView.performanceTracker?.clearRenderTimes()
-                    recordDroppedFrames()
-                    startRecordingDroppedFrames()
                 }
         ))
 
@@ -437,12 +430,6 @@ class AnimationFragment : Fragment() {
 
     private fun onLoadError() = view!!.showSnackbarLong("Failed to load animation")
 
-    private fun startRecordingDroppedFrames() = application.startRecordingDroppedFrames()
-
-    private fun recordDroppedFrames() {
-        val droppedFrames = application.stopRecordingDroppedFrames()
-        Log.d(TAG, "Dropped frames: " + droppedFrames.first)
-    }
 
     private fun getAnimationScale(context: Context): Float {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

@@ -64,7 +64,6 @@ dependencies {
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-  debugImplementation 'com.github.brianPlummer:tinydancer:0.0.9'
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed

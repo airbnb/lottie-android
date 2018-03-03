@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
 import android.support.v4.app.Fragment
@@ -11,17 +12,20 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.RelativeLayout
+import androidx.view.isInvisible
+import androidx.view.isVisible
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.OnCompositionLoadedListener
 import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import kotlinx.android.synthetic.main.fragment_animation2.*
+import kotlinx.android.synthetic.main.fragment_player.*
 
-class AnimationFragment2 : Fragment() {
+class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
     private val transition = AutoTransition().apply {
         duration = 250
@@ -41,8 +45,8 @@ class AnimationFragment2 : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        inflater.inflate(R.layout.fragment_animation2, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.fragment_player, container, false)
 
     private val animatorListener = AnimatorListenerAdapter(
             onStart = { playButton.isActivated = true },
@@ -64,7 +68,8 @@ class AnimationFragment2 : Fragment() {
         setHasOptionsMenu(true)
         toolbar.title = ""
 
-        LottieComposition.Factory.fromAssetFileName(context, "HamburgerArrow.json", this::setComposition)
+        val compositionArgs = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS) ?: throw IllegalArgumentException("No composition args specified")
+        CompositionLoader(requireContext(), compositionArgs, this)
 
         backgroundButton.setOnClickListener { showContainer(backgroundColorContainer) }
         scaleButton.setOnClickListener { showContainer(scaleContainer) }
@@ -148,7 +153,7 @@ class AnimationFragment2 : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.fragment_animation2, menu)
+        inflater.inflate(R.menu.fragment_player, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -161,7 +166,7 @@ class AnimationFragment2 : Fragment() {
             R.id.merge_paths -> animationView.enableMergePathsForKitKatAndAbove(item.isChecked)
             R.id.performance_graph -> {
                 beginDelayedTransition()
-                renderTimesGraphContainer.visibility = if (item.isChecked) View.VISIBLE else View.INVISIBLE
+                renderTimesGraphContainer.isInvisible = !item.isChecked
                 val lp = renderTimesGraphContainer.layoutParams as RelativeLayout.LayoutParams
                 if (item.isChecked) {
                     lp.addRule(RelativeLayout.ABOVE, R.id.controlsContainer)
@@ -176,8 +181,11 @@ class AnimationFragment2 : Fragment() {
         return true
     }
 
-    private fun setComposition(composition: LottieComposition?) {
-        if (composition == null) return
+    override fun onCompositionLoaded(composition: LottieComposition?) {
+        if (composition == null) {
+            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
+            return
+        }
         animationView.setComposition(composition)
         animationView.setPerformanceTrackingEnabled(true)
         animationView.performanceTracker?.addFrameListener { ms ->
@@ -190,10 +198,20 @@ class AnimationFragment2 : Fragment() {
 
     private fun showContainer(container: View) {
         beginDelayedTransition()
-        arrayOf(toolbarContainer, backgroundColorContainer, scaleContainer).forEach {
-            it.visibility = if (it == container) View.VISIBLE else View.GONE
-        }
+        arrayOf(toolbarContainer, backgroundColorContainer, scaleContainer).forEach { it.isVisible = it == container }
     }
 
     private fun beginDelayedTransition() = TransitionManager.beginDelayedTransition(container, transition)
+
+    companion object {
+        const val EXTRA_ANIMATION_ARGS = "animation_args"
+
+        fun forAsset(args: CompositionArgs): Fragment {
+            return PlayerFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(EXTRA_ANIMATION_ARGS, args)
+                }
+            }
+        }
+    }
 }

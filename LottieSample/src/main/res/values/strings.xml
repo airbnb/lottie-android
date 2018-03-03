@@ -22,7 +22,7 @@
     <string name="shortcut_disabled">Shortcut Disabled</string>
     <string name="start_typing">Start typing!</string>
     <string name="qr_code_overlay">QR code overlay</string>
-    
+
     <string name="scale">Scale</string>
     <string name="background">Background</string>
     <string name="ms">ms</string>
@@ -39,4 +39,6 @@
     <string name="preview_file_action">Open</string>
     <string name="preview_url">Enter a URL</string>
     <string name="preview_url_action">Enter</string>
+
+    <string name="composition_load_error">There was an error loading the composition</string>
 </resources>

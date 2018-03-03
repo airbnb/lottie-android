@@ -1,6 +1,5 @@
 package com.airbnb.lottie.samples
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.PointF
@@ -35,10 +34,12 @@ class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListene
     }
 
     override fun onQRCodeRead(url: String, pointFS: Array<PointF>) {
+        @Suppress("DEPRECATION")
         vibrator.vibrate(100)
-        val resultIntent = Intent()
-        resultIntent.putExtra(AnimationFragment.EXTRA_URL, url)
-        setResult(Activity.RESULT_OK, resultIntent)
-        finish()
+        startActivity(PlayerActivity.intent(this, CompositionArgs(url = url)))
+    }
+
+    companion object {
+        fun intent(context: Context) = Intent(context, QRScanActivity::class.java)
     }
 }
