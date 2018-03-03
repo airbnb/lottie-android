@@ -6,4 +6,13 @@
     <color name="divider">#cacaca</color>
     <color name="material_teal">#009688</color>
     <color name="text_color">#7e7e7e</color>
+
+    <color name="background_color1">#ffffff</color>
+    <color name="background_color1_stroke">#848484</color>
+    <color name="background_color2">#000000</color>
+    <color name="background_color3">#FF5A5F</color>
+    <color name="background_color4">#008489</color>
+    <color name="background_color5">#A61D55</color>
+    <color name="background_color6">#FFB400</color>
+    <color name="background_color7">#A61D55</color>
 </resources>

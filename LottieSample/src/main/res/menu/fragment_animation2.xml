@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/performance_graph"
+        android:icon="@drawable/ic_chart"
+        android:title="@string/render_times_graph"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/info"
+        android:icon="@drawable/ic_info_outline"
+        android:title="@string/animation_info"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/border"
+        android:title="@string/show_border"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/hardware_acceleration"
+        android:title="@string/hardware_acceleration"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/merge_paths"
+        android:title="@string/enable_merge_paths"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
+</menu>

@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+androidExtensions {
+  experimental = true
+}
 
 android {
   compileSdkVersion 27
@@ -52,11 +55,12 @@ dependencies {
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
   implementation "com.android.support:recyclerview-v7:$supportLibVersion"
   implementation "com.android.support:design:$supportLibVersion"
-  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+  implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
+  implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation 'com.jakewharton:butterknife:8.8.1'
   annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-  implementation 'com.squareup.okhttp3:okhttp:3.9.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'

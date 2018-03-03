@@ -88,7 +88,7 @@ class AnimationFragment : Fragment() {
         view.animationView.setPerformanceTrackingEnabled(true)
 
         myActivity.setSupportActionBar(view.toolbar)
-        view.toolbar.setNavigationIcon(R.drawable.ic_back)
+        view.toolbar.setNavigationIcon(R.drawable.ic_back_white)
         view.toolbar.setNavigationOnClickListener { fragmentManager!!.popBackStack() }
         setHasOptionsMenu(true)
         postUpdatePlayButtonText()
