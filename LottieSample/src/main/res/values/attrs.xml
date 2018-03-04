@@ -4,4 +4,8 @@
         <attr name="titleText" format="string" />
         <attr name="actionText" format="string" />
     </declare-styleable>
+    <declare-styleable name="ControlBarItemToggleView">
+        <attr name="src" format="reference" />
+        <attr name="text" format="string" />
+    </declare-styleable>
 </resources>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/backgroundColorContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp">
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton1"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1"
+            android:background="@color/background_color1"/>
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton2"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@color/background_color2"/>
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton3"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@color/background_color3"/>
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton4"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@color/background_color4"/>
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton5"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@color/background_color5"/>
+
+        <com.airbnb.lottie.samples.views.BackgroundColorView
+            android:id="@+id/backgroundButton6"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@color/background_color6"/>
+
+        <ImageButton
+            android:id="@+id/closeBackgroundColorButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_close"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_gravity="bottom"
+        android:background="@color/divider"/>
+</FrameLayout>

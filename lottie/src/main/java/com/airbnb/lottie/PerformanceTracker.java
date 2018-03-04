@@ -83,7 +83,7 @@ public class PerformanceTracker {
     }
   }
 
-  @SuppressWarnings("WeakerAccess") public List<Pair<String, Float>> getSortedRenderTimes() {
+  public List<Pair<String, Float>> getSortedRenderTimes() {
     if (!enabled) {
       return Collections.emptyList();
     }

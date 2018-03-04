@@ -1,14 +1,13 @@
 <resources>
     <string name="app_name">Lottie</string>
     <string name="invalid_assets">Unable to load assets</string>
+    <string name="permission_required">Camera permissions are required to use the QR Scanner</string>
+    <string name="scan_prompt">Scan QR Code from lottiefiles.com</string>
     <string name="render_times_graph">Show real time render time graph</string>
     <string name="hardware_acceleration">Use hardware acceleration</string>
     <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
-    <string name="permission_required">Camera permissions are required to use the QR Scanner</string>
-    <string name="scan_prompt">Scan QR Code from lottiefiles.com</string>
-    <string name="animation_info">Animation info</string>
-    <string name="settings">Animation settings</string>
-    <string name="show_border">Show border</string>
+    <string name="menu_item_animation_info">Animation info</string>
+    <string name="menu_item_visibility">Hide Controls</string>
 
     <!-- Shortcuts -->
     <string name="shortcut_animation_viewer">Animation Viewer</string>
@@ -41,4 +40,24 @@
     <string name="preview_url_action">Enter</string>
 
     <string name="composition_load_error">There was an error loading the composition</string>
+
+    <string name="control_bar_border">Border</string>
+    <string name="control_bar_background_color">Background Color</string>
+    <string name="control_bar_hardware_acceleration">Hardware Acceleration</string>
+    <string name="control_bar_render_graph">Render Graph</string>
+    <string name="control_bar_scale">Scale</string>
+    <string name="control_bar_speed">Speed</string>
+    <string name="control_bar_warnings">View Warnings</string>
+    <string name="control_bar_no_warnings">No Warnings</string>
+    <string name="control_bar_merge_paths">Enable merge paths (KitKat+)</string>
+
+    <string name="minus_one_x">-1x</string>
+    <string name="minus_half_x">-0.5x</string>
+    <string name="half_x">0.5x</string>
+    <string name="one_x">1x</string>
+    <string name="two_x">2x</string>
+
+    <string name="render_times_per_layer_button">View render times per layer</string>
+    <string name="render_times_title">Render time per layer</string>
+    <string name="warnings_title">Warnings</string>
 </resources>

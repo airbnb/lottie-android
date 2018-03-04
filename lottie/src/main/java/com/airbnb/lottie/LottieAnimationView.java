@@ -275,6 +275,13 @@ import java.util.Map;
   }
 
   /**
+   * Returns whether merge paths are enabled for KitKat and above.
+   */
+  public boolean isMergePathsEnabledForKitKatAndAbove() {
+    return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
+  }
+
+  /**
    * @see #useHardwareAcceleration(boolean)
    */
   @Deprecated
@@ -313,6 +320,10 @@ import java.util.Map;
   public void useHardwareAcceleration(boolean use) {
     useHardwareLayer = use;
     enableOrDisableHardwareLayer();
+  }
+
+  public boolean getUseHardwareAcceleration() {
+    return useHardwareLayer;
   }
 
   /**

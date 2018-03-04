@@ -43,7 +43,28 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".PlayerActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="application/octet-stream"
+                    android:host="*"
+                    android:pathPattern=".*\\.json"
+                    />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="application/json"
+                    android:host="*"
+                    android:pathPattern=".*\\.mytype"
+                    />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

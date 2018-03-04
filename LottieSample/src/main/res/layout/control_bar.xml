@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/controlBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="false">
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/renderGraphToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_chart"
+            app:text="@string/control_bar_render_graph" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/warningsButton"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_device"
+            app:text="@string/control_bar_no_warnings" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/borderToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_device"
+            app:text="@string/control_bar_border" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/backgroundColorToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_color"
+            app:text="@string/control_bar_background_color" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/scaleToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_scale"
+            app:text="@string/control_bar_scale" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/speedToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_fast_forward"
+            app:text="@string/control_bar_speed" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/hardwareAccelerationToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_memory"
+            app:text="@string/control_bar_hardware_acceleration" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/mergePathsToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_merge_paths"
+            app:text="@string/control_bar_merge_paths" />
+    </LinearLayout>
+</HorizontalScrollView>
