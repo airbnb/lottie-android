@@ -21,7 +21,7 @@ class LottiefilesViewModel(application: Application) : AndroidViewModel(applicat
 
     val animationDataList = MutableLiveData<List<AnimationData?>>()
     val loading = MutableLiveData<Boolean>()
-    val mode = MutableLiveData<Mode>().apply { value = Mode.Popular }
+    val mode = MutableLiveData<Mode>().apply { value = Mode.Recent }
     private var disposables = CompositeDisposable()
     private val responses = ArrayList<AnimationResponse>()
 

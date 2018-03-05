@@ -13,7 +13,7 @@ import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.LoadingViewModel_
 import com.airbnb.lottie.samples.views.MarqueeModel_
 import com.airbnb.lottie.samples.views.SectionHeaderViewModel_
-import kotlinx.android.synthetic.main.fragment_lottiefiles.*
+import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 
 private val TAG = LottiefilesFragment::class.simpleName
 class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
@@ -27,7 +27,7 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_lottiefiles, container, false)
+            inflater.inflate(R.layout.fragment_epoxy_recycler_view, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView.buildModelsWith(this)

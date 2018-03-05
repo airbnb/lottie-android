@@ -29,7 +29,7 @@ class AnimationItemView @JvmOverloads constructor(
         args = CompositionArgs(animationData = animationData)
         animationView.background = ColorDrawable(animationData.bgColorInt())
         titleView.text = animationData.title
-        authorView.text = animationData.userInfo?.name
+        authorView.text = animationData.userInfo?.name ?: context.getString(R.string.anonymous)
         animationView.setImageUrl(animationData.preview)
     }
 

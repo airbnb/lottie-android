@@ -1,10 +1,12 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
+import android.support.customtabs.CustomTabsIntent
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.net.toUri
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -14,18 +16,23 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         setContentView(R.layout.activity_main)
         bottomNavigation.setOnNavigationItemSelectedListener(this)
 
-        savedInstanceState ?: showFragment(ListFragment.newInstance())
+        savedInstanceState ?: showFragment(ShowcaseFragment())
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.showcase -> showFragment(ListFragment.newInstance())
+            R.id.showcase -> showFragment(ShowcaseFragment())
             R.id.preview -> showFragment(PreviewFragment())
             R.id.lottiefiles -> showFragment(LottiefilesFragment())
-            R.id.learn -> showFragment(TodoFragment())
+            R.id.learn -> showShowcase()
             else -> return false
         }
         return true
+    }
+
+    private fun showShowcase() {
+        val intent = CustomTabsIntent.Builder().build()
+        intent.launchUrl(this, "http://airbnb.io/lottie/android/android.html".toUri())
     }
 
     private fun showFragment(fragment: Fragment) {

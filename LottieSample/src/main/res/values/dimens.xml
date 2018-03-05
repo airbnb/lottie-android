@@ -7,4 +7,5 @@
     <dimen name="background_color_view_stroke_width">1dp</dimen>
     <dimen name="control_bar_button_padding">8dp</dimen>
     <dimen name="bottom_bar_peek_height">256dp</dimen>
+    <dimen name="showcase_carousel_padding">8dp</dimen>
 </resources>

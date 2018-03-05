@@ -41,29 +41,34 @@
         <activity
             android:name=".TestColorFilterActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".DynamicActivity"/>
         <activity
             android:name=".PlayerActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.EDIT"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
                 <data
-                    android:mimeType="application/octet-stream"
                     android:host="*"
-                    android:pathPattern=".*\\.json"
-                    />
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.json"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.EDIT" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.EDIT"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
                 <data
-                    android:mimeType="application/json"
                     android:host="*"
-                    android:pathPattern=".*\\.mytype"
-                    />
+                    android:mimeType="application/octet-stream"
+                    android:pathPattern=".*\\.zip"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".DynamicTextActivity">
         </activity>
     </application>
 

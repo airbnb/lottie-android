@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
@@ -30,7 +31,7 @@ class ListFragment : Fragment() {
             ListItem("Full Screen Animation", SHORTCUT_FULLSCREEN)
                 { startActivity(FullScreenActivity::class.java) },
             ListItem("Dynamic Properties")
-            { showFragment(DynamicFragment()) },
+            { startActivity(Intent(requireContext(), DynamicActivity::class.java)) },
             ListItem("Custom fonts and dynamic text")
             { showFragment(FontFragment.newInstance()) },
             ListItem("Open lottiefiles.com")

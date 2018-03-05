@@ -19,7 +19,6 @@ import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.OnCompositionLoadedListener
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.airbnb.lottie.samples.views.BottomSheetItemView
@@ -37,7 +36,6 @@ import kotlinx.android.synthetic.main.control_bar_player_controls.*
 import kotlinx.android.synthetic.main.control_bar_scale.*
 import kotlinx.android.synthetic.main.control_bar_speed.*
 import kotlinx.android.synthetic.main.fragment_player.*
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
@@ -58,7 +56,7 @@ private class UiState(private val callback: () -> Unit) {
     var scale by BooleanProperty(false)
     var speed by BooleanProperty(false)
 }
-class PlayerFragment : Fragment(), OnCompositionLoadedListener {
+class PlayerFragment : Fragment() {
 
     private val transition = AutoTransition().apply { duration = 175 }
     private val uiState = UiState { updateUiFromState() }
@@ -184,20 +182,13 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
-                    val minScale = 0.15f
-                    val screenWidth = resources.displayMetrics.widthPixels.toFloat()
-                    val screenHeight = resources.displayMetrics.heightPixels.toFloat()
-                    val maxScale = max(min(
-                            screenWidth / (composition?.bounds?.width()?.toFloat() ?: screenWidth),
-                            screenHeight / (composition?.bounds?.height()?.toFloat() ?: screenHeight)
-                    ), minScale)
+                    val minScale = minScale()
+                    val maxScale = maxScale()
                     val scale = minScale + progress / 100f * (maxScale - minScale)
                     animationView.scale = scale
                     scaleText.text = "%.0f%%".format(scale * 100)
                 }
         ))
-        // This maps to a scale of 1
-        scaleSeekBar.progress = 46
 
         arrayOf<BackgroundColorView>(
                 backgroundButton1,
@@ -298,15 +289,19 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
         return true
     }
 
-    override fun onCompositionLoaded(composition: LottieComposition?) {
+    private fun onCompositionLoaded(compositionData: CompositionData?) {
         if (this.composition != null) return
-
-        this.composition = composition
-        if (composition == null) {
+        if (compositionData?.composition == null) {
             Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
             return
         }
 
+        val composition = compositionData.composition!!
+        this.composition = composition
+
+        animationView.setImageAssetDelegate {
+            compositionData.images[it.fileName]
+        }
         animationView.setComposition(composition)
         animationView.setPerformanceTrackingEnabled(true)
         var renderTimeGraphRange = 4f
@@ -321,6 +316,8 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
         // Force warning to update
         warningsContainer.removeAllViews()
         updateWarnings()
+
+        scaleSeekBar.progress = 100
     }
 
     private fun updateUiFromState() {
@@ -391,6 +388,17 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
         warningsButton.setImageResource(
                 if (warnings.isEmpty()) R.drawable.ic_sentiment_satisfied
                 else R.drawable.ic_sentiment_dissatisfied
+        )
+    }
+
+    private fun minScale() = 0.15f
+
+    private fun maxScale(): Float {
+        val screenWidth = resources.displayMetrics.widthPixels.toFloat()
+        val screenHeight = resources.displayMetrics.heightPixels.toFloat()
+        return min(
+                screenWidth / (composition?.bounds?.width()?.toFloat() ?: screenWidth),
+                screenHeight / (composition?.bounds?.height()?.toFloat() ?: screenHeight)
         )
     }
 

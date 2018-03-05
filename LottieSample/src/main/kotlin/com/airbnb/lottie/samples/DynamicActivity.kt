@@ -2,15 +2,11 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.app.AppCompatActivity
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
-import kotlinx.android.synthetic.main.fragment_dynamic.*
-import kotlinx.android.synthetic.main.fragment_dynamic.view.*
+import kotlinx.android.synthetic.main.activity_dynamic.*
 
 private val COLORS = arrayOf(
         0xff5a5f,
@@ -18,37 +14,33 @@ private val COLORS = arrayOf(
         0xa61d55
 )
 private val EXTRA_JUMP = arrayOf(0f, 20f, 50f)
-class DynamicFragment : Fragment() {
+class DynamicActivity : AppCompatActivity() {
     private var speed = 1
     private var colorIndex = 0
     private var extraJumpIndex = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = container!!.inflate(R.layout.fragment_dynamic, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_dynamic)
 
-        view.speedButton.setOnClickListener {
+        speedButton.setOnClickListener {
             speed = ++speed % 4
             updateButtonText()
         }
 
-        view.colorButton.setOnClickListener {
+        colorButton.setOnClickListener {
             colorIndex = (colorIndex + 1) % COLORS.size
             updateButtonText()
         }
 
-        view.jumpHeight.setOnClickListener {
+        jumpHeight.setOnClickListener {
             extraJumpIndex = (extraJumpIndex + 1) % EXTRA_JUMP.size
             updateButtonText()
         }
 
-        view.postDelayed({ setupValueCallbacks() }, 1000)
-
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()
+
     }
 
     private fun setupValueCallbacks() {
