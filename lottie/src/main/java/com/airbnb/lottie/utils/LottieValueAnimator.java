@@ -211,7 +211,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     if (composition == null) {
       return 0;
     }
-    return minFrame == Integer.MIN_VALUE ? 0 : minFrame;
+    return minFrame == Integer.MIN_VALUE ? composition.getStartFrame() : minFrame;
   }
 
   private float getMaxFrame() {
