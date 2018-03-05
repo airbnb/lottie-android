@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 androidExtensions {
   experimental = true
 }
@@ -55,6 +56,10 @@ dependencies {
   implementation "com.android.support:appcompat-v7:$supportLibVersion"
   implementation "com.android.support:recyclerview-v7:$supportLibVersion"
   implementation "com.android.support:design:$supportLibVersion"
+  implementation "android.arch.lifecycle:extensions:1.1.0"
+  kapt "android.arch.lifecycle:compiler:1.1.0"
+  implementation 'com.airbnb.android:epoxy:2.10.0'
+  kapt 'com.airbnb.android:epoxy-processor:2.10.0'
   implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
   implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
@@ -86,7 +91,11 @@ dependencies {
   androidTestImplementation('com.android.support.test:rules:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  implementation 'com.android.support:design:27.1.0'
+  implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+  implementation 'com.google.code.gson:gson:2.8.2'
+  implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+  implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+  implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 }
 repositories {
   mavenCentral()

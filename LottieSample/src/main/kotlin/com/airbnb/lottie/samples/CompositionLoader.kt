@@ -1,93 +1,122 @@
 package com.airbnb.lottie.samples
 
-import android.annotation.SuppressLint
+import android.arch.lifecycle.LifecycleOwner
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Observer
 import android.content.Context
-import android.net.Uri
-import android.os.Parcelable
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.OnCompositionLoadedListener
-import kotlinx.android.parcel.Parcelize
+import com.airbnb.lottie.samples.model.AnimationData
+import com.airbnb.lottie.samples.model.CompositionArgs
 import okhttp3.Request
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 
-@SuppressLint("ParcelCreator")
-@Parcelize
-class CompositionArgs(
-        val assetName: String? = null,
-        val url: String? = null,
-        val fileUri: Uri? = null
-) : Parcelable
-class CompositionLoader(
-        private val context: Context,
-        args: CompositionArgs,
-        private val listener: OnCompositionLoadedListener
-) {
-    private val okHttpClient by lazy { (context.applicationContext as LottieApplication).okHttpClient }
+sealed class CompositionResult
+class Loading : CompositionResult()
+class Loaded(val composition: LottieComposition) : CompositionResult()
+class LoadError(val throwable: Throwable) : CompositionResult()
 
-    init {
-        if (args.assetName != null) {
-            LottieComposition.Factory.fromAssetFileName(context, args.assetName, listener)
+object CompositionCache {
+    val cache = HashMap<CompositionArgs, MutableLiveData<CompositionResult>>()
+
+    fun observe(args: CompositionArgs?, owner: LifecycleOwner, observer: Observer<CompositionResult>) {
+        args ?: return
+        cache.getValue(args).observe(owner, observer)
+    }
+
+    fun removeObserver(args: CompositionArgs?, observer: Observer<CompositionResult>) {
+        args ?: return
+        cache.getValue(args).removeObserver(observer)
+    }
+
+    fun fetch(context: Context, args: CompositionArgs) {
+        if (args.animationData != null) {
+            fetchByAnimationData(context, args.animationData)
         } else if (args.url != null) {
-            loadUrl(args.url)
-        } else if (args.fileUri != null) {
-            loadFile(args.fileUri)
+            fetchByUrl(context, args.url)
         }
     }
 
-    private fun loadUrl(url: String) {
+    private fun fetchByAnimationData(context: Context, animationData: AnimationData) {
+        fetchByUrlOrAnimationData(context, CompositionArgs(animationData = animationData))
+    }
+
+    private fun fetchByUrl(context: Context, url: String) {
+        fetchByUrlOrAnimationData(context, CompositionArgs(url = url))
+    }
+
+    private fun fetchByUrlOrAnimationData(context: Context, args: CompositionArgs) {
+        val url = args.url ?: args.animationData?.lottieLink
+        cache[args] = MutableLiveData<CompositionResult>().apply { value = Loading() }
         val request: Request
         try {
             request = Request.Builder()
                     .url(url)
                     .build()
         } catch (e: IllegalArgumentException) {
-            onLoadError()
+            onError(args, e)
             return
         }
-        okHttpClient.newCall(request)?.enqueue(OkHttpCallback(
-                onFailure = { _, _ -> onLoadError() },
+        okHttpClient(context).newCall(request)?.enqueue(OkHttpCallback(
+                onFailure = { _, e ->  onError(args, e) },
                 onResponse = { _, response ->
                     if (!response.isSuccessful) {
-                        onLoadError()
+                        onError(args, IllegalStateException("Response was unsuccessful."))
                     } else {
                         val string = response.body()?.string()
                         if (string == null) {
-                            onLoadError()
+                            onError(args, IllegalStateException("Response body was null"))
                             return@OkHttpCallback
                         }
                         try {
-                            LottieComposition.Factory.fromJsonString(string, listener)
+                            LottieComposition.Factory.fromJsonString(string, {
+                                if (it == null) {
+                                    onError(args, IllegalArgumentException("Unable to parse composition"))
+                                } else {
+                                    onComplete(args, it)
+                                }
+                            })
                         } catch (e: RuntimeException) {
-                            onLoadError()
+                            onError(args, e)
                         }
                     }
                 }))
     }
 
-    private fun loadFile(uri: Uri) {
-        val fis = try {
-            when (uri.scheme) {
-                "file" -> FileInputStream(uri.path)
-                "content" -> context.contentResolver.openInputStream(uri)
-                else -> {
-                    onLoadError()
-                    return
-                }
-            }
-        } catch (e: FileNotFoundException) {
-            onLoadError()
-            return
-        }
+    private fun okHttpClient(context: Context) = (context.applicationContext as LottieApplication).okHttpClient
 
-        LottieComposition.Factory.fromInputStream(fis, { composition ->
-            if (composition == null) {
-                onLoadError()
-            } else {
-                listener.onCompositionLoaded(composition)
-            }
-        })
+    private fun onComplete(args: CompositionArgs, composition: LottieComposition) {
+        cache.getValue(args).value = Loaded(composition)
     }
 
-    private fun onLoadError() = listener.onCompositionLoaded(null)
+    private fun onError(args: CompositionArgs, t: Throwable) {
+        cache.getValue(args).value = LoadError(t)
+    }
+//
+//
+//    private fun loadFile(context: Context, uri: Uri) {
+//        val fis = try {
+//            when (uri.scheme) {
+//                "file" -> FileInputStream(uri.path)
+//                "content" -> context.contentResolver.openInputStream(uri)
+//                else -> {
+//                    onLoadError()
+//                    return
+//                }
+//            }
+//        } catch (e: FileNotFoundException) {
+//            onLoadError()
+//            return
+//        }
+//
+//        LottieComposition.Factory.fromInputStream(fis, { composition ->
+//            if (composition == null) {
+//                onLoadError()
+//            } else {
+//                listener.onCompositionLoaded(composition)
+//            }
+//        })
+//    }
+//
+//    private fun loadAnimationData(animationData: AnimationData) {
+//        loadUrl(animationData.lottieLink)
+//    }
 }

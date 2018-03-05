@@ -46,3 +46,5 @@ fun View.setVisibleIf(condition: Boolean) {
 }
 
 fun Float.lerp(other: Float, amount: Float): Float = this + amount * (other - this)
+fun View.getText(@StringRes res: Int) = this.resources.getText(res)
+operator fun Boolean.inc() = !this

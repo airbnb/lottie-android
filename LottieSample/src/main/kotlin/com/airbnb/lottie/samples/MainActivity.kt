@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         when (item.itemId) {
             R.id.showcase -> showFragment(ListFragment.newInstance())
             R.id.preview -> showFragment(PreviewFragment())
-            R.id.lottiefiles -> showFragment(TodoFragment())
+            R.id.lottiefiles -> showFragment(LottiefilesFragment())
             R.id.learn -> showFragment(TodoFragment())
             else -> return false
         }

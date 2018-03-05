@@ -2,7 +2,9 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Observer
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.Snackbar
@@ -11,12 +13,14 @@ import android.support.transition.TransitionManager
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.*
 import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.OnCompositionLoadedListener
+import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.airbnb.lottie.samples.views.BottomSheetItemView
 import com.airbnb.lottie.samples.views.ControlBarItemToggleView
@@ -110,8 +114,21 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         L.setTraceEnabled(true)
 
-        val compositionArgs = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS) ?: throw IllegalArgumentException("No composition args specified")
-        CompositionLoader(requireContext(), compositionArgs, this)
+        val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS) ?: throw IllegalArgumentException("No composition args specified")
+        args.animationData?.bgColorInt()?.let {
+            val bgDrawable = ColorDrawable(it)
+            backgroundButton1.background = bgDrawable
+            animationContainer.background = bgDrawable
+        }
+
+        CompositionCache.fetch(requireContext(), args)
+        CompositionCache.observe(args, requireActivity(), Observer {
+            if (it is Loaded) {
+                animationView.setComposition(it.composition)
+            } else {
+                animationView.setImageDrawable(null)
+            }
+        })
 
         borderToggle.setOnClickListener { uiState.border++ }
         backgroundColorToggle.setOnClickListener { uiState.backgroundColor++ }
@@ -135,6 +152,11 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
+                    Log.d("Gabe", "$progress#\t");
+                    if (seekBar.isPressed && progress > 0 && progress < 5) {
+                        seekBar.progress = 0
+                        return@OnSeekBarChangeListenerAdapter
+                    }
                     currentFrameView.text = animationView.frame.toString()
                     if (animationView.isAnimating) return@OnSeekBarChangeListenerAdapter
                     animationView.progress = progress / seekBar.max.toFloat()

@@ -60,4 +60,7 @@
     <string name="render_times_per_layer_button">View render times per layer</string>
     <string name="render_times_title">Render time per layer</string>
     <string name="warnings_title">Warnings</string>
+
+    <string name="lottiefiles">Lottiefiles</string>
+    <string name="popular">Popular</string>
 </resources>

@@ -6,5 +6,5 @@
     <dimen name="divider_height">0.6dp</dimen>
     <dimen name="background_color_view_stroke_width">1dp</dimen>
     <dimen name="control_bar_button_padding">8dp</dimen>
-    <dimen name="bottom_bar_peek_height">128dp</dimen>
+    <dimen name="bottom_bar_peek_height">256dp</dimen>
 </resources>
