@@ -232,13 +232,20 @@ public class LottieComposition {
 
     @Nullable
     public static LottieComposition fromInputStreamSync(InputStream stream) {
+      return fromInputStreamSync(stream, true);
+    }
+
+    @Nullable
+    public static LottieComposition fromInputStreamSync(InputStream stream, boolean close) {
       LottieComposition composition;
       try {
         composition = fromJsonSync(new JsonReader(new InputStreamReader(stream)));
       } catch (IOException e) {
         throw new IllegalArgumentException("Unable to parse composition.", e);
       } finally {
-        closeQuietly(stream);
+        if (close) {
+          closeQuietly(stream);
+        }
       }
       return composition;
     }
