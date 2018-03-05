@@ -1,7 +1,5 @@
 package com.airbnb.lottie.samples
 
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
@@ -18,7 +16,7 @@ class AnimationItemView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), Observer<CompositionResult> {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var args: CompositionArgs? = null
 
@@ -31,38 +29,12 @@ class AnimationItemView @JvmOverloads constructor(
         args = CompositionArgs(animationData = animationData)
         animationView.background = ColorDrawable(animationData.bgColorInt())
         titleView.text = animationData.title
-        authorView.text = animationData.userInfo.name
-        animationView.setImageDrawable(null)
+        authorView.text = animationData.userInfo?.name
+        animationView.setImageUrl(animationData.preview)
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
     fun setClickListener(listener: View.OnClickListener) {
         clickOverlay.setOnClickListener(listener)
-    }
-
-    fun onBind() {
-        animationView.playAnimation()
-        CompositionCache.observe(args, context as LifecycleOwner, this)
-    }
-
-    fun onUnbind() {
-        CompositionCache.removeObserver(args, this)
-        animationView.cancelAnimation()
-        animationView.setImageDrawable(null)
-    }
-
-    override fun onChanged(result: CompositionResult?) {
-        result ?: return
-
-        val composition = when (result) {
-            is Loaded -> result.composition
-            else -> null
-        }
-        if (composition == null) {
-            animationView.setImageDrawable(null)
-        } else {
-            animationView.setComposition(composition)
-            animationView.playAnimation()
-        }
     }
 }

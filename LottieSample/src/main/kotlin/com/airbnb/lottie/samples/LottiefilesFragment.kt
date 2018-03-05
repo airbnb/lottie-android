@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,7 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.fetchAnimations()
+        viewModel.fetchMoreAnimations()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -33,8 +32,7 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView.buildModelsWith(this)
         viewModel.loading.observe(this, Observer { recyclerView.requestModelBuild() })
-        viewModel.animationResponse.observe(this, Observer { recyclerView.requestModelBuild() })
-        viewModel.animationResponseError.observe(this, Observer { recyclerView.requestModelBuild() })
+        viewModel.animationDataList.observe(this, Observer { recyclerView.requestModelBuild() })
     }
 
     override fun buildModels(controller: EpoxyController) {
@@ -42,36 +40,37 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
                 .id("lottiefiles")
                 .title(R.string.lottiefiles)
                 .addTo(controller)
+
         SectionHeaderViewModel_()
-                .id("popular")
-                .title(R.string.popular)
-                .addIf(viewModel.animationResponse.value != null, controller)
+                .id("mode")
+                .title(when (viewModel.mode()) {
+                    LottiefilesViewModel.Mode.Popular -> R.string.popular
+                    LottiefilesViewModel.Mode.Recent -> R.string.recent
+                })
+                .onClickListener { _ -> viewModel.switchMode() }
+                .addIf(viewModel.animationDataList.value != null, controller)
 
-        LoadingViewModel_()
-                .id("loading")
-                .addIf(viewModel.loading.value ?: false, controller)
-
-        viewModel.animationResponse.value?.data?.forEach {
+        val lastAnimationData = viewModel.animationDataList.value?.last()
+        viewModel.animationDataList.value?.forEach {
+            it ?: return@forEach
             val args = CompositionArgs(animationData = it)
-            CompositionCache.fetch(requireContext(), args)
-            val cacheLiveData = CompositionCache.cache.getValue(args)
-            val compositionResult = cacheLiveData.value
-            if (compositionResult is LoadError) {
-                Log.e(TAG, "Error getting composition", compositionResult.throwable)
-            }
             AnimationItemViewModel_()
                     .id(it.id)
                     .animationData(it)
                     .clickListener { _ ->
                         startActivity(PlayerActivity.intent(requireContext(), args))
                     }
-                    .onBind({ _, view, _ ->
-                        view.onBind()
+                    .onBind({ _, _, _ ->
+                        if (it == lastAnimationData) {
+                            viewModel.fetchMoreAnimations()
+                        }
                     })
-                    .onUnbind { _, view ->
-                        view.onUnbind()
-                    }
                     .addTo(controller)
         }
+
+        LoadingViewModel_()
+                .id("loading")
+                .onBind { _, _, _ -> viewModel.fetchMoreAnimations() }
+                .addIf(viewModel.loading.value ?: false, controller)
     }
 }

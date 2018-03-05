@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
@@ -41,5 +42,5 @@ class BackgroundColorView @JvmOverloads constructor(
         canvas.drawCircle(cx, cy, r - paint.strokeWidth, paint)
     }
 
-    fun getColor() = (background as ColorDrawable).color
+    @ColorInt fun getColor() = (background as ColorDrawable).color
 }

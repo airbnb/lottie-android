@@ -24,6 +24,12 @@
                 android:layout_gravity="center"
                 android:background="@drawable/outline"/>
 
+            <ProgressBar
+                android:id="@+id/loadingView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
@@ -43,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top"
-        app:navigationIcon="@drawable/ic_back_black"
+        app:navigationIcon="@drawable/ic_nav_close"
         app:title=""/>
 
     <include layout="@layout/bottom_sheet_render_times" />

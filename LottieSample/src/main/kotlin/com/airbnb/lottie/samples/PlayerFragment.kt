@@ -2,9 +2,10 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.Snackbar
@@ -13,7 +14,6 @@ import android.support.transition.TransitionManager
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import androidx.view.children
 import androidx.view.isVisible
@@ -37,6 +37,8 @@ import kotlinx.android.synthetic.main.control_bar_player_controls.*
 import kotlinx.android.synthetic.main.control_bar_scale.*
 import kotlinx.android.synthetic.main.control_bar_speed.*
 import kotlinx.android.synthetic.main.fragment_player.*
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
@@ -51,7 +53,7 @@ private class UiState(private val callback: () -> Unit) {
     var controls by BooleanProperty(true)
     var controlBar by BooleanProperty(true)
     var renderGraph by BooleanProperty(false)
-    var border by BooleanProperty(true)
+    var border by BooleanProperty(false)
     var backgroundColor by BooleanProperty(false)
     var scale by BooleanProperty(false)
     var speed by BooleanProperty(false)
@@ -105,6 +107,8 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
             }
     )
 
+    private val viewModel by lazy { ViewModelProviders.of(this).get(PlayerViewModel::class.java) }
+
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,19 +120,18 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS) ?: throw IllegalArgumentException("No composition args specified")
         args.animationData?.bgColorInt()?.let {
-            val bgDrawable = ColorDrawable(it)
-            backgroundButton1.background = bgDrawable
-            animationContainer.background = bgDrawable
+            backgroundButton1.setBackgroundColor(it)
+            animationContainer.setBackgroundColor(it)
         }
 
-        CompositionCache.fetch(requireContext(), args)
-        CompositionCache.observe(args, requireActivity(), Observer {
-            if (it is Loaded) {
-                animationView.setComposition(it.composition)
-            } else {
-                animationView.setImageDrawable(null)
-            }
+        viewModel.composition.observe(this, Observer {
+            loadingView.isVisible = false
+            onCompositionLoaded(it)
         })
+        viewModel.error.observe(this, Observer {
+            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
+        })
+        viewModel.fetchAnimation(args)
 
         borderToggle.setOnClickListener { uiState.border++ }
         backgroundColorToggle.setOnClickListener { uiState.backgroundColor++ }
@@ -152,7 +155,6 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
-                    Log.d("Gabe", "$progress#\t");
                     if (seekBar.isPressed && progress > 0 && progress < 5) {
                         seekBar.progress = 0
                         return@OnSeekBarChangeListenerAdapter
@@ -182,13 +184,20 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
 
         scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
-                    val scale = 20f + progress * 3.8f
-                    animationView.scale = scale / 100f
-                    scaleText.text = "%.0f%%".format(scale)
+                    val minScale = 0.15f
+                    val screenWidth = resources.displayMetrics.widthPixels.toFloat()
+                    val screenHeight = resources.displayMetrics.heightPixels.toFloat()
+                    val maxScale = max(min(
+                            screenWidth / (composition?.bounds?.width()?.toFloat() ?: screenWidth),
+                            screenHeight / (composition?.bounds?.height()?.toFloat() ?: screenHeight)
+                    ), minScale)
+                    val scale = minScale + progress / 100f * (maxScale - minScale)
+                    animationView.scale = scale
+                    scaleText.text = "%.0f%%".format(scale * 100)
                 }
         ))
         // This maps to a scale of 1
-        scaleSeekBar.progress = 21
+        scaleSeekBar.progress = 46
 
         arrayOf<BackgroundColorView>(
                 backgroundButton1,
@@ -290,6 +299,8 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
     }
 
     override fun onCompositionLoaded(composition: LottieComposition?) {
+        if (this.composition != null) return
+
         this.composition = composition
         if (composition == null) {
             Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
@@ -300,6 +311,7 @@ class PlayerFragment : Fragment(), OnCompositionLoadedListener {
         animationView.setPerformanceTrackingEnabled(true)
         var renderTimeGraphRange = 4f
         animationView.performanceTracker?.addFrameListener { ms ->
+            if (lifecycle.currentState != Lifecycle.State.RESUMED) return@addFrameListener
             lineDataSet.getEntryForIndex((animationView.progress * 100).toInt()).y = ms
             renderTimeGraphRange = Math.max(renderTimeGraphRange, ms * 1.2f)
             renderTimesGraph.setVisibleYRange(0f, renderTimeGraphRange, YAxis.AxisDependency.LEFT)

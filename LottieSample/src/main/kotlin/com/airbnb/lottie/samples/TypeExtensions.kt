@@ -15,7 +15,9 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 
 fun Fragment.startActivity(cls: Class<*>) {
     startActivity(Intent(context, cls))
@@ -44,6 +46,10 @@ fun View.showSnackbarLong(message: String) =
 fun View.setVisibleIf(condition: Boolean) {
     visibility = if (condition) View.VISIBLE else View.GONE
 }
+
+fun ImageView.setImageUrl(url: String) = Glide.with(this).load(url).into(this)
+
+inline fun <reified T> flatten(vararg lists: List<T>?) = lists.flatMap { it ?: emptyList() }
 
 fun Float.lerp(other: Float, amount: Float): Float = this + amount * (other - this)
 fun View.getText(@StringRes res: Int) = this.resources.getText(res)

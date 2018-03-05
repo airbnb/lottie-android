@@ -7,14 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.airbnb.lottie.LottieAnimationView
+    <ImageView
         android:id="@+id/animationView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/list_item_animation_background"
-        app:layout_constraintDimensionRatio="1"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"/>
+        app:layout_constraintDimensionRatio="1"/>
 
     <TextView
         android:id="@+id/titleView"

@@ -2,7 +2,9 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
+import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
 import com.airbnb.lottie.samples.R
@@ -23,5 +25,10 @@ class SectionHeaderView @JvmOverloads constructor(
     @TextProp
     fun setTitle(title: CharSequence) {
         titleView.text = title
+    }
+
+    @ModelProp(options = [ModelProp.Option.DoNotHash])
+    override fun setOnClickListener(listener: View.OnClickListener) {
+        super.setOnClickListener(listener)
     }
 }
