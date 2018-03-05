@@ -177,7 +177,11 @@ import java.util.Map;
   }
 
   @Override public void setImageDrawable(Drawable drawable) {
-    if (drawable != lottieDrawable) {
+    setImageDrawable(drawable, true);
+  }
+
+  private void setImageDrawable(Drawable drawable, boolean recycle) {
+    if (recycle && drawable != lottieDrawable) {
       recycleBitmaps();
     }
     cancelLoaderTask();
@@ -780,8 +784,8 @@ import java.util.Map;
   public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {
-      setImageDrawable(null);
-      setImageDrawable(lottieDrawable);
+      setImageDrawable(null, false);
+      setImageDrawable(lottieDrawable, false);
     }
   }
 
