@@ -31,13 +31,12 @@
     <string name="bottom_bar_lottiefiles">Lottiefiles</string>
     <string name="bottom_bar_learn">Learn</string>
 
-    <string name="preview_title">Preview Animations</string>
+    <string name="preview_title">Preview</string>
     <string name="preview_qr">Scan a QR code</string>
-    <string name="preview_qr_action">Scan</string>
     <string name="preview_file">Open a file</string>
-    <string name="preview_file_action">Open</string>
-    <string name="preview_url">Enter a URL</string>
-    <string name="preview_url_action">Enter</string>
+    <string name="preview_url">Enter a URL to a json or zip file</string>
+    <string name="preview_load">Load</string>
+    <string name="preview_cancel">Cancel</string>
 
     <string name="composition_load_error">There was an error loading the composition</string>
 
@@ -64,6 +63,7 @@
     <string name="lottiefiles">Lottiefiles</string>
     <string name="popular">Popular</string>
     <string name="recent">Recent</string>
+    <string name="search">Search</string>
 
     <string name="anonymous">Anonymous</string>
 

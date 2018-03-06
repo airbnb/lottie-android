@@ -63,7 +63,7 @@ class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
                 .showcaseItems(showcaseItems)
                 .addTo(controller)
 
-        viewModel.collection.value?.entries?.forEach {
+        viewModel.collection.value?.data?.forEach {
             ShowcaseAnimationItemViewModel_()
                     .id(it.title)
                     .title(it.title)

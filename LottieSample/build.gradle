@@ -15,6 +15,7 @@ android {
     targetSdkVersion 27
     versionCode 34
     versionName "2.5.0"
+    multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
     buildConfigField("String", "S3AccessKey", "\"" + System.getenv("LOTTIE_S3_API_KEY") + "\"")
@@ -57,6 +58,7 @@ dependencies {
   implementation "com.android.support:recyclerview-v7:$supportLibVersion"
   implementation "com.android.support:design:$supportLibVersion"
   implementation "com.android.support:cardview-v7:$supportLibVersion"
+  implementation 'com.android.support:multidex:1.0.1'
   implementation 'android.arch.lifecycle:extensions:1.1.0'
   kapt "android.arch.lifecycle:compiler:1.1.0"
   implementation "com.android.support:customtabs:$supportLibVersion"
@@ -65,6 +67,7 @@ dependencies {
   implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
   implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation 'com.jakewharton:butterknife:8.8.1'
   kapt 'com.jakewharton:butterknife-compiler:8.8.1'
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'

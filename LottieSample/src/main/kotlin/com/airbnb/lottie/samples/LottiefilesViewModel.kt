@@ -8,29 +8,28 @@ import android.arch.lifecycle.OnLifecycleEvent
 import android.util.Log
 import com.airbnb.lottie.samples.model.AnimationData
 import com.airbnb.lottie.samples.model.AnimationResponse
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class LottiefilesViewModel(application: Application) : AndroidViewModel(application) {
 
-    enum class Mode {
-        Popular,
-        Recent
-    }
-
     val animationDataList = MutableLiveData<List<AnimationData?>>()
     val loading = MutableLiveData<Boolean>()
-    val mode = MutableLiveData<Mode>().apply { value = Mode.Recent }
+    val mode = MutableLiveData<LottiefilesMode>().apply { value = LottiefilesMode.Recent }
     private var disposables = CompositeDisposable()
     private val responses = ArrayList<AnimationResponse>()
 
+    private var searchQuery: String? = null
+
     fun mode() = mode.value ?: throw IllegalStateException("Mode must be set")
 
-    fun switchMode() {
+    fun setMode(mode: LottiefilesMode, searchQuery: String? = null) {
+        this.searchQuery = searchQuery
         disposables.dispose()
         disposables = CompositeDisposable()
-        mode.value = if (mode() == Mode.Popular) Mode.Recent else Mode.Popular
+        this.mode.value = mode
         animationDataList.value = null
         loading.value = false
         responses.clear()
@@ -44,9 +43,12 @@ class LottiefilesViewModel(application: Application) : AndroidViewModel(applicat
         if (!responses.isEmpty() && page > responses.last().lastPage) return
 
         val service = getApplication<LottieApplication>().lottiefilesService
-        val observable =
-                if (mode() == Mode.Recent) service.getRecent(page)
-                else service.getPopular(page)
+        val observable = when (mode()) {
+            LottiefilesMode.Recent -> service.getRecent(page)
+            LottiefilesMode.Popular -> service.getPopular(page)
+            LottiefilesMode.Search ->
+                if (searchQuery == null) Observable.empty() else service.search(searchQuery ?: "")
+        }
 
         disposables.add(observable
                 .subscribeOn(Schedulers.io())

@@ -4,7 +4,7 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.airbnb.lottie.samples.model.CollectionsResponse
+import com.airbnb.lottie.samples.model.AnimationResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -17,7 +17,7 @@ class ShowcaseViewModel(application: Application) : AndroidViewModel(application
 
     private var disposables = CompositeDisposable()
 
-    val collection = MutableLiveData<CollectionsResponse>()
+    val collection = MutableLiveData<AnimationResponse>()
     val loading = MutableLiveData<Boolean>().apply { value = false }
 
     fun fetchAnimations() {

@@ -35,7 +35,10 @@ class NoShiftBottomNavigationView @JvmOverloads constructor(
 
             menuView.children
                     .map { it as BottomNavigationItemView }
-                    .forEach { it.setChecked(it.itemData.isChecked) }
+                    .forEach {
+                        it.setShiftingMode(false)
+                        it.setChecked(it.itemData.isChecked)
+                    }
         } catch (e: NoSuchFieldException) {
             Log.e(TAG, "Unable to get shift mode field", e)
         } catch (e: IllegalAccessException) {

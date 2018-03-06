@@ -6,6 +6,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.samples.model.CompositionArgs
 import io.reactivex.Observable
@@ -15,6 +16,8 @@ import okhttp3.CacheControl
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.ResponseBody
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
@@ -29,8 +32,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     val error = MutableLiveData<Throwable>()
 
     fun fetchAnimation(args: CompositionArgs) {
-        val url = args.url ?: "https://www.lottiefiles.com/download/${args.animationData?.id}"
-        fetchAnimationByUrl(url)
+        val url = args.url ?: args.animationData?.lottieLink
+        if (url != null) {
+            fetchAnimationByUrl(url)
+        } else if (args.fileUri != null) {
+            fetchAnimationByFileUri(args.fileUri)
+        }
     }
 
     private fun fetchAnimationByUrl(url: String) {
@@ -127,5 +134,29 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     error.value = it
                 })
 
+    }
+
+    private fun fetchAnimationByFileUri(uri: Uri) {
+        val fis = try {
+            when (uri.scheme) {
+                "file" -> FileInputStream(uri.path)
+                "content" -> getApplication<LottieApplication>().contentResolver.openInputStream(uri)
+                else -> {
+                    error.value = IllegalArgumentException("Unknown scheme ${uri.scheme}")
+                    return
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            error.value = e
+            return
+        }
+
+        LottieComposition.Factory.fromInputStream(fis, {
+            if (it == null) {
+                error.value = IllegalArgumentException("Er")
+            } else {
+                composition.value = CompositionData(it)
+            }
+        })
     }
 }

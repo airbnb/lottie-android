@@ -11,8 +11,9 @@ import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.LoadingViewModel_
+import com.airbnb.lottie.samples.views.LottiefilesTabBarModel_
 import com.airbnb.lottie.samples.views.MarqueeModel_
-import com.airbnb.lottie.samples.views.SectionHeaderViewModel_
+import com.airbnb.lottie.samples.views.SearchInputItemViewModel_
 import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 
 private val TAG = LottiefilesFragment::class.simpleName
@@ -41,16 +42,20 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
                 .title(R.string.lottiefiles)
                 .addTo(controller)
 
-        SectionHeaderViewModel_()
+        LottiefilesTabBarModel_()
                 .id("mode")
-                .title(when (viewModel.mode()) {
-                    LottiefilesViewModel.Mode.Popular -> R.string.popular
-                    LottiefilesViewModel.Mode.Recent -> R.string.recent
-                })
-                .onClickListener { _ -> viewModel.switchMode() }
-                .addIf(viewModel.animationDataList.value != null, controller)
+                .mode(viewModel.mode())
+                .recentClickListener { _-> viewModel.setMode(LottiefilesMode.Recent) }
+                .popularClickListener { _ -> viewModel.setMode(LottiefilesMode.Popular) }
+                .searchClickListener { _ -> viewModel.setMode(LottiefilesMode.Search) }
+                .addTo(controller)
 
-        val lastAnimationData = viewModel.animationDataList.value?.last()
+        SearchInputItemViewModel_()
+                .id("search")
+                .searchClickListener { viewModel.setMode(LottiefilesMode.Search, it) }
+                .addIf(viewModel.mode() == LottiefilesMode.Search, controller)
+
+        val lastAnimationData = viewModel.animationDataList.value?.lastOrNull()
         viewModel.animationDataList.value?.forEach {
             it ?: return@forEach
             val args = CompositionArgs(animationData = it)

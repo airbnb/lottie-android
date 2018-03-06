@@ -22,7 +22,7 @@
         android:layout_height="56dp"
         app:menu="@menu/bottom_bar"
         app:itemIconTint="@drawable/bottom_bar_tint_list"
-        app:itemTextColor="#3D4246"
+        app:itemTextColor="@color/bottom_bar_label"
         android:background="#F7F7F7"
         android:elevation="8dp"/>
 

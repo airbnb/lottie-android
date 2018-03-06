@@ -15,20 +15,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:titleText="@string/preview_qr"
-        app:actionText="@string/preview_qr_action"/>
+        app:icon="@drawable/ic_qr_scan"/>
 
     <com.airbnb.lottie.samples.PreviewItemView
         android:id="@+id/file"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:titleText="@string/preview_file"
-        app:actionText="@string/preview_file_action"/>
+        app:icon="@drawable/ic_file"/>
 
     <com.airbnb.lottie.samples.PreviewItemView
         android:id="@+id/url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:titleText="@string/preview_url"
-        app:actionText="@string/preview_url_action"/>
+        app:icon="@drawable/ic_network"/>
 
 </LinearLayout>

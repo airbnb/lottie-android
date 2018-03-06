@@ -11,8 +11,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -23,14 +23,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
             android:singleLine="true"
-            android:textColor="@android:color/black"
+            android:textColor="@color/text_color_dark"
             android:textSize="16sp"/>
     </LinearLayout>
 
