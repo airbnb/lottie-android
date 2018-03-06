@@ -12,7 +12,7 @@ interface LottiefilesService {
     fun getRecent(@Query("page") page: Int): Observable<AnimationResponse>
 
     @GET("popular")
-    fun getPopular(@Query("tag") page: Int): Observable<AnimationResponse>
+    fun getPopular(@Query("page") page: Int): Observable<AnimationResponse>
 
     @GET("collections/{collection}")
     fun getCollection(@Path("collection") collection: String): Observable<CollectionsResponse>

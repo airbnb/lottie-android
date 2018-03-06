@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00d1c1</color>
+    <color name="colorPrimary">#c6c6c6</color>
     <color name="colorPrimaryDark">#f1f1f1</color>
-    <color name="colorAccent">#00d1c1</color>
+    <color name="colorAccent">#FF5A5F</color>
     <color name="divider">#CFCFCF</color>
-    <color name="material_teal">#009688</color>
+    <color name="material_teal">#c9484c</color>
     <color name="text_color">#7e7e7e</color>
 
     <color name="background_color1">#ffffff</color>

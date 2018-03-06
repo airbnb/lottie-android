@@ -50,7 +50,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top"
         app:navigationIcon="@drawable/ic_nav_close"
-        android:background="@drawable/toolbar_gradient"
         app:title=""/>
 
     <include layout="@layout/bottom_sheet_render_times" />

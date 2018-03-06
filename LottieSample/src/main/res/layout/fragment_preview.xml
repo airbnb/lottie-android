@@ -5,16 +5,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.airbnb.lottie.samples.views.Marquee
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="64dp"
-        android:text="@string/preview_title"
-        android:textSize="28sp"
-        android:paddingBottom="24dp"
-        android:textColor="#484848"
-        android:textStyle="bold"/>
+        app:titleText="@string/preview_title"/>
 
     <com.airbnb.lottie.samples.PreviewItemView
         android:id="@+id/qr"

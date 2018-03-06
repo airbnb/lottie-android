@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
 import com.airbnb.lottie.samples.R
+import com.airbnb.lottie.samples.getText
 import com.airbnb.lottie.samples.inflate
 import kotlinx.android.synthetic.main.marquee.view.*
 
@@ -18,6 +19,16 @@ class Marquee @JvmOverloads constructor(
 
     init {
         inflate(R.layout.marquee)
+        attrs?.let {
+            val typedArray = context.obtainStyledAttributes(it, R.styleable.Marquee, 0, 0)
+
+            val titleRes = typedArray.getResourceId(R.styleable.Marquee_titleText, 0)
+            if (titleRes != 0) {
+                titleView.text = getText(titleRes)
+            }
+
+            typedArray.recycle()
+        }
     }
 
     @TextProp

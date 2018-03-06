@@ -31,7 +31,7 @@
     <string name="bottom_bar_lottiefiles">Lottiefiles</string>
     <string name="bottom_bar_learn">Learn</string>
 
-    <string name="preview_title">Preview your animation</string>
+    <string name="preview_title">Preview Animations</string>
     <string name="preview_qr">Scan a QR code</string>
     <string name="preview_qr_action">Scan</string>
     <string name="preview_file">Open a file</string>
@@ -67,6 +67,7 @@
 
     <string name="anonymous">Anonymous</string>
 
+    <string name="showcase_item_bullseye">Bullseye</string>
     <string name="showcase_item_dynamic_properties">Dynamic\nProperties</string>
     <string name="showcase_item_animated_text">Animated\nText</string>
     <string name="showcase_item_dynamic_text">Dynamic\nText</string>

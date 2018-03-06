@@ -226,9 +226,12 @@ class PlayerFragment : Fragment() {
         }
 
         speedButtonsContainer.children.forEach {
-            it.setOnClickListener {
-                if (it is ControlBarItemToggleView) {
-                    animationView.speed = it.getText().replace("x", "").toFloat()
+            if (it is ControlBarItemToggleView) {
+                it.setOnClickListener {
+                    animationView.speed = (it as ControlBarItemToggleView)
+                            .getText()
+                            .replace("x", "")
+                            .toFloat()
                     updateUiFromState()
                 }
             }
