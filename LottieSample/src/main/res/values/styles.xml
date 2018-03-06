@@ -9,8 +9,8 @@
         <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
     </style>
 
-    <string name="AppTheme" parent="@style/AppThemeBase">
-    </string>
+    <style name="AppTheme" parent="@style/AppThemeBase">
+    </style>
 
     <style name="OverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_settings</item>
