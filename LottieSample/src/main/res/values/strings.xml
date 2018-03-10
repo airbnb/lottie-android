@@ -72,6 +72,7 @@
 
     <string name="anonymous">Anonymous</string>
 
+    <string name="showcase_item_app_intro">App\nTutorial</string>
     <string name="showcase_item_bullseye">Bullseye\n</string>
     <string name="showcase_item_dynamic_properties">Dynamic\nProperties</string>
     <string name="showcase_item_animated_text">Animated\nText</string>

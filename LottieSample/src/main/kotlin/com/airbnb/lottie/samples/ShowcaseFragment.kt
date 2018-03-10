@@ -21,6 +21,9 @@ import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
 
     private val showcaseItems = listOf(
+            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_app_intro) {
+                startActivity(Intent(requireContext(), AppIntroActivity::class.java))
+            },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
                 startActivity(Intent(requireContext(), BullseyeActivity::class.java))
             },
