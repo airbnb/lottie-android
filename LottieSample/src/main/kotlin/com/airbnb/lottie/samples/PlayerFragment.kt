@@ -153,7 +153,8 @@ class PlayerFragment : Fragment() {
 
         seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
-                    if (seekBar.isPressed && progress > 0 && progress < 5) {
+                    if (!seekBar.isPressed) return@OnSeekBarChangeListenerAdapter
+                    if (progress in 1..4) {
                         seekBar.progress = 0
                         return@OnSeekBarChangeListenerAdapter
                     }
@@ -321,6 +322,8 @@ class PlayerFragment : Fragment() {
         updateWarnings()
 
         scaleSeekBar.progress = 100
+
+        animationView.frame = 122
     }
 
     private fun updateUiFromState() {
