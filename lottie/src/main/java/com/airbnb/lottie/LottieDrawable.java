@@ -26,6 +26,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.parser.LayerParser;
 import com.airbnb.lottie.utils.LottieValueAnimator;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -496,7 +497,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
-    setProgress(frame / composition.getDurationFrames());
+    animator.setFrame(frame);
   }
 
   /**
@@ -515,7 +516,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.setFrame((int) (progress * composition.getDurationFrames() + composition.getStartFrame()));
+    setFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), progress));
   }
 
   /**
