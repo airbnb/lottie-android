@@ -134,29 +134,22 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
       return;
     }
     this.frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
-    verifyFrame();
     frameTime = System.nanoTime();
     notifyUpdate();
   }
 
   public void setMinFrame(int minFrame) {
-    this.minFrame = minFrame;
-    if (frame < minFrame) {
-      frame = minFrame;
-    }
+    setMinAndMaxFrames(minFrame, (int) maxFrame);
   }
 
   public void setMaxFrame(int maxFrame) {
-    this.maxFrame = maxFrame;
-    if (frame > maxFrame) {
-      frame = maxFrame;
-    }
+    setMinAndMaxFrames((int) minFrame, maxFrame);
   }
 
   public void setMinAndMaxFrames(int minFrame, int maxFrame) {
     this.minFrame = minFrame;
     this.maxFrame = maxFrame;
-    frame = MiscUtils.clamp(frame, minFrame, maxFrame);
+    setFrame((int) MiscUtils.clamp(frame, minFrame, maxFrame));
   }
 
   public void reverseAnimationSpeed() {
