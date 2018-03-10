@@ -200,14 +200,14 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return speed < 0;
   }
 
-  private float getMinFrame() {
+  public float getMinFrame() {
     if (composition == null) {
       return 0;
     }
     return minFrame == Integer.MIN_VALUE ? composition.getStartFrame() : minFrame;
   }
 
-  private float getMaxFrame() {
+  public float getMaxFrame() {
     if (composition == null) {
       return 0;
     }

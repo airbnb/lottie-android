@@ -369,6 +369,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Returns the minimum frame set by {@link #setMinFrame(int)} or {@link #setMinProgress(float)}
+   */
+  public float getMinFrame() {
+    return animator.getMinFrame();
+  }
+
+  /**
    * Sets the minimum progress that the animation will start from when playing or looping.
    */
    public void setMinProgress(final float minProgress) {
@@ -388,6 +395,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMaxFrame(final int maxFrame) {
     animator.setMaxFrame(maxFrame);
+  }
+
+  /**
+   * Returns the maximum frame set by {@link #setMaxFrame(int)} or {@link #setMaxProgress(float)}
+   */
+  public float getMaxFrame() {
+    return animator.getMaxFrame();
   }
 
   /**

@@ -542,6 +542,13 @@ import java.util.Map;
   }
 
   /**
+   * Returns the minimum frame set by {@link #setMinFrame(int)} or {@link #setMinProgress(float)}
+   */
+  public float getMinFrame() {
+    return lottieDrawable.getMinFrame();
+  }
+
+  /**
    * Sets the minimum progress that the animation will start from when playing or looping.
    */
   public void setMinProgress(float startProgress) {
@@ -553,6 +560,13 @@ import java.util.Map;
    */
   public void setMaxFrame(int endFrame) {
     lottieDrawable.setMaxFrame(endFrame);
+  }
+
+  /**
+   * Returns the maximum frame set by {@link #setMaxFrame(int)} or {@link #setMaxProgress(float)}
+   */
+  public float getMaxFrame() {
+    return lottieDrawable.getMaxFrame();
   }
 
   /**
