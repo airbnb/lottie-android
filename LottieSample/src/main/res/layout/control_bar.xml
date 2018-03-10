@@ -36,6 +36,11 @@
             app:src="@drawable/ic_color"
             app:text="@string/control_bar_background_color" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/trimToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_content_cut"
+            app:text="@string/control_bar_trim" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/scaleToggle"
             style="@style/ControlBarItem"
             app:src="@drawable/ic_scale"

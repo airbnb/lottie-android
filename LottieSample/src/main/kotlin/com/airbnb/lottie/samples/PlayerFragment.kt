@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -15,6 +16,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.*
+import android.widget.EditText
 import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
@@ -35,6 +37,7 @@ import kotlinx.android.synthetic.main.control_bar_background_color.*
 import kotlinx.android.synthetic.main.control_bar_player_controls.*
 import kotlinx.android.synthetic.main.control_bar_scale.*
 import kotlinx.android.synthetic.main.control_bar_speed.*
+import kotlinx.android.synthetic.main.control_bar_trim.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlin.math.min
 import kotlin.properties.ObservableProperty
@@ -55,6 +58,7 @@ private class UiState(private val callback: () -> Unit) {
     var backgroundColor by BooleanProperty(false)
     var scale by BooleanProperty(false)
     var speed by BooleanProperty(false)
+    var trim by BooleanProperty(false)
 }
 class PlayerFragment : Fragment() {
 
@@ -135,11 +139,13 @@ class PlayerFragment : Fragment() {
         backgroundColorToggle.setOnClickListener { uiState.backgroundColor++ }
         scaleToggle.setOnClickListener { uiState.scale++ }
         speedToggle.setOnClickListener { uiState.speed++ }
+        trimToggle.setOnClickListener { uiState.trim++ }
         renderGraphToggle.setOnClickListener { uiState.renderGraph++ }
 
         closeBackgroundColorButton.setOnClickListener { uiState.backgroundColor = false }
         closeScaleButton.setOnClickListener { uiState.scale = false }
         closeSpeedButton.setOnClickListener { uiState.speed = false }
+        closeTrimButton.setOnClickListener{ uiState.trim = false }
 
         hardwareAccelerationToggle.setOnClickListener {
             animationView.useHardwareAcceleration(!animationView.useHardwareAcceleration)
@@ -158,7 +164,6 @@ class PlayerFragment : Fragment() {
                         seekBar.progress = 0
                         return@OnSeekBarChangeListenerAdapter
                     }
-                    currentFrameView.text = animationView.frame.toString()
                     if (animationView.isAnimating) return@OnSeekBarChangeListenerAdapter
                     animationView.progress = progress / seekBar.max.toFloat()
                 }
@@ -166,6 +171,7 @@ class PlayerFragment : Fragment() {
 
         animationView.repeatCount = ValueAnimator.INFINITE
         animationView.addAnimatorUpdateListener {
+            currentFrameView.text = animationView.frame.toString()
             if (seekBar.isPressed) return@addAnimatorUpdateListener
             seekBar.progress = ((it.animatedValue as Float) * seekBar.max).toInt()
         }
@@ -190,6 +196,41 @@ class PlayerFragment : Fragment() {
                     scaleText.text = "%.0f%%".format(scale * 100)
                 }
         ))
+
+        minFrame.setOnClickListener {
+            val minFrameView = EditText(context)
+            minFrameView.setText(animationView.minFrame.toInt().toString())
+            AlertDialog.Builder(context)
+                    .setTitle(R.string.min_frame_dialog)
+                    .setView(minFrameView)
+                    .setPositiveButton("Load") { _, _ ->
+                        animationView.setMinFrame(
+                                minFrameView.parseIntOrNull() ?:
+                                0
+                        )
+                        updateUiFromState()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .show()
+        }
+
+        maxFrame.setOnClickListener {
+            val maxFrameView = EditText(context)
+            maxFrameView.setText(animationView.maxFrame.toInt().toString())
+            AlertDialog.Builder(context)
+                    .setTitle(R.string.max_frame_dialog)
+                    .setView(maxFrameView)
+                    .setPositiveButton("Load") { _, _ ->
+                        animationView.setMaxFrame(
+                                maxFrameView.parseIntOrNull() ?:
+                                composition?.endFrame?.toInt() ?:
+                                0
+                        )
+                        updateUiFromState()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                    .show()
+        }
 
         arrayOf<BackgroundColorView>(
                 backgroundButton1,
@@ -307,6 +348,7 @@ class PlayerFragment : Fragment() {
             compositionData.images[it.fileName]
         }
         animationView.setComposition(composition)
+        animationView.setMinAndMaxFrame(composition.startFrame.toInt(), composition.endFrame.toInt())
         animationView.setPerformanceTrackingEnabled(true)
         var renderTimeGraphRange = 4f
         animationView.performanceTracker?.addFrameListener { ms ->
@@ -322,8 +364,6 @@ class PlayerFragment : Fragment() {
         updateWarnings()
 
         scaleSeekBar.progress = 100
-
-        animationView.frame = 122
     }
 
     private fun updateUiFromState() {
@@ -348,6 +388,11 @@ class PlayerFragment : Fragment() {
 
         scaleToggle.isActivated = uiState.scale
         scaleContainer.isVisible = uiState.scale
+
+        trimToggle.isActivated = uiState.trim
+        trimContainer.isVisible = uiState.trim
+        minFrame.setText(resources.getString(R.string.min_frame, animationView.minFrame.toInt()))
+        maxFrame.setText(resources.getString(R.string.max_frame, animationView.maxFrame.toInt()))
 
         hardwareAccelerationToggle.isActivated = animationView.useHardwareAcceleration
         mergePathsToggle.isActivated = animationView.isMergePathsEnabledForKitKatAndAbove

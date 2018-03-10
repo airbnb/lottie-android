@@ -45,6 +45,7 @@
     <string name="control_bar_hardware_acceleration">Hardware Acceleration</string>
     <string name="control_bar_render_graph">Render Graph</string>
     <string name="control_bar_scale">Scale</string>
+    <string name="control_bar_trim">Trim Start/End</string>
     <string name="control_bar_speed">Speed</string>
     <string name="control_bar_warnings">View Warnings</string>
     <string name="control_bar_no_warnings">No Warnings</string>
@@ -55,6 +56,11 @@
     <string name="half_x">0.5x</string>
     <string name="one_x">1x</string>
     <string name="two_x">2x</string>
+
+    <string name="min_frame_dialog">Set min frame</string>
+    <string name="max_frame_dialog">Set max frame</string>
+    <string name="min_frame">Min frame: %1$d</string>
+    <string name="max_frame">Max frame: %1$d</string>
 
     <string name="render_times_per_layer_button">View render times per layer</string>
     <string name="render_times_title">Render time per layer</string>

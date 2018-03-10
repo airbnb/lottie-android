@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -57,3 +58,11 @@ fun Float.sqrt() = Math.sqrt(this.toDouble()).toFloat()
 
 fun View.getText(@StringRes res: Int) = this.resources.getText(res)
 operator fun Boolean.inc() = !this
+
+fun EditText.parseIntOrNull(): Int? {
+    return try {
+        Integer.parseInt(text.toString())
+    } catch (e: NumberFormatException) {
+        null
+    }
+}

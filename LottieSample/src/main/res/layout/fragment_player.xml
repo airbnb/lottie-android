@@ -40,6 +40,7 @@
         <include layout="@layout/control_bar_speed" />
         <include layout="@layout/control_bar_scale" />
         <include layout="@layout/control_bar_background_color" />
+        <include layout="@layout/control_bar_trim" />
         <include layout="@layout/control_bar_player_controls" />
         <include layout="@layout/control_bar" />
     </LinearLayout>
