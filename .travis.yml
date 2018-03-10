@@ -10,6 +10,11 @@ env:
   - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
   - yes | sdkmanager "platforms;android-27"
+  - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - export GIT_SHA=$(git rev-parse HEAD)
+  - export GIT_MERGE_BASE=$(git merge-base master)
+  - echo GIT_SHA $GIT_SHA
+  - echo GIT_MERGE_BASE $GIT_MERGE_BASE
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
@@ -34,6 +39,7 @@ notifications:
   email: false
 script:
   - ./gradlew check
+
   - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
   - ./gcloud_run.sh
 sudo: false
