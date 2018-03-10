@@ -13,8 +13,6 @@ import kotlinx.android.synthetic.main.activity_bullseye.*
 
 class BullseyeActivity : AppCompatActivity() {
 
-    private var firstKeypath: KeyPath? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bullseye)
