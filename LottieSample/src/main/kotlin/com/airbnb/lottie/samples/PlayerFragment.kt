@@ -363,6 +363,7 @@ class PlayerFragment : Fragment() {
         warningsContainer.removeAllViews()
         updateWarnings()
 
+        // Scale up to fill the screen
         scaleSeekBar.progress = 100
     }
 

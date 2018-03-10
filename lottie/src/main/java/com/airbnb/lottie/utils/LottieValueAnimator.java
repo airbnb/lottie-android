@@ -16,7 +16,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
 
   private float speed = 1f;
-  private long frameTime = 0;
+  private long lastFrameTimeNs = 0;
   private float frame = 0;
   private int repeatCount = 0;
   private float minFrame = Integer.MIN_VALUE;
@@ -81,19 +81,15 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
 
     long now = System.nanoTime();
-    long timeSinceFrame = now - frameTime;
+    long timeSinceFrame = now - lastFrameTimeNs;
     float frameDuration = getFrameDurationNs();
-    float frames = timeSinceFrame / frameDuration;
-    int wholeFrames = (int) frames;
-    if (wholeFrames == 0) {
-      return;
-    }
-    frame += isReversed() ? -wholeFrames : wholeFrames;
+    float dFrames = timeSinceFrame / frameDuration;
+
+    frame += isReversed() ? -dFrames : dFrames;
     boolean ended = !MiscUtils.contains(frame, getMinFrame(), getMaxFrame());
     frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
 
-    float partialFramesDuration = (frames - wholeFrames) * frameDuration;
-    frameTime = (long) (now - partialFramesDuration);
+    lastFrameTimeNs = now;
 
     notifyUpdate();
     if (ended) {
@@ -109,7 +105,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
         } else {
           frame = getMinFrame();
         }
-        frameTime = now;
+        lastFrameTimeNs = now;
       }
     }
 
@@ -126,7 +122,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   public void setComposition(LottieComposition composition) {
     this.composition = composition;
     setFrame((int) frame);
-    frameTime = System.nanoTime();
+    lastFrameTimeNs = System.nanoTime();
   }
 
   public void setFrame(int frame) {
@@ -134,7 +130,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
       return;
     }
     this.frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
-    frameTime = System.nanoTime();
+    lastFrameTimeNs = System.nanoTime();
     notifyUpdate();
   }
 
@@ -166,7 +162,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
   public void playAnimation() {
     frame = isReversed() ? getMaxFrame() : getMinFrame();
-    frameTime = System.nanoTime();
+    lastFrameTimeNs = System.nanoTime();
     repeatCount = 0;
     postFrameCallback();
     notifyStart(isReversed());
@@ -183,7 +179,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
   public void resumeAnimation() {
     postFrameCallback();
-    frameTime = System.nanoTime();
+    lastFrameTimeNs = System.nanoTime();
     if (isReversed() && getFrame() == getMinFrame()) {
       frame = getMaxFrame();
     } else if (!isReversed() && getFrame() == getMaxFrame()) {
