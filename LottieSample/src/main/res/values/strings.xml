@@ -6,7 +6,6 @@
     <string name="render_times_graph">Show real time render time graph</string>
     <string name="hardware_acceleration">Use hardware acceleration</string>
     <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
-    <string name="menu_item_animation_info">Animation info</string>
     <string name="menu_item_visibility">Hide Controls</string>
 
     <!-- Shortcuts -->
