@@ -49,26 +49,14 @@
             android:name=".PlayerActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.EDIT"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data
-                    android:host="*"
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content"
                     android:mimeType="application/octet-stream"
-                    android:pathPattern=".*\\.json"/>
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.EDIT"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-
-                <data
-                    android:host="*"
-                    android:mimeType="application/octet-stream"
-                    android:pathPattern=".*\\.zip"/>
+                    android:pathPattern=".*\\.json"
+                    android:host="*"/>
             </intent-filter>
         </activity>
         <activity android:name=".DynamicTextActivity">
