@@ -1,6 +1,17 @@
+# 2.5.1
+### Features and Improvements
+* Removed framerate restriction introduced in 2.5.0 that caused Lottie to attempt to render at the After Effects framerate. This caused animations to appear unexpectedly janky in most cases.
+### Bugs Fixed
+* Many minor bug fixes around setting min/max frames
+* Removed @RestrictTo on LottieValueCallback
+* Improved thread safety of animation listeners
+* Fixed looping when the animation speed is reversed
+
+
 # 2.5.0
+### Features and Improvements
 * Added the ability to dynamically change properties at runtime. See [docs](http://airbnb.io/lottie/android/dynamic.html) for more info. This feature removed the existing APIs for
-changing the color dynamically with a color filter. Refer to the docs for migration info from 
+changing the color dynamically with a color filter. Refer to the docs for migration info from
 existing ColorFilter APIs.
 * Added a setRepeatMode and setRepeatCount (Thanks Fabio Nuno!).
 * Completely overhauled json deserialization. Deserializing a composition takes half as long and
