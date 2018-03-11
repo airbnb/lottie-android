@@ -103,7 +103,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
         if (getRepeatMode() == REVERSE) {
           reverseAnimationSpeed();
         } else {
-          frame = getMinFrame();
+          frame = isReversed() ? getMaxFrame() : getMinFrame();
         }
         lastFrameTimeNs = now;
       }
