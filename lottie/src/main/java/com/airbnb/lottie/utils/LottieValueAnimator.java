@@ -162,11 +162,11 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   public void playAnimation() {
-    frame = isReversed() ? getMaxFrame() : getMinFrame();
+    notifyStart(isReversed());
+    setFrame((int) (isReversed() ? getMaxFrame() : getMinFrame()));
     lastFrameTimeNs = System.nanoTime();
     repeatCount = 0;
     postFrameCallback();
-    notifyStart(isReversed());
   }
 
   public void endAnimation() {
