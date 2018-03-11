@@ -70,6 +70,9 @@ class ContentModelParser {
         break;
       case "mm":
         model = MergePathsParser.parse(reader);
+        composition.addWarning("Animation contains merge paths. Merge paths are only " +
+            "supported on KitKat+ and must be manually enabled by calling " +
+            "enableMergePathsForKitKatAndAbove().");
         break;
       case "rp":
         model = RepeaterParser.parse(reader, composition);
