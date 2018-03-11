@@ -71,6 +71,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     testFrameBoundary2();
     testScaleTypes();
     testDynamicProperties();
+    testSwitchingToDrawableAndBack();
   }
 
   private void snapshotAssets(String[] animations) {
@@ -477,6 +478,17 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     animationView.addValueCallback(keyPath, property, callback);
     recordSnapshot(animationView, 1080, "android", "Dynamic Properties", name, params);
+  }
+
+  private void testSwitchingToDrawableAndBack() {
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
+    LottieAnimationView view = new LottieAnimationView(context);
+    view.setComposition(composition);
+    view.setImageResource(R.drawable.ic_assets);
+    view.setComposition(composition);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    recordSnapshot(view, 1080, "android", "Reset Animation", "Drawable and back", params);
   }
 
   private int dpToPx(int dp) {

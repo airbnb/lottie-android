@@ -480,9 +480,10 @@ import java.util.Map;
     }
     lottieDrawable.setCallback(this);
 
+    this.composition = composition;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
     enableOrDisableHardwareLayer();
-    if (!isNewComposition) {
+    if (getDrawable() == lottieDrawable && !isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
       return;
@@ -492,8 +493,6 @@ import java.util.Map;
     // the drawable is different than the original.
     setImageDrawable(null);
     setImageDrawable(lottieDrawable);
-
-    this.composition = composition;
 
     requestLayout();
   }
