@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -71,6 +72,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     testFrameBoundary2();
     testScaleTypes();
     testDynamicProperties();
+    testSwitchingToDrawableAndBack();
   }
 
   private void snapshotAssets(String[] animations) {
@@ -477,6 +479,17 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     animationView.addValueCallback(keyPath, property, callback);
     recordSnapshot(animationView, 1080, "android", "Dynamic Properties", name, params);
+  }
+
+  private void testSwitchingToDrawableAndBack() {
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
+    LottieAnimationView view = new LottieAnimationView(context);
+    view.setComposition(composition);
+    view.setImageDrawable(new ColorDrawable(Color.RED));
+    view.setComposition(composition);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    recordSnapshot(view, 1080, "android", "Reset Animation", "Drawable and back", params);
   }
 
   private int dpToPx(int dp) {
