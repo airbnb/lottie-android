@@ -40,15 +40,15 @@
     <string name="composition_load_error">There was an error loading the composition</string>
 
     <string name="control_bar_border">Border</string>
-    <string name="control_bar_background_color">Background Color</string>
+    <string name="control_bar_background_color">Background</string>
     <string name="control_bar_hardware_acceleration">Hardware Acceleration</string>
     <string name="control_bar_render_graph">Render Graph</string>
     <string name="control_bar_scale">Scale</string>
-    <string name="control_bar_trim">Trim Start/End</string>
+    <string name="control_bar_trim">Trim</string>
     <string name="control_bar_speed">Speed</string>
-    <string name="control_bar_warnings">View Warnings</string>
     <string name="control_bar_no_warnings">No Warnings</string>
-    <string name="control_bar_merge_paths">Enable merge paths (KitKat+)</string>
+    <string name="control_bar_key_paths">Show KeyPaths</string>
+    <string name="control_bar_merge_paths">Merge Paths (KitKat+)</string>
 
     <string name="minus_one_x">-1x</string>
     <string name="minus_half_x">-0.5x</string>
@@ -63,6 +63,7 @@
 
     <string name="render_times_per_layer_button">View render times per layer</string>
     <string name="render_times_title">Render time per layer</string>
+    <string name="key_paths_title">KeyPaths in animation.\nUsed for dynamic properties.</string>
     <string name="warnings_title">Warnings</string>
 
     <string name="lottiefiles">Lottiefiles</string>

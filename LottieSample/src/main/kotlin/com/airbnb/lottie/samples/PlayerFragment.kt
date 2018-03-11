@@ -21,15 +21,18 @@ import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.airbnb.lottie.samples.views.BottomSheetItemView
+import com.airbnb.lottie.samples.views.BottomSheetItemViewModel_
 import com.airbnb.lottie.samples.views.ControlBarItemToggleView
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import kotlinx.android.synthetic.main.bottom_sheet_key_paths.*
 import kotlinx.android.synthetic.main.bottom_sheet_render_times.*
 import kotlinx.android.synthetic.main.bottom_sheet_warnings.*
 import kotlinx.android.synthetic.main.control_bar.*
@@ -71,6 +74,11 @@ class PlayerFragment : Fragment() {
     }
     private val warningsBehavior by lazy {
         BottomSheetBehavior.from(warningsBottomSheet).apply {
+            peekHeight = resources.getDimensionPixelSize(R.dimen.bottom_bar_peek_height)
+        }
+    }
+    private val keyPathsBehavior by lazy {
+        BottomSheetBehavior.from(keyPathsBottomSheet).apply {
             peekHeight = resources.getDimensionPixelSize(R.dimen.bottom_bar_peek_height)
         }
     }
@@ -301,6 +309,27 @@ class PlayerFragment : Fragment() {
         }
         warningsBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+        keyPathsToggle.setOnClickListener {
+            keyPathsBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        closeKeyPathsBottomSheetButton.setOnClickListener {
+            keyPathsBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        keyPathsBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        keyPathsRecyclerView.buildModelsWith { controller ->
+            composition?.let {
+                animationView.resolveKeyPath(KeyPath("**")).forEach {
+                    BottomSheetItemViewModel_()
+                            .id(it.keysToString())
+                            .text(it.keysToString())
+                            .addTo(controller)
+
+                }
+            }
+        }
+
         updateUiFromState()
     }
 
@@ -367,6 +396,8 @@ class PlayerFragment : Fragment() {
 
         // Scale up to fill the screen
         scaleSeekBar.progress = 100
+
+        keyPathsRecyclerView.requestModelBuild()
     }
 
     private fun updateUiFromState() {

@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
-import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
 import com.airbnb.lottie.value.LottieRelativePointValueCallback
 import kotlinx.android.synthetic.main.activity_bullseye.*
 
@@ -25,9 +24,6 @@ class BullseyeActivity : AppCompatActivity() {
 
         val smallValueCallback = LottieRelativePointValueCallback(PointF(0f, 0f))
         animationView.addValueCallback(KeyPath("Seventh"), LottieProperty.TRANSFORM_POSITION, smallValueCallback)
-
-        val bugRotationCallback = LottieRelativeFloatValueCallback(0f)
-        animationView.addValueCallback(KeyPath("Bug"), LottieProperty.TRANSFORM_ROTATION, bugRotationCallback)
 
         var totalDx = 0f
         var totalDy = 0f
@@ -49,8 +45,6 @@ class BullseyeActivity : AppCompatActivity() {
                 smallValueCallback.setValue(getPoint(totalDx, totalDy, 1.2f))
                 mediumValueCallback.setValue(getPoint(totalDx, totalDy, 1f))
                 largeValueCallback.setValue(getPoint(totalDx, totalDy, 0.75f))
-
-                bugRotationCallback.setValue(totalDx)
             }
         })
 

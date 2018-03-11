@@ -203,6 +203,10 @@ public class KeyPath {
     return keys.get(keys.size() - 1).equals("**");
   }
 
+  public String keysToString() {
+    return keys.toString();
+  }
+
   @Override public String toString() {
     return "KeyPath{" + "keys=" + keys + ",resolved=" + (resolvedElement != null) + '}';
   }

@@ -55,4 +55,5 @@
 
     <include layout="@layout/bottom_sheet_render_times" />
     <include layout="@layout/bottom_sheet_warnings" />
+    <include layout="@layout/bottom_sheet_key_paths" />
 </android.support.design.widget.CoordinatorLayout>

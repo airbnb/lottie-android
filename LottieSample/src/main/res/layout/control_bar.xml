@@ -51,6 +51,11 @@
             app:src="@drawable/ic_fast_forward"
             app:text="@string/control_bar_speed" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/keyPathsToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_layers"
+            app:text="@string/control_bar_key_paths" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/hardwareAccelerationToggle"
             style="@style/ControlBarItem"
             app:src="@drawable/ic_memory"
