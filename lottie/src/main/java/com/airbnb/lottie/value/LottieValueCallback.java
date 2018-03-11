@@ -40,8 +40,8 @@ public class LottieValueCallback<T> {
   }
 
   public final void setValue(@Nullable T value) {
+    this.value = value;
     if (animation != null) {
-      this.value = value;
       animation.notifyListeners();
     }
   }
