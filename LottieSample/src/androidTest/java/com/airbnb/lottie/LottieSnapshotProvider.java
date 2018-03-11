@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -484,7 +485,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     LottieComposition composition = LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
     LottieAnimationView view = new LottieAnimationView(context);
     view.setComposition(composition);
-    view.setImageResource(R.drawable.ic_assets);
+    view.setImageDrawable(new ColorDrawable(Color.RED));
     view.setComposition(composition);
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
