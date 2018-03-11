@@ -434,6 +434,12 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
 
     testDynamicProperty(
+        "Null Color Filter",
+        new KeyPath("**"),
+        LottieProperty.COLOR_FILTER,
+        new LottieValueCallback<ColorFilter>(null));
+
+    testDynamicProperty(
         "Opacity interpolation (0)",
         new KeyPath("Shape Layer 1", "Rectangle"),
         LottieProperty.TRANSFORM_OPACITY,
