@@ -326,6 +326,8 @@ class PlayerFragment : Fragment() {
                 uiState.border = false
                 uiState.backgroundColor = false
                 uiState.scale = false
+                uiState.speed = false
+                uiState.trim = false
                 updateUiFromState()
                 val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_black
                 item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
