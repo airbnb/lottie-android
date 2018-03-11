@@ -1,7 +1,6 @@
 package com.airbnb.lottie.value;
 
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 
@@ -24,7 +23,7 @@ public class LottieValueCallback<T> {
   public LottieValueCallback() {
   }
 
-  public LottieValueCallback(@NonNull T staticValue) {
+  public LottieValueCallback(@Nullable T staticValue) {
     value = staticValue;
   }
 
@@ -32,10 +31,6 @@ public class LottieValueCallback<T> {
    * Override this if you haven't set a static value in the constructor or with setValue.
    */
   public T getValue(LottieFrameInfo<T> frameInfo) {
-    if (value == null) {
-      throw new IllegalArgumentException("You must provide a static value in the constructor " +
-          ", call setValue, or override getValue.");
-    }
     return value;
   }
 
