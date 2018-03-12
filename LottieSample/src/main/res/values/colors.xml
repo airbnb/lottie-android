@@ -19,6 +19,7 @@
     <color name="background_color6">#FFB400</color>
     <color name="background_color7">#A61D55</color>
 
+    <color name="item_deselected">#eaeaea</color>
     <color name="item_selected_teal">#009587</color>
     <color name="control_bar_content_unactivated">#444444</color>
 </resources>
