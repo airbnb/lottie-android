@@ -320,10 +320,10 @@ class PlayerFragment : Fragment() {
 
         keyPathsRecyclerView.buildModelsWith { controller ->
             composition?.let {
-                animationView.resolveKeyPath(KeyPath("**")).forEach {
+                animationView.resolveKeyPath(KeyPath("**")).forEachIndexed { index, keyPath ->
                     BottomSheetItemViewModel_()
-                            .id(it.keysToString())
-                            .text(it.keysToString())
+                            .id(index)
+                            .text(keyPath.keysToString())
                             .addTo(controller)
 
                 }
