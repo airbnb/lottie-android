@@ -15,11 +15,11 @@ class CircleShapeParser {
   private CircleShapeParser() {}
 
   static CircleShape parse(
-      JsonReader reader, LottieComposition composition) throws IOException {
+      JsonReader reader, LottieComposition composition, int d) throws IOException {
     String name = null;
     AnimatableValue<PointF, PointF> position = null;
     AnimatablePointValue size = null;
-    boolean reversed = false;
+    boolean reversed = d == 3;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
