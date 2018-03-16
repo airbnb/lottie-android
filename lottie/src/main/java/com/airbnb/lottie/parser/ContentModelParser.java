@@ -20,12 +20,21 @@ class ContentModelParser {
     String type = null;
 
     reader.beginObject();
+    // Unfortunately, for an ellipse, d is before "ty" which means that it will get parsed
+    // before we are in the ellipse parser.
+    // "d" is 2 for normal and 3 for reversed.
+    int d = 2;
+    typeLoop:
     while (reader.hasNext()) {
-      if (reader.nextName().equals("ty")) {
-        type = reader.nextString();
-        break;
-      } else {
-        reader.skipValue();
+      switch (reader.nextName()) {
+        case "ty":
+          type = reader.nextString();
+          break typeLoop;
+        case "d":
+          d = reader.nextInt();
+          break;
+        default:
+          reader.skipValue();
       }
     }
 
@@ -57,7 +66,7 @@ class ContentModelParser {
         model = ShapePathParser.parse(reader, composition);
         break;
       case "el":
-        model = CircleShapeParser.parse(reader, composition);
+        model = CircleShapeParser.parse(reader, composition, d);
         break;
       case "rc":
         model = RectangleShapeParser.parse(reader, composition);
