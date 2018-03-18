@@ -1,46 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.dlazaro66.qrcodereaderview.QRCodeReaderView
         android:id="@+id/qrView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <TextView
         android:id="@+id/textScanPrompt"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/black"
         android:gravity="center"
-        android:maxWidth="220dp"
+        android:padding="8dp"
         android:text="@string/scan_prompt"
-        android:textColor="#fff"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1"/>
+        android:textColor="@android:color/white"/>
 
 
     <ImageView
         android:id="@+id/scannerOverlay"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textScanPrompt"
-        app:layout_constraintVertical_bias="0.4"
-        app:srcCompat="@drawable/ic_qr_overlay"
-        android:contentDescription="@string/qr_code_overlay"/>
+        android:layout_gravity="center"
+        android:contentDescription="@string/qr_code_overlay"
+        app:srcCompat="@drawable/ic_qr_overlay"/>
 
 
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>
 
 

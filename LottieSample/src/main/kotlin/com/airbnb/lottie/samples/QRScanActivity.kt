@@ -13,6 +13,10 @@ import kotlinx.android.synthetic.main.activity_qrscan.*
 class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListener {
     private val vibrator by lazy { getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
 
+    // Sometimes the qr code is read twice in rapid succession. This prevents it from being read
+    // multiple times.
+    private var hasReadQrCode = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
@@ -27,6 +31,7 @@ class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListene
     override fun onResume() {
         super.onResume()
         qrView.startCamera()
+        hasReadQrCode = false
     }
 
     override fun onPause() {
@@ -35,8 +40,10 @@ class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListene
     }
 
     override fun onQRCodeRead(url: String, pointFS: Array<PointF>) {
-        @Suppress("DEPRECATION")
-        vibrator.vibrate(100)
+        if (hasReadQrCode) return
+        hasReadQrCode = true
+        vibrator.vibrateCompat(100)
+        finish()
         startActivity(PlayerActivity.intent(this, CompositionArgs(url = url)))
     }
 

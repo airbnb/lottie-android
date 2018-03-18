@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.annotation.DrawableRes
 import android.support.annotation.LayoutRes
 import android.support.annotation.StringRes
@@ -64,5 +67,18 @@ fun EditText.parseIntOrNull(): Int? {
         Integer.parseInt(text.toString())
     } catch (e: NumberFormatException) {
         null
+    }
+}
+
+fun Context.hasPermission(permission: String): Boolean {
+    return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Vibrator.vibrateCompat(millis: Long) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        vibrate(VibrationEffect.createOneShot(millis, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        @Suppress("DEPRECATION")
+        vibrate(millis)
     }
 }

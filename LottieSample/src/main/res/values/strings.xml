@@ -20,6 +20,7 @@
     <string name="shortcut_disabled">Shortcut Disabled</string>
     <string name="start_typing">Start typing!</string>
     <string name="qr_code_overlay">QR code overlay</string>
+    <string name="qr_permission_denied">QR scanning requires the camera permission.</string>
 
     <string name="scale">Scale</string>
     <string name="background">Background</string>

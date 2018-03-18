@@ -1,9 +1,12 @@
 package com.airbnb.lottie.samples
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +16,8 @@ import android.widget.Toast
 import com.airbnb.lottie.samples.model.CompositionArgs
 import kotlinx.android.synthetic.main.fragment_preview.*
 
-private val RC_FILE = 1000
+private const val RC_FILE = 1000
+private const val RC_CAMERA_PERMISSION = 1001
 class PreviewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -21,7 +25,11 @@ class PreviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         qr.setOnClickListener {
-            startActivity(QRScanActivity.intent(requireContext()))
+            if (requireContext().hasPermission(Manifest.permission.CAMERA)) {
+                startActivity(QRScanActivity.intent(requireContext()))
+            } else {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), RC_CAMERA_PERMISSION)
+            }
         }
 
         file.setOnClickListener {
@@ -55,6 +63,18 @@ class PreviewFragment : Fragment() {
         if (resultCode != Activity.RESULT_OK) return
         when (requestCode) {
             RC_FILE-> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(fileUri = data?.data)))
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            RC_CAMERA_PERMISSION -> {
+                if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(QRScanActivity.intent(requireContext()))
+                } else {
+                    Snackbar.make(container, R.string.qr_permission_denied, Snackbar.LENGTH_LONG).show()
+                }
+            }
         }
     }
 }
