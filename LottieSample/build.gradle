@@ -13,7 +13,7 @@ android {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
     targetSdkVersion 27
-    versionCode 36
+    versionCode 37
     versionName "2.5.2"
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
