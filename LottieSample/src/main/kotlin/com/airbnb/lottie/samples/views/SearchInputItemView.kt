@@ -26,7 +26,7 @@ class SearchInputItemView @JvmOverloads constructor(
             if (actionId == EditorInfo.IME_ACTION_SEARCH && event?.action == KeyEvent.ACTION_DOWN) {
                 searchButton.callOnClick()
                 return@setOnEditorActionListener true
-            } else if (event.keyCode == KeyEvent.KEYCODE_ENTER && event?.action == KeyEvent.ACTION_DOWN) {
+            } else if (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
                 searchButton.callOnClick()
                 return@setOnEditorActionListener true
             }
