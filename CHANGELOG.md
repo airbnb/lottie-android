@@ -1,3 +1,14 @@
+# 2.5.2
+# Features and Improvements
+* Totally new sample app!
+    * Rebuilt from the ground up.
+    * Lottiefiles integration
+    * Render times per layer
+    * Can open zip files with images from lottiefiles, even with qr scanning.
+    * Change speed
+# Bugs Fixed
+* Fixed a regression with ellipse direction
+
 # 2.5.1
 ### Features and Improvements
 * Removed framerate restriction introduced in 2.5.0 that caused Lottie to attempt to render at the After Effects framerate. This caused animations to appear unexpectedly janky in most cases.
