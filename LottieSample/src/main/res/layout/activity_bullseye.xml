@@ -21,4 +21,12 @@
         android:background="#00ddff"
         android:layout_gravity="center"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:text="@string/bullseye_drag_dot"
+        android:textColor="@color/text_color"/>
+
 </com.airbnb.lottie.samples.views.InterceptingFrameLayout>

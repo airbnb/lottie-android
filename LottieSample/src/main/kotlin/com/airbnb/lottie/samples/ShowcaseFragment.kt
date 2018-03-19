@@ -24,9 +24,6 @@ class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_app_intro) {
                 startActivity(Intent(requireContext(), AppIntroActivity::class.java))
             },
-            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
-                startActivity(Intent(requireContext(), BullseyeActivity::class.java))
-            },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_dynamic_properties) {
                 startActivity(Intent(requireContext(), DynamicActivity::class.java))
             },
@@ -35,6 +32,9 @@ class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
             },
             ShowcaseItem(R.drawable.gilbert_animated, R.string.showcase_item_dynamic_text) {
                 startActivity(Intent(requireContext(), DynamicTextActivity::class.java))
+            },
+            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
+                startActivity(Intent(requireContext(), BullseyeActivity::class.java))
             }
     )
     private val viewModel by lazy { ViewModelProviders.of(this).get(ShowcaseViewModel::class.java) }
