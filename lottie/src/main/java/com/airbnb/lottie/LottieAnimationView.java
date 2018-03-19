@@ -50,7 +50,11 @@ import java.util.Map;
  * {@link R.attr#lottie_progress}
  */
 @SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
+
+  public static final CacheStrategy DEFAULT_CACHE_STRATEGY = CacheStrategy.Weak;
+
   private static final String TAG = LottieAnimationView.class.getSimpleName();
+
 
   /**
    * Caching strategy for compositions that will be reused frequently.
@@ -109,10 +113,10 @@ import java.util.Map;
 
   private void init(@Nullable AttributeSet attrs) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
-    int cacheStrategy = ta.getInt(
+    int cacheStrategyOrdinal = ta.getInt(
         R.styleable.LottieAnimationView_lottie_cacheStrategy,
-        CacheStrategy.Weak.ordinal());
-    defaultCacheStrategy = CacheStrategy.values()[cacheStrategy];
+        DEFAULT_CACHE_STRATEGY.ordinal());
+    this.defaultCacheStrategy = CacheStrategy.values()[cacheStrategyOrdinal];
     if (!isInEditMode()) {
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
       boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
