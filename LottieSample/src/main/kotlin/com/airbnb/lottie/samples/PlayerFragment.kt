@@ -128,6 +128,8 @@ class PlayerFragment : Fragment() {
 
         L.setTraceEnabled(true)
 
+        lottieVersionView.text = getString(R.string.lottie_version, com.airbnb.lottie.BuildConfig.VERSION_NAME)
+
         val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS) ?: throw IllegalArgumentException("No composition args specified")
         args.animationData?.bgColorInt()?.let {
             backgroundButton1.setBackgroundColor(it)
@@ -409,6 +411,7 @@ class PlayerFragment : Fragment() {
         renderGraphToggle.isActivated = uiState.renderGraph
         renderTimesGraphContainer.isVisible = uiState.renderGraph
         renderTimesPerLayerButton.isVisible = uiState.renderGraph
+        lottieVersionView.isVisible = !uiState.renderGraph
 
         borderToggle.isActivated = uiState.border
         borderToggle.setImageResource(

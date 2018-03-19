@@ -11,6 +11,7 @@
     </declare-styleable>
     <declare-styleable name="Marquee">
         <attr name="titleText" />
+        <attr name="subtitleText" />
     </declare-styleable>
     <declare-styleable name="TabBarItemView">
         <attr name="titleText" />

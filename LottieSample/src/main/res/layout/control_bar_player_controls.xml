@@ -92,6 +92,15 @@
         android:textColor="@color/item_selected_teal"
         android:textSize="10sp"/>
 
+    <TextView
+        android:id="@+id/lottieVersionView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="14dp"
+        android:textColor="@color/text_color"
+        android:textSize="10sp"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_height"

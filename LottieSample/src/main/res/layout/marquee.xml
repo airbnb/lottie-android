@@ -3,16 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:parentTag="android.widget.FrameLayout">
+    tools:parentTag="android.widget.LinearLayout">
 
     <TextView
         android:id="@+id/titleView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
         android:layout_marginLeft="24dp"
         android:layout_marginTop="64dp"
         android:textSize="32sp"
         android:textStyle="bold"
         android:textColor="@color/text_color_dark"/>
+
+    <TextView
+        android:id="@+id/subtitleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:alpha="0.8"
+        android:textColor="@color/text_color_dark"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="24dp" />
 </merge>

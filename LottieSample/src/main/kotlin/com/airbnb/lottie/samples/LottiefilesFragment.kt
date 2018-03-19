@@ -40,6 +40,7 @@ class LottiefilesFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
         MarqueeModel_()
                 .id("lottiefiles")
                 .title(R.string.lottiefiles)
+                .subtitle(R.string.lottiefiles_airbnb)
                 .addTo(controller)
 
         LottiefilesTabBarModel_()

@@ -63,11 +63,13 @@
     <string name="max_frame">Max frame: %1$d</string>
 
     <string name="render_times_per_layer_button">View render times per layer</string>
+    <string name="lottie_version">Lottie %1$s</string>e
     <string name="render_times_title">Render time per layer</string>
     <string name="key_paths_title">KeyPaths in animation.\nUsed for dynamic properties.</string>
     <string name="warnings_title">Warnings</string>
 
     <string name="lottiefiles">Lottiefiles</string>
+    <string name="lottiefiles_airbnb">Lottiefiles is not affiliated with Airbnb</string>
     <string name="popular">Popular</string>
     <string name="recent">Recent</string>
     <string name="search">Search</string>
