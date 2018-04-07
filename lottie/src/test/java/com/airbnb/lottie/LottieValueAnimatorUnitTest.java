@@ -35,6 +35,7 @@ public class LottieValueAnimatorUnitTest {
     void verify(InOrder inOrder);
   }
 
+  private LottieComposition composition;
   private LottieValueAnimator animator;
   private Animator.AnimatorListener spyListener;
   private InOrder inOrder;
@@ -52,7 +53,7 @@ public class LottieValueAnimatorUnitTest {
         isRunning = false;
       }
     };
-    LottieComposition composition = new LottieComposition();
+    composition = new LottieComposition();
     composition.init(new Rect(), 0, 1000, 1000, new ArrayList<Layer>(),
         new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
         new HashMap<String, LottieImageAsset>(0), new SparseArrayCompat<FontCharacter>(0),
@@ -236,6 +237,18 @@ public class LottieValueAnimatorUnitTest {
         Mockito.verify(spyListener, times(0)).onAnimationCancel(animator);
       }
     });
+  }
+
+  @Test
+  public void setMinFrameSmallerThanComposition() {
+    animator.setMaxFrame(-9000);
+    assertEquals(animator.getMinFrame(), composition.getStartFrame());
+  }
+
+  @Test
+  public void setMaxFrameLargerThanComposition() {
+    animator.setMaxFrame(9000);
+    assertEquals(animator.getMaxFrame(), composition.getEndFrame());
   }
 
   private void testAnimator(final VerifyListener verifyListener) {
