@@ -428,7 +428,10 @@ class PlayerFragment : Fragment() {
 
         trimToggle.isActivated = uiState.trim
         trimContainer.isVisible = uiState.trim
+        // I think this is a lint bug. It complains about int being <ErrorType>
+        //noinspection StringFormatMatches
         minFrame.setText(resources.getString(R.string.min_frame, animationView.minFrame.toInt()))
+        //noinspection StringFormatMatches
         maxFrame.setText(resources.getString(R.string.max_frame, animationView.maxFrame.toInt()))
 
         hardwareAccelerationToggle.isActivated = animationView.useHardwareAcceleration

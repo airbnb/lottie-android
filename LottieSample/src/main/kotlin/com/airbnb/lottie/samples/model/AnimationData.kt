@@ -1,12 +1,12 @@
 package com.airbnb.lottie.samples.model
 
-import android.graphics.Color
 import android.os.Parcelable
 import android.support.annotation.ColorInt
-import android.text.TextUtils
 import androidx.graphics.toColorInt
 import kotlinx.android.parcel.Parcelize
 
+// This is a lint bug
+@SuppressWarnings("ParcelCreator")
 @Parcelize
 data class AnimationData(
         val id: Long,

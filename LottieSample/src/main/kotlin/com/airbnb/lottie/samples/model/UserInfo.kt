@@ -3,6 +3,8 @@ package com.airbnb.lottie.samples.model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+// This is a lint bug
+@SuppressWarnings("ParcelCreator")
 @Parcelize
 data class UserInfo(
         val id: Long,
