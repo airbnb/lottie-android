@@ -1,8 +1,8 @@
 import org.ajoberstar.grgit.Grgit
 
 buildscript {
-  ext.kotlinVersion = '1.2.21'
-  ext.supportLibVersion = '27.1.0'
+  ext.kotlinVersion = '1.2.31'
+  ext.supportLibVersion = '27.1.1'
 
   repositories {
     jcenter()
@@ -10,7 +10,7 @@ buildscript {
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:3.0.1'
+    classpath 'com.android.tools.build:gradle:3.1.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
