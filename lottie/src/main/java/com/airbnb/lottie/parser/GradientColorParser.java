@@ -4,9 +4,7 @@ import android.graphics.Color;
 import android.support.annotation.IntRange;
 import android.util.JsonReader;
 import android.util.JsonToken;
-import android.util.Log;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.utils.MiscUtils;
 
@@ -66,12 +64,6 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
 
     int r = 0;
     int g = 0;
-    if (array.size() != colorPoints * 4) {
-      Log.w(L.TAG, "Unexpected gradient length: " + array.size() +
-          ". Expected " + (colorPoints * 4) + ". This may affect the appearance of the gradient. " +
-          "Make sure to save your After Effects file before exporting an animation with " +
-          "gradients.");
-    }
     for (int i = 0; i < colorPoints * 4; i++) {
       int colorIndex = i / 4;
       double value = array.get(i);
