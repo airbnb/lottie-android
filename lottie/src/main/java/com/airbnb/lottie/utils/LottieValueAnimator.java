@@ -16,6 +16,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
 
   private float speed = 1f;
+  private boolean speedReversedForRepeatMode = false;
   private long lastFrameTimeNs = 0;
   private float frame = 0;
   private int repeatCount = 0;
@@ -101,6 +102,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
         notifyRepeat();
         repeatCount++;
         if (getRepeatMode() == REVERSE) {
+          speedReversedForRepeatMode = !speedReversedForRepeatMode;
           reverseAnimationSpeed();
         } else {
           frame = isReversed() ? getMaxFrame() : getMinFrame();
@@ -163,8 +165,19 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     this.speed = speed;
   }
 
+  /**
+   * Returns the current speed. This will be affected by repeat mode REVERSE.
+   */
   public float getSpeed() {
     return speed;
+  }
+
+  @Override public void setRepeatMode(int value) {
+    super.setRepeatMode(value);
+    if (value != REVERSE && speedReversedForRepeatMode) {
+      speedReversedForRepeatMode = false;
+      reverseAnimationSpeed();
+    }
   }
 
   public void playAnimation() {
@@ -200,7 +213,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   private boolean isReversed() {
-    return speed < 0;
+    return getSpeed() < 0;
   }
 
   public float getMinFrame() {
