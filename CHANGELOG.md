@@ -1,3 +1,10 @@
+# 2.5.4
+# Bugs Fixed
+* You can now call playAnimation() from onAnimationEnd
+* Min/Max frames are clipped to the composition start/end
+* setProgress takes into account start and end frame
+
+
 # 2.5.2
 # Features and Improvements
 * Totally new sample app!
