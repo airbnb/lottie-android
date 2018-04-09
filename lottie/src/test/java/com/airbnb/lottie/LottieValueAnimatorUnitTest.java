@@ -241,7 +241,7 @@ public class LottieValueAnimatorUnitTest {
 
   @Test
   public void setMinFrameSmallerThanComposition() {
-    animator.setMaxFrame(-9000);
+    animator.setMinFrame(-9000);
     assertEquals(animator.getMinFrame(), composition.getStartFrame());
   }
 
