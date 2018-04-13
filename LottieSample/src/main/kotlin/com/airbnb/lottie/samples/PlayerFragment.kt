@@ -63,6 +63,7 @@ private class UiState(private val callback: () -> Unit) {
     var speed by BooleanProperty(false)
     var trim by BooleanProperty(false)
 }
+
 class PlayerFragment : Fragment() {
 
     private val transition = AutoTransition().apply { duration = 175 }
@@ -134,6 +135,7 @@ class PlayerFragment : Fragment() {
         args.animationData?.bgColorInt()?.let {
             backgroundButton1.setBackgroundColor(it)
             animationContainer.setBackgroundColor(it)
+            invertColor(it)
         }
 
         viewModel.composition.observe(this, Observer {
@@ -155,7 +157,7 @@ class PlayerFragment : Fragment() {
         closeBackgroundColorButton.setOnClickListener { uiState.backgroundColor = false }
         closeScaleButton.setOnClickListener { uiState.scale = false }
         closeSpeedButton.setOnClickListener { uiState.speed = false }
-        closeTrimButton.setOnClickListener{ uiState.trim = false }
+        closeTrimButton.setOnClickListener { uiState.trim = false }
 
         hardwareAccelerationToggle.setOnClickListener {
             animationView.useHardwareAcceleration(!animationView.useHardwareAcceleration)
@@ -250,7 +252,10 @@ class PlayerFragment : Fragment() {
                 backgroundButton5,
                 backgroundButton6
         ).forEach { bb ->
-            bb.setOnClickListener { animationContainer.setBackgroundColor(bb.getColor()) }
+            bb.setOnClickListener {
+                animationContainer.setBackgroundColor(bb.getColor())
+                invertColor(bb.getColor())
+            }
         }
 
         renderTimesGraph.apply {
@@ -333,6 +338,17 @@ class PlayerFragment : Fragment() {
         }
 
         updateUiFromState()
+    }
+
+    private fun invertColor(color: Int) {
+        val shouldInvertColor = getContrastColor(color) == Color.WHITE
+        animationView.isActivated = shouldInvertColor
+        toolbar.isActivated = shouldInvertColor
+    }
+
+    private fun getContrastColor(color: Int): Int {
+        val y = (299 * Color.red(color) + 587 * Color.green(color) + 114 * Color.blue(color)) / 1000
+        return if (y >= 128) Color.BLACK else Color.WHITE
     }
 
     override fun onDestroyView() {

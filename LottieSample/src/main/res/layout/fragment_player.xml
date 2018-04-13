@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top"
-        app:navigationIcon="@drawable/ic_nav_close"
+        app:navigationIcon="@drawable/ic_nav_close_selector"
         app:title=""/>
 
     <include layout="@layout/bottom_sheet_render_times" />
