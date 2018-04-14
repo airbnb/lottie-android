@@ -341,14 +341,14 @@ class PlayerFragment : Fragment() {
     }
 
     private fun invertColor(color: Int) {
-        val shouldInvertColor = getContrastColor(color) == Color.WHITE
-        animationView.isActivated = shouldInvertColor
-        toolbar.isActivated = shouldInvertColor
+        val isDarkBg = color.isDark()
+        animationView.isActivated = isDarkBg
+        toolbar.isActivated = isDarkBg
     }
 
-    private fun getContrastColor(color: Int): Int {
-        val y = (299 * Color.red(color) + 587 * Color.green(color) + 114 * Color.blue(color)) / 1000
-        return if (y >= 128) Color.BLACK else Color.WHITE
+    private fun Int.isDark(): Boolean {
+        val y = (299 * Color.red(this) + 587 * Color.green(this) + 114 * Color.blue(this)) / 1000
+        return y < 128
     }
 
     override fun onDestroyView() {
