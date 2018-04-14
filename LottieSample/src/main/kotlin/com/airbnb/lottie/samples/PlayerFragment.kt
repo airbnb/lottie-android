@@ -63,6 +63,7 @@ private class UiState(private val callback: () -> Unit) {
     var speed by BooleanProperty(false)
     var trim by BooleanProperty(false)
 }
+
 class PlayerFragment : Fragment() {
 
     private val transition = AutoTransition().apply { duration = 175 }
@@ -134,6 +135,7 @@ class PlayerFragment : Fragment() {
         args.animationData?.bgColorInt()?.let {
             backgroundButton1.setBackgroundColor(it)
             animationContainer.setBackgroundColor(it)
+            invertColor(it)
         }
 
         viewModel.composition.observe(this, Observer {
@@ -155,7 +157,7 @@ class PlayerFragment : Fragment() {
         closeBackgroundColorButton.setOnClickListener { uiState.backgroundColor = false }
         closeScaleButton.setOnClickListener { uiState.scale = false }
         closeSpeedButton.setOnClickListener { uiState.speed = false }
-        closeTrimButton.setOnClickListener{ uiState.trim = false }
+        closeTrimButton.setOnClickListener { uiState.trim = false }
 
         hardwareAccelerationToggle.setOnClickListener {
             animationView.useHardwareAcceleration(!animationView.useHardwareAcceleration)
@@ -250,7 +252,10 @@ class PlayerFragment : Fragment() {
                 backgroundButton5,
                 backgroundButton6
         ).forEach { bb ->
-            bb.setOnClickListener { animationContainer.setBackgroundColor(bb.getColor()) }
+            bb.setOnClickListener {
+                animationContainer.setBackgroundColor(bb.getColor())
+                invertColor(bb.getColor())
+            }
         }
 
         renderTimesGraph.apply {
@@ -335,6 +340,17 @@ class PlayerFragment : Fragment() {
         updateUiFromState()
     }
 
+    private fun invertColor(color: Int) {
+        val isDarkBg = color.isDark()
+        animationView.isActivated = isDarkBg
+        toolbar.isActivated = isDarkBg
+    }
+
+    private fun Int.isDark(): Boolean {
+        val y = (299 * Color.red(this) + 587 * Color.green(this) + 114 * Color.blue(this)) / 1000
+        return y < 128
+    }
+
     override fun onDestroyView() {
         animationView.removeAnimatorListener(animatorListener)
         super.onDestroyView()
@@ -360,7 +376,7 @@ class PlayerFragment : Fragment() {
                 uiState.speed = false
                 uiState.trim = false
                 updateUiFromState()
-                val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_black
+                val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
                 item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
             }
         }
