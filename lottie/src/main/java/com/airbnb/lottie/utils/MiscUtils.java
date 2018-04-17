@@ -61,20 +61,15 @@ public class MiscUtils {
     return floorMod((int) x, (int) y);
   }
 
-  /**
-   * Copied from Math.floorMod in the Android platform.
-   */
   private static int floorMod(int x, int y) {
-    return x - floorDiv(x, y) * y;
+    return x - y * floorDiv(x, y);
   }
 
-  /**
-   * Copied from Math.floorDiv in the Android platform.
-   */
   private static int floorDiv(int x, int y) {
     int r = x / y;
-    // if the signs are different and modulo not zero, round down
-    if ((x ^ y) < 0 && (r * y != x)) {
+    boolean sameSign = (x ^ y) >= 0;
+    int mod = x % y;
+    if (!sameSign && mod != 0) {
       r--;
     }
     return r;
