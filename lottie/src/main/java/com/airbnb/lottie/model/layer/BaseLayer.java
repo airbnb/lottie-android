@@ -33,9 +33,6 @@ import java.util.List;
 
 public abstract class BaseLayer
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
-  private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
-      Canvas.MATRIX_SAVE_FLAG;
-
   @Nullable
   static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
@@ -219,7 +216,7 @@ public abstract class BaseLayer
     if (hasMatteOnThisLayer()) {
       L.beginSection("Layer#drawMatte");
       L.beginSection("Layer#saveLayer");
-      canvas.saveLayer(rect, mattePaint, SAVE_FLAGS);
+      canvas.saveLayer(rect, mattePaint, Canvas.ALL_SAVE_FLAG);
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
@@ -359,7 +356,7 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
-    canvas.saveLayer(rect, paint, SAVE_FLAGS);
+    canvas.saveLayer(rect, paint, Canvas.ALL_SAVE_FLAG);
     L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
 
