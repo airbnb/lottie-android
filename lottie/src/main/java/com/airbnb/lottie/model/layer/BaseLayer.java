@@ -36,6 +36,8 @@ public abstract class BaseLayer
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
+  private static boolean hasLoggedIntersectMasks = false;
+
   @Nullable
   static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
@@ -334,8 +336,11 @@ public abstract class BaseLayer
         paint = subtractMaskPaint;
         break;
       case MaskModeIntersect:
-        Log.w(L.TAG, "Animation contains intersect masks. They are not supported but will be " +
-            "treated like add masks.");
+        if (!hasLoggedIntersectMasks) {
+          Log.w(L.TAG, "Animation contains intersect masks. They are not supported but will be " +
+                  "treated like add masks.");
+          hasLoggedIntersectMasks = true;
+        }
       case MaskModeAdd:
       default:
         // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
