@@ -43,8 +43,17 @@ public class LottieValueAnimatorUnitTest {
 
   @Before
   public void setup() {
+    animator = createAnimator();
+    composition = createComposition(0, 1000);
+
+    animator.setComposition(composition);
+    spyListener = Mockito.mock(Animator.AnimatorListener.class);
+    isDone = new AtomicBoolean(false);
+  }
+
+  private LottieValueAnimator createAnimator() {
     // Choreographer#postFrameCallback hangs with robolectric.
-    animator = new LottieValueAnimator() {
+    return new LottieValueAnimator() {
       @Override public void postFrameCallback() {
         isRunning = true;
       }
@@ -53,14 +62,15 @@ public class LottieValueAnimatorUnitTest {
         isRunning = false;
       }
     };
-    composition = new LottieComposition();
-    composition.init(new Rect(), 0, 1000, 1000, new ArrayList<Layer>(),
-        new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
-        new HashMap<String, LottieImageAsset>(0), new SparseArrayCompat<FontCharacter>(0),
-        new HashMap<String, Font>(0));
-    animator.setComposition(composition);
-    spyListener = Mockito.mock(Animator.AnimatorListener.class);
-    isDone = new AtomicBoolean(false);
+  }
+
+  private LottieComposition createComposition(int startFrame, int endFrame) {
+    LottieComposition composition = new LottieComposition();
+    composition.init(new Rect(), startFrame, endFrame, 1000, new ArrayList<Layer>(),
+            new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
+            new HashMap<String, LottieImageAsset>(0), new SparseArrayCompat<FontCharacter>(0),
+            new HashMap<String, Font>(0));
+    return composition;
   }
 
   @Test
@@ -249,6 +259,107 @@ public class LottieValueAnimatorUnitTest {
   public void setMaxFrameLargerThanComposition() {
     animator.setMaxFrame(9000);
     assertEquals(animator.getMaxFrame(), composition.getEndFrame());
+  }
+
+  @Test
+  public void setMinFrameBeforeComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setMinFrame(100);
+    animator.setComposition(composition);
+    assertEquals(100.0f, animator.getMinFrame());
+  }
+
+  @Test
+  public void setMaxFrameBeforeComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setMaxFrame(100);
+    animator.setComposition(composition);
+    assertEquals(100.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void setMinAndMaxFrameBeforeComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setMinAndMaxFrames(100, 900);
+    animator.setComposition(composition);
+    assertEquals(100.0f, animator.getMinFrame());
+    assertEquals(900.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void setMinFrameAfterComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setComposition(composition);
+    animator.setMinFrame(100);
+    assertEquals(100.0f, animator.getMinFrame());
+  }
+
+  @Test
+  public void setMaxFrameAfterComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setComposition(composition);
+    animator.setMaxFrame(100);
+    assertEquals(100.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void setMinAndMaxFrameAfterComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setComposition(composition);
+    animator.setMinAndMaxFrames(100, 900);
+    assertEquals(100.0f, animator.getMinFrame());
+    assertEquals(900.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void maxFrameOfNewShorterComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setComposition(composition);
+    LottieComposition composition2 = createComposition(0, 500);
+    animator.setComposition(composition2);
+    assertEquals(500.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void maxFrameOfNewLongerComposition() {
+    LottieValueAnimator animator = createAnimator();
+    animator.setComposition(composition);
+    LottieComposition composition2 = createComposition(0, 1500);
+    animator.setComposition(composition2);
+    assertEquals(1500.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void clearComposition() {
+    animator.clearComposition();
+    assertEquals(0.0f, animator.getMaxFrame());
+    assertEquals(0.0f, animator.getMinFrame());
+  }
+
+  @Test
+  public void resetComposition() {
+    animator.clearComposition();
+    animator.setComposition(composition);
+    assertEquals(0.0f, animator.getMinFrame());
+    assertEquals(1000.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void resetAndSetMinBeforeComposition() {
+    animator.clearComposition();
+    animator.setMinFrame(100);
+    animator.setComposition(composition);
+    assertEquals(100.0f, animator.getMinFrame());
+    assertEquals(1000.0f, animator.getMaxFrame());
+  }
+
+  @Test
+  public void resetAndSetMinAterComposition() {
+    animator.clearComposition();
+    animator.setComposition(composition);
+    animator.setMinFrame(100);
+    assertEquals(100.0f, animator.getMinFrame());
+    assertEquals(1000.0f, animator.getMaxFrame());
   }
 
   private void testAnimator(final VerifyListener verifyListener) {
