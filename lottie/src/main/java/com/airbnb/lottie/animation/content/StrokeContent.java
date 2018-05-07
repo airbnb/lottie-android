@@ -17,6 +17,7 @@ import static com.airbnb.lottie.LottieProperty.STROKE_COLOR;
 
 public class StrokeContent extends BaseStrokeContent {
 
+  private final BaseLayer layer;
   private final String name;
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
@@ -25,6 +26,7 @@ public class StrokeContent extends BaseStrokeContent {
     super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),
         stroke.getJoinType().toPaintJoin(), stroke.getOpacity(), stroke.getWidth(),
         stroke.getLineDashPattern(), stroke.getDashOffset());
+    this.layer = layer;
     name = stroke.getName();
     colorAnimation = stroke.getColor().createAnimation();
     colorAnimation.addUpdateListener(this);
@@ -33,6 +35,9 @@ public class StrokeContent extends BaseStrokeContent {
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     paint.setColor(colorAnimation.getValue());
+    if (colorFilterAnimation != null) {
+      paint.setColorFilter(colorFilterAnimation.getValue());
+    }
     super.draw(canvas, parentMatrix, parentAlpha);
   }
 
@@ -52,6 +57,8 @@ public class StrokeContent extends BaseStrokeContent {
       } else {
         colorFilterAnimation =
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+        colorFilterAnimation.addUpdateListener(this);
+        layer.addAnimation(colorAnimation);
       }
     }
   }

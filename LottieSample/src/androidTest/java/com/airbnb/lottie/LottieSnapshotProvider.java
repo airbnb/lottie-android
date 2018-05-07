@@ -436,6 +436,17 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         LottieProperty.COLOR_FILTER,
         new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
 
+    LottieValueCallback<ColorFilter> blueColorFilter = new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN));
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
+    animationView.setComposition(composition);
+    animationView.setProgress(0f);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    animationView.addValueCallback(new KeyPath("**"), LottieProperty.COLOR_FILTER, blueColorFilter);
+    recordSnapshot(animationView, 1080, "android", "Dynamic Properties", "Color Filter before blue", params);
+    blueColorFilter.setValue(new SimpleColorFilter(Color.BLUE));
+    recordSnapshot(animationView, 1080, "android", "Dynamic Properties", "Color Filter after blue", params);
+
     testDynamicProperty(
         "Null Color Filter",
         new KeyPath("**"),
