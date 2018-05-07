@@ -121,13 +121,25 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return Utils.SECOND_IN_NANOS / composition.getFrameRate() / Math.abs(speed);
   }
 
+  public void clearComposition() {
+    this.composition = null;
+    minFrame = Integer.MIN_VALUE;
+    maxFrame = Integer.MAX_VALUE;
+  }
+
   public void setComposition(LottieComposition composition) {
+    // Because the initial composition is loaded async, the first min/max frame may be set
+    boolean keepMinAndMaxFrames = this.composition == null;
     this.composition = composition;
 
-    setMinAndMaxFrames(
-        (int) Math.max(this.minFrame, composition.getStartFrame()),
-        (int) Math.min(this.maxFrame, composition.getEndFrame())
-    );
+    if (keepMinAndMaxFrames) {
+      setMinAndMaxFrames(
+              (int) Math.max(this.minFrame, composition.getStartFrame()),
+              (int) Math.min(this.maxFrame, composition.getEndFrame())
+      );
+    } else {
+      setMinAndMaxFrames((int) composition.getStartFrame(), (int) composition.getEndFrame());
+    }
     setFrame((int) frame);
     lastFrameTimeNs = System.nanoTime();
   }

@@ -244,6 +244,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     composition = null;
     compositionLayer = null;
     imageAssetManager = null;
+    animator.clearComposition();
     invalidateSelf();
   }
 
