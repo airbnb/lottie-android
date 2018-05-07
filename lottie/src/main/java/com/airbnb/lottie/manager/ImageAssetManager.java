@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
@@ -62,37 +63,54 @@ public class ImageAssetManager {
 
   @Nullable public Bitmap bitmapForId(String id) {
     Bitmap bitmap = bitmaps.get(id);
-    if (bitmap == null) {
-      LottieImageAsset imageAsset = imageAssets.get(id);
-      if (imageAsset == null) {
-        return null;
-      }
-      if (delegate != null) {
-        bitmap = delegate.fetchBitmap(imageAsset);
-        if (bitmap != null) {
-          bitmaps.put(id, bitmap);
-        }
-        return bitmap;
-      }
-
-      InputStream is;
-      try {
-        if (TextUtils.isEmpty(imagesFolder)) {
-          throw new IllegalStateException("You must set an images folder before loading an image." +
-              " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
-        }
-        is = context.getAssets().open(imagesFolder + imageAsset.getFileName());
-      } catch (IOException e) {
-        Log.w(L.TAG, "Unable to open asset.", e);
-        return null;
-      }
-      BitmapFactory.Options opts = new BitmapFactory.Options();
-      opts.inScaled = true;
-      opts.inDensity = 160;
-      bitmap = BitmapFactory.decodeStream(is, null, opts);
-      bitmaps.put(id, bitmap);
+    if (bitmap != null) {
+      return bitmap;
     }
-    return bitmap;
+
+    LottieImageAsset imageAsset = imageAssets.get(id);
+    if (imageAsset == null) {
+      return null;
+    }
+
+    if (delegate != null) {
+      bitmap = delegate.fetchBitmap(imageAsset);
+      if (bitmap != null) {
+        bitmaps.put(id, bitmap);
+      }
+      return bitmap;
+    }
+
+    String filename = imageAsset.getFileName();
+    BitmapFactory.Options opts = new BitmapFactory.Options();
+    opts.inScaled = true;
+    opts.inDensity = 160;
+
+    if (filename.startsWith("data:") && filename.indexOf("base64,") > 0) {
+      // Contents look like a base64 data URI, with the format data:image/png;base64,<data>.
+      byte[] data;
+      try {
+        data = Base64.decode(filename.substring(filename.indexOf(',') + 1), Base64.DEFAULT);
+      } catch (IllegalArgumentException e) {
+        Log.w(L.TAG, "data URL did not have correct base64 format.", e);
+        return null;
+      }
+      bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+      return bitmaps.put(id, bitmap);
+    }
+
+    InputStream is;
+    try {
+      if (TextUtils.isEmpty(imagesFolder)) {
+        throw new IllegalStateException("You must set an images folder before loading an image." +
+            " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
+      }
+      is = context.getAssets().open(imagesFolder + filename);
+    } catch (IOException e) {
+      Log.w(L.TAG, "Unable to open asset.", e);
+      return null;
+    }
+    bitmap = BitmapFactory.decodeStream(is, null, opts);
+    return bitmaps.put(id, bitmap);
   }
 
   public void recycleBitmaps() {
