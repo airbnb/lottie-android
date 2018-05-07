@@ -1,12 +1,16 @@
 package com.airbnb.lottie.model;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.v4.util.Pair;
+
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
 
 /**
  * Non final version of {@link Pair}
  * @param <T>
  */
+@RestrictTo(LIBRARY)
 public class MutablePair<T> {
   @Nullable T first;
   @Nullable T second;
