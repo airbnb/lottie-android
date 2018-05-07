@@ -17,7 +17,7 @@ class FontCharacterParser {
   static FontCharacter parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     char character = '\0';
-    int size = 0;
+    double size = 0;
     double width = 0;
     String style = null;
     String fontFamily = null;
@@ -30,7 +30,7 @@ class FontCharacterParser {
           character = reader.nextString().charAt(0);
           break;
         case "size":
-          size = reader.nextInt();
+          size = reader.nextDouble();
           break;
         case "w":
           width = reader.nextDouble();

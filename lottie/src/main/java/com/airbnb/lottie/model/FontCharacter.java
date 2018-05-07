@@ -16,12 +16,12 @@ public class FontCharacter {
 
   private final List<ShapeGroup> shapes;
   private final char character;
-  private final int size;
+  private final double size;
   private final double width;
   private final String style;
   private final String fontFamily;
 
-  public FontCharacter(List<ShapeGroup> shapes, char character, int size,
+  public FontCharacter(List<ShapeGroup> shapes, char character, double size,
       double width, String style, String fontFamily) {
     this.shapes = shapes;
     this.character = character;
@@ -35,7 +35,7 @@ public class FontCharacter {
     return shapes;
   }
 
-  int getSize() {
+  double getSize() {
     return size;
   }
 
