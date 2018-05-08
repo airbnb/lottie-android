@@ -39,34 +39,6 @@
           <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true" />
           <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
         </JavaCodeStyleSettings>
-        <MarkdownNavigatorCodeStyleSettings>
-          <option name="RIGHT_MARGIN" value="72" />
-        </MarkdownNavigatorCodeStyleSettings>
-        <Objective-C-extensions>
-          <file>
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Import" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Macro" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Typedef" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Enum" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Constant" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Global" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Struct" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="FunctionPredecl" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Function" />
-          </file>
-          <class>
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Property" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="Synthesize" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InitMethod" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="StaticMethod" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="InstanceMethod" />
-            <option name="com.jetbrains.cidr.lang.util.OCDeclarationKind" value="DeallocMethod" />
-          </class>
-          <extensions>
-            <pair source="cpp" header="h" />
-            <pair source="c" header="h" />
-          </extensions>
-        </Objective-C-extensions>
         <XML>
           <option name="XML_ALIGN_ATTRIBUTES" value="false" />
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
