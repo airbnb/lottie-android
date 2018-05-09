@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class ImageAssetManager {
+  private static final Object bitmapHashLock = new Object();
+
   private final Context context;
   private String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
@@ -58,7 +60,7 @@ public class ImageAssetManager {
     if (bitmap == null) {
       return bitmaps.remove(id);
     }
-    return bitmaps.put(id, bitmap);
+    return putBitmap(id, bitmap);
   }
 
   @Nullable public Bitmap bitmapForId(String id) {
@@ -75,7 +77,7 @@ public class ImageAssetManager {
     if (delegate != null) {
       bitmap = delegate.fetchBitmap(imageAsset);
       if (bitmap != null) {
-        bitmaps.put(id, bitmap);
+        putBitmap(id, bitmap);
       }
       return bitmap;
     }
@@ -95,7 +97,7 @@ public class ImageAssetManager {
         return null;
       }
       bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
-      return bitmaps.put(id, bitmap);
+      return putBitmap(id, bitmap);
     }
 
     InputStream is;
@@ -110,20 +112,28 @@ public class ImageAssetManager {
       return null;
     }
     bitmap = BitmapFactory.decodeStream(is, null, opts);
-    return bitmaps.put(id, bitmap);
+    return putBitmap(id, bitmap);
   }
 
   public void recycleBitmaps() {
-    Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<String, Bitmap> entry = it.next();
-      entry.getValue().recycle();
-      it.remove();
+    synchronized (bitmapHashLock) {
+      Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
+      while (it.hasNext()) {
+        Map.Entry<String, Bitmap> entry = it.next();
+        entry.getValue().recycle();
+        it.remove();
+      }
     }
   }
 
   public boolean hasSameContext(Context context) {
     return context == null && this.context == null ||
         context != null && this.context.equals(context);
+  }
+
+  private Bitmap putBitmap(String key, @Nullable Bitmap bitmap) {
+    synchronized (bitmapHashLock) {
+      return bitmaps.put(key, bitmap);
+    }
   }
 }

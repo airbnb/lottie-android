@@ -511,12 +511,16 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     view.setMinProgress(0f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0", params);
     view.setMinProgress(0.25f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0.25", params);
     view.setMinProgress(0.75f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0.75", params);
-    view.setMinProgress(0.1f);
+    view.setMinProgress(1f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 1", params);
 
     view.setMaxProgress(0f);
@@ -528,7 +532,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     view.setMaxProgress(0.75f);
     view.setProgress(1f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "maxProgress 0.75", params);
-    view.setMaxProgress(0.1f);
+    view.setMaxProgress(1f);
     view.setProgress(1f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "maxProgress 1", params);
   }

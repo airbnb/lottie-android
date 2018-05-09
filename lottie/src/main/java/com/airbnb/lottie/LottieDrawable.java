@@ -394,7 +394,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
        });
        return;
      }
-   setMinFrame((int) MiscUtils.lerp(minProgress, composition.getStartFrame(), composition.getEndFrame()));
+   setMinFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), minProgress));
   }
 
   /**
@@ -423,7 +423,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    setMaxFrame((int) MiscUtils.lerp(maxProgress, composition.getStartFrame(), composition.getEndFrame()));
+    setMaxFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), maxProgress));
   }
 
   /**
