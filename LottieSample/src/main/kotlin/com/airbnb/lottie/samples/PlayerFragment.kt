@@ -171,8 +171,7 @@ class PlayerFragment : Fragment() {
 
         seekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
-                    if (!seekBar.isPressed) return@OnSeekBarChangeListenerAdapter
-                    if (progress in 1..4) {
+                    if (seekBar.isPressed && progress in 1..4) {
                         seekBar.progress = 0
                         return@OnSeekBarChangeListenerAdapter
                     }
@@ -185,7 +184,7 @@ class PlayerFragment : Fragment() {
         animationView.addAnimatorUpdateListener {
             currentFrameView.text = animationView.frame.toString()
             if (seekBar.isPressed) return@addAnimatorUpdateListener
-            seekBar.progress = ((it.animatedValue as Float) * seekBar.max).toInt()
+            seekBar.progress = ((it.animatedValue as Float) * seekBar.max).roundToInt()
         }
         animationView.addAnimatorListener(animatorListener)
         playButton.setOnClickListener {
