@@ -43,6 +43,7 @@ import kotlinx.android.synthetic.main.control_bar_speed.*
 import kotlinx.android.synthetic.main.control_bar_trim.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlin.math.min
+import kotlin.math.roundToInt
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
