@@ -52,7 +52,7 @@ public class LottieCompositionParser {
           startFrame = (float) reader.nextDouble();
           break;
         case "op":
-          endFrame = (float) reader.nextDouble();
+          endFrame = (float) reader.nextDouble() - 0.01f;
           break;
         case "fr":
           frameRate = (float) reader.nextDouble();
