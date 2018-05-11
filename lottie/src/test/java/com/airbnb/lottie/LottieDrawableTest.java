@@ -35,11 +35,11 @@ public class LottieDrawableTest {
 
   @Test
   public void testMinFrame() {
-    LottieComposition composition = createComposition(0, 200);
+    LottieComposition composition = createComposition(31, 391);
     LottieDrawable drawable = new LottieDrawable();
     drawable.setComposition(composition);
-    drawable.setMinProgress(0.5f);
-    assertEquals(100f, drawable.getMinFrame());
+    drawable.setMinProgress(0.42f);
+    assertEquals(182f, drawable.getMinFrame());
   }
 
   @Test
@@ -53,10 +53,20 @@ public class LottieDrawableTest {
 
   @Test
   public void testMaxFrame() {
-    LottieComposition composition = createComposition(0, 200);
+    LottieComposition composition = createComposition(31, 391);
     LottieDrawable drawable = new LottieDrawable();
     drawable.setComposition(composition);
-    drawable.setMaxProgress(0.5f);
-    assertEquals(100f, drawable.getMaxFrame());
+    drawable.setMaxProgress(0.25f);
+    assertEquals(121f, drawable.getMaxFrame());
+  }
+
+  @Test
+  public void testMinMaxFrame() {
+    LottieComposition composition = createComposition(31, 391);
+    LottieDrawable drawable = new LottieDrawable();
+    drawable.setComposition(composition);
+    drawable.setMinAndMaxProgress(0.25f, 0.42f);
+    assertEquals(121f, drawable.getMinFrame());
+    assertEquals(182f, drawable.getMaxFrame());
   }
 }
