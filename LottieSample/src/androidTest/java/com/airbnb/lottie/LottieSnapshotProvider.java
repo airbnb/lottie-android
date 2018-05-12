@@ -535,6 +535,15 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     view.setMaxProgress(1f);
     view.setProgress(1f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "maxProgress 1", params);
+
+    composition = LottieComposition.Factory.fromFileSync(context, "Tests/EndFrame.json");
+    view = new LottieAnimationView(context);
+    view.setComposition(composition);
+    view.setFrame(29);
+    recordSnapshot(view, 1080, "android", "EndFrame", "End Frame (red)", params);
+    view.setFrame(30);
+    recordSnapshot(view, 1080, "android", "EndFrame", "End Frame (blue)", params);
+
   }
 
   private int dpToPx(int dp) {
