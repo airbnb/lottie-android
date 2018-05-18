@@ -1,3 +1,11 @@
+# 2.5.5
+# Bugs Fixed
+* Fixed end times for layers/animations. Before, if the layer/animation out frame was 20, it would fully render frame 20. This is incorrect. The last rendered frame should be 19.999... in this case. This should make Lottie reflect After Effects more accurately. However, if you are getting the frame in onAnimationEnd or onAnimationRepeat, it will be one less than it used to be.
+* Added support for base64 encoded images directly in the json instead of the filename. They are 33% larger than their equivalent image file but enables you to have images with a single file.
+* Fixed a lint error about KeyPath visibility.
+* A few min/max progress bug fixes.
+* Prevent autoPlay from starting before the animation was attached to the window. This caused animations in a RecyclerView to start playing before they were on screen.
+
 # 2.5.4
 # Bugs Fixed
 * You can now call playAnimation() from onAnimationEnd
