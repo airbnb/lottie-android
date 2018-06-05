@@ -70,7 +70,6 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation 'com.jakewharton:butterknife:8.8.1'
   kapt 'com.jakewharton:butterknife-compiler:8.8.1'
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
@@ -96,9 +95,11 @@ dependencies {
   androidTestImplementation('com.android.support.test:rules:0.5', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
-  implementation 'com.squareup.retrofit2:retrofit:2.3.0'
   implementation 'com.google.code.gson:gson:2.8.2'
-  implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+  implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+  implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+  implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
   implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
   implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
   implementation 'com.github.bumptech.glide:glide:4.6.1'
