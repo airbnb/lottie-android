@@ -16,8 +16,20 @@ public class L {
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
 
+  public static void info(String msg) {
+    if (DBG) {
+      Log.i(TAG, msg);
+    }
+  }
+
   public static void warn(String msg) {
     Log.w(TAG, msg);
+  }
+
+  public static void error(String msg, Throwable throwable) {
+    if (DBG) {
+      Log.e(TAG, msg, throwable);
+    }
   }
 
   public static void setTraceEnabled(boolean enabled) {

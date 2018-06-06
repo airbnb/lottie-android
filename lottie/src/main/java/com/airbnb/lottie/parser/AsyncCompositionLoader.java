@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.JsonReader;
 
 import com.airbnb.lottie.Cancellable;
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
 
@@ -21,7 +22,8 @@ public final class AsyncCompositionLoader
     try {
       return LottieComposition.Factory.fromJsonSync(params[0]);
     } catch (IOException e) {
-      throw new IllegalStateException(e);
+      L.error("", e);
+      return null;
     }
   }
 
