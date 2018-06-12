@@ -8,6 +8,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
@@ -158,6 +159,17 @@ public abstract class BaseLayer
     lottieDrawable.invalidateSelf();
   }
 
+  @SuppressLint("WrongConstant")
+  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) { 
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // This method was deprecated in API level 26 and not recommented since 22, but its
+      // 2-parameter replacement is only available starting at API level 21.
+      canvas.saveLayer(rect, paint, SAVE_FLAGS);
+    } else {
+      canvas.saveLayer(rect, paint);
+    }
+  }
+
   public void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
     animations.add(newAnimation);
   }
@@ -167,7 +179,7 @@ public abstract class BaseLayer
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
-  @SuppressLint("WrongConstant") @Override
+  @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(drawTraceName);
     if (!visible) {
@@ -205,7 +217,7 @@ public abstract class BaseLayer
     L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
-    canvas.saveLayer(rect, contentPaint, Canvas.ALL_SAVE_FLAG);
+    saveLayerCompat(canvas, rect, contentPaint);
     L.endSection("Layer#saveLayer");
 
     // Clear the off screen buffer. This is necessary for some phones.
@@ -221,7 +233,7 @@ public abstract class BaseLayer
     if (hasMatteOnThisLayer()) {
       L.beginSection("Layer#drawMatte");
       L.beginSection("Layer#saveLayer");
-      canvas.saveLayer(rect, mattePaint, Canvas.ALL_SAVE_FLAG);
+      saveLayerCompat(canvas, rect, mattePaint);
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
@@ -328,7 +340,7 @@ public abstract class BaseLayer
     applyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
   }
 
-  @SuppressLint("WrongConstant") private void applyMasks(Canvas canvas, Matrix matrix,
+  private void applyMasks(Canvas canvas, Matrix matrix,
       Mask.MaskMode maskMode) {
     Paint paint;
     switch (maskMode) {
@@ -364,7 +376,7 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
-    canvas.saveLayer(rect, paint, Canvas.ALL_SAVE_FLAG);
+    saveLayerCompat(canvas, rect, paint);
     L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
 
