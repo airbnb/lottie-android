@@ -38,6 +38,7 @@ public abstract class BaseStrokeContent
   private final Path trimPathPath = new Path();
   private final RectF rect = new RectF();
   private final LottieDrawable lottieDrawable;
+  private final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;
   final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -52,6 +53,7 @@ public abstract class BaseStrokeContent
       Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width,
       List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
     this.lottieDrawable = lottieDrawable;
+    this.layer = layer;
 
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeCap(cap);
@@ -309,6 +311,8 @@ public abstract class BaseStrokeContent
       } else {
         colorFilterAnimation =
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+        colorFilterAnimation.addUpdateListener(this);
+        layer.addAnimation(colorFilterAnimation);
       }
     }
   }

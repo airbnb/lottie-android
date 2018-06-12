@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
@@ -20,6 +21,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class ImageAssetManager {
+  private static final Object bitmapHashLock = new Object();
+
   private final Context context;
   private String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
@@ -57,55 +60,80 @@ public class ImageAssetManager {
     if (bitmap == null) {
       return bitmaps.remove(id);
     }
-    return bitmaps.put(id, bitmap);
+    return putBitmap(id, bitmap);
   }
 
   @Nullable public Bitmap bitmapForId(String id) {
     Bitmap bitmap = bitmaps.get(id);
-    if (bitmap == null) {
-      LottieImageAsset imageAsset = imageAssets.get(id);
-      if (imageAsset == null) {
-        return null;
-      }
-      if (delegate != null) {
-        bitmap = delegate.fetchBitmap(imageAsset);
-        if (bitmap != null) {
-          bitmaps.put(id, bitmap);
-        }
-        return bitmap;
-      }
-
-      InputStream is;
-      try {
-        if (TextUtils.isEmpty(imagesFolder)) {
-          throw new IllegalStateException("You must set an images folder before loading an image." +
-              " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
-        }
-        is = context.getAssets().open(imagesFolder + imageAsset.getFileName());
-      } catch (IOException e) {
-        Log.w(L.TAG, "Unable to open asset.", e);
-        return null;
-      }
-      BitmapFactory.Options opts = new BitmapFactory.Options();
-      opts.inScaled = true;
-      opts.inDensity = 160;
-      bitmap = BitmapFactory.decodeStream(is, null, opts);
-      bitmaps.put(id, bitmap);
+    if (bitmap != null) {
+      return bitmap;
     }
-    return bitmap;
+
+    LottieImageAsset imageAsset = imageAssets.get(id);
+    if (imageAsset == null) {
+      return null;
+    }
+
+    if (delegate != null) {
+      bitmap = delegate.fetchBitmap(imageAsset);
+      if (bitmap != null) {
+        putBitmap(id, bitmap);
+      }
+      return bitmap;
+    }
+
+    String filename = imageAsset.getFileName();
+    BitmapFactory.Options opts = new BitmapFactory.Options();
+    opts.inScaled = true;
+    opts.inDensity = 160;
+
+    if (filename.startsWith("data:") && filename.indexOf("base64,") > 0) {
+      // Contents look like a base64 data URI, with the format data:image/png;base64,<data>.
+      byte[] data;
+      try {
+        data = Base64.decode(filename.substring(filename.indexOf(',') + 1), Base64.DEFAULT);
+      } catch (IllegalArgumentException e) {
+        Log.w(L.TAG, "data URL did not have correct base64 format.", e);
+        return null;
+      }
+      bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+      return putBitmap(id, bitmap);
+    }
+
+    InputStream is;
+    try {
+      if (TextUtils.isEmpty(imagesFolder)) {
+        throw new IllegalStateException("You must set an images folder before loading an image." +
+            " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
+      }
+      is = context.getAssets().open(imagesFolder + filename);
+    } catch (IOException e) {
+      Log.w(L.TAG, "Unable to open asset.", e);
+      return null;
+    }
+    bitmap = BitmapFactory.decodeStream(is, null, opts);
+    return putBitmap(id, bitmap);
   }
 
   public void recycleBitmaps() {
-    Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<String, Bitmap> entry = it.next();
-      entry.getValue().recycle();
-      it.remove();
+    synchronized (bitmapHashLock) {
+      Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
+      while (it.hasNext()) {
+        Map.Entry<String, Bitmap> entry = it.next();
+        entry.getValue().recycle();
+        it.remove();
+      }
     }
   }
 
   public boolean hasSameContext(Context context) {
     return context == null && this.context == null ||
         context != null && this.context.equals(context);
+  }
+
+  private Bitmap putBitmap(String key, @Nullable Bitmap bitmap) {
+    synchronized (bitmapHashLock) {
+      return bitmaps.put(key, bitmap);
+    }
   }
 }

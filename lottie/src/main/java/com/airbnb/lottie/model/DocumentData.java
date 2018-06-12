@@ -1,7 +1,11 @@
 package com.airbnb.lottie.model;
 
 import android.support.annotation.ColorInt;
+import android.support.annotation.RestrictTo;
 
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+
+@RestrictTo(LIBRARY)
 public class DocumentData {
 
   public final String text;

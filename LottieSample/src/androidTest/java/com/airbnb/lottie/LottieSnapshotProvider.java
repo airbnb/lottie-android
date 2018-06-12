@@ -436,6 +436,17 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         LottieProperty.COLOR_FILTER,
         new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN)));
 
+    LottieValueCallback<ColorFilter> blueColorFilter = new LottieValueCallback<ColorFilter>(new SimpleColorFilter(Color.GREEN));
+    LottieAnimationView animationView = new LottieAnimationView(context);
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, "Tests/Shapes.json");
+    animationView.setComposition(composition);
+    animationView.setProgress(0f);
+    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    animationView.addValueCallback(new KeyPath("**"), LottieProperty.COLOR_FILTER, blueColorFilter);
+    recordSnapshot(animationView, 1080, "android", "Dynamic Properties", "Color Filter before blue", params);
+    blueColorFilter.setValue(new SimpleColorFilter(Color.BLUE));
+    recordSnapshot(animationView, 1080, "android", "Dynamic Properties", "Color Filter after blue", params);
+
     testDynamicProperty(
         "Null Color Filter",
         new KeyPath("**"),
@@ -500,12 +511,16 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     view.setMinProgress(0f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0", params);
     view.setMinProgress(0.25f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0.25", params);
     view.setMinProgress(0.75f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 0.75", params);
-    view.setMinProgress(0.1f);
+    view.setMinProgress(1f);
+    view.setProgress(0f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "minProgress 1", params);
 
     view.setMaxProgress(0f);
@@ -517,9 +532,18 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     view.setMaxProgress(0.75f);
     view.setProgress(1f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "maxProgress 0.75", params);
-    view.setMaxProgress(0.1f);
+    view.setMaxProgress(1f);
     view.setProgress(1f);
     recordSnapshot(view, 1080, "android", "MinMaxFrame", "maxProgress 1", params);
+
+    composition = LottieComposition.Factory.fromFileSync(context, "Tests/EndFrame.json");
+    view = new LottieAnimationView(context);
+    view.setComposition(composition);
+    view.setFrame(29);
+    recordSnapshot(view, 1080, "android", "EndFrame", "End Frame (red)", params);
+    view.setFrame(30);
+    recordSnapshot(view, 1080, "android", "EndFrame", "End Frame (blue)", params);
+
   }
 
   private int dpToPx(int dp) {

@@ -204,7 +204,7 @@ public class LayerParser {
     }
 
     // The + 1 is because the animation should be visible on the out frame itself.
-    outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame()) + 1;
+    outFrame = (outFrame > 0 ? outFrame : composition.getEndFrame());
     Keyframe<Float> visibleKeyframe =
         new Keyframe<>(composition, 1f, 1f, null, inFrame, outFrame);
     inOutKeyframes.add(visibleKeyframe);

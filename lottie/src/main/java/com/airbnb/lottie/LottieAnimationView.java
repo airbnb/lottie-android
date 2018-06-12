@@ -136,7 +136,7 @@ import java.util.Map;
       }
     }
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-      lottieDrawable.playAnimation();
+      wasAnimatingWhenDetached = true;
       autoPlay = true;
     }
 
