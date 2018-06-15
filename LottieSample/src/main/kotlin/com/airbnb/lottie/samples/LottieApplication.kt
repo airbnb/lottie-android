@@ -1,23 +1,17 @@
 package com.airbnb.lottie.samples
 
 import android.support.multidex.MultiDexApplication
-import android.util.Log
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class LottieApplication : MultiDexApplication() {
-    // print HTTP protocol content
-    private val loggingInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Log.i("Lottie", it) }).apply { level = HttpLoggingInterceptor.Level.BODY }
-
     val okHttpClient by lazy {
         OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .build() }
 
