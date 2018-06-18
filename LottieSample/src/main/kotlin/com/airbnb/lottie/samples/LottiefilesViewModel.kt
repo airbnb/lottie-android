@@ -53,6 +53,7 @@ class LottiefilesViewModel(application: Application) : AndroidViewModel(applicat
         disposables.add(observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .retry(3)
                 .doOnSubscribe { loading.value = true }
                 .subscribe({
                     responses.add(it)
