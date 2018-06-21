@@ -36,8 +36,8 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:paddingBottom="14dp"
-        android:paddingTop="14dp">
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
