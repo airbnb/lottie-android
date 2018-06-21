@@ -20,6 +20,7 @@ import android.widget.EditText
 import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -182,8 +183,10 @@ class PlayerFragment : Fragment() {
         ))
 
         animationView.repeatCount = ValueAnimator.INFINITE
+
         animationView.addAnimatorUpdateListener {
-            currentFrameView.text = animationView.frame.toString()
+            currentFrameView.text = updateFramesAndDurationLabel(animationView)
+
             if (seekBar.isPressed) return@addAnimatorUpdateListener
             seekBar.progress = ((it.animatedValue as Float) * seekBar.max).roundToInt()
         }
@@ -521,5 +524,23 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    /* Calculate and returns current and total frames along wih current and total seconds */
+    private fun updateFramesAndDurationLabel(animation: LottieAnimationView): String {
+
+        var label = ""
+
+        // current frame out of total frames
+        label += animation.frame.toString() + "/" + ("%.0f").format(animation.maxFrame)
+
+        // current time out of total time
+        val animationSpeed:Float = Math.abs(animation.speed)    // negative numbers become positive
+        // (duration / speed = increase or decrease depending on speed set)
+        val totalTime = (animation.duration / animationSpeed) / 1000.0
+        val progress = (Math.round(animation.progress * 100.0))   // animation.progress out of 100
+        label += "\n" + "%.1f".format(totalTime / 100.0 * progress) + "/" + ("%.1f").format(totalTime)
+
+        return label
     }
 }
