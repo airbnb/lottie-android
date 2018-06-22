@@ -15,14 +15,10 @@ class TrimView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val leftAnchor by lazy {
-        val iv = ImageView(context)
-        iv.setImageResource(R.drawable.ic_trim)
-        iv
+        ImageView(context).apply { setImageResource(R.drawable.ic_trim) }
     }
     private val rightAnchor by lazy {
-        val iv = ImageView(context)
-        iv.setImageResource(R.drawable.ic_trim)
-        iv
+        ImageView(context).apply { setImageResource(R.drawable.ic_trim) }
     }
     private lateinit var callback: (Float, Float) -> Unit
 
@@ -48,13 +44,14 @@ class TrimView @JvmOverloads constructor(
 
 
     init {
-        val leftLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        leftLp.gravity = Gravity.START
-        leftAnchor.layoutParams = leftLp
+        leftAnchor.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.START
+        }
         addView(leftAnchor)
-        val rightLp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        rightLp.gravity = Gravity.END
-        rightAnchor.layoutParams = rightLp
+
+        rightAnchor.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.END
+        }
         addView(rightAnchor)
     }
 

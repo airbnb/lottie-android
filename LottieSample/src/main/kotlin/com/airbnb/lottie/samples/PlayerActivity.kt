@@ -16,7 +16,7 @@ class PlayerActivity : AppCompatActivity() {
             val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS) ?:
                     CompositionArgs(fileUri = intent.data)
             supportFragmentManager.beginTransaction()
-                    .add(R.id.content, PlayerFragment.forAsset(args))
+                    .add(R.id.content, PlayerFragment.newInstance(args))
                     .commit()
         }
     }

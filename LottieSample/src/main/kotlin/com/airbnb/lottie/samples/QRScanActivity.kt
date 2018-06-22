@@ -21,11 +21,13 @@ class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qrscan)
 
-        qrView.setQRDecodingEnabled(true)
-        qrView.setAutofocusInterval(2000L)
-        qrView.setBackCamera()
-        qrView.setOnQRCodeReadListener(this)
-        qrView.setOnClickListener { qrView.forceAutoFocus() }
+        qrView.run {
+            setQRDecodingEnabled(true)
+            setAutofocusInterval(2000L)
+            setBackCamera()
+            setOnQRCodeReadListener(this@QRScanActivity)
+            setOnClickListener { forceAutoFocus() }
+        }
     }
 
     override fun onResume() {

@@ -13,29 +13,29 @@ import com.matthewtamlin.sliding_intro_screen_library.buttons.IntroButton
 import com.matthewtamlin.sliding_intro_screen_library.core.IntroActivity
 import com.matthewtamlin.sliding_intro_screen_library.core.LockableViewPager
 
+private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
 
 class AppIntroActivity : IntroActivity() {
-    private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
 
     private val animationView: LottieAnimationView by lazy {
         rootView.inflate(R.layout.app_intro_animation_view, false) as LottieAnimationView
     }
+
     private val viewPager: LockableViewPager by lazy {
         findViewById<LockableViewPager>(R.id.intro_activity_viewPager)
     }
 
-    override fun generatePages(savedInstanceState: Bundle?): Collection<Fragment> {
-        return listOf(
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance()
-        )
-    }
+    override fun generatePages(savedInstanceState: Bundle?) = listOf(
+            EmptyFragment.newInstance(),
+            EmptyFragment.newInstance(),
+            EmptyFragment.newInstance(),
+            EmptyFragment.newInstance()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         rootView.addView(animationView, 0)
+
         setViewPagerScroller()
 
         addPageChangeListener(OnPageChangeListenerAdapter(
@@ -45,12 +45,10 @@ class AppIntroActivity : IntroActivity() {
         ))
     }
 
-    override fun generateFinalButtonBehaviour(): IntroButton.Behaviour {
-        return object : IntroButton.Behaviour {
-            override fun setActivity(activity: IntroActivity) { finish() }
-            override fun getActivity(): IntroActivity? = null
-            override fun run() {}
-        }
+    override fun generateFinalButtonBehaviour() = object : IntroButton.Behaviour {
+        override fun setActivity(activity: IntroActivity) { finish() }
+        override fun getActivity(): IntroActivity? = null
+        override fun run() {}
     }
 
     private fun setAnimationProgress(position: Int, positionOffset: Float) {
@@ -63,29 +61,33 @@ class AppIntroActivity : IntroActivity() {
     class EmptyFragment : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            return container!!.inflate(R.layout.fragment_empty, false)
+            return inflater.inflate(R.layout.fragment_empty, container, false)
         }
 
         companion object {
-            internal fun newInstance(): EmptyFragment {
-                return EmptyFragment()
-            }
+            fun newInstance() = EmptyFragment()
         }
     }
 
     private fun setViewPagerScroller() {
         try {
-            val scrollerField = ViewPager::class.java.getDeclaredField("mScroller")
-            scrollerField.isAccessible = true
-            val interpolator = ViewPager::class.java.getDeclaredField("sInterpolator")
-            interpolator.isAccessible = true
+            val viewPagerClazz = ViewPager::class.java
 
-            val scroller = object : Scroller(this, interpolator.get(null) as Interpolator) {
+            val interpolator = viewPagerClazz.getDeclaredField("sInterpolator").run {
+                isAccessible = true
+                get(null) as Interpolator
+            }
+
+            val scroller = object : Scroller(this, interpolator) {
                 override fun startScroll(startX: Int, startY: Int, dx: Int, dy: Int, duration: Int) {
                     super.startScroll(startX, startY, dx, dy, duration * 7)
                 }
             }
-            scrollerField.set(viewPager, scroller)
+
+            viewPagerClazz.getDeclaredField("mScroller").run {
+                isAccessible = true
+                set(viewPager, scroller)
+            }
         } catch (e: NoSuchFieldException) {
             // Do nothing.
         } catch (e: IllegalAccessException) {
