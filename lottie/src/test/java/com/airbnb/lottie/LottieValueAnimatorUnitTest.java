@@ -55,11 +55,11 @@ public class LottieValueAnimatorUnitTest {
     // Choreographer#postFrameCallback hangs with robolectric.
     return new LottieValueAnimator() {
       @Override public void postFrameCallback() {
-        isRunning = true;
+        running = true;
       }
 
       @Override public void removeFrameCallback() {
-        isRunning = false;
+        running = false;
       }
     };
   }
