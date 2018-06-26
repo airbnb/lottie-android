@@ -526,21 +526,18 @@ class PlayerFragment : Fragment() {
         }
     }
 
-    /* Calculate and returns current and total frames along wih current and total seconds */
     private fun updateFramesAndDurationLabel(animation: LottieAnimationView): String {
+        val currentFrame = animation.frame.toString()
+        val totalFrames = ("%.0f").format(animation.maxFrame)
 
-        var label = ""
+        val animationSpeed:Float = Math.abs(animation.speed)
 
-        // current frame out of total frames
-        label += animation.frame.toString() + "/" + ("%.0f").format(animation.maxFrame)
+		val totalTime = ((animation.duration / animationSpeed) / 1000.0)
+        val totalTimeFormatted = ("%.1f").format(totalTime)
 
-        // current time out of total time
-        val animationSpeed:Float = Math.abs(animation.speed)    // negative numbers become positive
-        // (duration / speed = increase or decrease depending on speed set)
-        val totalTime = (animation.duration / animationSpeed) / 1000.0
-        val progress = (Math.round(animation.progress * 100.0))   // animation.progress out of 100
-        label += "\n" + "%.1f".format(totalTime / 100.0 * progress) + "/" + ("%.1f").format(totalTime)
+        val progress = (totalTime / 100.0) * (Math.round(animation.progress * 100.0))
+        val progressFormatted = ("%.1f").format(progress)
 
-        return label
+        return "$currentFrame/$totalFrames\n$progressFormatted/$totalTimeFormatted"
     }
 }
