@@ -8,11 +8,4 @@
         android:checkable="true"
         android:checked="false"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/changeScreenOrientation"
-        android:icon="@drawable/ic_assets"
-        android:title="@string/menu_item_visibility"
-        android:checkable="true"
-        android:checked="false"
-        app:showAsAction="ifRoom" />
 </menu>

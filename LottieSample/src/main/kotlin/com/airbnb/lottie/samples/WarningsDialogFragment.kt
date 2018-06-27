@@ -15,7 +15,7 @@ class WarningsDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.fragment_warnings, container, false).apply {
             okButton.setOnClickListener { dismiss() }
             recyclerView.adapter = Adapter((savedInstanceState ?: arguments)?.getStringArrayList
-            (ARG_WARNINGS) ?: arrayListOf())
+            (ARG_WARNINGS) ?: emptyList())
         }
     }
 

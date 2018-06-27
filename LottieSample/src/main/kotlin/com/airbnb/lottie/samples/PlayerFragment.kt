@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -379,15 +378,6 @@ class PlayerFragment : Fragment() {
                 updateUiFromState()
                 val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
                 item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
-            }
-            R.id.changeScreenOrientation -> {
-                requireActivity()?.run {
-                    requestedOrientation = if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    } else {
-                        ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    }
-                }
             }
         }
         return true
