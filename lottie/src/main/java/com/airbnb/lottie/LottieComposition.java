@@ -221,6 +221,10 @@ public class LottieComposition {
       return loader;
     }
 
+    public static LottieTask<LottieComposition> fromJsonReader(JsonReader reader) {
+
+    }
+
     @Nullable
     public static LottieComposition fromFileSync(Context context, String fileName) {
       try {
