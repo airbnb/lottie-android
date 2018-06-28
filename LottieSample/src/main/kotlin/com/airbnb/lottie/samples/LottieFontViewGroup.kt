@@ -18,9 +18,9 @@ import java.util.*
 class LottieFontViewGroup @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val compositionMap = HashMap<String, LottieComposition>()
-    private val views = ArrayList<View>()
 
+    private val compositionMap by lazy { HashMap<String, LottieComposition>() }
+    private val views by lazy { ArrayList<View>() }
     private val cursorView: LottieAnimationView by lazy { LottieAnimationView(context) }
 
     init {
@@ -30,20 +30,20 @@ class LottieFontViewGroup @JvmOverloads constructor(
             if (composition == null) {
                 return@fromAssetFileName
             }
-            cursorView.layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            cursorView.setComposition(composition)
-            cursorView.repeatCount = LottieDrawable.INFINITE
-            cursorView.playAnimation()
-            addView(cursorView)
+            cursorView.apply {
+                layoutParams = FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                setComposition(composition)
+                repeatCount = LottieDrawable.INFINITE
+                playAnimation()
+            }.let { addView(it) }
         }
     }
 
     private fun addSpace() {
-        val index = indexOfChild(cursorView)
-        addView(createSpaceView(), index)
+        addView(createSpaceView(), indexOfChild(cursorView))
     }
 
     override fun addView(child: View, index: Int) {
@@ -56,10 +56,9 @@ class LottieFontViewGroup @JvmOverloads constructor(
     }
 
     private fun removeLastView() {
-        if (views.size > 1) {
-            val position = views.size - 2
-            removeView(views[position])
-            views.removeAt(position)
+        (views.size - 2).takeIf { it >= 0 }?.let {
+            removeView(views[it])
+            views.removeAt(it)
         }
     }
 
@@ -97,7 +96,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
         for (i in views.indices) {
             val view = views[i]
             if (!fitsOnCurrentLine(currentX, view)) {
-                if (view.tag != null && view.tag == "Space") {
+                if (view.tag == "Space") {
                     continue
                 }
                 currentX = paddingLeft
@@ -110,16 +109,15 @@ class LottieFontViewGroup @JvmOverloads constructor(
     }
 
     override fun onCreateInputConnection(outAttrs: EditorInfo): InputConnection {
-        val fic = BaseInputConnection(this, false)
-        outAttrs.actionLabel = null
-        outAttrs.inputType = InputType.TYPE_NULL
-        outAttrs.imeOptions = EditorInfo.IME_ACTION_NEXT
-        return fic
+        outAttrs.run {
+            actionLabel = null
+            inputType = InputType.TYPE_NULL
+            imeOptions = EditorInfo.IME_ACTION_NEXT
+        }
+        return BaseInputConnection(this, false)
     }
 
-    override fun onCheckIsTextEditor(): Boolean {
-        return true
-    }
+    override fun onCheckIsTextEditor(): Boolean = true
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_SPACE) {
@@ -151,17 +149,17 @@ class LottieFontViewGroup @JvmOverloads constructor(
         //         break;
         // }
         val fileName = "Mobilo/$letter.json"
-        if (compositionMap.containsKey(fileName)) {
-            addComposition(compositionMap[fileName]!!)
-        } else {
-            LottieComposition.Factory.fromAssetFileName(context, fileName
-            ) { composition ->
-                if (composition == null) {
+        val composition = compositionMap[fileName]
+        if (composition == null) {
+            LottieComposition.Factory.fromAssetFileName(context, fileName) {
+                if (it == null) {
                     return@fromAssetFileName
                 }
-                compositionMap.put(fileName, composition)
-                addComposition(composition)
+                compositionMap[fileName] = it
+                addComposition(it)
             }
+        } else {
+            addComposition(composition)
         }
 
         return true
@@ -185,28 +183,24 @@ class LottieFontViewGroup @JvmOverloads constructor(
     }
 
     private fun addComposition(composition: LottieComposition) {
-        val lottieAnimationView = LottieAnimationView(context)
-        lottieAnimationView.layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        lottieAnimationView.setComposition(composition)
-        lottieAnimationView.playAnimation()
-        val index = indexOfChild(cursorView)
-        addView(lottieAnimationView, index)
+        LottieAnimationView(context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            setComposition(composition)
+            playAnimation()
+        }.let { addView(it, indexOfChild(cursorView)) }
     }
 
     private fun fitsOnCurrentLine(currentX: Int, view: View): Boolean {
         return currentX + view.measuredWidth < width - paddingRight
     }
 
-    private fun createSpaceView(): View {
-        val spaceView = View(context)
-        spaceView.layoutParams = FrameLayout.LayoutParams(
+    private fun createSpaceView() = View(context).apply {
+        layoutParams = FrameLayout.LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.font_space_width),
                 ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        spaceView.tag = "Space"
-        return spaceView
+        tag = "Space"
     }
 }

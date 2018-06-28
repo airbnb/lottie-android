@@ -2,7 +2,6 @@ package com.airbnb.lottie.samples
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -22,19 +21,19 @@ class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
 
     private val showcaseItems = listOf(
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_app_intro) {
-                startActivity(Intent(requireContext(), AppIntroActivity::class.java))
+                startActivity(AppIntroActivity::class)
             },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_dynamic_properties) {
-                startActivity(Intent(requireContext(), DynamicActivity::class.java))
+                startActivity(DynamicActivity::class)
             },
             ShowcaseItem(R.drawable.gilbert_animated, R.string.showcase_item_animated_text) {
-                startActivity(Intent(requireContext(), TypographyDemoActivity::class.java))
+                startActivity(TypographyDemoActivity::class)
             },
             ShowcaseItem(R.drawable.gilbert_animated, R.string.showcase_item_dynamic_text) {
-                startActivity(Intent(requireContext(), DynamicTextActivity::class.java))
+                startActivity(DynamicTextActivity::class)
             },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
-                startActivity(Intent(requireContext(), BullseyeActivity::class.java))
+                startActivity(BullseyeActivity::class)
             }
     )
     private val viewModel by lazy { ViewModelProviders.of(this).get(ShowcaseViewModel::class.java) }
