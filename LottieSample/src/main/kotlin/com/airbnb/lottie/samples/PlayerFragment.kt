@@ -530,7 +530,7 @@ class PlayerFragment : Fragment() {
         val currentFrame = animation.frame.toString()
         val totalFrames = ("%.0f").format(animation.maxFrame)
 
-        val animationSpeed:Float = Math.abs(animation.speed)
+        val animationSpeed: Float = Math.abs(animation.speed)
 
 		val totalTime = ((animation.duration / animationSpeed) / 1000.0)
         val totalTimeFormatted = ("%.1f").format(totalTime)
