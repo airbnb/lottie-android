@@ -20,6 +20,7 @@ import android.widget.EditText
 import androidx.view.children
 import androidx.view.isVisible
 import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -182,8 +183,10 @@ class PlayerFragment : Fragment() {
         ))
 
         animationView.repeatCount = ValueAnimator.INFINITE
+
         animationView.addAnimatorUpdateListener {
-            currentFrameView.text = animationView.frame.toString()
+            currentFrameView.text = updateFramesAndDurationLabel(animationView)
+
             if (seekBar.isPressed) return@addAnimatorUpdateListener
             seekBar.progress = ((it.animatedValue as Float) * seekBar.max).roundToInt()
         }
@@ -521,5 +524,20 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun updateFramesAndDurationLabel(animation: LottieAnimationView): String {
+        val currentFrame = animation.frame.toString()
+        val totalFrames = ("%.0f").format(animation.maxFrame)
+
+        val animationSpeed: Float = Math.abs(animation.speed)
+
+		val totalTime = ((animation.duration / animationSpeed) / 1000.0)
+        val totalTimeFormatted = ("%.1f").format(totalTime)
+
+        val progress = (totalTime / 100.0) * (Math.round(animation.progress * 100.0))
+        val progressFormatted = ("%.1f").format(progress)
+
+        return "$currentFrame/$totalFrames\n$progressFormatted/$totalTimeFormatted"
     }
 }
