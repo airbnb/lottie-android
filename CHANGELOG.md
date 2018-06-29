@@ -1,3 +1,8 @@
+# 2.5.6
+# Added support for targeting Android P
+# Fixed a potential dangling Choreographer callback ([#775](https://github
+.com/airbnb/lottie-android/pull/775))
+
 # 2.5.5
 # Bugs Fixed
 * Fixed end times for layers/animations. Before, if the layer/animation out frame was 20, it would fully render frame 20. This is incorrect. The last rendered frame should be 19.999... in this case. This should make Lottie reflect After Effects more accurately. However, if you are getting the frame in onAnimationEnd or onAnimationRepeat, it will be one less than it used to be.
