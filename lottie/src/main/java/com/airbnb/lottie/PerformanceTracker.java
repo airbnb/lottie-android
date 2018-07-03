@@ -23,18 +23,15 @@ public class PerformanceTracker {
   private boolean enabled = false;
   private final Set<FrameListener> frameListeners = new ArraySet<>();
   private final Map<String, MeanCalculator> layerRenderTimes = new HashMap<>();
-  private final Comparator<Pair<String, Float>> floatComparator =
-      new Comparator<Pair<String, Float>>() {
-    @Override public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {
-      float r1 = o1.second;
-      float r2 = o2.second;
-      if (r2 > r1) {
-        return 1;
-      } else if (r1 > r2) {
-        return -1;
-      }
-      return 0;
+  private final Comparator<Pair<String, Float>> floatComparator = (o1, o2) -> {
+    float r1 = o1.second;
+    float r2 = o2.second;
+    if (r2 > r1) {
+      return 1;
+    } else if (r1 > r2) {
+      return -1;
     }
+    return 0;
   };
 
   void setEnabled(boolean enabled) {

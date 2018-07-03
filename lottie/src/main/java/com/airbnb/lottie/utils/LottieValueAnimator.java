@@ -23,7 +23,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   private float minFrame = Integer.MIN_VALUE;
   private float maxFrame = Integer.MAX_VALUE;
   @Nullable private LottieComposition composition;
-  @VisibleForTesting protected boolean isRunning = false;
+  @VisibleForTesting protected boolean running = false;
 
   public LottieValueAnimator() {
   }
@@ -72,7 +72,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   @Override public boolean isRunning() {
-    return isRunning;
+    return running;
   }
 
   @Override public void doFrame(long frameTimeNanos) {
@@ -193,6 +193,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   public void playAnimation() {
+    running = true;
     notifyStart(isReversed());
     setFrame((int) (isReversed() ? getMaxFrame() : getMinFrame()));
     lastFrameTimeNs = System.nanoTime();
@@ -210,6 +211,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   public void resumeAnimation() {
+    running = true;
     postFrameCallback();
     lastFrameTimeNs = System.nanoTime();
     if (isReversed() && getFrame() == getMinFrame()) {
@@ -243,14 +245,21 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   protected void postFrameCallback() {
-    removeFrameCallback();
-    Choreographer.getInstance().postFrameCallback(this);
-    isRunning = true;
+    if (isRunning()) {
+      removeFrameCallback(false);
+      Choreographer.getInstance().postFrameCallback(this);
+    }
   }
 
   protected void removeFrameCallback() {
+    this.removeFrameCallback(true);
+  }
+
+  protected void removeFrameCallback(boolean stopRunning) {
     Choreographer.getInstance().removeFrameCallback(this);
-    isRunning = false;
+    if (stopRunning) {
+      running = false;
+    }
   }
 
   private void verifyFrame() {

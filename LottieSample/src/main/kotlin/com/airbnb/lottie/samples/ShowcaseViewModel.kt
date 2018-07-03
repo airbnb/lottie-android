@@ -24,6 +24,7 @@ class ShowcaseViewModel(application: Application) : AndroidViewModel(application
         disposables.add(lottiefilesService.getCollection(COLLECTION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .retry(3)
                 .doOnSubscribe { loading.value = true }
                 .subscribe({
                     collection.value = it
