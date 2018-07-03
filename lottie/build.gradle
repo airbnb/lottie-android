@@ -10,7 +10,7 @@ android {
     minSdkVersion 16
     targetSdkVersion 27
     versionCode 100
-    versionName "2.5.5"
+    versionName "2.5.6"
   }
   lintOptions {
     abortOnError true
@@ -18,8 +18,8 @@ android {
     textOutput 'stdout'
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
   testOptions {
     unitTests {
