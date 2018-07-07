@@ -30,7 +30,7 @@ public class ImageLayer extends BaseLayer {
 
   @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     Bitmap bitmap = getBitmap();
-    if (bitmap == null) {
+    if (bitmap == null || bitmap.isRecycled()) {
       return;
     }
     float density = Utils.dpScale();
