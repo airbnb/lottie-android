@@ -1,7 +1,6 @@
 # 2.5.6
-# Added support for targeting Android P
-# Fixed a potential dangling Choreographer callback ([#775](https://github
-.com/airbnb/lottie-android/pull/775))
+* Added support for targeting Android P
+* Fixed a potential dangling Choreographer callback ([#775](https://githubcom/airbnb/lottie-android/pull/775))
 
 # 2.5.5
 # Bugs Fixed
