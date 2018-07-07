@@ -145,7 +145,7 @@ class PlayerFragment : Fragment() {
             onCompositionLoaded(it)
         })
         viewModel.error.observe(this, Observer {
-            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
+            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG).show()
         })
         viewModel.fetchAnimation(args)
 
@@ -191,14 +191,14 @@ class PlayerFragment : Fragment() {
             seekBar.progress = ((it.animatedValue as Float) * seekBar.max).roundToInt()
         }
         animationView.addAnimatorListener(animatorListener)
+
         playButton.setOnClickListener {
             if (animationView.isAnimating) animationView.pauseAnimation() else animationView.resumeAnimation()
             updateUiFromState()
         }
 
         loopButton.setOnClickListener {
-            val repeatCount = if (animationView.repeatCount == ValueAnimator.INFINITE) 0 else ValueAnimator.INFINITE
-            animationView.repeatCount = repeatCount
+            animationView.repeatCount = if (animationView.repeatCount == ValueAnimator.INFINITE) 0 else ValueAnimator.INFINITE
             updateUiFromState()
         }
 
@@ -220,8 +220,7 @@ class PlayerFragment : Fragment() {
                     .setView(minFrameView)
                     .setPositiveButton("Load") { _, _ ->
                         animationView.setMinFrame(
-                                minFrameView.parseIntOrNull() ?:
-                                0
+                                minFrameView.parseIntOrNull() ?: 0
                         )
                         updateUiFromState()
                     }
@@ -237,9 +236,7 @@ class PlayerFragment : Fragment() {
                     .setView(maxFrameView)
                     .setPositiveButton("Load") { _, _ ->
                         animationView.setMaxFrame(
-                                maxFrameView.parseIntOrNull() ?:
-                                composition?.endFrame?.toInt() ?:
-                                0
+                                maxFrameView.parseIntOrNull() ?: composition?.endFrame?.toInt() ?: 0
                         )
                         updateUiFromState()
                     }
@@ -270,19 +267,20 @@ class PlayerFragment : Fragment() {
             data = LineData(lineDataSet)
             axisLeft.setDrawGridLines(false)
             axisLeft.labelCount = 4
-            val ll1 = LimitLine(16f, "60fps")
-            ll1.lineColor = Color.RED
-            ll1.lineWidth = 1.2f
-            ll1.textColor = Color.BLACK
-            ll1.textSize = 8f
-            axisLeft.addLimitLine(ll1)
 
-            val ll2 = LimitLine(32f, "30fps")
-            ll2.lineColor = Color.RED
-            ll2.lineWidth = 1.2f
-            ll2.textColor = Color.BLACK
-            ll2.textSize = 8f
-            axisLeft.addLimitLine(ll2)
+            LimitLine(16f, "60fps").apply {
+                lineColor = Color.RED
+                lineWidth = 1.2f
+                textColor = Color.BLACK
+                textSize = 8f
+            }.let { axisLeft.addLimitLine(it) }
+
+            LimitLine(32f, "30fps").apply {
+                lineColor = Color.RED
+                lineWidth = 1.2f
+                textColor = Color.BLACK
+                textSize = 8f
+            }.let { axisLeft.addLimitLine(it) }
         }
 
         speedButtonsContainer.children.forEach {
@@ -370,14 +368,16 @@ class PlayerFragment : Fragment() {
             android.R.id.home -> requireActivity().finish()
             R.id.info -> Unit
             R.id.visibility -> {
-                uiState.controls = !item.isChecked
-                uiState.controlBar = !item.isChecked
-                uiState.renderGraph = false
-                uiState.border = false
-                uiState.backgroundColor = false
-                uiState.scale = false
-                uiState.speed = false
-                uiState.trim = false
+                uiState.apply {
+                    controls = !item.isChecked
+                    controlBar = !item.isChecked
+                    renderGraph = false
+                    border = false
+                    backgroundColor = false
+                    scale = false
+                    speed = false
+                    trim = false
+                }
                 updateUiFromState()
                 val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
                 item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
@@ -487,10 +487,10 @@ class PlayerFragment : Fragment() {
 
         warningsContainer.removeAllViews()
         warnings.forEach {
-            val view = BottomSheetItemView(requireContext()).apply {
+            BottomSheetItemView(requireContext()).apply {
                 set(it)
+                warningsContainer.addView(this)
             }
-            warningsContainer.addView(view)
         }
 
         val size = warnings.size
@@ -515,13 +515,12 @@ class PlayerFragment : Fragment() {
     private fun beginDelayedTransition() = TransitionManager.beginDelayedTransition(container, transition)
 
     companion object {
+
         const val EXTRA_ANIMATION_ARGS = "animation_args"
 
-        fun forAsset(args: CompositionArgs): Fragment {
-            return PlayerFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(EXTRA_ANIMATION_ARGS, args)
-                }
+        fun newInstance(args: CompositionArgs) = PlayerFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(EXTRA_ANIMATION_ARGS, args)
             }
         }
     }

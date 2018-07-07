@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.app.AppCompatDelegate
+import android.view.KeyEvent
 import android.view.MenuItem
 import androidx.net.toUri
 import kotlinx.android.synthetic.main.activity_main.*
@@ -32,9 +33,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return true
     }
 
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            System.exit(0)
+            return true
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
     private fun showShowcase() {
-        val intent = CustomTabsIntent.Builder().build()
-        intent.launchUrl(this, "http://airbnb.io/lottie/android/android.html".toUri())
+        CustomTabsIntent.Builder().build().run {
+            launchUrl(this@MainActivity, "http://airbnb.io/lottie/android/android.html".toUri())
+        }
     }
 
     private fun showFragment(fragment: Fragment) {

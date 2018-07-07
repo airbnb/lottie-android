@@ -11,12 +11,12 @@ import kotlinx.android.synthetic.main.view_holder_warning.view.*
 
 class WarningsDialogFragment : DialogFragment() {
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_warnings, container, false)
-        view!!.okButton.setOnClickListener { dismiss() }
-        view.recyclerView.adapter = Adapter(arguments!!.getStringArrayList(ARG_WARNINGS))
-        return view
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_warnings, container, false).apply {
+            okButton.setOnClickListener { dismiss() }
+            recyclerView.adapter = Adapter((savedInstanceState ?: arguments)?.getStringArrayList
+            (ARG_WARNINGS) ?: emptyList())
+        }
     }
 
     private class Adapter(private val warnings: List<String>) : RecyclerView.Adapter<VH>() {
@@ -38,14 +38,13 @@ class WarningsDialogFragment : DialogFragment() {
     }
 
     companion object {
-        private val ARG_WARNINGS = "warnings"
 
-        internal fun newInstance(warnings: ArrayList<String>): WarningsDialogFragment {
-            val args = Bundle()
-            args.putStringArrayList(ARG_WARNINGS, warnings)
-            val frag = WarningsDialogFragment()
-            frag.arguments = args
-            return frag
+        private const val ARG_WARNINGS = "warnings"
+
+        internal fun newInstance(warnings: ArrayList<String>) = WarningsDialogFragment().apply {
+            arguments = Bundle().apply {
+                putStringArrayList(ARG_WARNINGS, warnings)
+            }
         }
     }
 }

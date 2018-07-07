@@ -22,9 +22,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import kotlin.reflect.KClass
 
-fun Fragment.startActivity(cls: Class<*>) {
-    startActivity(Intent(context, cls))
+fun Fragment.startActivity(activityKClassOfWannaStart: KClass<*>) {
+    startActivity(Intent(requireContext(), activityKClassOfWannaStart.java))
 }
 
 fun String.urlIntent(): Intent =
