@@ -162,7 +162,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   public void setMinAndMaxFrames(int minFrame, int maxFrame) {
-    float compositionMinFrame = composition == null ? Float.MIN_VALUE : composition.getStartFrame();
+    float compositionMinFrame = composition == null ? -Float.MAX_VALUE : composition.getStartFrame();
     float compositionMaxFrame = composition == null ? Float.MAX_VALUE : composition.getEndFrame();
     this.minFrame = MiscUtils.clamp(minFrame, compositionMinFrame, compositionMaxFrame);
     this.maxFrame = MiscUtils.clamp(maxFrame, compositionMinFrame, compositionMaxFrame);
