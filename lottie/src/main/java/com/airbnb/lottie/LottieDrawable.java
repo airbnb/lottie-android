@@ -364,6 +364,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Sets the minimum frame that the animation will start from when playing or looping.
    */
   public void setMinFrame(final int minFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(c -> setMinFrame(minFrame));
+      return;
+    }
     animator.setMinFrame(minFrame);
   }
 
@@ -389,6 +393,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Sets the maximum frame that the animation will end at when playing or looping.
    */
   public void setMaxFrame(final int maxFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(c -> setMaxFrame(maxFrame));
+      return;
+    }
     animator.setMaxFrame(maxFrame);
   }
 
@@ -415,6 +423,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see #setMaxFrame(int)
    */
   public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(c -> setMinAndMaxFrame(minFrame, maxFrame));
+      return;
+    }
     animator.setMinAndMaxFrames(minFrame, maxFrame);
   }
 
