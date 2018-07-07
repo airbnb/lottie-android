@@ -89,9 +89,12 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         continue;
       }
       remainingTasks += 1;
-      executor.execute(() -> {
-        runAnimation(animation);
-        decrementAndCompleteIfDone();
+      executor.execute(new Runnable() {
+        @Override
+        public void run() {
+          runAnimation(animation);
+          decrementAndCompleteIfDone();
+        }
       });
     }
   }
@@ -109,7 +112,11 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void drawComposition(LottieComposition composition, String name) {
     LottieAnimationView view = new LottieAnimationView(context);
-    view.setImageAssetDelegate(asset -> dummyBitmap);
+    view.setImageAssetDelegate(new ImageAssetDelegate() {
+      @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
+        return dummyBitmap;
+      }
+    });
     view.setComposition(composition);
     for (float progress : PROGRESS) {
       view.setProgress(progress);

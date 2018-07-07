@@ -369,15 +369,18 @@ import java.util.Map;
 
     clearComposition();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromRawFile(getContext(), animationResId, composition -> {
-      if (cacheStrategy == CacheStrategy.Strong) {
-        RAW_RES_STRONG_REF_CACHE.put(animationResId, composition);
-      } else if (cacheStrategy == CacheStrategy.Weak) {
-        RAW_RES_WEAK_REF_CACHE.put(animationResId, new WeakReference<>(composition));
-      }
+    compositionLoader = LottieComposition.Factory.fromRawFile(getContext(), animationResId,
+        new OnCompositionLoadedListener() {
+          @Override public void onCompositionLoaded(LottieComposition composition) {
+            if (cacheStrategy == CacheStrategy.Strong) {
+              RAW_RES_STRONG_REF_CACHE.put(animationResId, composition);
+            } else if (cacheStrategy == CacheStrategy.Weak) {
+              RAW_RES_WEAK_REF_CACHE.put(animationResId, new WeakReference<>(composition));
+            }
 
-      setComposition(composition);
-    });
+            setComposition(composition);
+          }
+        });
   }
 
   /**
@@ -415,15 +418,18 @@ import java.util.Map;
 
     clearComposition();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName, composition -> {
-      if (cacheStrategy == CacheStrategy.Strong) {
-        ASSET_STRONG_REF_CACHE.put(animationName, composition);
-      } else if (cacheStrategy == CacheStrategy.Weak) {
-        ASSET_WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
-      }
+    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
+        new OnCompositionLoadedListener() {
+          @Override public void onCompositionLoaded(LottieComposition composition) {
+            if (cacheStrategy == CacheStrategy.Strong) {
+              ASSET_STRONG_REF_CACHE.put(animationName, composition);
+            } else if (cacheStrategy == CacheStrategy.Weak) {
+              ASSET_WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
+            }
 
-      setComposition(composition);
-    });
+            setComposition(composition);
+          }
+        });
   }
 
   /**

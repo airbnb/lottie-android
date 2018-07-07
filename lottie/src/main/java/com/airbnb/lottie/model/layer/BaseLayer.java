@@ -143,7 +143,11 @@ public abstract class BaseLayer
       final FloatKeyframeAnimation inOutAnimation =
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
-      inOutAnimation.addUpdateListener(() -> setVisible(inOutAnimation.getValue() == 1f));
+      inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
+        @Override public void onValueChanged() {
+          setVisible(inOutAnimation.getValue() == 1f);
+        }
+      });
       setVisible(inOutAnimation.getValue() == 1f);
       addAnimation(inOutAnimation);
     } else {
