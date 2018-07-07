@@ -373,7 +373,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinFrame(final int minFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(c -> setMinFrame(minFrame));
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override
+        public void run(LottieComposition composition) {
+          setMinFrame(minFrame);
+        }
+      });
       return;
     }
     animator.setMinFrame(minFrame);
@@ -406,7 +411,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMaxFrame(final int maxFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(c -> setMaxFrame(maxFrame));
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override
+        public void run(LottieComposition composition) {
+          setMaxFrame(maxFrame);
+        }
+      });
       return;
     }
     animator.setMaxFrame(maxFrame);
@@ -438,9 +448,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */
-  public void setMinAndMaxFrame(int minFrame, int maxFrame) {
+  public void setMinAndMaxFrame(final int minFrame, final int maxFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(c -> setMinAndMaxFrame(minFrame, maxFrame));
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override
+        public void run(LottieComposition composition) {
+          setMinAndMaxFrame(minFrame, maxFrame);
+        }
+      });
       return;
     }
     animator.setMinAndMaxFrames(minFrame, maxFrame);
