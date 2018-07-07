@@ -1,3 +1,8 @@
+# 2.5.7
+* Reapply min/max frame once composition is loaded (#827).
+* Fixed a bug that would ignore setting minFrame to 0 before the composition was set (#820).
+* Prevented Lottie from drawing a recycled bitmap (#828).
+
 # 2.5.6
 * Added support for targeting Android P
 * Fixed a potential dangling Choreographer callback ([#775](https://githubcom/airbnb/lottie-android/pull/775))
