@@ -2,9 +2,12 @@ package com.airbnb.lottie;
 
 import android.util.Log;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -21,9 +24,16 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @Config(constants = BuildConfig.class)
 public class LottieTaskTest {
 
+  @Mock
+  public LottieTaskListener<Integer> listener;
+
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+  }
+
   @Test
   public void testListener() {
-    LottieTaskListener<Integer> listener = mock(LottieTaskListener.class);
     LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
       @Override public LottieResult<Integer> call() {
         return new LottieResult<>(5);
@@ -35,7 +45,6 @@ public class LottieTaskTest {
 
   @Test
   public void testException() {
-    LottieTaskListener<Integer> listener = mock(LottieTaskListener.class);
     LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
       @Override public LottieResult<Integer> call() {
         throw new IllegalStateException("foo");
@@ -48,7 +57,6 @@ public class LottieTaskTest {
   @Test
   public void testRemoveListener() {
     final Semaphore lock = new Semaphore(0);
-    LottieTaskListener<Integer> listener = mock(LottieTaskListener.class);
     LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
       @Override public LottieResult<Integer> call() {
         return new LottieResult<>(5);
@@ -77,7 +85,6 @@ public class LottieTaskTest {
       }
     }, true);
 
-    LottieTaskListener<Integer> listener = mock(LottieTaskListener.class);
     task.addListener(listener);
     Mockito.verify(listener, times(1)).onResult(new LottieResult<Integer>(5));
   }
