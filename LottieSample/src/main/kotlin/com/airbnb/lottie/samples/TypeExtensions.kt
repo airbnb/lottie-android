@@ -62,14 +62,6 @@ fun Float.sqrt() = Math.sqrt(this.toDouble()).toFloat()
 fun View.getText(@StringRes res: Int) = this.resources.getText(res)
 operator fun Boolean.inc() = !this
 
-fun EditText.parseIntOrNull(): Int? {
-    return try {
-        Integer.parseInt(text.toString())
-    } catch (e: NumberFormatException) {
-        null
-    }
-}
-
 fun Context.hasPermission(permission: String): Boolean {
     return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 }

@@ -28,6 +28,7 @@ import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.airbnb.lottie.samples.views.BottomSheetItemView
 import com.airbnb.lottie.samples.views.BottomSheetItemViewModel_
 import com.airbnb.lottie.samples.views.ControlBarItemToggleView
+import com.airbnb.lottie.utils.MiscUtils
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -219,10 +220,10 @@ class PlayerFragment : Fragment() {
                     .setTitle(R.string.min_frame_dialog)
                     .setView(minFrameView)
                     .setPositiveButton("Load") { _, _ ->
-                        animationView.setMinFrame(
-                                minFrameView.parseIntOrNull() ?:
-                                0
-                        )
+                        var frame = minFrameView.text.toString().toFloatOrNull() ?: 0f
+                        frame = MiscUtils.clamp(frame, composition?.startFrame ?: frame, animationView.maxFrame)
+
+                        animationView.setMinFrame(frame.toInt())
                         updateUiFromState()
                     }
                     .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
@@ -236,11 +237,9 @@ class PlayerFragment : Fragment() {
                     .setTitle(R.string.max_frame_dialog)
                     .setView(maxFrameView)
                     .setPositiveButton("Load") { _, _ ->
-                        animationView.setMaxFrame(
-                                maxFrameView.parseIntOrNull() ?:
-                                composition?.endFrame?.toInt() ?:
-                                0
-                        )
+                        var frame = maxFrameView.text.toString().toFloatOrNull() ?: 0f
+                        frame = MiscUtils.clamp(frame, animationView.minFrame, composition?.endFrame ?: frame)
+                        animationView.setMaxFrame(frame.toInt())
                         updateUiFromState()
                     }
                     .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
