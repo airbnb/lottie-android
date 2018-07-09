@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.util.Log;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
+@Ignore
 public class LottieTaskTest {
 
   @Mock
