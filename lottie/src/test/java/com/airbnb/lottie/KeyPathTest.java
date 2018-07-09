@@ -32,13 +32,8 @@ public class KeyPathTest {
   @Before
   public void setupDrawable() {
     lottieDrawable = new LottieDrawable();
-    try {
-      LottieComposition composition = LottieComposition.Factory
-          .fromJsonSync(new JsonReader(new StringReader(Fixtures.SQUARES)));
-      lottieDrawable.setComposition(composition);
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    }
+    LottieComposition composition = LottieCompositionFactory.fromJsonStringSync(Fixtures.SQUARES).getValue();
+    lottieDrawable.setComposition(composition);
   }
 
   //<editor-fold desc="Basic Tests">

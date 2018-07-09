@@ -15,6 +15,7 @@ import android.support.transition.TransitionManager
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import androidx.view.children
@@ -145,7 +146,8 @@ class PlayerFragment : Fragment() {
             onCompositionLoaded(it)
         })
         viewModel.error.observe(this, Observer {
-            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
+            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG).show()
+            Log.w(L.TAG, "Error loading composition.", viewModel.error.value);
         })
         viewModel.fetchAnimation(args)
 

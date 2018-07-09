@@ -20,9 +20,9 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.JsonReader;
 import android.util.Log;
-import android.util.SparseArray;
 
 import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -31,9 +31,7 @@ import org.json.JSONObject;
 
 import java.io.StringReader;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -66,23 +64,17 @@ import java.util.Map;
     Strong
   }
 
-  private static final SparseArray<LottieComposition> RAW_RES_STRONG_REF_CACHE = new SparseArray<>();
-  private static final SparseArray<WeakReference<LottieComposition>> RAW_RES_WEAK_REF_CACHE =
-      new SparseArray<>();
-
-  private static final Map<String, LottieComposition> ASSET_STRONG_REF_CACHE = new HashMap<>();
-  private static final Map<String, WeakReference<LottieComposition>> ASSET_WEAK_REF_CACHE =
-      new HashMap<>();
-
-  private final OnCompositionLoadedListener loadedListener =
-      new OnCompositionLoadedListener() {
-        @Override public void onCompositionLoaded(@Nullable LottieComposition composition) {
-          if (composition != null) {
-            setComposition(composition);
-          }
-          compositionLoader = null;
-        }
-      };
+  private final LottieTaskListener<LottieComposition> loadedListener = new LottieTaskListener<LottieComposition>() {
+    @Override public void onResult(LottieResult<LottieComposition> result) {
+      LottieComposition composition = result.getValue();
+      if (composition == null) {
+        Log.w(L.TAG, "Error parsing composition.", result.getException());
+      } else {
+        setComposition(composition);
+      }
+      compositionTask = null;
+    }
+  };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private CacheStrategy defaultCacheStrategy;
@@ -92,7 +84,7 @@ import java.util.Map;
   private boolean autoPlay = false;
   private boolean useHardwareLayer = false;
 
-  @Nullable private Cancellable compositionLoader;
+  @Nullable private LottieTask compositionTask;
   /** Can be null because it is created async */
   @Nullable private LottieComposition composition;
 
@@ -352,35 +344,24 @@ import java.util.Map;
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  public void setAnimation(@RawRes final int animationResId, final CacheStrategy cacheStrategy) {
-    this.animationResId = animationResId;
+  public void setAnimation(@RawRes final int rawRes, final CacheStrategy cacheStrategy) {
+    this.animationResId = rawRes;
     animationName = null;
-    if (RAW_RES_WEAK_REF_CACHE.indexOfKey(animationResId) > 0) {
-      WeakReference<LottieComposition> compRef = RAW_RES_WEAK_REF_CACHE.get(animationResId);
-      LottieComposition ref = compRef.get();
-      if (ref != null) {
-        setComposition(ref);
-        return;
-      }
-    } else if (RAW_RES_STRONG_REF_CACHE.indexOfKey(animationResId) > 0) {
-      setComposition(RAW_RES_STRONG_REF_CACHE.get(animationResId));
+    LottieComposition cachedComposition = LottieCompositionCache.getInstance().getRawRes(rawRes);
+    if (cachedComposition != null) {
+      setComposition(cachedComposition);
       return;
     }
 
     clearComposition();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromRawFile(getContext(), animationResId,
-        new OnCompositionLoadedListener() {
-          @Override public void onCompositionLoaded(LottieComposition composition) {
-            if (cacheStrategy == CacheStrategy.Strong) {
-              RAW_RES_STRONG_REF_CACHE.put(animationResId, composition);
-            } else if (cacheStrategy == CacheStrategy.Weak) {
-              RAW_RES_WEAK_REF_CACHE.put(animationResId, new WeakReference<>(composition));
-            }
-
-            setComposition(composition);
+    compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
+        .addListener(new LottieTaskListener<LottieComposition>() {
+          @Override public void onResult(LottieResult<LottieComposition> result) {
+            LottieCompositionCache.getInstance().put(result.getValue(), rawRes, cacheStrategy);
           }
-        });
+        })
+      .addListener(loadedListener);
   }
 
   /**
@@ -401,35 +382,24 @@ import java.util.Map;
    * strong reference to the composition once it is loaded
    * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  public void setAnimation(final String animationName, final CacheStrategy cacheStrategy) {
-    this.animationName = animationName;
+  public void setAnimation(final String assetName, final CacheStrategy cacheStrategy) {
+    this.animationName = assetName;
     animationResId = 0;
-    if (ASSET_WEAK_REF_CACHE.containsKey(animationName)) {
-      WeakReference<LottieComposition> compRef = ASSET_WEAK_REF_CACHE.get(animationName);
-      LottieComposition ref = compRef.get();
-      if (ref != null) {
-        setComposition(ref);
-        return;
-      }
-    } else if (ASSET_STRONG_REF_CACHE.containsKey(animationName)) {
-      setComposition(ASSET_STRONG_REF_CACHE.get(animationName));
+    LottieComposition cachedComposition = LottieCompositionCache.getInstance().getAsset(assetName);
+    if (cachedComposition != null) {
+      setComposition(cachedComposition);
       return;
     }
 
     clearComposition();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromAssetFileName(getContext(), animationName,
-        new OnCompositionLoadedListener() {
-          @Override public void onCompositionLoaded(LottieComposition composition) {
-            if (cacheStrategy == CacheStrategy.Strong) {
-              ASSET_STRONG_REF_CACHE.put(animationName, composition);
-            } else if (cacheStrategy == CacheStrategy.Weak) {
-              ASSET_WEAK_REF_CACHE.put(animationName, new WeakReference<>(composition));
-            }
-
-            setComposition(composition);
+    compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
+        .addListener(new LottieTaskListener<LottieComposition>() {
+          @Override public void onResult(LottieResult<LottieComposition> result) {
+            LottieCompositionCache.getInstance().put(result.getValue(), assetName, cacheStrategy);
           }
-        });
+        })
+        .addListener(loadedListener);
   }
 
   /**
@@ -463,13 +433,14 @@ import java.util.Map;
   public void setAnimation(JsonReader reader) {
     clearComposition();
     cancelLoaderTask();
-    compositionLoader = LottieComposition.Factory.fromJsonReader(reader, loadedListener);
+    compositionTask = LottieCompositionFactory.fromJsonReader(reader)
+        .addListener(loadedListener);
   }
 
   private void cancelLoaderTask() {
-    if (compositionLoader != null) {
-      compositionLoader.cancel();
-      compositionLoader = null;
+    if (compositionTask != null) {
+      compositionTask.removeListener(loadedListener);
+      compositionTask = null;
     }
   }
 
