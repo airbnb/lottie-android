@@ -2,10 +2,13 @@ package com.airbnb.lottie;
 
 import android.support.annotation.Nullable;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * TODO
+ * Contains class to hold the resulting value of an async task or an exception if it failed.
+ *
+ * Either value or exception will be non-null.
  */
 public class LottieResult<V> {
 
@@ -38,17 +41,16 @@ public class LottieResult<V> {
       return false;
     }
     LottieResult<?> that = (LottieResult<?>) o;
-    if (Objects.equals(getValue(), that.getValue())) {
+    if (getValue() != null && getValue().equals(that.getValue())) {
       return true;
     }
     if (getException() != null && that.getException() != null) {
-      return Objects.equals(getException().toString(), that.getException().toString());
+      return getException().toString().equals(getException().toString());
     }
     return false;
   }
 
   @Override public int hashCode() {
-
-    return Objects.hash(getValue(), getException());
+    return Arrays.hashCode(new Object[]{getValue(), getException()});
   }
 }

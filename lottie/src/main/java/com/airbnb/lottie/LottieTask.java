@@ -8,7 +8,6 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +17,7 @@ import java.util.concurrent.FutureTask;
 
 public class LottieTask<T> {
 
-  public enum LottieTaskState {
+  public enum State {
     Loading,
     Success,
     Fail
@@ -32,12 +31,14 @@ public class LottieTask<T> {
   private final FutureTask<LottieResult<T>> task;
 
   @Nullable private LottieResult<T> result = null;
-  private boolean throwOnException = false;
 
   public LottieTask(Callable<LottieResult<T>> runnable) {
     this(runnable, false);
   }
 
+  /**
+   * runNow is only used for testing.
+   */
   @VisibleForTesting
   public LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
     task = new FutureTask<>(runnable);
@@ -55,20 +56,14 @@ public class LottieTask<T> {
     }
   }
 
-  public LottieTaskState getState() {
+  public State getState() {
     if (result == null) {
-      return LottieTaskState.Loading;
+      return State.Loading;
     } else if (result.getException() != null) {
-      return LottieTaskState.Fail;
+      return State.Fail;
     } else {
-      return LottieTaskState.Success;
+      return State.Success;
     }
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public void setValue(T value) {
-    result = new LottieResult<>(value);
-    notifyListeners();
   }
 
   @Nullable public T getValue() {
@@ -76,15 +71,6 @@ public class LottieTask<T> {
       return null;
     }
     return result.getValue();
-  }
-
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public void setException(Throwable exception) {
-    if (throwOnException) {
-      throw new IllegalStateException("LottieTask failed!", exception);
-    }
-    this.result = new LottieResult<>(exception);
-    notifyListeners();
   }
 
   @Nullable public Throwable getException() {
@@ -95,7 +81,7 @@ public class LottieTask<T> {
   }
 
   public LottieTask<T> addListener(LottieTaskListener<T> listener) {
-    if (getState() != LottieTaskState.Loading) {
+    if (getState() != State.Loading) {
       listener.onResult(result);
     }
     synchronized (listeners) {
@@ -111,13 +97,6 @@ public class LottieTask<T> {
     }
     stopTaskObserverIfNeeded();
     return this;
-  }
-
-  public void throwOnException() {
-    throwOnException = true;
-    if (result != null && result.getException() != null) {
-      throw new IllegalStateException("LottieTask failed!", result.getException());
-    }
   }
 
   private void notifyListeners() {

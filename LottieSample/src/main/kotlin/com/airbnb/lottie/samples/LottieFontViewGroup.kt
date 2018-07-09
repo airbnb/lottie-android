@@ -155,13 +155,11 @@ class LottieFontViewGroup @JvmOverloads constructor(
             addComposition(compositionMap[fileName]!!)
         } else {
             LottieCompositionFactory.fromAsset(context, fileName)
-                    .addListener {
-                        val composition = it.value
-                        if (composition == null) {
-                            return@addListener
+                    .addListener { result ->
+                        result.value?.let { composition ->
+                            compositionMap.put(fileName, composition)
+                            addComposition(composition)
                         }
-                        compositionMap.put(fileName, composition)
-                        addComposition(composition)
                     }
         }
 

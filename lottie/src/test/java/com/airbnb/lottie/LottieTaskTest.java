@@ -81,14 +81,4 @@ public class LottieTaskTest {
     task.addListener(listener);
     Mockito.verify(listener, times(1)).onResult(new LottieResult<Integer>(5));
   }
-
-  @Test(expected = IllegalStateException.class)
-  public void testThrowsException() {
-    LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
-      @Override public LottieResult<Integer> call() {
-        throw new IllegalStateException("foo");
-      }
-    }, true);
-    task.throwOnException();
-  }
 }
