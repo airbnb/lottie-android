@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-@Ignore
 public class LottieTaskTest {
 
   @Mock
@@ -56,6 +55,10 @@ public class LottieTaskTest {
     Mockito.verify(listener, times(1)).onResult(new LottieResult<Integer>(new IllegalStateException("foo")));
   }
 
+  /**
+   * This hangs on CI but not locally.
+   */
+  @Ignore
   @Test
   public void testRemoveListener() {
     final Semaphore lock = new Semaphore(0);
