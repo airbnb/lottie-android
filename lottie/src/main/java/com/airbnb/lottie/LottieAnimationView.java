@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.FloatRange;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
@@ -486,6 +487,7 @@ import java.util.List;
    * Plays the animation from the beginning. If speed is < 0, it will start at the end
    * and play towards the beginning
    */
+  @MainThread
   public void playAnimation() {
     lottieDrawable.playAnimation();
     enableOrDisableHardwareLayer();
@@ -495,6 +497,7 @@ import java.util.List;
    * Continues playing the animation from its current position. If speed < 0, it will play backwards
    * from the current position.
    */
+  @MainThread
   public void resumeAnimation() {
     lottieDrawable.resumeAnimation();
     enableOrDisableHardwareLayer();
@@ -788,11 +791,13 @@ import java.util.List;
     return lottieDrawable.getScale();
   }
 
+  @MainThread
   public void cancelAnimation() {
     lottieDrawable.cancelAnimation();
     enableOrDisableHardwareLayer();
   }
 
+  @MainThread
   public void pauseAnimation() {
     lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();

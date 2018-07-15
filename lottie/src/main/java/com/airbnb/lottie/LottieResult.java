@@ -10,7 +10,7 @@ import java.util.Objects;
  *
  * Either value or exception will be non-null.
  */
-public class LottieResult<V> {
+public final class LottieResult<V> {
 
   @Nullable private final V value;
   @Nullable private final Throwable exception;

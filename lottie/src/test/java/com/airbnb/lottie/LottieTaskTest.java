@@ -16,6 +16,7 @@ import java.util.concurrent.Semaphore;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
@@ -39,8 +40,10 @@ public class LottieTaskTest {
         return new LottieResult<>(5);
       }
     }, true)
-        .addListener(successListener);
-    Mockito.verify(successListener, times(1)).onResult(5);
+        .addListener(successListener)
+        .addFailureListener(failureListener);
+    verify(successListener, times(1)).onResult(5);
+    verifyZeroInteractions(failureListener);
   }
 
   @Test
@@ -51,8 +54,10 @@ public class LottieTaskTest {
         throw exception;
       }
     }, true)
+        .addListener(successListener)
         .addFailureListener(failureListener);
-    Mockito.verify(failureListener, times(1)).onResult(exception);
+    verifyZeroInteractions(successListener);
+    verify(failureListener, times(1)).onResult(exception);
   }
 
   /**
@@ -68,6 +73,7 @@ public class LottieTaskTest {
       }
     })
         .addListener(successListener)
+        .addFailureListener(failureListener)
         .addListener(new LottieListener<Integer>() {
           @Override public void onResult(Integer result) {
             lock.release();
@@ -80,6 +86,7 @@ public class LottieTaskTest {
       throw new IllegalStateException(e);
     }
     verifyZeroInteractions(successListener);
+    verifyZeroInteractions(failureListener);
   }
 
   @Test
@@ -91,6 +98,8 @@ public class LottieTaskTest {
     }, true);
 
     task.addListener(successListener);
-    Mockito.verify(successListener, times(1)).onResult(5);
+    task.addFailureListener(failureListener);
+    verify(successListener, times(1)).onResult(5);
+    verifyZeroInteractions(failureListener);
   }
 }
