@@ -3,7 +3,6 @@ package com.airbnb.lottie;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
@@ -26,7 +25,8 @@ public class LottieTask<T> {
   @Nullable private Thread taskObserver;
 
   /* Preserve add order. */
-  private final Set<LottieTaskListener<T>> listeners = new LinkedHashSet<>(1);
+  private final Set<LottieListener<T>> successListeners = new LinkedHashSet<>(1);
+  private final Set<LottieListener<Throwable>> failureListeners = new LinkedHashSet<>(1);
   private final Handler handler = new Handler(Looper.getMainLooper());
   private final FutureTask<LottieResult<T>> task;
 
@@ -45,11 +45,10 @@ public class LottieTask<T> {
 
     if (runNow) {
       try {
-        result = runnable.call();
+        setResult(runnable.call());
       } catch (Exception e) {
-        result = new LottieResult<>(e);
+        setResult(new LottieResult<T>(e));
       }
-      notifyListeners();
     } else {
       task.run();
       startTaskObserverIfNeeded();
@@ -66,6 +65,11 @@ public class LottieTask<T> {
     }
   }
 
+  private void setResult(@Nullable LottieResult<T> result) {
+    this.result = result;
+    notifyListeners();
+  }
+
   @Nullable public T getValue() {
     if (result == null) {
       return null;
@@ -80,20 +84,43 @@ public class LottieTask<T> {
     return result.getException();
   }
 
-  public LottieTask<T> addListener(LottieTaskListener<T> listener) {
-    if (getState() != State.Loading) {
-      listener.onResult(result);
+  public LottieTask<T> addListener(LottieListener<T> listener) {
+    if (result != null && result.getValue() != null) {
+      listener.onResult(result.getValue());
+      return this;
     }
-    synchronized (listeners) {
-      listeners.add(listener);
+
+    synchronized (successListeners) {
+      successListeners.add(listener);
     }
     startTaskObserverIfNeeded();
     return this;
   }
 
-  public LottieTask<T> removeListener(LottieTaskListener<T> listener) {
-    synchronized (listeners) {
-      listeners.remove(listener);
+  public LottieTask<T> removeListener(LottieListener<T> listener) {
+    synchronized (successListeners) {
+      successListeners.remove(listener);
+    }
+    stopTaskObserverIfNeeded();
+    return this;
+  }
+
+  public LottieTask<T> addFailureListener(LottieListener<Throwable> listener) {
+    if (result != null && result.getException() != null) {
+      listener.onResult(result.getException());
+      return this;
+    }
+
+    synchronized (failureListeners) {
+      failureListeners.add(listener);
+    }
+    startTaskObserverIfNeeded();
+    return this;
+  }
+
+  public LottieTask<T> removeFailureListener(LottieListener<T> listener) {
+    synchronized (failureListeners) {
+      failureListeners.remove(listener);
     }
     stopTaskObserverIfNeeded();
     return this;
@@ -102,23 +129,48 @@ public class LottieTask<T> {
   private void notifyListeners() {
     handler.post(new Runnable() {
       @Override public void run() {
-        if (task.isCancelled()) {
+        if (result == null || task.isCancelled()) {
           return;
         }
-        // Allow listeners to remove themself in onResult. Otherwise we risk ConcurrentModificationException.
-        List<LottieTaskListener<T>> listenersCopy = new ArrayList<>(listeners);
-        for (LottieTaskListener<T> l : listenersCopy) {
-          l.onResult(result);
+        // Local reference in case it gets set on a background thread.
+        LottieResult<T> result = LottieTask.this.result;
+        if (result.getValue() != null) {
+          notifySuccessListeners(result.getValue());
+        } else {
+          notifyFailureListeners(result.getException());
         }
       }
     });
+  }
+
+  private void notifySuccessListeners(T value) {
+    // Allow listeners to remove themself in onResult.
+    // Otherwise we risk ConcurrentModificationException.
+    List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
+    for (LottieListener<T> l : listenersCopy) {
+      l.onResult(value);
+    }
+  }
+
+  private void notifyFailureListeners(Throwable e) {
+    // Allow listeners to remove themself in onResult.
+    // Otherwise we risk ConcurrentModificationException.
+    List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
+    if (listenersCopy.isEmpty()) {
+      Log.w(L.TAG, "Lottie encountered an error but no failure listener was added.", e);
+      return;
+    }
+
+    for (LottieListener<Throwable> l : listenersCopy) {
+      l.onResult(e);
+    }
   }
 
   private void stopTaskObserverIfNeeded() {
     if (!taskObserverAlive()) {
       return;
     }
-    if (listeners.isEmpty() || result != null) {
+    if (successListeners.isEmpty() || result != null) {
       taskObserver.interrupt();
       if (L.DBG) {
         Log.d(L.TAG, "Stopping TaskObserver thread");
@@ -137,11 +189,10 @@ public class LottieTask<T> {
         }
         if (task.isDone()) {
           try {
-            result = task.get();
+            setResult(task.get());
           } catch (InterruptedException | ExecutionException e) {
-            result = new LottieResult<>(e);
+            setResult(new LottieResult<T>(e));
           }
-          notifyListeners();
           stopTaskObserverIfNeeded();
         }
       }

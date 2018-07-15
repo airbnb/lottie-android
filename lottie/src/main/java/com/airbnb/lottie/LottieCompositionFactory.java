@@ -121,7 +121,7 @@ public class LottieCompositionFactory {
 
   /**
    * Return a LottieComposition for the specified raw json string.
-   * If loading from a file, it is
+   * If loading from a file, it is preferable to use the InputStream or rawRes version.
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json) {

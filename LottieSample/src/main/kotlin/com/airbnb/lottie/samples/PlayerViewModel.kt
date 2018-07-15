@@ -81,12 +81,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private fun handleJsonResponse(jsonString: String) {
         LottieCompositionFactory.fromJsonString(jsonString)
                 .addListener {
-                    val composition = it.value
-                    if (composition == null) {
-                        error.value = it.exception
-                    } else {
-                        this.composition.value = CompositionData(composition)
-                    }
+                    this.composition.value = CompositionData(it)
                 }
     }
 
@@ -153,12 +148,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         LottieCompositionFactory.fromJsonInputStream(fis)
                 .addListener {
-                    val composition = it.value
-                    if (composition == null) {
-                        error.value = IllegalArgumentException("Er")
-                    } else {
-                        this.composition.value = CompositionData(composition)
-                    }
+                    this.composition.value = CompositionData(it)
                 }
     }
 }

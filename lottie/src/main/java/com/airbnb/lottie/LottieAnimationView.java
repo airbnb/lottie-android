@@ -30,7 +30,6 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import org.json.JSONObject;
 
 import java.io.StringReader;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -64,15 +63,9 @@ import java.util.List;
     Strong
   }
 
-  private final LottieTaskListener<LottieComposition> loadedListener = new LottieTaskListener<LottieComposition>() {
-    @Override public void onResult(LottieResult<LottieComposition> result) {
-      LottieComposition composition = result.getValue();
-      if (composition == null) {
-        Log.w(L.TAG, "Error parsing composition.", result.getException());
-      } else {
-        setComposition(composition);
-      }
-      compositionTask = null;
+  private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
+    @Override public void onResult(LottieComposition composition) {
+      setComposition(composition);
     }
   };
 
@@ -356,9 +349,9 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
-        .addListener(new LottieTaskListener<LottieComposition>() {
-          @Override public void onResult(LottieResult<LottieComposition> result) {
-            LottieCompositionCache.getInstance().put(result.getValue(), rawRes, cacheStrategy);
+        .addListener(new LottieListener<LottieComposition>() {
+          @Override public void onResult(LottieComposition composition) {
+            LottieCompositionCache.getInstance().put(composition, rawRes, cacheStrategy);
           }
         })
       .addListener(loadedListener);
@@ -376,7 +369,7 @@ import java.util.List;
 
   /**
    * Sets the animation from a file in the assets directory.
-   * This will load and deserialize the file asynchronously.
+   * This will load and deserialize the file asynchronously if it is not already in the cache.
    * <p>
    * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a
    * strong reference to the composition once it is loaded
@@ -394,9 +387,9 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
-        .addListener(new LottieTaskListener<LottieComposition>() {
-          @Override public void onResult(LottieResult<LottieComposition> result) {
-            LottieCompositionCache.getInstance().put(result.getValue(), assetName, cacheStrategy);
+        .addListener(new LottieListener<LottieComposition>() {
+          @Override public void onResult(LottieComposition composition) {
+            LottieCompositionCache.getInstance().put(composition, assetName, cacheStrategy);
           }
         })
         .addListener(loadedListener);
@@ -440,7 +433,6 @@ import java.util.List;
   private void cancelLoaderTask() {
     if (compositionTask != null) {
       compositionTask.removeListener(loadedListener);
-      compositionTask = null;
     }
   }
 

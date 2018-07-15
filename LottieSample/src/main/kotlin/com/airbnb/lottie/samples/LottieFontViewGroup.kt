@@ -28,13 +28,11 @@ class LottieFontViewGroup @JvmOverloads constructor(
         isFocusableInTouchMode = true
         LottieCompositionFactory.fromAsset(context, "Mobilo/BlinkingCursor.json")
                 .addListener {
-                    val composition = it.value
-                    composition ?: return@addListener
                     cursorView.layoutParams = FrameLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT
                     )
-                    cursorView.setComposition(composition)
+                    cursorView.setComposition(it)
                     cursorView.repeatCount = LottieDrawable.INFINITE
                     cursorView.playAnimation()
                     addView(cursorView)
@@ -155,11 +153,9 @@ class LottieFontViewGroup @JvmOverloads constructor(
             addComposition(compositionMap[fileName]!!)
         } else {
             LottieCompositionFactory.fromAsset(context, fileName)
-                    .addListener { result ->
-                        result.value?.let { composition ->
-                            compositionMap.put(fileName, composition)
-                            addComposition(composition)
-                        }
+                    .addListener {
+                        compositionMap.put(fileName, it)
+                        addComposition(it)
                     }
         }
 

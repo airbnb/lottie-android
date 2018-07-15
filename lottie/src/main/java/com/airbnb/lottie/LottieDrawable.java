@@ -186,6 +186,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Create a composition with {@link LottieCompositionFactory}
+   *
    * @return True if the composition is different from the previously set composition, false otherwise.
    */
   public boolean setComposition(LottieComposition composition) {

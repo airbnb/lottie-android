@@ -29,6 +29,9 @@ import java.util.Map;
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
  * animation will be created.
+ *
+ * To create one, use {@link LottieCompositionFactory}.
+ *
  * It can be used with a {@link com.airbnb.lottie.LottieAnimationView} or
  * {@link com.airbnb.lottie.LottieDrawable}.
  */
@@ -256,8 +259,7 @@ public class LottieComposition {
       return LottieCompositionFactory.fromJsonReaderSync(reader).getValue();
     }
 
-    private static final class ListenerAdapter implements LottieTaskListener<LottieComposition>, Cancellable {
-
+    private static final class ListenerAdapter implements LottieListener<LottieComposition>, Cancellable {
       private final OnCompositionLoadedListener listener;
       private boolean cancelled = false;
 
@@ -265,14 +267,11 @@ public class LottieComposition {
         this.listener = listener;
       }
 
-      @Override public void onResult(LottieResult<LottieComposition> result) {
+      @Override public void onResult(LottieComposition composition) {
         if (cancelled) {
           return;
         }
-        if (result.getException() != null) {
-          Log.w(L.TAG, "Unable to parse composition. This API is deprecated. Please migrate to LottieCompositionFactory", result.getException());
-        }
-        listener.onCompositionLoaded(result.getValue());
+        listener.onCompositionLoaded(composition);
       }
 
       @Override public void cancel() {
