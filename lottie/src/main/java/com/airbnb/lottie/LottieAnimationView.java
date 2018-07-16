@@ -352,7 +352,7 @@ import java.util.List;
     compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
         .addListener(new LottieListener<LottieComposition>() {
           @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(composition, rawRes, cacheStrategy);
+            LottieCompositionCache.getInstance().put(rawRes, composition, cacheStrategy);
           }
         })
       .addListener(loadedListener);
@@ -390,7 +390,7 @@ import java.util.List;
     compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
         .addListener(new LottieListener<LottieComposition>() {
           @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(composition, assetName, cacheStrategy);
+            LottieCompositionCache.getInstance().put(assetName, composition, cacheStrategy);
           }
         })
         .addListener(loadedListener);

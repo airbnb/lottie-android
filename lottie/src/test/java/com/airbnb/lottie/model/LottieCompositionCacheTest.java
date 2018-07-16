@@ -1,8 +1,9 @@
-package com.airbnb.lottie;
+package com.airbnb.lottie.model;
 
-import com.airbnb.lottie.model.LottieCompositionCache;
+import com.airbnb.lottie.BuildConfig;
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieComposition;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,25 +35,25 @@ public class LottieCompositionCacheTest {
 
   @Test
   public void testStrongAsset() {
-    cache.put(composition, "foo", LottieAnimationView.CacheStrategy.Strong);
+    cache.put("foo", composition, LottieAnimationView.CacheStrategy.Strong);
     assertEquals(composition, cache.getAsset("foo"));
   }
 
   @Test
   public void testWeakAsset() {
-    cache.put(composition, "foo", LottieAnimationView.CacheStrategy.Weak);
+    cache.put("foo", composition, LottieAnimationView.CacheStrategy.Weak);
     assertEquals(composition, cache.getAsset("foo"));
   }
 
   @Test
   public void testStrongRawRes() {
-    cache.put(composition, 123, LottieAnimationView.CacheStrategy.Strong);
+    cache.put(123, composition, LottieAnimationView.CacheStrategy.Strong);
     assertEquals(composition, cache.getRawRes(123));
   }
 
   @Test
   public void testWeakRawRes() {
-    cache.put(composition, 123, LottieAnimationView.CacheStrategy.Weak);
+    cache.put(123, composition, LottieAnimationView.CacheStrategy.Weak);
     assertEquals(composition, cache.getRawRes(123));
   }
 }

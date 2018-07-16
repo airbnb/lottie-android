@@ -12,8 +12,10 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.io.FileNotFoundException;
 import java.io.StringReader;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
@@ -61,16 +63,9 @@ public class LottieCompositionFactoryTest {
   }
 
   @Test
-  public void testLoadAsset() {
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(RuntimeEnvironment.application, "square.json");
-    assertNull(result.getException());
-    assertNotNull(result.getValue());
-  }
-
-  @Test
   public void testLoadInvalidAssetName() {
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(RuntimeEnvironment.application, "square2.json");
-    assertNotNull(result.getException());
+    assertEquals(FileNotFoundException.class, result.getException().getClass());
     assertNull(result.getValue());
   }
 
@@ -82,22 +77,8 @@ public class LottieCompositionFactoryTest {
   }
 
   @Test
-  public void testLoadRawRes() {
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromRawResSync(RuntimeEnvironment.application, R.raw.square);
-    assertNull(result.getException());
-    assertNotNull(result.getValue());
-  }
-
-  @Test
   public void testLoadInvalidRawResName() {
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromRawResSync(RuntimeEnvironment.application, 0);
-    assertNotNull(result.getException());
-    assertNull(result.getValue());
-  }
-
-  @Test
-  public void testNonJsonRawResFile() {
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromRawResSync(RuntimeEnvironment.application, R.raw.not_json);
     assertNotNull(result.getException());
     assertNull(result.getValue());
   }
