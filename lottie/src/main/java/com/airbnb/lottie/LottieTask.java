@@ -1,0 +1,213 @@
+package com.airbnb.lottie;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
+/**
+ * Helper to run asynchronous tasks with a result.
+ * Results can be obtained with {@link #addListener(LottieListener)}.
+ * Failures can be obtained with {@link #addFailureListener(LottieListener)}.
+ *
+ * A task will produce a single result or a single failure.
+ */
+public class LottieTask<T> {
+
+  @Nullable private Thread taskObserver;
+
+  /* Preserve add order. */
+  private final Set<LottieListener<T>> successListeners = new LinkedHashSet<>(1);
+  private final Set<LottieListener<Throwable>> failureListeners = new LinkedHashSet<>(1);
+  private final Handler handler = new Handler(Looper.getMainLooper());
+  private final FutureTask<LottieResult<T>> task;
+
+  @Nullable private LottieResult<T> result = null;
+
+  public LottieTask(Callable<LottieResult<T>> runnable) {
+    this(runnable, false);
+  }
+
+  /**
+   * runNow is only used for testing.
+   */
+  LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
+    task = new FutureTask<>(runnable);
+
+    if (runNow) {
+      try {
+        setResult(runnable.call());
+      } catch (Throwable e) {
+        setResult(new LottieResult<T>(e));
+      }
+    } else {
+      task.run();
+      startTaskObserverIfNeeded();
+    }
+  }
+
+  private void setResult(@Nullable LottieResult<T> result) {
+    if (this.result != null) {
+      throw new IllegalStateException("A task may only be set once.");
+    }
+    this.result = result;
+    notifyListeners();
+  }
+
+  /**
+   * Add a task listener. If the task has completed, the listener will be called synchronously.
+   * @return the task for call chaining.
+   */
+  public LottieTask<T> addListener(LottieListener<T> listener) {
+    if (result != null && result.getValue() != null) {
+      listener.onResult(result.getValue());
+    }
+
+    synchronized (successListeners) {
+      successListeners.add(listener);
+    }
+    startTaskObserverIfNeeded();
+    return this;
+  }
+
+  /**
+   * Remove a given task listener. The task will continue to execute so you can re-add
+   * a listener if neccesary.
+   * @return the task for call chaining.
+   */
+  public LottieTask<T> removeListener(LottieListener<T> listener) {
+    synchronized (successListeners) {
+      successListeners.remove(listener);
+    }
+    stopTaskObserverIfNeeded();
+    return this;
+  }
+
+  /**
+   * Add a task failure listener. This will only be called in the even that an exception
+   * occurs. If an exception has already occurred, the listener will be called immediately.
+   * @return the task for call chaining.
+   */
+  public LottieTask<T> addFailureListener(LottieListener<Throwable> listener) {
+    if (result != null && result.getException() != null) {
+      listener.onResult(result.getException());
+    }
+
+    synchronized (failureListeners) {
+      failureListeners.add(listener);
+    }
+    startTaskObserverIfNeeded();
+    return this;
+  }
+
+  /**
+   * Remove a given task failure listener. The task will continue to execute so you can re-add
+   * a listener if neccesary.
+   * @return the task for call chaining.
+   */
+  public LottieTask<T> removeFailureListener(LottieListener<T> listener) {
+    synchronized (failureListeners) {
+      failureListeners.remove(listener);
+    }
+    stopTaskObserverIfNeeded();
+    return this;
+  }
+
+  private void notifyListeners() {
+    // Listeners should be called on the main thread.
+    handler.post(new Runnable() {
+      @Override public void run() {
+        if (result == null || task.isCancelled()) {
+          return;
+        }
+        // Local reference in case it gets set on a background thread.
+        LottieResult<T> result = LottieTask.this.result;
+        if (result.getValue() != null) {
+          notifySuccessListeners(result.getValue());
+        } else {
+          notifyFailureListeners(result.getException());
+        }
+      }
+    });
+  }
+
+  private void notifySuccessListeners(T value) {
+    // Allow listeners to remove themself in onResult.
+    // Otherwise we risk ConcurrentModificationException.
+    List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
+    for (LottieListener<T> l : listenersCopy) {
+      l.onResult(value);
+    }
+  }
+
+  private void notifyFailureListeners(Throwable e) {
+    // Allow listeners to remove themself in onResult.
+    // Otherwise we risk ConcurrentModificationException.
+    List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
+    if (listenersCopy.isEmpty()) {
+      Log.w(L.TAG, "Lottie encountered an error but no failure listener was added.", e);
+      return;
+    }
+
+    for (LottieListener<Throwable> l : listenersCopy) {
+      l.onResult(e);
+    }
+  }
+
+  /**
+   * We monitor the task with an observer thread to determine when it is done and should notify
+   * the appropriate listeners.
+   */
+  private void startTaskObserverIfNeeded() {
+    if (taskObserverAlive() || result != null) {
+      return;
+    }
+    taskObserver = new Thread("LottieTaskObserver") {
+      @Override public void run() {
+        if (isInterrupted()) {
+          return;
+        }
+        if (task.isDone()) {
+          try {
+            setResult(task.get());
+          } catch (InterruptedException | ExecutionException e) {
+            setResult(new LottieResult<T>(e));
+          }
+          stopTaskObserverIfNeeded();
+        }
+      }
+    };
+    taskObserver.start();
+    if (L.DBG) {
+      Log.d(L.TAG, "Starting TaskObserver thread");
+    }
+  }
+
+  /**
+   * We can stop observing the task if there are no more listeners or if the task is complete.
+   */
+  private void stopTaskObserverIfNeeded() {
+    if (!taskObserverAlive()) {
+      return;
+    }
+    if (successListeners.isEmpty() || result != null) {
+      taskObserver.interrupt();
+      if (L.DBG) {
+        Log.d(L.TAG, "Stopping TaskObserver thread");
+      }
+    }
+  }
+
+  private boolean taskObserverAlive() {
+    return taskObserver != null && taskObserver.isAlive();
+  }
+}

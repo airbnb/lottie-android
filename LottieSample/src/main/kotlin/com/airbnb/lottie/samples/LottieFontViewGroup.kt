@@ -12,6 +12,7 @@ import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 import java.util.*
 
@@ -25,20 +26,17 @@ class LottieFontViewGroup @JvmOverloads constructor(
 
     init {
         isFocusableInTouchMode = true
-        LottieComposition.Factory.fromAssetFileName(context, "Mobilo/BlinkingCursor.json"
-        ) { composition ->
-            if (composition == null) {
-                return@fromAssetFileName
-            }
-            cursorView.layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            cursorView.setComposition(composition)
-            cursorView.repeatCount = LottieDrawable.INFINITE
-            cursorView.playAnimation()
-            addView(cursorView)
-        }
+        LottieCompositionFactory.fromAsset(context, "Mobilo/BlinkingCursor.json")
+                .addListener {
+                    cursorView.layoutParams = FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    cursorView.setComposition(it)
+                    cursorView.repeatCount = LottieDrawable.INFINITE
+                    cursorView.playAnimation()
+                    addView(cursorView)
+                }
     }
 
     private fun addSpace() {
@@ -154,14 +152,11 @@ class LottieFontViewGroup @JvmOverloads constructor(
         if (compositionMap.containsKey(fileName)) {
             addComposition(compositionMap[fileName]!!)
         } else {
-            LottieComposition.Factory.fromAssetFileName(context, fileName
-            ) { composition ->
-                if (composition == null) {
-                    return@fromAssetFileName
-                }
-                compositionMap.put(fileName, composition)
-                addComposition(composition)
-            }
+            LottieCompositionFactory.fromAsset(context, fileName)
+                    .addListener {
+                        compositionMap.put(fileName, it)
+                        addComposition(it)
+                    }
         }
 
         return true

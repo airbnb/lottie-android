@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.samples.model.CompositionArgs
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -87,17 +88,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun handleJsonResponse(jsonString: String) {
-        try {
-            LottieComposition.Factory.fromJsonString(jsonString, {
-                if (it == null) {
-                    error.value = IllegalArgumentException("Unable to parse composition")
-                } else {
-                    composition.value = CompositionData(it)
+        LottieCompositionFactory.fromJsonString(jsonString)
+                .addListener {
+                    this.composition.value = CompositionData(it)
                 }
-            })
-        } catch (e: RuntimeException) {
-            error.value = e
-        }
+                .addFailureListener {
+                    this.error.value = it
+                }
     }
 
     @SuppressLint("CheckResult")
@@ -114,7 +111,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                             if (zipEntry.name.contains("__MACOSX")) {
                                 zis.closeEntry()
                             } else if (zipEntry.name.contains(".json")) {
-                                val composition = LottieComposition.Factory.fromInputStreamSync(zis, false)
+                                val result = LottieCompositionFactory.fromJsonInputStreamSync(zis, false)
+                                val composition = result.value
                                 if (composition == null) {
                                     throw IllegalArgumentException("Unable to parse composition")
                                 } else {
@@ -160,22 +158,22 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
 
-        LottieComposition.Factory.fromInputStream(fis) {
-            if (it == null) {
-                error.value = IllegalArgumentException("Er")
-            } else {
-                composition.value = CompositionData(it)
-            }
-        }
+        LottieCompositionFactory.fromJsonInputStream(fis)
+                .addListener {
+                    this.composition.value = CompositionData(it)
+                }
+                .addFailureListener {
+                    this.error.value = it
+                }
     }
 
     private fun fetchAnimationByAsset(asset: String) {
-        LottieComposition.Factory.fromAssetFileName(getApplication(), asset) {
-            if (it == null) {
-                error.value = IllegalArgumentException("Error loading asset " + asset)
-            } else {
-                composition.value = CompositionData(it)
-            }
-        }
+        LottieCompositionFactory.fromAsset(getApplication(), asset)
+                .addListener {
+                    composition.value = CompositionData(it)
+                }
+                .addFailureListener {
+                    error.value = it
+                }
     }
 }
