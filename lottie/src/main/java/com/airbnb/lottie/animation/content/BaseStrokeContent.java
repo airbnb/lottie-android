@@ -15,6 +15,7 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
@@ -50,7 +51,7 @@ public abstract class BaseStrokeContent
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
-      Paint.Join join, AnimatableIntegerValue opacity, AnimatableFloatValue width,
+      Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
       List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
     this.lottieDrawable = lottieDrawable;
     this.layer = layer;
@@ -58,6 +59,7 @@ public abstract class BaseStrokeContent
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeCap(cap);
     paint.setStrokeJoin(join);
+    paint.setStrokeMiter(miterLimit);
 
     opacityAnimation = opacity.createAnimation();
     widthAnimation = width.createAnimation();

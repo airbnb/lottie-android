@@ -24,8 +24,8 @@ public class StrokeContent extends BaseStrokeContent {
 
   public StrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) {
     super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),
-        stroke.getJoinType().toPaintJoin(), stroke.getOpacity(), stroke.getWidth(),
-        stroke.getLineDashPattern(), stroke.getDashOffset());
+        stroke.getJoinType().toPaintJoin(), stroke.getMiterLimit(), stroke.getOpacity(),
+        stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset());
     this.layer = layer;
     name = stroke.getName();
     colorAnimation = stroke.getColor().createAnimation();

@@ -4,6 +4,7 @@
     * The new factory methods make it easier to catch exceptions by separating out success and
     failure handlers. Previously, catching exceptions was impossible and would crash your app.
 * [Sample App] Added the ability to load a file from assets.
+* Added support for miter limit.
 
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
