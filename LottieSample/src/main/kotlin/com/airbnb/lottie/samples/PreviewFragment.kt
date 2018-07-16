@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -55,6 +56,22 @@ class PreviewFragment : Fragment() {
                         startActivity(PlayerActivity.intent(requireContext(), args))
                     }
                     .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
+                    .show()
+        }
+
+        assets.setOnClickListener {
+            val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item).apply {
+                requireContext().assets.list("").forEach {
+                    if (it.endsWith(".json")) {
+                        add(it)
+                    }
+                }
+            }
+            AlertDialog.Builder(context)
+                    .setAdapter(adapter) { _, which ->
+                        val args = CompositionArgs(asset = adapter.getItem(which))
+                        startActivity(PlayerActivity.intent(requireContext(), args))
+                    }
                     .show()
         }
     }

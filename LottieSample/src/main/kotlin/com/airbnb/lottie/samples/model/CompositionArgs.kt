@@ -11,5 +11,6 @@ data class CompositionArgs(
         val assetName: String? = null,
         val url: String? = null,
         val fileUri: Uri? = null,
+        val asset: String? = null,
         val animationData: AnimationData? = null
 ) : Parcelable

@@ -1,3 +1,7 @@
+# 2.6.0
+### Features and Improvements
+* [Sample App] Added the ability to load a file from assets.
+
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
 * Fixed a bug that would ignore setting minFrame to 0 before the composition was set (#820).
@@ -23,7 +27,7 @@
 
 
 # 2.5.2
-# Features and Improvements
+### Features and Improvements
 * Totally new sample app!
     * Rebuilt from the ground up.
     * Lottiefiles integration

@@ -33,5 +33,12 @@
             android:layout_height="wrap_content"
             app:titleText="@string/preview_url"
             app:icon="@drawable/ic_network"/>
+
+        <com.airbnb.lottie.samples.PreviewItemView
+            android:id="@+id/assets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/preview_assets"
+            app:icon="@drawable/ic_storage"/>
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

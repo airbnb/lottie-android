@@ -41,6 +41,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             fetchAnimationByUrl(url)
         } else if (args.fileUri != null) {
             fetchAnimationByFileUri(args.fileUri)
+        } else if (args.asset != null) {
+            fetchAnimationByAsset(args.asset)
         }
     }
 
@@ -158,12 +160,22 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
 
-        LottieComposition.Factory.fromInputStream(fis, {
+        LottieComposition.Factory.fromInputStream(fis) {
             if (it == null) {
                 error.value = IllegalArgumentException("Er")
             } else {
                 composition.value = CompositionData(it)
             }
-        })
+        }
+    }
+
+    private fun fetchAnimationByAsset(asset: String) {
+        LottieComposition.Factory.fromAssetFileName(getApplication(), asset) {
+            if (it == null) {
+                error.value = IllegalArgumentException("Error loading asset " + asset)
+            } else {
+                composition.value = CompositionData(it)
+            }
+        }
     }
 }
