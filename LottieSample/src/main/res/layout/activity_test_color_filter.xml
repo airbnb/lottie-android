@@ -12,7 +12,7 @@
         android:layout_height="50dp"
         android:background="#ffffff"
         app:lottie_colorFilter="#ffff00"
-        app:lottie_fileName="HamburgerArrow.json"/>
+        app:lottie_rawRes="@raw/hamburger_arrow"/>
 
 
     <com.airbnb.lottie.LottieAnimationView
