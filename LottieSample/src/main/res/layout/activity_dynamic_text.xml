@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            app:lottie_fileName="Name.json"
+            app:lottie_rawRes="@raw/name"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"/>
 
@@ -24,7 +24,7 @@
             android:id="@+id/dynamicTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:lottie_fileName="Name.json"
+            app:lottie_rawRes="@raw/name"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"/>
     </LinearLayout>
