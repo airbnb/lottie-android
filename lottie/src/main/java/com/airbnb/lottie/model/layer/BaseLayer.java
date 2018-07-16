@@ -107,7 +107,8 @@ public abstract class BaseLayer
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
       this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
       for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
-        addAnimation(animation);
+        // Don't call addAnimation() because progress gets set manually in setProgress to
+        // properly handle time scale.
         animation.addUpdateListener(this);
       }
       for (BaseKeyframeAnimation<Integer, Integer> animation : mask.getOpacityAnimations()) {
@@ -416,6 +417,11 @@ public abstract class BaseLayer
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     // Time stretch should not be applied to the layer transform.
     transform.setProgress(progress);
+    if (mask != null) {
+      for (int i = 0; i < mask.getMaskAnimations().size(); i++) {
+        mask.getMaskAnimations().get(i).setProgress(progress);
+      }
+    }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }
