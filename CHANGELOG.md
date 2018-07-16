@@ -1,6 +1,7 @@
 # 2.6.0
 ### Features and Improvements
 * [Sample App] Added the ability to load a file from assets.
+* Added support for miter limit.
 
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
