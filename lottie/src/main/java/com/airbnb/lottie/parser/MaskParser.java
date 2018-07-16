@@ -34,6 +34,8 @@ class MaskParser {
               maskMode = Mask.MaskMode.MaskModeSubtract;
               break;
             case "i":
+              composition.addWarning(
+                  "Animation contains intersect masks. They are not supported but will be treated like add masks.");
               maskMode = Mask.MaskMode.MaskModeIntersect;
               break;
             default:
