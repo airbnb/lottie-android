@@ -7,6 +7,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -29,6 +31,8 @@ class CompositionData(var composition: LottieComposition? = null) {
 
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val handler = Handler(Looper.getMainLooper())
+
     val composition = MutableLiveData<CompositionData>()
     val error = MutableLiveData<Throwable>()
 
@@ -38,6 +42,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             fetchAnimationByUrl(url)
         } else if (args.fileUri != null) {
             fetchAnimationByFileUri(args.fileUri)
+        } else if (args.asset != null) {
+            fetchAnimationByAsset(args.asset)
         }
     }
 
@@ -57,25 +63,28 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         getApplication<LottieApplication>().okHttpClient
                 .newCall(request)
                 ?.enqueue(OkHttpCallback(
-                        onFailure = { _, e -> error.value = e },
+                        onFailure = { _, e -> onFailure(e) },
                         onResponse = { _, response ->
                             if (!response.isSuccessful) {
-                                error.value = IllegalStateException("Response was unsuccessful.")
+                                onFailure(IllegalStateException("Response was unsuccessful."))
                             } else {
                                 if (response.body()?.contentType() == MediaType.parse("application/zip")) {
                                     handleZipResponse(response.body()!!)
                                 } else {
                                     val string = response.body()?.string()
                                     if (string == null) {
-                                        error.value = IllegalStateException("Response body was null")
+                                        onFailure(IllegalStateException("Response body was null"))
                                         return@OkHttpCallback
                                     }
                                     handleJsonResponse(string)
                                 }
-
-
                             }
-                        }))
+                        }
+                ))
+    }
+
+    private fun onFailure(e: Exception) {
+        handler.post { error.value = e }
     }
 
     private fun handleJsonResponse(jsonString: String) {
@@ -155,6 +164,16 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 }
                 .addFailureListener {
                     this.error.value = it
+                }
+    }
+
+    private fun fetchAnimationByAsset(asset: String) {
+        LottieCompositionFactory.fromAsset(getApplication(), asset)
+                .addListener {
+                    composition.value = CompositionData(it)
+                }
+                .addFailureListener {
+                    error.value = it
                 }
     }
 }

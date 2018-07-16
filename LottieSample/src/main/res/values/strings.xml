@@ -33,6 +33,7 @@
 
     <string name="preview_title">Preview</string>
     <string name="preview_qr">Scan a QR code</string>
+    <string name="preview_assets">Load from assets</string>
     <string name="preview_file">Open a file</string>
     <string name="preview_url">Enter a URL to a json or zip file</string>
     <string name="preview_load">Load</string>

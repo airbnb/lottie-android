@@ -3,6 +3,7 @@
 * Deprecated `LottieComposition.Factory` in favor of LottieCompositionFactory.
     * The new factory methods make it easier to catch exceptions by separating out success and
     failure handlers. Previously, catching exceptions was impossible and would crash your app.
+* [Sample App] Added the ability to load a file from assets.
 
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
@@ -27,7 +28,7 @@
 
 
 # 2.5.2
-# Features and Improvements
+### Features and Improvements
 * Totally new sample app!
     * Rebuilt from the ground up.
     * Lottiefiles integration
