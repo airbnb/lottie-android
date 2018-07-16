@@ -6,6 +6,7 @@ import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.OnLifecycleEvent
 import android.util.Log
+import com.airbnb.lottie.L
 import com.airbnb.lottie.samples.model.AnimationData
 import com.airbnb.lottie.samples.model.AnimationResponse
 import io.reactivex.Observable
@@ -59,7 +60,7 @@ class LottiefilesViewModel(application: Application) : AndroidViewModel(applicat
                     responses.add(it)
                     animationDataList.value = flatten(animationDataList.value, it.data)
                 }, {
-                    Log.d("Gabe", "e#\t", it);
+                    Log.d(L.TAG, "e#\t", it);
                 }, {
                     loading.value = false
                 }))

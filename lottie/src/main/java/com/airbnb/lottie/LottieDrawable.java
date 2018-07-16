@@ -15,6 +15,7 @@ import android.os.Build;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -186,6 +187,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Create a composition with {@link LottieCompositionFactory}
+   *
    * @return True if the composition is different from the previously set composition, false otherwise.
    */
   public boolean setComposition(LottieComposition composition) {
@@ -319,10 +322,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
 // <editor-fold desc="animator">
 
+  @MainThread
   @Override public void start() {
     playAnimation();
   }
 
+  @MainThread
   @Override public void stop() {
     endAnimation();
   }
@@ -335,6 +340,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Plays the animation from the beginning. If speed is < 0, it will start at the end
    * and play towards the beginning
    */
+  @MainThread
   public void playAnimation() {
     if (compositionLayer == null) {
       lazyCompositionTasks.add(new LazyCompositionTask() {
@@ -347,6 +353,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     animator.playAnimation();
   }
 
+  @MainThread
   public void endAnimation() {
     lazyCompositionTasks.clear();
     animator.endAnimation();
@@ -356,6 +363,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Continues playing the animation from its current position. If speed < 0, it will play backwards
    * from the current position.
    */
+  @MainThread
   public void resumeAnimation() {
     if (compositionLayer == null) {
       lazyCompositionTasks.add(new LazyCompositionTask() {

@@ -2,6 +2,7 @@ package com.airbnb.lottie.utils;
 
 import android.animation.ValueAnimator;
 import android.support.annotation.FloatRange;
+import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.view.Choreographer;
@@ -192,6 +193,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
   }
 
+  @MainThread
   public void playAnimation() {
     running = true;
     notifyStart(isReversed());
@@ -201,15 +203,18 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     postFrameCallback();
   }
 
+  @MainThread
   public void endAnimation() {
     removeFrameCallback();
     notifyEnd(isReversed());
   }
 
+  @MainThread
   public void pauseAnimation() {
     removeFrameCallback();
   }
 
+  @MainThread
   public void resumeAnimation() {
     running = true;
     postFrameCallback();
@@ -221,6 +226,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
   }
 
+  @MainThread
   @Override public void cancel() {
     notifyCancel();
     removeFrameCallback();
@@ -251,10 +257,12 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
   }
 
+  @MainThread
   protected void removeFrameCallback() {
     this.removeFrameCallback(true);
   }
 
+  @MainThread
   protected void removeFrameCallback(boolean stopRunning) {
     Choreographer.getInstance().removeFrameCallback(this);
     if (stopRunning) {
