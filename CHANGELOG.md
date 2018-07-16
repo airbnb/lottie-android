@@ -1,3 +1,9 @@
+# 2.6.0
+### Features and Improvements
+* Deprecated `LottieComposition.Factory` in favor of LottieCompositionFactory.
+    * The new factory methods make it easier to catch exceptions by separating out success and
+    failure handlers. Previously, catching exceptions was impossible and would crash your app.
+
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
 * Fixed a bug that would ignore setting minFrame to 0 before the composition was set (#820).
@@ -8,7 +14,6 @@
 * Fixed a potential dangling Choreographer callback ([#775](https://githubcom/airbnb/lottie-android/pull/775))
 
 # 2.5.5
-# Bugs Fixed
 * Fixed end times for layers/animations. Before, if the layer/animation out frame was 20, it would fully render frame 20. This is incorrect. The last rendered frame should be 19.999... in this case. This should make Lottie reflect After Effects more accurately. However, if you are getting the frame in onAnimationEnd or onAnimationRepeat, it will be one less than it used to be.
 * Added support for base64 encoded images directly in the json instead of the filename. They are 33% larger than their equivalent image file but enables you to have images with a single file.
 * Fixed a lint error about KeyPath visibility.
@@ -16,7 +21,6 @@
 * Prevent autoPlay from starting before the animation was attached to the window. This caused animations in a RecyclerView to start playing before they were on screen.
 
 # 2.5.4
-# Bugs Fixed
 * You can now call playAnimation() from onAnimationEnd
 * Min/Max frames are clipped to the composition start/end
 * setProgress takes into account start and end frame

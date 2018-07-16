@@ -1,12 +1,11 @@
 package com.airbnb.lottie.model;
 
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
-import android.util.SparseArray;
 
-import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieAnimationView.CacheStrategy;
 import com.airbnb.lottie.LottieComposition;
 
@@ -23,11 +22,8 @@ public class LottieCompositionCache {
     return INSTANCE;
   }
 
-  private final SparseArray<LottieComposition> rawResStrongRefCache = new SparseArray<>();
-  private final SparseArray<WeakReference<LottieComposition>> rawResWeakRefCache = new SparseArray<>();
-
-  private final Map<String, LottieComposition> assetStringRefCache = new HashMap<>();
-  private final Map<String, WeakReference<LottieComposition>> assetWeakRefCache = new HashMap<>();
+  private final Map<String, LottieComposition> strongRefCache = new HashMap<>();
+  private final Map<String, WeakReference<LottieComposition>> weakRefCache = new HashMap<>();
 
   @VisibleForTesting
   LottieCompositionCache() {
@@ -35,39 +31,29 @@ public class LottieCompositionCache {
 
   @Nullable
   public LottieComposition getRawRes(@RawRes int rawRes) {
-    if (rawResWeakRefCache.indexOfKey(rawRes) >= 0) {
-      WeakReference<LottieComposition> compRef = rawResWeakRefCache.get(rawRes);
-      return compRef.get();
-    } else if (rawResStrongRefCache.indexOfKey(rawRes) >= 0) {
-      return rawResStrongRefCache.get(rawRes);
-    }
-    return null;
+    return get(Integer.toString(rawRes));
   }
 
   @Nullable
-  public LottieComposition getAsset(String assetName) {
-    if (assetWeakRefCache.containsKey(assetName)) {
-      WeakReference<LottieComposition> compRef = assetWeakRefCache.get(assetName);
+  public LottieComposition get(String assetName) {
+    if (strongRefCache.containsKey(assetName)) {
+      return strongRefCache.get(assetName);
+    } else if (weakRefCache.containsKey(assetName)) {
+      WeakReference<LottieComposition> compRef = weakRefCache.get(assetName);
       return compRef.get();
-    } else if (assetStringRefCache.containsKey(assetName)) {
-      return assetStringRefCache.get(assetName);
     }
     return null;
   }
 
   public void put(@RawRes int rawRes, @Nullable LottieComposition composition, CacheStrategy cacheStrategy) {
-    if (cacheStrategy == CacheStrategy.Strong) {
-      rawResStrongRefCache.put(rawRes, composition);
-    } else if (cacheStrategy == CacheStrategy.Weak) {
-      rawResWeakRefCache.put(rawRes, new WeakReference<LottieComposition>(composition));
-    }
+    put(Integer.toString(rawRes), composition, cacheStrategy);
   }
 
-  public void put(String assetName, @Nullable LottieComposition composition, CacheStrategy cacheStrategy) {
+  public void put(String cacheKey, @Nullable LottieComposition composition, CacheStrategy cacheStrategy) {
     if (cacheStrategy == CacheStrategy.Strong) {
-      assetStringRefCache.put(assetName, composition);
+      strongRefCache.put(cacheKey, composition);
     } else if (cacheStrategy == CacheStrategy.Weak) {
-      assetWeakRefCache.put(assetName, new WeakReference<LottieComposition>(composition));
+      weakRefCache.put(cacheKey, new WeakReference<LottieComposition>(composition));
     }
   }
 }

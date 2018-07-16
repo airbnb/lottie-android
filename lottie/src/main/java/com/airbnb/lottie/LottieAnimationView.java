@@ -379,7 +379,7 @@ import java.util.List;
   public void setAnimation(final String assetName, final CacheStrategy cacheStrategy) {
     this.animationName = assetName;
     animationResId = 0;
-    LottieComposition cachedComposition = LottieCompositionCache.getInstance().getAsset(assetName);
+    LottieComposition cachedComposition = LottieCompositionCache.getInstance().get(assetName);
     if (cachedComposition != null) {
       setComposition(cachedComposition);
       return;

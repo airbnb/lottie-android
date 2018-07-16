@@ -23,12 +23,6 @@ import java.util.concurrent.FutureTask;
  */
 public class LottieTask<T> {
 
-  public enum State {
-    Loading,
-    Success,
-    Fail
-  }
-
   @Nullable private Thread taskObserver;
 
   /* Preserve add order. */
@@ -52,22 +46,12 @@ public class LottieTask<T> {
     if (runNow) {
       try {
         setResult(runnable.call());
-      } catch (Exception e) {
+      } catch (Throwable e) {
         setResult(new LottieResult<T>(e));
       }
     } else {
       task.run();
       startTaskObserverIfNeeded();
-    }
-  }
-
-  public State getState() {
-    if (result == null) {
-      return State.Loading;
-    } else if (result.getException() != null) {
-      return State.Fail;
-    } else {
-      return State.Success;
     }
   }
 
@@ -77,20 +61,6 @@ public class LottieTask<T> {
     }
     this.result = result;
     notifyListeners();
-  }
-
-  @Nullable public T getValue() {
-    if (result == null) {
-      return null;
-    }
-    return result.getValue();
-  }
-
-  @Nullable public Throwable getException() {
-    if (result == null) {
-      return null;
-    }
-    return result.getException();
   }
 
   /**
