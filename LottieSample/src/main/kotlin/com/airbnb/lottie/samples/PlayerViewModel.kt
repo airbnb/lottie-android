@@ -83,6 +83,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 .addListener {
                     this.composition.value = CompositionData(it)
                 }
+                .addFailureListener {
+                    this.error.value = it
+                }
     }
 
     @SuppressLint("CheckResult")
@@ -149,6 +152,9 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         LottieCompositionFactory.fromJsonInputStream(fis)
                 .addListener {
                     this.composition.value = CompositionData(it)
+                }
+                .addFailureListener {
+                    this.error.value = it
                 }
     }
 }
