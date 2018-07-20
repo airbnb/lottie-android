@@ -159,11 +159,11 @@ public abstract class BaseLayer
   }
 
   @SuppressLint("WrongConstant")
-  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) { 
+  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This method was deprecated in API level 26 and not recommented since 22, but its
       // 2-parameter replacement is only available starting at API level 21.
-      canvas.saveLayer(rect, paint, SAVE_FLAGS);
+      canvas.saveLayer(rect, paint, all ? Canvas.ALL_SAVE_FLAG : SAVE_FLAGS);
     } else {
       canvas.saveLayer(rect, paint);
     }
@@ -216,7 +216,7 @@ public abstract class BaseLayer
     L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, contentPaint);
+    saveLayerCompat(canvas, rect, contentPaint, true);
     L.endSection("Layer#saveLayer");
 
     // Clear the off screen buffer. This is necessary for some phones.
@@ -232,7 +232,7 @@ public abstract class BaseLayer
     if (hasMatteOnThisLayer()) {
       L.beginSection("Layer#drawMatte");
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, mattePaint);
+      saveLayerCompat(canvas, rect, mattePaint, false);
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
@@ -370,7 +370,7 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, paint);
+    saveLayerCompat(canvas, rect, paint, false);
     L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
 
