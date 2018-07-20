@@ -62,7 +62,7 @@ class PreviewFragment : Fragment() {
         assets.setOnClickListener {
             val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item).apply {
                 requireContext().assets.list("").forEach {
-                    if (it.endsWith(".json")) {
+                    if (it.endsWith(".json") || it.endsWith(".zip")) {
                         add(it)
                     }
                 }

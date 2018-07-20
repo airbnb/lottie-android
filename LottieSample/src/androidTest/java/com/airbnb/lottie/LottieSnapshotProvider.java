@@ -85,7 +85,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       file.delete();
     }
     for (final String animation : animations) {
-      if (!animation.contains(".json")) {
+      if (!animation.contains(".json") || !animation.contains(".zip")) {
         continue;
       }
       remainingTasks += 1;
@@ -100,7 +100,9 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void runAnimation(final String name) {
-    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, name);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
+    if (result.getException() != null) throw new IllegalStateException(result.getException());
+    LottieComposition composition = result.getValue();
     if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
         composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
       Log.d("Happo", "" + name + " is too large. Skipping (" + composition.getBounds().width() +

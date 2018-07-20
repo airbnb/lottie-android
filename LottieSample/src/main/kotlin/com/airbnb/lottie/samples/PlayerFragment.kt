@@ -387,19 +387,10 @@ class PlayerFragment : Fragment() {
         return true
     }
 
-    private fun onCompositionLoaded(compositionData: CompositionData?) {
-        if (this.composition != null) return
-        if (compositionData?.composition == null) {
-            Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG)
-            return
-        }
-
-        val composition = compositionData.composition!!
+    private fun onCompositionLoaded(composition: LottieComposition?) {
+        composition ?: return
         this.composition = composition
 
-        animationView.setImageAssetDelegate {
-            compositionData.images[it.fileName]
-        }
         animationView.setComposition(composition)
         animationView.setMinAndMaxFrame(composition.startFrame.toInt(), composition.endFrame.toInt())
         animationView.setPerformanceTrackingEnabled(true)
