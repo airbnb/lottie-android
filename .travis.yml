@@ -38,5 +38,5 @@ script:
   - ./gradlew check
 
   - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
-  - ./gcloud_run.sh
+  - travis_wait 30 ./gcloud_run.sh
 sudo: false
