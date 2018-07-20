@@ -43,6 +43,12 @@ public class LottieCompositionFactory {
     });
   }
 
+  /**
+   * Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will
+   * be parsed as json.
+   *
+   * @see #fromZipStream(ZipInputStream)
+   */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
     try {
@@ -183,8 +189,9 @@ public class LottieCompositionFactory {
   }
 
   /**
-   * Parses a zip input stream into a Lottie composition. It will automatically store and configure any images inside the animation
-   * if they exist.
+   * Parses a zip input stream into a Lottie composition.
+   * Your zip file should just be a folder with your json file and images zipped together.
+   * It will automatically store and configure any images inside the animation if they exist.
    */
   @WorkerThread
   private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, boolean close) {
