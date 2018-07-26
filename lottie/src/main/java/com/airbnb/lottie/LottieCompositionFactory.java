@@ -192,20 +192,20 @@ public class LottieCompositionFactory {
    * Parses a zip input stream into a Lottie composition.
    * Your zip file should just be a folder with your json file and images zipped together.
    * It will automatically store and configure any images inside the animation if they exist.
+   *
+   * It will also close the input stream.
    */
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, boolean close) {
+  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream) {
     try {
-      return fromZipStreamSync(inputStream);
+      return fromZipStreamSyncInternal(inputStream);
     } finally {
-      if (close) {
-        closeQuietly(inputStream);
-      }
+      closeQuietly(inputStream);
     }
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
 
