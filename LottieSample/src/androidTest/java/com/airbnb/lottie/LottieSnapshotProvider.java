@@ -54,6 +54,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   @Override
   public void beginSnapshotting() {
+    Log.d(L.TAG, "beginSnapshotting");
     try {
       snapshotAssets(context.getAssets().list(""));
       String[] tests = context.getAssets().list("Tests");
@@ -87,7 +88,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       file.delete();
     }
     for (final String animation : animations) {
-      if (!animation.contains(".json") || !animation.contains(".zip")) {
+      if (!animation.contains(".json") && !animation.contains(".zip")) {
         continue;
       }
       remainingTasks += 1;
