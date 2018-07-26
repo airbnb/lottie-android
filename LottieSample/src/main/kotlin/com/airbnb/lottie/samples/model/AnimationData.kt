@@ -20,7 +20,7 @@ data class AnimationData(
         val bodymovinVersion: String,
         val slug: String,
         val speed: String,
-        val preview: String,
+        val preview: String?,
         val lottieLink: String,
         val userInfo: UserInfo?
 ) : Parcelable {
