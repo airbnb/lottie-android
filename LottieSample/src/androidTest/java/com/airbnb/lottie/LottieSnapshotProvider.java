@@ -31,6 +31,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import retrofit2.http.HEAD;
+
 public class LottieSnapshotProvider extends SnapshotProvider {
 
   private static final float[] PROGRESS = {0f, 0.25f, 0.5f, 0.75f, 1f};
@@ -52,6 +54,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   @Override
   public void beginSnapshotting() {
+    Log.d(L.TAG, "beginSnapshotting");
     try {
       snapshotAssets(context.getAssets().list(""));
       String[] tests = context.getAssets().list("Tests");
@@ -85,7 +88,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       file.delete();
     }
     for (final String animation : animations) {
-      if (!animation.contains(".json") || !animation.contains(".zip")) {
+      if (!animation.contains(".json") && !animation.contains(".zip")) {
         continue;
       }
       remainingTasks += 1;
@@ -133,6 +136,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void decrementAndCompleteIfDone() {
     remainingTasks--;
+    Log.d(L.TAG, "There are " + remainingTasks + " tasks left.");
     Log.d("Happo", "There are " + remainingTasks + " remaining tasks.");
     if (remainingTasks < 0) {
       throw new IllegalStateException("Remaining tasks cannot be negative.");

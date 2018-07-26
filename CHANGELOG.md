@@ -6,6 +6,7 @@
     * InputStreams are now always closed even if you use the old APIs. Please be aware if you were
     using this while upgrading.
 * [Sample App] Added the ability to load a file from assets.
+* Added support for miter limit.
 
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).

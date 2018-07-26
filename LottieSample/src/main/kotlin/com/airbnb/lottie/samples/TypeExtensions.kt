@@ -51,7 +51,7 @@ fun View.setVisibleIf(condition: Boolean) {
     visibility = if (condition) View.VISIBLE else View.GONE
 }
 
-fun ImageView.setImageUrl(url: String) = Glide.with(this).load(url).into(this)
+fun ImageView.setImageUrl(url: String?) = url?.let { Glide.with(this).load(it).into(this) }
 
 inline fun <reified T> flatten(vararg lists: List<T>?) = lists.flatMap { it ?: emptyList() }
 

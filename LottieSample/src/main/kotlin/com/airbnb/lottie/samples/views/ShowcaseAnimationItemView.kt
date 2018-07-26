@@ -23,7 +23,7 @@ class ShowcaseAnimationItemView @JvmOverloads constructor(
     }
 
     @ModelProp
-    fun setPreviewUrl(url: String) {
+    fun setPreviewUrl(url: String?) {
         imageView.setImageUrl(url)
     }
 

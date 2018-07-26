@@ -1,15 +1,20 @@
 # https://cloud.google.com/solutions/continuous-delivery-with-travis-ci
 language: android
 group: travis_lts
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - "$HOME/.m2"
-  - "$HOME/.gradle"
-  - "$HOME/gcloud-sdk/"
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+    - "$HOME/.m2"
+    - "$HOME/google-cloud-sdk/"
+    - "$HOME/.cache"
 env:
-  - PATH=${HOME}/gcloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  - yes | sdkmanager "platforms;android-27"
   - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - export GIT_SHA=$(git rev-parse HEAD)
   - export GIT_MERGE_BASE=$(git merge-base master)
@@ -24,6 +29,8 @@ android:
   components:
     - tools
     - platform-tools
+    - tools
+
     - build-tools-27.0.3
     - android-27
     - extra-android-m2repository
@@ -34,9 +41,19 @@ branches:
     - gh-pages
 notifications:
   email: false
-script:
-  - ./gradlew check
-
-  - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
-  - travis_wait 30 ./gcloud_run.sh
+jobs:
+  include:
+    - stage: "test"
+      name: "Lottie Lint"
+      script: ./gradlew :lottie:lintRelease
+    - name: "Lottie Unit Tests"
+      script: ./gradlew :lottie:testReleaseUnitTest
+    - name: "LottieSample Lint"
+      script: ./gradlew :LottieSample:lintRelease
+    - name: "LottieSample Unit Tests"
+      script: ./gradlew :LottieSample:testReleaseUnitTest
+    - name: "Firebase Happo Tests"
+      script:
+        - ./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest
+        - ./gcloud_run.sh
 sudo: false

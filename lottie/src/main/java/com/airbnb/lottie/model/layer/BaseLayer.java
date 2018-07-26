@@ -37,8 +37,6 @@ public abstract class BaseLayer
   private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
       Canvas.MATRIX_SAVE_FLAG;
 
-  private static boolean hasLoggedIntersectMasks = false;
-
   @Nullable
   static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
@@ -107,7 +105,8 @@ public abstract class BaseLayer
     if (layerModel.getMasks() != null && !layerModel.getMasks().isEmpty()) {
       this.mask = new MaskKeyframeAnimation(layerModel.getMasks());
       for (BaseKeyframeAnimation<?, Path> animation : mask.getMaskAnimations()) {
-        addAnimation(animation);
+        // Don't call addAnimation() because progress gets set manually in setProgress to
+        // properly handle time scale.
         animation.addUpdateListener(this);
       }
       for (BaseKeyframeAnimation<Integer, Integer> animation : mask.getOpacityAnimations()) {
@@ -160,11 +159,11 @@ public abstract class BaseLayer
   }
 
   @SuppressLint("WrongConstant")
-  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) { 
+  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This method was deprecated in API level 26 and not recommented since 22, but its
       // 2-parameter replacement is only available starting at API level 21.
-      canvas.saveLayer(rect, paint, SAVE_FLAGS);
+      canvas.saveLayer(rect, paint, all ? Canvas.ALL_SAVE_FLAG : SAVE_FLAGS);
     } else {
       canvas.saveLayer(rect, paint);
     }
@@ -217,7 +216,7 @@ public abstract class BaseLayer
     L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, contentPaint);
+    saveLayerCompat(canvas, rect, contentPaint, true);
     L.endSection("Layer#saveLayer");
 
     // Clear the off screen buffer. This is necessary for some phones.
@@ -233,7 +232,7 @@ public abstract class BaseLayer
     if (hasMatteOnThisLayer()) {
       L.beginSection("Layer#drawMatte");
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, mattePaint);
+      saveLayerCompat(canvas, rect, mattePaint, false);
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
@@ -348,11 +347,6 @@ public abstract class BaseLayer
         paint = subtractMaskPaint;
         break;
       case MaskModeIntersect:
-        if (!hasLoggedIntersectMasks) {
-          Log.w(L.TAG, "Animation contains intersect masks. They are not supported but will be " +
-                  "treated like add masks.");
-          hasLoggedIntersectMasks = true;
-        }
       case MaskModeAdd:
       default:
         // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
@@ -376,7 +370,7 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, paint);
+    saveLayerCompat(canvas, rect, paint, false);
     L.endSection("Layer#saveLayer");
     clearCanvas(canvas);
 
@@ -416,6 +410,11 @@ public abstract class BaseLayer
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     // Time stretch should not be applied to the layer transform.
     transform.setProgress(progress);
+    if (mask != null) {
+      for (int i = 0; i < mask.getMaskAnimations().size(); i++) {
+        mask.getMaskAnimations().get(i).setProgress(progress);
+      }
+    }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }
