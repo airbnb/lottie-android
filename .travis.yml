@@ -34,9 +34,12 @@ branches:
     - gh-pages
 notifications:
   email: false
-script:
-  - ./gradlew check
-
-  - ./gradlew :LottieSample:assembleAndroidTest :LottieSample:assembleDebug
-  - ./gcloud_run.sh
+jobs:
+  include:
+    - stage: "test"
+      name: "check"
+      script: ./gradlew check
+    - stage: "test"
+      name: "firebase"
+      script: ./gcloud_run.sh
 sudo: false
