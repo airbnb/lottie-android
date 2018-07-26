@@ -9,6 +9,7 @@ import android.support.annotation.RawRes;
 import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
 
+import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
 import org.json.JSONObject;
@@ -26,7 +27,7 @@ import java.util.zip.ZipInputStream;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 
 /**
- * Helpers to create a LottieComposition.
+ * Helpers to create or cache a LottieComposition.
  */
 public class LottieCompositionFactory {
 
@@ -47,15 +48,16 @@ public class LottieCompositionFactory {
    * Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will
    * be parsed as json.
    *
-   * @see #fromZipStream(ZipInputStream)
+   * @see #fromZipStreamSync(ZipInputStream, String)
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
     try {
+      String cacheKey = "asset_" + fileName;
       if (fileName.endsWith(".zip")) {
-        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)));
+        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
-      return fromJsonInputStreamSync(context.getAssets().open(fileName));
+      return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
     } catch (IOException e) {
       return new LottieResult<>(e);
     }
@@ -74,7 +76,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int resId) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(resId));
+      return fromJsonInputStreamSync(context.getResources().openRawResource(resId), "rawRes_" + resId);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
@@ -85,46 +87,34 @@ public class LottieCompositionFactory {
    *
    * @see #fromJsonInputStreamSync(InputStream, boolean)
    */
-  public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream) {
+  public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fromJsonInputStreamSync(stream);
+        return fromJsonInputStreamSync(stream, cacheKey);
       }
     });
-  }
-
-  /**
-   * Auto-closes the stream.
-   *
-   * @see #fromJsonInputStreamSync(InputStream, boolean)
-   */
-  @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream) {
-    return fromJsonInputStreamSync(stream, true);
   }
 
   /**
    * Return a LottieComposition for the given InputStream to json.
    */
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, boolean close) {
+  public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey) {
     try {
-      return fromJsonReaderSync(new JsonReader(new InputStreamReader(stream)));
+      return fromJsonReaderSync(new JsonReader(new InputStreamReader(stream)), cacheKey);
     } finally {
-      if (close) {
-        closeQuietly(stream);
-      }
+      closeQuietly(stream);
     }
   }
 
   /**
-   * @see #fromJsonSync(JSONObject)
+   * @see #fromJsonSync(JSONObject, String)
    */
   @Deprecated
-  public static LottieTask<LottieComposition> fromJson(final JSONObject json) {
+  public static LottieTask<LottieComposition> fromJson(final JSONObject json, @Nullable final String cacheKey) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fromJsonSync(json);
+        return fromJsonSync(json, cacheKey);
       }
     });
   }
@@ -136,17 +126,17 @@ public class LottieCompositionFactory {
    */
   @Deprecated
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonSync(JSONObject json) {
-    return fromJsonStringSync(json.toString());
+  public static LottieResult<LottieComposition> fromJsonSync(JSONObject json, @Nullable String cacheKey) {
+    return fromJsonStringSync(json.toString(), cacheKey);
   }
 
   /**
    * @see #fromJsonStringSync(String)
    */
-  public static LottieTask<LottieComposition> fromJsonString(final String json) {
+  public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fromJsonStringSync(json);
+        return fromJsonStringSync(json, cacheKey);
       }
     });
   }
@@ -156,14 +146,14 @@ public class LottieCompositionFactory {
    * If loading from a file, it is preferable to use the InputStream or rawRes version.
    */
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonStringSync(String json) {
-    return fromJsonReaderSync(new JsonReader(new StringReader(json)));
+  public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
+    return fromJsonReaderSync(new JsonReader(new StringReader(json)), cacheKey);
   }
 
-  public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader) {
+  public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fromJsonReaderSync(reader);
+        return fromJsonReaderSync(reader, cacheKey);
       }
     });
   }
@@ -172,18 +162,20 @@ public class LottieCompositionFactory {
    * Return a LottieComposition for the specified json.
    */
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(JsonReader reader) {
+  public static LottieResult<LottieComposition> fromJsonReaderSync(JsonReader reader, @Nullable String cacheKey) {
     try {
-      return new LottieResult<>(LottieCompositionParser.parse(reader));
+      LottieComposition composition = LottieCompositionParser.parse(reader);
+      LottieCompositionCache.getInstance().put(cacheKey, composition);
+      return new LottieResult<>(composition);
     } catch (Exception e) {
       return new LottieResult<>(e);
     }
   }
 
-  public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream) {
+  public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fromZipStreamSync(inputStream);
+        return fromZipStreamSync(inputStream, cacheKey);
       }
     });
   }
@@ -194,18 +186,16 @@ public class LottieCompositionFactory {
    * It will automatically store and configure any images inside the animation if they exist.
    */
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, boolean close) {
+  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
     try {
-      return fromZipStreamSync(inputStream);
+      return fromZipStreamSyncInternal(inputStream, cacheKey);
     } finally {
-      if (close) {
-        closeQuietly(inputStream);
-      }
+      closeQuietly(inputStream);
     }
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream, @Nullable String cacheKey) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
 
@@ -249,6 +239,7 @@ public class LottieCompositionFactory {
       }
     }
 
+    LottieCompositionCache.getInstance().put(cacheKey, composition);
     return new LottieResult<>(composition);
   }
 

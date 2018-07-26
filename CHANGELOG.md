@@ -3,6 +3,8 @@
 * Deprecated `LottieComposition.Factory` in favor of LottieCompositionFactory.
     * The new factory methods make it easier to catch exceptions by separating out success and
     failure handlers. Previously, catching exceptions was impossible and would crash your app.
+    * InputStreams are now always closed even if you use the old APIs. Please be aware if you were
+    using this while upgrading.
 * [Sample App] Added the ability to load a file from assets.
 
 # 2.5.7

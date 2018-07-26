@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -55,9 +56,10 @@ import java.util.List;
 
 
   /**
-   * Caching strategy for compositions that will be reused frequently.
-   * Weak or Strong indicates the GC reference strength of the composition in the cache.
+   * Pleaes migrate to LottieCompositionFactory. It has cleaner APIs and a LruCache built in.
+   * @see LottieCompositionFactory
    */
+  @Deprecated
   public enum CacheStrategy {
     None,
     Weak,
@@ -321,24 +323,20 @@ import java.util.List;
   }
 
   /**
-   * Sets the animation from a file in the raw directory.
-   * This will load and deserialize the file asynchronously.
-   * <p>
-   * Will not cache the composition once loaded.
+   * cacheStrategy is deprecated. Compositions are now cached by default.
+   *
+   * @see #setAnimationRawRes(int)
    */
-  public void setAnimation(@RawRes int animationResId) {
-    setAnimation(animationResId, defaultCacheStrategy);
+  @Deprecated
+  public void setAnimation(@RawRes final int rawRes, final CacheStrategy cacheStrategy) {
+    setAnimation(rawRes);
   }
 
   /**
    * Sets the animation from a file in the raw directory.
    * This will load and deserialize the file asynchronously.
-   * <p>
-   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a
-   * strong reference to the composition once it is loaded
-   * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
    */
-  public void setAnimation(@RawRes final int rawRes, final CacheStrategy cacheStrategy) {
+  public void setAnimation(@RawRes final int rawRes) {
     this.animationResId = rawRes;
     animationName = null;
     LottieComposition cachedComposition = LottieCompositionCache.getInstance().getRawRes(rawRes);
@@ -352,31 +350,23 @@ import java.util.List;
     compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
         .addListener(new LottieListener<LottieComposition>() {
           @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(rawRes, composition, cacheStrategy);
+            LottieCompositionCache.getInstance().put(rawRes, composition);
           }
         })
-      .addListener(loadedListener);
+        .addListener(loadedListener);
   }
 
   /**
-   * Sets the animation from a file in the assets directory.
-   * This will load and deserialize the file asynchronously.
-   * <p>
-   * Will not cache the composition once loaded.
+   * cacheStrategy is deprecated. Compositions are now cached by default.
+   *
+   * @see #setAnimationAsset(String)
    */
-  public void setAnimation(String animationName) {
-    setAnimation(animationName, defaultCacheStrategy);
+  @Deprecated
+  public void setAnimation(String assetName, CacheStrategy cacheStrategy) {
+    setAnimation(assetName);
   }
 
-  /**
-   * Sets the animation from a file in the assets directory.
-   * This will load and deserialize the file asynchronously if it is not already in the cache.
-   * <p>
-   * You may also specify a cache strategy. Specifying {@link CacheStrategy#Strong} will hold a
-   * strong reference to the composition once it is loaded
-   * and deserialized. {@link CacheStrategy#Weak} will hold a weak reference to said composition.
-   */
-  public void setAnimation(final String assetName, final CacheStrategy cacheStrategy) {
+  public void setAnimation(final String assetName) {
     this.animationName = assetName;
     animationResId = 0;
     LottieComposition cachedComposition = LottieCompositionCache.getInstance().get(assetName);
@@ -390,7 +380,7 @@ import java.util.List;
     compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
         .addListener(new LottieListener<LottieComposition>() {
           @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(assetName, composition, cacheStrategy);
+            LottieCompositionCache.getInstance().put(assetName, composition);
           }
         })
         .addListener(loadedListener);
@@ -409,12 +399,28 @@ import java.util.List;
   }
 
   /**
+   * @see #setAnimationFromJson(String, String)
+   */
+  @Deprecated
+  public void setAnimationFromJson(String jsonString) {
+    setAnimationFromJson(jsonString, null);
+  }
+
+  /**
    * Sets the animation from json string. This is the ideal API to use when loading an animation
    * over the network because you can use the raw response body here and a converstion to a
    * JSONObject never has to be done.
    */
-  public void setAnimationFromJson(String jsonString) {
-    setAnimation(new JsonReader(new StringReader(jsonString)));
+  public void setAnimationFromJson(String jsonString, @Nullable String cacheKey) {
+    setAnimation(new JsonReader(new StringReader(jsonString)), cacheKey);
+  }
+
+  /**
+   * @see #setAnimation(JsonReader, String)
+   */
+  @Deprecated
+  public void setAnimation(JsonReader reader) {
+    setAnimation(reader, null);
   }
 
   /**
@@ -424,10 +430,10 @@ import java.util.List;
    * This is particularly useful for animations loaded from the network. You can fetch the
    * bodymovin json from the network and pass it directly here.
    */
-  public void setAnimation(JsonReader reader) {
+  public void setAnimation(JsonReader reader, @Nullable String cacheKey) {
     clearComposition();
     cancelLoaderTask();
-    compositionTask = LottieCompositionFactory.fromJsonReader(reader)
+    compositionTask = LottieCompositionFactory.fromJsonReader(reader, cacheKey)
         .addListener(loadedListener);
   }
 

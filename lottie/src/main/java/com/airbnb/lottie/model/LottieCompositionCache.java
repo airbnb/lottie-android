@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.LruCache;
 
 import com.airbnb.lottie.LottieAnimationView.CacheStrategy;
 import com.airbnb.lottie.LottieComposition;
@@ -16,14 +17,14 @@ import java.util.Map;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class LottieCompositionCache {
 
+  private static final int CACHE_SIZE_MB = 10;
   private static final LottieCompositionCache INSTANCE = new LottieCompositionCache();
 
   public static LottieCompositionCache getInstance() {
     return INSTANCE;
   }
 
-  private final Map<String, LottieComposition> strongRefCache = new HashMap<>();
-  private final Map<String, WeakReference<LottieComposition>> weakRefCache = new HashMap<>();
+  private final LruCache<String, LottieComposition> cache = new LruCache<>(1024 * 1024 * CACHE_SIZE_MB);
 
   @VisibleForTesting
   LottieCompositionCache() {
@@ -36,24 +37,18 @@ public class LottieCompositionCache {
 
   @Nullable
   public LottieComposition get(String assetName) {
-    if (strongRefCache.containsKey(assetName)) {
-      return strongRefCache.get(assetName);
-    } else if (weakRefCache.containsKey(assetName)) {
-      WeakReference<LottieComposition> compRef = weakRefCache.get(assetName);
-      return compRef.get();
-    }
-    return null;
+    return cache.get(assetName);
   }
 
-  public void put(@RawRes int rawRes, @Nullable LottieComposition composition, CacheStrategy cacheStrategy) {
-    put(Integer.toString(rawRes), composition, cacheStrategy);
+  public void put(@RawRes int rawRes, @Nullable LottieComposition composition) {
+    put(Integer.toString(rawRes), composition);
   }
 
-  public void put(String cacheKey, @Nullable LottieComposition composition, CacheStrategy cacheStrategy) {
-    if (cacheStrategy == CacheStrategy.Strong) {
-      strongRefCache.put(cacheKey, composition);
-    } else if (cacheStrategy == CacheStrategy.Weak) {
-      weakRefCache.put(cacheKey, new WeakReference<LottieComposition>(composition));
+  public void put(@Nullable String cacheKey, @Nullable LottieComposition composition) {
+    if (cacheKey == null) {
+      return;
+
     }
+    cache.put(cacheKey, composition);
   }
 }
