@@ -24,6 +24,7 @@ public class GradientStroke implements ContentModel {
   private final AnimatableFloatValue width;
   private final ShapeStroke.LineCapType capType;
   private final ShapeStroke.LineJoinType joinType;
+  private final float miterLimit;
   private final List<AnimatableFloatValue> lineDashPattern;
   @Nullable private final AnimatableFloatValue dashOffset;
 
@@ -31,7 +32,8 @@ public class GradientStroke implements ContentModel {
       AnimatableGradientColorValue gradientColor,
       AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
       AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
-      ShapeStroke.LineJoinType joinType, List<AnimatableFloatValue> lineDashPattern,
+      ShapeStroke.LineJoinType joinType, float miterLimit,
+      List<AnimatableFloatValue> lineDashPattern,
       @Nullable AnimatableFloatValue dashOffset) {
     this.name = name;
     this.gradientType = gradientType;
@@ -42,6 +44,7 @@ public class GradientStroke implements ContentModel {
     this.width = width;
     this.capType = capType;
     this.joinType = joinType;
+    this.miterLimit = miterLimit;
     this.lineDashPattern = lineDashPattern;
     this.dashOffset = dashOffset;
   }
@@ -88,6 +91,10 @@ public class GradientStroke implements ContentModel {
 
   @Nullable public AnimatableFloatValue getDashOffset() {
     return dashOffset;
+  }
+
+  public float getMiterLimit() {
+    return miterLimit;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {

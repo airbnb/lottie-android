@@ -25,6 +25,7 @@ class ShapeStrokeParser {
     ShapeStroke.LineCapType capType = null;
     ShapeStroke.LineJoinType joinType = null;
     AnimatableFloatValue offset = null;
+    float miterLimit = 0f;
 
     List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
@@ -47,6 +48,9 @@ class ShapeStrokeParser {
           break;
         case "lj":
           joinType = ShapeStroke.LineJoinType.values()[reader.nextInt() - 1];
+          break;
+        case "ml":
+          miterLimit =  (float) reader.nextDouble();
           break;
         case "d":
           reader.beginArray();
@@ -92,6 +96,6 @@ class ShapeStrokeParser {
     }
 
     return new ShapeStroke(
-        name, offset, lineDashPattern, color, opacity, width, capType, joinType);
+        name, offset, lineDashPattern, color, opacity, width, capType, joinType, miterLimit);
   }
 }

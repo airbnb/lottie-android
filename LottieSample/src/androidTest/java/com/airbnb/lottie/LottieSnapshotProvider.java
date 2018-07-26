@@ -100,9 +100,14 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void runAnimation(final String name) {
+<<<<<<< HEAD
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
     if (result.getException() != null) throw new IllegalStateException(result.getException());
     LottieComposition composition = result.getValue();
+=======
+    Log.d(L.TAG, "Running name");
+    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, name);
+>>>>>>> origin/master
     if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
         composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
       Log.d("Happo", "" + name + " is too large. Skipping (" + composition.getBounds().width() +
@@ -133,6 +138,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void decrementAndCompleteIfDone() {
     remainingTasks--;
+    Log.d(L.TAG, "There are " + remainingTasks + " tasks left.");
     Log.d("Happo", "There are " + remainingTasks + " remaining tasks.");
     if (remainingTasks < 0) {
       throw new IllegalStateException("Remaining tasks cannot be negative.");
