@@ -17,5 +17,7 @@ gcloud config set project lottie-snapshots
 
 gcloud firebase test android run --no-auto-google-login --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/debug/LottieSample-debug.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
 result=$?
-./post_pr_comment.js
+if [ "$result" -eq "0" ]; then
+  ./post_pr_comment.js
+fi
 exit $result
