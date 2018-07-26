@@ -100,10 +100,17 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey) {
+    return fromJsonInputStreamSync(stream, cacheKey, true);
+  }
+
+  @WorkerThread
+  private static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
       return fromJsonReaderSync(new JsonReader(new InputStreamReader(stream)), cacheKey);
     } finally {
-      closeQuietly(stream);
+      if (close) {
+        closeQuietly(stream);
+      }
     }
   }
 
@@ -205,7 +212,7 @@ public class LottieCompositionFactory {
         if (entry.getName().contains("__MACOSX")) {
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
-          composition = LottieComposition.Factory.fromInputStreamSync(inputStream, false);
+          composition = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, cacheKey, false).getValue();
         } else if (entry.getName().contains(".png")) {
           String[] splitName = entry.getName().split("/");
           String name = splitName[splitName.length - 1];
