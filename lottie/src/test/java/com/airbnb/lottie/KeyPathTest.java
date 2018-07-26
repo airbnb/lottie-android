@@ -32,7 +32,7 @@ public class KeyPathTest {
   @Before
   public void setupDrawable() {
     lottieDrawable = new LottieDrawable();
-    LottieComposition composition = LottieCompositionFactory.fromJsonStringSync(Fixtures.SQUARES).getValue();
+    LottieComposition composition = LottieCompositionFactory.fromJsonStringSync(Fixtures.SQUARES, "squares").getValue();
     lottieDrawable.setComposition(composition);
   }
 
