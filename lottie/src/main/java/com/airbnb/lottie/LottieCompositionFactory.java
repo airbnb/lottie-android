@@ -2,6 +2,9 @@ package com.airbnb.lottie;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
@@ -14,7 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 
@@ -36,9 +43,18 @@ public class LottieCompositionFactory {
     });
   }
 
+  /**
+   * Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will
+   * be parsed as json.
+   *
+   * @see #fromZipStream(ZipInputStream)
+   */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
     try {
+      if (fileName.endsWith(".zip")) {
+        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)));
+      }
       return fromJsonInputStreamSync(context.getAssets().open(fileName));
     } catch (IOException e) {
       return new LottieResult<>(e);
@@ -64,6 +80,11 @@ public class LottieCompositionFactory {
     }
   }
 
+  /**
+   * Auto-closes the stream.
+   *
+   * @see #fromJsonInputStreamSync(InputStream, boolean)
+   */
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
@@ -72,6 +93,11 @@ public class LottieCompositionFactory {
     });
   }
 
+  /**
+   * Auto-closes the stream.
+   *
+   * @see #fromJsonInputStreamSync(InputStream, boolean)
+   */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream) {
     return fromJsonInputStreamSync(stream, true);
@@ -91,6 +117,9 @@ public class LottieCompositionFactory {
     }
   }
 
+  /**
+   * @see #fromJsonSync(JSONObject)
+   */
   @Deprecated
   public static LottieTask<LottieComposition> fromJson(final JSONObject json) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
@@ -111,6 +140,9 @@ public class LottieCompositionFactory {
     return fromJsonStringSync(json.toString());
   }
 
+  /**
+   * @see #fromJsonStringSync(String)
+   */
   public static LottieTask<LottieComposition> fromJsonString(final String json) {
     return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
@@ -146,5 +178,87 @@ public class LottieCompositionFactory {
     } catch (Exception e) {
       return new LottieResult<>(e);
     }
+  }
+
+  public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream) {
+    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+      @Override public LottieResult<LottieComposition> call() throws Exception {
+        return fromZipStreamSync(inputStream);
+      }
+    });
+  }
+
+  /**
+   * Parses a zip input stream into a Lottie composition.
+   * Your zip file should just be a folder with your json file and images zipped together.
+   * It will automatically store and configure any images inside the animation if they exist.
+   *
+   * It will also close the input stream.
+   */
+  @WorkerThread
+  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream) {
+    try {
+      return fromZipStreamSyncInternal(inputStream);
+    } finally {
+      closeQuietly(inputStream);
+    }
+  }
+
+  @WorkerThread
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream) {
+    LottieComposition composition = null;
+    Map<String, Bitmap> images = new HashMap<>();
+
+    try {
+      ZipEntry entry = inputStream.getNextEntry();
+      while (entry != null) {
+        if (entry.getName().contains("__MACOSX")) {
+          inputStream.closeEntry();
+        } else if (entry.getName().contains(".json")) {
+          composition = LottieComposition.Factory.fromInputStreamSync(inputStream, false);
+        } else if (entry.getName().contains(".png")) {
+          String[] splitName = entry.getName().split("/");
+          String name = splitName[splitName.length - 1];
+          images.put(name, BitmapFactory.decodeStream(inputStream));
+        } else {
+          inputStream.closeEntry();
+        }
+
+        entry = inputStream.getNextEntry();
+      }
+    } catch (IOException e) {
+      return new LottieResult<>(e);
+    }
+
+
+    if (composition == null) {
+      return new LottieResult<>(new IllegalArgumentException("Unable to parse composition"));
+    }
+
+    for (Map.Entry<String, Bitmap> e : images.entrySet()) {
+      LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
+      if (imageAsset != null) {
+        imageAsset.setBitmap(e.getValue());
+      }
+    }
+
+    // Ensure that all bitmaps have been set.
+    for (Map.Entry<String, LottieImageAsset> entry : composition.getImages().entrySet()) {
+      if (entry.getValue().getBitmap() == null) {
+        return new LottieResult<>(new IllegalStateException("There is no image for " + entry.getValue().getFileName()));
+      }
+    }
+
+    return new LottieResult<>(composition);
+  }
+
+  @Nullable
+  private static LottieImageAsset findImageAssetForFileName(LottieComposition composition, String fileName) {
+    for (LottieImageAsset asset : composition.getImages().values()) {
+      if (asset.getFileName().equals(fileName)) {
+        return asset;
+      }
+    }
+    return null;
   }
 }

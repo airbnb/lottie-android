@@ -31,6 +31,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import retrofit2.http.HEAD;
+
 public class LottieSnapshotProvider extends SnapshotProvider {
 
   private static final float[] PROGRESS = {0f, 0.25f, 0.5f, 0.75f, 1f};
@@ -52,6 +54,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   @Override
   public void beginSnapshotting() {
+    Log.d(L.TAG, "beginSnapshotting");
     try {
       snapshotAssets(context.getAssets().list(""));
       String[] tests = context.getAssets().list("Tests");
@@ -85,7 +88,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
       file.delete();
     }
     for (final String animation : animations) {
-      if (!animation.contains(".json")) {
+      if (!animation.contains(".json") && !animation.contains(".zip")) {
         continue;
       }
       remainingTasks += 1;
@@ -101,7 +104,9 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void runAnimation(final String name) {
     Log.d(L.TAG, "Running name");
-    LottieComposition composition = LottieComposition.Factory.fromFileSync(context, name);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
+    if (result.getException() != null) throw new IllegalStateException(result.getException());
+    LottieComposition composition = result.getValue();
     if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
         composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
       Log.d("Happo", "" + name + " is too large. Skipping (" + composition.getBounds().width() +

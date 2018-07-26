@@ -27,7 +27,6 @@ public class ImageAssetManager {
   private String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
   private final Map<String, LottieImageAsset> imageAssets;
-  private final Map<String, Bitmap> bitmaps = new HashMap<>();
 
   public ImageAssetManager(Drawable.Callback callback, String imagesFolder,
       ImageAssetDelegate delegate, Map<String, LottieImageAsset> imageAssets) {
@@ -58,13 +57,16 @@ public class ImageAssetManager {
    */
   @Nullable public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
     if (bitmap == null) {
-      return bitmaps.remove(id);
+      LottieImageAsset asset = imageAssets.get(id);
+      Bitmap ret = asset.getBitmap();
+      asset.setBitmap(null);
+      return ret;
     }
     return putBitmap(id, bitmap);
   }
 
   @Nullable public Bitmap bitmapForId(String id) {
-    Bitmap bitmap = bitmaps.get(id);
+    Bitmap bitmap = imageAssets.get(id).getBitmap();
     if (bitmap != null) {
       return bitmap;
     }
@@ -117,23 +119,24 @@ public class ImageAssetManager {
 
   public void recycleBitmaps() {
     synchronized (bitmapHashLock) {
-      Iterator<Map.Entry<String, Bitmap>> it = bitmaps.entrySet().iterator();
+      Iterator<Map.Entry<String, LottieImageAsset>> it = imageAssets.entrySet().iterator();
       while (it.hasNext()) {
-        Map.Entry<String, Bitmap> entry = it.next();
-        entry.getValue().recycle();
+        Map.Entry<String, LottieImageAsset> entry = it.next();
+        entry.getValue().getBitmap().recycle();
         it.remove();
       }
     }
   }
 
+
   public boolean hasSameContext(Context context) {
-    return context == null && this.context == null ||
-        context != null && this.context.equals(context);
+    return context == null && this.context == null || this.context.equals(context);
   }
 
   private Bitmap putBitmap(String key, @Nullable Bitmap bitmap) {
     synchronized (bitmapHashLock) {
-      return bitmaps.put(key, bitmap);
+      imageAssets.get(key).setBitmap(bitmap);
+      return bitmap;
     }
   }
 }

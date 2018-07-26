@@ -70,6 +70,12 @@ import java.util.List;
     }
   };
 
+  private final LottieListener<Throwable> failureListener = new LottieListener<Throwable>() {
+    @Override public void onResult(Throwable throwable) {
+      throw new IllegalStateException("Unable to parse composition", throwable);
+    }
+  };
+
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private CacheStrategy defaultCacheStrategy;
   private String animationName;
@@ -355,7 +361,8 @@ import java.util.List;
             LottieCompositionCache.getInstance().put(rawRes, composition, cacheStrategy);
           }
         })
-      .addListener(loadedListener);
+      .addListener(loadedListener)
+      .addFailureListener(failureListener);
   }
 
   /**
@@ -393,7 +400,8 @@ import java.util.List;
             LottieCompositionCache.getInstance().put(assetName, composition, cacheStrategy);
           }
         })
-        .addListener(loadedListener);
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   /**
@@ -428,12 +436,14 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromJsonReader(reader)
-        .addListener(loadedListener);
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   private void cancelLoaderTask() {
     if (compositionTask != null) {
       compositionTask.removeListener(loadedListener);
+      compositionTask.removeFailureListener(failureListener);
     }
   }
 

@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.airbnb.happo.HappoRunner;
 import com.airbnb.lottie.samples.MainActivity;
@@ -37,6 +38,7 @@ public class LottieTest {
   );
 
   @Test public void testAll() {
+    Log.d(L.TAG, "Beginning tests");
     String androidVersion = "-android" + Build.VERSION.SDK_INT;
     String branch = TextUtils.isEmpty(com.airbnb.lottie.samples.BuildConfig.TRAVIS_GIT_BRANCH) ?
         com.airbnb.lottie.samples.BuildConfig.GIT_BRANCH :

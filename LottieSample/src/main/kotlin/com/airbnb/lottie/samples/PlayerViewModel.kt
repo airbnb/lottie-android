@@ -25,15 +25,11 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 
-class CompositionData(var composition: LottieComposition? = null) {
-    val images = HashMap<String, Bitmap>()
-}
-
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
 
     private val handler = Handler(Looper.getMainLooper())
 
-    val composition = MutableLiveData<CompositionData>()
+    val composition = MutableLiveData<LottieComposition>()
     val error = MutableLiveData<Throwable>()
 
     fun fetchAnimation(args: CompositionArgs) {
@@ -90,7 +86,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private fun handleJsonResponse(jsonString: String) {
         LottieCompositionFactory.fromJsonString(jsonString)
                 .addListener {
-                    this.composition.value = CompositionData(it)
+                    this.composition.value = it
                 }
                 .addFailureListener {
                     this.error.value = it
@@ -99,48 +95,13 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     @SuppressLint("CheckResult")
     private fun handleZipResponse(body: ResponseBody) {
-        Observable.just(body.byteStream())
-                .map {
-                    val compositionData = CompositionData()
-                    val zis: ZipInputStream
-                    try {
-                        zis = ZipInputStream(body.byteStream())
-
-                        var zipEntry = zis.nextEntry
-                        while (zipEntry != null) {
-                            if (zipEntry.name.contains("__MACOSX")) {
-                                zis.closeEntry()
-                            } else if (zipEntry.name.contains(".json")) {
-                                val result = LottieCompositionFactory.fromJsonInputStreamSync(zis, false)
-                                val composition = result.value
-                                if (composition == null) {
-                                    throw IllegalArgumentException("Unable to parse composition")
-                                } else {
-                                    compositionData.composition = composition
-                                }
-                            } else if (zipEntry.name.contains(".png")) {
-                                val name = zipEntry.name.split("/").last()
-                                compositionData.images[name] = BitmapFactory.decodeStream(zis)
-                            } else {
-                                zis.closeEntry()
-                            }
-                            zipEntry = zis.nextEntry
-                        }
-
-                        zis.close()
-                        compositionData
-                    } catch (e: IOException) {
-                        throw e
-                    }
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
+        LottieCompositionFactory.fromZipStream(ZipInputStream(body.byteStream()))
+                .addListener {
                     composition.value = it
-                }, {
+                }
+                .addFailureListener {
                     error.value = it
-                })
-
+                }
     }
 
     private fun fetchAnimationByFileUri(uri: Uri) {
@@ -160,7 +121,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         LottieCompositionFactory.fromJsonInputStream(fis)
                 .addListener {
-                    this.composition.value = CompositionData(it)
+                    this.composition.value = it
                 }
                 .addFailureListener {
                     this.error.value = it
@@ -170,7 +131,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private fun fetchAnimationByAsset(asset: String) {
         LottieCompositionFactory.fromAsset(getApplication(), asset)
                 .addListener {
-                    composition.value = CompositionData(it)
+                    composition.value = it
                 }
                 .addFailureListener {
                     error.value = it
