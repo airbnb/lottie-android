@@ -100,6 +100,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void runAnimation(final String name) {
+    Log.d(L.TAG, "Running name");
     LottieComposition composition = LottieComposition.Factory.fromFileSync(context, name);
     if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
         composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
@@ -131,6 +132,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void decrementAndCompleteIfDone() {
     remainingTasks--;
+    Log.d(L.TAG, "There are " + remainingTasks + " tasks left.");
     Log.d("Happo", "There are " + remainingTasks + " remaining tasks.");
     if (remainingTasks < 0) {
       throw new IllegalStateException("Remaining tasks cannot be negative.");
