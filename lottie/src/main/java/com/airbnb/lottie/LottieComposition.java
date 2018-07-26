@@ -183,7 +183,7 @@ public class LottieComposition {
      */
     public static Cancellable fromInputStream(InputStream stream, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
-      LottieCompositionFactory.fromJsonInputStream(stream).addListener(listener);
+      LottieCompositionFactory.fromJsonInputStream(stream, null).addListener(listener);
       return listener;
     }
 
@@ -192,7 +192,7 @@ public class LottieComposition {
      */
     public static Cancellable fromJsonString(String jsonString, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
-      LottieCompositionFactory.fromJsonString(jsonString).addListener(listener);
+      LottieCompositionFactory.fromJsonString(jsonString, null).addListener(listener);
       return listener;
     }
 
@@ -201,7 +201,7 @@ public class LottieComposition {
      */
     public static Cancellable fromJsonReader(JsonReader reader, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
-      LottieCompositionFactory.fromJsonReader(reader).addListener(listener);
+      LottieCompositionFactory.fromJsonReader(reader, null).addListener(listener);
       return listener;
     }
 
@@ -220,16 +220,21 @@ public class LottieComposition {
     @Nullable
     @WorkerThread
     public static LottieComposition fromInputStreamSync(InputStream stream) {
-      return LottieCompositionFactory.fromJsonInputStreamSync(stream).getValue();
+      return LottieCompositionFactory.fromJsonInputStreamSync(stream, null).getValue();
     }
 
     /**
+     * This will now auto-close the input stream!
+     *
      * @see LottieCompositionFactory#fromJsonInputStreamSync(InputStream, boolean)
      */
     @Nullable
     @WorkerThread
     public static LottieComposition fromInputStreamSync(InputStream stream, boolean close) {
-      return LottieCompositionFactory.fromJsonInputStreamSync(stream, close).getValue();
+      if (close) {
+        Log.w(L.TAG, "Lottie now auto-closes input stream!");
+      }
+      return LottieCompositionFactory.fromJsonInputStreamSync(stream, null).getValue();
     }
 
     /**
@@ -238,7 +243,7 @@ public class LottieComposition {
     @Nullable
     @WorkerThread
     public static LottieComposition fromJsonSync(@SuppressWarnings("unused") Resources res, JSONObject json) {
-      return LottieCompositionFactory.fromJsonSync(json).getValue();
+      return LottieCompositionFactory.fromJsonSync(json, null).getValue();
     }
 
     /**
@@ -247,7 +252,7 @@ public class LottieComposition {
     @Nullable
     @WorkerThread
     public static LottieComposition fromJsonSync(String json) {
-      return LottieCompositionFactory.fromJsonStringSync(json).getValue();
+      return LottieCompositionFactory.fromJsonStringSync(json, null).getValue();
     }
 
     /**
@@ -256,7 +261,7 @@ public class LottieComposition {
     @Nullable
     @WorkerThread
     public static LottieComposition fromJsonSync(JsonReader reader) throws IOException {
-      return LottieCompositionFactory.fromJsonReaderSync(reader).getValue();
+      return LottieCompositionFactory.fromJsonReaderSync(reader, null).getValue();
     }
 
     private static final class ListenerAdapter implements LottieListener<LottieComposition>, Cancellable {

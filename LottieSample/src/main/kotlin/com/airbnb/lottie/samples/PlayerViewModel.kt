@@ -65,14 +65,14 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                                 onFailure(IllegalStateException("Response was unsuccessful."))
                             } else {
                                 if (response.body()?.contentType() == MediaType.parse("application/zip")) {
-                                    handleZipResponse(response.body()!!)
+                                    handleZipResponse(response.body()!!, url)
                                 } else {
                                     val string = response.body()?.string()
                                     if (string == null) {
                                         onFailure(IllegalStateException("Response body was null"))
                                         return@OkHttpCallback
                                     }
-                                    handleJsonResponse(string)
+                                    handleJsonResponse(string, url)
                                 }
                             }
                         }
@@ -83,8 +83,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         handler.post { error.value = e }
     }
 
-    private fun handleJsonResponse(jsonString: String) {
-        LottieCompositionFactory.fromJsonString(jsonString)
+    private fun handleJsonResponse(jsonString: String, cacheKey: String) {
+        LottieCompositionFactory.fromJsonString(jsonString, cacheKey)
                 .addListener {
                     this.composition.value = it
                 }
@@ -94,8 +94,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     @SuppressLint("CheckResult")
-    private fun handleZipResponse(body: ResponseBody) {
-        LottieCompositionFactory.fromZipStream(ZipInputStream(body.byteStream()))
+    private fun handleZipResponse(body: ResponseBody, cacheKey: String) {
+        LottieCompositionFactory.fromZipStream(ZipInputStream(body.byteStream()), cacheKey)
                 .addListener {
                     composition.value = it
                 }
@@ -119,7 +119,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
 
-        LottieCompositionFactory.fromJsonInputStream(fis)
+        LottieCompositionFactory.fromJsonInputStream(fis, uri.toString())
                 .addListener {
                     this.composition.value = it
                 }

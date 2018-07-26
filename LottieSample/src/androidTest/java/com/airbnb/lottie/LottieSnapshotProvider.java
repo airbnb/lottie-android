@@ -103,7 +103,6 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void runAnimation(final String name) {
-    Log.d(L.TAG, "Running name");
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
     if (result.getException() != null) throw new IllegalStateException(result.getException());
     LottieComposition composition = result.getValue();
