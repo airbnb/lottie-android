@@ -55,5 +55,5 @@ jobs:
     - name: "Firebase Happo Tests"
       script:
         - ./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest
-        - ./gcloud_run.sh
+        - travis_wait 30 ./gcloud_run.sh
 sudo: false
