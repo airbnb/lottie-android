@@ -35,31 +35,31 @@ public class LottieCompositionCacheTest {
 
   @Test
   public void testStrongAsset() {
-    cache.put("foo", composition, LottieAnimationView.CacheStrategy.Strong);
+    cache.put("foo", composition);
     assertEquals(composition, cache.get("foo"));
   }
 
   @Test
   public void testWeakAsset() {
-    cache.put("foo", composition, LottieAnimationView.CacheStrategy.Weak);
+    cache.put("foo", composition);
     assertEquals(composition, cache.get("foo"));
   }
 
   @Test
   public void testStrongRawRes() {
-    cache.put(123, composition, LottieAnimationView.CacheStrategy.Strong);
+    cache.put(123, composition);
     assertEquals(composition, cache.getRawRes(123));
   }
 
   @Test
   public void testWeakRawRes() {
-    cache.put(123, composition, LottieAnimationView.CacheStrategy.Weak);
+    cache.put(123, composition);
     assertEquals(composition, cache.getRawRes(123));
   }
 
   @Test
   public void testStringAndWeakRawRes() {
-    cache.put(123, composition, LottieAnimationView.CacheStrategy.Weak);
+    cache.put(123, composition);
     assertEquals(composition, cache.getRawRes(123));
   }
 }

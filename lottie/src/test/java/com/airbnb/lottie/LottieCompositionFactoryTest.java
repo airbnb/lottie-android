@@ -34,14 +34,14 @@ public class LottieCompositionFactoryTest {
 
   @Test
   public void testLoadJsonString() {
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonStringSync(JSON);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonStringSync(JSON, "json");
     assertNull(result.getException());
     assertNotNull(result.getValue());
   }
 
   @Test
   public void testLoadInvalidJsonString() {
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonStringSync(NOT_JSON);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonStringSync(NOT_JSON, "not_json");
     assertNotNull(result.getException());
     assertNull(result.getValue());
   }
@@ -49,7 +49,7 @@ public class LottieCompositionFactoryTest {
   @Test
   public void testLoadJsonReader() {
     JsonReader reader = new JsonReader(new StringReader(JSON));
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
     assertNull(result.getException());
     assertNotNull(result.getValue());
   }
@@ -57,7 +57,7 @@ public class LottieCompositionFactoryTest {
   @Test
   public void testLoadInvalidJsonReader() {
     JsonReader reader = new JsonReader(new StringReader(NOT_JSON));
-    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader);
+    LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
     assertNotNull(result.getException());
     assertNull(result.getValue());
   }
