@@ -14,4 +14,6 @@ gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
 gcloud config set project lottie-snapshots
 
 gcloud firebase test android run --no-auto-google-login --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/debug/LottieSample-debug.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
+result=$?
 ./post_pr_comment.js
+exit $result

@@ -39,7 +39,8 @@ jobs:
     - stage: "test"
       name: "check"
       script: ./gradlew check
-    - stage: "test"
-      name: "firebase"
-      script: ./gcloud_run.sh
+    - name: "firebase"
+      script:
+        - ./gradlew :LottieSample:assembleDebug
+        - ./gcloud_run.sh
 sudo: false
