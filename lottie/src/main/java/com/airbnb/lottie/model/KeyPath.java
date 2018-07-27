@@ -185,10 +185,7 @@ public class KeyPath {
   @SuppressWarnings("SimplifiableIfStatement")
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public boolean propagateToChildren(String key, int depth) {
-    if (key.equals("__container")) {
-      return true;
-    }
-    return depth < keys.size() - 1 || keys.get(depth).equals("**");
+    return isContainer(key) || depth < keys.size() - 1 || keys.get(depth).equals("**");
   }
 
   /**
@@ -196,7 +193,7 @@ public class KeyPath {
    * and for the contents of a ShapeLayer).
    */
   private boolean isContainer(String key) {
-    return key.equals("__container");
+    return key != null && key.equals("__container");
   }
 
   private boolean endsWithGlobstar() {
