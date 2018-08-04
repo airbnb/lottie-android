@@ -9,7 +9,7 @@ android {
     minSdkVersion 16
     targetSdkVersion 27
     versionCode 100
-    versionName "2.6.0-beta4"
+    versionName "2.6.0-beta5"
   }
   lintOptions {
     abortOnError true
