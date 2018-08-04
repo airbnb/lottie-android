@@ -26,6 +26,7 @@ import com.airbnb.lottie.value.ScaleXY;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -58,6 +59,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     try {
       snapshotAssets(context.getAssets().list(""));
       String[] tests = context.getAssets().list("Tests");
+      Log.d(L.TAG, "Tests assest " + Arrays.toString(tests));
       for (int i = 0; i < tests.length; i++) {
         tests[i] = "Tests/" + tests[i];
       }
