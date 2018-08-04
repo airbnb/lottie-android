@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.samples.R.id.url
 import com.airbnb.lottie.samples.model.CompositionArgs
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -18,6 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.CacheControl
 import okhttp3.MediaType
 import okhttp3.Request
+import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -44,9 +46,8 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private fun fetchAnimationByUrl(url: String) {
-        val request: Request
-        try {
-            request = Request.Builder()
+        val request = try {
+            Request.Builder()
                     .cacheControl(CacheControl.Builder()
                             .maxAge(Int.MAX_VALUE, TimeUnit.DAYS)
                             .build())
@@ -60,27 +61,31 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                 .newCall(request)
                 ?.enqueue(OkHttpCallback(
                         onFailure = { _, e -> onFailure(e) },
-                        onResponse = { _, response ->
-                            if (!response.isSuccessful) {
-                                onFailure(IllegalStateException("Response was unsuccessful."))
-                            } else {
-                                if (response.body()?.contentType() == MediaType.parse("application/zip")) {
-                                    handleZipResponse(response.body()!!, url)
-                                } else {
-                                    val string = response.body()?.string()
-                                    if (string == null) {
-                                        onFailure(IllegalStateException("Response body was null"))
-                                        return@OkHttpCallback
-                                    }
-                                    handleJsonResponse(string, url)
-                                }
-                            }
-                        }
+                        onResponse = { _, response -> onResponse(url, response) }
                 ))
     }
 
     private fun onFailure(e: Exception) {
         handler.post { error.value = e }
+    }
+
+    fun onResponse(url: String, response: Response) {
+        handler.post {
+            if (!response.isSuccessful) {
+                onFailure(IllegalStateException("Response was unsuccessful."))
+            } else {
+                if (response.body()?.contentType() == MediaType.parse("application/zip")) {
+                    handleZipResponse(response.body()!!, url)
+                } else {
+                    val string = response.body()?.string()
+                    if (string == null) {
+                        onFailure(IllegalStateException("Response body was null"))
+                        return@post
+                    }
+                    handleJsonResponse(string, url)
+                }
+            }
+        }
     }
 
     private fun handleJsonResponse(jsonString: String, cacheKey: String) {
