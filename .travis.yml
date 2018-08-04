@@ -65,7 +65,7 @@ jobs:
   #   - "./gcloud_run.sh"
   - stage: deploy
     name: Build Signed Release
-    script: ./sign.sh
+    script: ./sign_and_upload.sh
 addons:
   artifacts:
     paths:

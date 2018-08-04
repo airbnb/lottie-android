@@ -1,7 +1,7 @@
 #! /bin/bash
 
-if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
-  # Don't sign PR builds.
+if [ -z "$TRAVIS_TAG" ]; then
+  # Only sign and deploy tags
   exit 0
 fi
 
@@ -10,3 +10,5 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore lottie-upload-k
 
 echo "----------Zipaligning APK"
 ${ANDROID_HOME}/build-tools/27.0.3/zipalign 4 LottieSample/build/outputs/apk/release/LottieSample-release-unsigned.apk LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+
+./gradlew :lottie:uploadArchives
