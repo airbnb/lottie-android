@@ -49,8 +49,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   LottieSnapshotProvider(Context context) {
     this.context = context;
-    dummyBitmap = BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R
-        .drawable.airbnb);
+    dummyBitmap = BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R.drawable.airbnb);
   }
 
   @Override
@@ -94,6 +93,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
         continue;
       }
       remainingTasks += 1;
+      Log.d(L.TAG, "Enqueueing " + animation);
       executor.execute(new Runnable() {
         @Override
         public void run() {
@@ -105,6 +105,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   }
 
   private void runAnimation(final String name) {
+    Log.d(L.TAG, "Running " + name);
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
     if (result.getException() != null) throw new IllegalStateException(result.getException());
     LottieComposition composition = result.getValue();
