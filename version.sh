@@ -17,5 +17,5 @@ sed -i '' "s/  compile 'com[.]airbnb[.]android[:]lottie[:].*'/  compile 'com\.ai
 
 git add -A
 git commit -m "v$1"
-git tag -l "v$1"
+git tag "v$1"
 git push --follow-tags
