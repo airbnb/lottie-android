@@ -1,6 +1,6 @@
 #! /bin/bash
 
-if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
   # Don't sign PR builds.
   exit 0
 fi
