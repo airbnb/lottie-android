@@ -44,6 +44,9 @@ notifications:
   email: false
 jobs:
   include:
+  - stage: build
+    name: Build
+    script: ./gradlew :LottieSample:assembleRelease
   - stage: test
     name: Lottie Lint
     script: "./gradlew :lottie:lintRelease"
@@ -55,6 +58,20 @@ jobs:
     script: "./gradlew :LottieSample:testReleaseUnitTest"
   - name: Firebase Happo Tests
     script:
-    - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
+    - "./gradlew :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
+  - stage: deploy
+    name: Build Signed Release
+    script: ./sign.sh
+addons:
+  artifacts:
+    paths:
+      - LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+deploy:
+  provider: releases
+  api_key: $GITHUB_ACCESS_TOKEN
+  file: LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+  skip_cleanup: true
+  on:
+    tags: true
 sudo: false
