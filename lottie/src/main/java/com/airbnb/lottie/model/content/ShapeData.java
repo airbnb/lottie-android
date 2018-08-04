@@ -56,10 +56,9 @@ public class ShapeData {
       L.warn("Curves must have the same number of control points. Shape 1: " +
           shapeData1.getCurves().size() + "\tShape 2: " + shapeData2.getCurves().size());
     }
-
-    int points = Math.min(shapeData1.getCurves().size(), shapeData2.getCurves().size());
-
+    
     if (curves.isEmpty()) {
+      int points = Math.min(shapeData1.getCurves().size(), shapeData2.getCurves().size());
       for (int i = 0; i < points; i++) {
         curves.add(new CubicCurveData());
       }
