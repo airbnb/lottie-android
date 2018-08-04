@@ -1,4 +1,9 @@
 #!/bin/bash
+git diff-index --quiet HEAD --
+
+if [ $? -ne 0 ]; then
+  echo "Working tree must be empty before bumping the version"
+fi
 
 sed -i '' "s/    versionName \".*\"/    versionName \"$1\"/" lottie/build.gradle
 
@@ -9,3 +14,8 @@ sed -i '' "s/    versionCode .*/    versionCode $versionCode/" LottieSample/buil
 sed -i '' "s/VERSION_NAME=.*/VERSION_NAME=$1/" gradle.properties
 
 sed -i '' "s/  compile 'com[.]airbnb[.]android[:]lottie[:].*'/  compile 'com\.airbnb\.android\:lottie\:$1'/" README.md
+
+git add -A
+git commit -m "v$1"
+git tag -l "v$1"
+git push --follow-tags
