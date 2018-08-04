@@ -7,9 +7,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -58,7 +60,6 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     try {
       snapshotAssets(context.getAssets().list(""));
       String[] tests = context.getAssets().list("Tests");
-      Log.d(L.TAG, "Tests assest " + Arrays.toString(tests));
       for (int i = 0; i < tests.length; i++) {
         tests[i] = "Tests/" + tests[i];
       }
@@ -109,16 +110,20 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromAssetSync(context, name);
     if (result.getException() != null) throw new IllegalStateException(result.getException());
     LottieComposition composition = result.getValue();
-    if (composition.getBounds().width() > 4 * Resources.getSystem().getDisplayMetrics().widthPixels ||
-        composition.getBounds().height() > 4 * Resources.getSystem().getDisplayMetrics().heightPixels) {
-      Log.d("Happo", "" + name + " is too large. Skipping (" + composition.getBounds().width() +
-          "x" + composition.getBounds().height() + ")");
+
+    Rect bounds = composition.getBounds();
+    int width = bounds.width();
+    int height = bounds.height();
+    DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+    if (width > 4 * displayMetrics.widthPixels || height > 4 * displayMetrics.heightPixels) {
+      Log.d("Happo", name + " is too large. Skipping (" + width + "x" + height + ")");
       return;
     }
     drawComposition(composition, name);
   }
 
   private void drawComposition(LottieComposition composition, String name) {
+    Log.d(L.TAG, "Drawing " + name);
     LottieAnimationView view = new LottieAnimationView(context);
     view.setImageAssetDelegate(new ImageAssetDelegate() {
       @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
@@ -128,6 +133,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     view.setComposition(composition);
     for (float progress : PROGRESS) {
       view.setProgress(progress);
+      Log.d(L.TAG, "Recording " + name + " @ " + progress);
       recordSnapshot(view, 1080, "android", name, Integer.toString((int) (progress * 100)));
     }
   }
