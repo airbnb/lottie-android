@@ -12,8 +12,8 @@ android {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
     targetSdkVersion 27
-    versionCode 54
-    versionName "2.6.0-beta13"
+    versionCode 55
+    versionName "2.6.0-beta14"
     multiDexEnabled true
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     vectorDrawables.useSupportLibrary = true
