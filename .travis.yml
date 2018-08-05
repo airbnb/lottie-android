@@ -58,7 +58,7 @@ jobs:
     script: "./gradlew :LottieSample:testReleaseUnitTest"
   - name: Firebase Happo Tests
     script:
-    - "./gradlew :LottieSample:assembleRelease :LottieSample:assembleAndroidTest"
+    - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
   - stage: deploy
     name: Create release and upload artifacts
