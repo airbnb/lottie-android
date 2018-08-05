@@ -17,7 +17,7 @@ gcloud config set project lottie-snapshots
 
 RunTests()
 {
-gcloud firebase test android run --no-auto-google-login --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/release/LottieSample-release.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
+gcloud firebase test android run --no-auto-google-login --type instrumentation --device model=Nexus5X,version=26 --app LottieSample/build/outputs/apk/release/LottieSample-release-unsigned.apk --test LottieSample/build/outputs/apk/androidTest/debug/LottieSample-debug-androidTest.apk
 result=$?
 }
 
