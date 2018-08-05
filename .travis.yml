@@ -47,9 +47,6 @@ notifications:
   email: false
 jobs:
   include:
-  - stage: build
-    name: Build
-    script: ./gradlew :LottieSample:assembleRelease
   - stage: test
     name: Lottie Lint
     script: "./gradlew :lottie:lintRelease"
@@ -61,7 +58,7 @@ jobs:
     script: "./gradlew :LottieSample:testReleaseUnitTest"
   - name: Firebase Happo Tests
     script:
-    - "./gradlew :LottieSample:assembleAndroidTest"
+    - "./gradlew :LottieSample:assembleRelease :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
   - stage: deploy
     name: Create release and upload artifacts
