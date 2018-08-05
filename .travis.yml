@@ -1,59 +1,76 @@
-# https://cloud.google.com/solutions/continuous-delivery-with-travis-ci
 language: android
 group: travis_lts
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-    - $HOME/.android/build-cache
-    - "$HOME/.m2"
-    - "$HOME/google-cloud-sdk/"
-    - "$HOME/.cache"
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+  - "$HOME/.android/build-cache"
+  - "$HOME/.m2"
+  - "$HOME/google-cloud-sdk/"
+  - "$HOME/.cache"
+  - "$TRAVIS_BUILD_DIR/build"
+  - "$TRAVIS_BUILD_DIR/lottie/build"
+  - "$TRAVIS_BUILD_DIR/LottieSample/build"
 env:
-  - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
+- PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-  - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - export GIT_SHA=$(git rev-parse HEAD)
-  - export GIT_MERGE_BASE=$(git merge-base master)
-  - echo GIT_SHA $GIT_SHA
-  - echo GIT_MERGE_BASE $GIT_MERGE_BASE
+- openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv
+  -in lottie-upload-key.jks.enc -out lottie-upload-key.jks -d
+- export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
+  else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+- export GIT_SHA=$(git rev-parse HEAD)
+- export GIT_MERGE_BASE=$(git merge-base master)
+- echo GIT_SHA $GIT_SHA
+- echo GIT_MERGE_BASE $GIT_MERGE_BASE
 install:
-  - . $HOME/.nvm/nvm.sh
-  - nvm install stable
-  - nvm use stable
-  - npm install
+- ". $HOME/.nvm/nvm.sh"
+- nvm install stable
+- nvm use stable
+- npm install
 android:
   components:
-    - tools
-    - platform-tools
-    - tools
-
-    - build-tools-27.0.3
-    - android-27
-    - extra-android-m2repository
+  - tools
+  - platform-tools
+  - tools
+  - build-tools-27.0.3
+  - android-27
+  - extra-android-m2repository
 jdk:
-  - oraclejdk8
+- oraclejdk8
 branches:
   except:
-    - gh-pages
+  - gh-pages
 notifications:
   email: false
 jobs:
   include:
-    - stage: "test"
-      name: "Lottie Lint"
-      script: ./gradlew :lottie:lintRelease
-    - name: "Lottie Unit Tests"
-      script: ./gradlew :lottie:testReleaseUnitTest
-    - name: "LottieSample Lint"
-      script: ./gradlew :LottieSample:lintRelease
-    - name: "LottieSample Unit Tests"
-      script: ./gradlew :LottieSample:testReleaseUnitTest
-    - name: "Firebase Happo Tests"
-      script:
-        - ./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest
-        - ./gcloud_run.sh
+  - stage: test
+    name: Lottie Lint
+    script: "./gradlew :lottie:lintRelease"
+  - name: Lottie Unit Tests
+    script: "./gradlew :lottie:testReleaseUnitTest"
+  - name: LottieSample Lint
+    script: "./gradlew :LottieSample:lintRelease"
+  - name: LottieSample Unit Tests
+    script: "./gradlew :LottieSample:testReleaseUnitTest"
+  - name: Firebase Happo Tests
+    script:
+    - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
+    - "./gcloud_run.sh"
+  - stage: deploy
+    name: Create release and upload artifacts
+    script:
+    - ./gradlew :LottieSample:assembleRelease
+    - ./sign.sh
+    - ./gradlew  -PNEXUS_USERNAME=$NEXUS_USERNAME -PNEXUS_PASSWORD=$NEXUS_PASSWORD :lottie:uploadArchives
+    deploy:
+      provider: releases
+      api_key: $GITHUB_ACCESS_TOKEN
+      file: LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+      skip_cleanup: true
+      on:
+        tags: true
 sudo: false
