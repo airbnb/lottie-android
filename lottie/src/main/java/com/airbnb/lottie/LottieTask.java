@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Helper to run asynchronous tasks with a result.
@@ -22,6 +25,8 @@ import java.util.concurrent.FutureTask;
  * A task will produce a single result or a single failure.
  */
 public class LottieTask<T> {
+
+  private static final Executor EXECUTOR = Executors.newCachedThreadPool();
 
   @Nullable private Thread taskObserver;
 
@@ -50,7 +55,7 @@ public class LottieTask<T> {
         setResult(new LottieResult<T>(e));
       }
     } else {
-      task.run();
+      EXECUTOR.execute(task);
       startTaskObserverIfNeeded();
     }
   }
@@ -173,23 +178,23 @@ public class LottieTask<T> {
     }
     taskObserver = new Thread("LottieTaskObserver") {
       @Override public void run() {
-        if (isInterrupted()) {
-          return;
-        }
-        if (task.isDone()) {
-          try {
-            setResult(task.get());
-          } catch (InterruptedException | ExecutionException e) {
-            setResult(new LottieResult<T>(e));
+        while (true) {
+          if (isInterrupted()) {
+            return;
           }
-          stopTaskObserverIfNeeded();
+          if (task.isDone()) {
+            try {
+              setResult(task.get());
+            } catch (InterruptedException | ExecutionException e) {
+              setResult(new LottieResult<T>(e));
+            }
+            stopTaskObserverIfNeeded();
+          }
         }
       }
     };
     taskObserver.start();
-    if (L.DBG) {
-      Log.d(L.TAG, "Starting TaskObserver thread");
-    }
+    L.debug("Starting TaskObserver thread");
   }
 
   /**
@@ -201,9 +206,8 @@ public class LottieTask<T> {
     }
     if (successListeners.isEmpty() || result != null) {
       taskObserver.interrupt();
-      if (L.DBG) {
-        Log.d(L.TAG, "Stopping TaskObserver thread");
-      }
+      taskObserver = null;
+      L.debug("Stopping TaskObserver thread");
     }
   }
 

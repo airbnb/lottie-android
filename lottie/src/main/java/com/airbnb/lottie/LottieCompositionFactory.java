@@ -10,6 +10,7 @@ import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
+import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
 import org.json.JSONObject;
@@ -32,6 +33,10 @@ import static com.airbnb.lottie.utils.Utils.closeQuietly;
 public class LottieCompositionFactory {
 
   private LottieCompositionFactory() {
+  }
+
+  public static LottieTask<LottieComposition> fromUrl(Context context, String url) {
+    return NetworkFetcher.fetch(context, url);
   }
 
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
@@ -193,7 +198,7 @@ public class LottieCompositionFactory {
    * It will automatically store and configure any images inside the animation if they exist.
    */
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
     try {
       return fromZipStreamSyncInternal(inputStream, cacheKey);
     } finally {
