@@ -43,6 +43,10 @@ public class NetworkFetcher {
     return new NetworkFetcher(context, url).fetch();
   }
 
+  public static LottieResult<LottieComposition> fetchSync(Context context, String url) {
+    return new NetworkFetcher(context, url).fetchSync();
+  }
+
   private NetworkFetcher(Context context, String url) {
     appContext = context.getApplicationContext();
     this.url = url;
@@ -58,7 +62,7 @@ public class NetworkFetcher {
   }
 
   @WorkerThread
-  private LottieResult<LottieComposition> fetchSync() {
+  public LottieResult<LottieComposition> fetchSync() {
     LottieResult<LottieComposition> result = fetchFromCache();
     if (result.getValue() != null) {
       return result;
