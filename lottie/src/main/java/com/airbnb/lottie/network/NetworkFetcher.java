@@ -11,10 +11,12 @@ import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieResult;
 import com.airbnb.lottie.LottieTask;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -98,6 +100,17 @@ public class NetworkFetcher {
 
     connection.setRequestMethod("GET");
     connection.connect();
+
+    if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+      StringBuilder error = new StringBuilder();
+      String line;
+      while ((line = r.readLine()) != null) {
+        error.append(line).append('\n');
+      }
+      return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
+          connection.getResponseCode() + "\n" + error));
+    }
 
     File file;
     FileExtension extension;

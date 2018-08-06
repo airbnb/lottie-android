@@ -8,6 +8,8 @@ import androidx.graphics.toColorInt
 import com.airbnb.lottie.L
 import kotlinx.android.parcel.Parcelize
 
+// This is a lint bug
+@SuppressWarnings("ParcelCreator")
 @Parcelize
 data class AnimationData(
         val id: Long,
