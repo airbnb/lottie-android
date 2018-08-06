@@ -4,6 +4,9 @@ import android.util.JsonReader;
 
 import com.airbnb.lottie.L;
 
+/**
+ * Helpers for known Lottie file types.
+ */
 public enum FileExtension {
   Json(".json"),
   Zip(".zip");

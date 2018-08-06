@@ -1,6 +1,5 @@
 package com.airbnb.lottie.samples
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
@@ -11,10 +10,8 @@ import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
 import com.airbnb.lottie.samples.model.CompositionArgs
-import okhttp3.ResponseBody
 import java.io.FileInputStream
 import java.io.FileNotFoundException
-import java.util.zip.ZipInputStream
 
 class PlayerViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -35,17 +32,6 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         registerTask(task)
     }
 
-    private fun handleJsonResponse(jsonString: String, cacheKey: String) {
-        val task = LottieCompositionFactory.fromJsonString(jsonString, cacheKey)
-        registerTask(task)
-    }
-
-    @SuppressLint("CheckResult")
-    private fun handleZipResponse(body: ResponseBody, cacheKey: String) {
-        val task = LottieCompositionFactory.fromZipStream(ZipInputStream(body.byteStream()), cacheKey)
-        registerTask(task)
-    }
-
     private fun taskForUri(uri: Uri): LottieTask<LottieComposition> {
         val fis = try {
             when (uri.scheme) {
@@ -62,11 +48,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     private fun registerTask(task: LottieTask<LottieComposition>) {
         task
-                .addListener {
-                    composition.value = it
-                }
-                .addFailureListener {
-                    error.value = it
-                }
+                .addListener { composition.value = it }
+                .addFailureListener { error.value = it }
     }
 }

@@ -1,35 +1,23 @@
 package com.airbnb.lottie.network;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.util.Pair;
-import android.util.Base64;
-import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
-import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.LottieResult;
 import com.airbnb.lottie.LottieTask;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class NetworkFetcher {
@@ -63,28 +51,37 @@ public class NetworkFetcher {
 
   @WorkerThread
   public LottieResult<LottieComposition> fetchSync() {
-    LottieResult<LottieComposition> result = fetchFromCache();
-    if (result.getValue() != null) {
-      return result;
+    LottieComposition result = fetchFromCache();
+    if (result != null) {
+      return new LottieResult<>(result);
     }
 
     L.debug("Animation for " + url + " not found in cache. Fetching from network.");
     return fetchFromNetwork();
   }
 
-  private LottieResult<LottieComposition> fetchFromCache() {
-    LottieResult<Pair<FileExtension, InputStream>> cacheResult = networkCache.fetch();
-    if (cacheResult.getValue() == null) {
-      return new LottieResult<>(new IllegalArgumentException(url + " Does not exist in the cache. Fetching."));
+  /**
+   * Returns null if the animation doesn't exist in the cache.
+   */
+  @Nullable
+  private LottieComposition fetchFromCache() {
+    Pair<FileExtension, InputStream> cacheResult = networkCache.fetch();
+    if (cacheResult == null) {
+      return null;
     }
 
-    FileExtension extension = cacheResult.getValue().first;
-    InputStream inputStream = cacheResult.getValue().second;
+    FileExtension extension = cacheResult.first;
+    InputStream inputStream = cacheResult.second;
+    LottieResult<LottieComposition> result;
     if (extension == FileExtension.Zip) {
-      return LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(inputStream), url);
+      result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(inputStream), url);
     } else {
-      return LottieCompositionFactory.fromJsonInputStreamSync(inputStream, url);
+      result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, url);
     }
+    if (result.getValue() != null) {
+      return result.getValue();
+    }
+    return null;
   }
 
   private LottieResult<LottieComposition> fetchFromNetwork() {
@@ -122,7 +119,7 @@ public class NetworkFetcher {
     }
 
     if (result.getValue() != null) {
-      networkCache.copyTempFileToRealFile(url, extension);
+      networkCache.renameTempFile(extension);
     }
 
     L.debug("Completed fetch from network. Success: " + (result.getValue() != null));
