@@ -4,7 +4,7 @@
     * The new factory methods make it easier to catch exceptions by separating out success and
     failure handlers. Previously, catching exceptions was impossible and would crash your app.
     * InputStreams are now always closed even if you use the old APIs. Please be aware if you were
-    using this while upgrading.
+      using this while upgrading.
 * [Sample App] Added the ability to load a file from assets.
 * Added support for miter limit.
 
