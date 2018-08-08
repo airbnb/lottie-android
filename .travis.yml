@@ -64,10 +64,7 @@ jobs:
   - stage: deploy
     name: Create release and upload artifacts
     script:
-    - "./gradlew :LottieSample:assembleRelease"
     - "./sign.sh"
-    - "./gradlew  -PNEXUS_USERNAME=$NEXUS_USERNAME -PNEXUS_PASSWORD=$NEXUS_PASSWORD
-      :lottie:uploadArchives"
     deploy:
       provider: releases
       api_key: "$GITHUB_ACCESS_TOKEN"
