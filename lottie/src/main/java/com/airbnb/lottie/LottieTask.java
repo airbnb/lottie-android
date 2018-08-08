@@ -26,7 +26,11 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public class LottieTask<T> {
 
-  private static final Executor EXECUTOR = Executors.newCachedThreadPool();
+  /**
+   * Set this to change the executor that LottieTasks are run on. This will be the executor that composition parsing and url
+   * fetching happens on.
+   */
+  public final Executor EXECUTOR = Executors.newCachedThreadPool();
 
   @Nullable private Thread taskObserver;
 

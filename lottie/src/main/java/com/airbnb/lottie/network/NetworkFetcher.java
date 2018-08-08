@@ -66,6 +66,7 @@ public class NetworkFetcher {
    * Returns null if the animation doesn't exist in the cache.
    */
   @Nullable
+  @WorkerThread
   private LottieComposition fetchFromCache() {
     Pair<FileExtension, InputStream> cacheResult = networkCache.fetch();
     if (cacheResult == null) {
@@ -86,6 +87,7 @@ public class NetworkFetcher {
     return null;
   }
 
+  @WorkerThread
   private LottieResult<LottieComposition> fetchFromNetwork() {
     try {
       return fetchFromNetworkInternal();
@@ -94,6 +96,7 @@ public class NetworkFetcher {
     }
   }
 
+  @WorkerThread
   private LottieResult fetchFromNetworkInternal() throws IOException {
     L.debug( "Fetching " + url);
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
