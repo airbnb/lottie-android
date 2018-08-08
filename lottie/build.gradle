@@ -1,5 +1,5 @@
-apply plugin: 'com.android.library'
 apply from: 'gradle-maven-push.gradle'
+apply plugin: 'com.android.library'
 
 android {
   compileSdkVersion 27
@@ -9,7 +9,7 @@ android {
     minSdkVersion 16
     targetSdkVersion 27
     versionCode 100
-    versionName "2.6.0-beta15"
+    versionName "2.6.0-signed3"
   }
   lintOptions {
     abortOnError true
@@ -39,4 +39,12 @@ task javadoc(type: Javadoc) {
   configurations.implementation.setCanBeResolved(true)
   classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
   failOnError false
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+  if (taskGraph.allTasks.any { it instanceof Sign }) {
+    allprojects { ext."signing.keyId" = System.getenv("GRADLE_SIGNING_KEY_ID") }
+    allprojects { ext."signing.secretKeyRingFile" = "../secring.gpg" }
+    allprojects { ext."signing.password" = System.getenv("GRADLE_SIGNING_PASSWORD") }
+  }
 }
