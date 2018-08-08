@@ -79,6 +79,7 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     testDynamicProperties();
     testSwitchingToDrawableAndBack();
     testStartEndFrameWithStartEndProgress();
+    testUrl();
   }
 
   private void snapshotAssets(String[] animations) {
@@ -559,6 +560,11 @@ public class LottieSnapshotProvider extends SnapshotProvider {
     view.setFrame(30);
     recordSnapshot(view, 1080, "android", "EndFrame", "End Frame (blue)", params);
 
+  }
+
+  private void testUrl() {
+    LottieComposition composition = LottieCompositionFactory.fromUrlSync(context, "https://www.lottiefiles.com/download/427").getValue();
+    drawComposition(composition, "GiftBox from LottieFiles URL (427)");
   }
 
   private int dpToPx(int dp) {

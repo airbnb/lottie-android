@@ -10,7 +10,7 @@ import java.util.Set;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {
   public static final String TAG = "LOTTIE";
-  public static final boolean DBG = false;
+  public static boolean DBG = false;
 
   /**
    * Set to ensure that we only log each message one time max.
@@ -23,6 +23,10 @@ public class L {
   private static long[] startTimeNs;
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
+
+  public static void debug(String msg) {
+    if (DBG) Log.d(TAG, msg);
+  }
 
   /**
    * Warn to logcat. Keeps track of messages so they are only logged once ever.

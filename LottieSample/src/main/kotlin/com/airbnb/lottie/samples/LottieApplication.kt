@@ -1,6 +1,7 @@
 package com.airbnb.lottie.samples
 
 import android.support.multidex.MultiDexApplication
+import com.airbnb.lottie.L
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -31,4 +32,9 @@ class LottieApplication : MultiDexApplication() {
     }
 
     val lottiefilesService by lazy { retrofit.create(LottiefilesService::class.java) }
+
+    override fun onCreate() {
+        super.onCreate()
+        L.DBG = true;
+    }
 }

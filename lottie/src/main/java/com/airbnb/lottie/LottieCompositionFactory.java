@@ -10,6 +10,7 @@ import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
+import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
 import org.json.JSONObject;
@@ -34,6 +35,32 @@ public class LottieCompositionFactory {
   private LottieCompositionFactory() {
   }
 
+  /**
+   * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
+   * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
+   * might need an animation in the future.
+   */
+  public static LottieTask<LottieComposition> fromUrl(Context context, String url) {
+    return NetworkFetcher.fetch(context, url);
+  }
+
+  /**
+   * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
+   * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
+   * might need an animation in the future.
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromUrlSync(Context context, String url) {
+    return NetworkFetcher.fetchSync(context, url);
+  }
+
+  /**
+   * Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+   * The asset file name will be used as a cache key so future usages won't have to parse the json again.
+   * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
+   *
+   * @see #fromZipStream(ZipInputStream, String)
+   */
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
@@ -45,8 +72,9 @@ public class LottieCompositionFactory {
   }
 
   /**
-   * Name of a files in src/main/assets. If it ends with zip, it will be parsed as a zip file. Otherwise, it will
-   * be parsed as json.
+   * Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+   * The asset file name will be used as a cache key so future usages won't have to parse the json again.
+   * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
    *
    * @see #fromZipStreamSync(ZipInputStream, String)
    */
@@ -63,6 +91,11 @@ public class LottieCompositionFactory {
     }
   }
 
+  /**
+   * Parse an animation from raw/res. This is recommended over putting your animation in assets because
+   * it uses a hard reference to R.
+   * The resource id will be used as a cache key so future usages won't parse the json again.
+   */
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
@@ -73,6 +106,11 @@ public class LottieCompositionFactory {
     });
   }
 
+  /**
+   * Parse an animation from raw/res. This is recommended over putting your animation in assets because
+   * it uses a hard reference to R.
+   * The resource id will be used as a cache key so future usages won't parse the json again.
+   */
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int resId) {
     try {
@@ -193,7 +231,7 @@ public class LottieCompositionFactory {
    * It will automatically store and configure any images inside the animation if they exist.
    */
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
     try {
       return fromZipStreamSyncInternal(inputStream, cacheKey);
     } finally {
