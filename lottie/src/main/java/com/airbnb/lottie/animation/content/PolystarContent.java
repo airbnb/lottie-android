@@ -78,8 +78,8 @@ public class PolystarContent
     outerRadiusAnimation.addUpdateListener(this);
     outerRoundednessAnimation.addUpdateListener(this);
     if (type == PolystarShape.Type.Star) {
-      outerRadiusAnimation.addUpdateListener(this);
-      outerRoundednessAnimation.addUpdateListener(this);
+      innerRadiusAnimation.addUpdateListener(this);
+      innerRoundednessAnimation.addUpdateListener(this);
     }
   }
 
