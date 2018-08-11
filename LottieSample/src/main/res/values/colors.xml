@@ -9,6 +9,7 @@
     <color name="text_color_dark">#484848</color>
     <color name="text_color_placeholder">#BABABA</color>
     <color name="tab_bar_underline">#00D1C1</color>
+    <color name="loading_placeholder">#c4c4c4</color>
 
     <color name="background_color1">#ffffff</color>
     <color name="background_color1_stroke">#848484</color>

@@ -59,8 +59,8 @@
                     android:host="*"/>
             </intent-filter>
         </activity>
-        <activity android:name=".DynamicTextActivity">
-        </activity>
+        <activity android:name=".DynamicTextActivity" />
+        <activity android:name=".ListActivity" />
     </application>
 
 </manifest>
