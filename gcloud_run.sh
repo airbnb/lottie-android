@@ -7,11 +7,11 @@ fi
 if [ ! -f ${HOME}/google-cloud-sdk/install.sh ]; then
   mkdir $HOME/.cache
   echo "File not found!"
-  echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/.cache/gcloud-service-key.json
   curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-209.0.0-linux-x86_64.tar.gz -o gcloud.tar.gz
   tar xzf gcloud.tar.gz -C ${HOME}
   ${HOME}/google-cloud-sdk/install.sh --quiet --usage-reporting false
 fi
+echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > ${HOME}/.cache/gcloud-service-key.json
 gcloud auth activate-service-account --key-file ${HOME}/.cache/gcloud-service-key.json
 gcloud config set project lottie-snapshots
 
