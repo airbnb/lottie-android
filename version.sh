@@ -13,8 +13,6 @@ sed -i '' "s/    versionCode .*/    versionCode $versionCode/" LottieSample/buil
 
 sed -i '' "s/VERSION_NAME=.*/VERSION_NAME=$1/" gradle.properties
 
-sed -i '' "s/  compile 'com[.]airbnb[.]android[:]lottie[:].*'/  compile 'com\.airbnb\.android\:lottie\:$1'/" README.md
-
 git add -A
 git commit -m "v$1"
 git tag "v$1"
