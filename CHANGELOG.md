@@ -1,12 +1,23 @@
 # 2.6.0
 ### Features and Improvements
+* Added support for loading an image from a url directly. See LottieCompositionFactory for more information.
+* Added support for loading an animation from a zip file that contains the json as well as images.
+    * URLs supports zip files as well as json files.
 * Deprecated `LottieComposition.Factory` in favor of LottieCompositionFactory.
     * The new factory methods make it easier to catch exceptions by separating out success and
-    failure handlers. Previously, catching exceptions was impossible and would crash your app.
+      failure handlers. Previously, catching exceptions was impossible and would crash your app.
+    * All APIs now have a mandatory cacheKey that uses an LRU cache rather than a strong/weak ref cache.
+    * If the same animation is fetched multiple times in parallel, the same task will be returned.
+      This will be massively helpful for animations that are loaded in a list.
     * InputStreams are now always closed even if you use the old APIs. Please be aware if you were
       using this while upgrading.
-* [Sample App] Added the ability to load a file from assets.
 * Added support for miter limit.
+* [Sample App] Added the ability to load a file from assets.
+### Bugs Fixed
+* Fixed a timing issue when there was time stretch on a masked layer.
+* Fixed support for Android P.
+* Make a best-effort attempt at rendering shapes in which the number of vertices changes rather than crashing.
+* Fixed a bug in which the inner radius animation of a polystar wouldn't update.
 
 # 2.5.7
 * Reapply min/max frame once composition is loaded (#827).
