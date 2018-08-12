@@ -8,20 +8,11 @@
     <View
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="256dp"
+        android:layout_height="72dp"
         android:background="@color/loading_placeholder"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginBottom="16dp"/>
-
-    <View
-        android:id="@+id/title"
-        android:layout_width="128dp"
-        android:layout_height="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_below="@id/image"
-        android:background="@color/loading_placeholder"/>
 
     <com.airbnb.lottie.samples.views.WishListIconView
         android:id="@+id/wishListIcon"

@@ -153,6 +153,10 @@ public class LottieComposition {
   }
 
   /**
+   * This will be removed in the next version of Lottie. {@link LottieCompositionFactory} has improved
+   * API names, failure handlers, and will return in-progress tasks so you will never parse the same
+   * animation twice in parallel.
+   *
    * @see LottieCompositionFactory
    */
   @Deprecated
@@ -163,6 +167,7 @@ public class LottieComposition {
     /**
      * @see LottieCompositionFactory#fromAsset(Context, String)
      */
+    @Deprecated
     public static Cancellable fromAssetFileName(Context context, String fileName, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
       LottieCompositionFactory.fromAsset(context, fileName).addListener(listener);
@@ -172,6 +177,7 @@ public class LottieComposition {
     /**
      * @see LottieCompositionFactory#fromRawRes(Context, int)
      */
+    @Deprecated
      public static Cancellable fromRawFile(Context context, @RawRes int resId, OnCompositionLoadedListener l) {
        ListenerAdapter listener = new ListenerAdapter(l);
        LottieCompositionFactory.fromRawRes(context, resId).addListener(listener);
@@ -181,6 +187,7 @@ public class LottieComposition {
     /**
      * @see LottieCompositionFactory#fromJsonInputStream(InputStream)
      */
+    @Deprecated
     public static Cancellable fromInputStream(InputStream stream, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
       LottieCompositionFactory.fromJsonInputStream(stream, null).addListener(listener);
@@ -190,6 +197,7 @@ public class LottieComposition {
     /**
      * @see LottieCompositionFactory#fromJsonString(String)
      */
+    @Deprecated
     public static Cancellable fromJsonString(String jsonString, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
       LottieCompositionFactory.fromJsonString(jsonString, null).addListener(listener);
@@ -199,6 +207,7 @@ public class LottieComposition {
     /**
      * @see LottieCompositionFactory#fromJsonReader(JsonReader)
      */
+    @Deprecated
     public static Cancellable fromJsonReader(JsonReader reader, OnCompositionLoadedListener l) {
       ListenerAdapter listener = new ListenerAdapter(l);
       LottieCompositionFactory.fromJsonReader(reader, null).addListener(listener);
@@ -210,6 +219,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromFileSync(Context context, String fileName) {
       return LottieCompositionFactory.fromAssetSync(context, fileName).getValue();
     }
@@ -219,6 +229,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromInputStreamSync(InputStream stream) {
       return LottieCompositionFactory.fromJsonInputStreamSync(stream, null).getValue();
     }
@@ -230,6 +241,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromInputStreamSync(InputStream stream, boolean close) {
       if (close) {
         Log.w(L.TAG, "Lottie now auto-closes input stream!");
@@ -242,6 +254,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromJsonSync(@SuppressWarnings("unused") Resources res, JSONObject json) {
       return LottieCompositionFactory.fromJsonSync(json, null).getValue();
     }
@@ -251,6 +264,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromJsonSync(String json) {
       return LottieCompositionFactory.fromJsonStringSync(json, null).getValue();
     }
@@ -260,6 +274,7 @@ public class LottieComposition {
      */
     @Nullable
     @WorkerThread
+    @Deprecated
     public static LottieComposition fromJsonSync(JsonReader reader) throws IOException {
       return LottieCompositionFactory.fromJsonReaderSync(reader, null).getValue();
     }
