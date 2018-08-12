@@ -312,6 +312,11 @@ public class LottieCompositionFactory {
     return null;
   }
 
+  /**
+   * First, check to see if there are any in-progress tasks associated with the cache key and return it if there is.
+   * If not, create a new task for the callable.
+   * Then, add the new task to the task cache and set up listeners to it gets cleared when done.
+   */
   private static LottieTask<LottieComposition> cache(final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
     if (taskCache.containsKey(cacheKey)) {
       return taskCache.get(cacheKey);
