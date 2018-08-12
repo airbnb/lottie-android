@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
@@ -42,6 +43,7 @@ public class LottieTask<T> {
 
   @Nullable private LottieResult<T> result = null;
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public LottieTask(Callable<LottieResult<T>> runnable) {
     this(runnable, false);
   }
@@ -49,6 +51,7 @@ public class LottieTask<T> {
   /**
    * runNow is only used for testing.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
     task = new FutureTask<>(runnable);
 

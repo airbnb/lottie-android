@@ -29,8 +29,18 @@ import static com.airbnb.lottie.utils.Utils.closeQuietly;
 
 /**
  * Helpers to create or cache a LottieComposition.
+ *
+ * All factory methods take a cache key. The animation will be stored in an LRU cache for future use.
+ * In-progress tasks will also be held so they can be returned for subsequent requests for the same
+ * animation prior to the cache being populated.
  */
 public class LottieCompositionFactory {
+  /**
+   * Keep a map of cache keys to in-progress tasks and return them for new requests.
+   * Without this, simultaneous requests to parse a composition will trigger multiple parallel
+   * parse tasks prior to the cache getting populated.
+   */
+  private static final Map<String, LottieTask<LottieComposition>> taskCache = new HashMap<>();
 
   private LottieCompositionFactory() {
   }
@@ -64,7 +74,7 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(fileName, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() {
         return fromAssetSync(appContext, fileName);
       }
@@ -99,7 +109,7 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(rawResCacheKey(rawRes), new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromRawResSync(appContext, rawRes);
       }
@@ -112,12 +122,16 @@ public class LottieCompositionFactory {
    * The resource id will be used as a cache key so future usages won't parse the json again.
    */
   @WorkerThread
-  public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int resId) {
+  public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(resId), "rawRes_" + resId);
+      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(rawRes));
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
+  }
+
+  private static String rawResCacheKey(@RawRes int resId) {
+    return "rawRes_" + resId;
   }
 
   /**
@@ -126,7 +140,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonInputStreamSync(InputStream, boolean)
    */
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromJsonInputStreamSync(stream, cacheKey);
       }
@@ -157,7 +171,7 @@ public class LottieCompositionFactory {
    */
   @Deprecated
   public static LottieTask<LottieComposition> fromJson(final JSONObject json, @Nullable final String cacheKey) {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromJsonSync(json, cacheKey);
       }
@@ -179,7 +193,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonStringSync(String)
    */
   public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromJsonStringSync(json, cacheKey);
       }
@@ -196,7 +210,7 @@ public class LottieCompositionFactory {
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromJsonReaderSync(reader, cacheKey);
       }
@@ -218,7 +232,7 @@ public class LottieCompositionFactory {
   }
 
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override public LottieResult<LottieComposition> call() throws Exception {
         return fromZipStreamSync(inputStream, cacheKey);
       }
@@ -296,5 +310,30 @@ public class LottieCompositionFactory {
       }
     }
     return null;
+  }
+
+  /**
+   * First, check to see if there are any in-progress tasks associated with the cache key and return it if there is.
+   * If not, create a new task for the callable.
+   * Then, add the new task to the task cache and set up listeners to it gets cleared when done.
+   */
+  private static LottieTask<LottieComposition> cache(final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
+    if (taskCache.containsKey(cacheKey)) {
+      return taskCache.get(cacheKey);
+    }
+
+    LottieTask<LottieComposition> task = new LottieTask<>(callable);
+    task.addListener(new LottieListener<LottieComposition>() {
+      @Override public void onResult(LottieComposition result) {
+        taskCache.remove(cacheKey);
+      }
+    });
+    task.addFailureListener(new LottieListener<Throwable>() {
+      @Override public void onResult(Throwable result) {
+        taskCache.remove(cacheKey);
+      }
+    });
+    taskCache.put(cacheKey, task);
+    return task;
   }
 }

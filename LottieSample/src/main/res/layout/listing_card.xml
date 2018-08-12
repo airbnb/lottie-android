@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="@color/loading_placeholder"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="16dp"/>
+
+    <com.airbnb.lottie.samples.views.WishListIconView
+        android:id="@+id/wishListIcon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="-16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        app:lottie_rawRes="@raw/heart"
+        android:scaleType="centerCrop"/>
+
+</RelativeLayout>

@@ -82,5 +82,6 @@
     <string name="showcase_item_dynamic_properties">Dynamic\nProperties</string>
     <string name="showcase_item_animated_text">Animated\nText</string>
     <string name="showcase_item_dynamic_text">Dynamic\nText</string>
+    <string name="showcase_item_recycler_viwe">RecyclerView</string>
     <string name="bullseye_drag_dot">Drag the blue dot</string>
 </resources>
