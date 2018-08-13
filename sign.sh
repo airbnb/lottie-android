@@ -18,4 +18,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "----------Zipaligning APK"
-${ANDROID_HOME}/build-tools/27.0.3/zipalign 4 LottieSample/build/outputs/apk/release/LottieSample-release-unsigned.apk LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+${ANDROID_HOME}/build-tools/27.0.3/zipalign 4 LottieSample/build/outputs/apk/release/LottieSample-release-signed.apk LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
