@@ -6,7 +6,7 @@
 #   exit 0
 # fi
 
-./gradlew -Porg.gradle.parallel=false -PNEXUS_USERNAME=$NEXUS_USERNAME -PNEXUS_PASSWORD=$NEXUS_PASSWORD clean assemble uploadArchives
+./gradlew --no-parallel -PNEXUS_USERNAME=$NEXUS_USERNAME -PNEXUS_PASSWORD=$NEXUS_PASSWORD clean assemble uploadArchives
 
 # echo "----------Signing APK"
 # jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore lottie-upload-key.jks -storepass $LOTTIE_UPLOAD_CERT_KEY_STORE_PASSWORD LottieSample/build/outputs/apk/release/LottieSample-release-unsigned.apk upload -keypass $LOTTIE_UPLOAD_CERT_KEY_PASSWORD -signedjar LottieSample/build/outputs/apk/release/LottieSample-release-signed.apk
