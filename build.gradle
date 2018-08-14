@@ -14,6 +14,7 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.4.0'
   }
 }
 

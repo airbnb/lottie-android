@@ -1,5 +1,5 @@
-apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
+apply plugin: "com.vanniktech.maven.publish"
 
 android {
   compileSdkVersion 27
@@ -40,6 +40,13 @@ task javadoc(type: Javadoc) {
   classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
   failOnError false
 }
+
+//mavenPublish {
+//  releaseRepositoryUrl = System.getenv("GRADLE_SIGNING_KEY_ID")
+//  snapshotRepositoryUrl = System.getenv("GRADLE_SIGNING_KEY_ID")
+//  repositoryUsername = null // This defaults to either the SONATYPE_NEXUS_USERNAME Gradle property or the system environment variable.
+//  repositoryPassword = null // This defaults to either the SONATYPE_NEXUS_PASSWORD Gradle property or the system environment variable.
+//}
 
 gradle.taskGraph.whenReady { taskGraph ->
   if (taskGraph.allTasks.any { it instanceof Sign }) {
