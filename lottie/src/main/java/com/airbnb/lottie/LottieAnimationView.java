@@ -114,6 +114,7 @@ import java.util.Set;
     if (!isInEditMode()) {
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
       boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
+      boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
       if (hasRawRes && hasFileName) {
         throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
             "the same time. Please use use only one at once.");
@@ -126,6 +127,11 @@ import java.util.Set;
         String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
         if (fileName != null) {
           setAnimation(fileName);
+        }
+      } else if (hasUrl) {
+        String url = ta.getString(R.styleable.LottieAnimationView_lottie_url);
+        if (url != null) {
+          setAnimationFromUrl(url);
         }
       }
     }
@@ -442,6 +448,22 @@ import java.util.Set;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromJsonReader(reader, cacheKey)
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
+  }
+
+  /**
+   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them togethre and lottie
+   * will unzip and link the images automatically.
+   *
+   * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
+   * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
+   * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
+   */
+  public void setAnimationFromUrl(String url) {
+    clearComposition();
+    cancelLoaderTask();
+    compositionTask = LottieCompositionFactory.fromUrl(getContext(), url)
         .addListener(loadedListener)
         .addFailureListener(failureListener);
   }
