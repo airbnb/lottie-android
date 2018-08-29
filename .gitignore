@@ -9,3 +9,5 @@
 .externalNativeBuild
 *auto-save*
 credentials/*
+
+*.gpg
