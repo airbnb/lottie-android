@@ -66,25 +66,24 @@ public class ImageAssetManager {
   }
 
   @Nullable public Bitmap bitmapForId(String id) {
-    Bitmap bitmap = imageAssets.get(id).getBitmap();
+    LottieImageAsset asset = imageAssets.get(id);
+    if (asset == null) {
+      return null;
+    }
+    Bitmap bitmap = asset.getBitmap();
     if (bitmap != null) {
       return bitmap;
     }
 
-    LottieImageAsset imageAsset = imageAssets.get(id);
-    if (imageAsset == null) {
-      return null;
-    }
-
     if (delegate != null) {
-      bitmap = delegate.fetchBitmap(imageAsset);
+      bitmap = delegate.fetchBitmap(asset);
       if (bitmap != null) {
         putBitmap(id, bitmap);
       }
       return bitmap;
     }
 
-    String filename = imageAsset.getFileName();
+    String filename = asset.getFileName();
     BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inScaled = true;
     opts.inDensity = 160;
@@ -122,7 +121,10 @@ public class ImageAssetManager {
       Iterator<Map.Entry<String, LottieImageAsset>> it = imageAssets.entrySet().iterator();
       while (it.hasNext()) {
         Map.Entry<String, LottieImageAsset> entry = it.next();
-        entry.getValue().getBitmap().recycle();
+        Bitmap bitmap = entry.getValue().getBitmap();
+        if (bitmap != null) {
+          bitmap.recycle();
+        }
         it.remove();
       }
     }
