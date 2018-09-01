@@ -64,7 +64,7 @@ dependencies {
   implementation 'com.airbnb.android:epoxy:2.16.4'
   kapt 'com.airbnb.android:epoxy-processor:2.16.4'
   implementation 'com.android.support.constraint:constraint-layout:2.0.0-alpha2'
-  implementation 'androidx.core:core-ktx:0.3'
+  implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation 'com.jakewharton:butterknife:8.8.1'
