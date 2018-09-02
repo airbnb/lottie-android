@@ -61,8 +61,9 @@ dependencies {
   implementation 'android.arch.lifecycle:extensions:1.1.0'
   kapt "android.arch.lifecycle:compiler:1.1.0"
   implementation "com.android.support:customtabs:$supportLibVersion"
-  implementation 'com.airbnb.android:epoxy:2.16.1'
-  kapt 'com.airbnb.android:epoxy-processor:2.16.1'
+  implementation 'com.airbnb.android:epoxy:2.16.4'
+  kapt 'com.airbnb.android:epoxy-processor:2.16.4'
+  implementation 'com.airbnb.android:mvrx:0.5.0'
   implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
   implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="titleText" format="string" />
-    <declare-styleable name="PreviewItemView">
-        <attr name="icon" format="reference" />
-        <attr name="titleText" />
-    </declare-styleable>
     <declare-styleable name="ControlBarItemToggleView">
         <attr name="src" format="reference" />
         <attr name="text" format="string" />
