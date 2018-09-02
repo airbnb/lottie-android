@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/trimContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:visibility="gone">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,7 +23,7 @@
             android:layout_weight="0.5"/>
 
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            android:id="@+id/minFrame"
+            android:id="@+id/minFrameView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -32,7 +33,7 @@
             android:layout_weight="1"/>
 
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            android:id="@+id/maxFrame"
+            android:id="@+id/maxFrameView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

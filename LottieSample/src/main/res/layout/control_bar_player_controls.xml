@@ -90,7 +90,8 @@
         android:padding="4dp"
         android:text="@string/render_times_per_layer_button"
         android:textColor="@color/item_selected_teal"
-        android:textSize="10sp"/>
+        android:textSize="10sp"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/lottieVersionView"
