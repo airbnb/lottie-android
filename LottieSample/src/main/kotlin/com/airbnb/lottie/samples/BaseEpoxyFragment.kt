@@ -19,14 +19,12 @@ private class BaseEpoxyController(
     }
 }
 
-
 abstract class BaseEpoxyFragment : BaseMvRxFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_base, container, false).apply {
                 recyclerView.setController(BaseEpoxyController { buildModels() })
             }
-
 
     override fun invalidate() {
         recyclerView.requestModelBuild()

@@ -118,32 +118,8 @@ class PlayerFragment : BaseMvRxFragment() {
             invertColor(it)
         }
 
-        minFrameView.setOnClickListener {
-            val minFrameView = EditText(context)
-            minFrameView.setText(animationView.minFrame.toInt().toString())
-            AlertDialog.Builder(context)
-                    .setTitle(R.string.min_frame_dialog)
-                    .setView(minFrameView)
-                    .setPositiveButton("Load") { _, _ ->
-                        viewModel.setMinFrame(minFrameView.text.toString().toIntOrNull() ?: 0)
-                    }
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                    .show()
-        }
-
-        maxFrameView.setOnClickListener {
-            val maxFrameView = EditText(context)
-            maxFrameView.setText(animationView.maxFrame.toInt().toString())
-            AlertDialog.Builder(context)
-                    .setTitle(R.string.max_frame_dialog)
-                    .setView(maxFrameView)
-                    .setPositiveButton("Load") { _, _ ->
-                        viewModel.setMaxFrame(maxFrameView.text.toString().toIntOrNull() ?: 0)
-                    }
-                    .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
-                    .show()
-        }
-
+        minFrameView.setOnClickListener { showMinFrameDialog() }
+        maxFrameView.setOnClickListener { showMaxFrameDialog() }
         viewModel.selectSubscribe(PlayerState::minFrame, PlayerState::maxFrame) { minFrame, maxFrame ->
             animationView.setMinAndMaxFrame(minFrame, maxFrame)
             // I think this is a lint bug. It complains about int being <ErrorType>
@@ -357,6 +333,32 @@ class PlayerFragment : BaseMvRxFragment() {
             keyPathsBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         keyPathsBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
+    private fun showMinFrameDialog() {
+        val minFrameView = EditText(context)
+        minFrameView.setText(animationView.minFrame.toInt().toString())
+        AlertDialog.Builder(context)
+                .setTitle(R.string.min_frame_dialog)
+                .setView(minFrameView)
+                .setPositiveButton("Load") { _, _ ->
+                    viewModel.setMinFrame(minFrameView.text.toString().toIntOrNull() ?: 0)
+                }
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                .show()
+    }
+
+    private fun showMaxFrameDialog() {
+        val maxFrameView = EditText(context)
+        maxFrameView.setText(animationView.maxFrame.toInt().toString())
+        AlertDialog.Builder(context)
+                .setTitle(R.string.max_frame_dialog)
+                .setView(maxFrameView)
+                .setPositiveButton("Load") { _, _ ->
+                    viewModel.setMaxFrame(maxFrameView.text.toString().toIntOrNull() ?: 0)
+                }
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                .show()
     }
 
     private fun View.animateVisible(visible: Boolean) {
