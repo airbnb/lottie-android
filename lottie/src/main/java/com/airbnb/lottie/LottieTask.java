@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Helper to run asynchronous tasks with a result.
@@ -30,8 +28,11 @@ public class LottieTask<T> {
   /**
    * Set this to change the executor that LottieTasks are run on. This will be the executor that composition parsing and url
    * fetching happens on.
+   *
+   * You may change this to run deserialization synchronously for testing.
    */
-  public final Executor EXECUTOR = Executors.newCachedThreadPool();
+  @SuppressWarnings("WeakerAccess")
+  public Executor EXECUTOR = Executors.newCachedThreadPool();
 
   @Nullable private Thread taskObserver;
 
