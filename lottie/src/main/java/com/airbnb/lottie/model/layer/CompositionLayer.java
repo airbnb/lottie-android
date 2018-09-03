@@ -3,6 +3,7 @@ package com.airbnb.lottie.model.layer;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
@@ -93,7 +94,13 @@ public class CompositionLayer extends BaseLayer {
     for (int i = layers.size() - 1; i >= 0 ; i--) {
       boolean nonEmptyClip = true;
       if (!newClipRect.isEmpty()) {
-        nonEmptyClip = canvas.clipRect(newClipRect);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
+            canvas.save();
+            nonEmptyClip = canvas.clipRect(newClipRect);
+            canvas.restore();
+        } else {
+            nonEmptyClip = canvas.clipRect(newClipRect);
+        }
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
