@@ -3,76 +3,93 @@ package com.airbnb.lottie.samples
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
+import com.airbnb.epoxy.EpoxyController
 import com.airbnb.lottie.samples.model.CompositionArgs
-import kotlinx.android.synthetic.main.fragment_preview.*
+import com.airbnb.lottie.samples.views.marquee
+import kotlinx.android.synthetic.main.fragment_player.*
 
 private const val RC_FILE = 1000
 private const val RC_CAMERA_PERMISSION = 1001
-class PreviewFragment : Fragment() {
+class PreviewFragment : BaseEpoxyFragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_preview, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        qr.setOnClickListener {
-            if (requireContext().hasPermission(Manifest.permission.CAMERA)) {
-                startActivity(QRScanActivity.intent(requireContext()))
-            } else {
-                requestPermissions(arrayOf(Manifest.permission.CAMERA), RC_CAMERA_PERMISSION)
-            }
+    override fun EpoxyController.buildModels() {
+        marquee {
+            id("marquee")
+            title(R.string.preview_title)
         }
 
-        file.setOnClickListener {
-            try {
-                val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                    type = "*/*"
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                }
-                startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), RC_FILE)
-            } catch (ex: android.content.ActivityNotFoundException) {
-                // Potentially direct the user to the Market with a Dialog
-                Toast.makeText(context, "Please install a File Manager.", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        url.setOnClickListener {
-            val urlOrJsonView = EditText(context)
-            AlertDialog.Builder(context)
-                    .setTitle(R.string.preview_url)
-                    .setView(urlOrJsonView)
-                    .setPositiveButton(R.string.preview_load) { _, _ ->
-                        val args = CompositionArgs(url = urlOrJsonView.text.toString())
-                        startActivity(PlayerActivity.intent(requireContext(), args))
-                    }
-                    .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
-                    .show()
-        }
-
-        assets.setOnClickListener {
-            val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item).apply {
-                requireContext().assets.list("").forEach {
-                    if (it.endsWith(".json") || it.endsWith(".zip")) {
-                        add(it)
-                    }
+        previewItemView {
+            id("qr")
+            title(R.string.preview_qr)
+            icon(R.drawable.ic_qr_scan)
+            clickListener { _ ->
+                if (requireContext().hasPermission(Manifest.permission.CAMERA)) {
+                    startActivity(QRScanActivity.intent(requireContext()))
+                } else {
+                    requestPermissions(arrayOf(Manifest.permission.CAMERA), RC_CAMERA_PERMISSION)
                 }
             }
-            AlertDialog.Builder(context)
-                    .setAdapter(adapter) { _, which ->
-                        val args = CompositionArgs(asset = adapter.getItem(which))
-                        startActivity(PlayerActivity.intent(requireContext(), args))
+        }
+
+        previewItemView {
+            id("file")
+            title(R.string.preview_file)
+            icon(R.drawable.ic_file)
+            clickListener { _ ->
+                try {
+                    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                        type = "*/*"
+                        addCategory(Intent.CATEGORY_OPENABLE)
                     }
-                    .show()
+                    startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), RC_FILE)
+                } catch (ex: ActivityNotFoundException) {
+                    // Potentially direct the user to the Market with a Dialog
+                    Toast.makeText(context, "Please install a File Manager.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        previewItemView {
+            id("url")
+            title(R.string.preview_url)
+            icon(R.drawable.ic_network)
+            clickListener { _ ->
+                val urlOrJsonView = EditText(context)
+                AlertDialog.Builder(context)
+                        .setTitle(R.string.preview_url)
+                        .setView(urlOrJsonView)
+                        .setPositiveButton(R.string.preview_load) { _, _ ->
+                            val args = CompositionArgs(url = urlOrJsonView.text.toString())
+                            startActivity(PlayerActivity.intent(requireContext(), args))
+                        }
+                        .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
+                        .show()
+            }
+        }
+
+        previewItemView {
+            id("assets")
+            title(R.string.preview_assets)
+            icon(R.drawable.ic_storage)
+            clickListener { _ ->
+                val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item)
+                requireContext().assets.list("").asSequence()
+                        .filter { it.endsWith(".json") || it.endsWith(".zip") }
+                        .forEach { adapter.add(it) }
+                AlertDialog.Builder(context)
+                        .setAdapter(adapter) { _, which ->
+                            val args = CompositionArgs(asset = adapter.getItem(which))
+                            startActivity(PlayerActivity.intent(requireContext(), args))
+                        }
+                        .show()
+            }
         }
     }
 
@@ -89,7 +106,7 @@ class PreviewFragment : Fragment() {
                 if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                     startActivity(QRScanActivity.intent(requireContext()))
                 } else {
-                    Snackbar.make(container, R.string.qr_permission_denied, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(coordinatorLayout, R.string.qr_permission_denied, Snackbar.LENGTH_LONG).show()
                 }
             }
         }

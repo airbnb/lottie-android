@@ -326,6 +326,9 @@ import java.util.Set;
    *    anything about that.
    */
   public void useHardwareAcceleration(boolean use) {
+    if (useHardwareLayer == use) {
+      return;
+    }
     useHardwareLayer = use;
     enableOrDisableHardwareLayer();
   }

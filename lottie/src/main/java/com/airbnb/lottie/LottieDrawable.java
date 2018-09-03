@@ -132,6 +132,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * instead of using merge paths.
    */
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
+    if (enableMergePaths == enable) {
+      return;
+    }
+
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
       Log.w(TAG, "Merge paths are not supported pre-Kit Kat.");
       return;

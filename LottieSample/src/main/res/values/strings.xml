@@ -48,7 +48,6 @@
     <string name="control_bar_scale">Scale</string>
     <string name="control_bar_trim">Trim</string>
     <string name="control_bar_speed">Speed</string>
-    <string name="control_bar_no_warnings">No Warnings</string>
     <string name="control_bar_key_paths">Show KeyPaths</string>
     <string name="control_bar_merge_paths">Merge Paths (KitKat+)</string>
 

@@ -1,24 +1,36 @@
 package com.airbnb.lottie.samples
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v4.app.FragmentActivity
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.epoxy.EpoxyRecyclerView
+import com.airbnb.lottie.samples.model.AnimationResponse
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.model.ShowcaseItem
-import com.airbnb.lottie.samples.views.LoadingViewModel_
-import com.airbnb.lottie.samples.views.MarqueeModel_
-import com.airbnb.lottie.samples.views.ShowcaseAnimationItemViewModel_
-import com.airbnb.lottie.samples.views.ShowcaseCarouselModel_
-import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
+import com.airbnb.lottie.samples.views.loadingView
+import com.airbnb.lottie.samples.views.marquee
+import com.airbnb.lottie.samples.views.showcaseAnimationItemView
+import com.airbnb.lottie.samples.views.showcaseCarousel
+import com.airbnb.mvrx.*
 
-class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
+data class ShowcaseState(val response: Async<AnimationResponse> = Uninitialized) : MvRxState
+
+class ShowcaseViewModel(initialState: ShowcaseState, service: LottiefilesService) : MvRxViewModel<ShowcaseState>(initialState) {
+    init {
+        service.getCollection("lottie-showcase")
+                .retry(3)
+                .execute { copy(response = it) }
+    }
+
+    companion object : MvRxViewModelFactory<ShowcaseState> {
+        @JvmStatic
+        override fun create(activity: FragmentActivity, state: ShowcaseState): ShowcaseViewModel {
+            val service = (activity.applicationContext as LottieApplication).lottiefilesService
+            return ShowcaseViewModel(state, service)
+        }
+    }
+}
+
+class ShowcaseFragment : BaseEpoxyFragment() {
 
     private val showcaseItems = listOf(
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_app_intro) {
@@ -40,48 +52,33 @@ class ShowcaseFragment : Fragment(), EpoxyRecyclerView.ModelBuilderCallback {
                 startActivity(Intent(requireContext(), ListActivity::class.java))
             }
     )
-    private val viewModel by lazy { ViewModelProviders.of(this).get(ShowcaseViewModel::class.java) }
+    private val viewModel: ShowcaseViewModel by fragmentViewModel()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_epoxy_recycler_view, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        recyclerView.buildModelsWith(this)
-
-        viewModel.collection.observe(this, Observer {
-            recyclerView.requestModelBuild()
-        })
-
-        viewModel.loading.observe(this, Observer {
-            recyclerView.requestModelBuild()
-        })
-
-        viewModel.fetchAnimations()
-    }
-
-    override fun buildModels(controller: EpoxyController) {
-        MarqueeModel_()
-                .id("showcase")
-                .title("Showcase")
-                .addTo(controller)
-        ShowcaseCarouselModel_()
-                .id("carousel")
-                .showcaseItems(showcaseItems)
-                .addTo(controller)
-
-        viewModel.collection.value?.data?.forEach {
-            ShowcaseAnimationItemViewModel_()
-                    .id(it.id)
-                    .title(it.title)
-                    .previewUrl(it.preview)
-                    .onClickListener { _ ->
-                        startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationData = it)))
-                    }
-                    .addTo(controller)
+    override fun EpoxyController.buildModels() = withState(viewModel) { state ->
+        marquee {
+            id("showcase")
+            title("Showcase")
+        }
+        showcaseCarousel {
+            id("carousel")
+            showcaseItems(showcaseItems)
         }
 
-        LoadingViewModel_()
-                .id("loading")
-                .addIf(viewModel.loading.value ?: false, controller)
+        val collectionItems = state.response()?.data
+
+        if (collectionItems == null) {
+            loadingView {
+                id("loading")
+            }
+        } else {
+            collectionItems.forEach {
+                showcaseAnimationItemView {
+                    id(it.id)
+                    title(it.title)
+                    previewUrl(it.preview)
+                    onClickListener { _ -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationData = it))) }
+                }
+            }
+        }
     }
 }

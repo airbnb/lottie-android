@@ -1,11 +1,17 @@
 package com.airbnb.lottie.samples
 
 import android.content.Context
+import android.support.annotation.DrawableRes
 import android.util.AttributeSet
-import android.util.TypedValue
+import android.view.View
 import android.widget.LinearLayout
+import com.airbnb.epoxy.CallbackProp
+import com.airbnb.epoxy.ModelProp
+import com.airbnb.epoxy.ModelView
+import com.airbnb.epoxy.TextProp
 import kotlinx.android.synthetic.main.list_item_preview.view.*
 
+@ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class PreviewItemView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
@@ -15,20 +21,20 @@ class PreviewItemView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
         inflate(R.layout.list_item_preview)
+    }
 
-        attrs?.let {
-            val ta = context.obtainStyledAttributes(it, R.styleable.PreviewItemView)
-            val titleText = resources.getText(ta.getResourceId(R.styleable.PreviewItemView_titleText, 0))
-            val iconRes = ta.getResourceId(R.styleable.PreviewItemView_icon, 0)
+    @TextProp
+    fun setTitle(title: CharSequence) {
+        titleView.text = title
+    }
 
-            titleView.text = titleText
-            iconView.setImageResource(iconRes)
+    @ModelProp
+    fun setIcon(@DrawableRes icon: Int) {
+        iconView.setImageResource(icon)
+    }
 
-            ta.recycle()
-        }
-
-        val outValue = TypedValue()
-        getContext().theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
-        setBackgroundResource(outValue.resourceId)
+    @CallbackProp
+    fun setClickListener(clickListener: View.OnClickListener?) {
+        container.setOnClickListener(clickListener)
     }
 }

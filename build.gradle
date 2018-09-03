@@ -3,6 +3,7 @@ import org.ajoberstar.grgit.Grgit
 buildscript {
   ext.kotlinVersion = '1.2.51'
   ext.supportLibVersion = '27.1.1'
+  ext.navVersion = '1.0.0-alpha04'
 
   repositories {
     jcenter()

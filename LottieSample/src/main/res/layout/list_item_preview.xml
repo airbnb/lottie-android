@@ -4,14 +4,16 @@
     tools:parentTag="android.widget.LinearLayout">
 
     <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="18dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginTop="18dp"
+        android:paddingBottom="18dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="18dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="?attr/selectableItemBackground">
 
         <ImageView
             android:id="@+id/iconView"

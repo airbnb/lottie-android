@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="warnings">
-        <item quantity="zero">%d warnings</item>
+        <item quantity="zero">No warnings</item>
         <item quantity="one">%d warning</item>
         <item quantity="other">%d warnings</item>
     </plurals>
