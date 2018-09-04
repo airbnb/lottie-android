@@ -124,6 +124,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
     private fun drawComposition(composition: LottieComposition?, name: String) {
         Log.d(L.TAG, "Drawing $name")
         val view = LottieAnimationView(context)
+        view.scaleType = ImageView.ScaleType.CENTER_INSIDE
         view.setImageAssetDelegate { dummyBitmap }
         view.setComposition(composition!!)
 
