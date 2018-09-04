@@ -56,7 +56,7 @@ import java.util.Set;
 
 
   /**
-   * Pleaes migrate to LottieCompositionFactory. It has cleaner APIs and a LruCache built in.
+   * Please migrate to LottieCompositionFactory. It has cleaner APIs and a LruCache built in.
    * @see LottieCompositionFactory
    */
   @Deprecated
