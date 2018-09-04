@@ -126,6 +126,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         val drawable = LottieDrawable()
         drawable.composition = composition
         drawable.setImageAssetDelegate { dummyBitmap }
+        drawable.scale = 200 / maxOf(composition.bounds.width(), composition.bounds.height()).toFloat()
 
         val outlinePaint = Paint().apply {
             style = Paint.Style.STROKE
