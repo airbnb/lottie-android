@@ -128,17 +128,18 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         drawable.setImageAssetDelegate { dummyBitmap }
         drawable.scale = maxOf(composition.bounds.width(), composition.bounds.height()) / 200f
 
+        val strokeWidth = 7f
         val outlinePaint = Paint().apply {
             style = Paint.Style.STROKE
             color = Color.RED
-            strokeWidth = 7f
+            strokeWidth = strokeWidth
         }
 
         clearBitmap()
         snapshotInfos.forEach {
             drawable.progress = it.progress
             drawable.draw(it.canvas)
-            it.canvas.drawRect(it.canvas.clipBounds, outlinePaint)
+            it.canvas.drawRect(strokeWidth, strokeWidth, it.canvas.width - strokeWidth, it.canvas.height - strokeWidth, outlinePaint)
         }
         recordSnapshot(renderBitmap, "android", name, "Main")
     }
