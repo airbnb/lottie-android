@@ -41,10 +41,11 @@ task javadoc(type: Javadoc) {
   failOnError false
 }
 
-gradle.taskGraph.whenReady { taskGraph ->
-  if (taskGraph.allTasks.any { it instanceof Sign }) {
-    allprojects { ext."signing.keyId" = System.getenv("GRADLE_SIGNING_KEY_ID") }
-    allprojects { ext."signing.secretKeyRingFile" = "../secring.gpg" }
-    allprojects { ext."signing.password" = System.getenv("GRADLE_SIGNING_PASSWORD") }
-  }
-}
+// Re-enable this if releases are uploaded from CI.
+//gradle.taskGraph.whenReady { taskGraph ->
+//  if (taskGraph.allTasks.any { it instanceof Sign }) {
+//    allprojects { ext."signing.keyId" = System.getenv("GRADLE_SIGNING_KEY_ID") }
+//    allprojects { ext."signing.secretKeyRingFile" = "~/.gnupg/secring.gpg" }
+//    allprojects { ext."signing.password" = System.getenv("GRADLE_SIGNING_PASSWORD") }
+//  }
+//}
