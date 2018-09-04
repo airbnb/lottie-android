@@ -36,8 +36,10 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         ArrayList<SnapshotInfo>(25).apply {
             for (row in 0..4) {
                 for (col in 0..4) {
-                    val bitmap = Bitmap.createBitmap(renderBitmap, col * 200, row * 200, 200, 200)
-                    add(SnapshotInfo(Canvas(bitmap), 0.04f * (row * 5f + col)))
+                    val canvas = Canvas(renderBitmap)
+                    canvas.scale(5f, 5f, 0f, 0f)
+                    canvas.translate(col * 200f, row * 200f)
+                    add(SnapshotInfo(canvas, 0.04f * (row * 5f + col)))
                 }
             }
         }
