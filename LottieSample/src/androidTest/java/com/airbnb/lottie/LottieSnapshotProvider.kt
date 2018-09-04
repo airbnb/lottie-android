@@ -125,6 +125,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         Log.d(L.TAG, "Drawing $name")
         val drawable = LottieDrawable()
         drawable.composition = composition
+        drawable.setImageAssetDelegate { dummyBitmap }
 
         val outlinePaint = Paint().apply {
             style = Paint.Style.STROKE
