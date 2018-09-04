@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
-private data class SnapshotInfo(val canvas: Canvas, val progress: Float)
+private class SnapshotInfo(val canvas: Canvas, val progress: Float)
 
 class LottieSnapshotProvider internal constructor(private val context: Context) : SnapshotProvider() {
 
@@ -122,7 +122,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
             view.progress = it.progress
             view.draw(it.canvas)
         }
-        recordSnapshot(renderBitmap, "android", name, "")
+        recordSnapshot(renderBitmap, "android", name, "Main")
     }
 
     override fun stopSnapshotting() {
@@ -558,8 +558,6 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
     }
 
     companion object {
-
-        private val PROGRESS = floatArrayOf(0f, 0.25f, 0.5f, 0.75f, 1f)
         private val CORES = 1 //Runtime.getRuntime().availableProcessors();
     }
 }
