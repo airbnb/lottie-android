@@ -132,7 +132,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         val outlinePaint = Paint().apply {
             style = Paint.Style.STROKE
             color = Color.RED
-            strokeWidth = strokeWidth
+            this.strokeWidth = strokeWidth
         }
 
         clearBitmap()
