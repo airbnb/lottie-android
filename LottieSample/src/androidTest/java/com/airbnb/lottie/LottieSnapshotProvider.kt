@@ -2,58 +2,48 @@ package com.airbnb.lottie
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.Paint
-import android.graphics.PointF
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Environment
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-
 import com.airbnb.happo.SnapshotProvider
 import com.airbnb.lottie.model.KeyPath
-import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
-import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
-import com.airbnb.lottie.value.LottieRelativePointValueCallback
-import com.airbnb.lottie.value.LottieValueCallback
-import com.airbnb.lottie.value.ScaleXY
-
+import com.airbnb.lottie.value.*
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+
+private data class SnapshotInfo(val canvas: Canvas, val progress: Float)
 
 class LottieSnapshotProvider internal constructor(private val context: Context) : SnapshotProvider() {
 
     private val queue = LinkedBlockingQueue<Runnable>()
     private val executor = ThreadPoolExecutor(CORES, CORES, 15, TimeUnit.MINUTES, queue)
     // Bitmap to return from an ImageAssetDelegate to make testing animations with images easier.
-    private val dummyBitmap: Bitmap
-    private val renderBitmap: Bitmap
-    private val clearPaint = Paint()
-    private val renderCanvas: Canvas
+    private val dummyBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.airbnb)
+    private val renderBitmap: Bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
+    private val clearPaint = Paint().apply {
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+    }
+    private val renderCanvas = Canvas(renderBitmap)
+    private val snapshotInfos: List<SnapshotInfo> by lazy {
+        ArrayList<SnapshotInfo>(25).apply {
+            for (row in 0..4) {
+                for (col in 0..4) {
+                    val bitmap = Bitmap.createBitmap(renderBitmap, col * 200, row * 200, 200, 200)
+                    add(SnapshotInfo(Canvas(bitmap), 0.04f * (row * 5f + col)))
+                }
+            }
+        }
+    }
 
     private var remainingTasks = 0
-
-    init {
-        dummyBitmap = BitmapFactory.decodeResource(context.resources, com.airbnb.lottie.samples.R.drawable.airbnb)
-        renderBitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-        renderCanvas = Canvas(renderBitmap)
-        clearPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-    }
 
     override fun beginSnapshotting() {
         Log.d(L.TAG, "beginSnapshotting")
@@ -126,20 +116,13 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         val view = LottieAnimationView(context)
         view.setImageAssetDelegate { dummyBitmap }
         view.setComposition(composition!!)
+
         clearBitmap()
-
-        for (i in 0..4) {
-            for (j in 0..4) {
-                val subBit: Bitmap
-            }
+        snapshotInfos.forEach {
+            view.progress = it.progress
+            view.draw(it.canvas)
         }
-
-        for (progress in PROGRESS) {
-            view.progress = progress
-            Log.d(L.TAG, "Recording $name @ $progress")
-            recordSnapshot(view, 1080, "android", name, Integer.toString((progress * 100).toInt()))
-            recordSnapshot()
-        }
+        recordSnapshot(renderBitmap, "android", name, "")
     }
 
     override fun stopSnapshotting() {
