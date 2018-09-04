@@ -26,7 +26,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
     private val queue = LinkedBlockingQueue<Runnable>()
     private val executor = ThreadPoolExecutor(CORES, CORES, 15, TimeUnit.MINUTES, queue)
     // Bitmap to return from an ImageAssetDelegate to make testing animations with images easier.
-    private val dummyBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.airbnb)
+    private val dummyBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, com.airbnb.lottie.samples.R.drawable.airbnb)
     private val renderBitmap: Bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
     private val clearPaint = Paint().apply {
         xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
