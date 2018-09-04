@@ -108,9 +108,9 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         Log.d(L.TAG, "Running $name")
         val result = LottieCompositionFactory.fromAssetSync(context, name)
         if (result.exception != null) throw IllegalStateException(result.exception)
-        val composition = result.value
+        val composition = result.value ?: return
 
-        val bounds = composition!!.bounds
+        val bounds = composition.bounds
         val width = bounds.width()
         val height = bounds.height()
         val displayMetrics = Resources.getSystem().displayMetrics
@@ -121,17 +121,22 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
         drawComposition(composition, name)
     }
 
-    private fun drawComposition(composition: LottieComposition?, name: String) {
+    private fun drawComposition(composition: LottieComposition, name: String) {
         Log.d(L.TAG, "Drawing $name")
-        val view = LottieAnimationView(context)
-        view.scaleType = ImageView.ScaleType.CENTER_INSIDE
-        view.setImageAssetDelegate { dummyBitmap }
-        view.setComposition(composition!!)
+        val drawable = LottieDrawable()
+        drawable.composition = composition
+
+        val outlinePaint = Paint().apply {
+            style = Paint.Style.STROKE
+            color = Color.RED
+            strokeWidth = 7f
+        }
 
         clearBitmap()
         snapshotInfos.forEach {
-            view.progress = it.progress
-            view.draw(it.canvas)
+            drawable.progress = it.progress
+            drawable.draw(it.canvas)
+            it.canvas.drawRect(it.canvas.clipBounds, outlinePaint)
         }
         recordSnapshot(renderBitmap, "android", name, "Main")
     }
@@ -555,7 +560,7 @@ class LottieSnapshotProvider internal constructor(private val context: Context) 
     }
 
     private fun testUrl() {
-        val composition = LottieCompositionFactory.fromUrlSync(context, "https://www.lottiefiles.com/download/427").value
+        val composition = LottieCompositionFactory.fromUrlSync(context, "https://www.lottiefiles.com/download/427").value ?: return
         drawComposition(composition, "GiftBox from LottieFiles URL (427)")
     }
 
