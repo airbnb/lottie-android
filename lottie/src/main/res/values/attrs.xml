@@ -21,5 +21,6 @@
         </attr>
         <attr name="lottie_colorFilter" format="color" />
         <attr name="lottie_scale" format="float" />
+        <attr name="lottie_logHierarchyKeypaths" format="boolean" />
     </declare-styleable>
 </resources>

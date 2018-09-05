@@ -75,6 +75,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+  private boolean isLogHierarchyKeypathsActivated;
 
   @IntDef({RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
@@ -355,6 +356,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     animator.playAnimation();
+    if (isLogHierarchyKeypathsActivated) {
+      List<KeyPath> keyPaths = resolveKeyPath(new KeyPath("**"));
+      for (KeyPath keyPath : keyPaths) {
+        Log.d(TAG,keyPath.keysToString());
+      }
+    }
   }
 
   @MainThread
@@ -618,6 +625,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setRepeatCount(int count) {
     animator.setRepeatCount(count);
+  }
+
+  public void setLogHierarchyKeypaths(boolean isLogHierarchyKeypathsActivated) {
+    this.isLogHierarchyKeypathsActivated = isLogHierarchyKeypathsActivated;
   }
 
   /**
