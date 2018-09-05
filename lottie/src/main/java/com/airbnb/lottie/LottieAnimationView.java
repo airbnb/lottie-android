@@ -154,6 +154,10 @@ import java.util.Set;
           LottieDrawable.INFINITE));
     }
 
+    if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_logHierarchyKeypaths, false)) {
+      lottieDrawable.setLogHierarchyKeypaths(true);
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
