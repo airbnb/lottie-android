@@ -12,8 +12,7 @@
         android:layout_weight="1"
         airbnb:lottie_fileName="AndroidWave.json"
         airbnb:lottie_autoPlay="true"
-        airbnb:lottie_loop="true"
-        airbnb:lottie_logHierarchyKeypaths="true"/>
+        airbnb:lottie_loop="true"/>
     <Button
         android:id="@+id/speedButton"
         android:layout_width="match_parent"

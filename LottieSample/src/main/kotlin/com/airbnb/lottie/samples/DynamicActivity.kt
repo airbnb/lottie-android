@@ -6,14 +6,18 @@ import android.support.v7.app.AppCompatActivity
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
-import kotlinx.android.synthetic.main.activity_dynamic.*
+import kotlinx.android.synthetic.main.activity_dynamic.animationView
+import kotlinx.android.synthetic.main.activity_dynamic.colorButton
+import kotlinx.android.synthetic.main.activity_dynamic.jumpHeight
+import kotlinx.android.synthetic.main.activity_dynamic.speedButton
 
 private val COLORS = arrayOf(
-        0xff5a5f,
-        0x008489,
-        0xa61d55
+    0xff5a5f,
+    0x008489,
+    0xa61d55
 )
 private val EXTRA_JUMP = arrayOf(0f, 20f, 50f)
+
 class DynamicActivity : AppCompatActivity() {
     private var speed = 1
     private var colorIndex = 0
@@ -38,13 +42,16 @@ class DynamicActivity : AppCompatActivity() {
             updateButtonText()
         }
 
+        animationView.setLottieCompositionListener(KeyPathsHierarchyLogger(animationView))
+
         jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()
 
     }
 
     private fun setupValueCallbacks() {
-        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
+        animationView.addValueCallback(KeyPath("LeftArmWave"),
+            LottieProperty.TIME_REMAP) { frameInfo ->
             2 * speed.toFloat() * frameInfo.overallProgress
         }
 
@@ -56,7 +63,8 @@ class DynamicActivity : AppCompatActivity() {
         animationView.addValueCallback(leftArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         animationView.addValueCallback(rightArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         val point = PointF()
-        animationView.addValueCallback(KeyPath("Body"), LottieProperty.TRANSFORM_POSITION) { frameInfo ->
+        animationView.addValueCallback(KeyPath("Body"),
+            LottieProperty.TRANSFORM_POSITION) { frameInfo ->
             val startX = frameInfo.startValue.x
             var startY = frameInfo.startValue.y
             var endY = frameInfo.endValue.y
