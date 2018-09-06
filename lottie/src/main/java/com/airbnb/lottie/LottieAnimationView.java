@@ -908,6 +908,10 @@ import java.util.Set;
     this.lottieOnCompositionLoadedListeners.remove(lottieOnCompositionLoadedListener);
   }
 
+  public void removeAllLottieOnCompositionLoadedListener() {
+    this.lottieOnCompositionLoadedListeners.clear();
+  }
+
   private static class SavedState extends BaseSavedState {
     String animationName;
     int animationResId;
