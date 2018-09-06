@@ -85,9 +85,7 @@ public class LottieTask<T> {
       listener.onResult(result.getValue());
     }
 
-    synchronized (successListeners) {
-      successListeners.add(listener);
-    }
+    successListeners.add(listener);
     startTaskObserverIfNeeded();
     return this;
   }
@@ -98,9 +96,7 @@ public class LottieTask<T> {
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> removeListener(LottieListener<T> listener) {
-    synchronized (successListeners) {
-      successListeners.remove(listener);
-    }
+    successListeners.remove(listener);
     stopTaskObserverIfNeeded();
     return this;
   }
@@ -115,9 +111,7 @@ public class LottieTask<T> {
       listener.onResult(result.getException());
     }
 
-    synchronized (failureListeners) {
-      failureListeners.add(listener);
-    }
+    failureListeners.add(listener);
     startTaskObserverIfNeeded();
     return this;
   }
@@ -128,9 +122,7 @@ public class LottieTask<T> {
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> removeFailureListener(LottieListener<T> listener) {
-    synchronized (failureListeners) {
-      failureListeners.remove(listener);
-    }
+    failureListeners.remove(listener);
     stopTaskObserverIfNeeded();
     return this;
   }
@@ -154,7 +146,7 @@ public class LottieTask<T> {
   }
 
   private void notifySuccessListeners(T value) {
-    // Allow listeners to remove them self in onResult.
+    // Allows listeners to remove themselves in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
     for (LottieListener<T> l : listenersCopy) {
@@ -163,7 +155,7 @@ public class LottieTask<T> {
   }
 
   private void notifyFailureListeners(Throwable e) {
-    // Allow listeners to remove them self in onResult.
+    // Allows listeners to remove themselves in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
     if (listenersCopy.isEmpty()) {
