@@ -31,7 +31,9 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import org.json.JSONObject;
 
 import java.io.StringReader;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -84,7 +86,7 @@ import java.util.List;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private boolean useHardwareLayer = false;
-  private LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener;
+  private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask compositionTask;
   /** Can be null because it is created async */
@@ -505,9 +507,12 @@ import java.util.List;
 
     requestLayout();
 
-    if (lottieOnCompositionLoadedListener != null) {
-      lottieOnCompositionLoadedListener.onCompositionLoaded();
+    for (LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener : lottieOnCompositionLoadedListeners) {
+      if(lottieOnCompositionLoadedListener != null) {
+        lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
+      }
     }
+
   }
 
   @Nullable public LottieComposition getComposition() {
@@ -895,8 +900,12 @@ import java.util.List;
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
   }
 
-  public void setLottieOnCompositionLoadedListener(LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
-    this.lottieOnCompositionLoadedListener = lottieOnCompositionLoadedListener;
+  public void addLottieOnCompositionLoadedListener(LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    this.lottieOnCompositionLoadedListeners.add(lottieOnCompositionLoadedListener);
+  }
+
+  public void removeLottieOnCompositionLoadedListener(LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    this.lottieOnCompositionLoadedListeners.remove(lottieOnCompositionLoadedListener);
   }
 
   private static class SavedState extends BaseSavedState {

@@ -47,7 +47,7 @@ class DynamicActivity : AppCompatActivity() {
             updateButtonText()
         }
 
-        animationView.setLottieOnCompositionLoadedListener {
+        animationView.addLottieOnCompositionLoadedListener { _ ->
             animationView.resolveKeyPath(KeyPath("**")).forEach {
                 Log.d(TAG, it.keysToString())
             }
