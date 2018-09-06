@@ -108,8 +108,8 @@ import java.util.List;
   private void init(@Nullable AttributeSet attrs) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
     int cacheStrategyOrdinal = ta.getInt(
-      R.styleable.LottieAnimationView_lottie_cacheStrategy,
-      DEFAULT_CACHE_STRATEGY.ordinal());
+        R.styleable.LottieAnimationView_lottie_cacheStrategy,
+        DEFAULT_CACHE_STRATEGY.ordinal());
     this.defaultCacheStrategy = CacheStrategy.values()[cacheStrategyOrdinal];
     if (!isInEditMode()) {
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
@@ -117,7 +117,7 @@ import java.util.List;
       boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
       if (hasRawRes && hasFileName) {
         throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
-                                             "the same time. Please use use only one at once.");
+             "the same time. Please use use only one at once.");
       } else if (hasRawRes) {
         int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
         if (rawResId != 0) {
@@ -146,21 +146,21 @@ import java.util.List;
 
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatMode)) {
       setRepeatMode(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatMode,
-                              LottieDrawable.RESTART));
+          LottieDrawable.RESTART));
     }
 
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_repeatCount)) {
       setRepeatCount(ta.getInt(R.styleable.LottieAnimationView_lottie_repeatCount,
-                               LottieDrawable.INFINITE));
+          LottieDrawable.INFINITE));
     }
 
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
-      R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
+        R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
       SimpleColorFilter filter = new SimpleColorFilter(
-        ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
+          ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
       KeyPath keyPath = new KeyPath("**");
       LottieValueCallback<ColorFilter> callback = new LottieValueCallback<ColorFilter>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
@@ -363,13 +363,13 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
-                                              .addListener(new LottieListener<LottieComposition>() {
-                                                @Override public void onResult(LottieComposition composition) {
-                                                  LottieCompositionCache.getInstance().put(rawRes, composition);
-                                                }
-                                              })
-                                              .addListener(loadedListener)
-                                              .addFailureListener(failureListener);
+        .addListener(new LottieListener<LottieComposition>() {
+          @Override public void onResult(LottieComposition composition) {
+            LottieCompositionCache.getInstance().put(rawRes, composition);
+          }
+        })
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   /**
@@ -394,13 +394,13 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
-                                              .addListener(new LottieListener<LottieComposition>() {
-                                                @Override public void onResult(LottieComposition composition) {
-                                                  LottieCompositionCache.getInstance().put(assetName, composition);
-                                                }
-                                              })
-                                              .addListener(loadedListener)
-                                              .addFailureListener(failureListener);
+                                .addListener(new LottieListener<LottieComposition>() {
+                                  @Override public void onResult(LottieComposition composition) {
+                                    LottieCompositionCache.getInstance().put(assetName, composition);
+                                  }
+                                })
+                                .addListener(loadedListener)
+                                .addFailureListener(failureListener);
   }
 
   /**
@@ -451,8 +451,8 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromJsonReader(reader, cacheKey)
-                                              .addListener(loadedListener)
-                                              .addFailureListener(failureListener);
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   /**
@@ -603,8 +603,8 @@ import java.util.List;
    * @see #setMaxProgress(float)
    */
   public void setMinAndMaxProgress(
-    @FloatRange(from = 0f, to = 1f) float minProgress,
-    @FloatRange(from = 0f, to = 1f) float maxProgress) {
+      @FloatRange(from = 0f, to = 1f) float minProgress,
+      @FloatRange(from = 0f, to = 1f) float maxProgress) {
     lottieDrawable.setMinAndMaxProgress(minProgress, maxProgress);
   }
 
@@ -804,7 +804,7 @@ import java.util.List;
    * animationView.addValueCallback(yourKeyPath, LottieProperty.COLOR) { yourColor }
    */
   public <T> void addValueCallback(KeyPath keyPath, T property,
-                                   final SimpleLottieValueCallback<T> callback) {
+      final SimpleLottieValueCallback<T> callback) {
     lottieDrawable.addValueCallback(keyPath, property, new LottieValueCallback<T>() {
       @Override public T getValue(LottieFrameInfo<T> frameInfo) {
         return callback.getValue(frameInfo);
@@ -934,16 +934,16 @@ import java.util.List;
     }
 
     public static final Parcelable.Creator<SavedState> CREATOR =
-      new Parcelable.Creator<SavedState>() {
-        @Override
-        public SavedState createFromParcel(Parcel in) {
-          return new SavedState(in);
-        }
+        new Parcelable.Creator<SavedState>() {
+          @Override
+          public SavedState createFromParcel(Parcel in) {
+            return new SavedState(in);
+          }
 
-        @Override
-        public SavedState[] newArray(int size) {
-          return new SavedState[size];
-        }
-      };
+          @Override
+          public SavedState[] newArray(int size) {
+            return new SavedState[size];
+          }
+        };
   }
 }
