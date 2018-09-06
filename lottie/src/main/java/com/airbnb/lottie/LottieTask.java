@@ -180,7 +180,7 @@ public class LottieTask<T> {
    * We monitor the task with an observer thread to determine when it is done and should notify
    * the appropriate listeners.
    */
-  private void startTaskObserverIfNeeded() {
+  private synchronized void startTaskObserverIfNeeded() {
     if (taskObserverAlive() || result != null) {
       return;
     }
@@ -208,7 +208,7 @@ public class LottieTask<T> {
   /**
    * We can stop observing the task if there are no more listeners or if the task is complete.
    */
-  private void stopTaskObserverIfNeeded() {
+  private synchronized void stopTaskObserverIfNeeded() {
     if (!taskObserverAlive()) {
       return;
     }
