@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.design.widget.BottomNavigationView
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.showcase -> showFragment(ShowcaseFragment())
             R.id.preview -> showFragment(PreviewFragment())
             R.id.lottiefiles -> showFragment(LottiefilesFragment())
-            R.id.learn -> showShowcase()
+            R.id.learn -> startActivity(Intent(this, DebugActivity::class.java))
             else -> return false
         }
         return true
