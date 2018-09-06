@@ -117,7 +117,7 @@ import java.util.List;
       boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
       if (hasRawRes && hasFileName) {
         throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
-             "the same time. Please use use only one at once.");
+            "the same time. Please use use only one at once.");
       } else if (hasRawRes) {
         int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
         if (rawResId != 0) {
@@ -368,8 +368,8 @@ import java.util.List;
             LottieCompositionCache.getInstance().put(rawRes, composition);
           }
         })
-        .addListener(loadedListener)
-        .addFailureListener(failureListener);
+      .addListener(loadedListener)
+      .addFailureListener(failureListener);
   }
 
   /**
@@ -394,13 +394,13 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
-                                .addListener(new LottieListener<LottieComposition>() {
-                                  @Override public void onResult(LottieComposition composition) {
-                                    LottieCompositionCache.getInstance().put(assetName, composition);
-                                  }
-                                })
-                                .addListener(loadedListener)
-                                .addFailureListener(failureListener);
+        .addListener(new LottieListener<LottieComposition>() {
+          @Override public void onResult(LottieComposition composition) {
+            LottieCompositionCache.getInstance().put(assetName, composition);
+          }
+        })
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   /**
@@ -467,8 +467,8 @@ import java.util.List;
     clearComposition();
     cancelLoaderTask();
     compositionTask = LottieCompositionFactory.fromUrl(getContext(), url)
-                                              .addListener(loadedListener)
-                                              .addFailureListener(failureListener);
+        .addListener(loadedListener)
+        .addFailureListener(failureListener);
   }
 
   private void cancelLoaderTask() {
@@ -764,7 +764,7 @@ import java.util.List;
    * Use this to manually set fonts.
    */
   public void setFontAssetDelegate(
-    @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
+      @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
     lottieDrawable.setFontAssetDelegate(assetDelegate);
   }
 
