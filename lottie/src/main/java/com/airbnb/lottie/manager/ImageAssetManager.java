@@ -118,14 +118,13 @@ public class ImageAssetManager {
 
   public void recycleBitmaps() {
     synchronized (bitmapHashLock) {
-      Iterator<Map.Entry<String, LottieImageAsset>> it = imageAssets.entrySet().iterator();
-      while (it.hasNext()) {
-        Map.Entry<String, LottieImageAsset> entry = it.next();
-        Bitmap bitmap = entry.getValue().getBitmap();
+      for (Map.Entry<String, LottieImageAsset> entry : imageAssets.entrySet()) {
+        LottieImageAsset asset = entry.getValue();
+        Bitmap bitmap = asset.getBitmap();
         if (bitmap != null) {
           bitmap.recycle();
+          asset.setBitmap(null);
         }
-        it.remove();
       }
     }
   }
