@@ -1,5 +1,5 @@
 package com.airbnb.lottie;
 
-public interface LottieCompositionListener {
+public interface LottieOnCompositionLoadedListener {
   void onCompositionLoaded();
 }

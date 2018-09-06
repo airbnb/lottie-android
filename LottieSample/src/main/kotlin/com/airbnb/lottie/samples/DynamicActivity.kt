@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples
 import android.graphics.PointF
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
@@ -23,6 +24,10 @@ class DynamicActivity : AppCompatActivity() {
     private var colorIndex = 0
     private var extraJumpIndex = 0
 
+    companion object {
+        val TAG = DynamicActivity::class.simpleName
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dynamic)
@@ -42,7 +47,11 @@ class DynamicActivity : AppCompatActivity() {
             updateButtonText()
         }
 
-        animationView.setLottieCompositionListener(KeyPathsHierarchyLogger(animationView))
+        animationView.setLottieOnCompositionLoadedListener {
+            animationView.resolveKeyPath(KeyPath("**")).forEach {
+                Log.d(TAG, it.keysToString())
+            }
+        }
 
         jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()
