@@ -177,9 +177,11 @@ public class LottieTask<T> {
       return;
     }
     taskObserver = new Thread("LottieTaskObserver") {
+      private boolean taskComplete = false;
+
       @Override public void run() {
         while (true) {
-          if (isInterrupted()) {
+          if (isInterrupted() || taskComplete) {
             return;
           }
           if (task.isDone()) {
@@ -188,6 +190,7 @@ public class LottieTask<T> {
             } catch (InterruptedException | ExecutionException e) {
               setResult(new LottieResult<T>(e));
             }
+            taskComplete = true;
             stopTaskObserverIfNeeded();
           }
         }
