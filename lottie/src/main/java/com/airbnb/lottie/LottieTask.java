@@ -80,7 +80,7 @@ public class LottieTask<T> {
    * Add a task listener. If the task has completed, the listener will be called synchronously.
    * @return the task for call chaining.
    */
-  public LottieTask<T> addListener(LottieListener<T> listener) {
+  public synchronized LottieTask<T> addListener(LottieListener<T> listener) {
     if (result != null && result.getValue() != null) {
       listener.onResult(result.getValue());
     }
@@ -97,7 +97,7 @@ public class LottieTask<T> {
    * a listener if neccesary.
    * @return the task for call chaining.
    */
-  public LottieTask<T> removeListener(LottieListener<T> listener) {
+  public synchronized LottieTask<T> removeListener(LottieListener<T> listener) {
     synchronized (successListeners) {
       successListeners.remove(listener);
     }
@@ -110,7 +110,7 @@ public class LottieTask<T> {
    * occurs. If an exception has already occurred, the listener will be called immediately.
    * @return the task for call chaining.
    */
-  public LottieTask<T> addFailureListener(LottieListener<Throwable> listener) {
+  public synchronized LottieTask<T> addFailureListener(LottieListener<Throwable> listener) {
     if (result != null && result.getException() != null) {
       listener.onResult(result.getException());
     }
@@ -127,7 +127,7 @@ public class LottieTask<T> {
    * a listener if neccesary.
    * @return the task for call chaining.
    */
-  public LottieTask<T> removeFailureListener(LottieListener<T> listener) {
+  public synchronized LottieTask<T> removeFailureListener(LottieListener<T> listener) {
     synchronized (failureListeners) {
       failureListeners.remove(listener);
     }
@@ -154,7 +154,7 @@ public class LottieTask<T> {
   }
 
   private void notifySuccessListeners(T value) {
-    // Allow listeners to remove themself in onResult.
+    // Allow listeners to remove them self in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
     for (LottieListener<T> l : listenersCopy) {
@@ -163,7 +163,7 @@ public class LottieTask<T> {
   }
 
   private void notifyFailureListeners(Throwable e) {
-    // Allow listeners to remove themself in onResult.
+    // Allow listeners to remove them self in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
     if (listenersCopy.isEmpty()) {
