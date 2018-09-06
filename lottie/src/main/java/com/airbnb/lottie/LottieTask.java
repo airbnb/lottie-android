@@ -42,7 +42,7 @@ public class LottieTask<T> {
   private final Handler handler = new Handler(Looper.getMainLooper());
   private final FutureTask<LottieResult<T>> task;
 
-  @Nullable private LottieResult<T> result = null;
+  @Nullable private volatile LottieResult<T> result = null;
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public LottieTask(Callable<LottieResult<T>> runnable) {
