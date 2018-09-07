@@ -508,9 +508,7 @@ import java.util.Set;
     requestLayout();
 
     for (LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener : lottieOnCompositionLoadedListeners) {
-      if(lottieOnCompositionLoadedListener != null) {
         lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
-      }
     }
 
   }
@@ -900,16 +898,16 @@ import java.util.Set;
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
   }
 
-  public void addLottieOnCompositionLoadedListener(LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
-    this.lottieOnCompositionLoadedListeners.add(lottieOnCompositionLoadedListener);
+  public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    return lottieOnCompositionLoadedListeners.add(lottieOnCompositionLoadedListener);
   }
 
-  public void removeLottieOnCompositionLoadedListener(LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
-    this.lottieOnCompositionLoadedListeners.remove(lottieOnCompositionLoadedListener);
+  public boolean removeLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    return lottieOnCompositionLoadedListeners.remove(lottieOnCompositionLoadedListener);
   }
 
   public void removeAllLottieOnCompositionLoadedListener() {
-    this.lottieOnCompositionLoadedListeners.clear();
+    lottieOnCompositionLoadedListeners.clear();
   }
 
   private static class SavedState extends BaseSavedState {
