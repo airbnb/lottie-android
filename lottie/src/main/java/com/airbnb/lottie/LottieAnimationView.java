@@ -41,7 +41,7 @@ import java.util.Set;
  * <p>
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
+ * 2) Programmatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
  * or {@link #setAnimation(JsonReader)}.
  * <p>
  * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
@@ -119,7 +119,7 @@ import java.util.Set;
       boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
       if (hasRawRes && hasFileName) {
         throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
-            "the same time. Please use use only one at once.");
+            "the same time. Please use only one at once.");
       } else if (hasRawRes) {
         int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
         if (rawResId != 0) {
@@ -427,7 +427,7 @@ import java.util.Set;
 
   /**
    * Sets the animation from json string. This is the ideal API to use when loading an animation
-   * over the network because you can use the raw response body here and a converstion to a
+   * over the network because you can use the raw response body here and a conversion to a
    * JSONObject never has to be done.
    */
   public void setAnimationFromJson(String jsonString, @Nullable String cacheKey) {
@@ -458,7 +458,7 @@ import java.util.Set;
   }
 
   /**
-   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them togethre and lottie
+   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and lottie
    * will unzip and link the images automatically.
    *
    * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
@@ -782,7 +782,7 @@ import java.util.Set;
    * Takes a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
    * zero or more actual {@link KeyPath Keypaths} that exist in the current animation.
    *
-   * If you want to set value callbacks for any of these values, it is recommend to use the
+   * If you want to set value callbacks for any of these values, it is recommended to use the
    * returned {@link KeyPath} objects because they will be internally resolved to their content
    * and won't trigger a tree walk of the animation contents when applied.
    */
@@ -791,8 +791,8 @@ import java.util.Set;
   }
 
   /**
-   * Add an property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
-   * to multiple contents. In that case, the callbacks's value will apply to all of them.
+   * Add a property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
+   * to multiple contents. In that case, the callback's value will apply to all of them.
    *
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
