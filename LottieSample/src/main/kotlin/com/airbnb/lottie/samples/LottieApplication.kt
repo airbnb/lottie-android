@@ -35,6 +35,6 @@ class LottieApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        L.DBG = true;
+        L.DBG = true
     }
 }

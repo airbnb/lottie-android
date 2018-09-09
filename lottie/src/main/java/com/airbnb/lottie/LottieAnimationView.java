@@ -31,6 +31,7 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import org.json.JSONObject;
 
 import java.io.StringReader;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -85,6 +86,7 @@ import java.util.Set;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private boolean useHardwareLayer = false;
+  private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask compositionTask;
   /** Can be null because it is created async */
@@ -504,6 +506,11 @@ import java.util.Set;
     setImageDrawable(lottieDrawable);
 
     requestLayout();
+
+    for (LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener : lottieOnCompositionLoadedListeners) {
+        lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
+    }
+
   }
 
   @Nullable public LottieComposition getComposition() {
@@ -808,18 +815,18 @@ import java.util.Set;
     });
   }
 
-    /**
-     * Set the scale on the current composition. The only cost of this function is re-rendering the
-     * current frame so you may call it frequent to scale something up or down.
-     *
-     * The smaller the animation is, the better the performance will be. You may find that scaling an
-     * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
-     * with a scaleType such as centerInside will yield better performance with little perceivable
-     * quality loss.
-     *
-     * You can also use a fixed view width/height in conjunction with the normal ImageView
-     * scaleTypes centerCrop and centerInside.
-     */
+  /**
+   * Set the scale on the current composition. The only cost of this function is re-rendering the
+   * current frame so you may call it frequent to scale something up or down.
+   *
+   * The smaller the animation is, the better the performance will be. You may find that scaling an
+   * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
+   * with a scaleType such as centerInside will yield better performance with little perceivable
+   * quality loss.
+   *
+   * You can also use a fixed view width/height in conjunction with the normal ImageView
+   * scaleTypes centerCrop and centerInside.
+   */
   public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {
@@ -889,6 +896,18 @@ import java.util.Set;
   private void enableOrDisableHardwareLayer() {
     boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
+  }
+
+  public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    return lottieOnCompositionLoadedListeners.add(lottieOnCompositionLoadedListener);
+  }
+
+  public boolean removeLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    return lottieOnCompositionLoadedListeners.remove(lottieOnCompositionLoadedListener);
+  }
+
+  public void removeAllLottieOnCompositionLoadedListener() {
+    lottieOnCompositionLoadedListeners.clear();
   }
 
   private static class SavedState extends BaseSavedState {
