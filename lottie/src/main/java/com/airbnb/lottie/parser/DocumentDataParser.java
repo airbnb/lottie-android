@@ -21,7 +21,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     double baselineShift = 0;
     int fillColor = 0;
     int strokeColor = 0;
-    int strokeWidth = 0;
+    double strokeWidth = 0;
     boolean strokeOverFill = true;
 
     reader.beginObject();
@@ -55,7 +55,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           strokeColor = JsonUtils.jsonToColor(reader);
           break;
         case "sw":
-          strokeWidth = reader.nextInt();
+          strokeWidth = reader.nextDouble();
           break;
         case "of":
           strokeOverFill = reader.nextBoolean();

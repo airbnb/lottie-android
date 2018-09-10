@@ -116,7 +116,7 @@ public class TextLayer extends BaseLayer {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
       float parentScale = Utils.getScale(parentMatrix);
-      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
+      strokePaint.setStrokeWidth((float) (documentData.strokeWidth * Utils.dpScale() * parentScale));
     }
 
     if (lottieDrawable.useTextGlyphs()) {

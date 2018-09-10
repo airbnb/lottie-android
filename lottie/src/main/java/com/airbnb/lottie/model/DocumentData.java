@@ -17,13 +17,13 @@ public class DocumentData {
   public final double baselineShift;
   @ColorInt public final int color;
   @ColorInt public final int strokeColor;
-  public final int strokeWidth;
+  public final double strokeWidth;
   public final boolean strokeOverFill;
 
 
   public DocumentData(String text, String fontName, double size, int justification, int tracking,
       double lineHeight, double baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      int strokeWidth, boolean strokeOverFill) {
+      double strokeWidth, boolean strokeOverFill) {
     this.text = text;
     this.fontName = fontName;
     this.size = size;
