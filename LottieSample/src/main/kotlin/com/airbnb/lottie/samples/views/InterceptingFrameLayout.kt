@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples.views
 
 import android.content.Context
-import android.support.v4.widget.ViewDragHelper
+import androidx.customview.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
@@ -12,7 +12,7 @@ class InterceptingFrameLayout @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    var viewDragHelper: ViewDragHelper? = null
+    var viewDragHelper: androidx.customview.widget.ViewDragHelper? = null
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         if (viewDragHelper?.shouldInterceptTouchEvent(ev) == true) return true

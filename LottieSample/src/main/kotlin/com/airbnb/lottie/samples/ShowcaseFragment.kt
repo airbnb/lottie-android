@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples
 
 import android.content.Intent
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.lottie.samples.model.AnimationResponse
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -23,7 +23,7 @@ class ShowcaseViewModel(initialState: ShowcaseState, service: LottiefilesService
 
     companion object : MvRxViewModelFactory<ShowcaseState> {
         @JvmStatic
-        override fun create(activity: FragmentActivity, state: ShowcaseState): ShowcaseViewModel {
+        override fun create(activity: androidx.fragment.app.FragmentActivity, state: ShowcaseState): ShowcaseViewModel {
             val service = (activity.applicationContext as LottieApplication).lottiefilesService
             return ShowcaseViewModel(state, service)
         }

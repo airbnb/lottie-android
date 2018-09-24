@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.support.design.internal.BottomNavigationItemView
 import android.support.design.internal.BottomNavigationMenuView
-import android.support.design.widget.BottomNavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View

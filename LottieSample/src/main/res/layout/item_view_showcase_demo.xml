@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="android.widget.FrameLayout">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="196dp"
         android:layout_height="108dp"
@@ -29,5 +29,5 @@
             android:layout_marginLeft="12dp"
             android:textColor="@color/text_color_dark"
             android:textSize="20sp"/>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </merge>

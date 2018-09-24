@@ -1,7 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import android.support.annotation.FloatRange;
-import android.support.annotation.Nullable;
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.Keyframe;

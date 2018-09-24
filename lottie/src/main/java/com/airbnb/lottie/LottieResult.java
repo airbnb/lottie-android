@@ -1,9 +1,8 @@
 package com.airbnb.lottie;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Contains class to hold the resulting value of an async task or an exception if it failed.

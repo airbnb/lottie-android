@@ -1,6 +1,6 @@
 package com.airbnb.lottie.parser;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.JsonReader;
 import android.util.Log;
 

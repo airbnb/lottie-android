@@ -1,15 +1,14 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_warnings.view.*
-import kotlinx.android.synthetic.main.view_holder_warning.view.*
 
-class WarningsDialogFragment : DialogFragment() {
+class WarningsDialogFragment : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -19,7 +18,7 @@ class WarningsDialogFragment : DialogFragment() {
         return view
     }
 
-    private class Adapter(private val warnings: List<String>) : RecyclerView.Adapter<VH>() {
+    private class Adapter(private val warnings: List<String>) : androidx.recyclerview.widget.RecyclerView.Adapter<VH>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH = VH(parent)
 
@@ -29,7 +28,7 @@ class WarningsDialogFragment : DialogFragment() {
         override fun getItemCount(): Int = warnings.size
     }
 
-    internal class VH(parent: ViewGroup) : RecyclerView.ViewHolder(
+    internal class VH(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(
             parent.inflate(R.layout.view_holder_warning, false)) {
         fun bind(warning: String, showDivider: Boolean) {
             itemView.warning.text = warning

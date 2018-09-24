@@ -2,15 +2,11 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
-import kotlinx.android.synthetic.main.activity_dynamic.animationView
-import kotlinx.android.synthetic.main.activity_dynamic.colorButton
-import kotlinx.android.synthetic.main.activity_dynamic.jumpHeight
-import kotlinx.android.synthetic.main.activity_dynamic.speedButton
 
 private val COLORS = arrayOf(
     0xff5a5f,

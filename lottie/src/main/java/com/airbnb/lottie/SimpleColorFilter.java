@@ -2,7 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 /**
  * A color filter with a predefined transfer mode that applies the specified color on top of the

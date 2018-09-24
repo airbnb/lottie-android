@@ -2,13 +2,12 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import android.support.v4.widget.ViewDragHelper
-import android.support.v7.app.AppCompatActivity
+import androidx.customview.widget.ViewDragHelper
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieRelativePointValueCallback
-import kotlinx.android.synthetic.main.activity_bullseye.*
 
 class BullseyeActivity : AppCompatActivity() {
 
@@ -28,7 +27,7 @@ class BullseyeActivity : AppCompatActivity() {
         var totalDx = 0f
         var totalDy = 0f
 
-        val viewDragHelper = ViewDragHelper.create(containerView, object : ViewDragHelper.Callback() {
+        val viewDragHelper = androidx.customview.widget.ViewDragHelper.create(containerView, object : androidx.customview.widget.ViewDragHelper.Callback() {
             override fun tryCaptureView(child: View, pointerId: Int) = child == targetView
 
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {

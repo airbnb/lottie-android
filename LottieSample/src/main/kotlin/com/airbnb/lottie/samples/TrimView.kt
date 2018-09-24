@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v4.widget.ViewDragHelper
+import androidx.customview.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.MotionEvent
@@ -26,7 +26,7 @@ class TrimView @JvmOverloads constructor(
     }
     private lateinit var callback: (Float, Float) -> Unit
 
-    private val dragHelper = ViewDragHelper.create(this, object: ViewDragHelper.Callback() {
+    private val dragHelper = androidx.customview.widget.ViewDragHelper.create(this, object: androidx.customview.widget.ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int) = true
 
         override fun getViewHorizontalDragRange(child: View) = width

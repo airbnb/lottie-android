@@ -3,7 +3,7 @@ package com.airbnb.lottie.samples
 import android.animation.ValueAnimator
 import android.app.Application
 import android.net.Uri
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
@@ -117,6 +117,6 @@ class PlayerViewModel(
 
     companion object : MvRxViewModelFactory<PlayerState> {
         @JvmStatic
-        override fun create(activity: FragmentActivity, state: PlayerState) = PlayerViewModel(state, activity.application)
+        override fun create(activity: androidx.fragment.app.FragmentActivity, state: PlayerState) = PlayerViewModel(state, activity.application)
     }
 }
