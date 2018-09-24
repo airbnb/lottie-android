@@ -57,14 +57,14 @@ dependencies {
   implementation "com.android.support:recyclerview-v7:$supportLibVersion"
   implementation "com.android.support:design:$supportLibVersion"
   implementation "com.android.support:cardview-v7:$supportLibVersion"
-  implementation 'com.android.support:multidex:1.0.1'
-  implementation 'android.arch.lifecycle:extensions:1.1.0'
-  kapt "android.arch.lifecycle:compiler:1.1.0"
+  implementation 'com.android.support:multidex:1.0.3'
+  implementation 'android.arch.lifecycle:extensions:1.1.1'
+  kapt "android.arch.lifecycle:compiler:1.1.1"
   implementation "com.android.support:customtabs:$supportLibVersion"
-  implementation 'com.airbnb.android:epoxy:2.16.4'
-  kapt 'com.airbnb.android:epoxy-processor:2.16.4'
+  implementation 'com.airbnb.android:epoxy:2.17.0'
+  kapt 'com.airbnb.android:epoxy-processor:2.17.0'
   implementation 'com.airbnb.android:mvrx:0.5.0'
-  implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta5'
+  implementation 'com.android.support.constraint:constraint-layout:2.0.0-alpha2'
   implementation 'androidx.core:core-ktx:0.2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
@@ -76,15 +76,15 @@ dependencies {
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
   // TODO: figure out why transitive deps of happo are needed
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
-  androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.1.5'
-  androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-  androidTestImplementation 'com.squareup.okhttp3:okhttp:3.9.0'
-  androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.5'
-  androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.5'
-  androidTestImplementation 'io.jsonwebtoken:jjwt:0.8.0'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+  androidTestImplementation 'com.android.support.test:runner:1.0.2'
+  androidTestImplementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.2'
+  androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.2.1'
+  androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+  androidTestImplementation 'com.squareup.okhttp3:okhttp:3.11.0'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.31'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.31'
+  androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.0'
   androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
     exclude group: 'com.android.support', module: 'support-annotations'
     exclude group: 'org.hamcrest', module: 'hamcrest-integration'
@@ -96,12 +96,12 @@ dependencies {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
   implementation 'com.google.code.gson:gson:2.8.2'
-  implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-  implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+  implementation 'com.squareup.retrofit2:retrofit:2.4.0'
   implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-  implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-  implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-  implementation 'com.github.bumptech.glide:glide:4.6.1'
+  implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+  implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+  implementation 'com.github.bumptech.glide:glide:4.8.0'
 }
 repositories {
   mavenCentral()
