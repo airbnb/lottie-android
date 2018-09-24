@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import com.airbnb.lottie.TextDelegate
+import kotlinx.android.synthetic.main.activity_dynamic_text.*
 
 class DynamicTextActivity : AppCompatActivity() {
 

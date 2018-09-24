@@ -35,10 +35,10 @@ class SearchInputItemView @JvmOverloads constructor(
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
     fun setSearchClickListener(listener: (String) -> Unit) {
-        searchButton.setOnClickListener({
+        searchButton.setOnClickListener {
             val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromInputMethod(windowToken, 0)
             listener(searchEditText.text.toString())
-        })
+        }
     }
 }

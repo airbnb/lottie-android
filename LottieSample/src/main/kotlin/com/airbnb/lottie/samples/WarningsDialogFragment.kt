@@ -13,7 +13,7 @@ class WarningsDialogFragment : androidx.fragment.app.DialogFragment() {
             inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_warnings, container, false)
         view!!.okButton.setOnClickListener { dismiss() }
-        view.recyclerView.adapter = Adapter(arguments!!.getStringArrayList(ARG_WARNINGS))
+        view.recyclerView.adapter = Adapter(arguments?.getStringArrayList(ARG_WARNINGS) ?: emptyList())
         return view
     }
 

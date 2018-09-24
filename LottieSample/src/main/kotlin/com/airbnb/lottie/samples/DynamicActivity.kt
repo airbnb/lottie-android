@@ -7,6 +7,7 @@ import android.util.Log
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.utils.MiscUtils
+import kotlinx.android.synthetic.main.activity_dynamic.*
 
 private val COLORS = arrayOf(
     0xff5a5f,

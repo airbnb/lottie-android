@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_typography_demo.*
 
 class TypographyDemoActivity : AppCompatActivity() {
     private val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {

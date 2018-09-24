@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.view.children
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 
 private val TAG = NoShiftBottomNavigationView::class.java.name
 
@@ -24,7 +25,7 @@ class NoShiftBottomNavigationView @JvmOverloads constructor(
 
     @SuppressLint("RestrictedApi")
     private fun removeShiftAnimation() {
-        val menuView = getChildAt(0) as BottomNavigationView
+        val menuView = getChildAt(0) as BottomNavigationMenuView
         try {
             menuView::class.java.getDeclaredField("mShiftingMode").apply {
                 isAccessible = true
