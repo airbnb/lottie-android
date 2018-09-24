@@ -12,7 +12,7 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
  */
 public class LottieValueCallback<T> {
   private final LottieFrameInfo<T> frameInfo = new LottieFrameInfo<>();
-  @Nullable BaseKeyframeAnimation<?, ?> animation;
+  @Nullable private BaseKeyframeAnimation<?, ?> animation;
 
   /**
    * This can be set with {@link #setValue(Object)} to use a value instead of deferring
@@ -29,7 +29,10 @@ public class LottieValueCallback<T> {
 
   /**
    * Override this if you haven't set a static value in the constructor or with setValue.
+   *
+   * Return null to resort to the default value.
    */
+  @Nullable
   public T getValue(LottieFrameInfo<T> frameInfo) {
     return value;
   }
@@ -42,6 +45,7 @@ public class LottieValueCallback<T> {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @Nullable
   public final T getValueInternal(
       float startFrame,
       float endFrame,

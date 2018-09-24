@@ -1,7 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.GammaEvaluator;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
 
@@ -20,8 +20,11 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
 
     if (valueCallback != null) {
       //noinspection ConstantConditions
-      return valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startColor,
-          endColor, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startColor,
+              endColor, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      if (value != null) {
+        return value;
+      }
     }
 
     return GammaEvaluator.evaluate(keyframeProgress, startColor, endColor);
