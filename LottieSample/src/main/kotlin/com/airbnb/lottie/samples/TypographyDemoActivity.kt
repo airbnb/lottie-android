@@ -1,9 +1,9 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.ViewTreeObserver
+import androidx.appcompat.app.AppCompatActivity
 
 class TypographyDemoActivity : AppCompatActivity() {
     private val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {

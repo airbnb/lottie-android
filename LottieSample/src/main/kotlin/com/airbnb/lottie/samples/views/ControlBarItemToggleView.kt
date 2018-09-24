@@ -9,8 +9,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.view.isVisible
-import androidx.view.setPadding
+import androidx.core.view.isVisible
 import com.airbnb.lottie.samples.R
 import com.airbnb.lottie.samples.getText
 import kotlinx.android.synthetic.main.item_view_control_bar.view.*
@@ -25,8 +24,12 @@ class ControlBarItemToggleView @JvmOverloads constructor(
         inflate(context, R.layout.item_view_control_bar, this)
         orientation = HORIZONTAL
         setBackgroundResource(R.drawable.control_bar_item_view_background)
-        setPadding(resources.getDimensionPixelSize(R.dimen.control_bar_button_padding))
-
+        setPadding(
+                resources.getDimensionPixelSize(R.dimen.control_bar_button_padding),
+                resources.getDimensionPixelSize(R.dimen.control_bar_button_padding),
+                resources.getDimensionPixelSize(R.dimen.control_bar_button_padding),
+                resources.getDimensionPixelSize(R.dimen.control_bar_button_padding)
+        )
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.ControlBarItemToggleView, 0, 0)
 

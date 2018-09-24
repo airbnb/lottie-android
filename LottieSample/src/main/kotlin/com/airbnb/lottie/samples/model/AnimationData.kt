@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.os.Parcelable
 import androidx.annotation.ColorInt
 import android.util.Log
-import androidx.graphics.toColorInt
+import androidx.core.graphics.toColorInt
 import com.airbnb.lottie.L
 import kotlinx.android.parcel.Parcelize
 

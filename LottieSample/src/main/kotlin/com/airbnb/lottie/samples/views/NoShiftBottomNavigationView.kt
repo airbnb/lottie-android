@@ -2,13 +2,12 @@ package com.airbnb.lottie.samples.views
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.design.internal.BottomNavigationItemView
-import android.support.design.internal.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import androidx.view.children
+import androidx.core.view.children
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
 
 private val TAG = NoShiftBottomNavigationView::class.java.name
 
@@ -25,7 +24,7 @@ class NoShiftBottomNavigationView @JvmOverloads constructor(
 
     @SuppressLint("RestrictedApi")
     private fun removeShiftAnimation() {
-        val menuView = getChildAt(0) as BottomNavigationMenuView
+        val menuView = getChildAt(0) as BottomNavigationView
         try {
             menuView::class.java.getDeclaredField("mShiftingMode").apply {
                 isAccessible = true

@@ -1,12 +1,11 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_warnings.view.*
+import kotlinx.android.synthetic.main.view_holder_warning.view.*
 
 class WarningsDialogFragment : androidx.fragment.app.DialogFragment() {
 

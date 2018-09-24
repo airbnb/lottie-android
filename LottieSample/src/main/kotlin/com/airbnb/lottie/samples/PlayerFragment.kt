@@ -16,12 +16,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.EditText
-import androidx.view.children
-import androidx.view.isVisible
+import androidx.core.view.isVisible
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.samples.R.id.*
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
 import com.airbnb.lottie.samples.views.BottomSheetItemView
