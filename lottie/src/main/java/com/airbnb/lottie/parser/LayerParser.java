@@ -35,7 +35,9 @@ public class LayerParser {
   }
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
-    String layerName = null;
+    // This should always be set by After Effects. However, if somebody wants to minify
+    // and optimize their json, the name isn't critical for most cases so it can be removed.
+    String layerName = "UNSET";
     Layer.LayerType layerType = null;
     String refId = null;
     long layerId = 0;
