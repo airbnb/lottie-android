@@ -36,7 +36,7 @@ class LottiefilesViewModel(
             LottiefilesMode.Recent -> service.getRecent(page)
             LottiefilesMode.Popular -> service.getPopular(page)
             LottiefilesMode.Search -> service.search(state.query)
-        }.execute { copy(request = it) }
+        }.execute { copy(request = it, items = items + (it()?.data ?: emptyList())) }
     }
 
     fun setMode(mode: LottiefilesMode, query: String = "") = setState {
