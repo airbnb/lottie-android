@@ -41,8 +41,12 @@ import java.util.Set;
  * <p>
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
- * 2) Programmatically: {@link #setAnimation(String)}, {@link #setComposition(LottieComposition)},
- * or {@link #setAnimation(JsonReader)}.
+ * 2) Programmatically:
+ *      {@link #setAnimation(String)}
+ *      {@link #setAnimation(JsonReader, String)}
+ *      {@link #setAnimationFromJson(String, String)}
+ *      {@link #setAnimationFromUrl(String)}
+ *      {@link #setComposition(LottieComposition)}
  * <p>
  * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
  * <p>
@@ -51,21 +55,7 @@ import java.util.Set;
  */
 @SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
 
-  public static final CacheStrategy DEFAULT_CACHE_STRATEGY = CacheStrategy.Weak;
-
   private static final String TAG = LottieAnimationView.class.getSimpleName();
-
-
-  /**
-   * Please migrate to LottieCompositionFactory. It has cleaner APIs and a LruCache built in.
-   * @see LottieCompositionFactory
-   */
-  @Deprecated
-  public enum CacheStrategy {
-    None,
-    Weak,
-    Strong
-  }
 
   private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
     @Override public void onResult(LottieComposition composition) {
@@ -80,7 +70,6 @@ import java.util.Set;
   };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
-  private CacheStrategy defaultCacheStrategy;
   private String animationName;
   private @RawRes int animationResId;
   private boolean wasAnimatingWhenDetached = false;
@@ -88,7 +77,7 @@ import java.util.Set;
   private boolean useHardwareLayer = false;
   private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
-  @Nullable private LottieTask compositionTask;
+  @Nullable private LottieTask<LottieComposition> compositionTask;
   /** Can be null because it is created async */
   @Nullable private LottieComposition composition;
 
@@ -109,10 +98,6 @@ import java.util.Set;
 
   private void init(@Nullable AttributeSet attrs) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
-    int cacheStrategyOrdinal = ta.getInt(
-        R.styleable.LottieAnimationView_lottie_cacheStrategy,
-        DEFAULT_CACHE_STRATEGY.ordinal());
-    this.defaultCacheStrategy = CacheStrategy.values()[cacheStrategyOrdinal];
     if (!isInEditMode()) {
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
       boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
@@ -268,9 +253,7 @@ import java.util.Set;
   @VisibleForTesting void recycleBitmaps() {
     // AppCompatImageView constructor will set the image when set from xml
     // before LottieDrawable has been initialized
-    if (lottieDrawable != null) {
-      lottieDrawable.recycleBitmaps();
-    }
+    lottieDrawable.recycleBitmaps();
   }
 
   /**
@@ -340,81 +323,19 @@ import java.util.Set;
   }
 
   /**
-   * cacheStrategy is deprecated. Compositions are now cached by default.
-   *
-   * @see #setAnimationRawRes(int)
-   */
-  @Deprecated
-  public void setAnimation(@RawRes final int rawRes, final CacheStrategy cacheStrategy) {
-    setAnimation(rawRes);
-  }
-
-  /**
    * Sets the animation from a file in the raw directory.
    * This will load and deserialize the file asynchronously.
    */
   public void setAnimation(@RawRes final int rawRes) {
     this.animationResId = rawRes;
     animationName = null;
-    LottieComposition cachedComposition = LottieCompositionCache.getInstance().getRawRes(rawRes);
-    if (cachedComposition != null) {
-      setComposition(cachedComposition);
-      return;
-    }
-
-    clearComposition();
-    cancelLoaderTask();
-    compositionTask = LottieCompositionFactory.fromRawRes(getContext(), rawRes)
-        .addListener(new LottieListener<LottieComposition>() {
-          @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(rawRes, composition);
-          }
-        })
-      .addListener(loadedListener)
-      .addFailureListener(failureListener);
-  }
-
-  /**
-   * cacheStrategy is deprecated. Compositions are now cached by default.
-   *
-   * @see #setAnimationAsset(String)
-   */
-  @Deprecated
-  public void setAnimation(String assetName, CacheStrategy cacheStrategy) {
-    setAnimation(assetName);
+    setCompositionTask(LottieCompositionFactory.fromRawRes(getContext(), rawRes));
   }
 
   public void setAnimation(final String assetName) {
     this.animationName = assetName;
     animationResId = 0;
-    LottieComposition cachedComposition = LottieCompositionCache.getInstance().get(assetName);
-    if (cachedComposition != null) {
-      setComposition(cachedComposition);
-      return;
-    }
-
-    clearComposition();
-    cancelLoaderTask();
-    compositionTask = LottieCompositionFactory.fromAsset(getContext(), assetName)
-        .addListener(new LottieListener<LottieComposition>() {
-          @Override public void onResult(LottieComposition composition) {
-            LottieCompositionCache.getInstance().put(assetName, composition);
-          }
-        })
-        .addListener(loadedListener)
-        .addFailureListener(failureListener);
-  }
-
-  /**
-   * @see #setAnimation(JsonReader) which is more efficient than using a JSONObject.
-   * For animations loaded from the network, use {@link #setAnimationFromJson(String)}.
-   *
-   * If you must use a JSONObject, you can convert it to a StreamReader with:
-   *    `new JsonReader(new StringReader(json.toString()));`
-   */
-  @Deprecated
-  public void setAnimation(JSONObject json) {
-    setAnimation(new JsonReader(new StringReader(json.toString())));
+    setCompositionTask(LottieCompositionFactory.fromAsset(getContext(), assetName));
   }
 
   /**
@@ -435,14 +356,6 @@ import java.util.Set;
   }
 
   /**
-   * @see #setAnimation(JsonReader, String)
-   */
-  @Deprecated
-  public void setAnimation(JsonReader reader) {
-    setAnimation(reader, null);
-  }
-
-  /**
    * Sets the animation from a JSONReader.
    * This will load and deserialize the file asynchronously.
    * <p>
@@ -450,11 +363,7 @@ import java.util.Set;
    * bodymovin json from the network and pass it directly here.
    */
   public void setAnimation(JsonReader reader, @Nullable String cacheKey) {
-    clearComposition();
-    cancelLoaderTask();
-    compositionTask = LottieCompositionFactory.fromJsonReader(reader, cacheKey)
-        .addListener(loadedListener)
-        .addFailureListener(failureListener);
+    setCompositionTask(LottieCompositionFactory.fromJsonReader(reader, cacheKey));
   }
 
   /**
@@ -466,11 +375,15 @@ import java.util.Set;
    * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
    */
   public void setAnimationFromUrl(String url) {
+    setCompositionTask(LottieCompositionFactory.fromUrl(getContext(), url));
+  }
+
+  private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
     clearComposition();
     cancelLoaderTask();
-    compositionTask = LottieCompositionFactory.fromUrl(getContext(), url)
-        .addListener(loadedListener)
-        .addFailureListener(failureListener);
+    this.compositionTask = compositionTask
+            .addListener(loadedListener)
+            .addFailureListener(failureListener);
   }
 
   private void cancelLoaderTask() {

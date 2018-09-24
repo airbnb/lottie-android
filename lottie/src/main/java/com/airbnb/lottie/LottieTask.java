@@ -121,7 +121,7 @@ public class LottieTask<T> {
    * a listener if neccesary.
    * @return the task for call chaining.
    */
-  public synchronized LottieTask<T> removeFailureListener(LottieListener<T> listener) {
+  public synchronized LottieTask<T> removeFailureListener(LottieListener<Throwable> listener) {
     failureListeners.remove(listener);
     stopTaskObserverIfNeeded();
     return this;
