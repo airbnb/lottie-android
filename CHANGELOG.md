@@ -1,3 +1,12 @@
+# 2.7.0
+### Features and Improvements
+* Removed deprecated LottieCompositionFactory APIs. If you were using JsonObjects, switch to Strings (#959).
+* Made LottieTask.EXECUTOR public and static so tests can set it.
+* Allow layer names to be stripped from JSON if desired.
+* Allow returning null from LottieValueCallbacks to fall back to the default value.
+### Bugs Fixed
+* Allow text stroke width to be a double (#940).
+
 # 2.6.0
 ### Features and Improvements
 * Added support for loading an image from a url directly. See LottieCompositionFactory for more information.
