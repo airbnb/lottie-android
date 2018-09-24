@@ -18,9 +18,12 @@ public class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
 
     if (valueCallback != null) {
       //noinspection ConstantConditions
-      return valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
-          keyframe.startValue, keyframe.endValue,
-          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
+              keyframe.startValue, keyframe.endValue,
+              keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      if (value != null) {
+        return value;
+      }
     }
 
     return MiscUtils.lerp(keyframe.startValue, keyframe.endValue, keyframeProgress);

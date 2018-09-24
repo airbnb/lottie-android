@@ -23,8 +23,11 @@ public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
 
     if (valueCallback != null) {
       //noinspection ConstantConditions
-      return valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startPoint,
-          endPoint, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      PointF value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startPoint,
+              endPoint, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      if (value != null) {
+        return value;
+      }
     }
 
     point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
