@@ -8,6 +8,7 @@ import android.view.View
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.value.LottieRelativePointValueCallback
+import kotlinx.android.synthetic.main.activity_bullseye.*
 
 class BullseyeActivity : AppCompatActivity() {
 

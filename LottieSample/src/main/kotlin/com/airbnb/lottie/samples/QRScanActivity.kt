@@ -8,6 +8,7 @@ import android.os.Vibrator
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView
+import kotlinx.android.synthetic.main.activity_qrscan.*
 
 class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListener {
     private val vibrator by lazy { getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
