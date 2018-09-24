@@ -30,7 +30,6 @@ public class LottieCompositionCacheTest {
   @Test
   public void testEmpty() {
     assertNull(cache.get("foo"));
-    assertNull(cache.getRawRes(123));
   }
 
   @Test
@@ -43,23 +42,5 @@ public class LottieCompositionCacheTest {
   public void testWeakAsset() {
     cache.put("foo", composition);
     assertEquals(composition, cache.get("foo"));
-  }
-
-  @Test
-  public void testStrongRawRes() {
-    cache.put(123, composition);
-    assertEquals(composition, cache.getRawRes(123));
-  }
-
-  @Test
-  public void testWeakRawRes() {
-    cache.put(123, composition);
-    assertEquals(composition, cache.getRawRes(123));
-  }
-
-  @Test
-  public void testStringAndWeakRawRes() {
-    cache.put(123, composition);
-    assertEquals(composition, cache.getRawRes(123));
   }
 }
