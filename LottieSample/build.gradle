@@ -7,11 +7,11 @@ androidExtensions {
 }
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 27
+    targetSdkVersion 28
     versionCode 66
     versionName "2.7.0"
     multiDexEnabled true

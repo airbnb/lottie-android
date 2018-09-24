@@ -1,19 +1,11 @@
 package com.airbnb.lottie.model.layer;
 
 import android.annotation.SuppressLint;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
+import android.graphics.*;
 import android.os.Build;
 import android.support.annotation.CallSuper;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
-import android.util.Log;
-
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -34,8 +26,14 @@ import java.util.List;
 
 public abstract class BaseLayer
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
-  private static final int SAVE_FLAGS = Canvas.CLIP_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG |
-      Canvas.MATRIX_SAVE_FLAG;
+  /**
+   * These flags were in Canvas but they were deprecated and removed.
+   * TODO: test removing these on older versions of Android.
+   */
+    private static final int CLIP_SAVE_FLAG = 0x02;
+    private static final int CLIP_TO_LAYER_SAVE_FLAG = 0x10;
+    private static final int MATRIX_SAVE_FLAG = 0x01;
+    private static final int SAVE_FLAGS = CLIP_SAVE_FLAG | CLIP_TO_LAYER_SAVE_FLAG | MATRIX_SAVE_FLAG;
 
   @Nullable
   static BaseLayer forModel(
@@ -161,7 +159,7 @@ public abstract class BaseLayer
   @SuppressLint("WrongConstant")
   private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // This method was deprecated in API level 26 and not recommented since 22, but its
+      // This method was deprecated in API level 26 and not recommended since 22, but its
       // 2-parameter replacement is only available starting at API level 21.
       canvas.saveLayer(rect, paint, all ? Canvas.ALL_SAVE_FLAG : SAVE_FLAGS);
     } else {
