@@ -32,7 +32,7 @@ public class LottieTask<T> {
    * You may change this to run deserialization synchronously for testing.
    */
   @SuppressWarnings("WeakerAccess")
-  public Executor EXECUTOR = Executors.newCachedThreadPool();
+  public static Executor EXECUTOR = Executors.newCachedThreadPool();
 
   @Nullable private Thread taskObserver;
 
