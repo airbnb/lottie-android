@@ -19,7 +19,6 @@ import java.util.*
 class LottieFontViewGroup @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val compositionMap = HashMap<String, LottieComposition>()
     private val views = ArrayList<View>()
 
     private val cursorView: LottieAnimationView by lazy { LottieAnimationView(context) }
@@ -149,15 +148,8 @@ class LottieFontViewGroup @JvmOverloads constructor(
         //         break;
         // }
         val fileName = "Mobilo/$letter.json"
-        if (compositionMap.containsKey(fileName)) {
-            addComposition(compositionMap[fileName]!!)
-        } else {
-            LottieCompositionFactory.fromAsset(context, fileName)
-                    .addListener {
-                        compositionMap.put(fileName, it)
-                        addComposition(it)
-                    }
-        }
+        LottieCompositionFactory.fromAsset(context, fileName)
+                .addListener { addComposition(it) }
 
         return true
     }
