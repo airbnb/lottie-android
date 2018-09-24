@@ -250,6 +250,7 @@ class PlayerFragment : BaseMvRxFragment() {
         animationView.addAnimatorListener(animatorListener)
         playButton.setOnClickListener {
             if (animationView.isAnimating) animationView.pauseAnimation() else animationView.resumeAnimation()
+            playButton.isActivated = animationView.isAnimating
             postInvalidate()
         }
 
