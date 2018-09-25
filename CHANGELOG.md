@@ -1,3 +1,7 @@
+# 2.8.0
+### Features and Improvements
+* Migrated to androidx
+
 # 2.7.0
 ### Features and Improvements
 * Removed deprecated LottieCompositionFactory APIs. If you were using JsonObjects, switch to Strings (#959).
