@@ -19,9 +19,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public class LottieCompositionFactoryTest {
+public class LottieCompositionFactoryTest extends BaseTest {
   private static final String JSON = "{\"v\":\"4.11.1\",\"fr\":60,\"ip\":0,\"op\":180,\"w\":300,\"h\":300,\"nm\":\"Comp 1\",\"ddd\":0,\"assets\":[]," +
       "\"layers\":[{\"ddd\":0,\"ind\":1,\"ty\":4,\"nm\":\"Shape Layer 1\",\"sr\":1,\"ks\":{\"o\":{\"a\":0,\"k\":100,\"ix\":11},\"r\":{\"a\":0," +
       "\"k\":0,\"ix\":10},\"p\":{\"a\":0,\"k\":[150,150,0],\"ix\":2},\"a\":{\"a\":0,\"k\":[0,0,0],\"ix\":1},\"s\":{\"a\":0,\"k\":[100,100,100]," +
