@@ -10,6 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,7 @@ import kotlinx.android.synthetic.main.control_bar_speed.*
 import kotlinx.android.synthetic.main.control_bar_trim.*
 import kotlinx.android.synthetic.main.fragment_player.*
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class PlayerFragment : BaseMvRxFragment() {
 
