@@ -48,7 +48,7 @@ class LottiefilesViewModel(
 
     companion object : MvRxViewModelFactory<LottiefilesState> {
         @JvmStatic
-        override fun create(activity: androidx.fragment.app.FragmentActivity, state: LottiefilesState): LottiefilesViewModel {
+        override fun create(activity: FragmentActivity, state: LottiefilesState): LottiefilesViewModel {
             val service = (activity.applicationContext as LottieApplication).lottiefilesService
             return LottiefilesViewModel(state, service)
         }

@@ -1,13 +1,13 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.browser.customtabs.CustomTabsIntent
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.fragment.app.Fragment
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import android.view.MenuItem
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         intent.launchUrl(this, "http://airbnb.io/lottie/android/android.html".toUri())
     }
 
-    private fun showFragment(fragment: androidx.fragment.app.Fragment) {
+    private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit()

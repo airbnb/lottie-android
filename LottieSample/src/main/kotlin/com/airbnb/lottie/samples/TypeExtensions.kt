@@ -22,7 +22,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 
-fun androidx.fragment.app.Fragment.startActivity(cls: Class<*>) {
+fun Fragment.startActivity(cls: Class<*>) {
     startActivity(Intent(context, cls))
 }
 

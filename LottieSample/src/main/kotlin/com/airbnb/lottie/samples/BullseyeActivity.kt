@@ -28,7 +28,7 @@ class BullseyeActivity : AppCompatActivity() {
         var totalDx = 0f
         var totalDy = 0f
 
-        val viewDragHelper = androidx.customview.widget.ViewDragHelper.create(containerView, object : androidx.customview.widget.ViewDragHelper.Callback() {
+        val viewDragHelper = ViewDragHelper.create(containerView, object : ViewDragHelper.Callback() {
             override fun tryCaptureView(child: View, pointerId: Int) = child == targetView
 
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {

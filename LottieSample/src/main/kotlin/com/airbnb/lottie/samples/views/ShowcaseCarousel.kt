@@ -21,7 +21,7 @@ class ShowcaseCarousel @JvmOverloads constructor(
     private var items: List<ShowcaseItem>? = null
 
     init {
-        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.RecyclerView.HORIZONTAL, false)
+        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         buildModelsWith(this)
         val sidePadding = resources.getDimensionPixelSize(R.dimen.showcase_carousel_padding)
         setPadding(sidePadding, 0, sidePadding, 0)

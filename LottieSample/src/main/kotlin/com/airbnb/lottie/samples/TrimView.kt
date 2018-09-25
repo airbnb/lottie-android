@@ -26,7 +26,7 @@ class TrimView @JvmOverloads constructor(
     }
     private lateinit var callback: (Float, Float) -> Unit
 
-    private val dragHelper = androidx.customview.widget.ViewDragHelper.create(this, object: androidx.customview.widget.ViewDragHelper.Callback() {
+    private val dragHelper = ViewDragHelper.create(this, object: ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int) = true
 
         override fun getViewHorizontalDragRange(child: View) = width

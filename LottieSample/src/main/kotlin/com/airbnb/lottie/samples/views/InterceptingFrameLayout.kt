@@ -12,7 +12,7 @@ class InterceptingFrameLayout @JvmOverloads constructor(
         defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
-    var viewDragHelper: androidx.customview.widget.ViewDragHelper? = null
+    var viewDragHelper: ViewDragHelper? = null
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         if (viewDragHelper?.shouldInterceptTouchEvent(ev) == true) return true

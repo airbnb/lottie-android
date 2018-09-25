@@ -7,7 +7,7 @@ internal open class OnPageChangeListenerAdapter(
         private val onPageScrolled:
                 ((position: Int, positionOffset: Float, positionOffsetPixels: Int) -> Unit)? = null,
         private val onPageSelected: ((position: Int) -> Unit)? = null
-): androidx.viewpager.widget.ViewPager.OnPageChangeListener {
+): ViewPager.OnPageChangeListener {
     override fun onPageScrollStateChanged(state: Int) =
             onPageScrollStateChanged?.invoke(state) ?: Unit
 

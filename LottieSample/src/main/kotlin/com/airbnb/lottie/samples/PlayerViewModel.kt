@@ -117,6 +117,6 @@ class PlayerViewModel(
 
     companion object : MvRxViewModelFactory<PlayerState> {
         @JvmStatic
-        override fun create(activity: androidx.fragment.app.FragmentActivity, state: PlayerState) = PlayerViewModel(state, activity.application)
+        override fun create(activity: FragmentActivity, state: PlayerState) = PlayerViewModel(state, activity.application)
     }
 }
