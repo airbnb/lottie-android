@@ -1,7 +1,7 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 import android.util.JsonReader;
 import android.util.JsonToken;
 

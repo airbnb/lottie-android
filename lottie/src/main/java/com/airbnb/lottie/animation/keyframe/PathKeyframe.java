@@ -2,7 +2,7 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.value.Keyframe;

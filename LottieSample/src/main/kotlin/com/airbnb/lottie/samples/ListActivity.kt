@@ -1,9 +1,8 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.lottie.samples.views.ListingCard
 import com.airbnb.lottie.samples.views.WishListIconView
 import com.airbnb.lottie.samples.views.listingCard
 import com.airbnb.lottie.samples.views.marquee

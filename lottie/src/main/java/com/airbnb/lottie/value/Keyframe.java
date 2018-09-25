@@ -1,8 +1,8 @@
 package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
-import android.support.annotation.FloatRange;
-import android.support.annotation.Nullable;
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.LottieComposition;

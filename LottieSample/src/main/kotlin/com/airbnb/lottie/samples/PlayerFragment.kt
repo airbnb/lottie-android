@@ -3,21 +3,19 @@ package com.airbnb.lottie.samples
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.arch.lifecycle.Lifecycle
 import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.Snackbar
-import android.support.transition.AutoTransition
-import android.support.transition.TransitionManager
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.EditText
-import androidx.view.children
-import androidx.view.isVisible
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -35,6 +33,8 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.bottom_sheet_key_paths.*
 import kotlinx.android.synthetic.main.bottom_sheet_render_times.*
 import kotlinx.android.synthetic.main.bottom_sheet_warnings.*
@@ -132,7 +132,7 @@ class PlayerFragment : BaseMvRxFragment() {
         viewModel.fetchAnimation(args)
         viewModel.asyncSubscribe(PlayerState::composition, onFail = {
             Snackbar.make(coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG).show()
-            Log.w(L.TAG, "Error loading composition.", it);
+            Log.w(L.TAG, "Error loading composition.", it)
         }) {
             loadingView.isVisible = false
             onCompositionLoaded(it)

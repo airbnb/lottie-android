@@ -1,6 +1,6 @@
 package com.airbnb.lottie.samples
 
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 import com.airbnb.lottie.L
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
@@ -25,7 +25,7 @@ class LottieApplication : MultiDexApplication() {
     val retrofit by lazy {
         Retrofit.Builder()
                 .client(okHttpClient)
-                .baseUrl("http://lottiefiles.com/api/v1/")
+                .baseUrl("https://lottiefiles.com/api/v1/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()

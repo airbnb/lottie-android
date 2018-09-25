@@ -1,17 +1,12 @@
 package com.airbnb.lottie;
 
 import android.graphics.Rect;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SparseArrayCompat;
-
+import androidx.collection.LongSparseArray;
+import androidx.collection.SparseArrayCompat;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.layer.Layer;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +14,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public class LottieDrawableTest {
+public class LottieDrawableTest extends BaseTest {
 
   @SuppressWarnings("SameParameterValue")
   private LottieComposition createComposition(int startFrame, int endFrame) {

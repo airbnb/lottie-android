@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v4.widget.ViewDragHelper
+import androidx.customview.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.MotionEvent

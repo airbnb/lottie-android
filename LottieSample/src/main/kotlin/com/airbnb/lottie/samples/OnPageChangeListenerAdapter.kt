@@ -1,6 +1,6 @@
 package com.airbnb.lottie.samples
 
-import android.support.v4.view.ViewPager
+import androidx.viewpager.widget.ViewPager
 
 internal open class OnPageChangeListenerAdapter(
         private val onPageScrollStateChanged: ((state: Int) -> Unit)? = null,

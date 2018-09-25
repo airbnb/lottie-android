@@ -15,8 +15,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
-public class KeyPathTest {
+public class KeyPathTest extends BaseTest {
   private static final String[] V = {
       "Shape Layer 1",
       "Group 1",

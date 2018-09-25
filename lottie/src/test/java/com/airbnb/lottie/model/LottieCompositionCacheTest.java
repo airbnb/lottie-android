@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import com.airbnb.lottie.BaseTest;
 import com.airbnb.lottie.BuildConfig;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
@@ -14,9 +15,7 @@ import org.robolectric.annotation.Config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public class LottieCompositionCacheTest {
+public class LottieCompositionCacheTest extends BaseTest  {
 
   private LottieComposition composition;
   private LottieCompositionCache cache;

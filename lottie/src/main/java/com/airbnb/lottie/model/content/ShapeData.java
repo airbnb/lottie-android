@@ -1,8 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.graphics.PointF;
-import android.support.annotation.FloatRange;
-import android.util.Log;
+import androidx.annotation.FloatRange;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.model.CubicCurveData;

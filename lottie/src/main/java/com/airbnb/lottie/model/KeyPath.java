@@ -1,8 +1,8 @@
 package com.airbnb.lottie.model;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
+import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import java.util.ArrayList;
 import java.util.Arrays;

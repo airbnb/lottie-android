@@ -3,7 +3,7 @@ package com.airbnb.lottie.samples
 import android.animation.ValueAnimator
 import android.app.Application
 import android.net.Uri
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask

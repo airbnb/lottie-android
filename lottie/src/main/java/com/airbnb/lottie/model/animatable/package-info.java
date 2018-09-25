@@ -1,6 +1,6 @@
 @RestrictTo(LIBRARY)
 package com.airbnb.lottie.model.animatable;
 
-import android.support.annotation.RestrictTo;
+import androidx.annotation.RestrictTo;
 
-import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY;
