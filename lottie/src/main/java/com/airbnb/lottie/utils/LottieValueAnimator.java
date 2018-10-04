@@ -163,6 +163,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   }
 
   public void setMinAndMaxFrames(int minFrame, int maxFrame) {
+    if (minFrame > maxFrame) {
+      throw new IllegalArgumentException(String.format("minFrame (%s) must be <= maxFrame (%s)", minFrame, maxFrame));
+    }
     float compositionMinFrame = composition == null ? -Float.MAX_VALUE : composition.getStartFrame();
     float compositionMaxFrame = composition == null ? Float.MAX_VALUE : composition.getEndFrame();
     this.minFrame = MiscUtils.clamp(minFrame, compositionMinFrame, compositionMaxFrame);
