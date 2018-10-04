@@ -1,6 +1,6 @@
 # 2.8.0
 ### Features and Improvements
-* Migrated to androidx
+* Migrated to androidx. This release and all future releases are only compatible with projects that have been migrated to androidx.
 
 # 2.7.0
 ### Features and Improvements
