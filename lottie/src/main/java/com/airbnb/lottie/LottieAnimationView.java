@@ -54,13 +54,15 @@ import java.util.Set;
 
   private static final String TAG = LottieAnimationView.class.getSimpleName();
 
-  private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
+  @NonNull
+  private LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
     @Override public void onResult(LottieComposition composition) {
       setComposition(composition);
     }
   };
 
-  private final LottieListener<Throwable> failureListener = new LottieListener<Throwable>() {
+  @NonNull
+  private LottieListener<Throwable> failureListener = new LottieListener<Throwable>() {
     @Override public void onResult(Throwable throwable) {
       throw new IllegalStateException("Unable to parse composition", throwable);
     }
@@ -373,6 +375,38 @@ import java.util.Set;
    */
   public void setAnimationFromUrl(String url) {
     setCompositionTask(LottieCompositionFactory.fromUrl(getContext(), url));
+  }
+
+  /**
+   * Sets a task listener. Previous listener will be removed
+   *
+   * @param loadedListener - task listener
+   * @see LottieTask#addListener(LottieListener)
+   * @see LottieTask#removeListener(LottieListener)
+   */
+  public void setLoadedListener(@NonNull LottieListener<LottieComposition> loadedListener) {
+    LottieTask<LottieComposition> compositionTask = this.compositionTask;
+    if (compositionTask != null) {
+      compositionTask.addListener(loadedListener);
+      compositionTask.removeListener(this.loadedListener);
+    }
+    this.loadedListener = loadedListener;
+  }
+
+  /**
+   * Sets a task failure listener. Previous failure listener will be removed
+   *
+   * @param failureListener - task failure listener
+   * @see LottieTask#addFailureListener(LottieListener)
+   * @see LottieTask#removeFailureListener(LottieListener)
+   */
+  public void setFailureListener(@NonNull LottieListener<Throwable> failureListener) {
+    LottieTask<LottieComposition> compositionTask = this.compositionTask;
+    if (compositionTask != null) {
+      compositionTask.addFailureListener(failureListener);
+      compositionTask.removeFailureListener(this.failureListener);
+    }
+    this.failureListener = failureListener;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
