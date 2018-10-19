@@ -164,6 +164,23 @@ public class LottieValueAnimatorUnitTest extends BaseTest {
   }
 
   @Test
+  public void testSetFrameIntegrity() {
+    animator.setMinAndMaxFrames(200, 800);
+
+    // setFrame < minFrame should clamp to minFrame
+    animator.setFrame(100);
+    assertEquals(200, animator.getFrame());
+
+    animator.setFrame(900);
+    assertEquals(800, animator.getFrame());
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testMinAndMaxFrameIntegrity() {
+    animator.setMinAndMaxFrames(800, 200);
+  }
+
+  @Test
   public void testDefaultAnimator() {
     testAnimator(new VerifyListener() {
       @Override public void verify(InOrder inOrder) {
