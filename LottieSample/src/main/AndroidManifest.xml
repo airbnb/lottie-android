@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.airbnb.lottie.samples">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".LottieApplication"
@@ -18,33 +19,33 @@
             android:name=".MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts"/>
+                android:resource="@xml/shortcuts" />
         </activity>
         <activity
             android:name=".TypographyDemoActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible"/>
+            android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".BullseyeActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".AppIntroActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".QRScanActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".FullScreenActivity"/>
+            android:screenOrientation="portrait" />
+        <activity android:name=".FullScreenActivity" />
         <activity
             android:name=".TestColorFilterActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".DynamicActivity"/>
+            android:screenOrientation="portrait" />
+        <activity android:name=".DynamicActivity" />
         <activity
             android:name=".PlayerActivity"
             android:screenOrientation="portrait">
@@ -53,14 +54,19 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="content"
+
+                <data
+                    android:host="*"
                     android:mimeType="application/octet-stream"
                     android:pathPattern=".*\\.json"
-                    android:host="*"/>
+                    android:scheme="content" />
             </intent-filter>
         </activity>
         <activity android:name=".DynamicTextActivity" />
         <activity android:name=".ListActivity" />
+        <activity
+            android:name=".FilmStripSnapshotActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
