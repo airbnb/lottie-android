@@ -43,12 +43,12 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
         if (!animationsDir.exists() || !animationsDir.isDirectory) throw IllegalStateException("Animations directory ($animationsDir) does not exist!")
         if (!snapshotsDir.exists()) snapshotsDir.mkdirs()
 
-        film_strip_container.doOnNextLayout {
+        filmStripView.doOnNextLayout {
             createSnapshots()
+            Log.i(L.TAG, "Finished Snapshots")
+            finish()
         }
     }
-
-    private fun animationViews() = film_strip_container.children.filterIsInstance(LottieAnimationView::class.java)
 
     private fun hasStoragePermission() = hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
 
@@ -84,13 +84,9 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
                     val fis = FileInputStream(file)
                     val result = LottieCompositionFactory.fromJsonInputStreamSync(fis, file.name)
                     val composition = result.value ?: throw IllegalStateException("Unable to parse composition for $file", result.exception)
-                    animationViews().forEachIndexed { i, view ->
-                        view.setComposition(composition)
-                        view.progress = i / 24f
-                        Log.d("Gabe", "createSnapshots: $i -> ${view.progress}")
-                    }
+                    filmStripView.setComposition(composition)
                     canvas.clear()
-                    film_strip_container.draw(canvas)
+                    filmStripView.draw(canvas)
 
                     val outputFileName = file.name.replace(".json", ".png")
                     val outputFilePath = "${Environment.getExternalStorageDirectory()}/lottie/snapshots/$outputFileName"
@@ -98,8 +94,6 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
                     }
                 }
-        Log.i(L.TAG, "Finished Snapshots")
-        finish()
     }
 
     private fun Canvas.clear() {

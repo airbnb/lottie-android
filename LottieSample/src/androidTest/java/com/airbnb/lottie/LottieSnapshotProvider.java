@@ -20,6 +20,7 @@ import android.widget.ImageView;
 
 import com.airbnb.happo.SnapshotProvider;
 import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.samples.views.FilmStripView;
 import com.airbnb.lottie.value.LottieInterpolatedIntegerValue;
 import com.airbnb.lottie.value.LottieRelativeFloatValueCallback;
 import com.airbnb.lottie.value.LottieRelativePointValueCallback;
@@ -122,18 +123,14 @@ public class LottieSnapshotProvider extends SnapshotProvider {
 
   private void drawComposition(LottieComposition composition, String name) {
     Log.d(L.TAG, "Drawing " + name);
-    LottieAnimationView view = new LottieAnimationView(context);
+    FilmStripView view = new FilmStripView(context);
     view.setImageAssetDelegate(new ImageAssetDelegate() {
       @Override public Bitmap fetchBitmap(LottieImageAsset asset) {
         return dummyBitmap;
       }
     });
     view.setComposition(composition);
-    for (float progress : PROGRESS) {
-      view.setProgress(progress);
-      Log.d(L.TAG, "Recording " + name + " @ " + progress);
-      recordSnapshot(view, 1080, "android", name, Integer.toString((int) (progress * 100)));
-    }
+    recordSnapshot(view, 1080, "android", name, "");
   }
 
   @Override
