@@ -52,8 +52,13 @@ public class LottieCompositionFactory {
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
    * might need an animation in the future.
    */
-  public static LottieTask<LottieComposition> fromUrl(Context context, String url) {
-    return NetworkFetcher.fetch(context, url);
+  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url) {
+    String urlCacheKey = "url_" + url;
+    return cache(urlCacheKey, new Callable<LottieResult<LottieComposition>>() {
+      @Override public LottieResult<LottieComposition> call() {
+        return NetworkFetcher.fetchSync(context, url);
+      }
+    });
   }
 
   /**
@@ -318,7 +323,7 @@ public class LottieCompositionFactory {
   /**
    * First, check to see if there are any in-progress tasks associated with the cache key and return it if there is.
    * If not, create a new task for the callable.
-   * Then, add the new task to the task cache and set up listeners to it gets cleared when done.
+   * Then, add the new task to the task cache and set up listeners so it gets cleared when done.
    */
   private static LottieTask<LottieComposition> cache(
           @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
