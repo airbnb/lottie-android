@@ -1,11 +1,9 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.Path;
 
-import com.airbnb.lottie.L;
+import android.util.Log;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
@@ -18,8 +16,7 @@ public class MaskKeyframeAnimation {
   private final List<BaseKeyframeAnimation<Integer, Integer>> opacityAnimations;
   private final List<Mask> masks;
   /** Reusable path for calculating masks. */
-  private final Path maskPath = new Path();
-  private final Path contentPath = new Path();
+  private final Path masksPath = new Path();
 
   public MaskKeyframeAnimation(List<Mask> masks) {
     this.masks = masks;
@@ -44,56 +41,27 @@ public class MaskKeyframeAnimation {
     return opacityAnimations;
   }
 
-  public void applyToPath(Path path, Matrix matrix) {
-    applyMasks(path, matrix, Mask.MaskMode.MaskModeAdd);
-    // Treat intersect masks like add masks. This is not correct but it's closer.
-    applyMasks(path, matrix, Mask.MaskMode.MaskModeIntersect);
-    applyMasks(path, matrix, Mask.MaskMode.MaskModeSubtract);
-  }
-
-  private void applyMasks(Path contentPath, Matrix matrix, Mask.MaskMode maskMode) {
-    Path.Op op;
-    switch (maskMode) {
-      case MaskModeSubtract:
-        op = Path.Op.DIFFERENCE;
-        break;
-      case MaskModeIntersect:
-      case MaskModeAdd:
-      default:
-        // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
-        // better than nothing.
-        op = Path.Op.INTERSECT;
-    }
-
-    //noinspection ConstantConditions
-    int size = getMasks().size();
-
-    boolean hasMask = false;
-    for (int i = 0; i < size; i++) {
-      if (getMasks().get(i).getMaskMode() == maskMode) {
-        hasMask = true;
-        break;
-      }
-    }
-    if (!hasMask) {
-      return;
-    }
-
-    L.beginSection("Layer#drawMask");
-
-    this.maskPath.reset();
-    for (int i = 0; i < size; i++) {
-      Mask mask = getMasks().get(i);
-      if (mask.getMaskMode() != maskMode) {
-        continue;
-      }
-      BaseKeyframeAnimation<?, Path> maskAnimation = getMaskAnimations().get(i);
-      Path maskPath = maskAnimation.getValue();
+  public void applyToPath(Path contentPath, Matrix matrix) {
+    masksPath.reset();
+    for (int i = 0; i < getMaskAnimations().size(); i++) {
+      BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
+      Path maskPath = mask.getValue();
       maskPath.transform(matrix);
-      this.maskPath.addPath(maskPath);
-      // TODO: opacity animation
+      Mask.MaskMode maskMode = getMasks().get(i).getMaskMode();
+      if (maskMode == Mask.MaskMode.MaskModeAdd) {
+        Path addMaskPaint = new Path(contentPath);
+        addMaskPaint.op(maskPath, Path.Op.INTERSECT);
+        masksPath.op(maskPath, Path.Op.UNION);
+      } else if (maskMode == Mask.MaskMode.MaskModeSubtract) {
+        Path subtractMaskPath = new Path(contentPath);
+        subtractMaskPath.op(maskPath, Path.Op.DIFFERENCE);
+        if (masksPath.isEmpty()) {
+          masksPath.addPath(contentPath);
+        }
+        masksPath.op(subtractMaskPath, Path.Op.INTERSECT);
+      }
     }
-    contentPath.op(maskPath, op);
-    L.endSection("Layer#drawMask");
+
+    contentPath.op(masksPath, Path.Op.INTERSECT);
   }
 }
