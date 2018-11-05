@@ -110,7 +110,7 @@ public class CompositionLayer extends BaseLayer {
   @Override
   public Path getPath() {
       path.reset();
-      for (int i = layers.size(); i >= 0; i--) {
+      for (int i = layers.size() - 1; i >= 0; i--) {
         path.addPath(layers.get(i).getPath());
       }
       return path;

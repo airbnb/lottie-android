@@ -3,6 +3,8 @@ package com.airbnb.lottie.animation.keyframe;
 import android.graphics.Matrix;
 import android.graphics.Path;
 
+import android.graphics.RectF;
+import android.util.Log;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
@@ -22,7 +24,7 @@ public class MaskKeyframeAnimation {
   private final Path addPath = new Path();
   private final Path subtractPath = new Path();
   @Nullable
-  private BaseLayer matteLayer;
+  public BaseLayer matteLayer;
   @Nullable
   private Layer.MatteType matteType;
 
@@ -54,8 +56,8 @@ public class MaskKeyframeAnimation {
     return opacityAnimations;
   }
 
-  public void applyToPath(Path contentPath, Matrix matrix, Matrix parentMatrix) {
-    getMaskPath(contentPath, matrix, parentMatrix);
+  public void applyToPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix) {
+    getMaskPath(contentPath, maskMatrix, matteMatrix);
 
     contentPath.op(combinedPath, Path.Op.INTERSECT);
   }
@@ -85,12 +87,21 @@ public class MaskKeyframeAnimation {
     if (matteLayer != null && matteType != null) {
       Path mattePath = matteLayer.getPath();
       mattePath.transform(parentMatrix);
-      mattePath.transform(matteLayer.getTransformMatrix());
       if (matteType == Layer.MatteType.Add) {
+        RectF bounds = new RectF();
+        contentPath.computeBounds(bounds, false);
+        Log.d("Gabe", "Content: " + bounds);
+        mattePath.computeBounds(bounds, false);
+        Log.d("Gabe", "Matte: " + bounds);
+
         addPath.set(contentPath);
         addPath.op(mattePath, Path.Op.INTERSECT);
-        combinedPath.op(mattePath, Path.Op.UNION);
-      } else if (matteType == Layer.MatteType.Invert){
+        combinedPath.addPath(addPath);
+
+        combinedPath.computeBounds(bounds, false);
+        Log.d("Gabe", "Combined: " + bounds);
+
+      } else if (matteType == Layer.MatteType.Invert) {
         subtractPath.set(contentPath);
         subtractPath.op(mattePath, Path.Op.DIFFERENCE);
         if (combinedPath.isEmpty()) {
@@ -98,6 +109,8 @@ public class MaskKeyframeAnimation {
         }
         combinedPath.op(subtractPath, Path.Op.INTERSECT);
       }
+
+      combinedPath.addPath(mattePath);
     }
 
     return combinedPath;

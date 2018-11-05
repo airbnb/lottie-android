@@ -164,7 +164,9 @@ public abstract class BaseLayer
         ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
     matrix.preConcat(transform.getMatrix());
     L.beginSection("Layer#drawLayer");
-    drawLayer(canvas, matrix, alpha, this.mask, matrix);
+    // TODO: figure out the right mask to use.
+    MaskKeyframeAnimation layerMask = this.mask != null ? this.mask : mask;
+    drawLayer(canvas, matrix, alpha, layerMask, matrix);
     L.endSection("Layer#drawLayer");
     recordRenderTime(L.endSection(drawTraceName));
   }
