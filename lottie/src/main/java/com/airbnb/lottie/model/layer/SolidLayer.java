@@ -67,7 +67,7 @@ public class SolidLayer extends BaseLayer {
       path.close();
 
       if (mask != null) {
-        mask.applyToPath(path, parentMatrix);
+        mask.applyToPath(path, parentMatrix, parentMatrix);
       }
 
       canvas.drawPath(path, paint);
@@ -79,6 +79,13 @@ public class SolidLayer extends BaseLayer {
     rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
     boundsMatrix.mapRect(rect);
     outBounds.set(rect);
+  }
+
+  @Override
+  public Path getPath() {
+    path.reset();
+    path.addRect(0f, 0f, (float) layerModel.getSolidWidth(), (float) layerModel.getSolidHeight(), Path.Direction.CW);
+    return path;
   }
 
   @SuppressWarnings("unchecked")

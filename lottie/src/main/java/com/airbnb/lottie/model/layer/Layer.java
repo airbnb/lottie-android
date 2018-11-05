@@ -129,7 +129,7 @@ public class Layer {
     return layerType;
   }
 
-  MatteType getMatteType() {
+  public MatteType getMatteType() {
     return matteType;
   }
 

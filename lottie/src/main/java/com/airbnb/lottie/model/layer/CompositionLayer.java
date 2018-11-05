@@ -2,6 +2,7 @@ package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.RectF;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
@@ -24,6 +25,7 @@ import java.util.List;
 public class CompositionLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
+  private final Path path = new Path();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
 
@@ -98,11 +100,20 @@ public class CompositionLayer extends BaseLayer {
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
-        layer.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix);
+        layer.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, parentMatrix);
       }
     }
     canvas.restore();
     L.endSection("CompositionLayer#draw");
+  }
+
+  @Override
+  public Path getPath() {
+      path.reset();
+      for (int i = layers.size(); i >= 0; i--) {
+        path.addPath(layers.get(i).getPath());
+      }
+      return path;
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

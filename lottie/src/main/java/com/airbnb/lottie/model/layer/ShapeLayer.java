@@ -2,6 +2,7 @@ package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.RectF;
 import androidx.annotation.NonNull;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
+  private final Path path = new Path();
   private final ContentGroup contentGroup;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
@@ -29,12 +31,18 @@ public class ShapeLayer extends BaseLayer {
   }
 
   @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
-    contentGroup.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix);
+    contentGroup.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, parentMatrix);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     super.getBounds(outBounds, parentMatrix);
     contentGroup.getBounds(outBounds, boundsMatrix);
+  }
+
+  @Override
+  public Path getPath() {
+    path.set(contentGroup.getPath());
+    return path;
   }
 
   @Override

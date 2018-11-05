@@ -74,7 +74,7 @@ public class FillContent
     return name;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     L.beginSection("FillContent#draw");
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
@@ -90,7 +90,7 @@ public class FillContent
     }
 
     if (mask != null) {
-      mask.applyToPath(path, maskMatrix);
+      mask.applyToPath(path, maskMatrix, matteMatrix);
     }
 
     canvas.drawPath(path, paint);

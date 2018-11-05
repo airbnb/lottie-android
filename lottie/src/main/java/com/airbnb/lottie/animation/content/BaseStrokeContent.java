@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.R;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
@@ -143,7 +142,7 @@ public abstract class BaseStrokeContent
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     L.beginSection("StrokeContent#draw");
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
@@ -165,7 +164,7 @@ public abstract class BaseStrokeContent
 
 
       if (pathGroup.trimPath != null) {
-        applyTrimPath(canvas, pathGroup, parentMatrix, mask, maskMatrix);
+        applyTrimPath(canvas, pathGroup, parentMatrix, mask, maskMatrix, matteMatrix);
       } else {
         L.beginSection("StrokeContent#buildPath");
         path.reset();
@@ -177,7 +176,7 @@ public abstract class BaseStrokeContent
           // Stroke has to use Canvas.clipPath so that it actually clips the stroke rather than creating
           // a new path of the content combined with the stroke. Doing that would cause Lottie to draw a stroke
           // on the mask edge that wasn't part of the original path.
-          Path maskPath = mask.getMaskPath(path, maskMatrix);
+          Path maskPath = mask.getMaskPath(path, maskMatrix, matteMatrix);
           maskPath.computeBounds(maskBounds, false);
           path.computeBounds(pathBounds, false);
           pathBounds.inset(-strokeWidth, -strokeWidth);
@@ -196,7 +195,7 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#draw");
   }
 
-  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     L.beginSection("StrokeContent#applyTrimPath");
     if (pathGroup.trimPath == null) {
       L.endSection("StrokeContent#applyTrimPath");
@@ -236,7 +235,7 @@ public abstract class BaseStrokeContent
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         if (mask != null) {
-          mask.applyToPath(path, maskMatrix);
+          mask.applyToPath(path, maskMatrix, matteMatrix);
         }
         canvas.drawPath(trimPathPath, paint);
       } else
@@ -245,7 +244,7 @@ public abstract class BaseStrokeContent
           // Do nothing
         } else if (currentLength + length <= endLength && startLength < currentLength) {
           if (mask != null) {
-            mask.applyToPath(path, maskMatrix);
+            mask.applyToPath(path, maskMatrix, matteMatrix);
           }
           canvas.drawPath(trimPathPath, paint);
         } else {
@@ -263,7 +262,7 @@ public abstract class BaseStrokeContent
           }
           Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
           if (mask != null) {
-            mask.applyToPath(path, maskMatrix);
+            mask.applyToPath(path, maskMatrix, matteMatrix);
           }
           canvas.drawPath(trimPathPath, paint);
         }
