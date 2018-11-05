@@ -59,6 +59,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private final Matrix matrix = new Matrix();
+  private final Matrix maskIdentityMatrix = new Matrix();
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
@@ -316,7 +317,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha, null, new Matrix());
+    compositionLayer.draw(canvas, matrix, alpha, null, maskIdentityMatrix);
     L.endSection("Drawable#draw");
 
     if (extraScale > 1) {

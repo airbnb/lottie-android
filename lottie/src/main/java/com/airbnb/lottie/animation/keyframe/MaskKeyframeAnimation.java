@@ -17,6 +17,8 @@ public class MaskKeyframeAnimation {
   private final List<Mask> masks;
   /** Reusable path for calculating masks. */
   private final Path masksPath = new Path();
+  private final Path addPath = new Path();
+  private final Path subtractPath = new Path();
 
   public MaskKeyframeAnimation(List<Mask> masks) {
     this.masks = masks;
@@ -49,16 +51,16 @@ public class MaskKeyframeAnimation {
       maskPath.transform(matrix);
       Mask.MaskMode maskMode = getMasks().get(i).getMaskMode();
       if (maskMode == Mask.MaskMode.MaskModeAdd || maskMode == Mask.MaskMode.MaskModeIntersect) {
-        Path addMaskPaint = new Path(contentPath);
-        addMaskPaint.op(maskPath, Path.Op.INTERSECT);
+        addPath.reset();
+        addPath.op(maskPath, Path.Op.INTERSECT);
         masksPath.op(maskPath, Path.Op.UNION);
       } else if (maskMode == Mask.MaskMode.MaskModeSubtract) {
-        Path subtractMaskPath = new Path(contentPath);
-        subtractMaskPath.op(maskPath, Path.Op.DIFFERENCE);
+        subtractPath.reset();
+        subtractPath.op(maskPath, Path.Op.DIFFERENCE);
         if (masksPath.isEmpty()) {
           masksPath.addPath(contentPath);
         }
-        masksPath.op(subtractMaskPath, Path.Op.INTERSECT);
+        masksPath.op(subtractPath, Path.Op.INTERSECT);
       }
     }
     masksPath.close();
