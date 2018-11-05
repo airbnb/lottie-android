@@ -121,6 +121,10 @@ public class GradientFillContent
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
 
+    if (mask != null) {
+      mask.applyToPath(path, maskMatrix);
+    }
+
     canvas.drawPath(path, paint);
     L.endSection("GradientFillContent#draw");
   }

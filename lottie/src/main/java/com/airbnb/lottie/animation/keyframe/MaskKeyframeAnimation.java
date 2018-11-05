@@ -48,7 +48,7 @@ public class MaskKeyframeAnimation {
       Path maskPath = mask.getValue();
       maskPath.transform(matrix);
       Mask.MaskMode maskMode = getMasks().get(i).getMaskMode();
-      if (maskMode == Mask.MaskMode.MaskModeAdd) {
+      if (maskMode == Mask.MaskMode.MaskModeAdd || maskMode == Mask.MaskMode.MaskModeIntersect) {
         Path addMaskPaint = new Path(contentPath);
         addMaskPaint.op(maskPath, Path.Op.INTERSECT);
         masksPath.op(maskPath, Path.Op.UNION);
@@ -61,6 +61,7 @@ public class MaskKeyframeAnimation {
         masksPath.op(subtractMaskPath, Path.Op.INTERSECT);
       }
     }
+    masksPath.close();
 
     contentPath.op(masksPath, Path.Op.INTERSECT);
   }

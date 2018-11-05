@@ -156,12 +156,15 @@ public abstract class BaseStrokeContent
 
 
       if (pathGroup.trimPath != null) {
-        applyTrimPath(canvas, pathGroup, parentMatrix);
+        applyTrimPath(canvas, pathGroup, parentMatrix, mask, maskMatrix);
       } else {
         L.beginSection("StrokeContent#buildPath");
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
           path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
+        }
+        if (mask != null) {
+          mask.applyToPath(path, maskMatrix);
         }
         L.endSection("StrokeContent#buildPath");
         L.beginSection("StrokeContent#drawPath");
@@ -172,7 +175,7 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#draw");
   }
 
-  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix) {
+  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     L.beginSection("StrokeContent#applyTrimPath");
     if (pathGroup.trimPath == null) {
       L.endSection("StrokeContent#applyTrimPath");
@@ -211,12 +214,18 @@ public abstract class BaseStrokeContent
         }
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
+        if (mask != null) {
+          mask.applyToPath(path, maskMatrix);
+        }
         canvas.drawPath(trimPathPath, paint);
       } else
         //noinspection StatementWithEmptyBody
         if (currentLength + length < startLength || currentLength > endLength) {
           // Do nothing
         } else if (currentLength + length <= endLength && startLength < currentLength) {
+          if (mask != null) {
+            mask.applyToPath(path, maskMatrix);
+          }
           canvas.drawPath(trimPathPath, paint);
         } else {
           float startValue;
@@ -232,6 +241,9 @@ public abstract class BaseStrokeContent
             endValue = (endLength - currentLength) / length;
           }
           Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
+          if (mask != null) {
+            mask.applyToPath(path, maskMatrix);
+          }
           canvas.drawPath(trimPathPath, paint);
         }
       currentLength += length;

@@ -121,7 +121,7 @@ public class TextLayer extends BaseLayer {
     }
 
     if (lottieDrawable.useTextGlyphs()) {
-      drawTextGlyphs(documentData, parentMatrix, font, canvas);
+      drawTextGlyphs(documentData, parentMatrix, font, canvas, mask, maskMatrix);
     } else {
       drawTextWithFont(documentData, font, parentMatrix, canvas);
     }
@@ -130,7 +130,8 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawTextGlyphs(
-      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
+      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas,
+      @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
     String text = documentData.text;
@@ -144,7 +145,7 @@ public class TextLayer extends BaseLayer {
         // Something is wrong. Potentially, they didn't export the text as a glyph.
         continue;
       }
-      drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
+      drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas, mask, maskMatrix);
       float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
@@ -192,7 +193,9 @@ public class TextLayer extends BaseLayer {
       Matrix parentMatrix,
       float fontScale,
       DocumentData documentData,
-      Canvas canvas) {
+      Canvas canvas,
+      @Nullable MaskKeyframeAnimation mask,
+      Matrix maskMatrix) {
     List<ContentGroup> contentGroups = getContentsForCharacter(character);
     for (int j = 0; j < contentGroups.size(); j++) {
       Path path = contentGroups.get(j).getPath();
@@ -202,22 +205,27 @@ public class TextLayer extends BaseLayer {
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
       if (documentData.strokeOverFill) {
-        drawGlyph(path, fillPaint, canvas);
-        drawGlyph(path, strokePaint, canvas);
+        drawGlyph(path, fillPaint, canvas, mask, maskMatrix);
+        drawGlyph(path, strokePaint, canvas, mask, maskMatrix);
       } else {
-        drawGlyph(path, strokePaint, canvas);
-        drawGlyph(path, fillPaint, canvas);
+        drawGlyph(path, strokePaint, canvas, mask, maskMatrix);
+        drawGlyph(path, fillPaint, canvas, mask, maskMatrix);
       }
     }
   }
 
-  private void drawGlyph(Path path, Paint paint, Canvas canvas) {
+  private void drawGlyph(Path path, Paint paint, Canvas canvas, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     if (paint.getColor() == Color.TRANSPARENT) {
       return;
     }
     if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0) {
       return;
     }
+
+    if (mask != null) {
+      mask.applyToPath(path, maskMatrix);
+    }
+
     canvas.drawPath(path, paint);
   }
 
