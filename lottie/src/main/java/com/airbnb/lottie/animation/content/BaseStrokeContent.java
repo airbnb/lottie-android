@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.R;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
@@ -38,6 +39,8 @@ public abstract class BaseStrokeContent
   private final Path path = new Path();
   private final Path trimPathPath = new Path();
   private final RectF rect = new RectF();
+  private final RectF maskBounds = new RectF();
+  private final RectF pathBounds = new RectF();
   private final LottieDrawable lottieDrawable;
   private final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
@@ -47,12 +50,14 @@ public abstract class BaseStrokeContent
   private final BaseKeyframeAnimation<?, Float> widthAnimation;
   private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
-  @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
-  @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
+  @Nullable
+  private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
-      Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
-      List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
+                    Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
+                    List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
     this.lottieDrawable = lottieDrawable;
     this.layer = layer;
 
@@ -96,11 +101,13 @@ public abstract class BaseStrokeContent
     }
   }
 
-  @Override public void onValueChanged() {
+  @Override
+  public void onValueChanged() {
     lottieDrawable.invalidateSelf();
   }
 
-  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+  @Override
+  public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     TrimPathContent trimPathContentBefore = null;
     for (int i = contentsBefore.size() - 1; i >= 0; i--) {
       Content content = contentsBefore.get(i);
@@ -135,11 +142,13 @@ public abstract class BaseStrokeContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  @Override
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     L.beginSection("StrokeContent#draw");
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
-    paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
+    float strokeWidth = widthAnimation.getValue() * Utils.getScale(parentMatrix);
+    paint.setStrokeWidth(strokeWidth);
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
       L.endSection("StrokeContent#draw");
@@ -163,13 +172,25 @@ public abstract class BaseStrokeContent
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
           path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
         }
-        if (mask != null) {
-          mask.applyToPath(path, maskMatrix);
-        }
         L.endSection("StrokeContent#buildPath");
-        L.beginSection("StrokeContent#drawPath");
-        canvas.drawPath(path, paint);
-        L.endSection("StrokeContent#drawPath");
+        if (mask != null) {
+          // Stroke has to use Canvas.clipPath so that it actually clips the stroke rather than creating
+          // a new path of the content combined with the stroke. Doing that would cause Lottie to draw a stroke
+          // on the mask edge that wasn't part of the original path.
+          Path maskPath = mask.getMaskPath(path, maskMatrix);
+          maskPath.computeBounds(maskBounds, false);
+          path.computeBounds(pathBounds, false);
+          pathBounds.inset(-strokeWidth, -strokeWidth);
+          maskBounds.intersect(pathBounds);
+          canvas.saveLayer(maskBounds, new Paint());
+          canvas.clipPath(maskPath);
+          canvas.drawPath(path, paint);
+          canvas.restore();
+        } else {
+          L.beginSection("StrokeContent#drawPath");
+          canvas.drawPath(path, paint);
+          L.endSection("StrokeContent#drawPath");
+        }
       }
     }
     L.endSection("StrokeContent#draw");
@@ -251,7 +272,8 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#applyTrimPath");
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @Override
+  public void getBounds(RectF outBounds, Matrix parentMatrix) {
     L.beginSection("StrokeContent#getBounds");
     path.reset();
     for (int i = 0; i < pathGroups.size(); i++) {
@@ -306,7 +328,8 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#applyDashPattern");
   }
 
-  @Override public void resolveKeyPath(
+  @Override
+  public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
@@ -336,7 +359,8 @@ public abstract class BaseStrokeContent
    */
   private static final class PathGroup {
     private final List<PathContent> paths = new ArrayList<>();
-    @Nullable private final TrimPathContent trimPath;
+    @Nullable
+    private final TrimPathContent trimPath;
 
     private PathGroup(@Nullable TrimPathContent trimPath) {
       this.trimPath = trimPath;

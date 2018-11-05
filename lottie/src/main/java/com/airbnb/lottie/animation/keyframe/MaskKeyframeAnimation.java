@@ -3,7 +3,6 @@ package com.airbnb.lottie.animation.keyframe;
 import android.graphics.Matrix;
 import android.graphics.Path;
 
-import android.util.Log;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
@@ -44,6 +43,12 @@ public class MaskKeyframeAnimation {
   }
 
   public void applyToPath(Path contentPath, Matrix matrix) {
+    getMaskPath(contentPath, matrix);
+
+    contentPath.op(masksPath, Path.Op.INTERSECT);
+  }
+
+  public Path getMaskPath(Path contentPath, Matrix matrix) {
     masksPath.reset();
     for (int i = 0; i < getMaskAnimations().size(); i++) {
       BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
@@ -64,7 +69,6 @@ public class MaskKeyframeAnimation {
       }
     }
     masksPath.close();
-
-    contentPath.op(masksPath, Path.Op.INTERSECT);
+    return masksPath;
   }
 }
