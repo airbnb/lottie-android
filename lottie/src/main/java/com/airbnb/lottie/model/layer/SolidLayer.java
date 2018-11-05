@@ -65,6 +65,11 @@ public class SolidLayer extends BaseLayer {
       path.lineTo(points[6], points[7]);
       path.lineTo(points[0], points[1]);
       path.close();
+
+      if (mask != null) {
+        mask.applyToPath(path, parentMatrix);
+      }
+
       canvas.drawPath(path, paint);
     }
   }

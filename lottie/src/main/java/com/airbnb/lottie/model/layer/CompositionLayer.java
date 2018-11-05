@@ -98,7 +98,7 @@ public class CompositionLayer extends BaseLayer {
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
-        layer.draw(canvas, parentMatrix, parentAlpha);
+        layer.draw(canvas, parentMatrix, parentAlpha, mask);
       }
     }
     canvas.restore();

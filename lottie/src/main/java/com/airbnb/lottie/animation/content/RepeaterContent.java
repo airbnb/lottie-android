@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.Repeater;
@@ -101,7 +102,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();
     //noinspection ConstantConditions
@@ -112,7 +113,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
       matrix.set(parentMatrix);
       matrix.preConcat(transform.getMatrixForRepeater(i + offset));
       float newAlpha = alpha * MiscUtils.lerp(startOpacity, endOpacity, i / copies);
-      contentGroup.draw(canvas, matrix, (int) newAlpha);
+      contentGroup.draw(canvas, matrix, (int) newAlpha, mask);
     }
   }
 

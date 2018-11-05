@@ -29,7 +29,7 @@ public class ShapeLayer extends BaseLayer {
   }
 
   @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask) {
-    contentGroup.draw(canvas, parentMatrix, parentAlpha);
+    contentGroup.draw(canvas, parentMatrix, parentAlpha, mask);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
