@@ -177,7 +177,7 @@ public abstract class BaseLayer
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     L.beginSection(drawTraceName);
     if (!visible) {
       L.endSection(drawTraceName);
@@ -196,7 +196,7 @@ public abstract class BaseLayer
     if (!hasMatteOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha, this.mask);
+      drawLayer(canvas, matrix, alpha, this.mask, matrix);
       L.endSection("Layer#drawLayer");
       recordRenderTime(L.endSection(drawTraceName));
       return;
@@ -220,7 +220,7 @@ public abstract class BaseLayer
     // Clear the off screen buffer. This is necessary for some phones.
     clearCanvas(canvas);
     L.beginSection("Layer#drawLayer");
-    drawLayer(canvas, matrix, alpha, this.mask);
+    drawLayer(canvas, matrix, alpha, this.mask, matrix);
     L.endSection("Layer#drawLayer");
 
     if (hasMasksOnThisLayer()) {
@@ -234,7 +234,7 @@ public abstract class BaseLayer
       L.endSection("Layer#saveLayer");
       clearCanvas(canvas);
       //noinspection ConstantConditions
-      matteLayer.draw(canvas, parentMatrix, alpha, mask);
+      matteLayer.draw(canvas, parentMatrix, alpha, mask, maskMatrix);
       L.beginSection("Layer#restoreLayer");
       canvas.restore();
       L.endSection("Layer#restoreLayer");
@@ -328,7 +328,7 @@ public abstract class BaseLayer
     );
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     applyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);

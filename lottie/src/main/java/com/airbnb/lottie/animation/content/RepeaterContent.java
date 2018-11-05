@@ -102,7 +102,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();
     //noinspection ConstantConditions
@@ -113,7 +113,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
       matrix.set(parentMatrix);
       matrix.preConcat(transform.getMatrixForRepeater(i + offset));
       float newAlpha = alpha * MiscUtils.lerp(startOpacity, endOpacity, i / copies);
-      contentGroup.draw(canvas, matrix, (int) newAlpha, mask);
+      contentGroup.draw(canvas, matrix, (int) newAlpha, mask, maskMatrix);
     }
   }
 

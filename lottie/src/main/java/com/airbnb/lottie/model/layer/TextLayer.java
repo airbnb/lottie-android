@@ -85,7 +85,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);

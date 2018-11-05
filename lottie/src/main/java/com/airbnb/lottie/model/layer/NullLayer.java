@@ -13,7 +13,7 @@ public class NullLayer extends BaseLayer {
     super(lottieDrawable, layerModel);
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     // Do nothing.
   }
 

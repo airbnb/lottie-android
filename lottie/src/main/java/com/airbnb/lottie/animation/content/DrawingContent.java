@@ -7,6 +7,6 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 
 public interface DrawingContent extends Content {
-  void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask);
+  void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix);
   void getBounds(RectF outBounds, Matrix parentMatrix);
 }
