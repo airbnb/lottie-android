@@ -68,8 +68,8 @@ dependencies {
   implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-  implementation 'com.jakewharton:butterknife:9.0.0-SNAPSHOT'
-  kapt 'com.jakewharton:butterknife-compiler:9.0.0-SNAPSHOT'
+  implementation 'com.jakewharton:butterknife:9.0.0-rc1'
+  kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
