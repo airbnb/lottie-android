@@ -10,7 +10,7 @@ android {
   compileSdkVersion 28
   defaultConfig {
     applicationId "com.airbnb.lottie"
-    minSdkVersion 16
+    minSdkVersion 19
     targetSdkVersion 28
     versionCode 67
     versionName "2.8.0"
