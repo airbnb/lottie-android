@@ -61,7 +61,9 @@ public class ImageAssetManager {
       asset.setBitmap(null);
       return ret;
     }
-    return putBitmap(id, bitmap);
+    Bitmap prevBitmap = imageAssets.get(id).getBitmap();
+    putBitmap(id, bitmap);
+    return prevBitmap;
   }
 
   @Nullable public Bitmap bitmapForId(String id) {
