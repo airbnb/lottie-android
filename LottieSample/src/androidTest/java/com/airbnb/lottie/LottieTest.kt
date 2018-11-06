@@ -19,6 +19,7 @@ import com.airbnb.lottie.samples.MainActivity
 import com.airbnb.lottie.samples.TestColorFilterActivity
 import com.airbnb.lottie.samples.views.FilmStripView
 import kotlinx.coroutines.runBlocking
+import com.airbnb.lottie.samples.R as SampleAppR
 
 import org.junit.Rule
 import org.junit.Test
@@ -40,7 +41,7 @@ class LottieTest {
     val mainActivityRule = ActivityTestRule(MainActivity::class.java)
 
     private val context get() = mainActivityRule.activity
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R.drawable.airbnb); }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(context.getResources(), SampleAppR.drawable.airbnb); }
     private val bitmap = Bitmap.createBitmap(SIZE_PX, SIZE_PX, Bitmap.Config.ARGB_8888)
     private val canvas = Canvas(bitmap)
 
@@ -58,7 +59,7 @@ class LottieTest {
         Log.d(L.TAG, "Beginning tests")
         val snapshotter = HappoSnapshotter(context)
         val view = newView()
-        val composition = LottieCompositionFactory.fromRawResSync(context, R.raw.hamburger_arrow).value
+        val composition = LottieCompositionFactory.fromRawResSync(context, SampleAppR.raw.hamburger_arrow).value
                 ?: throw IllegalStateException("Unable to parse animatioj")
         view.setComposition(composition)
         view.draw(canvas)
