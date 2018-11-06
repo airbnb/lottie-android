@@ -169,10 +169,10 @@ public class LottieValueAnimatorUnitTest extends BaseTest {
 
     // setFrame < minFrame should clamp to minFrame
     animator.setFrame(100);
-    assertEquals(200, animator.getFrame());
+    assertEquals(200f, animator.getFrame());
 
     animator.setFrame(900);
-    assertEquals(800, animator.getFrame());
+    assertEquals(800f, animator.getFrame());
   }
 
   @Test(expected = IllegalArgumentException.class)
