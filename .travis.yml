@@ -57,7 +57,8 @@ jobs:
     script: "./gradlew :LottieSample:lintRelease"
   - name: LottieSample Unit Tests
     script: "./gradlew :LottieSample:testReleaseUnitTest"
-  - name: Firebase Happo Tests
+  - stage: snapshots
+    name: Firebase Happo Tests
     script:
     - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
