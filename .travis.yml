@@ -17,9 +17,7 @@ cache:
 env:
 - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-- openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv
-  -in secrets.tar.enc -out secrets.tar -d
-- tar xvf secrets.tar
+- ./decrypt.sh
 - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
   else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -48,15 +46,15 @@ notifications:
   email: false
 jobs:
   include:
-  - stage: test
-    name: Lottie Lint
-    script: "./gradlew :lottie:lintRelease"
-  - name: Lottie Unit Tests
-    script: "./gradlew :lottie:testReleaseUnitTest"
-  - name: LottieSample Lint
-    script: "./gradlew :LottieSample:lintRelease"
-  - name: LottieSample Unit Tests
-    script: "./gradlew :LottieSample:testReleaseUnitTest"
+#  - stage: test
+#    name: Lottie Lint
+#    script: "./gradlew :lottie:lintRelease"
+#  - name: Lottie Unit Tests
+#    script: "./gradlew :lottie:testReleaseUnitTest"
+#  - name: LottieSample Lint
+#    script: "./gradlew :LottieSample:lintRelease"
+#  - name: LottieSample Unit Tests
+#    script: "./gradlew :LottieSample:testReleaseUnitTest"
   - stage: snapshots
     name: Firebase Happo Tests
     script:
