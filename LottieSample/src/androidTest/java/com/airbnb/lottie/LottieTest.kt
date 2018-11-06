@@ -37,7 +37,7 @@ private const val SIZE_PX = 1000
 @LargeTest
 class LottieTest {
 
-    @Rule
+    @get:Rule
     val mainActivityRule = ActivityTestRule(MainActivity::class.java)
 
     private val context get() = mainActivityRule.activity
@@ -45,10 +45,10 @@ class LottieTest {
     private val bitmap = Bitmap.createBitmap(SIZE_PX, SIZE_PX, Bitmap.Config.ARGB_8888)
     private val canvas = Canvas(bitmap)
 
-    @Rule
+    @get:Rule
     var colorFilterActivityRule = ActivityTestRule(TestColorFilterActivity::class.java)
 
-    @Rule
+    @get:Rule
     var permissionRule = GrantPermissionRule.grant(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
