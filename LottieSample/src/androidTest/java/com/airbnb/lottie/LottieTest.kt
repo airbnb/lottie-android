@@ -15,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 
-import com.airbnb.happo.HappoRunner
 import com.airbnb.lottie.samples.MainActivity
 import com.airbnb.lottie.samples.TestColorFilterActivity
 import com.airbnb.lottie.samples.views.FilmStripView
@@ -41,7 +40,7 @@ class LottieTest {
     val mainActivityRule = ActivityTestRule(MainActivity::class.java)
 
     private val context get() = mainActivityRule.activity
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(context.getResources(), R.drawable.airbnb); }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(context.getResources(), com.airbnb.lottie.samples.R.drawable.airbnb); }
     private val bitmap = Bitmap.createBitmap(SIZE_PX, SIZE_PX, Bitmap.Config.ARGB_8888)
     private val canvas = Canvas(bitmap)
 

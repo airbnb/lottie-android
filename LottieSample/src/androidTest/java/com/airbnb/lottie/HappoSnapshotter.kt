@@ -16,7 +16,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
+import java.lang.IllegalStateException
 import java.math.BigInteger
+import java.net.HttpURLConnection
 import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
@@ -79,6 +81,11 @@ class HappoSnapshotter(
                 .build()
 
         val response = okhttp.executeDeferred(request)
+        if (response.code() == HttpURLConnection.HTTP_OK) {
+            Log.d(TAG, "Uploaded $reportName to happo")
+        } else {
+            throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code()}")
+        }
     }
 
     private suspend fun TransferUtility.uploadDeferred(key: String, file: File): TransferObserver = suspendCoroutine { continuation ->
