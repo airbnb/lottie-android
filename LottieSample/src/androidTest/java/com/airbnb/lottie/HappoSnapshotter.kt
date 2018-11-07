@@ -3,12 +3,14 @@ package com.airbnb.lottie
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.*
 import com.amazonaws.services.s3.AmazonS3Client
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import io.jsonwebtoken.Jwts.header
 import kotlinx.coroutines.*
 import okhttp3.*
 import java.io.ByteArrayOutputStream
@@ -19,6 +21,7 @@ import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.net.HttpURLConnection
+import java.net.URLEncoder
 import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
@@ -45,7 +48,16 @@ class HappoSnapshotter(
             "${BuildConfig.VERSION_NAME}-$androidVersion"
     )
 
-    private val okhttp = OkHttpClient()
+    private val okhttp = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                Log.d("Gabe", "INTERCEPTED: ")
+                val authenticatedRequest = chain.request().newBuilder()
+                        .addHeader("Authentication", Credentials.basic(happoApiKey, happoSecretKey))
+                        .build()
+                Log.d(TAG, "Added header " + authenticatedRequest.headers())
+                chain.proceed(authenticatedRequest)
+            }
+            .build()
 
     private val transferUtility = TransferUtility.builder()
             .context(context)
@@ -76,7 +88,7 @@ class HappoSnapshotter(
         val body = RequestBody.create(MediaType.get("application/json"), json.toString())
         val request = Request.Builder()
                 .url("https://happo.io/api/reports/$reportName")
-                .header("Authentication", "$happoApiKey:$happoSecretKey".md5)
+//                .header("Authentication", Credentials.basic(happoApiKey, happoSecretKey))
                 .post(body)
                 .build()
 
