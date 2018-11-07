@@ -8,8 +8,10 @@ import android.util.Log
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.*
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import io.jsonwebtoken.Jwts.header
 import kotlinx.coroutines.*
 import okhttp3.*
@@ -22,6 +24,7 @@ import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.net.HttpURLConnection
 import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
@@ -40,24 +43,15 @@ class HappoSnapshotter(
 
     private val happoApiKey = BC.HappoApiKey
     private val happoSecretKey = BC.HappoSecretKey
-    private val gitBranch = if (BC.TRAVIS_GIT_BRANCH.isEmpty()) BC.GIT_BRANCH else BC.TRAVIS_GIT_BRANCH
+    private val gitBranch = URLEncoder.encode((if (BC.TRAVIS_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.TRAVIS_GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
-    private val reportNames = listOf(
+    private val reportNames = listOfNotNull(
             "${BC.GIT_SHA}-$androidVersion",
             "$gitBranch-$androidVersion",
             "${BuildConfig.VERSION_NAME}-$androidVersion"
     )
 
-    private val okhttp = OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                Log.d("Gabe", "INTERCEPTED: ")
-                val authenticatedRequest = chain.request().newBuilder()
-                        .addHeader("Authentication", Credentials.basic(happoApiKey, happoSecretKey))
-                        .build()
-                Log.d(TAG, "Added header " + authenticatedRequest.headers())
-                chain.proceed(authenticatedRequest)
-            }
-            .build()
+    private val okhttp = OkHttpClient()
 
     private val transferUtility = TransferUtility.builder()
             .context(context)
@@ -77,9 +71,11 @@ class HappoSnapshotter(
 
     suspend fun finalizeReportAndUpload() {
         snapshots.forEach { it.await() }
-        val json = JsonArray()
+        val json = JsonObject()
+        val snaps = JsonArray()
+        json.add("snaps", snaps)
         snapshots.forEach {
-            json.add(it.toJson())
+            snaps.add(it.toJson())
         }
         reportNames.forEach { upload(it, json) }
     }
@@ -87,21 +83,23 @@ class HappoSnapshotter(
     private suspend fun upload(reportName: String, json: JsonElement) {
         val body = RequestBody.create(MediaType.get("application/json"), json.toString())
         val request = Request.Builder()
+                .addHeader("Authorization", Credentials.basic(happoApiKey, happoSecretKey, Charset.forName("UTF-8")))
                 .url("https://happo.io/api/reports/$reportName")
-//                .header("Authentication", Credentials.basic(happoApiKey, happoSecretKey))
                 .post(body)
                 .build()
 
+        Log.d("Gabe", "Uploading " + request.url())
+
         val response = okhttp.executeDeferred(request)
-        if (response.code() == HttpURLConnection.HTTP_OK) {
+        if (response.isSuccessful) {
             Log.d(TAG, "Uploaded $reportName to happo")
         } else {
-            throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code()}")
+            throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code()}. " + response.body()?.string())
         }
     }
 
     private suspend fun TransferUtility.uploadDeferred(key: String, file: File): TransferObserver = suspendCoroutine { continuation ->
-        val observer = transferUtility.upload(key, file)
+        val observer = transferUtility.upload(key, file, CannedAccessControlList.PublicRead)
         val listener = object : TransferListener {
             override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {}
 
@@ -120,14 +118,14 @@ class HappoSnapshotter(
         observer.setTransferListener(listener)
     }
 
-    private val Bitmap.md5
-        get() = {
+    private val Bitmap.md5: String
+        get() {
             val outputStream = ByteArrayOutputStream()
             compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             val bytes = outputStream.toByteArray()
             val digest = MessageDigest.getInstance("MD5")
             digest.update(bytes, 0, bytes.size)
-            BigInteger(1, digest.digest()).toString(16)
+            return BigInteger(1, digest.digest()).toString(16)
         }
 
 

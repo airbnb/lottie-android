@@ -3,6 +3,7 @@ package com.airbnb.lottie
 import android.graphics.Bitmap
 import android.os.Build
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Deferred
 
@@ -22,11 +23,11 @@ class Snapshot(
         transferObserver = transferObserverDeferred.await()
     }
 
-    fun toJson() = JsonObject().apply {
+    fun toJson(): JsonElement = JsonObject().apply {
         addProperty("url", url)
         addProperty("variant", animationName)
         addProperty("target", "android${Build.VERSION.SDK_INT}")
-        addProperty("component", "")
+        addProperty("component", "default")
         addProperty("width", bitmap.width)
         addProperty("height", bitmap.height)
     }

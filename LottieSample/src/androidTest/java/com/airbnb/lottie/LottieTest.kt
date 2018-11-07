@@ -4,19 +4,16 @@ import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.os.Build
+import android.graphics.Color
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
-import android.text.TextUtils
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
+import com.airbnb.lottie.samples.FilmStripSnapshotTestActivity
 
-import com.airbnb.lottie.samples.MainActivity
-import com.airbnb.lottie.samples.TestColorFilterActivity
 import com.airbnb.lottie.samples.views.FilmStripView
 import kotlinx.coroutines.runBlocking
 import com.airbnb.lottie.samples.R as SampleAppR
@@ -26,7 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.IllegalStateException
 
-private const val SIZE_PX = 1000
+private const val SIZE_PX = 200
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests
@@ -37,16 +34,11 @@ private const val SIZE_PX = 1000
 @LargeTest
 class LottieTest {
 
-    @get:Rule
-    val mainActivityRule = ActivityTestRule(MainActivity::class.java)
-
-    private val context get() = mainActivityRule.activity
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(context.getResources(), SampleAppR.drawable.airbnb); }
-    private val bitmap = Bitmap.createBitmap(SIZE_PX, SIZE_PX, Bitmap.Config.ARGB_8888)
-    private val canvas = Canvas(bitmap)
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.getResources(), SampleAppR.drawable.airbnb); }
 
     @get:Rule
-    var colorFilterActivityRule = ActivityTestRule(TestColorFilterActivity::class.java)
+    var snapshotActivityRule = ActivityTestRule(FilmStripSnapshotTestActivity::class.java)
+    private val activity get() = snapshotActivityRule.activity
 
     @get:Rule
     var permissionRule = GrantPermissionRule.grant(
@@ -57,21 +49,24 @@ class LottieTest {
     @Test
     fun testAll() {
         Log.d(L.TAG, "Beginning tests")
-        val snapshotter = HappoSnapshotter(context)
-        val view = newView()
-        val composition = LottieCompositionFactory.fromRawResSync(context, SampleAppR.raw.hamburger_arrow).value
-                ?: throw IllegalStateException("Unable to parse animatioj")
-        view.setComposition(composition)
-        view.draw(canvas)
-        snapshotter.record("Hamburger Arrow", bitmap)
+        val snapshotter = HappoSnapshotter(activity)
         runBlocking {
+            val composition = LottieCompositionFactory.fromRawResSync(activity, SampleAppR.raw.hamburger_arrow).value
+                    ?: throw IllegalStateException("Unable to parse animation")
+            val bitmap = activity.snapshot(composition)
+            snapshotter.record("Hamburger Arrow", bitmap)
             snapshotter.finalizeReportAndUpload()
         }
     }
 
-    private fun newView() = FilmStripView(context).apply {
-        setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
-        val spec = View.MeasureSpec.makeMeasureSpec(SIZE_PX, View.MeasureSpec.EXACTLY)
-        measure(spec, spec)
+    private fun newView(): FilmStripView {
+        val view = FilmStripView(activity)
+        val parent = FrameLayout(activity)
+        parent.addView(view)
+        view.updateLayoutParams<FrameLayout.LayoutParams> {
+            width = SIZE_PX
+            height = SIZE_PX
+        }
+        return view
     }
 }
