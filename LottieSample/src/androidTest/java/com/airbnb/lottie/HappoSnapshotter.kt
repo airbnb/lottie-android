@@ -88,8 +88,6 @@ class HappoSnapshotter(
                 .post(body)
                 .build()
 
-        Log.d("Gabe", "Uploading " + request.url())
-
         val response = okhttp.executeDeferred(request)
         if (response.isSuccessful) {
             Log.d(TAG, "Uploaded $reportName to happo")

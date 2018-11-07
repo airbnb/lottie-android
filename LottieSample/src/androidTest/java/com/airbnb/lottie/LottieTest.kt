@@ -16,12 +16,17 @@ import com.airbnb.lottie.samples.FilmStripSnapshotTestActivity
 
 import com.airbnb.lottie.samples.views.FilmStripView
 import kotlinx.coroutines.runBlocking
+import org.junit.Before
 import com.airbnb.lottie.samples.R as SampleAppR
 
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.IllegalStateException
+import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 private const val SIZE_PX = 200
 
@@ -34,8 +39,6 @@ private const val SIZE_PX = 200
 @LargeTest
 class LottieTest {
 
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.getResources(), SampleAppR.drawable.airbnb); }
-
     @get:Rule
     var snapshotActivityRule = ActivityTestRule(FilmStripSnapshotTestActivity::class.java)
     private val activity get() = snapshotActivityRule.activity
@@ -46,27 +49,37 @@ class LottieTest {
             Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
+    private lateinit var snapshotter: HappoSnapshotter
+
+    @Before
+    fun setup() {
+        snapshotter = HappoSnapshotter(activity)
+    }
+
     @Test
     fun testAll() {
-        Log.d(L.TAG, "Beginning tests")
-        val snapshotter = HappoSnapshotter(activity)
         runBlocking {
-            val composition = LottieCompositionFactory.fromRawResSync(activity, SampleAppR.raw.hamburger_arrow).value
-                    ?: throw IllegalStateException("Unable to parse animation")
-            val bitmap = activity.snapshot(composition)
-            snapshotter.record("Hamburger Arrow", bitmap)
+            snapshotAssets()
             snapshotter.finalizeReportAndUpload()
         }
     }
 
-    private fun newView(): FilmStripView {
-        val view = FilmStripView(activity)
-        val parent = FrameLayout(activity)
-        parent.addView(view)
-        view.updateLayoutParams<FrameLayout.LayoutParams> {
-            width = SIZE_PX
-            height = SIZE_PX
+    private suspend fun snapshotAssets(pathPrefix: String = "") {
+        activity.getAssets().list(pathPrefix)?.forEach { animation ->
+            if (!animation.contains('.')) {
+                snapshotAssets(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
+                return@forEach
+            }
+            if (!animation.endsWith(".json") && !animation.endsWith(".zip")) return@forEach
+            val composition = parseComposition(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
+            val bitmap = activity.snapshot(composition)
+            snapshotter.record(animation, bitmap)
         }
-        return view
+    }
+
+    private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
+        LottieCompositionFactory.fromAsset(activity, animationName)
+                .addFailureListener { continuation.resumeWithException(it) }
+                .addListener { continuation.resume(it) }
     }
 }
