@@ -78,8 +78,17 @@ class LottieTest {
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
+        var isResumed = false
         LottieCompositionFactory.fromAsset(activity, animationName)
-                .addFailureListener { continuation.resumeWithException(it) }
-                .addListener { continuation.resume(it) }
+                .addFailureListener {
+                    if (isResumed) return@addFailureListener
+                    continuation.resumeWithException(it)
+                    isResumed = true
+                }
+                .addListener {
+                    if (isResumed) return@addListener
+                    continuation.resume(it)
+                    isResumed = true
+                }
     }
 }
