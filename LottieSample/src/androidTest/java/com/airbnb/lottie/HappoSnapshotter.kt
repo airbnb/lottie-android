@@ -75,7 +75,7 @@ class HappoSnapshotter(
     private suspend fun upload(reportName: String, json: JsonElement) {
         val body = RequestBody.create(MediaType.get("application/json"), json.toString())
         val request = Request.Builder()
-                .url("happo.io/api/reports/$reportName")
+                .url("https://happo.io/api/reports/$reportName")
                 .header("Authentication", "$happoApiKey:$happoSecretKey".md5)
                 .post(body)
                 .build()
