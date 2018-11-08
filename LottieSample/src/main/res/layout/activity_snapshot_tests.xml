@@ -9,4 +9,9 @@
         android:layout_width="1000px"
         android:layout_height="1000px" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="wrap_contentw"
+        android:layout_height="wrap_content" />
+
 </FrameLayout>

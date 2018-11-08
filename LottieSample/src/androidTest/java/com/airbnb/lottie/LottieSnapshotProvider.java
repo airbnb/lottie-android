@@ -55,22 +55,6 @@ public class LottieSnapshotProvider extends SnapshotProvider {
   @Override
   public void beginSnapshotting() {
     Log.d(L.TAG, "beginSnapshotting");
-    try {
-      snapshotAssets(context.getAssets().list(""));
-      String[] tests = context.getAssets().list("Tests");
-      for (int i = 0; i < tests.length; i++) {
-        tests[i] = "Tests/" + tests[i];
-      }
-      snapshotAssets(tests);
-
-      String[] lottiefiles = context.getAssets().list("lottiefiles");
-      for (int i = 0; i < lottiefiles.length; i++) {
-        lottiefiles[i] = "lottiefiles/" + lottiefiles[i];
-      }
-      snapshotAssets(lottiefiles);
-    } catch (IOException e) {
-      onError(e);
-    }
     testFrameBoundary();
     testFrameBoundary2();
     testScaleTypes();

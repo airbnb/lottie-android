@@ -1,20 +1,13 @@
 package com.airbnb.lottie
 
 import android.Manifest
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
-import android.util.Log
-import android.widget.FrameLayout
-import androidx.core.view.updateLayoutParams
-import com.airbnb.lottie.samples.FilmStripSnapshotTestActivity
+import com.airbnb.lottie.samples.SnapshotTestActivity
+import kotlinx.android.synthetic.main.activity_snapshot_tests.*
 
-import com.airbnb.lottie.samples.views.FilmStripView
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import com.airbnb.lottie.samples.R as SampleAppR
@@ -22,8 +15,6 @@ import com.airbnb.lottie.samples.R as SampleAppR
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.IllegalStateException
-import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -40,7 +31,7 @@ private const val SIZE_PX = 200
 class LottieTest {
 
     @get:Rule
-    var snapshotActivityRule = ActivityTestRule(FilmStripSnapshotTestActivity::class.java)
+    var snapshotActivityRule = ActivityTestRule(SnapshotTestActivity::class.java)
     private val activity get() = snapshotActivityRule.activity
 
     @get:Rule
@@ -72,9 +63,30 @@ class LottieTest {
             }
             if (!animation.endsWith(".json") && !animation.endsWith(".zip")) return@forEach
             val composition = parseComposition(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
-            val bitmap = activity.snapshot(composition)
+            val bitmap = activity.snapshotFilmstrip(composition)
             snapshotter.record(animation, bitmap)
         }
+    }
+
+    private suspend fun snapshotFrameBoundaries() {
+        val animationView = activity.getAnimationView()
+        animationView.setComposition(parseComposition("Tests/Frame.json"))
+        animationView.frame = 16
+        activity.snapshotAnimationView()
+        animationView.frame = 17
+        activity.snapshotAnimationView()
+        animationView.frame = 50
+        activity.snapshotAnimationView()
+        animationView.frame = 51
+        activity.snapshotAnimationView()
+
+        animationView.setComposition(parseComposition("Tests/RGB.json"))
+        animationView.frame = 0
+        activity.snapshotAnimationView()
+        animationView.frame = 1
+        activity.snapshotAnimationView()
+        animationView.frame = 2
+        activity.snapshotAnimationView()
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->

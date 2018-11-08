@@ -34,6 +34,13 @@ import com.airbnb.lottie.samples.BuildConfig as BC
 
 private const val TAG = "HappotSnapshotter"
 
+/**
+ * Use this class to record Bitmap snapshots and upload them to happo.
+ *
+ * To use it:
+ *    1) Call record with each bitmap you want to save
+ *    2) Call finalizeAndUpload
+ */
 class HappoSnapshotter(
         private val context: Context
 ) : CoroutineScope {

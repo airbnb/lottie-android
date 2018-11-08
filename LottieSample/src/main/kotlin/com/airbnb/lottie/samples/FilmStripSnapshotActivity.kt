@@ -80,7 +80,7 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
         animationsDir.listFiles()
                 .filter { it.name.endsWith(".json") }
                 .forEach { file ->
-                    Log.d(L.TAG, "Creating snapshot for ${file.name}")
+                    Log.d(L.TAG, "Creating snapshotFilmstrip for ${file.name}")
                     val fis = FileInputStream(file)
                     val result = LottieCompositionFactory.fromJsonInputStreamSync(fis, file.name)
                     val composition = result.value ?: throw IllegalStateException("Unable to parse composition for $file", result.exception)
