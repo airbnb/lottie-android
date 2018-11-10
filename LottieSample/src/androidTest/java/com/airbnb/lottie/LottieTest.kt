@@ -55,6 +55,8 @@ class LottieTest {
     fun testAll() {
         runBlocking {
             snapshotAssets()
+            snapshotFrameBoundaries()
+            snapshotScaleTypes()
             snapshotter.finalizeReportAndUpload()
         }
     }
