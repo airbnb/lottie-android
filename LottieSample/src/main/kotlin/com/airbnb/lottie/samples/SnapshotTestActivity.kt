@@ -24,9 +24,9 @@ class SnapshotTestActivity : AppCompatActivity() {
     fun getAnimationView() = animationView
 
     suspend fun snapshotAnimationView() = suspendCoroutine<Bitmap> { continuation ->
-        animationView.isVisible = true
-        filmStripView.isVisible = false
         animationView.post {
+            animationView.isVisible = true
+            filmStripView.isVisible = false
             val bitmap = Bitmap.createBitmap(animationView.width, animationView.height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             animationView.draw(canvas)
@@ -35,9 +35,9 @@ class SnapshotTestActivity : AppCompatActivity() {
     }
 
     suspend fun snapshotFilmstrip(composition: LottieComposition) = suspendCoroutine<Bitmap> { continuation ->
-        animationView.isVisible = false
-        filmStripView.isVisible = true
         filmStripView.post {
+            animationView.isVisible = false
+            filmStripView.isVisible = true
             val bitmap = Bitmap.createBitmap(filmStripView.width, filmStripView.height, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
             filmStripView.setComposition(composition)
