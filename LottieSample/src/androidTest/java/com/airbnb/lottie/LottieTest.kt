@@ -11,6 +11,9 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.airbnb.lottie.samples.SnapshotTestActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -19,6 +22,7 @@ import com.airbnb.lottie.samples.R as SampleAppR
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -182,24 +186,30 @@ class LottieTest {
         }
     }
 
-    private suspend fun withAnimationView(animationName: String, variant: String = "default", block: (LottieAnimationView) -> Unit) {
+    private suspend fun withAnimationView(animationName: String, variant: String = "default", block: (LottieAnimationView) -> Unit) = suspendCoroutine<Unit> { continuation ->
         val animationView = activity.getAnimationView()
-        animationView.setComposition(parseComposition(animationName))
-        val layoutParams = animationView.layoutParams
-        animationView.frame = 0
-        animationView.scale = 1f
-        animationView.scaleType
-        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+        // TODO: use launch(UI)
+        animationView.post {
+            runBlocking {
+                animationView.setComposition(parseComposition(animationName))
+                val layoutParams = animationView.layoutParams
+                animationView.frame = 0
+                animationView.scale = 1f
+                animationView.scaleType
+                animationView.scaleType = ImageView.ScaleType.FIT_CENTER
 
-        block(animationView)
+                block(animationView)
 
-        val bitmap = activity.snapshotAnimationView()
-        snapshotter.record(bitmap, animationName, variant)
+                val bitmap = activity.snapshotAnimationView()
+                snapshotter.record(bitmap, animationName, variant)
 
-        animationView.layoutParams = layoutParams
-        animationView.requestLayout()
-        animationView.scale = 1f
-        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+                animationView.layoutParams = layoutParams
+                animationView.requestLayout()
+                animationView.scale = 1f
+                animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+            continuation.resume(Unit)
+        }
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
