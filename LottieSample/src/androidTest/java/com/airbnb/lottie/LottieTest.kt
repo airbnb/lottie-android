@@ -1,12 +1,16 @@
 package com.airbnb.lottie
 
 import android.Manifest
+import android.content.res.Resources
+import android.util.DisplayMetrics
+import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.view.updateLayoutParams
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.airbnb.lottie.samples.SnapshotTestActivity
-import kotlinx.android.synthetic.main.activity_snapshot_tests.*
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -64,29 +68,136 @@ class LottieTest {
             if (!animation.endsWith(".json") && !animation.endsWith(".zip")) return@forEach
             val composition = parseComposition(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
             val bitmap = activity.snapshotFilmstrip(composition)
-            snapshotter.record(animation, bitmap)
+            snapshotter.record(bitmap, animation, "default")
         }
     }
 
     private suspend fun snapshotFrameBoundaries() {
-        val animationView = activity.getAnimationView()
-        animationView.setComposition(parseComposition("Tests/Frame.json"))
-        animationView.frame = 16
-        activity.snapshotAnimationView()
-        animationView.frame = 17
-        activity.snapshotAnimationView()
-        animationView.frame = 50
-        activity.snapshotAnimationView()
-        animationView.frame = 51
-        activity.snapshotAnimationView()
+        withAnimationView("Tests/Frame.json") { animationView ->
+            animationView.frame = 16
+        }
+        withAnimationView("Tests/Frame.json") { animationView ->
+            animationView.frame = 17
+        }
+        withAnimationView("Tests/Frame.json") { animationView ->
+            animationView.frame = 50
+        }
+        withAnimationView("Tests/Frame.json") { animationView ->
+            animationView.frame = 51
+        }
 
-        animationView.setComposition(parseComposition("Tests/RGB.json"))
+        withAnimationView("Tests/RGB.json") { animationView ->
+            animationView.frame = 0
+        }
+
+        withAnimationView("Tests/RGB.json") { animationView ->
+            animationView.frame = 1
+        }
+        withAnimationView("Tests/RGB.json") { animationView ->
+            animationView.frame = 2
+        }
+    }
+
+    private suspend fun snapshotScaleTypes() {
+        withAnimationView("LottieLogo1.json", "Wrap Content") { animationView ->
+            animationView.updateLayoutParams {
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+        }
+
+        withAnimationView("LottieLogo1.json", "Match Parent") { animationView ->
+            animationView.updateLayoutParams {
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
+            }
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300@2x") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scale = 2f
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300@4x") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scale = 4f
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300 centerCrop") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300 centerInside") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300 centerInside @2x") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            animationView.scale = 2f
+        }
+
+        withAnimationView("LottieLogo1.json", "300x300 centerCrop @2x") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_CROP
+            animationView.scale = 2f
+        }
+
+        withAnimationView("LottieLogo1.json", "600x300 centerInside") { animationView ->
+            animationView.updateLayoutParams {
+                width = 600.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+
+        withAnimationView("LottieLogo1.json", "300x600 centerInside") { animationView ->
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 600.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+    }
+
+    private suspend fun withAnimationView(animationName: String, variant: String = "default", block: (LottieAnimationView) -> Unit) {
+        val animationView = activity.getAnimationView()
+        animationView.setComposition(parseComposition(animationName))
+        val layoutParams = animationView.layoutParams
         animationView.frame = 0
-        activity.snapshotAnimationView()
-        animationView.frame = 1
-        activity.snapshotAnimationView()
-        animationView.frame = 2
-        activity.snapshotAnimationView()
+        animationView.scale = 1f
+        animationView.scaleType
+        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+
+        block(animationView)
+
+        val bitmap = activity.snapshotAnimationView()
+        snapshotter.record(bitmap, animationName, variant)
+
+        animationView.layoutParams = layoutParams
+        animationView.requestLayout()
+        animationView.scale = 1f
+        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
@@ -103,4 +214,6 @@ class LottieTest {
                     isResumed = true
                 }
     }
+
+    private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
 }

@@ -3,7 +3,6 @@ package com.airbnb.lottie
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
-import android.util.Base64
 import android.util.Log
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.*
@@ -12,7 +11,6 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import io.jsonwebtoken.Jwts.header
 import kotlinx.coroutines.*
 import okhttp3.*
 import java.io.ByteArrayOutputStream
@@ -22,7 +20,6 @@ import java.io.IOException
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigInteger
-import java.net.HttpURLConnection
 import java.net.URLEncoder
 import java.nio.charset.Charset
 import java.security.MessageDigest
@@ -67,13 +64,13 @@ class HappoSnapshotter(
             .build()
     private val snapshots = mutableListOf<Snapshot>()
 
-    fun record(animationName: String, bitmap: Bitmap) {
+    fun record(bitmap: Bitmap, animationName: String, variant: String) {
         val md5 = bitmap.md5
         val file = File(context.cacheDir, "$md5.png")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val observer = async { transferUtility.uploadDeferred("snapshots/$md5.png", file) }
-        snapshots += Snapshot(observer, bitmap, animationName)
+        snapshots += Snapshot(observer, bitmap, animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {

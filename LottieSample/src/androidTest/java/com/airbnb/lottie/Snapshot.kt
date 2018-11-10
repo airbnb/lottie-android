@@ -10,7 +10,8 @@ import kotlinx.coroutines.Deferred
 class Snapshot(
         private val transferObserverDeferred: Deferred<TransferObserver>,
         val bitmap: Bitmap,
-        val animationName: String
+        val animationName: String,
+        val variant: String
 ) {
     /**
      * You must call await before calling this.
@@ -27,7 +28,7 @@ class Snapshot(
         addProperty("url", url)
         addProperty("variant", animationName)
         addProperty("target", "android${Build.VERSION.SDK_INT}")
-        addProperty("component", "default")
+        addProperty("component", variant)
         addProperty("width", bitmap.width)
         addProperty("height", bitmap.height)
     }
