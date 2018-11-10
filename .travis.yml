@@ -58,7 +58,6 @@ jobs:
   - stage: snapshots
     name: Firebase Happo Tests
     script:
-    - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
   - stage: deploy
     name: Create release and upload artifacts
