@@ -327,7 +327,6 @@ public class LottieCompositionFactory {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
         @Override
         public LottieResult<LottieComposition> call() {
-          Log.d("Gabe", "call\treturning from cache");
           return new LottieResult<>(cachedComposition);
         }
       });

@@ -6,7 +6,7 @@ if (!process.env.TRAVIS_REPO_SLUG) {
 
 const https = require('https');
 
-const postData = `{\"body\": \"Snapshot Test Results: https://happo.io/compare?q=lottie-master-android26..lottie-${process.env.GIT_SHA}-android26&a=27\"}`
+const postData = `{\"body\": \"**Snapshot Tests**\\nReport: https://happo.io/a/27/report/${process.env.GIT_SHA}-android26\\nDiff: https://happo.io/a/27/compare/master-android26/${process.env.GIT_SHA}-android26\"}`
 
 const options = {
   hostname: 'api.github.com',

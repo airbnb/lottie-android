@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -8,4 +8,6 @@
     <dimen name="control_bar_button_padding">8dp</dimen>
     <dimen name="bottom_bar_peek_height">256dp</dimen>
     <dimen name="showcase_carousel_padding">8dp</dimen>
+    <!-- This is intentionally px -->
+    <dimen name="film_strip_size" tools:ignore="PxUsage">200px</dimen>
 </resources>

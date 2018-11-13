@@ -67,15 +67,19 @@ dependencies {
   implementation 'com.airbnb.android:mvrx:0.5.0'
   implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1'
   implementation 'com.jakewharton:butterknife:9.0.0-rc1'
   kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
   testImplementation 'junit:junit:4.12'
-  androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
-  // TODO: figure out why transitive deps of happo are needed
+  implementation 'com.amazonaws:aws-android-sdk-s3:2.7.+'
+  implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
+  implementation ('com.amazonaws:aws-android-sdk-auth-userpools:2.7.+@aar') { transitive = true }
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
   androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
   androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0-alpha4'

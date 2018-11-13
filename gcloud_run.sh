@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 if [ -z $TRAVIS_PULL_REQUEST_SLUG ] && [ "$TRAVIS_REPO_SLUG" != "airbnb/lottie-android" ]; then
   echo "Skipping gcloud run for PR because api keys are not available from forks."
   exit 0
@@ -21,6 +22,7 @@ gcloud firebase test android run --no-auto-google-login --type instrumentation -
 result=$?
 }
 
+./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest
 RunTests
 
 if [ "$result" -ne "0" ]; then

@@ -17,9 +17,7 @@ cache:
 env:
 - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-- openssl aes-256-cbc -K $encrypted_7f6a0d70974a_key -iv $encrypted_7f6a0d70974a_iv
-  -in secrets.tar.enc -out secrets.tar -d
-- tar xvf secrets.tar
+- ./decrypt.sh
 - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
   else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -59,7 +57,6 @@ jobs:
     script: "./gradlew :LottieSample:testReleaseUnitTest"
   - name: Firebase Happo Tests
     script:
-    - "./gradlew :LottieSample:assembleDebug :LottieSample:assembleAndroidTest"
     - "./gcloud_run.sh"
   - stage: deploy
     name: Create release and upload artifacts
