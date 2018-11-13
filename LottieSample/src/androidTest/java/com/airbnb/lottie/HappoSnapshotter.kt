@@ -116,9 +116,16 @@ class HappoSnapshotter(
             }
 
             override fun onStateChanged(id: Int, state: TransferState) {
-                if (state == TransferState.COMPLETED) {
-                    Log.d(TAG, "$id finished uploading.")
-                    continuation.resume(observer)
+                when (state) {
+                    TransferState.COMPLETED -> {
+                        Log.d(TAG, "$id finished uploading.")
+                        continuation.resume(observer)
+                    }
+                    TransferState.CANCELED, TransferState.FAILED -> {
+                        Log.d(TAG, "$id failed uploading ($state).")
+                        continuation.resume(observer)
+                    }
+                    else -> Unit
                 }
             }
         }
