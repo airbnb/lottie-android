@@ -447,7 +447,6 @@ class LottieTest {
     ) {
         async(Dispatchers.Main) {
             val animationView = activity.getAnimationView()
-            Log.d(L.TAG, "Snapshotting $animationName")
             animationView.setComposition(parseComposition(animationName))
             val layoutParams = animationView.layoutParams
             animationView.frame = 0
@@ -456,7 +455,8 @@ class LottieTest {
             animationView.scaleType = ImageView.ScaleType.FIT_CENTER
 
             suspendCoroutine<Unit> { continuation ->
-                animationView.doOnNextLayout {
+                animationView.requestLayout()
+                animationView.post {
                     continuation.resume(Unit)
                 }
             }

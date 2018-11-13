@@ -31,7 +31,7 @@ class SnapshotTestActivity : AppCompatActivity() {
     suspend fun snapshotAnimationView(): Bitmap {
         animationView.isVisible = true
         filmStripView.isVisible = false
-        val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
+        val bitmap = bitmapPool.acquire(animationView.width.coerceAtLeast(1), animationView.height.coerceAtLeast(1))
         val canvas = Canvas(bitmap)
         animationView.draw(canvas)
         return bitmap
