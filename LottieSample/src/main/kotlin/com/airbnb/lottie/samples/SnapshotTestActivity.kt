@@ -9,11 +9,16 @@ import androidx.core.view.isVisible
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import kotlinx.android.synthetic.main.activity_snapshot_tests.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class SnapshotTestActivity : AppCompatActivity() {
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(resources, R.drawable.airbnb); }
+    private val bitmapPool = BitmapPool()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,15 +28,13 @@ class SnapshotTestActivity : AppCompatActivity() {
 
     fun getAnimationView() = animationView
 
-    suspend fun snapshotAnimationView() = suspendCoroutine<Bitmap> { continuation ->
-        animationView.post {
-            animationView.isVisible = true
-            filmStripView.isVisible = false
-            val bitmap = Bitmap.createBitmap(animationView.width, animationView.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            animationView.draw(canvas)
-            continuation.resume(bitmap)
-        }
+    suspend fun snapshotAnimationView(): Bitmap {
+        animationView.isVisible = true
+        filmStripView.isVisible = false
+        val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
+        val canvas = Canvas(bitmap)
+        animationView.draw(canvas)
+        return bitmap
     }
 
     suspend fun snapshotFilmstrip(composition: LottieComposition) = suspendCoroutine<Bitmap> { continuation ->
@@ -43,6 +46,20 @@ class SnapshotTestActivity : AppCompatActivity() {
             filmStripView.setComposition(composition)
             filmStripView.draw(canvas)
             continuation.resume(bitmap)
+        }
+    }
+
+    private class BitmapPool() {
+        private val bitmaps = mutableListOf<Bitmap>()
+
+        @Synchronized
+        fun acquire(width: Int, height: Int): Bitmap {
+            return bitmaps.firstOrNull { it.width == width && it.height == height } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        }
+
+        @Synchronized
+        fun release(bitmap: Bitmap) {
+            bitmaps.add(bitmap)
         }
     }
 }

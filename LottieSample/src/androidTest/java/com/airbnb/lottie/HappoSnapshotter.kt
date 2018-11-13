@@ -45,6 +45,7 @@ class HappoSnapshotter(
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
+    private val bucket = "lottie-happo"
     private val happoApiKey = BC.HappoApiKey
     private val happoSecretKey = BC.HappoSecretKey
     private val gitBranch = URLEncoder.encode((if (BC.TRAVIS_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.TRAVIS_GIT_BRANCH).replace("/", "_"), "UTF-8")
@@ -60,21 +61,25 @@ class HappoSnapshotter(
     private val transferUtility = TransferUtility.builder()
             .context(context)
             .s3Client(AmazonS3Client(BasicAWSCredentials(BC.S3AccessKey, BC.S3SecretKey)))
-            .defaultBucket("lottie-happo")
+            .defaultBucket(bucket)
             .build()
     private val snapshots = mutableListOf<Snapshot>()
 
     fun record(bitmap: Bitmap, animationName: String, variant: String) {
+        Log.d(L.TAG, "Recording $animationName $variant")
         val md5 = bitmap.md5
+        val key = "snapshots/$md5.png"
         val file = File(context.cacheDir, "$md5.png")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val observer = async { transferUtility.uploadDeferred("snapshots/$md5.png", file) }
-        snapshots += Snapshot(observer, bitmap, animationName, variant)
+        val observer = async { transferUtility.uploadDeferred(key, file) }
+        snapshots += Snapshot(observer, bucket, key, bitmap.width, bitmap.height, animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {
+        Log.d(L.TAG, "Waiting for snapshots to upload")
         snapshots.forEach { it.await() }
+        Log.d(L.TAG, "Finished uploading snapshots")
         val json = JsonObject()
         val snaps = JsonArray()
         json.add("snaps", snaps)

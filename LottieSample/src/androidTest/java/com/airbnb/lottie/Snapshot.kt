@@ -8,28 +8,26 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.Deferred
 
 class Snapshot(
-        private val transferObserverDeferred: Deferred<TransferObserver>,
-        val bitmap: Bitmap,
-        val animationName: String,
-        val variant: String
+        private val transferObserverDeferred: Deferred<*>,
+        private val bucket: String,
+        private val key: String,
+        private val width: Int,
+        private val height: Int,
+        private val animationName: String,
+        private val variant: String
 ) {
-    /**
-     * You must call await before calling this.
-     */
-    lateinit var transferObserver: TransferObserver
-
-    private val url get() = "https://s3.amazonaws.com/${transferObserver.bucket}/${transferObserver.key}"
+    private val url get() = "https://s3.amazonaws.com/$bucket/$key"
 
     suspend fun await() {
-        transferObserver = transferObserverDeferred.await()
+        transferObserverDeferred.await()
     }
 
     fun toJson(): JsonElement = JsonObject().apply {
         addProperty("url", url)
-        addProperty("variant", animationName)
         addProperty("target", "android${Build.VERSION.SDK_INT}")
-        addProperty("component", variant)
-        addProperty("width", bitmap.width)
-        addProperty("height", bitmap.height)
+        addProperty("component", animationName)
+        addProperty("variant", variant)
+        addProperty("width", width)
+        addProperty("height", height)
     }
 }
