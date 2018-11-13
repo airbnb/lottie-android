@@ -77,8 +77,6 @@ dependencies {
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
   testImplementation 'junit:junit:4.12'
-  androidTestImplementation 'com.airbnb.android:happo:0.0.15@aar'
-  // TODO: figure out why transitive deps of happo are needed
   implementation 'com.amazonaws:aws-android-sdk-s3:2.7.+'
   implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
   implementation ('com.amazonaws:aws-android-sdk-auth-userpools:2.7.+@aar') { transitive = true }
