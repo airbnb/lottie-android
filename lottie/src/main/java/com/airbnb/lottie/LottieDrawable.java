@@ -317,7 +317,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha, null, maskIdentityMatrix, maskIdentityMatrix);
+    compositionLayer.draw(canvas, matrix, alpha, null, maskIdentityMatrix, matrix);
     L.endSection("Drawable#draw");
 
     if (extraScale > 1) {

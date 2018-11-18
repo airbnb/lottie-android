@@ -38,7 +38,7 @@ public class SolidLayer extends BaseLayer {
     paint.setColor(layerModel.getSolidColor());
   }
 
-  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     int backgroundAlpha = Color.alpha(layerModel.getSolidColor());
     if (backgroundAlpha == 0) {
       return;
@@ -71,7 +71,8 @@ public class SolidLayer extends BaseLayer {
       path.close();
 
       if (mask != null) {
-        mask.applyToPath(path, parentMatrix, parentMatrix);
+        // TODO: use the right matte matrix
+        mask.applyToPath(path, maskMatrix, parentMatrix, new Matrix());
       }
 
       canvas.drawPath(path, paint);

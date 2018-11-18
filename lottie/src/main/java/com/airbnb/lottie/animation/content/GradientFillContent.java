@@ -122,7 +122,7 @@ public class GradientFillContent
     paint.setAlpha(clamp(alpha, 0, 255));
 
     if (mask != null) {
-      mask.applyToPath(path, maskMatrix, matteMatrix);
+      mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
     }
 
     canvas.drawPath(path, paint);

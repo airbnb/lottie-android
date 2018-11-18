@@ -94,7 +94,7 @@ public class TextLayer extends BaseLayer {
     return Collections.emptyList();
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);
@@ -233,7 +233,8 @@ public class TextLayer extends BaseLayer {
     }
 
     if (mask != null) {
-      mask.applyToPath(path, maskMatrix, matteMatrix);
+      // TODO: use the right matte matrix
+      mask.applyToPath(path, maskMatrix, matteMatrix, new Matrix());
     }
 
     canvas.drawPath(path, paint);

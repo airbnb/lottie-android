@@ -20,7 +20,6 @@ import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.value.LottieValueCallback;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -168,7 +167,7 @@ public abstract class BaseLayer
     L.beginSection("Layer#drawLayer");
     // TODO: figure out the right mask to use.
     MaskKeyframeAnimation layerMask = this.mask != null ? this.mask : mask;
-    drawLayer(canvas, matrix, alpha, layerMask, matrix);
+    drawLayer(canvas, matrix, alpha, layerMask, matrix, matteMatrix);
     L.endSection("Layer#drawLayer");
     recordRenderTime(L.endSection(drawTraceName));
   }
@@ -183,7 +182,7 @@ public abstract class BaseLayer
 
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix);
 
   boolean hasMasksOnThisLayer() {
     return mask != null && !mask.getMaskAnimations().isEmpty();

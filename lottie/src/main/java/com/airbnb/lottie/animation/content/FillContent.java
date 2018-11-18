@@ -90,7 +90,7 @@ public class FillContent
     }
 
     if (mask != null) {
-      mask.applyToPath(path, maskMatrix, matteMatrix);
+      mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
     }
 
     canvas.drawPath(path, paint);

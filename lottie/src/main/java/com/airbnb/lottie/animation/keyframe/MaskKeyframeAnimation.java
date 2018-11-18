@@ -19,7 +19,9 @@ public class MaskKeyframeAnimation {
   private final List<BaseKeyframeAnimation<ShapeData, Path>> maskAnimations;
   private final List<BaseKeyframeAnimation<Integer, Integer>> opacityAnimations;
   private final List<Mask> masks;
-  /** Reusable path for calculating masks. */
+  /**
+   * Reusable path for calculating masks.
+   */
   private final Path combinedPath = new Path();
   private final Path addPath = new Path();
   private final Path subtractPath = new Path();
@@ -56,16 +58,16 @@ public class MaskKeyframeAnimation {
     return opacityAnimations;
   }
 
-  public void applyToPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix) {
-    getMaskPath(contentPath, maskMatrix, matteMatrix, true);
+  public void applyToPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix, Matrix parentMatrix) {
+    getMaskPath(contentPath, maskMatrix, matteMatrix, parentMatrix, true);
   }
 
-  public Path getMaskPath(Path contentPath, Matrix matrix, Matrix parentMatrix, boolean applyToPath) {
+  public Path getMaskPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix, Matrix parentMatrix, boolean applyToPath) {
     combinedPath.reset();
     for (int i = 0; i < getMaskAnimations().size(); i++) {
       BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
       Path maskPath = mask.getValue();
-      maskPath.transform(matrix);
+      maskPath.transform(maskMatrix);
       Mask.MaskMode maskMode = getMasks().get(i).getMaskMode();
       if (maskMode == Mask.MaskMode.MaskModeAdd || maskMode == Mask.MaskMode.MaskModeIntersect) {
         addPath.set(contentPath);
@@ -87,25 +89,32 @@ public class MaskKeyframeAnimation {
 //      combinedPath.set(contentPath);
 
       List<Path> mattePaths = matteLayer.getPaths();
+      combinedPath.setFillType(Path.FillType.WINDING);
 //      mattePath.transform(parentMatrix);
       if (matteType == Layer.MatteType.Add) {
         RectF bounds = new RectF();
-//        contentPath.computeBounds(bounds, false);
-//        Log.d("Gabe", "Content: " + bounds);
 //        mattePath.computeBounds(bounds, false);
 //        Log.d("Gabe", "Matte: " + bounds);
 
         for (int i = 0; i < mattePaths.size(); i++) {
           Path mattePath = new Path(mattePaths.get(i));
-          mattePath.transform(parentMatrix);
+//          mattePath.transform(parentMatrix);
 
 
 //          combinedPath.addPath(mattePath);
 
 
           addPath.set(contentPath);
+//          addPath.transform(parentMatrix);
+          mattePath.transform(matteMatrix);
           addPath.op(mattePath, Path.Op.INTERSECT);
-          combinedPath.addPath(addPath);
+          if (combinedPath.isEmpty()) {
+            combinedPath.addPath(addPath);
+          } else {
+            combinedPath.op(addPath, Path.Op.UNION);
+          }
+//          combinedPath.addPath(addPath);
+
         }
 
 //        addPath.set(contentPath);

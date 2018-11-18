@@ -32,8 +32,8 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
-    contentGroup.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, parentMatrix);
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+    contentGroup.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, matteMatrix);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

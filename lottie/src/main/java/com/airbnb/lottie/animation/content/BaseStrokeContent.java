@@ -176,7 +176,7 @@ public abstract class BaseStrokeContent
           // Stroke has to use Canvas.clipPath so that it actually clips the stroke rather than creating
           // a new path of the content combined with the stroke. Doing that would cause Lottie to draw a stroke
           // on the mask edge that wasn't part of the original path.
-          Path maskPath = mask.getMaskPath(path, maskMatrix, matteMatrix, false);
+          Path maskPath = mask.getMaskPath(path, maskMatrix, matteMatrix, parentMatrix, false);
           maskPath.computeBounds(maskBounds, false);
           path.computeBounds(pathBounds, false);
           pathBounds.inset(-strokeWidth, -strokeWidth);
@@ -235,7 +235,7 @@ public abstract class BaseStrokeContent
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         if (mask != null) {
-          mask.applyToPath(path, maskMatrix, matteMatrix);
+          mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
         }
         canvas.drawPath(trimPathPath, paint);
       } else
@@ -244,7 +244,7 @@ public abstract class BaseStrokeContent
           // Do nothing
         } else if (currentLength + length <= endLength && startLength < currentLength) {
           if (mask != null) {
-            mask.applyToPath(path, maskMatrix, matteMatrix);
+            mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
           }
           canvas.drawPath(trimPathPath, paint);
         } else {
@@ -262,7 +262,7 @@ public abstract class BaseStrokeContent
           }
           Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
           if (mask != null) {
-            mask.applyToPath(path, maskMatrix, matteMatrix);
+            mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
           }
           canvas.drawPath(trimPathPath, paint);
         }
