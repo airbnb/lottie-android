@@ -12,6 +12,9 @@ import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
+import java.util.Collections;
+import java.util.List;
+
 public class ImageLayer extends BaseLayer {
 
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
@@ -51,6 +54,12 @@ public class ImageLayer extends BaseLayer {
     path.reset();
     path.addRect(outBounds, Path.Direction.CW);
     return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    // TODO
+    return Collections.emptyList();
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

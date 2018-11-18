@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.util.Log;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
@@ -25,6 +26,7 @@ import java.util.List;
 public class CompositionLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
+  private final List<Path> paths = new ArrayList<>();
   private final Path path = new Path();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
@@ -110,10 +112,29 @@ public class CompositionLayer extends BaseLayer {
   @Override
   public Path getPath() {
       path.reset();
-      for (int i = layers.size() - 1; i >= 0; i--) {
-        path.addPath(layers.get(i).getPath());
+      Matrix matrix = getTransformMatrix();
+      for (int i = Math.min(layers.size() - 1, 20); i >= 0; i--) {
+        path.addPath(layers.get(i).getPath(), matrix);
       }
+      path.close();
       return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    Matrix matrix = getTransformMatrix();
+    for (int i = 0; i < layers.size(); i++) {
+      Path path;
+      if (i >= paths.size()) {
+        path = new Path();
+        paths.add(path);
+      } else {
+        path = paths.get(i);
+      }
+      path.set(layers.get(i).getPath());
+      path.transform(matrix);
+    }
+    return paths;
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {

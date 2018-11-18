@@ -176,7 +176,7 @@ public abstract class BaseStrokeContent
           // Stroke has to use Canvas.clipPath so that it actually clips the stroke rather than creating
           // a new path of the content combined with the stroke. Doing that would cause Lottie to draw a stroke
           // on the mask edge that wasn't part of the original path.
-          Path maskPath = mask.getMaskPath(path, maskMatrix, matteMatrix);
+          Path maskPath = mask.getMaskPath(path, maskMatrix, matteMatrix, false);
           maskPath.computeBounds(maskBounds, false);
           path.computeBounds(pathBounds, false);
           pathBounds.inset(-strokeWidth, -strokeWidth);

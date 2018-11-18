@@ -19,9 +19,10 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class ContentGroup implements DrawingContent, PathContent,
+public class ContentGroup implements DrawingContent, PathContent, PathsContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
@@ -49,6 +50,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
   private final RectF rect = new RectF();
+  private final List<Path> paths;
 
   private final String name;
   private final List<Content> contents;
@@ -67,6 +69,10 @@ public class ContentGroup implements DrawingContent, PathContent,
     this.name = name;
     this.lottieDrawable = lottieDrawable;
     this.contents = contents;
+    paths = new ArrayList<>(contents.size());
+    for (int i = 0; i < paths.size(); i++) {
+      paths.set(i, new Path());
+    }
 
     if (transform != null) {
       transformAnimation = transform.createAnimation();
@@ -142,6 +148,24 @@ public class ContentGroup implements DrawingContent, PathContent,
       }
     }
     return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    // TODO: cache this somehow.
+    matrix.reset();
+    if (transformAnimation != null) {
+      matrix.set(transformAnimation.getMatrix());
+    }
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Path path = paths.get(i);
+      Content content = contents.get(i);
+      if (content instanceof PathContent) {
+        path.set(((PathContent) content).getPath());
+        path.transform(matrix);
+      }
+    }
+    return paths;
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {

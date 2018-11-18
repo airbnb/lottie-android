@@ -14,11 +14,13 @@ import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeGroup;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
   private final Path path = new Path();
+  private final List<Path> paths = Collections.emptyList();
   private final ContentGroup contentGroup;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
@@ -42,7 +44,17 @@ public class ShapeLayer extends BaseLayer {
   @Override
   public Path getPath() {
     path.set(contentGroup.getPath());
+    path.transform(getTransformMatrix());
     return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    List<Path> paths = new ArrayList<>(contentGroup.getPaths());
+    for (int i = 0; i < paths.size(); i++) {
+      paths.get(i).transform(getTransformMatrix());
+    }
+    return contentGroup.getPaths();
   }
 
   @Override

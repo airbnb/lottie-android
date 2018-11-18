@@ -9,6 +9,9 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 
+import java.util.Collections;
+import java.util.List;
+
 public class NullLayer extends BaseLayer {
   private final Path path = new Path();
 
@@ -28,5 +31,10 @@ public class NullLayer extends BaseLayer {
   @Override
   public Path getPath() {
     return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    return Collections.emptyList();
   }
 }

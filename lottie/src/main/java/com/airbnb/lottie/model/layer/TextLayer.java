@@ -25,10 +25,7 @@ import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TextLayer extends BaseLayer {
   private final char[] tempCharArray = new char[1];
@@ -89,6 +86,12 @@ public class TextLayer extends BaseLayer {
   public Path getPath() {
     // TODO
     return new Path();
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    // TODO
+    return Collections.emptyList();
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {

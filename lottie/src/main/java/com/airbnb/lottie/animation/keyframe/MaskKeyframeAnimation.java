@@ -57,12 +57,10 @@ public class MaskKeyframeAnimation {
   }
 
   public void applyToPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix) {
-    getMaskPath(contentPath, maskMatrix, matteMatrix);
-
-    contentPath.op(combinedPath, Path.Op.INTERSECT);
+    getMaskPath(contentPath, maskMatrix, matteMatrix, true);
   }
 
-  public Path getMaskPath(Path contentPath, Matrix matrix, Matrix parentMatrix) {
+  public Path getMaskPath(Path contentPath, Matrix matrix, Matrix parentMatrix, boolean applyToPath) {
     combinedPath.reset();
     for (int i = 0; i < getMaskAnimations().size(); i++) {
       BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
@@ -85,32 +83,55 @@ public class MaskKeyframeAnimation {
     combinedPath.close();
 
     if (matteLayer != null && matteType != null) {
-      Path mattePath = matteLayer.getPath();
-      mattePath.transform(parentMatrix);
+      // TODO this won't work if there are masks and mattes
+//      combinedPath.set(contentPath);
+
+      List<Path> mattePaths = matteLayer.getPaths();
+//      mattePath.transform(parentMatrix);
       if (matteType == Layer.MatteType.Add) {
         RectF bounds = new RectF();
-        contentPath.computeBounds(bounds, false);
-        Log.d("Gabe", "Content: " + bounds);
-        mattePath.computeBounds(bounds, false);
-        Log.d("Gabe", "Matte: " + bounds);
+//        contentPath.computeBounds(bounds, false);
+//        Log.d("Gabe", "Content: " + bounds);
+//        mattePath.computeBounds(bounds, false);
+//        Log.d("Gabe", "Matte: " + bounds);
 
-        addPath.set(contentPath);
-        addPath.op(mattePath, Path.Op.INTERSECT);
-        combinedPath.addPath(addPath);
+        for (int i = 0; i < mattePaths.size(); i++) {
+          Path mattePath = new Path(mattePaths.get(i));
+          mattePath.transform(parentMatrix);
 
-        combinedPath.computeBounds(bounds, false);
-        Log.d("Gabe", "Combined: " + bounds);
+
+//          combinedPath.addPath(mattePath);
+
+
+          addPath.set(contentPath);
+          addPath.op(mattePath, Path.Op.INTERSECT);
+          combinedPath.addPath(addPath);
+        }
+
+//        addPath.set(contentPath);
+//        long now = System.currentTimeMillis();
+//        addPath.op(mattePath, Path.Op.UNION);
+//        long end = System.currentTimeMillis() - now;
+//        Log.d("Gabe", "getPath\t" + end);
+//        combinedPath.addPath(addPath);
+
+//        combinedPath.computeBounds(bounds, false);
+//        Log.d("Gabe", "Combined: " + bounds);
 
       } else if (matteType == Layer.MatteType.Invert) {
-        subtractPath.set(contentPath);
-        subtractPath.op(mattePath, Path.Op.DIFFERENCE);
-        if (combinedPath.isEmpty()) {
-          combinedPath.addPath(contentPath);
-        }
-        combinedPath.op(subtractPath, Path.Op.INTERSECT);
+//        subtractPath.set(contentPath);
+//        subtractPath.op(mattePath, Path.Op.DIFFERENCE);
+//        if (combinedPath.isEmpty()) {
+//          combinedPath.addPath(contentPath);
+//        }
+//        combinedPath.op(subtractPath, Path.Op.INTERSECT);
       }
 
-      combinedPath.addPath(mattePath);
+//      combinedPath.addPath(mattePath);
+    }
+
+    if (applyToPath) {
+      contentPath.set(combinedPath);
     }
 
     return combinedPath;

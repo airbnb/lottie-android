@@ -10,6 +10,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.content.PathContent;
+import com.airbnb.lottie.animation.content.PathsContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
@@ -19,12 +20,13 @@ import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.value.LottieValueCallback;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseLayer
-    implements DrawingContent, PathContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+    implements DrawingContent, PathContent, PathsContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
   @Nullable
   static BaseLayer forModel(

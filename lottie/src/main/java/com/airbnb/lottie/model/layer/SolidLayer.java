@@ -16,12 +16,16 @@ import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.value.LottieValueCallback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SolidLayer extends BaseLayer {
 
   private final RectF rect = new RectF();
   private final Paint paint = new Paint();
   private final float[] points = new float[8];
   private final Path path = new Path();
+  private final List<Path> paths = new ArrayList<>(1);
   private final Layer layerModel;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
@@ -86,6 +90,12 @@ public class SolidLayer extends BaseLayer {
     path.reset();
     path.addRect(0f, 0f, (float) layerModel.getSolidWidth(), (float) layerModel.getSolidHeight(), Path.Direction.CW);
     return path;
+  }
+
+  @Override
+  public List<Path> getPaths() {
+    paths.get(0).set(getPath());
+    return paths;
   }
 
   @SuppressWarnings("unchecked")
