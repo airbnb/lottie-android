@@ -4,7 +4,6 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 
 import android.graphics.RectF;
-import android.util.Log;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
@@ -22,6 +21,8 @@ public class MaskKeyframeAnimation {
   /**
    * Reusable path for calculating masks.
    */
+  private final Path masksPath = new Path();
+  private final Path mattesPath = new Path();
   private final Path combinedPath = new Path();
   private final Path addPath = new Path();
   private final Path subtractPath = new Path();
@@ -63,7 +64,7 @@ public class MaskKeyframeAnimation {
   }
 
   public Path getMaskPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix, Matrix parentMatrix, boolean applyToPath) {
-    combinedPath.reset();
+    masksPath.reset();
     for (int i = 0; i < getMaskAnimations().size(); i++) {
       BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
       Path maskPath = mask.getValue();
@@ -72,60 +73,34 @@ public class MaskKeyframeAnimation {
       if (maskMode == Mask.MaskMode.MaskModeAdd || maskMode == Mask.MaskMode.MaskModeIntersect) {
         addPath.set(contentPath);
         addPath.op(maskPath, Path.Op.INTERSECT);
-        combinedPath.op(maskPath, Path.Op.UNION);
+        masksPath.op(maskPath, Path.Op.UNION);
       } else if (maskMode == Mask.MaskMode.MaskModeSubtract) {
         subtractPath.set(contentPath);
         subtractPath.op(maskPath, Path.Op.DIFFERENCE);
-        if (combinedPath.isEmpty()) {
-          combinedPath.addPath(contentPath);
+        if (masksPath.isEmpty()) {
+          masksPath.addPath(contentPath);
         }
-        combinedPath.op(subtractPath, Path.Op.INTERSECT);
+        masksPath.op(subtractPath, Path.Op.INTERSECT);
       }
     }
-    combinedPath.close();
+    masksPath.close();
 
+    mattesPath.reset();
+    mattesPath.setFillType(Path.FillType.WINDING);
     if (matteLayer != null && matteType != null) {
-      // TODO this won't work if there are masks and mattes
-//      combinedPath.set(contentPath);
-
       List<Path> mattePaths = matteLayer.getPaths();
-      combinedPath.setFillType(Path.FillType.WINDING);
-//      mattePath.transform(parentMatrix);
       if (matteType == Layer.MatteType.Add) {
-        RectF bounds = new RectF();
-//        mattePath.computeBounds(bounds, false);
-//        Log.d("Gabe", "Matte: " + bounds);
-
         for (int i = 0; i < mattePaths.size(); i++) {
           Path mattePath = new Path(mattePaths.get(i));
-//          mattePath.transform(parentMatrix);
-
-
-//          combinedPath.addPath(mattePath);
-
-
           addPath.set(contentPath);
-//          addPath.transform(parentMatrix);
           mattePath.transform(matteMatrix);
           addPath.op(mattePath, Path.Op.INTERSECT);
-          if (combinedPath.isEmpty()) {
-            combinedPath.addPath(addPath);
+          if (mattesPath.isEmpty()) {
+            mattesPath.addPath(addPath);
           } else {
-            combinedPath.op(addPath, Path.Op.UNION);
+            mattesPath.op(addPath, Path.Op.UNION);
           }
-//          combinedPath.addPath(addPath);
-
         }
-
-//        addPath.set(contentPath);
-//        long now = System.currentTimeMillis();
-//        addPath.op(mattePath, Path.Op.UNION);
-//        long end = System.currentTimeMillis() - now;
-//        Log.d("Gabe", "getPath\t" + end);
-//        combinedPath.addPath(addPath);
-
-//        combinedPath.computeBounds(bounds, false);
-//        Log.d("Gabe", "Combined: " + bounds);
 
       } else if (matteType == Layer.MatteType.Invert) {
 //        subtractPath.set(contentPath);
@@ -136,13 +111,18 @@ public class MaskKeyframeAnimation {
 //        combinedPath.op(subtractPath, Path.Op.INTERSECT);
       }
 
-//      combinedPath.addPath(mattePath);
     }
 
+    if (!masksPath.isEmpty() && !mattesPath.isEmpty()) {
+      combinedPath.op(masksPath, mattesPath, Path.Op.INTERSECT);
+    } else if (!masksPath.isEmpty()) {
+      combinedPath.set(masksPath);
+    } else {
+      combinedPath. set(mattesPath);
+    }
     if (applyToPath) {
       contentPath.set(combinedPath);
     }
-
     return combinedPath;
   }
 }
