@@ -95,6 +95,9 @@ public class SolidLayer extends BaseLayer {
 
   @Override
   public List<Path> getPaths() {
+    if (paths.get(0) == null) {
+      paths.set(0, new Path());
+    }
     paths.get(0).set(getPath());
     return paths;
   }
