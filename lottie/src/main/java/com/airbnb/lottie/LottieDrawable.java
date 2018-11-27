@@ -178,19 +178,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * If you have image assets and use {@link LottieDrawable} directly, you must call this yourself.
-   *
-   * Calling recycleBitmaps() doesn't have to be final and {@link LottieDrawable}
-   * will recreate the bitmaps if needed but they will leak if you don't recycle them.
-   *
-   */
-  public void recycleBitmaps() {
-    if (imageAssetManager != null) {
-      imageAssetManager.recycleBitmaps();
-    }
-  }
-
-  /**
    * Create a composition with {@link LottieCompositionFactory}
    *
    * @return True if the composition is different from the previously set composition, false otherwise.
@@ -244,7 +231,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   public void clearComposition() {
-    recycleBitmaps();
     if (animator.isRunning()) {
       animator.cancel();
     }
@@ -848,7 +834,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (imageAssetManager != null && !imageAssetManager.hasSameContext(getContext())) {
-      imageAssetManager.recycleBitmaps();
       imageAssetManager = null;
     }
 
