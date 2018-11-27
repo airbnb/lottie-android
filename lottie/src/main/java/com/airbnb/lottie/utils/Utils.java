@@ -183,11 +183,9 @@ public final class Utils {
   }
 
   public static float dpScale() {
-//    if (dpScale == -1) {
-//      dpScale = Resources.getSystem().getDisplayMetrics().density;
-//    }
-//    return dpScale;
-    // DO MOT MERGE THIS
-    return 1f;
+    if (dpScale == -1) {
+      dpScale = Resources.getSystem().getDisplayMetrics().density;
+    }
+    return dpScale;
   }
 }

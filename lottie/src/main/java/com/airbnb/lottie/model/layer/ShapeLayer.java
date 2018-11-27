@@ -20,8 +20,8 @@ import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
   private final Path path = new Path();
-  private final List<Path> paths = Collections.emptyList();
   private final ContentGroup contentGroup;
+  private List<Path> paths = Collections.emptyList();
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -50,11 +50,19 @@ public class ShapeLayer extends BaseLayer {
 
   @Override
   public List<Path> getPaths() {
-    List<Path> paths = new ArrayList<>(contentGroup.getPaths());
-    for (int i = 0; i < paths.size(); i++) {
-      paths.get(i).transform(getTransformMatrix());
+    List<Path> contentGroupPaths = contentGroup.getPaths();
+    if (paths.size() != contentGroupPaths.size()) {
+      paths = new ArrayList<>(contentGroupPaths.size());
+      for (int i = 0; i < contentGroupPaths.size(); i++) {
+        paths.add(new Path());
+      }
     }
-    return contentGroup.getPaths();
+    Matrix matrix = getTransformMatrix();
+    for (int i = 0; i < paths.size(); i++) {
+      contentGroupPaths.get(i).transform(matrix, paths.get(i));
+    }
+
+    return paths;
   }
 
   @Override
