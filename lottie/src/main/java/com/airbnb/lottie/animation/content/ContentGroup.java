@@ -50,7 +50,7 @@ public class ContentGroup implements DrawingContent, PathContent, PathsContent,
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
   private final RectF rect = new RectF();
-  private final List<Path> paths;
+  private final List<Path> paths = new ArrayList<>();
 
   private final String name;
   private final List<Content> contents;
@@ -69,10 +69,6 @@ public class ContentGroup implements DrawingContent, PathContent, PathsContent,
     this.name = name;
     this.lottieDrawable = lottieDrawable;
     this.contents = contents;
-    paths = new ArrayList<>(contents.size());
-    for (int i = 0; i < paths.size(); i++) {
-      paths.set(i, new Path());
-    }
 
     if (transform != null) {
       transformAnimation = transform.createAnimation();
@@ -158,6 +154,9 @@ public class ContentGroup implements DrawingContent, PathContent, PathsContent,
       matrix.set(transformAnimation.getMatrix());
     }
     for (int i = contents.size() - 1; i >= 0; i--) {
+      if (i >= paths.size()) {
+        paths.add(new Path());
+      }
       Path path = paths.get(i);
       Content content = contents.get(i);
       if (content instanceof PathContent) {

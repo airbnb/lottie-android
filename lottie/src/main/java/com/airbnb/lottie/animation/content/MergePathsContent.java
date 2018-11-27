@@ -21,9 +21,6 @@ public class MergePathsContent implements PathContent, GreedyContent {
   private final MergePaths mergePaths;
 
   public MergePathsContent(MergePaths mergePaths) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      throw new IllegalStateException("Merge paths are not supported pre-KitKat.");
-    }
     name = mergePaths.getName();
     this.mergePaths = mergePaths;
   }
