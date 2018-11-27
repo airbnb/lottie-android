@@ -101,8 +101,20 @@ public class MaskKeyframeAnimation {
             mattesPath.op(addPath, Path.Op.UNION);
           }
         }
-
       } else if (matteType == Layer.MatteType.Invert) {
+        for (int i = 0; i < mattePaths.size(); i++) {
+          Path mattePath = new Path(mattePaths.get(i));
+          subtractPath.set(contentPath);
+          mattePath.transform(matteMatrix);
+          subtractPath.op(mattePath, Path.Op.DIFFERENCE);
+        }
+        if (mattesPath.isEmpty()) {
+          mattesPath.addPath(subtractPath);
+        } else {
+          mattesPath.op(subtractPath, Path.Op.INTERSECT);
+        }
+
+
 //        subtractPath.set(contentPath);
 //        subtractPath.op(mattePath, Path.Op.DIFFERENCE);
 //        if (combinedPath.isEmpty()) {
