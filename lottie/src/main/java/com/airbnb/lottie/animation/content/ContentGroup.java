@@ -50,7 +50,7 @@ public class ContentGroup implements DrawingContent, PathContent, PathsContent,
   private final Matrix matrix = new Matrix();
   private final Path path = new Path();
   private final RectF rect = new RectF();
-  private final List<Path> paths = new ArrayList<>();
+  private List<Path> paths = Collections.emptyList();
 
   private final String name;
   private final List<Content> contents;
@@ -152,6 +152,13 @@ public class ContentGroup implements DrawingContent, PathContent, PathsContent,
     matrix.reset();
     if (transformAnimation != null) {
       matrix.set(transformAnimation.getMatrix());
+    }
+
+    if (paths.size() != contents.size()) {
+      paths = new ArrayList<>(contents.size());
+      for (int i = 0; i < contents.size(); i++) {
+        paths.add(new Path());
+      }
     }
     for (int i = contents.size() - 1; i >= 0; i--) {
       if (i >= paths.size()) {

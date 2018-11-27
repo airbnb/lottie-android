@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
+import android.os.Build;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
@@ -181,7 +182,8 @@ public abstract class BaseStrokeContent
           path.computeBounds(pathBounds, false);
           pathBounds.inset(-strokeWidth, -strokeWidth);
           maskBounds.intersect(pathBounds);
-          canvas.saveLayer(maskBounds, new Paint());
+          // TODO: reuse paint.
+          saveLayerCompat(canvas, maskBounds, new Paint());
           canvas.clipPath(maskPath);
           canvas.drawPath(path, paint);
           canvas.restore();
@@ -363,6 +365,16 @@ public abstract class BaseStrokeContent
 
     private PathGroup(@Nullable TrimPathContent trimPath) {
       this.trimPath = trimPath;
+    }
+  }
+
+  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // This method was deprecated in API level 26 and not recommented since 22, but its
+      // 2-parameter replacement is only available starting at API level 21.
+      canvas.saveLayer(rect, paint, Canvas.ALL_SAVE_FLAG);
+    } else {
+      canvas.saveLayer(rect, paint);
     }
   }
 }
