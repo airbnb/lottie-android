@@ -163,25 +163,16 @@ import java.util.Set;
   }
 
   @Override public void setImageResource(int resId) {
-    recycleBitmaps();
     cancelLoaderTask();
     super.setImageResource(resId);
   }
 
   @Override public void setImageDrawable(Drawable drawable) {
-    setImageDrawable(drawable, true);
-  }
-
-  private void setImageDrawable(Drawable drawable, boolean recycle) {
-    if (recycle && drawable != lottieDrawable) {
-      recycleBitmaps();
-    }
     cancelLoaderTask();
     super.setImageDrawable(drawable);
   }
 
   @Override public void setImageBitmap(Bitmap bm) {
-    recycleBitmaps();
     cancelLoaderTask();
     super.setImageBitmap(bm);
   }
@@ -247,14 +238,7 @@ import java.util.Set;
       cancelAnimation();
       wasAnimatingWhenDetached = true;
     }
-    recycleBitmaps();
     super.onDetachedFromWindow();
-  }
-
-  @VisibleForTesting void recycleBitmaps() {
-    // AppCompatImageView constructor will set the image when set from xml
-    // before LottieDrawable has been initialized
-    lottieDrawable.recycleBitmaps();
   }
 
   /**
@@ -744,8 +728,8 @@ import java.util.Set;
   public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {
-      setImageDrawable(null, false);
-      setImageDrawable(lottieDrawable, false);
+      setImageDrawable(null);
+      setImageDrawable(lottieDrawable);
     }
   }
 

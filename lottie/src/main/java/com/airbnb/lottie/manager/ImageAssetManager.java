@@ -117,20 +117,6 @@ public class ImageAssetManager {
     return putBitmap(id, bitmap);
   }
 
-  public void recycleBitmaps() {
-    synchronized (bitmapHashLock) {
-      for (Map.Entry<String, LottieImageAsset> entry : imageAssets.entrySet()) {
-        LottieImageAsset asset = entry.getValue();
-        Bitmap bitmap = asset.getBitmap();
-        if (bitmap != null) {
-          bitmap.recycle();
-          asset.setBitmap(null);
-        }
-      }
-    }
-  }
-
-
   public boolean hasSameContext(Context context) {
     return context == null && this.context == null || this.context.equals(context);
   }
