@@ -75,7 +75,7 @@ public class MaskKeyframeAnimation {
       if (maskMode == Mask.MaskMode.MaskModeAdd || maskMode == Mask.MaskMode.MaskModeIntersect) {
         addPath.set(contentPath);
         addPath.op(maskPath, Path.Op.INTERSECT);
-        masksPath.op(maskPath, Path.Op.UNION);
+        masksPath.op(addPath, Path.Op.UNION);
       } else if (maskMode == Mask.MaskMode.MaskModeSubtract) {
         subtractPath.set(contentPath);
         subtractPath.op(maskPath, Path.Op.DIFFERENCE);
