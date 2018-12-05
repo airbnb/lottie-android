@@ -1,6 +1,5 @@
 package com.airbnb.lottie.animation.content;
 
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -8,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
@@ -102,7 +102,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int alpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();
     //noinspection ConstantConditions

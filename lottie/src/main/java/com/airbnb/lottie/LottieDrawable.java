@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 
+import com.airbnb.lottie.animation.canvas.WrappedCanvas;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.KeyPath;
@@ -313,7 +314,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha, null, maskIdentityMatrix, matrix);
+    compositionLayer.draw(new WrappedCanvas(canvas), matrix, alpha, null, maskIdentityMatrix, matrix);
     L.endSection("Drawable#draw");
 
     if (extraScale > 1) {

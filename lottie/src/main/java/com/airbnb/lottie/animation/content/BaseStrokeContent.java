@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
@@ -143,7 +144,7 @@ public abstract class BaseStrokeContent
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     L.beginSection("StrokeContent#draw");
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
@@ -197,7 +198,7 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#draw");
   }
 
-  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  private void applyTrimPath(ICanvas canvas, PathGroup pathGroup, Matrix parentMatrix, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     L.beginSection("StrokeContent#applyTrimPath");
     if (pathGroup.trimPath == null) {
       L.endSection("StrokeContent#applyTrimPath");
@@ -368,7 +369,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) {
+  private void saveLayerCompat(ICanvas canvas, RectF rect, Paint paint) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This method was deprecated in API level 26 and not recommented since 22, but its
       // 2-parameter replacement is only available starting at API level 21.

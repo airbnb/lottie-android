@@ -1,6 +1,5 @@
 package com.airbnb.lottie.model.layer;
 
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -8,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
@@ -32,7 +32,7 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override void drawLayer(@NonNull ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     contentGroup.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, matteMatrix);
   }
 

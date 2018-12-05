@@ -13,6 +13,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.TextDelegate;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
@@ -94,7 +95,7 @@ public class TextLayer extends BaseLayer {
     return Collections.emptyList();
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);
@@ -139,7 +140,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawTextGlyphs(
-      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas,
+      DocumentData documentData, Matrix parentMatrix, Font font, ICanvas canvas,
       @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
@@ -167,7 +168,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawTextWithFont(
-      DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
+      DocumentData documentData, Font font, Matrix parentMatrix, ICanvas canvas) {
     float parentScale = Utils.getScale(parentMatrix);
     Typeface typeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
     if (typeface == null) {
@@ -202,7 +203,7 @@ public class TextLayer extends BaseLayer {
       Matrix parentMatrix,
       float fontScale,
       DocumentData documentData,
-      Canvas canvas,
+      ICanvas canvas,
       @Nullable MaskKeyframeAnimation mask,
       Matrix maskMatrix,
       Matrix matteMatrix) {
@@ -224,7 +225,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private void drawGlyph(Path path, Paint paint, Canvas canvas, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  private void drawGlyph(Path path, Paint paint, ICanvas canvas, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     if (paint.getColor() == Color.TRANSPARENT) {
       return;
     }
@@ -240,7 +241,7 @@ public class TextLayer extends BaseLayer {
     canvas.drawPath(path, paint);
   }
 
-  private void drawCharacterFromFont(char c, DocumentData documentData, Canvas canvas) {
+  private void drawCharacterFromFont(char c, DocumentData documentData, ICanvas canvas) {
     tempCharArray[0] = c;
     if (documentData.strokeOverFill) {
       drawCharacter(tempCharArray, fillPaint, canvas);
@@ -251,7 +252,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private void drawCharacter(char[] character, Paint paint, Canvas canvas) {
+  private void drawCharacter(char[] character, Paint paint, ICanvas canvas) {
     if (paint.getColor() == Color.TRANSPARENT) {
       return;
     }

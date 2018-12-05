@@ -1,6 +1,5 @@
 package com.airbnb.lottie.animation.content;
 
-import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -11,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
@@ -58,7 +58,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     layer.addAnimation(endPointAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     getBounds(boundsRect, parentMatrix);
     if (type == GradientType.Linear) {
       paint.setShader(getLinearGradient());

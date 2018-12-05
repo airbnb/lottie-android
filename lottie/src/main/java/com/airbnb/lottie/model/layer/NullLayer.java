@@ -1,12 +1,12 @@
 package com.airbnb.lottie.model.layer;
 
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.canvas.ICanvas;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ public class NullLayer extends BaseLayer {
     super(lottieDrawable, layerModel);
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
     // Do nothing.
   }
 
