@@ -130,7 +130,7 @@ public class MaskKeyframeAnimation {
     } else if (!masksPath.isEmpty()) {
       combinedPath.set(masksPath);
     } else {
-      combinedPath. set(mattesPath);
+      combinedPath.set(mattesPath);
     }
     if (applyToPath) {
       contentPath.set(combinedPath);
