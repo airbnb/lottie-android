@@ -5,6 +5,8 @@ import android.graphics.Path;
 
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
+import com.airbnb.lottie.animation.canvas.RecordedCanvas;
+import com.airbnb.lottie.animation.canvas.WrappedCanvas;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
@@ -86,9 +88,16 @@ public class MaskKeyframeAnimation {
     masksPath.close();
 
     mattesPath.reset();
-    mattesPath.setFillType(Path.FillType.WINDING);
+//    mattesPath.setFillType(Path.FillType.WINDING);
     if (matteLayer != null && matteType != null) {
-      List<Path> mattePaths = matteLayer.getPaths();
+      RecordedCanvas canvas = new RecordedCanvas();
+
+
+      Matrix testMatrix = new Matrix();
+      testMatrix.preTranslate(60, 60);
+
+      matteLayer.draw(canvas, new Matrix(), 255, null, new Matrix(), new Matrix());
+      List<Path> mattePaths = canvas.getPaths();
       if (matteType == Layer.MatteType.Add) {
         for (int i = 0; i < mattePaths.size(); i++) {
           Path mattePath = new Path(mattePaths.get(i));
