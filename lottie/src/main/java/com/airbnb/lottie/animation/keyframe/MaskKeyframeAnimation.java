@@ -6,12 +6,12 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.animation.canvas.RecordedCanvas;
-import com.airbnb.lottie.animation.canvas.WrappedCanvas;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +66,10 @@ public class MaskKeyframeAnimation {
   }
 
   public Path getMaskPath(Path contentPath, Matrix maskMatrix, Matrix matteMatrix, Matrix parentMatrix, boolean applyToPath) {
+    if (getMaskAnimations().isEmpty() && matteLayer == null) {
+      return contentPath;
+    }
+
     masksPath.reset();
     for (int i = 0; i < getMaskAnimations().size(); i++) {
       BaseKeyframeAnimation<ShapeData, Path> mask = getMaskAnimations().get(i);
@@ -90,7 +94,8 @@ public class MaskKeyframeAnimation {
     mattesPath.reset();
 //    mattesPath.setFillType(Path.FillType.WINDING);
     if (matteLayer != null && matteType != null) {
-      RecordedCanvas canvas = new RecordedCanvas();
+      RectF contentBounds = Utils.getBounds(contentPath);
+      RecordedCanvas canvas = new RecordedCanvas((int) contentBounds.right, (int) contentBounds.bottom);
 
 
       matteLayer.draw(canvas, matteMatrix, 255, null, new Matrix(), new Matrix());
@@ -130,7 +135,7 @@ public class MaskKeyframeAnimation {
       combinedPath.op(masksPath, mattesPath, Path.Op.INTERSECT);
     } else if (!masksPath.isEmpty()) {
       combinedPath.set(masksPath);
-    } else {
+    } else if (mattesPath != null) {
       combinedPath.set(mattesPath);
     }
     if (applyToPath) {

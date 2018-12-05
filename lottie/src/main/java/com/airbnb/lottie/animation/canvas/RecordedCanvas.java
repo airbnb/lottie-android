@@ -17,8 +17,17 @@ import java.util.List;
 
 public class RecordedCanvas implements ICanvas {
 
+  private final int width;
+  private final int height;
+
   // TODO: create a Path Pool to avoid memory thrashing.
   private final List<Path> paths = new ArrayList<>();
+
+  public RecordedCanvas(int width, int height) {
+    this.width = width;
+    this.height = height;
+  }
+
 
   @Override
   public int save() {
@@ -57,14 +66,12 @@ public class RecordedCanvas implements ICanvas {
 
   @Override
   public int getWidth() {
-    // TODO
-    return 0;
+    return width;
   }
 
   @Override
   public int getHeight() {
-    // TODO
-    return 0;
+    return height;
   }
 
   @Override
@@ -131,8 +138,7 @@ public class RecordedCanvas implements ICanvas {
 
   @Override
   public boolean clipRect(RectF rect) {
-    // TODO
-    return false;
+    return !rect.isEmpty();
   }
 
   @Override
