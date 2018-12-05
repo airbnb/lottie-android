@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
+import com.airbnb.lottie.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,29 +73,51 @@ public class RecordedCanvas implements ICanvas {
     if (paint.getStyle() == Paint.Style.STROKE) {
       RectF bounds = new RectF();
       path.computeBounds(bounds, false);
+      float cx = bounds.left + bounds.width() / 2f;
+      float cy = bounds.top + bounds.height() / 2f;
+
       float scaleFactor = paint.getStrokeWidth() / bounds.width();
       Matrix largeMatrix = new Matrix();
-      // TODO: use the right amount.
-      largeMatrix.preScale(1f + scaleFactor, 1f + scaleFactor, bounds.width() / 2f, bounds.height() / 2f);
+      largeMatrix.preScale(
+          1f + scaleFactor,
+          1f + scaleFactor
+      );
       Path largePath = new Path();
       largePath.addPath(path, largeMatrix);
+      RectF largeBounds = Utils.getBounds(largePath);
+      float cxLarge = largeBounds.left + largeBounds.width() / 2f;
+      float cyLarge = largeBounds.top + largeBounds.height() / 2f;
+      float dxLarge = cx - cxLarge;
+      float dyLarge = cy - cyLarge;
+      largeMatrix.reset();
+      largeMatrix.preTranslate(dxLarge, dyLarge);
+      largePath.transform(largeMatrix);
+
+
       Matrix smallMatrix = new Matrix();
-      // TODO: use the right amount.
-      smallMatrix.preScale(1f - scaleFactor, 1f - scaleFactor, bounds.width() / 2f, bounds.height() / 2f);
-      smallMatrix.preTranslate(paint.getStrokeWidth(), paint.getStrokeWidth());
+      smallMatrix.preScale(
+          1f - scaleFactor,
+          1f - scaleFactor
+      );
       Path smallPath = new Path();
       smallPath.addPath(path, smallMatrix);
+      RectF smallBounds = Utils.getBounds(smallPath);
+      float cxSmall = smallBounds.left + smallBounds.width() / 2f;
+      float cySmall = smallBounds.top + smallBounds.height() / 2f;
+      float dxSmall = cx - cxSmall;
+      float dySmall = cy - cySmall;
+      smallMatrix.reset();
+      smallMatrix.preTranslate(dxSmall, dySmall);
+      smallPath.transform(smallMatrix);
 
 //      Path strokedPath = new Path();
-//      strokedPath.op(largePath, smallPath, Path.Op.DIFFERENCE);
+//      strokedPath.set(largePath);
+//      strokedPath.setFillType(Path.FillType.EVEN_ODD);
+//      strokedPath.addPath(smallPath);
+//      paths.add(strokedPath);
 
-      Path strokedPath = new Path();
-      strokedPath.set(largePath);
-      strokedPath.setFillType(Path.FillType.EVEN_ODD);
-      strokedPath.addPath(smallPath);
-
-
-      paths.add(strokedPath);
+      largePath.op(smallPath, Path.Op.DIFFERENCE);
+      paths.add(largePath);
     } else {
       paths.add(path);
     }

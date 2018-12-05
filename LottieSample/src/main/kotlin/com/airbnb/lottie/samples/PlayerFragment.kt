@@ -417,7 +417,7 @@ class PlayerFragment : BaseMvRxFragment() {
         }
 
         // Scale up to fill the screen
-        scaleSeekBar.progress = 100
+        scaleSeekBar.progress = ((1f - minScale()) / (maxScale() - minScale()) * 100).toInt()
 
         keyPathsRecyclerView.buildModelsWith { controller ->
             animationView.resolveKeyPath(KeyPath("**")).forEachIndexed { index, keyPath ->

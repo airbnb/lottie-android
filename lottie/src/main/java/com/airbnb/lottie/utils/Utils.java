@@ -1,10 +1,16 @@
 package com.airbnb.lottie.utils;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -183,9 +189,36 @@ public final class Utils {
   }
 
   public static float dpScale() {
-    if (dpScale == -1) {
+    // DO NOT MERGE
+    return 1f;
+/*    if (dpScale == -1) {
       dpScale = Resources.getSystem().getDisplayMetrics().density;
     }
-    return dpScale;
+    return dpScale;*/
+  }
+
+  /**
+   * Do not merge.
+   */
+  public static RectF getBounds(Path path) {
+    RectF rect = new RectF();
+    path.computeBounds(rect, false);
+    return rect;
+  }
+
+  public static float length(Path path) {
+    PathMeasure pm = new PathMeasure(path, true);
+    return pm.getLength();
+  }
+
+  public static Bitmap renderPath(Path path) {
+    RectF bounds = new RectF();
+    path.computeBounds(bounds, false);
+    Bitmap bitmap = Bitmap.createBitmap((int) bounds.right, (int) bounds.bottom, Bitmap.Config.ARGB_8888);
+    Canvas canvas = new Canvas(bitmap);
+    Paint paint = new Paint();
+    paint.setColor(Color.BLUE);
+    canvas.drawPath(path, paint);
+    return bitmap;
   }
 }

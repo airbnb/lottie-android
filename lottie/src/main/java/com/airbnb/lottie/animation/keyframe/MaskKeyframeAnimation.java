@@ -93,22 +93,14 @@ public class MaskKeyframeAnimation {
       RecordedCanvas canvas = new RecordedCanvas();
 
 
-      Matrix testMatrix = new Matrix();
-      testMatrix.preTranslate(60, 60);
-
-      matteLayer.draw(canvas, new Matrix(), 255, null, new Matrix(), new Matrix());
+      matteLayer.draw(canvas, matteMatrix, 255, null, new Matrix(), new Matrix());
       List<Path> mattePaths = canvas.getPaths();
       if (matteType == Layer.MatteType.Add) {
         for (int i = 0; i < mattePaths.size(); i++) {
           Path mattePath = new Path(mattePaths.get(i));
           addPath.set(contentPath);
-          mattePath.transform(matteMatrix);
           addPath.op(mattePath, Path.Op.INTERSECT);
-          if (mattesPath.isEmpty()) {
-            mattesPath.addPath(addPath);
-          } else {
-            mattesPath.op(addPath, Path.Op.UNION);
-          }
+          mattesPath.op(addPath, Path.Op.UNION);
         }
       } else if (matteType == Layer.MatteType.Invert) {
         for (int i = 0; i < mattePaths.size(); i++) {
