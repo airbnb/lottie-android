@@ -5,16 +5,12 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -317,7 +313,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(new WrappedCanvas(canvas), matrix, alpha, null, maskIdentityMatrix, matrix);
+    compositionLayer.draw(new WrappedCanvas(canvas), matrix, alpha, null, maskIdentityMatrix);
     L.endSection("Drawable#draw");
 
     if (extraScale > 1) {

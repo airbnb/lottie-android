@@ -34,12 +34,12 @@ public class StrokeContent extends BaseStrokeContent {
     layer.addAnimation(colorAnimation);
   }
 
-  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     paint.setColor(colorAnimation.getValue());
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
-    super.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, matteMatrix);
+    super.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix);
   }
 
   @Override public String getName() {

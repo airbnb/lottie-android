@@ -58,7 +58,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     layer.addAnimation(endPointAnimation);
   }
 
-  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     getBounds(boundsRect, parentMatrix);
     if (type == GradientType.Linear) {
       paint.setShader(getLinearGradient());
@@ -66,7 +66,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
       paint.setShader(getRadialGradient());
     }
 
-    super.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, matteMatrix);
+    super.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix);
   }
 
   @Override public String getName() {

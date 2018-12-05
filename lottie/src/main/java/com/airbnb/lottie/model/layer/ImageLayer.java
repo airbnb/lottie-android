@@ -30,7 +30,7 @@ public class ImageLayer extends BaseLayer {
     super(lottieDrawable, layerModel);
   }
 
-  @Override public void drawLayer(@NonNull ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void drawLayer(@NonNull ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     Bitmap bitmap = getBitmap();
     if (bitmap == null || bitmap.isRecycled()) {
       return;

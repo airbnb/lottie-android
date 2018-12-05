@@ -88,7 +88,7 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
-  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     L.beginSection("CompositionLayer#draw");
     canvas.save();
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
@@ -101,7 +101,7 @@ public class CompositionLayer extends BaseLayer {
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
-        layer.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix, parentMatrix);
+        layer.draw(canvas, parentMatrix, parentAlpha, mask, maskMatrix);
       }
     }
     canvas.restore();

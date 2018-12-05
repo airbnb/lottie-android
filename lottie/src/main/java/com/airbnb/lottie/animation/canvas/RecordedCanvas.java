@@ -147,6 +147,11 @@ public class RecordedCanvas implements ICanvas {
   }
 
   @Override
+  public void drawRect(float left, float top, float right, float bottom, Paint paint) {
+    // TODO
+  }
+
+  @Override
   public void setMatrix(@Nullable Matrix matrix) {
     Log.d("Gabe", "setMatrix\t");
     // TODO

@@ -22,6 +22,7 @@ public interface ICanvas {
   boolean clipPath(Path path);
   boolean clipRect(RectF rect);
   void drawText(char[] text, int index, int count, float x, float y, Paint paint);
+  void drawRect(float left, float top, float right, float bottom, Paint paint);
   void setMatrix(@Nullable Matrix matrix);
   void concat(@Nullable Matrix matrix);
   void drawBitmap(@NonNull Bitmap bitmap, Rect src, Rect dst, @Nullable Paint paint);

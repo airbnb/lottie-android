@@ -1,6 +1,5 @@
 package com.airbnb.lottie.model.layer;
 
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -95,7 +94,7 @@ public class TextLayer extends BaseLayer {
     return Collections.emptyList();
   }
 
-  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override void drawLayer(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);
@@ -235,7 +234,7 @@ public class TextLayer extends BaseLayer {
 
     if (mask != null) {
       // TODO: use the right matte matrix
-      mask.applyToPath(path, maskMatrix, matteMatrix, new Matrix());
+      mask.applyToPath(path, maskMatrix);
     }
 
     canvas.drawPath(path, paint);

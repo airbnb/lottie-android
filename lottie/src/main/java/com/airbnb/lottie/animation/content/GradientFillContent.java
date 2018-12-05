@@ -95,7 +95,7 @@ public class GradientFillContent
     }
   }
 
-  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix, Matrix matteMatrix) {
+  @Override public void draw(ICanvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable MaskKeyframeAnimation mask, Matrix maskMatrix) {
     L.beginSection("GradientFillContent#draw");
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
@@ -122,7 +122,7 @@ public class GradientFillContent
     paint.setAlpha(clamp(alpha, 0, 255));
 
     if (mask != null) {
-      mask.applyToPath(path, maskMatrix, matteMatrix, parentMatrix);
+      mask.applyToPath(path, maskMatrix);
     }
 
     canvas.drawPath(path, paint);

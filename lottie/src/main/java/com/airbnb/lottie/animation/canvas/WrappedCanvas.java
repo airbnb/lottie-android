@@ -79,6 +79,11 @@ public class WrappedCanvas implements ICanvas{
   }
 
   @Override
+  public void drawRect(float left, float top, float right, float bottom, Paint paint) {
+    canvas.drawRect(left, top, right, bottom, paint);
+  }
+
+  @Override
   public void setMatrix(@Nullable Matrix matrix) {
     canvas.setMatrix(matrix);
   }
