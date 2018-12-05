@@ -22,8 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@drawable/outline"
-                app:lottie_autoPlay="true"/>
+                android:background="@drawable/outline"/>
 
             <ProgressBar
                 android:id="@+id/loadingView"

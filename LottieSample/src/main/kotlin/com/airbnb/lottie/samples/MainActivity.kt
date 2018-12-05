@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.samples.model.CompositionArgs
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -17,7 +18,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         setContentView(R.layout.activity_main)
         bottomNavigation.setOnNavigationItemSelectedListener(this)
 
-        savedInstanceState ?: showFragment(ShowcaseFragment())
+        savedInstanceState ?: showFragment(PreviewFragment())
+
+        val args = CompositionArgs(asset = "Identity City.json")
+        startActivity(PlayerActivity.intent(this, args))
+        finish()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
