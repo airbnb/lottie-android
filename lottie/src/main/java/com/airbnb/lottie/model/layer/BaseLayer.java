@@ -210,7 +210,6 @@ public abstract class BaseLayer
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
-    rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
     L.endSection("Layer#computeBounds");
 
     L.beginSection("Layer#saveLayer");
