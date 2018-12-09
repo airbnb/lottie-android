@@ -248,11 +248,12 @@ public abstract class BaseLayer
         L.endSection("Layer#restoreLayer");
         L.endSection("Layer#drawMatte");
       }
+
+      L.beginSection("Layer#restoreLayer");
+      canvas.restore();
+      L.endSection("Layer#restoreLayer");
     }
 
-    L.beginSection("Layer#restoreLayer");
-    canvas.restore();
-    L.endSection("Layer#restoreLayer");
     recordRenderTime(L.endSection(drawTraceName));
   }
 
