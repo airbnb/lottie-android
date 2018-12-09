@@ -25,6 +25,7 @@ class GradientFillParser {
     AnimatablePointValue startPoint = null;
     AnimatablePointValue endPoint = null;
     Path.FillType fillType = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -63,12 +64,15 @@ class GradientFillParser {
         case "r":
           fillType = reader.nextInt() == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
     return new GradientFill(
-        name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null);
+        name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null, hidden);
   }
 }

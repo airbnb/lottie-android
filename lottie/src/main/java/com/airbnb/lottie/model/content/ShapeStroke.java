@@ -59,11 +59,12 @@ public class ShapeStroke implements ContentModel {
   private final LineCapType capType;
   private final LineJoinType joinType;
   private final float miterLimit;
+  private final boolean hidden;
 
   public ShapeStroke(String name, @Nullable AnimatableFloatValue offset,
-      List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
-      AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
-      LineJoinType joinType, float miterLimit) {
+                     List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
+                     AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
+                     LineJoinType joinType, float miterLimit, boolean hidden) {
     this.name = name;
     this.offset = offset;
     this.lineDashPattern = lineDashPattern;
@@ -73,6 +74,7 @@ public class ShapeStroke implements ContentModel {
     this.capType = capType;
     this.joinType = joinType;
     this.miterLimit = miterLimit;
+    this.hidden = hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
