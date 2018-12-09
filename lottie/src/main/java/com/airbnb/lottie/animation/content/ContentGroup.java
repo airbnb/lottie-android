@@ -50,6 +50,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final RectF rect = new RectF();
 
   private final String name;
+  private final boolean hidden;
   private final List<Content> contents;
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
@@ -57,14 +58,15 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   public ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
     this(lottieDrawable, layer, shapeGroup.getName(),
-        contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
+            shapeGroup.isHidden(), contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
         findTransform(shapeGroup.getItems()));
   }
 
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer,
-      String name, List<Content> contents, @Nullable AnimatableTransform transform) {
+               String name, boolean hidden, List<Content> contents, @Nullable AnimatableTransform transform) {
     this.name = name;
     this.lottieDrawable = lottieDrawable;
+    this.hidden = hidden;
     this.contents = contents;
 
     if (transform != null) {
@@ -134,6 +136,9 @@ public class ContentGroup implements DrawingContent, PathContent,
       matrix.set(transformAnimation.getMatrix());
     }
     path.reset();
+    if (hidden) {
+      return path;
+    }
     for (int i = contents.size() - 1; i >= 0; i--) {
       Content content = contents.get(i);
       if (content instanceof PathContent) {
@@ -144,6 +149,9 @@ public class ContentGroup implements DrawingContent, PathContent,
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (hidden) {
+      return;
+    }
     matrix.set(parentMatrix);
     int alpha;
     if (transformAnimation != null) {

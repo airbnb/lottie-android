@@ -179,7 +179,7 @@ public abstract class BaseLayer
   @Override
   public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(drawTraceName);
-    if (!visible) {
+    if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
       return;
     }

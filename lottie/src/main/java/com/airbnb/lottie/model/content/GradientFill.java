@@ -23,12 +23,13 @@ public class GradientFill implements ContentModel {
   private final String name;
   @Nullable private final AnimatableFloatValue highlightLength;
   @Nullable private final AnimatableFloatValue highlightAngle;
+  private final boolean hidden;
 
   public GradientFill(String name, GradientType gradientType, Path.FillType fillType,
-      AnimatableGradientColorValue gradientColor,
-      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
-      AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
-      AnimatableFloatValue highlightAngle) {
+                      AnimatableGradientColorValue gradientColor,
+                      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
+                      AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
+                      AnimatableFloatValue highlightAngle, boolean hidden) {
     this.gradientType = gradientType;
     this.fillType = fillType;
     this.gradientColor = gradientColor;
@@ -38,6 +39,7 @@ public class GradientFill implements ContentModel {
     this.name = name;
     this.highlightLength = highlightLength;
     this.highlightAngle = highlightAngle;
+    this.hidden = hidden;
   }
 
   public String getName() {
@@ -74,6 +76,10 @@ public class GradientFill implements ContentModel {
 
   @Nullable AnimatableFloatValue getHighlightAngle() {
     return highlightAngle;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {

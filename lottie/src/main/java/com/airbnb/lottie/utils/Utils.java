@@ -65,7 +65,7 @@ public final class Utils {
   }
 
   public static void applyTrimPathIfNeeded(Path path, @Nullable TrimPathContent trimPath) {
-    if (trimPath == null) {
+    if (trimPath == null || trimPath.isHidden()) {
       return;
     }
     applyTrimPathIfNeeded(path, trimPath.getStart().getValue() / 100f,

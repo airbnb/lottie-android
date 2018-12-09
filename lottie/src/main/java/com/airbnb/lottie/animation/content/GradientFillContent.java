@@ -39,6 +39,7 @@ public class GradientFillContent
    */
   private static final int CACHE_STEPS_MS = 32;
   @NonNull private final String name;
+  private final boolean hidden;
   private final BaseLayer layer;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
@@ -59,6 +60,7 @@ public class GradientFillContent
   public GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     this.layer = layer;
     name = fill.getName();
+    hidden = fill.isHidden();
     this.lottieDrawable = lottieDrawable;
     type = fill.getGradientType();
     path.setFillType(fill.getFillType());
@@ -95,6 +97,9 @@ public class GradientFillContent
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (hidden) {
+      return;
+    }
     L.beginSection("GradientFillContent#draw");
     path.reset();
     for (int i = 0; i < paths.size(); i++) {

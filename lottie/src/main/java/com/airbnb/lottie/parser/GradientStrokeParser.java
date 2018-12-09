@@ -32,6 +32,7 @@ class GradientStrokeParser {
     ShapeStroke.LineJoinType joinType = null;
     AnimatableFloatValue offset = null;
     float miterLimit = 0f;
+    boolean hidden = false;
 
 
     List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
@@ -82,6 +83,9 @@ class GradientStrokeParser {
         case "ml":
           miterLimit = (float) reader.nextDouble();
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         case "d":
           reader.beginArray();
           while (reader.hasNext()) {
@@ -121,6 +125,6 @@ class GradientStrokeParser {
 
     return new GradientStroke(
         name, gradientType, color, opacity, startPoint, endPoint, width, capType, joinType,
-        miterLimit, lineDashPattern, offset);
+        miterLimit, lineDashPattern, offset, hidden);
   }
 }

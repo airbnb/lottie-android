@@ -38,10 +38,12 @@ public class MergePaths implements ContentModel {
 
   private final String name;
   private final MergePathsMode mode;
+  private final boolean hidden;
 
-  public MergePaths(String name, MergePathsMode mode) {
+  public MergePaths(String name, MergePathsMode mode, boolean hidden) {
     this.name = name;
     this.mode = mode;
+    this.hidden = hidden;
   }
 
   public String getName() {
@@ -50,6 +52,10 @@ public class MergePaths implements ContentModel {
 
   public MergePathsMode getMode() {
     return mode;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 
   @Override @Nullable public Content toContent(LottieDrawable drawable, BaseLayer layer) {

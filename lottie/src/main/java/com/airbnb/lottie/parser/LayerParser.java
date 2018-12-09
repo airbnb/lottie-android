@@ -31,7 +31,7 @@ public class LayerParser {
         Layer.LayerType.PreComp, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.None, null);
+        Layer.MatteType.None, null, false);
   }
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
@@ -52,6 +52,7 @@ public class LayerParser {
     float inFrame = 0f;
     float outFrame = 0f;
     String cl = null;
+    boolean hidden = false;
 
     Layer.MatteType matteType = Layer.MatteType.None;
     AnimatableTransform transform = null;
@@ -186,6 +187,9 @@ public class LayerParser {
         case "cl":
           cl = reader.nextString();
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
@@ -222,6 +226,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping);
+        timeRemapping, hidden);
   }
 }

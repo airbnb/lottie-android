@@ -23,6 +23,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
   private static final int CACHE_STEPS_MS = 32;
 
   private final String name;
+  private final boolean hidden;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final RectF boundsRect = new RectF();
@@ -41,6 +42,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
 
     name = stroke.getName();
     type = stroke.getGradientType();
+    hidden = stroke.isHidden();
     cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
 
     colorAnimation = stroke.getGradientColor().createAnimation();
@@ -57,6 +59,9 @@ public class GradientStrokeContent extends BaseStrokeContent {
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (hidden) {
+      return;
+    }
     getBounds(boundsRect, parentMatrix);
     if (type == GradientType.Linear) {
       paint.setShader(getLinearGradient());

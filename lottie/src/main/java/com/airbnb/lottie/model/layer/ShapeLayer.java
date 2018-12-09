@@ -21,7 +21,7 @@ public class ShapeLayer extends BaseLayer {
     super(lottieDrawable, layerModel);
 
     // Naming this __container allows it to be ignored in KeyPath matching.
-    ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes());
+    ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes(), false);
     contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }

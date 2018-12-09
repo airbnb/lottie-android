@@ -10,6 +10,7 @@ import java.util.List;
 public class TrimPathContent implements Content, BaseKeyframeAnimation.AnimationListener {
 
   private final String name;
+  private final boolean hidden;
   private final List<BaseKeyframeAnimation.AnimationListener> listeners = new ArrayList<>();
   private final ShapeTrimPath.Type type;
   private final BaseKeyframeAnimation<?, Float> startAnimation;
@@ -18,6 +19,7 @@ public class TrimPathContent implements Content, BaseKeyframeAnimation.Animation
 
   public TrimPathContent(BaseLayer layer, ShapeTrimPath trimPath) {
     name = trimPath.getName();
+    hidden = trimPath.isHidden();
     type = trimPath.getType();
     startAnimation = trimPath.getStart().createAnimation();
     endAnimation = trimPath.getEnd().createAnimation();
@@ -64,5 +66,9 @@ public class TrimPathContent implements Content, BaseKeyframeAnimation.Animation
 
   public BaseKeyframeAnimation<?, Float> getOffset() {
     return offsetAnimation;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 }

@@ -39,12 +39,13 @@ public class PolystarShape implements ContentModel {
   private final AnimatableFloatValue outerRadius;
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
+  private final boolean hidden;
 
   public PolystarShape(String name, Type type, AnimatableFloatValue points,
-      AnimatableValue<PointF, PointF> position,
-      AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
-      AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
-      AnimatableFloatValue outerRoundedness) {
+                       AnimatableValue<PointF, PointF> position,
+                       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
+                       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
+                       AnimatableFloatValue outerRoundedness, boolean hidden) {
     this.name = name;
     this.type = type;
     this.points = points;
@@ -54,6 +55,7 @@ public class PolystarShape implements ContentModel {
     this.outerRadius = outerRadius;
     this.innerRoundedness = innerRoundedness;
     this.outerRoundedness = outerRoundedness;
+    this.hidden = hidden;
   }
 
   public String getName() {
@@ -90,6 +92,10 @@ public class PolystarShape implements ContentModel {
 
   public AnimatableFloatValue getOuterRoundedness() {
     return outerRoundedness;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {

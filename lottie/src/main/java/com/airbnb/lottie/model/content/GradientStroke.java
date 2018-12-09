@@ -27,14 +27,15 @@ public class GradientStroke implements ContentModel {
   private final float miterLimit;
   private final List<AnimatableFloatValue> lineDashPattern;
   @Nullable private final AnimatableFloatValue dashOffset;
+  private final boolean hidden;
 
   public GradientStroke(String name, GradientType gradientType,
-      AnimatableGradientColorValue gradientColor,
-      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
-      AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
-      ShapeStroke.LineJoinType joinType, float miterLimit,
-      List<AnimatableFloatValue> lineDashPattern,
-      @Nullable AnimatableFloatValue dashOffset) {
+                        AnimatableGradientColorValue gradientColor,
+                        AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
+                        AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
+                        ShapeStroke.LineJoinType joinType, float miterLimit,
+                        List<AnimatableFloatValue> lineDashPattern,
+                        @Nullable AnimatableFloatValue dashOffset, boolean hidden) {
     this.name = name;
     this.gradientType = gradientType;
     this.gradientColor = gradientColor;
@@ -47,6 +48,7 @@ public class GradientStroke implements ContentModel {
     this.miterLimit = miterLimit;
     this.lineDashPattern = lineDashPattern;
     this.dashOffset = dashOffset;
+    this.hidden = hidden;
   }
 
   public String getName() {
@@ -95,6 +97,10 @@ public class GradientStroke implements ContentModel {
 
   public float getMiterLimit() {
     return miterLimit;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {

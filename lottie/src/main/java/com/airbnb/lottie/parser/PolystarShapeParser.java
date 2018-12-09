@@ -25,6 +25,7 @@ class PolystarShapeParser {
     AnimatableFloatValue outerRoundedness = null;
     AnimatableFloatValue innerRadius = null;
     AnimatableFloatValue innerRoundedness = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -55,12 +56,16 @@ class PolystarShapeParser {
         case "is":
           innerRoundedness = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
     return new PolystarShape(
-        name, type, points, position, rotation, innerRadius, outerRadius, innerRoundedness, outerRoundedness);
+        name, type, points, position, rotation, innerRadius, outerRadius,
+        innerRoundedness, outerRoundedness, hidden);
   }
 }

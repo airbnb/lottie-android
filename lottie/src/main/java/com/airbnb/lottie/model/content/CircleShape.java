@@ -14,13 +14,15 @@ public class CircleShape implements ContentModel {
   private final AnimatableValue<PointF, PointF> position;
   private final AnimatablePointValue size;
   private final boolean isReversed;
+  private final boolean hidden;
 
   public CircleShape(String name, AnimatableValue<PointF, PointF> position,
-      AnimatablePointValue size, boolean isReversed) {
+                     AnimatablePointValue size, boolean isReversed, boolean hidden) {
     this.name = name;
     this.position = position;
     this.size = size;
     this.isReversed = isReversed;
+    this.hidden = hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
@@ -41,5 +43,9 @@ public class CircleShape implements ContentModel {
 
   public boolean isReversed() {
     return isReversed;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 }

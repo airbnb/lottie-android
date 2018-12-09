@@ -13,6 +13,7 @@ class MergePathsParser {
   static MergePaths parse(JsonReader reader) throws IOException {
     String name = null;
     MergePaths.MergePathsMode mode = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -22,11 +23,14 @@ class MergePathsParser {
         case "mm":
           mode =  MergePaths.MergePathsMode.forId(reader.nextInt());
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
-    return new MergePaths(name, mode);
+    return new MergePaths(name, mode, hidden);
   }
 }
