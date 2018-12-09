@@ -24,6 +24,8 @@ class SnapshotTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snapshot_tests)
         filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+        @Suppress("DEPRECATION")
+        animationView.isDrawingCacheEnabled = false
     }
 
     fun getAnimationView() = animationView
