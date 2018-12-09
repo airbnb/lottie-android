@@ -278,7 +278,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       extraScale = this.scale / scale;
     }
 
-    if (extraScale > 1) {
+    int saveCount = -1;
+    // The .001 accounts for floating point errors.
+    if (extraScale > 1.001) {
       // This is a bit tricky...
       // We can't draw on a canvas larger than ViewConfiguration.get(context).getScaledMaximumDrawingCacheSize()
       // which works out to be roughly the size of the screen because Android can't generate a
@@ -288,7 +290,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       // to scale up the rest of the scale. However, since we rendered the animation to the top
       // left corner, we need to scale up and translate the canvas to zoom in on the top left
       // corner.
-      canvas.save();
+      saveCount = canvas.save();
       float halfWidth = composition.getBounds().width() / 2f;
       float halfHeight = composition.getBounds().height() / 2f;
       float scaledHalfWidth = halfWidth * scale;
@@ -305,8 +307,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     compositionLayer.draw(canvas, matrix, alpha);
     L.endSection("Drawable#draw");
 
-    if (extraScale > 1) {
-      canvas.restore();
+    if (saveCount > 0) {
+      canvas.restoreToCount(saveCount);
     }
   }
 

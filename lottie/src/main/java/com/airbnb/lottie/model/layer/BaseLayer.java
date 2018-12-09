@@ -62,7 +62,6 @@ public abstract class BaseLayer
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
-  private final Matrix matteBoundsParentMatrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint addMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint subtractMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -206,7 +205,7 @@ public abstract class BaseLayer
     L.beginSection("Layer#computeBounds");
     rect.set(0, 0, 0, 0);
     getBounds(rect, matrix);
-    intersectBoundsWithMatte(rect, matrix);
+    intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
@@ -314,7 +313,7 @@ public abstract class BaseLayer
       return;
     }
     //noinspection ConstantConditions
-    matteLayer.getBounds(matteBoundsRect, matteBoundsParentMatrix);
+    matteLayer.getBounds(matteBoundsRect, matrix);
     rect.intersect(matteBoundsRect);
   }
 
