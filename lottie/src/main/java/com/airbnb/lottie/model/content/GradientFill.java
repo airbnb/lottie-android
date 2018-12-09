@@ -78,6 +78,10 @@ public class GradientFill implements ContentModel {
     return highlightAngle;
   }
 
+  public boolean isHidden() {
+    return hidden;
+  }
+
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
     return new GradientFillContent(drawable, layer, this);
   }

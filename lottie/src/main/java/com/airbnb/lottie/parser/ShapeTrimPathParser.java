@@ -19,6 +19,7 @@ class ShapeTrimPathParser {
     AnimatableFloatValue start = null;
     AnimatableFloatValue end = null;
     AnimatableFloatValue offset = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -37,11 +38,14 @@ class ShapeTrimPathParser {
         case "m":
           type = ShapeTrimPath.Type.forId(reader.nextInt());
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
-    return new ShapeTrimPath(name, type, start, end, offset);
+    return new ShapeTrimPath(name, type, start, end, offset, hidden);
   }
 }

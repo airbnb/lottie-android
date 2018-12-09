@@ -17,6 +17,7 @@ class ShapePathParser {
     String name = null;
     int ind = 0;
     AnimatableShapeValue shape = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -29,11 +30,14 @@ class ShapePathParser {
         case "ks":
           shape = AnimatableValueParser.parseShapeData(reader, composition);
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
-    return new ShapePath(name, ind, shape);
+    return new ShapePath(name, ind, shape, hidden);
   }
 }

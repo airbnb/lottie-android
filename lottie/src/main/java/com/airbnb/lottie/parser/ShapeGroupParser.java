@@ -17,12 +17,16 @@ class ShapeGroupParser {
   static ShapeGroup parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
+    boolean hidden = false;
     List<ContentModel> items = new ArrayList<>();
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
         case "nm":
           name = reader.nextString();
+          break;
+        case "hd":
+          hidden = reader.nextBoolean();
           break;
         case "it":
           reader.beginArray();
@@ -39,6 +43,6 @@ class ShapeGroupParser {
       }
     }
 
-    return new ShapeGroup(name, items);
+    return new ShapeGroup(name, items, hidden);
   }
 }

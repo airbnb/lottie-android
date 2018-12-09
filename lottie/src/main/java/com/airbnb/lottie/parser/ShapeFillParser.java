@@ -21,6 +21,7 @@ class ShapeFillParser {
     AnimatableIntegerValue opacity = null;
     String name = null;
     int fillTypeInt = 1;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -39,12 +40,15 @@ class ShapeFillParser {
         case "r":
           fillTypeInt = reader.nextInt();
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
     Path.FillType fillType = fillTypeInt == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;
-    return new ShapeFill(name, fillEnabled, fillType, color, opacity);
+    return new ShapeFill(name, fillEnabled, fillType, color, opacity, hidden);
   }
 }

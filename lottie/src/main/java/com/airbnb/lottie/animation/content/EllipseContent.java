@@ -77,6 +77,10 @@ public class EllipseContent
 
     path.reset();
 
+    if (circleShape.isHidden()) {
+      isPathValid = true;
+      return path;
+    }
 
     PointF size = sizeAnimation.getValue();
     float halfWidth = size.x / 2f;

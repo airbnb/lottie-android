@@ -30,6 +30,7 @@ public class FillContent
   private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final BaseLayer layer;
   private final String name;
+  private final boolean hidden;
   private final List<PathContent> paths = new ArrayList<>();
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   private final BaseKeyframeAnimation<Integer, Integer> opacityAnimation;
@@ -39,6 +40,7 @@ public class FillContent
   public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
     this.layer = layer;
     name = fill.getName();
+    hidden = fill.isHidden();
     this.lottieDrawable = lottieDrawable;
     if (fill.getColor() == null || fill.getOpacity() == null ) {
       colorAnimation = null;
@@ -74,6 +76,9 @@ public class FillContent
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (hidden) {
+      return;
+    }
     L.beginSection("FillContent#draw");
     paint.setColor(colorAnimation.getValue());
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);

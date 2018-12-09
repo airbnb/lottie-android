@@ -16,14 +16,16 @@ public class ShapeFill implements ContentModel {
   private final String name;
   @Nullable private final AnimatableColorValue color;
   @Nullable private final AnimatableIntegerValue opacity;
+  private final boolean hidden;
 
   public ShapeFill(String name, boolean fillEnabled, Path.FillType fillType,
-      @Nullable AnimatableColorValue color, @Nullable AnimatableIntegerValue opacity) {
+                   @Nullable AnimatableColorValue color, @Nullable AnimatableIntegerValue opacity, boolean hidden) {
     this.name = name;
     this.fillEnabled = fillEnabled;
     this.fillType = fillType;
     this.color = color;
     this.opacity = opacity;
+    this.hidden = hidden;
   }
 
   public String getName() {
@@ -40,6 +42,10 @@ public class ShapeFill implements ContentModel {
 
   public Path.FillType getFillType() {
     return fillType;
+  }
+
+  public boolean isHidden() {
+    return hidden;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
