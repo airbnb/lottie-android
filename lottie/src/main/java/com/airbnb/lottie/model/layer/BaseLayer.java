@@ -179,8 +179,7 @@ public abstract class BaseLayer
         for (int i = parentLayers.size() - 1; i >= 0; i--) {
           matrix.preConcat(parentLayers.get(i).transform.getMatrix());
         }
-      }
-      if (parentLayer != null) {
+      } else if (parentLayer != null) {
         boundsMatrix.preConcat(parentLayer.transform.getMatrix());
       }
     }
