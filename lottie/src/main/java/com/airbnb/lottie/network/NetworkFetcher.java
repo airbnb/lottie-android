@@ -9,7 +9,6 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieResult;
-import com.airbnb.lottie.LottieTask;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.Callable;
 import java.util.zip.ZipInputStream;
 
 public class NetworkFetcher {
@@ -29,10 +27,6 @@ public class NetworkFetcher {
 
   private final NetworkCache networkCache;
 
-  public static LottieTask<LottieComposition> fetch(Context context, String url) {
-    return new NetworkFetcher(context, url).fetch();
-  }
-
   public static LottieResult<LottieComposition> fetchSync(Context context, String url) {
     return new NetworkFetcher(context, url).fetchSync();
   }
@@ -41,14 +35,6 @@ public class NetworkFetcher {
     appContext = context.getApplicationContext();
     this.url = url;
     networkCache = new NetworkCache(appContext, url);
-  }
-
-  private LottieTask<LottieComposition> fetch() {
-    return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() throws Exception {
-        return fetchSync();
-      }
-    });
   }
 
   @WorkerThread
