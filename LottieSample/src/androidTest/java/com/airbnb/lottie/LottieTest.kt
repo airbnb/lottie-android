@@ -445,7 +445,7 @@ class LottieTest {
             variant: String = "default",
             block: suspend CoroutineScope.(LottieAnimationView) -> Unit
     ) {
-        async(Dispatchers.Main) {
+        withContext(Dispatchers.Main) {
             val animationView = activity.getAnimationView()
             animationView.setComposition(parseComposition(animationName))
             val layoutParams = animationView.layoutParams
@@ -454,10 +454,13 @@ class LottieTest {
             animationView.scaleType
             animationView.scaleType = ImageView.ScaleType.FIT_CENTER
 
-            suspendCoroutine<Unit> { continuation ->
-                animationView.requestLayout()
-                animationView.post {
-                    continuation.resume(Unit)
+            Log.d(L.TAG, "Waiting for layout")
+            animationView.requestLayout()
+            withContext(Dispatchers.Default) {
+                suspendCoroutine<Unit> { continuation ->
+                    animationView.post {
+                        continuation.resume(Unit)
+                    }
                 }
             }
 
@@ -469,7 +472,7 @@ class LottieTest {
             animationView.requestLayout()
             animationView.scale = 1f
             animationView.scaleType = ImageView.ScaleType.FIT_CENTER
-        }.await()
+        }
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
