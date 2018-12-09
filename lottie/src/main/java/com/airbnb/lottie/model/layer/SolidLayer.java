@@ -68,8 +68,8 @@ public class SolidLayer extends BaseLayer {
     }
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     rect.set(0, 0, layerModel.getSolidWidth(), layerModel.getSolidHeight());
     boundsMatrix.mapRect(rect);
     outBounds.set(rect);

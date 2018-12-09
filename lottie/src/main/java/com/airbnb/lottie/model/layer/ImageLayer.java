@@ -47,8 +47,8 @@ public class ImageLayer extends BaseLayer {
     canvas.restore();
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     Bitmap bitmap = getBitmap();
     if (bitmap != null) {
       outBounds.set(

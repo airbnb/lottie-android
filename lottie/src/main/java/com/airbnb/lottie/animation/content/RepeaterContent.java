@@ -118,8 +118,8 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     }
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    contentGroup.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    contentGroup.getBounds(outBounds, parentMatrix, applyParents);
   }
 
   @Override public void onValueChanged() {

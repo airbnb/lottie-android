@@ -104,12 +104,12 @@ public class CompositionLayer extends BaseLayer {
     L.endSection("CompositionLayer#draw");
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     rect.set(0, 0, 0, 0);
     for (int i = layers.size() - 1; i >= 0; i--) {
       BaseLayer content = layers.get(i);
-      content.getBounds(rect, boundsMatrix);
+      content.getBounds(rect, boundsMatrix, applyParents);
       if (outBounds.isEmpty()) {
         outBounds.set(rect);
       } else {

@@ -171,7 +171,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     matrix.set(parentMatrix);
     if (transformAnimation != null) {
       matrix.preConcat(transformAnimation.getMatrix());
@@ -180,7 +180,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     for (int i = contents.size() - 1; i >= 0; i--) {
       Content content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).getBounds(rect, matrix);
+        ((DrawingContent) content).getBounds(rect, matrix, applyParents);
         if (outBounds.isEmpty()) {
           outBounds.set(rect);
         } else {

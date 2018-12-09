@@ -171,15 +171,18 @@ public abstract class BaseLayer
     animations.add(newAnimation);
   }
 
-  @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @CallSuper @Override public void getBounds(
+          RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     boundsMatrix.set(parentMatrix);
-    if (parentLayers != null) {
-      for (int i = parentLayers.size() - 1; i >= 0; i--) {
-        matrix.preConcat(parentLayers.get(i).transform.getMatrix());
+    if (applyParents) {
+      if (parentLayers != null) {
+        for (int i = parentLayers.size() - 1; i >= 0; i--) {
+          matrix.preConcat(parentLayers.get(i).transform.getMatrix());
+        }
       }
-    }
-    if (parentLayer != null) {
-      boundsMatrix.preConcat(parentLayer.transform.getMatrix());
+      if (parentLayer != null) {
+        boundsMatrix.preConcat(parentLayer.transform.getMatrix());
+      }
     }
     boundsMatrix.preConcat(transform.getMatrix());
   }
@@ -212,7 +215,7 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#computeBounds");
     rect.set(0, 0, 0, 0);
-    getBounds(rect, matrix);
+    getBounds(rect, matrix, false);
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
@@ -329,7 +332,7 @@ public abstract class BaseLayer
     }
     //noinspection ConstantConditions
     matteBoundsRect.set(0f, 0f, 0f, 0f);
-    matteLayer.getBounds(matteBoundsRect, matrix);
+    matteLayer.getBounds(matteBoundsRect, matrix, true);
     boolean intersects = rect.intersect(matteBoundsRect);
     if (!intersects) {
       rect.set(0f, 0f, 0f, 0f);

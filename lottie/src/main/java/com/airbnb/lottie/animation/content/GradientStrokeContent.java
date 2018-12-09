@@ -62,7 +62,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     if (hidden) {
       return;
     }
-    getBounds(boundsRect, parentMatrix);
+    getBounds(boundsRect, parentMatrix, false);
     if (type == GradientType.Linear) {
       paint.setShader(getLinearGradient());
     } else {

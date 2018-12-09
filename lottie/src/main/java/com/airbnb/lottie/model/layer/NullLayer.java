@@ -15,8 +15,8 @@ public class NullLayer extends BaseLayer {
     // Do nothing.
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     outBounds.set(0, 0, 0, 0);
   }
 }
