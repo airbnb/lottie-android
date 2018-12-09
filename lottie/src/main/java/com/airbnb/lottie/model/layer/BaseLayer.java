@@ -173,6 +173,14 @@ public abstract class BaseLayer
 
   @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
     boundsMatrix.set(parentMatrix);
+    if (parentLayers != null) {
+      for (int i = parentLayers.size() - 1; i >= 0; i--) {
+        matrix.preConcat(parentLayers.get(i).transform.getMatrix());
+      }
+    }
+    if (parentLayer != null) {
+      boundsMatrix.preConcat(parentLayer.transform.getMatrix());
+    }
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
@@ -212,32 +220,34 @@ public abstract class BaseLayer
 
     L.endSection("Layer#computeBounds");
 
-    L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, contentPaint, true);
-    L.endSection("Layer#saveLayer");
-
-    // Clear the off screen buffer. This is necessary for some phones.
-    clearCanvas(canvas);
-    L.beginSection("Layer#drawLayer");
-    drawLayer(canvas, matrix, alpha);
-    L.endSection("Layer#drawLayer");
-
-    if (hasMasksOnThisLayer()) {
-      applyMasks(canvas, matrix);
-    }
-
-    if (hasMatteOnThisLayer()) {
-      L.beginSection("Layer#drawMatte");
+    if (!rect.isEmpty()) {
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, mattePaint, false);
+      saveLayerCompat(canvas, rect, contentPaint, true);
       L.endSection("Layer#saveLayer");
+
+      // Clear the off screen buffer. This is necessary for some phones.
       clearCanvas(canvas);
-      //noinspection ConstantConditions
-      matteLayer.draw(canvas, parentMatrix, alpha);
-      L.beginSection("Layer#restoreLayer");
-      canvas.restore();
-      L.endSection("Layer#restoreLayer");
-      L.endSection("Layer#drawMatte");
+      L.beginSection("Layer#drawLayer");
+      drawLayer(canvas, matrix, alpha);
+      L.endSection("Layer#drawLayer");
+
+      if (hasMasksOnThisLayer()) {
+        applyMasks(canvas, matrix);
+      }
+
+      if (hasMatteOnThisLayer()) {
+        L.beginSection("Layer#drawMatte");
+        L.beginSection("Layer#saveLayer");
+        saveLayerCompat(canvas, rect, mattePaint, false);
+        L.endSection("Layer#saveLayer");
+        clearCanvas(canvas);
+        //noinspection ConstantConditions
+        matteLayer.draw(canvas, parentMatrix, alpha);
+        L.beginSection("Layer#restoreLayer");
+        canvas.restore();
+        L.endSection("Layer#restoreLayer");
+        L.endSection("Layer#drawMatte");
+      }
     }
 
     L.beginSection("Layer#restoreLayer");
@@ -300,21 +310,29 @@ public abstract class BaseLayer
       }
     }
 
-    rect.intersect(maskBoundsRect);
+    boolean intersects = rect.intersect(maskBoundsRect);
+    if (!intersects) {
+      rect.set(0f, 0f, 0f, 0f);
+    }
   }
 
   private void intersectBoundsWithMatte(RectF rect, Matrix matrix) {
     if (!hasMatteOnThisLayer()) {
       return;
     }
+
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
       // We can't trim the bounds if the mask is inverted since it extends all the way to the
       // composition bounds.
       return;
     }
     //noinspection ConstantConditions
+    matteBoundsRect.set(0f, 0f, 0f, 0f);
     matteLayer.getBounds(matteBoundsRect, matrix);
-    rect.intersect(matteBoundsRect);
+    boolean intersects = rect.intersect(matteBoundsRect);
+    if (!intersects) {
+      rect.set(0f, 0f, 0f, 0f);
+    }
   }
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
