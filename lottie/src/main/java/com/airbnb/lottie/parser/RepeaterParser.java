@@ -19,6 +19,7 @@ class RepeaterParser {
     AnimatableFloatValue copies = null;
     AnimatableFloatValue offset = null;
     AnimatableTransform transform = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -34,11 +35,14 @@ class RepeaterParser {
         case "tr":
           transform = AnimatableTransformParser.parse(reader, composition);
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
-    return new Repeater(name, copies, offset, transform);
+    return new Repeater(name, copies, offset, transform, hidden);
   }
 }

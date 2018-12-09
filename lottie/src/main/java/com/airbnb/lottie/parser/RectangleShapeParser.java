@@ -21,6 +21,7 @@ class RectangleShapeParser {
     AnimatableValue<PointF, PointF> position = null;
     AnimatablePointValue size = null;
     AnimatableFloatValue roundedness = null;
+    boolean hidden = false;
 
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -37,11 +38,14 @@ class RectangleShapeParser {
         case "r":
           roundedness = AnimatableValueParser.parseFloat(reader, composition);
           break;
+        case "hd":
+          hidden = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
 
-    return new RectangleShape(name, position, size, roundedness);
+    return new RectangleShape(name, position, size, roundedness, hidden);
   }
 }

@@ -23,6 +23,7 @@ public class RectangleContent
   private final RectF rect = new RectF();
 
   private final String name;
+  private final boolean hidden;
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
@@ -33,6 +34,7 @@ public class RectangleContent
 
   public RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape) {
     name = rectShape.getName();
+    hidden = rectShape.isHidden();
     this.lottieDrawable = lottieDrawable;
     positionAnimation = rectShape.getPosition().createAnimation();
     sizeAnimation = rectShape.getSize().createAnimation();
@@ -77,6 +79,11 @@ public class RectangleContent
     }
 
     path.reset();
+
+    if (hidden) {
+      isPathValid = true;
+      return path;
+    }
 
     PointF size = sizeAnimation.getValue();
     float halfWidth = size.x / 2f;

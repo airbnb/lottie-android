@@ -19,6 +19,7 @@ public class StrokeContent extends BaseStrokeContent {
 
   private final BaseLayer layer;
   private final String name;
+  private final boolean hidden;
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
@@ -28,12 +29,16 @@ public class StrokeContent extends BaseStrokeContent {
         stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset());
     this.layer = layer;
     name = stroke.getName();
+    hidden = stroke.isHidden();
     colorAnimation = stroke.getColor().createAnimation();
     colorAnimation.addUpdateListener(this);
     layer.addAnimation(colorAnimation);
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (hidden) {
+      return;
+    }
     paint.setColor(colorAnimation.getValue());
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());

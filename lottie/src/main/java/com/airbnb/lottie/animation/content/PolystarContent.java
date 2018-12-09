@@ -32,6 +32,7 @@ public class PolystarContent
   private final String name;
   private final LottieDrawable lottieDrawable;
   private final PolystarShape.Type type;
+  private final boolean hidden;
   private final BaseKeyframeAnimation<?, Float> pointsAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final BaseKeyframeAnimation<?, Float> rotationAnimation;
@@ -49,6 +50,7 @@ public class PolystarContent
 
     name = polystarShape.getName();
     type = polystarShape.getType();
+    hidden = polystarShape.isHidden();
     pointsAnimation = polystarShape.getPoints().createAnimation();
     positionAnimation = polystarShape.getPosition().createAnimation();
     rotationAnimation = polystarShape.getRotation().createAnimation();
@@ -109,6 +111,11 @@ public class PolystarContent
     }
 
     path.reset();
+
+    if (hidden) {
+      isPathValid = true;
+      return path;
+    }
 
     switch (type) {
       case Star:

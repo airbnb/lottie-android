@@ -16,6 +16,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   private final Path path = new Path();
 
   private final String name;
+  private final boolean hidden;
   private final LottieDrawable lottieDrawable;
   private final BaseKeyframeAnimation<?, Path> shapeAnimation;
 
@@ -24,6 +25,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
 
   public ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
     name = shape.getName();
+    hidden = shape.isHidden();
     this.lottieDrawable = lottieDrawable;
     shapeAnimation = shape.getShapePath().createAnimation();
     layer.addAnimation(shapeAnimation);
@@ -57,6 +59,11 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
     }
 
     path.reset();
+
+    if (hidden) {
+      isPathValid = true;
+      return path;
+    }
 
     path.set(shapeAnimation.getValue());
     path.setFillType(Path.FillType.EVEN_ODD);
