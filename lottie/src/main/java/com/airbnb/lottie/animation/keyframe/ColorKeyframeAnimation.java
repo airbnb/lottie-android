@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
 import com.airbnb.lottie.utils.GammaEvaluator;
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
@@ -27,6 +28,6 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
       }
     }
 
-    return GammaEvaluator.evaluate(keyframeProgress, startColor, endColor);
+    return GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), startColor, endColor);
   }
 }
