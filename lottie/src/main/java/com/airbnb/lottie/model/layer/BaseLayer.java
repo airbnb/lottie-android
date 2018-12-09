@@ -62,6 +62,7 @@ public abstract class BaseLayer
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
+  private final Matrix matteBoundsParentMatrix = new Matrix();
   private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint addMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final Paint subtractMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -300,12 +301,7 @@ public abstract class BaseLayer
       }
     }
 
-    rect.set(
-        Math.max(rect.left, maskBoundsRect.left),
-        Math.max(rect.top, maskBoundsRect.top),
-        Math.min(rect.right, maskBoundsRect.right),
-        Math.min(rect.bottom, maskBoundsRect.bottom)
-    );
+    rect.intersect(maskBoundsRect);
   }
 
   private void intersectBoundsWithMatte(RectF rect, Matrix matrix) {
@@ -318,13 +314,8 @@ public abstract class BaseLayer
       return;
     }
     //noinspection ConstantConditions
-    matteLayer.getBounds(matteBoundsRect, matrix);
-    rect.set(
-        Math.max(rect.left, matteBoundsRect.left),
-        Math.max(rect.top, matteBoundsRect.top),
-        Math.min(rect.right, matteBoundsRect.right),
-        Math.min(rect.bottom, matteBoundsRect.bottom)
-    );
+    matteLayer.getBounds(matteBoundsRect, matteBoundsParentMatrix);
+    rect.intersect(matteBoundsRect);
   }
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
