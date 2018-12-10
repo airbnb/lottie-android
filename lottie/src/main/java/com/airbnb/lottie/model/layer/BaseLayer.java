@@ -174,6 +174,7 @@ public abstract class BaseLayer
   @CallSuper @Override public void getBounds(
           RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     boundsMatrix.set(parentMatrix);
+
     if (applyParents) {
       if (parentLayers != null) {
         for (int i = parentLayers.size() - 1; i >= 0; i--) {
@@ -183,6 +184,7 @@ public abstract class BaseLayer
         boundsMatrix.preConcat(parentLayer.transform.getMatrix());
       }
     }
+
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
