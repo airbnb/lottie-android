@@ -175,15 +175,15 @@ public abstract class BaseLayer
           RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     boundsMatrix.set(parentMatrix);
 
-    if (applyParents) {
-      if (parentLayers != null) {
-        for (int i = parentLayers.size() - 1; i >= 0; i--) {
-          matrix.preConcat(parentLayers.get(i).transform.getMatrix());
-        }
-      } else if (parentLayer != null) {
-        boundsMatrix.preConcat(parentLayer.transform.getMatrix());
-      }
-    }
+//    if (applyParents) {
+//      if (parentLayers != null) {
+//        for (int i = parentLayers.size() - 1; i >= 0; i--) {
+//          matrix.preConcat(parentLayers.get(i).transform.getMatrix());
+//        }
+//      } else if (parentLayer != null) {
+//        boundsMatrix.preConcat(parentLayer.transform.getMatrix());
+//      }
+//    }
 
     boundsMatrix.preConcat(transform.getMatrix());
   }
