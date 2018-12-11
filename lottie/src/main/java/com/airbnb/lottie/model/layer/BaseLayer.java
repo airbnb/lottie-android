@@ -173,6 +173,7 @@ public abstract class BaseLayer
 
   @CallSuper @Override public void getBounds(
           RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    buildParentLayerListIfNeeded();
     boundsMatrix.set(parentMatrix);
 
     if (applyParents) {
