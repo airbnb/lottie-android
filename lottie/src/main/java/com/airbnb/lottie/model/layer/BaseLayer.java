@@ -77,6 +77,10 @@ public abstract class BaseLayer
   final Layer layerModel;
   @Nullable private MaskKeyframeAnimation mask;
   @Nullable private BaseLayer matteLayer;
+  /**
+   * This should only be used by {@link #buildParentLayerListIfNeeded()}
+   * to construct the list of parent layers.
+   */
   @Nullable private BaseLayer parentLayer;
   private List<BaseLayer> parentLayers;
 
@@ -173,6 +177,7 @@ public abstract class BaseLayer
 
   @CallSuper @Override public void getBounds(
           RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    rect.set(0, 0, 0, 0);
     buildParentLayerListIfNeeded();
     boundsMatrix.set(parentMatrix);
 
@@ -216,8 +221,7 @@ public abstract class BaseLayer
     }
 
     L.beginSection("Layer#computeBounds");
-    rect.set(0, 0, 0, 0);
-    getBounds(rect, matrix, false);
+    getBounds(rect, matrix, true);
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());

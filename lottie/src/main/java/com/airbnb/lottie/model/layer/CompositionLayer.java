@@ -106,20 +106,10 @@ public class CompositionLayer extends BaseLayer {
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     super.getBounds(outBounds, parentMatrix, applyParents);
-    rect.set(0, 0, 0, 0);
     for (int i = layers.size() - 1; i >= 0; i--) {
-      BaseLayer content = layers.get(i);
-      content.getBounds(rect, boundsMatrix, applyParents);
-      if (outBounds.isEmpty()) {
-        outBounds.set(rect);
-      } else {
-        outBounds.set(
-            Math.min(outBounds.left, rect.left),
-            Math.min(outBounds.top, rect.top),
-            Math.max(outBounds.right, rect.right),
-            Math.max(outBounds.bottom, rect.bottom)
-        );
-      }
+      rect.set(0, 0, 0, 0);
+      layers.get(i).getBounds(rect, boundsMatrix, applyParents);
+      outBounds.union(rect);
     }
   }
 
