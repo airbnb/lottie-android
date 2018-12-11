@@ -221,7 +221,8 @@ public abstract class BaseLayer
     }
 
     L.beginSection("Layer#computeBounds");
-    getBounds(rect, matrix, true);
+    // I'm not entirely sure why we only want to apply the parent bounds for CompositionLayers only.
+    getBounds(rect, matrix, this instanceof CompositionLayer);
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
