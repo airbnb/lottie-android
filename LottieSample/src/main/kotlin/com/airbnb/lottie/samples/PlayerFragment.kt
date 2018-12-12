@@ -254,6 +254,11 @@ class PlayerFragment : BaseMvRxFragment() {
             postInvalidate()
         }
 
+        animationView.setOnClickListener {
+            // Click the animation view to re-render it for debugging purposes.
+            animationView.invalidate()
+        }
+
         scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
                 onProgressChanged = { _, progress, _ ->
                     val minScale = minScale()

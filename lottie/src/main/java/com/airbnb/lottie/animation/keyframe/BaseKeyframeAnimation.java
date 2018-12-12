@@ -1,13 +1,13 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.Nullable;
-
-import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.Keyframe;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 
 /**
  * @param <K> Keyframe type
@@ -28,6 +28,10 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   @Nullable private Keyframe<K> cachedKeyframe;
 
+  @Nullable private Keyframe<K> cachedGetValueKeyframe;
+  private float cachedGetValueProgress = -1f;
+  @Nullable private A cachedGetValue = null;
+
   BaseKeyframeAnimation(List<? extends Keyframe<K>> keyframes) {
     this.keyframes = keyframes;
   }
@@ -41,6 +45,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    // Must use hashCode() since the actual object instance will be returned
+    // from getValue() below with the new values.
+    int previousValue = valueCallback == null ? 0 : getValue().hashCode();
     if (progress < getStartDelayProgress()) {
       progress = getStartDelayProgress();
     } else if (progress > getEndProgress()) {
@@ -51,8 +58,12 @@ public abstract class BaseKeyframeAnimation<K, A> {
       return;
     }
     this.progress = progress;
+    // Just trigger a change but don't compute values if there is a value callback.
+    int newValue = valueCallback == null ? -1 : getValue().hashCode();
 
-    notifyListeners();
+    if (previousValue != newValue) {
+      notifyListeners();
+    }
   }
 
   public void notifyListeners() {
@@ -122,7 +133,18 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public A getValue() {
-    return getValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
+    Keyframe<K> keyframe = getCurrentKeyframe();
+    float progress = getInterpolatedCurrentKeyframeProgress();
+    if (valueCallback == null && keyframe == cachedGetValueKeyframe && cachedGetValueProgress == progress) {
+      return cachedGetValue;
+    }
+
+    cachedGetValueKeyframe = keyframe;
+    cachedGetValueProgress = progress;
+    A value = getValue(keyframe, progress);
+    cachedGetValue = value;
+
+    return value;
   }
 
   public float getProgress() {
