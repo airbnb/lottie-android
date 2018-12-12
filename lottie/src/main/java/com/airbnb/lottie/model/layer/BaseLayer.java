@@ -221,7 +221,6 @@ public abstract class BaseLayer
     }
 
     L.beginSection("Layer#computeBounds");
-    // I'm not entirely sure why we only want to apply the parent bounds for CompositionLayers only.
     getBounds(rect, matrix, false);
 
     // Uncomment this to draw matte outlines.

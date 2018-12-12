@@ -51,15 +51,9 @@ public class ImageLayer extends BaseLayer {
     super.getBounds(outBounds, parentMatrix, applyParents);
     Bitmap bitmap = getBitmap();
     if (bitmap != null) {
-      outBounds.set(
-          outBounds.left,
-          outBounds.top,
-          Math.min(outBounds.right, bitmap.getWidth()),
-          Math.min(outBounds.bottom, bitmap.getHeight())
-      );
+      outBounds.set(0, 0, bitmap.getWidth() * Utils.dpScale(), bitmap.getHeight() * Utils.dpScale());
       boundsMatrix.mapRect(outBounds);
     }
-
   }
 
   @Nullable
