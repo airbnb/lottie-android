@@ -9,15 +9,19 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.updateLayoutParams
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.value.*
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.*
 
 import org.junit.Before
@@ -26,8 +30,10 @@ import com.airbnb.lottie.samples.R as SampleAppR
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.CoroutineContext
+import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -53,17 +59,26 @@ class LottieTest {
             Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
+    private lateinit var prodAnimationsTransferUtility: TransferUtility
+
     private lateinit var snapshotter: HappoSnapshotter
 
     @Before
     fun setup() {
         snapshotter = HappoSnapshotter(activity)
+        prodAnimationsTransferUtility = TransferUtility.builder()
+                .context(activity)
+                .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
+                .defaultBucket("lottie-prod-animations")
+                .build()
+
     }
 
     @Test
     fun testAll() {
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(15)) {
+                snapshotProdAnimations()
                 snapshotAssets()
                 snapshotFrameBoundaries()
                 snapshotScaleTypes()
@@ -71,6 +86,24 @@ class LottieTest {
                 snapshotter.finalizeReportAndUpload()
             }
         }
+    }
+
+    private suspend fun snapshotProdAnimations() {
+        val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
+        val objectListing = s3Client.listObjects("lottie-prod-animations")
+        objectListing.objectSummaries.forEach { snapshotProdAnimation(it) }
+    }
+
+    private suspend fun snapshotProdAnimation(objectSummary: S3ObjectSummary) {
+        val (fileName, extension) = objectSummary.key.split(".")
+        val file = File(activity.cacheDir, fileName.md5 + ".$extension")
+        file.createNewFile()
+        prodAnimationsTransferUtility.download(objectSummary.key, file).await()
+
+        val composition = parseComposition(file)
+        val bitmap = activity.snapshotFilmstrip(composition)
+        snapshotter.record(bitmap, "prod-" + objectSummary.key, "default")
+        file.delete()
     }
 
     private suspend fun snapshotAssets(pathPrefix: String = "") {
@@ -478,6 +511,23 @@ class LottieTest {
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
         var isResumed = false
         LottieCompositionFactory.fromAsset(activity, animationName)
+                .addFailureListener {
+                    if (isResumed) return@addFailureListener
+                    continuation.resumeWithException(it)
+                    isResumed = true
+                }
+                .addListener {
+                    if (isResumed) return@addListener
+                    continuation.resume(it)
+                    isResumed = true
+                }
+    }
+
+    private suspend fun parseComposition(file: File) = suspendCoroutine<LottieComposition> { continuation ->
+        var isResumed = false
+        val task = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStream(ZipInputStream(FileInputStream(file)), file.name)
+                else LottieCompositionFactory.fromJsonInputStream(FileInputStream(file), file.name)
+        task
                 .addFailureListener {
                     if (isResumed) return@addFailureListener
                     continuation.resumeWithException(it)
