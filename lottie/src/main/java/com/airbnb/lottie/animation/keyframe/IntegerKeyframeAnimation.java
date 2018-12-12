@@ -11,7 +11,12 @@ public class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
     super(keyframes);
   }
 
-  @Override Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+  @Override
+  Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+    return getIntValue(keyframe, keyframeProgress);
+  }
+
+  int getIntValue(Keyframe<Integer> keyframe, float keyframeProgress) {
     if (keyframe.startValue == null || keyframe.endValue == null) {
       throw new IllegalStateException("Missing values for keyframe.");
     }
@@ -26,6 +31,10 @@ public class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
       }
     }
 
-    return MiscUtils.lerp(keyframe.startValue, keyframe.endValue, keyframeProgress);
+    return MiscUtils.lerp(keyframe.getStartValueInt(), keyframe.getEndValueInt(), keyframeProgress);
+  }
+
+  public int getIntValue() {
+    return getIntValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
   }
 }

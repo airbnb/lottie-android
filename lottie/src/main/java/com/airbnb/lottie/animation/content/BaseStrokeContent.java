@@ -15,6 +15,8 @@ import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
@@ -136,9 +138,9 @@ public abstract class BaseStrokeContent
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("StrokeContent#draw");
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+    int alpha = (int) ((parentAlpha / 255f * ((IntegerKeyframeAnimation) opacityAnimation).getIntValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
-    paint.setStrokeWidth(widthAnimation.getValue() * Utils.getScale(parentMatrix));
+    paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue() * Utils.getScale(parentMatrix));
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
       L.endSection("StrokeContent#draw");
@@ -249,7 +251,7 @@ public abstract class BaseStrokeContent
     }
     path.computeBounds(rect, false);
 
-    float width = widthAnimation.getValue();
+    float width = ((FloatKeyframeAnimation) widthAnimation).getFloatValue();
     rect.set(rect.left - width / 2f, rect.top - width / 2f,
         rect.right + width / 2f, rect.bottom + width / 2f);
     outBounds.set(rect);

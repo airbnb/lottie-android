@@ -146,7 +146,7 @@ public abstract class BaseLayer
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
         @Override public void onValueChanged() {
-          setVisible(inOutAnimation.getValue() == 1f);
+          setVisible(inOutAnimation.getFloatValue() == 1f);
         }
       });
       setVisible(inOutAnimation.getValue() == 1f);

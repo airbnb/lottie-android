@@ -110,7 +110,7 @@ public class TransformKeyframeAnimation {
       matrix.preTranslate(position.x, position.y);
     }
 
-    float rotation = this.rotation.getValue();
+    float rotation = ((FloatKeyframeAnimation) this.rotation).getFloatValue();
     if (rotation != 0f) {
       matrix.preRotate(rotation);
     }

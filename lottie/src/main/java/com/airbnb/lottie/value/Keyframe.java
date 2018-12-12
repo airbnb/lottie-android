@@ -8,12 +8,21 @@ import android.view.animation.Interpolator;
 import com.airbnb.lottie.LottieComposition;
 
 public class Keyframe<T> {
+  private static final float UNSET_FLOAT = -3987645.78543923f;
+  private static final int UNSET_INT = 784923401;
+
   @Nullable private final LottieComposition composition;
   @Nullable public final T startValue;
   @Nullable public final T endValue;
   @Nullable public final Interpolator interpolator;
   public final float startFrame;
   @Nullable public Float endFrame;
+
+  private float startValueFloat = UNSET_FLOAT;
+  private float endValueFloat = UNSET_FLOAT;
+
+  private int startValueInt = UNSET_INT;
+  private int endValueInt = UNSET_INT;
 
   private float startProgress = Float.MIN_VALUE;
   private float endProgress = Float.MIN_VALUE;
@@ -80,6 +89,46 @@ public class Keyframe<T> {
 
   public boolean containsProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     return progress >= getStartProgress() && progress < getEndProgress();
+  }
+
+  /**
+   * Used to reduce autoboxing.
+   */
+  public float getStartValueFloat() {
+    if (startValueFloat == UNSET_FLOAT) {
+      startValueFloat = (float) (Float) startValue;
+    }
+    return startValueFloat;
+  }
+
+  /**
+   * Used to reduce autoboxing.
+   */
+  public float getEndValueFloat() {
+    if (endValueFloat == UNSET_FLOAT) {
+      endValueFloat = (float) (Float) endValue;
+    }
+    return endValueFloat;
+  }
+
+  /**
+   * Used to reduce autoboxing.
+   */
+  public int getStartValueInt() {
+    if (startValueInt == UNSET_INT) {
+      startValueInt = (int) (Integer) startValue;
+    }
+    return startValueInt;
+  }
+
+  /**
+   * Used to reduce autoboxing.
+   */
+  public int getEndValueInt() {
+    if (endValueInt == UNSET_INT) {
+      endValueInt = (int) (Integer) endValue;
+    }
+    return endValueInt;
   }
 
   @Override public String toString() {

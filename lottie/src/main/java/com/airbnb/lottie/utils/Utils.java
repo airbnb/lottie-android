@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.content.TrimPathContent;
+import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 
 import java.io.Closeable;
 
@@ -75,8 +76,10 @@ public final class Utils {
     if (trimPath == null || trimPath.isHidden()) {
       return;
     }
-    applyTrimPathIfNeeded(path, trimPath.getStart().getValue() / 100f,
-        trimPath.getEnd().getValue() / 100f, trimPath.getOffset().getValue() / 360f);
+    float start = ((FloatKeyframeAnimation) trimPath.getStart()).getFloatValue();
+    float end = ((FloatKeyframeAnimation) trimPath.getEnd()).getFloatValue();
+    float offset = ((FloatKeyframeAnimation) trimPath.getOffset()).getFloatValue();
+    applyTrimPathIfNeeded(path, start / 100f, end / 100f, offset / 360f);
   }
 
   public static void applyTrimPathIfNeeded(
