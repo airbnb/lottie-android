@@ -92,7 +92,7 @@ public class Keyframe<T> {
   }
 
   /**
-   * Used to reduce autoboxing.
+   * Optimization to avoid autoboxing.
    */
   public float getStartValueFloat() {
     if (startValueFloat == UNSET_FLOAT) {
@@ -102,7 +102,7 @@ public class Keyframe<T> {
   }
 
   /**
-   * Used to reduce autoboxing.
+   * Optimization to avoid autoboxing.
    */
   public float getEndValueFloat() {
     if (endValueFloat == UNSET_FLOAT) {
@@ -112,7 +112,7 @@ public class Keyframe<T> {
   }
 
   /**
-   * Used to reduce autoboxing.
+   * Optimization to avoid autoboxing.
    */
   public int getStartValueInt() {
     if (startValueInt == UNSET_INT) {
@@ -122,7 +122,7 @@ public class Keyframe<T> {
   }
 
   /**
-   * Used to reduce autoboxing.
+   * Optimization to avoid autoboxing.
    */
   public int getEndValueInt() {
     if (endValueInt == UNSET_INT) {

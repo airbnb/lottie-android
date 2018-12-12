@@ -68,6 +68,10 @@
             android:name=".FilmStripSnapshotActivity"
             android:exported="true" />
 
+        <activity
+            android:name=".SimpleAnimationActivity"
+            android:exported="true" />
+
         <activity android:name=".SnapshotTestActivity" />
         <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
     </application>
