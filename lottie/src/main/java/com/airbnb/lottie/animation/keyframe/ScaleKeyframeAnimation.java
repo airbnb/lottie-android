@@ -7,6 +7,9 @@ import com.airbnb.lottie.utils.MiscUtils;
 import java.util.List;
 
 public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
+
+  private final ScaleXY scaleXY = new ScaleXY();
+
   public ScaleKeyframeAnimation(List<Keyframe<ScaleXY>> keyframes) {
     super(keyframes);
   }
@@ -28,8 +31,10 @@ public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
       }
     }
 
-    return new ScaleXY(
+    scaleXY.set(
         MiscUtils.lerp(startTransform.getScaleX(), endTransform.getScaleX(), keyframeProgress),
-        MiscUtils.lerp(startTransform.getScaleY(), endTransform.getScaleY(), keyframeProgress));
+        MiscUtils.lerp(startTransform.getScaleY(), endTransform.getScaleY(), keyframeProgress)
+    );
+    return scaleXY;
   }
 }

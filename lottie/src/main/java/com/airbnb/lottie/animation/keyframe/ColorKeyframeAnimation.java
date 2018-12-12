@@ -12,7 +12,15 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     super(keyframes);
   }
 
-  @Override public Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+  @Override
+  Integer getValue(Keyframe<Integer> keyframe, float keyframeProgress) {
+    return getIntValue(keyframe, keyframeProgress);
+  }
+
+  /**
+   * Optimization to avoid autoboxing.
+   */
+  public int getIntValue(Keyframe<Integer> keyframe, float keyframeProgress) {
     if (keyframe.startValue == null || keyframe.endValue == null) {
       throw new IllegalStateException("Missing values for keyframe.");
     }
@@ -29,5 +37,12 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     }
 
     return GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), startColor, endColor);
+  }
+
+  /**
+   * Optimization to avoid autoboxing.
+   */
+  public int getIntValue() {
+    return getIntValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
   }
 }

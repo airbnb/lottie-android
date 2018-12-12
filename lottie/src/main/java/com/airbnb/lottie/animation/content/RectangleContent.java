@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.RectangleShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
@@ -88,7 +89,8 @@ public class RectangleContent
     PointF size = sizeAnimation.getValue();
     float halfWidth = size.x / 2f;
     float halfHeight = size.y / 2f;
-    float radius = cornerRadiusAnimation == null ? 0f : cornerRadiusAnimation.getValue();
+    float radius = cornerRadiusAnimation == null ?
+            0f : ((FloatKeyframeAnimation) cornerRadiusAnimation).getFloatValue();
     float maxRadius = Math.min(halfWidth, halfHeight);
     if (radius > maxRadius) {
       radius = maxRadius;

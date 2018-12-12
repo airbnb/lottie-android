@@ -1,8 +1,8 @@
 package com.airbnb.lottie.value;
 
 public class ScaleXY {
-  private final float scaleX;
-  private final float scaleY;
+  private float scaleX;
+  private float scaleY;
 
   public ScaleXY(float sx, float sy) {
     this.scaleX = sx;
@@ -19,6 +19,11 @@ public class ScaleXY {
 
   public float getScaleY() {
     return scaleY;
+  }
+
+  public void set(float scaleX, float scaleY) {
+    this.scaleX = scaleX;
+    this.scaleY = scaleY;
   }
 
   @Override public String toString() {

@@ -61,7 +61,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
   }
 
-  private Keyframe<K> getCurrentKeyframe() {
+  protected Keyframe<K> getCurrentKeyframe() {
     if (cachedKeyframe != null && cachedKeyframe.containsProgress(progress)) {
       return cachedKeyframe;
     }
@@ -102,7 +102,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
    * Takes the value of {@link #getLinearCurrentKeyframeProgress()} and interpolates it with
    * the current keyframe's interpolator.
    */
-  private float getInterpolatedCurrentKeyframeProgress() {
+  protected float getInterpolatedCurrentKeyframeProgress() {
     Keyframe<K> keyframe = getCurrentKeyframe();
     if (keyframe.isStatic()) {
       return 0f;
