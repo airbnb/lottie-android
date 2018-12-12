@@ -89,6 +89,7 @@ class LottieTest {
     }
 
     private suspend fun snapshotProdAnimations() {
+        Log.d(L.TAG, "Downloading prod animations from S3.")
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
         val objectListing = s3Client.listObjects("lottie-prod-animations")
         objectListing.objectSummaries.forEach { snapshotProdAnimation(it) }
@@ -97,8 +98,8 @@ class LottieTest {
     private suspend fun snapshotProdAnimation(objectSummary: S3ObjectSummary) {
         val (fileName, extension) = objectSummary.key.split(".")
         val file = File(activity.cacheDir, fileName.md5 + ".$extension")
-        file.createNewFile()
         prodAnimationsTransferUtility.download(objectSummary.key, file).await()
+        Log.d(L.TAG, "Downloaded ${objectSummary.key}")
 
         val composition = parseComposition(file)
         val bitmap = activity.snapshotFilmstrip(composition)

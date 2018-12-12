@@ -197,7 +197,6 @@ public class LottieTask<T> {
       }
     };
     taskObserver.start();
-    L.debug("Starting TaskObserver thread");
   }
 
   /**
@@ -210,7 +209,6 @@ public class LottieTask<T> {
     if (successListeners.isEmpty() || result != null) {
       taskObserver.interrupt();
       taskObserver = null;
-      L.debug("Stopping TaskObserver thread");
     }
   }
 
