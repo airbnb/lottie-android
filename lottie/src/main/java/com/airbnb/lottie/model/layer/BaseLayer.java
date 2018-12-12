@@ -222,7 +222,15 @@ public abstract class BaseLayer
 
     L.beginSection("Layer#computeBounds");
     // I'm not entirely sure why we only want to apply the parent bounds for CompositionLayers only.
-    getBounds(rect, matrix, this instanceof CompositionLayer);
+    getBounds(rect, matrix, false);
+
+    // Uncomment this to draw matte outlines.
+    /* Paint paint = new Paint();
+    paint.setColor(Color.RED);
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStrokeWidth(3);
+    canvas.drawRect(rect, paint); */
+
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());

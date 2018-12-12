@@ -108,7 +108,7 @@ public class CompositionLayer extends BaseLayer {
     super.getBounds(outBounds, parentMatrix, applyParents);
     for (int i = layers.size() - 1; i >= 0; i--) {
       rect.set(0, 0, 0, 0);
-      layers.get(i).getBounds(rect, boundsMatrix, applyParents);
+      layers.get(i).getBounds(rect, boundsMatrix, true);
       outBounds.union(rect);
     }
   }
