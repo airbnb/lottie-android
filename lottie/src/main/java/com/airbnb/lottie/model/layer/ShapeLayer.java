@@ -30,9 +30,9 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.draw(canvas, parentMatrix, parentAlpha);
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
-    contentGroup.getBounds(outBounds, boundsMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
+    contentGroup.getBounds(outBounds, boundsMatrix, applyParents);
   }
 
   @Override

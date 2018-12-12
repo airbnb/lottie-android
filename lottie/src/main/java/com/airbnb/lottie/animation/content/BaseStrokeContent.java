@@ -238,7 +238,7 @@ public abstract class BaseStrokeContent
     L.endSection("StrokeContent#applyTrimPath");
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     L.beginSection("StrokeContent#getBounds");
     path.reset();
     for (int i = 0; i < pathGroups.size(); i++) {

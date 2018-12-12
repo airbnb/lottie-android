@@ -47,14 +47,8 @@ notifications:
 jobs:
   include:
   - stage: test
-    name: Lottie Lint
-    script: "./gradlew :lottie:lintRelease"
-  - name: Lottie Unit Tests
-    script: "./gradlew :lottie:testReleaseUnitTest"
-  - name: LottieSample Lint
-    script: "./gradlew :LottieSample:lintRelease"
-  - name: LottieSample Unit Tests
-    script: "./gradlew :LottieSample:testReleaseUnitTest"
+    name: Test
+    script: "./gradlew lintRelease testReleaseUnitTest"
   - name: Firebase Happo Tests
     script:
     - "./gcloud_run.sh"

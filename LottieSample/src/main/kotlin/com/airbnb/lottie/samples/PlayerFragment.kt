@@ -471,7 +471,7 @@ class PlayerFragment : BaseMvRxFragment() {
         )
     }
 
-    private fun minScale() = 0.15f
+    private fun minScale() = 0.05f
 
     private fun maxScale(): Float = withState(viewModel) { state ->
         val screenWidth = resources.displayMetrics.widthPixels.toFloat()

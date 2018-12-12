@@ -98,7 +98,7 @@ public class FillContent
     L.endSection("FillContent#draw");
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
       this.path.addPath(paths.get(i).getPath(), parentMatrix);

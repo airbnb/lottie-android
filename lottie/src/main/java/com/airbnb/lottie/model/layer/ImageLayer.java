@@ -47,19 +47,13 @@ public class ImageLayer extends BaseLayer {
     canvas.restore();
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
-    super.getBounds(outBounds, parentMatrix);
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     Bitmap bitmap = getBitmap();
     if (bitmap != null) {
-      outBounds.set(
-          outBounds.left,
-          outBounds.top,
-          Math.min(outBounds.right, bitmap.getWidth()),
-          Math.min(outBounds.bottom, bitmap.getHeight())
-      );
+      outBounds.set(0, 0, bitmap.getWidth() * Utils.dpScale(), bitmap.getHeight() * Utils.dpScale());
       boundsMatrix.mapRect(outBounds);
     }
-
   }
 
   @Nullable

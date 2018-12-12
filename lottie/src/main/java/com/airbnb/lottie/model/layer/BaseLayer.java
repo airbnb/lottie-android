@@ -77,6 +77,10 @@ public abstract class BaseLayer
   final Layer layerModel;
   @Nullable private MaskKeyframeAnimation mask;
   @Nullable private BaseLayer matteLayer;
+  /**
+   * This should only be used by {@link #buildParentLayerListIfNeeded()}
+   * to construct the list of parent layers.
+   */
   @Nullable private BaseLayer parentLayer;
   private List<BaseLayer> parentLayers;
 
@@ -171,8 +175,22 @@ public abstract class BaseLayer
     animations.add(newAnimation);
   }
 
-  @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix) {
+  @CallSuper @Override public void getBounds(
+          RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    rect.set(0, 0, 0, 0);
+    buildParentLayerListIfNeeded();
     boundsMatrix.set(parentMatrix);
+
+    if (applyParents) {
+      if (parentLayers != null) {
+        for (int i = parentLayers.size() - 1; i >= 0; i--) {
+          boundsMatrix.preConcat(parentLayers.get(i).transform.getMatrix());
+        }
+      } else if (parentLayer != null) {
+        boundsMatrix.preConcat(parentLayer.transform.getMatrix());
+      }
+    }
+
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
@@ -203,47 +221,56 @@ public abstract class BaseLayer
     }
 
     L.beginSection("Layer#computeBounds");
-    rect.set(0, 0, 0, 0);
-    getBounds(rect, matrix);
-    intersectBoundsWithMatte(rect, matrix);
+    getBounds(rect, matrix, false);
+
+    // Uncomment this to draw matte outlines.
+    /* Paint paint = new Paint();
+    paint.setColor(Color.RED);
+    paint.setStyle(Paint.Style.STROKE);
+    paint.setStrokeWidth(3);
+    canvas.drawRect(rect, paint); */
+
+    intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
-    rect.set(0, 0, canvas.getWidth(), canvas.getHeight());
     L.endSection("Layer#computeBounds");
 
-    L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, contentPaint, true);
-    L.endSection("Layer#saveLayer");
-
-    // Clear the off screen buffer. This is necessary for some phones.
-    clearCanvas(canvas);
-    L.beginSection("Layer#drawLayer");
-    drawLayer(canvas, matrix, alpha);
-    L.endSection("Layer#drawLayer");
-
-    if (hasMasksOnThisLayer()) {
-      applyMasks(canvas, matrix);
-    }
-
-    if (hasMatteOnThisLayer()) {
-      L.beginSection("Layer#drawMatte");
+    if (!rect.isEmpty()) {
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, mattePaint, false);
+      saveLayerCompat(canvas, rect, contentPaint, true);
       L.endSection("Layer#saveLayer");
+
+      // Clear the off screen buffer. This is necessary for some phones.
       clearCanvas(canvas);
-      //noinspection ConstantConditions
-      matteLayer.draw(canvas, parentMatrix, alpha);
+      L.beginSection("Layer#drawLayer");
+      drawLayer(canvas, matrix, alpha);
+      L.endSection("Layer#drawLayer");
+
+      if (hasMasksOnThisLayer()) {
+        applyMasks(canvas, matrix);
+      }
+
+      if (hasMatteOnThisLayer()) {
+        L.beginSection("Layer#drawMatte");
+        L.beginSection("Layer#saveLayer");
+        saveLayerCompat(canvas, rect, mattePaint, false);
+        L.endSection("Layer#saveLayer");
+        clearCanvas(canvas);
+        //noinspection ConstantConditions
+        matteLayer.draw(canvas, parentMatrix, alpha);
+        L.beginSection("Layer#restoreLayer");
+        canvas.restore();
+        L.endSection("Layer#restoreLayer");
+        L.endSection("Layer#drawMatte");
+      }
+
       L.beginSection("Layer#restoreLayer");
       canvas.restore();
       L.endSection("Layer#restoreLayer");
-      L.endSection("Layer#drawMatte");
     }
 
-    L.beginSection("Layer#restoreLayer");
-    canvas.restore();
-    L.endSection("Layer#restoreLayer");
     recordRenderTime(L.endSection(drawTraceName));
   }
 
@@ -301,31 +328,29 @@ public abstract class BaseLayer
       }
     }
 
-    rect.set(
-        Math.max(rect.left, maskBoundsRect.left),
-        Math.max(rect.top, maskBoundsRect.top),
-        Math.min(rect.right, maskBoundsRect.right),
-        Math.min(rect.bottom, maskBoundsRect.bottom)
-    );
+    boolean intersects = rect.intersect(maskBoundsRect);
+    if (!intersects) {
+      rect.set(0f, 0f, 0f, 0f);
+    }
   }
 
   private void intersectBoundsWithMatte(RectF rect, Matrix matrix) {
     if (!hasMatteOnThisLayer()) {
       return;
     }
+
     if (layerModel.getMatteType() == Layer.MatteType.Invert) {
       // We can't trim the bounds if the mask is inverted since it extends all the way to the
       // composition bounds.
       return;
     }
     //noinspection ConstantConditions
-    matteLayer.getBounds(matteBoundsRect, matrix);
-    rect.set(
-        Math.max(rect.left, matteBoundsRect.left),
-        Math.max(rect.top, matteBoundsRect.top),
-        Math.min(rect.right, matteBoundsRect.right),
-        Math.min(rect.bottom, matteBoundsRect.bottom)
-    );
+    matteBoundsRect.set(0f, 0f, 0f, 0f);
+    matteLayer.getBounds(matteBoundsRect, matrix, true);
+    boolean intersects = rect.intersect(matteBoundsRect);
+    if (!intersects) {
+      rect.set(0f, 0f, 0f, 0f);
+    }
   }
 
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
