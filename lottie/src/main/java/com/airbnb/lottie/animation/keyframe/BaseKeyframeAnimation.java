@@ -135,7 +135,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   public A getValue() {
     Keyframe<K> keyframe = getCurrentKeyframe();
     float progress = getInterpolatedCurrentKeyframeProgress();
-    if (valueCallback != null && keyframe == cachedGetValueKeyframe && cachedGetValueProgress == progress) {
+    if (valueCallback == null && keyframe == cachedGetValueKeyframe && cachedGetValueProgress == progress) {
       return cachedGetValue;
     }
 
