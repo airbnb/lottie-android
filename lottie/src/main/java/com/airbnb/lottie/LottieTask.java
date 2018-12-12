@@ -145,7 +145,7 @@ public class LottieTask<T> {
     });
   }
 
-  private void notifySuccessListeners(T value) {
+  private synchronized void notifySuccessListeners(T value) {
     // Allows listeners to remove themselves in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
