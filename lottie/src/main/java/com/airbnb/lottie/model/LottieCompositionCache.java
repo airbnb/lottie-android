@@ -37,4 +37,8 @@ public class LottieCompositionCache {
     }
     cache.put(cacheKey, composition);
   }
+
+  public void clear() {
+    cache.evictAll();
+  }
 }

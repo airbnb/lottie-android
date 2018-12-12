@@ -15,6 +15,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.value.*
@@ -105,6 +106,7 @@ class LottieTest {
         val bitmap = activity.snapshotFilmstrip(composition)
         snapshotter.record(bitmap, "prod-" + objectSummary.key, "default")
         file.delete()
+        LottieCompositionCache.getInstance().clear()
     }
 
     private suspend fun snapshotAssets(pathPrefix: String = "") {
@@ -117,6 +119,7 @@ class LottieTest {
             val composition = parseComposition(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
             val bitmap = activity.snapshotFilmstrip(composition)
             snapshotter.record(bitmap, animation, "default")
+            LottieCompositionCache.getInstance().clear()
         }
     }
 
@@ -506,6 +509,7 @@ class LottieTest {
             animationView.requestLayout()
             animationView.scale = 1f
             animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+            LottieCompositionCache.getInstance().clear()
         }
     }
 
