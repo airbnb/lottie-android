@@ -47,7 +47,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     // Must use hashCode() since the actual object instance will be returned
     // from getValue() below with the new values.
-    int previousValue = getValue().hashCode();
+    int previousValue = valueCallback == null ? 0 : getValue().hashCode();
     if (progress < getStartDelayProgress()) {
       progress = getStartDelayProgress();
     } else if (progress > getEndProgress()) {
@@ -58,8 +58,8 @@ public abstract class BaseKeyframeAnimation<K, A> {
       return;
     }
     this.progress = progress;
-    int newValue = getValue().hashCode();
-
+    // Just trigger a change but don't compute values if there is a value callback.
+    int newValue = valueCallback == null ? -1 : getValue().hashCode();
 
     if (previousValue != newValue) {
       notifyListeners();
