@@ -43,7 +43,7 @@ class SnapshotTestActivity : AppCompatActivity() {
         filmStripView.post {
             animationView.isVisible = false
             filmStripView.isVisible = true
-            val bitmap = Bitmap.createBitmap(filmStripView.width, filmStripView.height, Bitmap.Config.ARGB_8888)
+            val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
             val canvas = Canvas(bitmap)
             filmStripView.setComposition(composition)
             filmStripView.draw(canvas)

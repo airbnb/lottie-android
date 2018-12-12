@@ -145,7 +145,7 @@ public class LottieTask<T> {
     });
   }
 
-  private void notifySuccessListeners(T value) {
+  private synchronized void notifySuccessListeners(T value) {
     // Allows listeners to remove themselves in onResult.
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<T>> listenersCopy = new ArrayList<>(successListeners);
@@ -197,7 +197,6 @@ public class LottieTask<T> {
       }
     };
     taskObserver.start();
-    L.debug("Starting TaskObserver thread");
   }
 
   /**
@@ -210,7 +209,6 @@ public class LottieTask<T> {
     if (successListeners.isEmpty() || result != null) {
       taskObserver.interrupt();
       taskObserver = null;
-      L.debug("Stopping TaskObserver thread");
     }
   }
 

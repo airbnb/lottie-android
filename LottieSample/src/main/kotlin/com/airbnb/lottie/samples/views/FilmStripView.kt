@@ -24,6 +24,10 @@ class FilmStripView @JvmOverloads constructor(
 
     init {
         inflate(R.layout.film_strip_view)
+        animationViews.forEach {
+            @Suppress("DEPRECATION")
+            it.isDrawingCacheEnabled = false
+        }
     }
 
     fun setComposition(composition: LottieComposition) {
