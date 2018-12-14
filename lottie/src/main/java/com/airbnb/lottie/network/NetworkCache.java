@@ -128,6 +128,6 @@ class NetworkCache {
   }
 
   private static String filenameForUrl(String url, FileExtension extension, boolean isTemp) {
-    return "lottie_cache_" + url.replaceAll("\\W+", "") + (isTemp ? extension.extension : extension.tempExtension());
+    return "lottie_cache_" + url.replaceAll("\\W+", "") + (isTemp ? extension.tempExtension(): extension.extension);
   }
 }
