@@ -15,6 +15,7 @@ import android.graphics.RectF;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.TrimPathContent;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 
@@ -207,7 +208,7 @@ public final class Utils {
     path.computeBounds(bounds, false);
     Bitmap bitmap = Bitmap.createBitmap((int) bounds.right, (int) bounds.bottom, Bitmap.Config.ARGB_8888);
     Canvas canvas = new Canvas(bitmap);
-    Paint paint = new Paint();
+    Paint paint = new LPaint();
     paint.setAntiAlias(true);
     paint.setColor(Color.BLUE);
     canvas.drawPath(path, paint);
