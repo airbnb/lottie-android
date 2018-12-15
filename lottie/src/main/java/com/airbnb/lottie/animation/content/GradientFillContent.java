@@ -17,6 +17,7 @@ import androidx.collection.LongSparseArray;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -45,7 +46,7 @@ public class GradientFillContent
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final Matrix shaderMatrix = new Matrix();
   private final Path path = new Path();
-  private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final RectF boundsRect = new RectF();
   private final List<PathContent> paths = new ArrayList<>();
   private final GradientType type;

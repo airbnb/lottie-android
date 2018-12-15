@@ -11,17 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShapeData {
-  private final List<CubicCurveData> curves = new ArrayList<>();
+  private final List<CubicCurveData> curves;
   private PointF initialPoint;
   private boolean closed;
 
   public ShapeData(PointF initialPoint, boolean closed, List<CubicCurveData> curves) {
     this.initialPoint = initialPoint;
     this.closed = closed;
-    this.curves.addAll(curves);
+    this.curves = new ArrayList<>(curves);
   }
 
   public ShapeData() {
+    curves = new ArrayList<>();
   }
 
   private void setInitialPoint(float x, float y) {

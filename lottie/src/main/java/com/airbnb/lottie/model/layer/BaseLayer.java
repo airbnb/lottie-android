@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -62,11 +63,11 @@ public abstract class BaseLayer
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
-  private final Paint contentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint addMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint subtractMaskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint mattePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint clearPaint = new Paint();
+  private final Paint contentPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint addMaskPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint subtractMaskPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint mattePaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint clearPaint = new LPaint();
   private final RectF rect = new RectF();
   private final RectF maskBoundsRect = new RectF();
   private final RectF matteBoundsRect = new RectF();
@@ -224,7 +225,7 @@ public abstract class BaseLayer
     getBounds(rect, matrix, false);
 
     // Uncomment this to draw matte outlines.
-    /* Paint paint = new Paint();
+    /* Paint paint = new LPaint();
     paint.setColor(Color.RED);
     paint.setStyle(Paint.Style.STROKE);
     paint.setStrokeWidth(3);

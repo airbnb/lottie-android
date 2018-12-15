@@ -1,5 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
+import android.util.Log;
+
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -19,7 +21,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   // This is not a Set because we don't want to create an iterator object on every setProgress.
-  final List<AnimationListener> listeners = new ArrayList<>();
+  final List<AnimationListener> listeners = new ArrayList<>(1);
   private boolean isDiscrete = false;
 
   private final List<? extends Keyframe<K>> keyframes;

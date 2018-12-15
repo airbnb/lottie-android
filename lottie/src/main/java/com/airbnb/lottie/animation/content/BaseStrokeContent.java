@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
@@ -43,7 +44,7 @@ public abstract class BaseStrokeContent
   private final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;
-  final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
 
   private final BaseKeyframeAnimation<?, Float> widthAnimation;
   private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
