@@ -71,6 +71,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+  /**
+   * True if the drawable has not been drawn since the last invalidateSelf.
+   * We can do this to prevent things like bounds from getting recalculated
+   * many times.
+   */
+  private boolean isDirty = false;
 
   @IntDef({RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
@@ -238,6 +244,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   @Override public void invalidateSelf() {
+    if (isDirty) {
+      return;
+    }
+    isDirty = true;
     final Callback callback = getCallback();
     if (callback != null) {
       callback.invalidateDrawable(this);
@@ -261,6 +271,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   @Override public void draw(@NonNull Canvas canvas) {
+    isDirty = false;
     L.beginSection("Drawable#draw");
     if (compositionLayer == null) {
       return;
