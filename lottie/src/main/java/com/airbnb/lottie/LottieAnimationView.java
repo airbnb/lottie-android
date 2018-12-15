@@ -49,6 +49,8 @@ import java.util.Set;
  * <p>
  * You can manually set the progress of the animation with {@link #setProgress(float)} or
  * {@link R.attr#lottie_progress}
+ *
+ * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
 @SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
 
