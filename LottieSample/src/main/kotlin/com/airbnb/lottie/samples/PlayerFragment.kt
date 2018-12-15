@@ -181,12 +181,6 @@ class PlayerFragment : BaseMvRxFragment() {
             trimContainer.animateVisible(it)
         }
 
-        hardwareAccelerationToggle.setOnClickListener { viewModel.toggleHardwareAcceleration() }
-        viewModel.selectSubscribe(PlayerState::useHardwareAcceleration) {
-            hardwareAccelerationToggle.isActivated = it
-            animationView.useHardwareAcceleration(it)
-        }
-
         mergePathsToggle.setOnClickListener { viewModel.toggleMergePaths() }
         viewModel.selectSubscribe(PlayerState::useMergePaths) {
             animationView.enableMergePathsForKitKatAndAbove(it)
@@ -411,6 +405,7 @@ class PlayerFragment : BaseMvRxFragment() {
         composition ?: return
 
         animationView.setComposition(composition)
+        hardwareAccelerationToggle.isActivated = animationView.layerType == View.LAYER_TYPE_HARDWARE
         animationView.setPerformanceTrackingEnabled(true)
         var renderTimeGraphRange = 4f
         animationView.performanceTracker?.addFrameListener { ms ->

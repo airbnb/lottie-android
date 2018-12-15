@@ -109,6 +109,7 @@ class GradientStrokeParser {
             if (n.equals("o")) {
               offset = val;
             } else if (n.equals("d") || n.equals("g")) {
+              composition.setHasDashPattern(true);
               lineDashPattern.add(val);
             }
           }

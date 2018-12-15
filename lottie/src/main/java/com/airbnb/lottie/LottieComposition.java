@@ -51,7 +51,12 @@ public class LottieComposition {
   private float startFrame;
   private float endFrame;
   private float frameRate;
+  /**
+   * Used to determine if an animation can be drawn with hardware acceleration.
+   */
+  private boolean hasDashPattern;
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
       List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
       List<Layer>> precomps, Map<String, LottieImageAsset> images,
@@ -72,6 +77,18 @@ public class LottieComposition {
   public void addWarning(String warning) {
     Log.w(L.TAG, warning);
     warnings.add(warning);
+  }
+
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public void setHasDashPattern(boolean hasDashPattern) {
+    this.hasDashPattern = hasDashPattern;
+  }
+
+  /**
+   * Used to determine if an animation can be drawn with hardware acceleration.
+   */
+  public boolean hasDashPattern() {
+    return hasDashPattern;
   }
 
   public ArrayList<String> getWarnings() {

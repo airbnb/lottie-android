@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.FloatRange;
@@ -15,7 +16,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatImageView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -73,7 +73,6 @@ import java.util.Set;
   private @RawRes int animationResId;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
-  private boolean useHardwareLayer = false;
   private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
@@ -259,54 +258,6 @@ import java.util.Set;
    */
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
-  }
-
-  /**
-   * @see #useHardwareAcceleration(boolean)
-   */
-  @Deprecated
-  public void useExperimentalHardwareAcceleration() {
-    useHardwareAcceleration(true);
-  }
-
-
-  /**
-   * @see #useHardwareAcceleration(boolean)
-   */
-  @Deprecated
-  public void useExperimentalHardwareAcceleration(boolean use) {
-    useHardwareAcceleration(use);
-  }
-
-  /**
-   * @see #useHardwareAcceleration(boolean)
-   */
-  public void useHardwareAcceleration() {
-    useHardwareAcceleration(true);
-  }
-
-  /**
-   * Enable hardware acceleration for this view.
-   * READ THIS BEFORE ENABLING HARDWARE ACCELERATION:
-   * 1) Test your animation on the minimum API level you support. Some drawing features such as
-   *    dashes and stroke caps have min api levels
-   *    (https://developer.android.com/guide/topics/graphics/hardware-accel.html#unsupported)
-   * 2) Enabling hardware acceleration is not always more performant. Check it with your specific
-   *    animation only if you are having performance issues with software rendering.
-   * 3) Software rendering is safer and will be consistent across devices. Manufacturers can
-   *    potentially break hardware rendering with bugs in their SKIA engine. Lottie cannot do
-   *    anything about that.
-   */
-  public void useHardwareAcceleration(boolean use) {
-    if (useHardwareLayer == use) {
-      return;
-    }
-    useHardwareLayer = use;
-    enableOrDisableHardwareLayer();
-  }
-
-  public boolean getUseHardwareAcceleration() {
-    return useHardwareLayer;
   }
 
   /**
@@ -794,7 +745,10 @@ import java.util.Set;
   }
 
   private void enableOrDisableHardwareLayer() {
-    boolean useHardwareLayer = this.useHardwareLayer && lottieDrawable.isAnimating();
+    boolean useHardwareLayer = true;
+    if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      useHardwareLayer = false;
+    }
     setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
   }
 

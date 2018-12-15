@@ -83,6 +83,7 @@ class ShapeStrokeParser {
                 break;
               case "d":
               case "g":
+                composition.setHasDashPattern(true);
                 lineDashPattern.add(val);
                 break;
             }
