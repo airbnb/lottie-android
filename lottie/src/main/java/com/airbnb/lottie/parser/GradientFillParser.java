@@ -24,7 +24,7 @@ class GradientFillParser {
     GradientType gradientType = null;
     AnimatablePointValue startPoint = null;
     AnimatablePointValue endPoint = null;
-    Path.FillType fillType = null;
+    Path.FillType fillType = Path.FillType.WINDING;
     boolean hidden = false;
 
     while (reader.hasNext()) {
