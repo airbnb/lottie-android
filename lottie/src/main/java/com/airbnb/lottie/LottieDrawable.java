@@ -43,12 +43,8 @@ import java.util.Set;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
- * If there are masks or mattes, then you MUST call {@link #recycleBitmaps()} when you are done
- * or else you will leak bitmaps.
- * <p>
- * It is preferable to use {@link com.airbnb.lottie.LottieAnimationView} when possible because it
- * handles bitmap recycling and asynchronous loading
- * of compositions.
+ *
+ * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class LottieDrawable extends Drawable implements Drawable.Callback, Animatable {
