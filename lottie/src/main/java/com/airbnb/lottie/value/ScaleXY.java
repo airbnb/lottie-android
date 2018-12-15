@@ -26,6 +26,10 @@ public class ScaleXY {
     this.scaleY = scaleY;
   }
 
+  public boolean equals(float scaleX, float scaleY) {
+    return this.scaleX == scaleX && this.scaleY == scaleY;
+  }
+
   @Override public String toString() {
     return getScaleX() + "x" + getScaleY();
   }

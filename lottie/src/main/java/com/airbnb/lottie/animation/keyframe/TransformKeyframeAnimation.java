@@ -20,6 +20,7 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
 
+  private boolean isIdentity;
   private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
   private final BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
@@ -31,24 +32,37 @@ public class TransformKeyframeAnimation {
   @Nullable private final BaseKeyframeAnimation<?, Float> endOpacity;
 
   public TransformKeyframeAnimation(AnimatableTransform animatableTransform) {
-    anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
-    position = animatableTransform.getPosition().createAnimation();
-    scale = animatableTransform.getScale().createAnimation();
-    rotation = animatableTransform.getRotation().createAnimation();
-    opacity = animatableTransform.getOpacity().createAnimation();
-    if (animatableTransform.getStartOpacity() != null) {
-      startOpacity = animatableTransform.getStartOpacity().createAnimation();
-    } else {
+    isIdentity = animatableTransform.isIdentity();
+    if (isIdentity) {
+      anchorPoint = null;
+      position = null;
+      scale = null;
+      rotation = null;
       startOpacity = null;
-    }
-    if (animatableTransform.getEndOpacity() != null) {
-      endOpacity = animatableTransform.getEndOpacity().createAnimation();
-    } else {
       endOpacity = null;
+    } else  {
+      anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
+      position = animatableTransform.getPosition().createAnimation();
+      scale = animatableTransform.getScale().createAnimation();
+      rotation = animatableTransform.getRotation().createAnimation();
+      if (animatableTransform.getStartOpacity() != null) {
+        startOpacity = animatableTransform.getStartOpacity().createAnimation();
+      } else {
+        startOpacity = null;
+      }
+      if (animatableTransform.getEndOpacity() != null) {
+        endOpacity = animatableTransform.getEndOpacity().createAnimation();
+      } else {
+        endOpacity = null;
+      }
     }
+    opacity = animatableTransform.getOpacity().createAnimation();
   }
 
   public void addAnimationsToLayer(BaseLayer layer) {
+    if (isIdentity) {
+      return;
+    }
     layer.addAnimation(anchorPoint);
     layer.addAnimation(position);
     layer.addAnimation(scale);
@@ -63,6 +77,9 @@ public class TransformKeyframeAnimation {
   }
 
   public void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
+    if (isIdentity) {
+      return;
+    }
     anchorPoint.addUpdateListener(listener);
     position.addUpdateListener(listener);
     scale.addUpdateListener(listener);
@@ -76,7 +93,10 @@ public class TransformKeyframeAnimation {
     }
   }
 
-  public void setProgress(float progress) {
+  public void  setProgress(float progress) {
+    if (isIdentity) {
+      return;
+    }
     anchorPoint.setProgress(progress);
     position.setProgress(progress);
     scale.setProgress(progress);
@@ -104,6 +124,9 @@ public class TransformKeyframeAnimation {
 
 
   public Matrix getMatrix() {
+    if (isIdentity) {
+      return matrix;
+    }
     matrix.reset();
     PointF position = this.position.getValue();
     if (position.x != 0 || position.y != 0) {
@@ -131,6 +154,9 @@ public class TransformKeyframeAnimation {
    * TODO: see if we can use this for the main {@link #getMatrix()} method.
    */
   public Matrix getMatrixForRepeater(float amount) {
+    if (isIdentity) {
+      return matrix;
+    }
     PointF position = this.position.getValue();
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
@@ -151,6 +177,7 @@ public class TransformKeyframeAnimation {
    */
   @SuppressWarnings("unchecked")
   public <T> boolean applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    isIdentity = false;
     if (property == TRANSFORM_ANCHOR_POINT) {
       anchorPoint.setValueCallback((LottieValueCallback<PointF>) callback);
     } else if (property == TRANSFORM_POSITION) {
