@@ -48,6 +48,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.startOpacity = startOpacity;
     this.endOpacity = endOpacity;
     isIdentity = anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f) &&
+            !(position instanceof AnimatableSplitDimensionPathValue) &&
             position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f) &&
             scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f) &&
             rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f;
