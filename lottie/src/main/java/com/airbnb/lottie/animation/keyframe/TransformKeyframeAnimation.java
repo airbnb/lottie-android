@@ -20,6 +20,7 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
 
+  private boolean isIdentity;
   private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   private final BaseKeyframeAnimation<?, PointF> position;
   private final BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
@@ -31,10 +32,18 @@ public class TransformKeyframeAnimation {
   @Nullable private final BaseKeyframeAnimation<?, Float> endOpacity;
 
   public TransformKeyframeAnimation(AnimatableTransform animatableTransform) {
-    anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
-    position = animatableTransform.getPosition().createAnimation();
-    scale = animatableTransform.getScale().createAnimation();
-    rotation = animatableTransform.getRotation().createAnimation();
+    isIdentity = animatableTransform.isIdentity();
+    if (isIdentity) {
+      anchorPoint = null;
+      position = null;
+      scale = null;
+      rotation = null;
+    } else  {
+      anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
+      position = animatableTransform.getPosition().createAnimation();
+      scale = animatableTransform.getScale().createAnimation();
+      rotation = animatableTransform.getRotation().createAnimation();
+    }
     opacity = animatableTransform.getOpacity().createAnimation();
     if (animatableTransform.getStartOpacity() != null) {
       startOpacity = animatableTransform.getStartOpacity().createAnimation();
@@ -49,10 +58,6 @@ public class TransformKeyframeAnimation {
   }
 
   public void addAnimationsToLayer(BaseLayer layer) {
-    layer.addAnimation(anchorPoint);
-    layer.addAnimation(position);
-    layer.addAnimation(scale);
-    layer.addAnimation(rotation);
     layer.addAnimation(opacity);
     if (startOpacity != null) {
       layer.addAnimation(startOpacity);
@@ -60,13 +65,17 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       layer.addAnimation(endOpacity);
     }
+
+    if (isIdentity) {
+      return;
+    }
+    layer.addAnimation(anchorPoint);
+    layer.addAnimation(position);
+    layer.addAnimation(scale);
+    layer.addAnimation(rotation);
   }
 
   public void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
-    anchorPoint.addUpdateListener(listener);
-    position.addUpdateListener(listener);
-    scale.addUpdateListener(listener);
-    rotation.addUpdateListener(listener);
     opacity.addUpdateListener(listener);
     if (startOpacity != null) {
       startOpacity.addUpdateListener(listener);
@@ -74,13 +83,17 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       endOpacity.addUpdateListener(listener);
     }
+
+    if (isIdentity) {
+      return;
+    }
+    anchorPoint.addUpdateListener(listener);
+    position.addUpdateListener(listener);
+    scale.addUpdateListener(listener);
+    rotation.addUpdateListener(listener);
   }
 
-  public void setProgress(float progress) {
-    anchorPoint.setProgress(progress);
-    position.setProgress(progress);
-    scale.setProgress(progress);
-    rotation.setProgress(progress);
+  public void  setProgress(float progress) {
     opacity.setProgress(progress);
     if (startOpacity != null) {
       startOpacity.setProgress(progress);
@@ -88,6 +101,14 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       endOpacity.setProgress(progress);
     }
+
+    if (isIdentity) {
+      return;
+    }
+    anchorPoint.setProgress(progress);
+    position.setProgress(progress);
+    scale.setProgress(progress);
+    rotation.setProgress(progress);
   }
 
   public BaseKeyframeAnimation<?, Integer> getOpacity() {
@@ -104,6 +125,9 @@ public class TransformKeyframeAnimation {
 
 
   public Matrix getMatrix() {
+    if (isIdentity) {
+      return matrix;
+    }
     matrix.reset();
     PointF position = this.position.getValue();
     if (position.x != 0 || position.y != 0) {
@@ -131,6 +155,9 @@ public class TransformKeyframeAnimation {
    * TODO: see if we can use this for the main {@link #getMatrix()} method.
    */
   public Matrix getMatrixForRepeater(float amount) {
+    if (isIdentity) {
+      return matrix;
+    }
     PointF position = this.position.getValue();
     PointF anchorPoint = this.anchorPoint.getValue();
     ScaleXY scale = this.scale.getValue();
@@ -151,6 +178,7 @@ public class TransformKeyframeAnimation {
    */
   @SuppressWarnings("unchecked")
   public <T> boolean applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    isIdentity = false;
     if (property == TRANSFORM_ANCHOR_POINT) {
       anchorPoint.setValueCallback((LottieValueCallback<PointF>) callback);
     } else if (property == TRANSFORM_POSITION) {

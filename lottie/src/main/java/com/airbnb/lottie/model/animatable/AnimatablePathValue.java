@@ -25,6 +25,16 @@ public class AnimatablePathValue implements AnimatableValue<PointF, PointF> {
   }
 
   @Override
+  public List<Keyframe<PointF>> getKeyframes() {
+    return keyframes;
+  }
+
+  @Override
+  public boolean isStatic() {
+    return keyframes.size() == 1 && keyframes.get(0).isStatic();
+  }
+
+  @Override
   public BaseKeyframeAnimation<PointF, PointF> createAnimation() {
     if (keyframes.get(0).isStatic()) {
       return new PointKeyframeAnimation(keyframes);

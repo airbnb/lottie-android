@@ -1,6 +1,8 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -16,6 +18,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatableScaleValue scale;
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
+  private final boolean isIdentity;
 
   // Used for repeaters
   @Nullable private final AnimatableFloatValue startOpacity;
@@ -44,6 +47,11 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.opacity = opacity;
     this.startOpacity = startOpacity;
     this.endOpacity = endOpacity;
+    isIdentity = anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f) &&
+            !(position instanceof AnimatableSplitDimensionPathValue) &&
+            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f) &&
+            scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f) &&
+            rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f;
   }
 
   public AnimatablePathValue getAnchorPoint() {
@@ -72,6 +80,10 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
 
   @Nullable public AnimatableFloatValue getEndOpacity() {
     return endOpacity;
+  }
+
+  public boolean isIdentity() {
+    return isIdentity;
   }
 
   public TransformKeyframeAnimation createAnimation() {
