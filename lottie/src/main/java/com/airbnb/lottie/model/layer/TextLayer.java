@@ -85,6 +85,7 @@ public class TextLayer extends BaseLayer {
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    super.getBounds(outBounds, parentMatrix, applyParents);
     // TODO: use the correct text bounds.
     outBounds.set(0, 0, composition.getBounds().width(), composition.getBounds().height());
   }
