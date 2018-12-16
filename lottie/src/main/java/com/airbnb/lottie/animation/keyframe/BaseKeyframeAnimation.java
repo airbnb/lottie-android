@@ -34,6 +34,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   private float cachedGetValueProgress = -1f;
   @Nullable private A cachedGetValue = null;
 
+  private float cachedStartDelayProgress = -1f;
+  private float cachedEndProgress = -1f;
+
   BaseKeyframeAnimation(List<? extends Keyframe<K>> keyframes) {
     this.keyframes = keyframes;
   }
@@ -126,12 +129,18 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   @FloatRange(from = 0f, to = 1f)
   private float getStartDelayProgress() {
-    return keyframes.isEmpty() ? 0f : keyframes.get(0).getStartProgress();
+      if (cachedStartDelayProgress == -1f) {
+            cachedStartDelayProgress = keyframes.isEmpty() ? 0f : keyframes.get(0).getStartProgress();
+      }
+      return cachedStartDelayProgress;
   }
 
   @FloatRange(from = 0f, to = 1f)
   float getEndProgress() {
-    return keyframes.isEmpty() ? 1f : keyframes.get(keyframes.size() - 1).getEndProgress();
+      if (cachedEndProgress == -1f) {
+        cachedEndProgress = keyframes.isEmpty() ? 1f : keyframes.get(keyframes.size() - 1).getEndProgress();
+      }
+      return cachedEndProgress;
   }
 
   public A getValue() {
