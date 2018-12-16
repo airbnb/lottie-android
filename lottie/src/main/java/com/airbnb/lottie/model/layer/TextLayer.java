@@ -84,6 +84,11 @@ public class TextLayer extends BaseLayer {
     }
   }
 
+  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+    // TODO: use the correct text bounds.
+    outBounds.set(0, 0, composition.getBounds().width(), composition.getBounds().height());
+  }
+
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
