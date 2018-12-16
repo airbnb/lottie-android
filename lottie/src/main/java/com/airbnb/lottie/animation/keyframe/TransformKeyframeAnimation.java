@@ -38,25 +38,23 @@ public class TransformKeyframeAnimation {
       position = null;
       scale = null;
       rotation = null;
-      startOpacity = null;
-      endOpacity = null;
     } else  {
       anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
       position = animatableTransform.getPosition().createAnimation();
       scale = animatableTransform.getScale().createAnimation();
       rotation = animatableTransform.getRotation().createAnimation();
-      if (animatableTransform.getStartOpacity() != null) {
-        startOpacity = animatableTransform.getStartOpacity().createAnimation();
-      } else {
-        startOpacity = null;
-      }
-      if (animatableTransform.getEndOpacity() != null) {
-        endOpacity = animatableTransform.getEndOpacity().createAnimation();
-      } else {
-        endOpacity = null;
-      }
     }
     opacity = animatableTransform.getOpacity().createAnimation();
+    if (animatableTransform.getStartOpacity() != null) {
+      startOpacity = animatableTransform.getStartOpacity().createAnimation();
+    } else {
+      startOpacity = null;
+    }
+    if (animatableTransform.getEndOpacity() != null) {
+      endOpacity = animatableTransform.getEndOpacity().createAnimation();
+    } else {
+      endOpacity = null;
+    }
   }
 
   public void addAnimationsToLayer(BaseLayer layer) {
@@ -77,13 +75,6 @@ public class TransformKeyframeAnimation {
   }
 
   public void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
-    if (isIdentity) {
-      return;
-    }
-    anchorPoint.addUpdateListener(listener);
-    position.addUpdateListener(listener);
-    scale.addUpdateListener(listener);
-    rotation.addUpdateListener(listener);
     opacity.addUpdateListener(listener);
     if (startOpacity != null) {
       startOpacity.addUpdateListener(listener);
@@ -91,16 +82,17 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       endOpacity.addUpdateListener(listener);
     }
-  }
 
-  public void  setProgress(float progress) {
     if (isIdentity) {
       return;
     }
-    anchorPoint.setProgress(progress);
-    position.setProgress(progress);
-    scale.setProgress(progress);
-    rotation.setProgress(progress);
+    anchorPoint.addUpdateListener(listener);
+    position.addUpdateListener(listener);
+    scale.addUpdateListener(listener);
+    rotation.addUpdateListener(listener);
+  }
+
+  public void  setProgress(float progress) {
     opacity.setProgress(progress);
     if (startOpacity != null) {
       startOpacity.setProgress(progress);
@@ -108,6 +100,14 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       endOpacity.setProgress(progress);
     }
+
+    if (isIdentity) {
+      return;
+    }
+    anchorPoint.setProgress(progress);
+    position.setProgress(progress);
+    scale.setProgress(progress);
+    rotation.setProgress(progress);
   }
 
   public BaseKeyframeAnimation<?, Integer> getOpacity() {
