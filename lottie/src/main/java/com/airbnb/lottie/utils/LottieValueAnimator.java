@@ -141,8 +141,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     } else {
       setMinAndMaxFrames((int) composition.getStartFrame(), (int) composition.getEndFrame());
     }
+    float frame = this.frame;
+    this.frame = 0f;
     setFrame((int) frame);
-    lastFrameTimeNs = System.nanoTime();
   }
 
   public void setFrame(int frame) {
