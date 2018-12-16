@@ -58,13 +58,6 @@ public class TransformKeyframeAnimation {
   }
 
   public void addAnimationsToLayer(BaseLayer layer) {
-    if (isIdentity) {
-      return;
-    }
-    layer.addAnimation(anchorPoint);
-    layer.addAnimation(position);
-    layer.addAnimation(scale);
-    layer.addAnimation(rotation);
     layer.addAnimation(opacity);
     if (startOpacity != null) {
       layer.addAnimation(startOpacity);
@@ -72,6 +65,14 @@ public class TransformKeyframeAnimation {
     if (endOpacity != null) {
       layer.addAnimation(endOpacity);
     }
+
+    if (isIdentity) {
+      return;
+    }
+    layer.addAnimation(anchorPoint);
+    layer.addAnimation(position);
+    layer.addAnimation(scale);
+    layer.addAnimation(rotation);
   }
 
   public void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
