@@ -57,10 +57,14 @@ public class ShapeData {
           shapeData1.getCurves().size() + "\tShape 2: " + shapeData2.getCurves().size());
     }
     
-    if (curves.isEmpty()) {
-      int points = Math.min(shapeData1.getCurves().size(), shapeData2.getCurves().size());
-      for (int i = 0; i < points; i++) {
+    int points = Math.min(shapeData1.getCurves().size(), shapeData2.getCurves().size());
+    if (curves.size() < points) {
+      for (int i = curves.size(); i < points; i++) {
         curves.add(new CubicCurveData());
+      }
+    } else if (curves.size() > points) {
+      for (int i = points; i < curves.size(); i++) {
+        curves.remove(curves.size() - 1);
       }
     }
 
