@@ -5,6 +5,7 @@ import android.util.Log;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     // Must use hashCode() since the actual object instance will be returned
     // from getValue() below with the new values.
-    int previousValue = valueCallback == null ? getValue().hashCode() : 0;
+    Keyframe<K> previousKeyframe = getCurrentKeyframe();
     if (progress < getStartDelayProgress()) {
       progress = getStartDelayProgress();
     } else if (progress > getEndProgress()) {
@@ -64,9 +65,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
     // Just trigger a change but don't compute values if there is a value callback.
-    int newValue = valueCallback == null ? getValue().hashCode() : -1;
+    Keyframe<K> newKeyframe = getCurrentKeyframe();
 
-    if (previousValue != newValue) {
+    if (previousKeyframe != newKeyframe || !newKeyframe.isStatic()) {
       notifyListeners();
     }
   }
