@@ -13,4 +13,9 @@ public class PathParser implements ValueParser<PointF> {
   @Override public PointF parse(JsonReader reader, float scale) throws IOException {
     return JsonUtils.jsonToPoint(reader, scale);
   }
+
+  @Override
+  public PointF defaultValue() {
+    return new PointF(0f, 0f);
+  }
 }

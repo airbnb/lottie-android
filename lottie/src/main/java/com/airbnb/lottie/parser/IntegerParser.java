@@ -12,4 +12,9 @@ public class IntegerParser implements ValueParser<Integer> {
   @Override public Integer parse(JsonReader reader, float scale) throws IOException {
     return Math.round(JsonUtils.valueFromObject(reader) * scale);
   }
+
+  @Override
+  public Integer defaultValue() {
+    return 0;
+  }
 }

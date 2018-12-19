@@ -33,4 +33,9 @@ public class ColorParser implements ValueParser<Integer> {
 
     return Color.argb((int) a, (int) r, (int) g, (int) b);
   }
+
+  @Override
+  public Integer defaultValue() {
+    return 0;
+  }
 }
