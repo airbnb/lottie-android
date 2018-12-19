@@ -13,8 +13,4 @@ public class FloatParser implements ValueParser<Float> {
     return JsonUtils.valueFromObject(reader) * scale;
   }
 
-  @Override
-  public Float defaultValue() {
-    return 0f;
-  }
 }

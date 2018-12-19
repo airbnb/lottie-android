@@ -91,8 +91,4 @@ public class ShapeDataParser implements ValueParser<ShapeData> {
     return new ShapeData(initialPoint, closed, curves);
   }
 
-  @Override
-  public ShapeData defaultValue() {
-    return new ShapeData(new PointF(0f, 0f), false, Collections.<CubicCurveData>emptyList());
-  }
 }

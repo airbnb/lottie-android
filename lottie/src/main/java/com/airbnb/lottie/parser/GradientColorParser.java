@@ -143,8 +143,4 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     return (int) (255 * opacities[opacities.length - 1]);
   }
 
-  @Override
-  public GradientColor defaultValue() {
-    return new GradientColor(new float[0], new int[0]);
-  }
 }

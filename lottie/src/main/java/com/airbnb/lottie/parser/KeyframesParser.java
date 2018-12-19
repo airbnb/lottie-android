@@ -51,10 +51,6 @@ class KeyframesParser {
     }
     reader.endObject();
 
-    if (keyframes.isEmpty()) {
-      keyframes.add(new Keyframe<T>(composition, valueParser.defaultValue(), null, null, 0f, null));
-    }
-
     setEndFrames(keyframes);
     return keyframes;
   }

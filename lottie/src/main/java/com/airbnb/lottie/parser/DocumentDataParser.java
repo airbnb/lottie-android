@@ -70,8 +70,4 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
         baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill);
   }
 
-  @Override
-  public DocumentData defaultValue() {
-    return new DocumentData("", "", 0.0, 0, 0, 0.0, 0.0, 0, 0, 0.0, false);
-  }
 }

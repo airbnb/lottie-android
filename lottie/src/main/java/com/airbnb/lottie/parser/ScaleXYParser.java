@@ -29,8 +29,4 @@ public class ScaleXYParser implements ValueParser<ScaleXY> {
     return new ScaleXY(sx / 100f * scale, sy / 100f * scale);
   }
 
-  @Override
-  public ScaleXY defaultValue() {
-    return new ScaleXY(1f, 1f);
-  }
 }

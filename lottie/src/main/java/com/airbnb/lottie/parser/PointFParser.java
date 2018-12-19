@@ -31,8 +31,4 @@ public class PointFParser implements ValueParser<PointF> {
     }
   }
 
-  @Override
-  public PointF defaultValue() {
-    return new PointF(0f, 0f);
-  }
 }

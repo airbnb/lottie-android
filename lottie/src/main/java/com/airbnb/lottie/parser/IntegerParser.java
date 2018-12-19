@@ -13,8 +13,4 @@ public class IntegerParser implements ValueParser<Integer> {
     return Math.round(JsonUtils.valueFromObject(reader) * scale);
   }
 
-  @Override
-  public Integer defaultValue() {
-    return 0;
-  }
 }

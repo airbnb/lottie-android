@@ -13,6 +13,7 @@ import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
+import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.ScaleXY;
 
 import java.io.IOException;
@@ -58,7 +59,20 @@ public class AnimatableTransformParser {
         case "rz":
           composition.addWarning("Lottie doesn't support 3D layers.");
         case "r":
+          /**
+           * Sometimes split path rotation gets exported like:
+           *         "rz": {
+           *           "a": 1,
+           *           "k": [
+           *             {}
+           *           ]
+           *         },
+           * which doesn't parse to a real keyframe.
+           */
           rotation = AnimatableValueParser.parseFloat(reader, composition, false);
+          if (rotation.getKeyframes().isEmpty()) {
+            rotation.getKeyframes().add(new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          }
           break;
         case "o":
           opacity = AnimatableValueParser.parseInteger(reader, composition);

@@ -51,7 +51,8 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
             !(position instanceof AnimatableSplitDimensionPathValue) &&
             position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f) &&
             scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f) &&
-            rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f;
+            (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f ||
+                    rotation.keyframes.isEmpty());
   }
 
   public AnimatablePathValue getAnchorPoint() {
