@@ -30,5 +30,4 @@ public class PointFParser implements ValueParser<PointF> {
       throw new IllegalArgumentException("Cannot convert json to point. Next token is " + token);
     }
   }
-
 }

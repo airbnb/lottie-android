@@ -90,5 +90,4 @@ public class ShapeDataParser implements ValueParser<ShapeData> {
     }
     return new ShapeData(initialPoint, closed, curves);
   }
-
 }

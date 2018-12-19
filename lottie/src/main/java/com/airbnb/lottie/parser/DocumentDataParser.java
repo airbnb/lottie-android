@@ -69,5 +69,4 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     return new DocumentData(text, fontName, size, justification, tracking, lineHeight,
         baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill);
   }
-
 }

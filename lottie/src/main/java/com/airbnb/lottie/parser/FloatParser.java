@@ -12,5 +12,4 @@ public class FloatParser implements ValueParser<Float> {
   @Override public Float parse(JsonReader reader, float scale) throws IOException {
     return JsonUtils.valueFromObject(reader) * scale;
   }
-
 }
