@@ -79,7 +79,7 @@ class LottieTest {
     @Test
     fun testAll() {
         runBlocking {
-            withTimeout(TimeUnit.MINUTES.toMillis(15)) {
+            withTimeout(TimeUnit.MINUTES.toMillis(30)) {
                 snapshotProdAnimations()
                 snapshotAssets()
                 snapshotFrameBoundaries()
