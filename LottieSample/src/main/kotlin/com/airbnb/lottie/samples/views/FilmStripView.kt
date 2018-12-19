@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.FloatRange
 import androidx.core.view.children
+import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -39,5 +40,9 @@ class FilmStripView @JvmOverloads constructor(
 
     fun setImageAssetDelegate(delegate: ImageAssetDelegate) {
         animationViews.forEach { it.setImageAssetDelegate(delegate) }
+    }
+
+    fun setFontAssetDelegate(delegate: FontAssetDelegate) {
+        animationViews.forEach { it.setFontAssetDelegate(delegate) }
     }
 }

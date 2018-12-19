@@ -3,9 +3,11 @@ package com.airbnb.lottie.samples
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import kotlinx.android.synthetic.main.activity_snapshot_tests.*
@@ -24,6 +26,11 @@ class SnapshotTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_snapshot_tests)
         filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+        filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {
+            override fun getFontPath(fontFamily: String?): String {
+                return "fonts/Roboto.ttf"
+            }
+        })
         @Suppress("DEPRECATION")
         animationView.isDrawingCacheEnabled = false
     }

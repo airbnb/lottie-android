@@ -28,7 +28,7 @@ abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
 
   @Override
   public boolean isStatic() {
-    return keyframes.size() == 1 && keyframes.get(0).isStatic();
+    return keyframes.isEmpty() || (keyframes.size() == 1 && keyframes.get(0).isStatic());
   }
 
   @Override public String toString() {

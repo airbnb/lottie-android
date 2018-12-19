@@ -63,7 +63,7 @@ public class ShapeData {
         curves.add(new CubicCurveData());
       }
     } else if (curves.size() > points) {
-      for (int i = points; i < curves.size(); i++) {
+      for (int i = curves.size() - 1; i >= points; i--) {
         curves.remove(curves.size() - 1);
       }
     }
