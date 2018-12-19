@@ -183,6 +183,9 @@ public class GradientFillContent
     float x1 = endPoint.x;
     float y1 = endPoint.y;
     float r = (float) Math.hypot(x1 - x0, y1 - y0);
+    if (r <= 0) {
+      r = 0.001f;
+    }
     gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.CLAMP);
     radialGradientCache.put(gradientHash, gradient);
     return gradient;
