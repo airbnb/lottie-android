@@ -22,6 +22,7 @@ import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.ListObjectsV2Request
 import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.*
 
@@ -91,9 +92,25 @@ class LottieTest {
 
     private suspend fun snapshotProdAnimations() {
         Log.d(L.TAG, "Downloading prod animations from S3.")
+        val allObjects = mutableListOf<S3ObjectSummary>()
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
-        val objectListing = s3Client.listObjects("lottie-prod-animations")
-        objectListing.objectSummaries.forEach { snapshotProdAnimation(it) }
+        var request = ListObjectsV2Request().apply {
+            bucketName = "lottie-prod-animations"
+        }
+        var result = s3Client.listObjectsV2(request)
+        allObjects.addAll(result.objectSummaries)
+        var startAfter = result.objectSummaries.lastOrNull()?.key
+        while (startAfter != null) {
+            request = ListObjectsV2Request().apply {
+                bucketName = "lottie-prod-animations"
+                this.startAfter = startAfter
+            }
+            result = s3Client.listObjectsV2(request)
+            allObjects.addAll(result.objectSummaries)
+            startAfter = result.objectSummaries.lastOrNull()?.key
+        }
+
+        allObjects.forEach { snapshotProdAnimation(it) }
     }
 
     private suspend fun snapshotProdAnimation(objectSummary: S3ObjectSummary) {
