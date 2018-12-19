@@ -143,12 +143,6 @@ class KeyframeParser {
       interpolator = LINEAR_INTERPOLATOR;
     }
 
-    if (startValue == null) {
-      startValue = valueParser.defaultValue();
-    }
-    if (endValue == null) {
-      endValue = valueParser.defaultValue();
-    }
     Keyframe<T> keyframe =
         new Keyframe<>(composition, startValue, endValue, interpolator, startFrame, null);
     keyframe.pathCp1 = pathCp1;
