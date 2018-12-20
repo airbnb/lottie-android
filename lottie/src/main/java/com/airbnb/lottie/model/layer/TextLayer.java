@@ -17,6 +17,7 @@ import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
+import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
@@ -63,7 +64,6 @@ public class TextLayer extends BaseLayer {
       colorAnimation.addUpdateListener(this);
       addAnimation(colorAnimation);
     }
-
 
     if (textProperties != null && textProperties.stroke != null) {
       strokeColorAnimation = textProperties.stroke.createAnimation();
@@ -138,9 +138,11 @@ public class TextLayer extends BaseLayer {
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
     float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
+
+    float totalTextWidth = getTotalTextWidthForGlyphs(documentData, font, fontScale, parentScale);
+    applyJustification(documentData.justification, canvas, totalTextWidth);
+
     String text = documentData.text;
-
-
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
@@ -163,6 +165,7 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextWithFont(
       DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
+    float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
     Typeface typeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
     if (typeface == null) {
@@ -177,6 +180,10 @@ public class TextLayer extends BaseLayer {
     fillPaint.setTextSize((float) (documentData.size * Utils.dpScale()));
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
+
+    float totalTextWidth = fillPaint.measureText(text) * fontScale * Utils.dpScale() * parentScale;
+    applyJustification(documentData.justification, canvas, totalTextWidth);
+
     for (int i = 0; i < text.length(); i++) {
       char character = text.charAt(i);
       drawCharacterFromFont(character, documentData, canvas);
@@ -189,6 +196,35 @@ public class TextLayer extends BaseLayer {
       }
       float tx = charWidth + tracking * parentScale;
       canvas.translate(tx, 0);
+    }
+  }
+
+  private float getTotalTextWidthForGlyphs(
+      DocumentData documentData, Font font, float fontScale, float parentScale) {
+    float totalWidth = 0;
+    for (int i = 0; i < documentData.text.length(); i++) {
+      char c = documentData.text.charAt(i);
+      int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
+      FontCharacter character = composition.getCharacters().get(characterHash);
+      if (character == null) {
+        continue;
+      }
+      totalWidth += character.getWidth() * fontScale * Utils.dpScale() * parentScale;
+    }
+    return totalWidth;
+  }
+
+  private void applyJustification(Justification justification, Canvas canvas, float totalTextWidth) {
+    switch (justification) {
+      case LeftAlign:
+        // Do nothing. Default is left aligned.
+        break;
+      case RightAlign:
+        canvas.translate(-totalTextWidth, 0);
+        break;
+      case Center:
+        canvas.translate(-totalTextWidth / 2, 0);
+        break;
     }
   }
 

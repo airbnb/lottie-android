@@ -4,6 +4,7 @@ import android.util.JsonReader;
 
 import com.airbnb.lottie.model.DocumentData;
 
+import com.airbnb.lottie.model.DocumentData.Justification;
 import java.io.IOException;
 
 public class DocumentDataParser implements ValueParser<DocumentData> {
@@ -15,7 +16,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     String text = null;
     String fontName = null;
     double size = 0;
-    int justification = 0;
+    Justification justification = Justification.Center;
     int tracking = 0;
     double lineHeight = 0;
     double baselineShift = 0;
@@ -37,7 +38,12 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           size = reader.nextDouble();
           break;
         case "j":
-          justification = reader.nextInt();
+          int justificationInt = reader.nextInt();
+          if (justificationInt > Justification.Center.ordinal() || justificationInt < 0) {
+            justification = Justification.Center;
+          } else {
+            justification = Justification.values()[justificationInt];
+          }
           break;
         case "tr":
           tracking = reader.nextInt();
