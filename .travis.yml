@@ -1,4 +1,4 @@
- Migrated to bitrise
+# Migrated to bitrise
 
 language: android
 group: travis_lts
@@ -51,4 +51,18 @@ jobs:
   - stage: test
     name: Test
     script: "./gradlew lintRelease testReleaseUnitTest"
+#  - name: Firebase Happo Tests
+#    script:
+#    - "./gcloud_run.sh"
+#  - stage: deploy
+#    name: Create release and upload artifacts
+#    script:
+#    - "./sign.sh"
+#    deploy:
+#      provider: releases
+#      api_key: "$GITHUB_ACCESS_TOKEN"
+#      file: LottieSample/build/outputs/apk/release/LottieSample-release-aligned.apk
+#      skip_cleanup: true
+#      on:
+#        tags: true
 sudo: false
