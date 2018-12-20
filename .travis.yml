@@ -19,7 +19,7 @@ cache:
 env:
 - PATH=${HOME}/google-cloud-sdk/bin:$PATH CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
-- ./decrypt.sh
+# - ./decrypt.sh
 - export TRAVIS_GIT_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH;
   else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
 - export GIT_SHA=$(git rev-parse HEAD)
