@@ -1,3 +1,5 @@
+ Migrated to bitrise
+
 language: android
 group: travis_lts
 before_cache:
