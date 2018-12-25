@@ -19,6 +19,7 @@ import androidx.transition.TransitionManager
 import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
@@ -146,6 +147,16 @@ class PlayerFragment : BaseMvRxFragment() {
                     else R.drawable.ic_border_off
             )
             animationView.setBackgroundResource(if (it) R.drawable.outline else 0)
+        }
+
+        hardwareAccelerationToggle.setOnClickListener {
+            val renderMode = if (animationView.layerType == View.LAYER_TYPE_HARDWARE) {
+                RenderMode.Software
+            } else {
+                RenderMode.Hardware
+            }
+            animationView.setRenderMode(renderMode)
+            hardwareAccelerationToggle.isActivated = animationView.layerType == View.LAYER_TYPE_HARDWARE
         }
 
         viewModel.selectSubscribe(PlayerState::controlsVisible) { controlsContainer.animateVisible(it) }

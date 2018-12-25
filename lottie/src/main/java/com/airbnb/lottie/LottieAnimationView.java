@@ -73,6 +73,7 @@ import java.util.Set;
   private @RawRes int animationResId;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
+  private RenderMode renderMode = RenderMode.Automatic;
   private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
@@ -744,12 +745,44 @@ import java.util.Set;
     lottieDrawable.clearComposition();
   }
 
+  /**
+   * Call this to set whether or not to render with hardware or software acceleration.
+   * Lottie defaults to Automatic which will use hardware acceleration unless:
+   * 1) There are dash paths and the device is pre-Pie.
+   * 2) There are more than 4 masks and mattes and the device is pre-Pie.
+   *    Hardware acceleration is generally faster for those devices unless
+   *    there are many large mattes and masks in which case there is a ton
+   *    of GPU uploadTexture thrashing which makes it much slower.
+   *
+   * In most cases, hardware rendering will be faster, even if you have mattes and masks.
+   * However, if you have multiple mattes and masks (especially large ones) then you
+   * should test both render modes. You should also test on pre-Pie and Pie+ devices
+   * because the underlying rendering enginge changed significantly.
+   */
+  public void setRenderMode(RenderMode renderMode) {
+    this.renderMode = renderMode;
+    enableOrDisableHardwareLayer();
+  }
+
   private void enableOrDisableHardwareLayer() {
-    boolean useHardwareLayer = true;
-    if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-      useHardwareLayer = false;
+    switch (renderMode) {
+      case Hardware:
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+        break;
+      case Software:
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
+        break;
+      case Automatic:
+        boolean useHardwareLayer = true;
+        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+          useHardwareLayer = false;
+        } else if (composition != null && composition.getMaskAndMatteCount() > 4) {
+          useHardwareLayer = false;
+        }
+        setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
+        break;
     }
-    setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
+
   }
 
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
