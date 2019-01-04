@@ -55,6 +55,12 @@ public class LottieComposition {
    * Used to determine if an animation can be drawn with hardware acceleration.
    */
   private boolean hasDashPattern;
+  /**
+   * Counts the number of mattes and masks. Before Android switched to SKIA
+   * for drawing in Oreo (API 28), using hardware acceleration with mattes and masks
+   * was only faster until you had ~4 masks after which it would actually become slower.
+   */
+  private int maskAndMatteCount = 0;
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
@@ -84,11 +90,25 @@ public class LottieComposition {
     this.hasDashPattern = hasDashPattern;
   }
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public void incrementMatteOrMaskCount(int amount) {
+    maskAndMatteCount += amount;
+  }
+
   /**
    * Used to determine if an animation can be drawn with hardware acceleration.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public boolean hasDashPattern() {
     return hasDashPattern;
+  }
+
+  /**
+   * Used to determine if an animation can be drawn with hardware acceleration.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public int getMaskAndMatteCount() {
+    return maskAndMatteCount;
   }
 
   public ArrayList<String> getWarnings() {

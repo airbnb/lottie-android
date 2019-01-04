@@ -17,5 +17,11 @@
         <attr name="lottie_colorFilter" format="color" />
         <attr name="lottie_scale" format="float" />
         <attr name="lottie_speed" format="float" />
+        <!-- These values must be kept in sync with the RenderMode enum -->
+        <attr name="lottie_renderMode" format="enum">
+            <enum name="automatic" value="0" />
+            <enum name="hardware" value="1" />
+            <enum name="software" value="2" />
+        </attr>
     </declare-styleable>
 </resources>

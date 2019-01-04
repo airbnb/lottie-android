@@ -100,12 +100,14 @@ public class LayerParser {
           break;
         case "tt":
           matteType = Layer.MatteType.values()[reader.nextInt()];
+          composition.incrementMatteOrMaskCount(1);
           break;
         case "masksProperties":
           reader.beginArray();
           while (reader.hasNext()) {
             masks.add(MaskParser.parse(reader, composition));
           }
+          composition.incrementMatteOrMaskCount(masks.size());
           reader.endArray();
           break;
         case "shapes":
