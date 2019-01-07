@@ -1,4 +1,4 @@
-# 2.9.0
+# 3.0.0
 ### Features and Improvements
 * **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.
 * Removed **all** memory allocations during playback including autoboxing.
