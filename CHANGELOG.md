@@ -1,3 +1,27 @@
+# 2.9.0
+### Features and Improvements
+* **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.
+* Removed **all** memory allocations during playback including autoboxing.
+* Added support for centered text.
+* Added support for hidden layers and properties (the eye button in After Effects).
+* Only redraw the animation when a value changed. This will have a major impact on animations that are static for part of their playback.
+* Replaced `enableHardwareAcceleration` with a new `setRenderMode` API because it has a third (`Automatic`) option. Refer to the docs for more info.
+* Added an XML attr for animation speed (lottie_speed).
+* Removed the recycleBitmaps() API because it is not neccesary anymore.
+* Prevented `invalidateSelf()` from being called and recalculating bounds many times per frame.
+* Optimize keyframes to recalculate values less frequently
+* Optimize static identity transforms so their matrix doesn't get recalculated on every frame.
+* Allow text to be masked.
+### Bugs Fixed
+* Prevented minFrame from being larger than maxFrame.
+* Return the correct (previous) bitmap when updating the BitmapAssetManager.
+* Properly use the in-memory cache for network animations.
+* Prevented color animations from interpolating before/after the start/end colors even if their interpolator goes <0 or >1.
+* Annotate `fetchBitmap()` as `@Nullable`
+* Fixed a bug in the local file cache that would save it with the wrong extensions.
+* Fixed a crash when an animation was missing gradient fill type.
+* Prevent shapes that have different numbers of control points in different keyframes from crashing.
+
 # 2.8.0
 ### Features and Improvements
 * Migrated to androidx. This release and all future releases are only compatible with projects that have been migrated to androidx.
