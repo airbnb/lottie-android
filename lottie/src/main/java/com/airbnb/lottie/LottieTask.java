@@ -34,8 +34,6 @@ public class LottieTask<T> {
   @SuppressWarnings("WeakerAccess")
   public static Executor EXECUTOR = Executors.newCachedThreadPool();
 
-  @Nullable private Thread taskObserver;
-
   /* Preserve add order. */
   private final Set<LottieListener<T>> successListeners = new LinkedHashSet<>(1);
   private final Set<LottieListener<Throwable>> failureListeners = new LinkedHashSet<>(1);
@@ -54,7 +52,7 @@ public class LottieTask<T> {
    */
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
-    task = new FutureTask<>(runnable);
+    task = new LottieFutureTask(runnable);
 
     if (runNow) {
       try {
@@ -64,7 +62,6 @@ public class LottieTask<T> {
       }
     } else {
       EXECUTOR.execute(task);
-      startTaskObserverIfNeeded();
     }
   }
 
@@ -86,7 +83,6 @@ public class LottieTask<T> {
     }
 
     successListeners.add(listener);
-    startTaskObserverIfNeeded();
     return this;
   }
 
@@ -97,7 +93,6 @@ public class LottieTask<T> {
    */
   public synchronized LottieTask<T> removeListener(LottieListener<T> listener) {
     successListeners.remove(listener);
-    stopTaskObserverIfNeeded();
     return this;
   }
 
@@ -112,7 +107,6 @@ public class LottieTask<T> {
     }
 
     failureListeners.add(listener);
-    startTaskObserverIfNeeded();
     return this;
   }
 
@@ -123,7 +117,6 @@ public class LottieTask<T> {
    */
   public synchronized LottieTask<T> removeFailureListener(LottieListener<Throwable> listener) {
     failureListeners.remove(listener);
-    stopTaskObserverIfNeeded();
     return this;
   }
 
@@ -168,51 +161,18 @@ public class LottieTask<T> {
     }
   }
 
-  /**
-   * We monitor the task with an observer thread to determine when it is done and should notify
-   * the appropriate listeners.
-   */
-  private synchronized void startTaskObserverIfNeeded() {
-    if (taskObserverAlive() || result != null) {
-      return;
+  private class LottieFutureTask extends FutureTask<LottieResult<T>> {
+    LottieFutureTask(Callable<LottieResult<T>> callable) {
+      super(callable);
     }
-    taskObserver = new Thread("LottieTaskObserver") {
-      private boolean taskComplete = false;
 
-      @Override public void run() {
-        while (true) {
-          if (isInterrupted() || taskComplete) {
-            return;
-          }
-          if (task.isDone()) {
-            try {
-              setResult(task.get());
-            } catch (InterruptedException | ExecutionException e) {
-              setResult(new LottieResult<T>(e));
-            }
-            taskComplete = true;
-            stopTaskObserverIfNeeded();
-          }
-        }
+    @Override
+    protected void done() {
+      try {
+        setResult(task.get());
+      } catch (InterruptedException | ExecutionException e) {
+        setResult(new LottieResult<T>(e));
       }
-    };
-    taskObserver.start();
-  }
-
-  /**
-   * We can stop observing the task if there are no more listeners or if the task is complete.
-   */
-  private synchronized void stopTaskObserverIfNeeded() {
-    if (!taskObserverAlive()) {
-      return;
     }
-    if (successListeners.isEmpty() || result != null) {
-      taskObserver.interrupt();
-      taskObserver = null;
-    }
-  }
-
-  private boolean taskObserverAlive() {
-    return taskObserver != null && taskObserver.isAlive();
   }
 }
