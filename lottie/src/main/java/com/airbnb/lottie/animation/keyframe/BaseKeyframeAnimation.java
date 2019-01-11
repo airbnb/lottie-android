@@ -51,6 +51,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    if (keyframes.isEmpty()) {
+      return;
+    }
     // Must use hashCode() since the actual object instance will be returned
     // from getValue() below with the new values.
     Keyframe<K> previousKeyframe = getCurrentKeyframe();
