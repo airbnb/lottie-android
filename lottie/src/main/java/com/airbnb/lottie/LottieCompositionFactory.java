@@ -327,7 +327,7 @@ public class LottieCompositionFactory {
    */
   private static LottieTask<LottieComposition> cache(
           @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
-    final LottieComposition cachedComposition = LottieCompositionCache.getInstance().get(cacheKey);
+    final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
         @Override
@@ -336,7 +336,7 @@ public class LottieCompositionFactory {
         }
       });
     }
-    if (taskCache.containsKey(cacheKey)) {
+    if (cacheKey != null && taskCache.containsKey(cacheKey)) {
       return taskCache.get(cacheKey);
     }
 
