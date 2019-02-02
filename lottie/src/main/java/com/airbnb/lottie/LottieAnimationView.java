@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.JsonReader;
 import android.util.Log;
+import android.view.View;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.value.LottieFrameInfo;
@@ -71,6 +72,7 @@ import java.util.Set;
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private String animationName;
   private @RawRes int animationResId;
+  private boolean wasAnimatingWhenVisibilityChanged = false;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private RenderMode renderMode = RenderMode.Automatic;
@@ -226,6 +228,20 @@ import java.util.Set;
     lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
     setRepeatMode(ss.repeatMode);
     setRepeatCount(ss.repeatCount);
+  }
+
+  @Override
+  protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+    if (visibility == VISIBLE && wasAnimatingWhenVisibilityChanged) {
+      resumeAnimation();
+    } else {
+      if (isAnimating()) {
+        wasAnimatingWhenVisibilityChanged = true;
+        pauseAnimation();
+      } else {
+        wasAnimatingWhenVisibilityChanged = false;
+      }
+    }
   }
 
   @Override protected void onAttachedToWindow() {
