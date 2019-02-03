@@ -48,6 +48,13 @@ public class LottieCompositionFactory {
   }
 
   /**
+   * Set the maximum number of compositions to keep cached in memory.
+   */
+  public static void setMaxCacheSize(int size) {
+    LottieCompositionCache.getInstance().resize(size);
+  }
+
+  /**
    * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
    * might need an animation in the future.

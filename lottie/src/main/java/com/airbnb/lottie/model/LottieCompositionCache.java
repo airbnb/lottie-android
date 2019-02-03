@@ -10,14 +10,13 @@ import com.airbnb.lottie.LottieComposition;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class LottieCompositionCache {
 
-  private static final int CACHE_SIZE_MB = 10;
   private static final LottieCompositionCache INSTANCE = new LottieCompositionCache();
 
   public static LottieCompositionCache getInstance() {
     return INSTANCE;
   }
 
-  private final LruCache<String, LottieComposition> cache = new LruCache<>(1024 * 1024 * CACHE_SIZE_MB);
+  private final LruCache<String, LottieComposition> cache = new LruCache<>(20);
 
   @VisibleForTesting
   LottieCompositionCache() {
@@ -40,5 +39,12 @@ public class LottieCompositionCache {
 
   public void clear() {
     cache.evictAll();
+  }
+
+  /**
+   * Set the maximum number of compositions to keep cached in memory.
+   */
+  public void resize(int size) {
+    cache.resize(size);
   }
 }
