@@ -236,6 +236,8 @@ public class LottieCompositionFactory {
       return new LottieResult<>(composition);
     } catch (Exception e) {
       return new LottieResult<>(e);
+    } finally {
+      closeQuietly(reader);
     }
   }
 
