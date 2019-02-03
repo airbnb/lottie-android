@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.StringReader;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
@@ -79,5 +80,21 @@ public class LottieCompositionFactoryTest extends BaseTest {
     LottieResult<LottieComposition> result = LottieCompositionFactory.fromRawResSync(RuntimeEnvironment.application, 0);
     assertNotNull(result.getException());
     assertNull(result.getValue());
+  }
+
+  @Test
+  public void testNullMultipleTimesAsync() {
+    JsonReader reader = new JsonReader(new StringReader(JSON));
+    LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, null);
+    LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, null);
+    assertFalse(task1 == task2);
+  }
+
+  @Test
+  public void testNullMultipleTimesSync() {
+    JsonReader reader = new JsonReader(new StringReader(JSON));
+    LottieResult<LottieComposition> task1 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
+    LottieResult<LottieComposition> task2 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
+    assertFalse(task1 == task2);
   }
 }
