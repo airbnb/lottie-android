@@ -21,7 +21,7 @@ android {
     buildConfigField("String", "S3SecretKey", "\"" + System.getenv("LOTTIE_S3_SECRET_KEY") + "\"")
     buildConfigField("String", "HappoApiKey", "\"" + System.getenv("LOTTIE_HAPPO_API_KEY") + "\"")
     buildConfigField("String", "HappoSecretKey", "\"" + System.getenv("LOTTIE_HAPPO_SECRET_KEY") + "\"")
-    buildConfigField("String", "TRAVIS_GIT_BRANCH", "\"" + System.getenv("TRAVIS_GIT_BRANCH") + "\"")
+    buildConfigField("String", "BITRISE_GIT_BRANCH", "\"" + System.getenv("BITRISE_GIT_BRANCH") + "\"")
     buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")
     buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
   }
