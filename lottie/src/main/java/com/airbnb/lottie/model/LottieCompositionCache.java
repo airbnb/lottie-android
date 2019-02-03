@@ -43,6 +43,7 @@ public class LottieCompositionCache {
 
   /**
    * Set the maximum number of compositions to keep cached in memory.
+   * This must be > 0.
    */
   public void resize(int size) {
     cache.resize(size);
