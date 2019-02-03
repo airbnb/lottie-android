@@ -49,7 +49,7 @@ class HappoSnapshotter(
     private val bucket = "lottie-happo"
     private val happoApiKey = BC.HappoApiKey
     private val happoSecretKey = BC.HappoSecretKey
-    private val gitBranch = URLEncoder.encode((if (BC.TRAVIS_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.TRAVIS_GIT_BRANCH).replace("/", "_"), "UTF-8")
+    private val gitBranch = URLEncoder.encode((if (BC.BITRISE_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
     private val reportNames = listOfNotNull(
             "${BC.GIT_SHA}-$androidVersion",
