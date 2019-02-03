@@ -2,9 +2,12 @@ package com.airbnb.lottie;
 
 import android.util.JsonReader;
 
+import com.airbnb.lottie.model.LottieCompositionCache;
+
 import junit.framework.Assert;
 
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -30,6 +33,12 @@ public class LottieCompositionFactoryTest extends BaseTest {
       "Graphic - Fill\",\"hd\":false}],\"ip\":0,\"op\":180,\"st\":0,\"bm\":0}]}";
 
   private static final String NOT_JSON = "not json";
+
+  @Before
+  public void setup() {
+    LottieCompositionCache.getInstance().clear();
+    LottieCompositionCache.getInstance().resize(20);
+  }
 
   @Test
   public void testLoadJsonString() {
@@ -96,5 +105,9 @@ public class LottieCompositionFactoryTest extends BaseTest {
     LottieResult<LottieComposition> task1 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
     LottieResult<LottieComposition> task2 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
     assertFalse(task1 == task2);
+  }
+
+  public void testMaxCacheSizeZero() {
+
   }
 }
