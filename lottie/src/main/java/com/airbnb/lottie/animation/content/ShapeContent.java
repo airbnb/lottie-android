@@ -1,7 +1,6 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Path;
-import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -21,7 +20,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   private final BaseKeyframeAnimation<?, Path> shapeAnimation;
 
   private boolean isPathValid;
-  @Nullable private TrimPathContent trimPath;
+  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
 
   public ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
     name = shape.getName();
@@ -47,7 +46,8 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
       if (content instanceof TrimPathContent &&
           ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
         // Trim path individually will be handled by the stroke where paths are combined.
-        trimPath = (TrimPathContent) content;
+        TrimPathContent trimPath = (TrimPathContent) content;
+        trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);
       }
     }
@@ -68,7 +68,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
     path.set(shapeAnimation.getValue());
     path.setFillType(Path.FillType.EVEN_ODD);
 
-    Utils.applyTrimPathIfNeeded(path, trimPath);
+    trimPaths.apply(path);
 
     isPathValid = true;
     return path;
