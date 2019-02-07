@@ -85,6 +85,7 @@ class LottieTest {
                 snapshotFrameBoundaries()
                 snapshotScaleTypes()
                 testDynamicProperties()
+                testMarkers()
                 snapshotter.finalizeReportAndUpload()
             }
         }
@@ -490,6 +491,18 @@ class LottieTest {
         withAnimationView("Tests/Shapes.json", "Dynamic Properties", name) { animationView ->
             animationView.progress = progress
             animationView.addValueCallback(keyPath, property, callback)
+        }
+    }
+
+    private suspend fun CoroutineScope.testMarkers() {
+        withAnimationView("Tests/Marker.json", "Marker", "startFrame") { animationView ->
+            animationView.setMinAndMaxFrame("Marker A")
+            animationView.frame = animationView.minFrame.toInt()
+        }
+
+        withAnimationView("Tests/Marker.json", "Marker", "endFrame") { animationView ->
+            animationView.setMinAndMaxFrame("Marker A")
+            animationView.frame = animationView.maxFrame.toInt()
         }
     }
 

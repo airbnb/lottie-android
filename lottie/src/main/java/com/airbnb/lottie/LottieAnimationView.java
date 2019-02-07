@@ -446,6 +446,31 @@ import java.util.Set;
   }
 
   /**
+   * Sets the minimum frame to the start time of the specified marker.
+   * @throws IllegalArgumentException if the marker is not found.
+   */
+  public void setMinFrame(String markerName) {
+    lottieDrawable.setMinFrame(markerName);
+  }
+
+  /**
+   * Sets the maximum frame to the start time + duration of the specified marker.
+   * @throws IllegalArgumentException if the marker is not found.
+   */
+  public void setMaxFrame(String markerName) {
+    lottieDrawable.setMaxFrame(markerName);
+  }
+
+  /**
+   * Sets the minimum and maximum frame to the start time and start time + duration
+   * of the specified marker.
+   * @throws IllegalArgumentException if the marker is not found.
+   */
+  public void setMinAndMaxFrame(String markerName) {
+    lottieDrawable.setMinAndMaxFrame(markerName);
+  }
+
+  /**
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */

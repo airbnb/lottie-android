@@ -14,6 +14,7 @@ import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
+import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
 
 import org.json.JSONObject;
@@ -43,6 +44,7 @@ public class LottieComposition {
   private Map<String, LottieImageAsset> images;
   /** Map of font names to fonts */
   private Map<String, Font> fonts;
+  private List<Marker> markers;
   private SparseArrayCompat<FontCharacter> characters;
   private LongSparseArray<Layer> layerMap;
   private List<Layer> layers;
@@ -66,7 +68,8 @@ public class LottieComposition {
   public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
       List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
       List<Layer>> precomps, Map<String, LottieImageAsset> images,
-      SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts) {
+      SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts,
+      List<Marker> markers) {
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
@@ -77,6 +80,7 @@ public class LottieComposition {
     this.images = images;
     this.characters = characters;
     this.fonts = fonts;
+    this.markers = markers;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -166,6 +170,22 @@ public class LottieComposition {
 
   public Map<String, Font> getFonts() {
     return fonts;
+  }
+
+  public List<Marker> getMarkers() {
+    return markers;
+  }
+
+  @Nullable
+  public Marker getMarker(String markerName) {
+    int size = markers.size();
+    for (int i = 0; i < markers.size(); i++) {
+      Marker marker = markers.get(i);
+      if (markerName.equals(marker.name)) {
+        return marker;
+      }
+    }
+    return null;
   }
 
   public boolean hasImages() {
