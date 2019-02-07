@@ -13,7 +13,7 @@ public class Keyframe<T> {
 
   @Nullable private final LottieComposition composition;
   @Nullable public final T startValue;
-  @Nullable public final T endValue;
+  @Nullable public T endValue;
   @Nullable public final Interpolator interpolator;
   public final float startFrame;
   @Nullable public Float endFrame;
