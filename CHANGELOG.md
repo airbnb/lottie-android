@@ -1,4 +1,8 @@
-# 3.0.0
+# 3.0.0-beta2
+### Features and Improvements
+* Added support for markers. You can now call `setMinFrame`, `setMaxFrame` and `setMinAndMaxFrame` with a marker name.
+
+# 3.0.0-beta1
 ### Features and Improvements
 * **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.
 * Removed **all** memory allocations during playback including autoboxing.

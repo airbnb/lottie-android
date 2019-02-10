@@ -46,7 +46,6 @@ class PlayerViewModel(
             else -> throw IllegalArgumentException("Don't know how to fetch animation for $args")
         }
                 .addListener {
-                        LottieCompositionCache.getInstance().clear()
                     setState {
                         copy(composition = Success(it), minFrame = it.startFrame.toInt(), maxFrame = it.endFrame.toInt())
                     }
