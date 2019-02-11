@@ -15,7 +15,7 @@ public class CompoundTrimPathContent {
     }
 
     public void apply(Path path) {
-        for (int i = 0; i < contents.size(); i++) {
+        for (int i = contents.size() - 1; i >= 0; i--) {
             Utils.applyTrimPathIfNeeded(path, contents.get(i));
         }
     }
