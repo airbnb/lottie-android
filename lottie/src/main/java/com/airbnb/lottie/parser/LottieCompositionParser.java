@@ -10,6 +10,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
+import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.Utils;
 
@@ -35,6 +36,7 @@ public class LottieCompositionParser {
     Map<String, List<Layer>> precomps = new HashMap<>();
     Map<String, LottieImageAsset> images = new HashMap<>();
     Map<String, Font> fonts = new HashMap<>();
+    List<Marker> markers = new ArrayList<>();
     SparseArrayCompat<FontCharacter> characters = new SparseArrayCompat<>();
 
     LottieComposition composition = new LottieComposition();
@@ -80,6 +82,9 @@ public class LottieCompositionParser {
         case "chars":
           parseChars(reader, composition, characters);
           break;
+        case "markers":
+          parseMarkers(reader, composition, markers);
+          break;
         default:
           reader.skipValue();
       }
@@ -91,7 +96,7 @@ public class LottieCompositionParser {
     Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
     composition.init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
-        images, characters, fonts);
+        images, characters, fonts, markers);
 
     return composition;
   }
@@ -174,7 +179,6 @@ public class LottieCompositionParser {
   }
 
   private static void parseFonts(JsonReader reader, Map<String, Font> fonts) throws IOException {
-
     reader.beginObject();
     while (reader.hasNext()) {
       switch (reader.nextName()) {
@@ -200,6 +204,35 @@ public class LottieCompositionParser {
     while (reader.hasNext()) {
       FontCharacter character = FontCharacterParser.parse(reader, composition);
       characters.put(character.hashCode(), character);
+    }
+    reader.endArray();
+  }
+
+  private static void parseMarkers(
+      JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException{
+    reader.beginArray();
+    while (reader.hasNext()) {
+      String comment = null;
+      float frame = 0f;
+      float durationFrames = 0f;
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "cm":
+            comment = reader.nextString();
+            break;
+          case "tm":
+            frame = (float) reader.nextDouble();
+            break;
+          case "dr":
+            durationFrames = (float) reader.nextDouble();
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
+      markers.add(new Marker(comment, frame, durationFrames));
     }
     reader.endArray();
   }

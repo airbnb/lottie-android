@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
+import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.mvrx.*
 import java.io.FileInputStream
