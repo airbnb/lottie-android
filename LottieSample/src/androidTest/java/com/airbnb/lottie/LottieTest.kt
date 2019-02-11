@@ -2,6 +2,7 @@ package com.airbnb.lottie
 
 import android.Manifest
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PointF
@@ -18,17 +19,29 @@ import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
-import com.airbnb.lottie.value.*
+import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
+import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
+import com.airbnb.lottie.value.LottieRelativePointValueCallback
+import com.airbnb.lottie.value.LottieValueCallback
+import com.airbnb.lottie.value.ScaleXY
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.ListObjectsV2Request
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import kotlinx.coroutines.*
-
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Before
-import com.airbnb.lottie.samples.R as SampleAppR
-
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,6 +52,7 @@ import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import com.airbnb.lottie.samples.R as SampleAppR
 
 private const val SIZE_PX = 200
 
@@ -47,6 +61,7 @@ private const val SIZE_PX = 200
  * If you run that command, it completes successfully, and nothing shows up in git, then you
  * haven't broken anything!
  */
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class LottieTest {
@@ -91,8 +106,8 @@ class LottieTest {
         }
     }
 
-    private suspend fun snapshotProdAnimations() {
-        Log.d(L.TAG, "Downloading prod animations from S3.")
+    private suspend fun snapshotProdAnimations() = coroutineScope {
+        Log.d(L.TAG, "Downloading prod animation keys from S3.")
         val allObjects = mutableListOf<S3ObjectSummary>()
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
         var request = ListObjectsV2Request().apply {
@@ -110,21 +125,61 @@ class LottieTest {
             allObjects.addAll(result.objectSummaries)
             startAfter = result.objectSummaries.lastOrNull()?.key
         }
+        Log.d(L.TAG, "Downloaded prod animation keys from S3.")
 
-        allObjects.forEach { snapshotProdAnimation(it) }
+        Log.d(L.TAG, "Starting downloads")
+        val downloadChannel = downloadAnimations(allObjects)
+        Log.d(L.TAG, "Starting parse")
+        val compositionsChannel = parseCompositions(downloadChannel)
+        Log.d(L.TAG, "Starting snapshots")
+        val snapshotChannel = snapshotCompositions(compositionsChannel)
+        Log.d(L.TAG, "Starting recording")
+        recordSnapshots(snapshotChannel)
+        Log.d(L.TAG, "Production snapshots finished")
     }
 
-    private suspend fun snapshotProdAnimation(objectSummary: S3ObjectSummary) {
-        val (fileName, extension) = objectSummary.key.split(".")
-        val file = File(activity.cacheDir, fileName.md5 + ".$extension")
-        prodAnimationsTransferUtility.download(objectSummary.key, file).await()
-        Log.d(L.TAG, "Downloaded ${objectSummary.key}")
+    private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
+            context = Dispatchers.IO,
+            capacity = 10
+    ) {
+        animations.forEach { animation ->
+            val file = File(activity.cacheDir, animation.key)
+            prodAnimationsTransferUtility.download(animation.key, file).await()
+            Log.d(L.TAG, "Downloaded ${animation.key}")
+            send(file)
+        }
+    }
 
-        val composition = parseComposition(file)
-        val bitmap = activity.snapshotFilmstrip(composition)
-        snapshotter.record(bitmap, "prod-" + objectSummary.key, "default")
-        file.delete()
-        LottieCompositionCache.getInstance().clear()
+    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<File, LottieComposition>>(
+            context = Dispatchers.Default,
+            capacity = 10
+    ) {
+        while (!files.isClosedForReceive) {
+            val file = files.receive()
+            Log.d(L.TAG, "Parsing ${file.nameWithoutExtension}")
+            send(file to parseComposition(file))
+        }
+    }
+
+    private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<File, LottieComposition>>) = produce<Pair<File, Bitmap>>(
+            context = Dispatchers.Main,
+            capacity = 10
+    ) {
+        while (!compositions.isClosedForReceive) {
+            val (file, composition) = compositions.receive()
+            Log.d(L.TAG, "Snapshotting ${file.nameWithoutExtension}")
+            send(file to activity.snapshotFilmstrip(composition))
+            LottieCompositionCache.getInstance().clear()
+            file.delete()
+        }
+    }
+
+    private suspend fun recordSnapshots(snapshots: ReceiveChannel<Pair<File, Bitmap>>) = coroutineScope {
+        snapshots.consumeEach {
+            val (file, bitmap) = snapshots.receive()
+            Log.d(L.TAG, "Recording ${file.nameWithoutExtension}")
+            snapshotter.record(bitmap, "prod-" + file.nameWithoutExtension, "default")
+        }
     }
 
     private suspend fun snapshotAssets(pathPrefix: String = "") {
@@ -141,7 +196,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun CoroutineScope.snapshotFrameBoundaries() {
+    private suspend fun snapshotFrameBoundaries() {
         Log.d(L.TAG, "snapshotFrameBoundaries")
         withAnimationView("Tests/Frame.json", "Frame Boundary", "Frame 16 Red") { animationView ->
             Log.d(L.TAG, "Setting frame to 16")
@@ -170,7 +225,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun CoroutineScope.snapshotScaleTypes() {
+    private suspend fun snapshotScaleTypes() {
         withAnimationView("LottieLogo1.json", "Scale Types", "Wrap Content") { animationView ->
             animationView.updateLayoutParams {
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -252,7 +307,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun CoroutineScope.testDynamicProperties() {
+    private suspend fun testDynamicProperties() {
         testDynamicProperty(
                 "Fill color (Green)",
                 KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
@@ -487,14 +542,14 @@ class LottieTest {
                 1f)
     }
 
-    private suspend fun <T> CoroutineScope.testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
+    private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
         withAnimationView("Tests/Shapes.json", "Dynamic Properties", name) { animationView ->
             animationView.progress = progress
             animationView.addValueCallback(keyPath, property, callback)
         }
     }
 
-    private suspend fun CoroutineScope.testMarkers() {
+    private suspend fun testMarkers() {
         withAnimationView("Tests/Marker.json", "Marker", "startFrame") { animationView ->
             animationView.setMinAndMaxFrame("Marker A")
             animationView.frame = animationView.minFrame.toInt()
@@ -506,7 +561,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun CoroutineScope.withAnimationView(
+    private suspend fun withAnimationView(
             animationName: String,
             snapshotName: String? = null,
             variant: String = "default",
@@ -561,7 +616,7 @@ class LottieTest {
     private suspend fun parseComposition(file: File) = suspendCoroutine<LottieComposition> { continuation ->
         var isResumed = false
         val task = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStream(ZipInputStream(FileInputStream(file)), file.name)
-                else LottieCompositionFactory.fromJsonInputStream(FileInputStream(file), file.name)
+        else LottieCompositionFactory.fromJsonInputStream(FileInputStream(file), file.name)
         task
                 .addFailureListener {
                     if (isResumed) return@addFailureListener
