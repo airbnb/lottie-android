@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -58,12 +59,14 @@ class SnapshotTestActivity : AppCompatActivity() {
         }
     }
 
-    private class BitmapPool() {
+    class BitmapPool() {
         private val bitmaps = mutableListOf<Bitmap>()
 
         @Synchronized
         fun acquire(width: Int, height: Int): Bitmap {
-            return bitmaps.firstOrNull { it.width == width && it.height == height } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            return bitmaps.firstOrNull { it.width == width && it.height == height } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+                eraseColor(Color.TRANSPARENT)
+            }
         }
 
         @Synchronized

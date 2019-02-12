@@ -3,11 +3,14 @@ package com.airbnb.lottie
 import android.Manifest
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PointF
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
@@ -19,6 +22,7 @@ import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
+import com.airbnb.lottie.samples.views.FilmStripView
 import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
 import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
 import com.airbnb.lottie.value.LottieRelativePointValueCallback
@@ -32,12 +36,10 @@ import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -79,6 +81,9 @@ class LottieTest {
     private lateinit var prodAnimationsTransferUtility: TransferUtility
 
     private lateinit var snapshotter: HappoSnapshotter
+
+    private val bitmapPool = SnapshotTestActivity.BitmapPool()
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
 
     @Before
     fun setup() {
@@ -142,58 +147,97 @@ class LottieTest {
             context = Dispatchers.IO,
             capacity = 10
     ) {
+        Log.d(L.TAG, "Downloading ${animations.size} animations.")
         animations.forEach { animation ->
             val file = File(activity.cacheDir, animation.key)
+            file.deleteOnExit()
             prodAnimationsTransferUtility.download(animation.key, file).await()
             Log.d(L.TAG, "Downloaded ${animation.key}")
             send(file)
         }
+        Log.d(L.TAG, "Downloaded ${animations.size} animations.")
     }
 
-    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<File, LottieComposition>>(
+    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
             context = Dispatchers.Default,
             capacity = 10
     ) {
         while (!files.isClosedForReceive) {
             val file = files.receive()
             Log.d(L.TAG, "Parsing ${file.nameWithoutExtension}")
-            send(file to parseComposition(file))
+            send(file.nameWithoutExtension to parseComposition(file))
         }
+        Log.d(L.TAG, "Parsed all animations.")
     }
 
-    private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<File, LottieComposition>>) = produce<Pair<File, Bitmap>>(
-            context = Dispatchers.Main,
+    private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
+            context = Dispatchers.Default,
             capacity = 10
     ) {
         while (!compositions.isClosedForReceive) {
-            val (file, composition) = compositions.receive()
-            Log.d(L.TAG, "Snapshotting ${file.nameWithoutExtension}")
-            send(file to activity.snapshotFilmstrip(composition))
+            val (name, composition) = compositions.receive()
+            Log.d(L.TAG, "Snapshotting $name")
+
+            val bitmap = bitmapPool.acquire(1000, 1000)
+            val canvas = Canvas(bitmap)
+            val filmStripView = FilmStripView(activity)
+            filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+            filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {
+                override fun getFontPath(fontFamily: String?): String {
+                    return "fonts/Roboto.ttf"
+                }
+            })
+            val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+            filmStripView.measure(spec, spec)
+            filmStripView.layout(0, 0, 1000, 1000)
+            filmStripView.setComposition(composition)
+            filmStripView.draw(canvas)
             LottieCompositionCache.getInstance().clear()
-            file.delete()
+            send(name to bitmap)
+            Log.d(L.TAG, "Snapshotted $name")
         }
     }
 
-    private suspend fun recordSnapshots(snapshots: ReceiveChannel<Pair<File, Bitmap>>) = coroutineScope {
-        snapshots.consumeEach {
-            val (file, bitmap) = snapshots.receive()
-            Log.d(L.TAG, "Recording ${file.nameWithoutExtension}")
-            snapshotter.record(bitmap, "prod-" + file.nameWithoutExtension, "default")
+    private suspend fun recordSnapshots(snapshots: ReceiveChannel<Pair<String, Bitmap>>) = coroutineScope {
+        while (!snapshots.isClosedForReceive) {
+            val (name, bitmap) = snapshots.receive()
+            Log.d(L.TAG, "Recording $name")
+            snapshotter.record(bitmap, "prod-" + name, "default")
+            bitmapPool.release(bitmap)
         }
     }
 
-    private suspend fun snapshotAssets(pathPrefix: String = "") {
+    private suspend fun snapshotAssets() = coroutineScope {
+        Log.d(L.TAG, "Starting assets")
+        val assetsChannel = listAssets()
+        val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
+        val snapshotChannel = snapshotCompositions(compositionsChannel)
+        recordSnapshots(snapshotChannel)
+        Log.d(L.TAG, "Finished assets")
+    }
+
+    private fun listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
         activity.getAssets().list(pathPrefix)?.forEach { animation ->
+            val pathWithPrefix = if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation"
             if (!animation.contains('.')) {
-                snapshotAssets(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
+                listAssets(assets, pathWithPrefix)
                 return@forEach
             }
             if (!animation.endsWith(".json") && !animation.endsWith(".zip")) return@forEach
-            val composition = parseComposition(if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation")
-            val bitmap = activity.snapshotFilmstrip(composition)
-            snapshotter.record(bitmap, animation, "default")
-            LottieCompositionCache.getInstance().clear()
+            assets += pathWithPrefix
         }
+        return assets
+    }
+
+    private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce<Pair<String, LottieComposition>>(
+            context = Dispatchers.Default,
+            capacity = 10
+    ) {
+        for (asset in assets) {
+            Log.d(L.TAG, "Parsing $asset")
+            send(asset to parseComposition(asset))
+        }
+        Log.d(L.TAG, "Parsed all animations.")
     }
 
     private suspend fun snapshotFrameBoundaries() {
