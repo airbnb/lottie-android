@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -64,9 +65,7 @@ class SnapshotTestActivity : AppCompatActivity() {
 
         @Synchronized
         fun acquire(width: Int, height: Int): Bitmap {
-            return bitmaps.firstOrNull { it.width == width && it.height == height } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
-                eraseColor(Color.TRANSPARENT)
-            }
+            return bitmaps.firstOrNull { it.width == width && it.height == height } ?: Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         }
 
         @Synchronized

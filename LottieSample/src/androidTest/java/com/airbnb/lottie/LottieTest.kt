@@ -8,6 +8,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PointF
+import android.graphics.PorterDuff
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -82,7 +83,7 @@ class LottieTest {
 
     private lateinit var snapshotter: HappoSnapshotter
 
-    private val bitmapPool = SnapshotTestActivity.BitmapPool()
+    private val bitmapPool = FixedSizeBitmapPool(1000, 1000)
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
 
     @Before
@@ -98,14 +99,15 @@ class LottieTest {
 
     @Test
     fun testAll() {
+        L.DBG = false
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-                snapshotProdAnimations()
+//                snapshotProdAnimations()
                 snapshotAssets()
-                snapshotFrameBoundaries()
-                snapshotScaleTypes()
-                testDynamicProperties()
-                testMarkers()
+//                snapshotFrameBoundaries()
+//                snapshotScaleTypes()
+//                testDynamicProperties()
+//                testMarkers()
                 snapshotter.finalizeReportAndUpload()
             }
         }
@@ -132,30 +134,23 @@ class LottieTest {
         }
         Log.d(L.TAG, "Downloaded prod animation keys from S3.")
 
-        Log.d(L.TAG, "Starting downloads")
         val downloadChannel = downloadAnimations(allObjects)
-        Log.d(L.TAG, "Starting parse")
         val compositionsChannel = parseCompositions(downloadChannel)
-        Log.d(L.TAG, "Starting snapshots")
         val snapshotChannel = snapshotCompositions(compositionsChannel)
-        Log.d(L.TAG, "Starting recording")
         recordSnapshots(snapshotChannel)
-        Log.d(L.TAG, "Production snapshots finished")
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
             context = Dispatchers.IO,
             capacity = 10
     ) {
-        Log.d(L.TAG, "Downloading ${animations.size} animations.")
         animations.forEach { animation ->
             val file = File(activity.cacheDir, animation.key)
             file.deleteOnExit()
+            Log.d(L.TAG, "Downloading ${animation.key}")
             prodAnimationsTransferUtility.download(animation.key, file).await()
-            Log.d(L.TAG, "Downloaded ${animation.key}")
             send(file)
         }
-        Log.d(L.TAG, "Downloaded ${animations.size} animations.")
     }
 
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
@@ -172,13 +167,13 @@ class LottieTest {
 
     private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
             context = Dispatchers.Default,
-            capacity = 10
+            capacity = 3
     ) {
         while (!compositions.isClosedForReceive) {
             val (name, composition) = compositions.receive()
             Log.d(L.TAG, "Snapshotting $name")
 
-            val bitmap = bitmapPool.acquire(1000, 1000)
+            val bitmap = bitmapPool.acquire()
             val canvas = Canvas(bitmap)
             val filmStripView = FilmStripView(activity)
             filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
@@ -191,6 +186,7 @@ class LottieTest {
             filmStripView.measure(spec, spec)
             filmStripView.layout(0, 0, 1000, 1000)
             filmStripView.setComposition(composition)
+            canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
             filmStripView.draw(canvas)
             LottieCompositionCache.getInstance().clear()
             send(name to bitmap)
@@ -202,7 +198,7 @@ class LottieTest {
         while (!snapshots.isClosedForReceive) {
             val (name, bitmap) = snapshots.receive()
             Log.d(L.TAG, "Recording $name")
-            snapshotter.record(bitmap, "prod-" + name, "default")
+            snapshotter.record(bitmap, name, "default")
             bitmapPool.release(bitmap)
         }
     }
