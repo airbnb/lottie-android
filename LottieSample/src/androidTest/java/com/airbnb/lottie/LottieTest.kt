@@ -102,12 +102,12 @@ class LottieTest {
         L.DBG = false
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-//                snapshotProdAnimations()
+                snapshotProdAnimations()
                 snapshotAssets()
-//                snapshotFrameBoundaries()
-//                snapshotScaleTypes()
-//                testDynamicProperties()
-//                testMarkers()
+                snapshotFrameBoundaries()
+                snapshotScaleTypes()
+                testDynamicProperties()
+                testMarkers()
                 snapshotter.finalizeReportAndUpload()
             }
         }
