@@ -3,6 +3,7 @@ package com.airbnb.lottie
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.Debug
 import android.util.Log
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
@@ -58,6 +59,7 @@ class HappoSnapshotter(
     )
 
     private val okhttp = OkHttpClient()
+    private val memoryInfo = Debug.MemoryInfo()
 
     private val transferUtility = TransferUtility.builder()
             .context(context)
@@ -75,6 +77,8 @@ class HappoSnapshotter(
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val observer = async { transferUtility.uploadDeferred(key, file) }
         snapshots += Snapshot(observer, bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        Debug.getMemoryInfo(memoryInfo)
+        Log.d(L.TAG, "MemoryInfo: ${memoryInfo.memoryStats}")
     }
 
     suspend fun finalizeReportAndUpload() {

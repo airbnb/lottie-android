@@ -84,21 +84,34 @@ class LottieTest {
 
     private val bitmapPool by lazy { BitmapPool(activity.resources) }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
+    @Suppress("DEPRECATION")
+    private val animationView by lazy { LottieAnimationView(activity).apply {
+        isDrawingCacheEnabled = false
+    }}
+    @Suppress("DEPRECATION")
+    private val filmStripView by lazy { FilmStripView(activity).apply {
+        setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+        setFontAssetDelegate(object : FontAssetDelegate() {
+            override fun getFontPath(fontFamily: String?): String {
+                return "fonts/Roboto.ttf"
+            }
+        })
+    } }
 
     @Before
     fun setup() {
+        L.DBG = false
         snapshotter = HappoSnapshotter(activity)
         prodAnimationsTransferUtility = TransferUtility.builder()
                 .context(activity)
                 .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
                 .defaultBucket("lottie-prod-animations")
                 .build()
-
+        LottieCompositionCache.getInstance().resize(1)
     }
 
     @Test
     fun testAll() {
-        L.DBG = false
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
                 snapshotProdAnimations()
@@ -125,7 +138,8 @@ class LottieTest {
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
-            context = Dispatchers.IO
+            context = Dispatchers.IO,
+            capacity = 10
     ) {
         animations.forEach { animation ->
             val file = File(activity.cacheDir, animation.key)
@@ -137,7 +151,8 @@ class LottieTest {
     }
 
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
-            context = Dispatchers.Default
+            context = Dispatchers.Default,
+            capacity = 10
     ) {
         while (!files.isClosedForReceive) {
             val file = files.receive()
@@ -148,21 +163,14 @@ class LottieTest {
     }
 
     private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
-            context = Dispatchers.Default
+            context = Dispatchers.Default,
+            capacity = 10
     ) {
         while (!compositions.isClosedForReceive) {
             val (name, composition) = compositions.receive()
             log("Snapshotting $name")
-
             val bitmap = bitmapPool.acquire(1000, 1000)
             val canvas = Canvas(bitmap)
-            val filmStripView = FilmStripView(activity)
-            filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
-            filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {
-                override fun getFontPath(fontFamily: String?): String {
-                    return "fonts/Roboto.ttf"
-                }
-            })
             val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
             filmStripView.measure(spec, spec)
             filmStripView.layout(0, 0, 1000, 1000)
@@ -597,7 +605,6 @@ class LottieTest {
     ) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
         val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
-        val animationView = LottieAnimationView(activity)
         animationView.setComposition(composition)
         val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         animationView.measure(spec, spec)
