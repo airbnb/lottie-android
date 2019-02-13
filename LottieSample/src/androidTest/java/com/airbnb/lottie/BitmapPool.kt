@@ -3,17 +3,16 @@ package com.airbnb.lottie
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.Log
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.runBlocking
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Semaphore
 
 internal class BitmapPool(resources: Resources) {
 
     private val screenWidth = resources.displayMetrics.widthPixels
     private val screenHeight = resources.displayMetrics.heightPixels
 
-    private val poolLimit = PoolLimit(MAX_RELEASED_BITMAPS)
+    private val semaphore = Semaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()
 
@@ -24,7 +23,7 @@ internal class BitmapPool(resources: Resources) {
             return TRANSPARENT_1X1_BITMAP
         }
 
-        poolLimit.acquire()
+        semaphore.acquire()
 
         val fullBitmap = synchronized(bitmaps) {
             bitmaps
@@ -50,7 +49,7 @@ internal class BitmapPool(resources: Resources) {
 
         bitmaps.add(originalBitmap)
 
-        poolLimit.release()
+        semaphore.release()
     }
 
     private fun createNewBitmap(width: Int, height: Int): Bitmap {
@@ -73,34 +72,6 @@ internal class BitmapPool(resources: Resources) {
 
         private val TRANSPARENT_1X1_BITMAP: Bitmap by lazy {
             Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8)
-        }
-    }
-}
-
-
-/**
- * Enforces a limit for how many bitmaps can be used at once.
- */
-private class PoolLimit(limit: Int) {
-    // The actual object sent in the channel is arbitrary and is unused,
-    // we just rely on the buffering mechanism to limit how many items can be acquired at once.
-    private val bufferedChannel = Channel<Int>(limit)
-
-    /**
-     * Returns when the number of current acquired count goes below the limit.
-     */
-    fun acquire() {
-        runBlocking {
-            bufferedChannel.send(0)
-        }
-    }
-
-    /**
-     * Must be matched with a call to [acquire] after the item is done being used.
-     */
-    fun release() {
-        runBlocking {
-            bufferedChannel.receive()
         }
     }
 }

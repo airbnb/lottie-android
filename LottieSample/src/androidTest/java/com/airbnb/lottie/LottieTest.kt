@@ -12,6 +12,7 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
 import androidx.test.filters.LargeTest
@@ -82,10 +83,12 @@ class LottieTest {
 
     private val bitmapPool by lazy { BitmapPool(activity.resources) }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
+    private val animationViewContainer by lazy { FrameLayout(activity) }
     @Suppress("DEPRECATION")
     private val animationView by lazy {
         LottieAnimationView(activity).apply {
             isDrawingCacheEnabled = false
+            animationViewContainer.addView(this)
         }
     }
     @Suppress("DEPRECATION")
@@ -116,12 +119,12 @@ class LottieTest {
     fun testAll() {
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-                snapshotProdAnimations()
-                snapshotAssets()
                 snapshotFrameBoundaries()
                 snapshotScaleTypes()
                 testDynamicProperties()
                 testMarkers()
+                snapshotAssets()
+                snapshotProdAnimations()
                 snapshotter.finalizeReportAndUpload()
             }
         }
@@ -609,23 +612,14 @@ class LottieTest {
         val composition = result.value
                 ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         animationView.setComposition(composition)
-        animationView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
         callback(animationView)
-        val lp = animationView.layoutParams
-        val widthSpec = if (lp.width > 0) {
-            View.MeasureSpec.makeMeasureSpec(lp.width, View.MeasureSpec.EXACTLY)
-        } else {
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        }
-        val heightSpec = if (lp.height > 0) {
-            View.MeasureSpec.makeMeasureSpec(lp.height, View.MeasureSpec.EXACTLY)
-        } else {
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        }
-        animationView.measure(widthSpec, heightSpec)
-        animationView.layout(0, 0, animationView.measuredWidth, animationView.measuredHeight)
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        animationViewContainer.measure(widthSpec, heightSpec)
+        animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
         val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
         val canvas = Canvas(bitmap)
         Log.d(L.TAG, "Drawing $assetName $snapshotName $snapshotVariant")
