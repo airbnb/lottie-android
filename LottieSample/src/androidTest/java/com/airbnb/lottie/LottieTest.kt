@@ -83,7 +83,7 @@ class LottieTest {
 
     private lateinit var snapshotter: HappoSnapshotter
 
-    private val bitmapPool = FixedSizeBitmapPool(1000, 1000)
+    private val bitmapPool by lazy { BitmapPool(activity.resources) }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
 
     @Before
@@ -115,23 +115,8 @@ class LottieTest {
 
     private suspend fun snapshotProdAnimations() = coroutineScope {
         Log.d(L.TAG, "Downloading prod animation keys from S3.")
-        val allObjects = mutableListOf<S3ObjectSummary>()
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
-        var request = ListObjectsV2Request().apply {
-            bucketName = "lottie-prod-animations"
-        }
-        var result = s3Client.listObjectsV2(request)
-        allObjects.addAll(result.objectSummaries)
-        var startAfter = result.objectSummaries.lastOrNull()?.key
-        while (startAfter != null) {
-            request = ListObjectsV2Request().apply {
-                bucketName = "lottie-prod-animations"
-                this.startAfter = startAfter
-            }
-            result = s3Client.listObjectsV2(request)
-            allObjects.addAll(result.objectSummaries)
-            startAfter = result.objectSummaries.lastOrNull()?.key
-        }
+        val allObjects = s3Client.fetchAllObjects("lottie-prod-animations")
         Log.d(L.TAG, "Downloaded prod animation keys from S3.")
 
         val downloadChannel = downloadAnimations(allObjects)
@@ -167,13 +152,13 @@ class LottieTest {
 
     private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
             context = Dispatchers.Default,
-            capacity = 3
+            capacity = 10
     ) {
         while (!compositions.isClosedForReceive) {
             val (name, composition) = compositions.receive()
             Log.d(L.TAG, "Snapshotting $name")
 
-            val bitmap = bitmapPool.acquire()
+            val bitmap = bitmapPool.acquire(1000, 1000)
             val canvas = Canvas(bitmap)
             val filmStripView = FilmStripView(activity)
             filmStripView.setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })

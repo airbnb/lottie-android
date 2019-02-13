@@ -2,9 +2,14 @@ package com.airbnb.lottie
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.airbnb.lottie.samples.BuildConfig
+import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.ListObjectsV2Request
+import com.amazonaws.services.s3.model.S3ObjectSummary
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.math.BigInteger
@@ -54,4 +59,25 @@ suspend fun TransferObserver.await() = suspendCoroutine<TransferObserver> { cont
         }
     }
     setTransferListener(listener)
+}
+
+fun AmazonS3Client.fetchAllObjects(bucket: String): List<S3ObjectSummary> {
+    val allObjects = mutableListOf<S3ObjectSummary>()
+    val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
+    var request = ListObjectsV2Request().apply {
+        bucketName = bucket
+    }
+    var result = s3Client.listObjectsV2(request)
+    allObjects.addAll(result.objectSummaries)
+    var startAfter = result.objectSummaries.lastOrNull()?.key
+    while (startAfter != null) {
+        request = ListObjectsV2Request().apply {
+            bucketName = bucket
+            this.startAfter = startAfter
+        }
+        result = s3Client.listObjectsV2(request)
+        allObjects.addAll(result.objectSummaries)
+        startAfter = result.objectSummaries.lastOrNull()?.key
+    }
+    return allObjects
 }
