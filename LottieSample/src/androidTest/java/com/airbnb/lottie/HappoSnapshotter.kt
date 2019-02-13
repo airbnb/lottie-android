@@ -3,7 +3,6 @@ package com.airbnb.lottie
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
-import android.os.Debug
 import android.util.Log
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
@@ -13,18 +12,23 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.*
-import okhttp3.*
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalStateException
-import java.math.BigInteger
 import java.net.URLEncoder
 import java.nio.charset.Charset
-import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -59,7 +63,6 @@ class HappoSnapshotter(
     )
 
     private val okhttp = OkHttpClient()
-    private val memoryInfo = Debug.MemoryInfo()
 
     private val transferUtility = TransferUtility.builder()
             .context(context)
@@ -77,8 +80,6 @@ class HappoSnapshotter(
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val observer = async { transferUtility.uploadDeferred(key, file) }
         snapshots += Snapshot(observer, bucket, key, bitmap.width, bitmap.height, animationName, variant)
-        Debug.getMemoryInfo(memoryInfo)
-        Log.d(L.TAG, "MemoryInfo: ${memoryInfo.memoryStats}")
     }
 
     suspend fun finalizeReportAndUpload() {
@@ -115,7 +116,7 @@ class HappoSnapshotter(
     }
 
     private suspend fun OkHttpClient.executeDeferred(request: Request): Response = suspendCoroutine { continuation ->
-        newCall(request).enqueue(object: Callback {
+        newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 continuation.resumeWithException(e)
             }

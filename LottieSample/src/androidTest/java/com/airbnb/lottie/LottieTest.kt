@@ -39,6 +39,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -83,16 +84,8 @@ class LottieTest {
 
     private val bitmapPool by lazy { BitmapPool(activity.resources) }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
-    private val animationViewContainer by lazy { FrameLayout(activity) }
-    @Suppress("DEPRECATION")
-    private val animationView by lazy {
-        LottieAnimationView(activity).apply {
-            isDrawingCacheEnabled = false
-            animationViewContainer.addView(this)
-        }
-    }
-    @Suppress("DEPRECATION")
-    private val filmStripView by lazy {
+
+    private val filmStripViewPool = ObjectPool<FilmStripView> {
         FilmStripView(activity).apply {
             setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
             setFontAssetDelegate(object : FontAssetDelegate() {
@@ -100,6 +93,14 @@ class LottieTest {
                     return "fonts/Roboto.ttf"
                 }
             })
+        }
+    }
+    @Suppress("DEPRECATION")
+    private val animationViewPool = ObjectPool<LottieAnimationView> {
+        val animationViewContainer = FrameLayout(activity)
+        LottieAnimationView(activity).apply {
+            isDrawingCacheEnabled = false
+            animationViewContainer.addView(this)
         }
     }
 
@@ -119,11 +120,11 @@ class LottieTest {
     fun testAll() {
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-                snapshotFrameBoundaries()
-                snapshotScaleTypes()
-                testDynamicProperties()
-                testMarkers()
-                snapshotAssets()
+                //                snapshotFrameBoundaries()
+//                snapshotScaleTypes()
+//                testDynamicProperties()
+//                testMarkers()
+//                snapshotAssets()
                 snapshotProdAnimations()
                 snapshotter.finalizeReportAndUpload()
             }
@@ -138,7 +139,9 @@ class LottieTest {
 
         val downloadChannel = downloadAnimations(allObjects)
         val compositionsChannel = parseCompositions(downloadChannel)
-        snapshotCompositions(compositionsChannel)
+        for ((name, composition) in compositionsChannel) {
+            snapshotCompositions(name, composition)
+        }
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
@@ -166,31 +169,35 @@ class LottieTest {
         log("Parsed all animations.")
     }
 
-    private suspend fun snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = coroutineScope {
-        for ((name, composition) in compositions) {
-            log("Snapshotting $name")
-            val bitmap = bitmapPool.acquire(1000, 1000)
-            val canvas = Canvas(bitmap)
-            val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
-            filmStripView.measure(spec, spec)
-            filmStripView.layout(0, 0, 1000, 1000)
-            filmStripView.setComposition(composition)
-            canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
+    private fun CoroutineScope.snapshotCompositions(name: String, composition: LottieComposition) = launch(Dispatchers.Default) {
+        log("Snapshotting $name")
+        val bitmap = bitmapPool.acquire(1000, 1000)
+        val canvas = Canvas(bitmap)
+        val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+        val filmStripView = filmStripViewPool.acquire()
+        filmStripView.measure(spec, spec)
+        filmStripView.layout(0, 0, 1000, 1000)
+        filmStripView.setComposition(composition)
+        canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
+        withContext(Dispatchers.Main) {
             filmStripView.draw(canvas)
-            LottieCompositionCache.getInstance().clear()
-            log("Recording $name")
-            snapshotter.record(bitmap, name, "default")
-            activity.recordSnapshot(name, "default")
-            bitmapPool.release(bitmap)
-            log("Snapshotted $name")
         }
+        filmStripViewPool.release(filmStripView)
+        LottieCompositionCache.getInstance().clear()
+        log("Recording $name")
+        snapshotter.record(bitmap, name, "default")
+        activity.recordSnapshot(name, "default")
+        bitmapPool.release(bitmap)
+        log("Snapshotted $name")
     }
 
     private suspend fun snapshotAssets() = coroutineScope {
         log("Starting assets")
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
-        snapshotCompositions(compositionsChannel)
+        for ((name, composition) in compositionsChannel) {
+            snapshotCompositions(name, composition)
+        }
         log("Finished assets")
     }
 
@@ -609,8 +616,8 @@ class LottieTest {
             callback: (LottieAnimationView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
-        val composition = result.value
-                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val animationView = animationViewPool.acquire()
         animationView.setComposition(composition)
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         animationView.scale = 1f
@@ -618,12 +625,14 @@ class LottieTest {
         callback(animationView)
         val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
         val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        val animationViewContainer = animationView.parent as ViewGroup
         animationViewContainer.measure(widthSpec, heightSpec)
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
         val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
         val canvas = Canvas(bitmap)
         Log.d(L.TAG, "Drawing $assetName $snapshotName $snapshotVariant")
         animationView.draw(canvas)
+        animationViewPool.release(animationView)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
         bitmapPool.release(bitmap)
