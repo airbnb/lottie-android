@@ -38,6 +38,6 @@ internal class ObjectPool<T>(private val factory: () -> T) {
         // If this limit is reached a thread must wait for another bitmap to be returned.
         // Bitmaps are expensive, and if we aren't careful we can easily allocate too many objects
         // since coroutines run parallelized.
-        private const val MAX_RELEASED_OBJECTS = 10
+        private const val MAX_RELEASED_OBJECTS = 2
     }
 }
