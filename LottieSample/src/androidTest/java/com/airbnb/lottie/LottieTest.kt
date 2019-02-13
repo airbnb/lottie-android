@@ -120,11 +120,11 @@ class LottieTest {
     fun testAll() {
         runBlocking {
             withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-                //                snapshotFrameBoundaries()
-//                snapshotScaleTypes()
-//                testDynamicProperties()
-//                testMarkers()
-//                snapshotAssets()
+                snapshotFrameBoundaries()
+                snapshotScaleTypes()
+                testDynamicProperties()
+                testMarkers()
+                snapshotAssets()
                 snapshotProdAnimations()
                 snapshotter.finalizeReportAndUpload()
             }
