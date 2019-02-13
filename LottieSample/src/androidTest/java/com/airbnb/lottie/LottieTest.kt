@@ -32,12 +32,10 @@ import com.airbnb.lottie.value.ScaleXY
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.ListObjectsV2Request
 import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
@@ -50,6 +48,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
+import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
@@ -114,10 +113,10 @@ class LottieTest {
     }
 
     private suspend fun snapshotProdAnimations() = coroutineScope {
-        Log.d(L.TAG, "Downloading prod animation keys from S3.")
+        log("Downloading prod animation keys from S3.")
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
         val allObjects = s3Client.fetchAllObjects("lottie-prod-animations")
-        Log.d(L.TAG, "Downloaded prod animation keys from S3.")
+        log("Downloaded prod animation keys from S3.")
 
         val downloadChannel = downloadAnimations(allObjects)
         val compositionsChannel = parseCompositions(downloadChannel)
@@ -126,37 +125,34 @@ class LottieTest {
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
-            context = Dispatchers.IO,
-            capacity = 10
+            context = Dispatchers.IO
     ) {
         animations.forEach { animation ->
             val file = File(activity.cacheDir, animation.key)
             file.deleteOnExit()
-            Log.d(L.TAG, "Downloading ${animation.key}")
+            log("Downloading ${animation.key}")
             prodAnimationsTransferUtility.download(animation.key, file).await()
             send(file)
         }
     }
 
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
-            context = Dispatchers.Default,
-            capacity = 10
+            context = Dispatchers.Default
     ) {
         while (!files.isClosedForReceive) {
             val file = files.receive()
-            Log.d(L.TAG, "Parsing ${file.nameWithoutExtension}")
+            log("Parsing ${file.nameWithoutExtension}")
             send(file.nameWithoutExtension to parseComposition(file))
         }
-        Log.d(L.TAG, "Parsed all animations.")
+        log("Parsed all animations.")
     }
 
     private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
-            context = Dispatchers.Default,
-            capacity = 10
+            context = Dispatchers.Default
     ) {
         while (!compositions.isClosedForReceive) {
             val (name, composition) = compositions.receive()
-            Log.d(L.TAG, "Snapshotting $name")
+            log("Snapshotting $name")
 
             val bitmap = bitmapPool.acquire(1000, 1000)
             val canvas = Canvas(bitmap)
@@ -175,26 +171,27 @@ class LottieTest {
             filmStripView.draw(canvas)
             LottieCompositionCache.getInstance().clear()
             send(name to bitmap)
-            Log.d(L.TAG, "Snapshotted $name")
+            log("Snapshotted $name")
         }
     }
 
     private suspend fun recordSnapshots(snapshots: ReceiveChannel<Pair<String, Bitmap>>) = coroutineScope {
         while (!snapshots.isClosedForReceive) {
             val (name, bitmap) = snapshots.receive()
-            Log.d(L.TAG, "Recording $name")
+            log("Recording $name")
             snapshotter.record(bitmap, name, "default")
+            activity.recordSnapshot(name, "default")
             bitmapPool.release(bitmap)
         }
     }
 
     private suspend fun snapshotAssets() = coroutineScope {
-        Log.d(L.TAG, "Starting assets")
+        log("Starting assets")
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
         val snapshotChannel = snapshotCompositions(compositionsChannel)
         recordSnapshots(snapshotChannel)
-        Log.d(L.TAG, "Finished assets")
+        log("Finished assets")
     }
 
     private fun listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
@@ -215,38 +212,38 @@ class LottieTest {
             capacity = 10
     ) {
         for (asset in assets) {
-            Log.d(L.TAG, "Parsing $asset")
+            log("Parsing $asset")
             send(asset to parseComposition(asset))
         }
-        Log.d(L.TAG, "Parsed all animations.")
+        log("Parsed all animations.")
     }
 
     private suspend fun snapshotFrameBoundaries() {
-        Log.d(L.TAG, "snapshotFrameBoundaries")
-        withAnimationView("Tests/Frame.json", "Frame Boundary", "Frame 16 Red") { animationView ->
-            Log.d(L.TAG, "Setting frame to 16")
-            animationView.frame = 16
+        log("snapshotFrameBoundaries")
+        withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 16 Red") { drawable ->
+            log("Setting frame to 16")
+            drawable.frame = 16
         }
-        Log.d(L.TAG, "Finished setting frame to 16")
-        withAnimationView("Tests/Frame.json", "Frame Boundary", "Frame 17 Blue") { animationView ->
-            animationView.frame = 17
+        log("Finished setting frame to 16")
+        withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 17 Blue") { drawable ->
+            drawable.frame = 17
         }
-        withAnimationView("Tests/Frame.json", "Frame Boundary", "Frame 50 Blue") { animationView ->
-            animationView.frame = 50
+        withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 50 Blue") { drawable ->
+            drawable.frame = 50
         }
-        withAnimationView("Tests/Frame.json", "Frame Boundary", "Frame 51 Green") { animationView ->
-            animationView.frame = 51
-        }
-
-        withAnimationView("Tests/RGB.json", "Frame Boundary", "Frame 0 Red") { animationView ->
-            animationView.frame = 0
+        withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 51 Green") { drawable ->
+            drawable.frame = 51
         }
 
-        withAnimationView("Tests/RGB.json", "Frame Boundary", "Frame 1 Green") { animationView ->
-            animationView.frame = 1
+        withDrawable("Tests/RGB.json", "Frame Boundary", "Frame 0 Red") { drawable ->
+            drawable.frame = 0
         }
-        withAnimationView("Tests/RGB.json", "Frame Boundary", "Frame 2 Blue") { animationView ->
-            animationView.frame = 2
+
+        withDrawable("Tests/RGB.json", "Frame Boundary", "Frame 1 Green") { drawable ->
+            drawable.frame = 1
+        }
+        withDrawable("Tests/RGB.json", "Frame Boundary", "Frame 2 Blue") { drawable ->
+            drawable.frame = 2
         }
     }
 
@@ -531,14 +528,6 @@ class LottieTest {
                 LottieProperty.COLOR_FILTER,
                 LottieValueCallback<ColorFilter>(SimpleColorFilter(Color.GREEN)))
 
-        withAnimationView("Tests/Shapes.json", "Dynamic Propertiers", "Color Filter after blue") { animationView ->
-            val blueColorFilter = LottieValueCallback<ColorFilter>(SimpleColorFilter(Color.GREEN))
-            animationView.addValueCallback(KeyPath("**"), LottieProperty.COLOR_FILTER, blueColorFilter)
-            val bitmap = activity.snapshotAnimationView()
-            snapshotter.record(bitmap, "Dynamic Propertiers", "Color Filter before blue")
-            blueColorFilter.setValue(SimpleColorFilter(Color.BLUE))
-        }
-
         testDynamicProperty(
                 "Null Color Filter",
                 KeyPath("**"),
@@ -567,60 +556,59 @@ class LottieTest {
                 1f)
     }
 
-    private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
-        withAnimationView("Tests/Shapes.json", "Dynamic Properties", name) { animationView ->
-            animationView.progress = progress
-            animationView.addValueCallback(keyPath, property, callback)
+    private fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
+        withDrawable(name, "Dynamic Properties", name) { drawable ->
+            drawable.addValueCallback(keyPath, property, callback)
+            drawable.progress = progress
         }
     }
 
     private suspend fun testMarkers() {
-        withAnimationView("Tests/Marker.json", "Marker", "startFrame") { animationView ->
-            animationView.setMinAndMaxFrame("Marker A")
-            animationView.frame = animationView.minFrame.toInt()
+        withDrawable("Tests/Marker.json", "Marker", "startFrame") { drawable ->
+            drawable.setMinAndMaxFrame("Marker A")
+            drawable.frame = drawable.minFrame.toInt()
         }
 
-        withAnimationView("Tests/Marker.json", "Marker", "endFrame") { animationView ->
-            animationView.setMinAndMaxFrame("Marker A")
-            animationView.frame = animationView.maxFrame.toInt()
+        withDrawable("Tests/Marker.json", "Marker", "endFrame") { drawable ->
+            drawable.setMinAndMaxFrame("Marker A")
+            drawable.frame = drawable.maxFrame.toInt()
         }
     }
 
+    private fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
+        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val drawable = LottieDrawable()
+        drawable.setComposition(composition)
+        callback(drawable)
+        val bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+        val canvas = Canvas(bitmap)
+        drawable.draw(canvas)
+        snapshotter.record(bitmap, snapshotName, snapshotVariant)
+        activity.recordSnapshot(snapshotName, snapshotVariant)
+        LottieCompositionCache.getInstance().clear()
+    }
+
     private suspend fun withAnimationView(
-            animationName: String,
-            snapshotName: String? = null,
-            variant: String = "default",
-            block: suspend CoroutineScope.(LottieAnimationView) -> Unit
+            assetName: String,
+            snapshotName: String = assetName,
+            snapshotVariant: String = "default",
+            callback: suspend (LottieAnimationView) -> Unit
     ) {
-        withContext(Dispatchers.Main) {
-            val animationView = activity.getAnimationView()
-            animationView.setComposition(parseComposition(animationName))
-            val layoutParams = animationView.layoutParams
-            animationView.frame = 0
-            animationView.scale = 1f
-            animationView.scaleType
-            animationView.scaleType = ImageView.ScaleType.FIT_CENTER
-
-            Log.d(L.TAG, "Waiting for layout")
-            animationView.requestLayout()
-            withContext(Dispatchers.Default) {
-                suspendCoroutine<Unit> { continuation ->
-                    animationView.post {
-                        continuation.resume(Unit)
-                    }
-                }
-            }
-
-            block(animationView)
-            val bitmap = activity.snapshotAnimationView()
-            snapshotter.record(bitmap, snapshotName ?: animationName, variant)
-
-            animationView.layoutParams = layoutParams
-            animationView.requestLayout()
-            animationView.scale = 1f
-            animationView.scaleType = ImageView.ScaleType.FIT_CENTER
-            LottieCompositionCache.getInstance().clear()
-        }
+        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val animationView = LottieAnimationView(activity)
+        animationView.setComposition(composition)
+        val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        animationView.measure(spec, spec)
+        animationView.layout(0, 0, animationView.measuredWidth, animationView.measuredHeight)
+        callback(animationView)
+        val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
+        val canvas = Canvas(bitmap)
+        animationView.draw(canvas)
+        snapshotter.record(bitmap, snapshotName, snapshotVariant)
+        activity.recordSnapshot(snapshotName, snapshotVariant)
+        LottieCompositionCache.getInstance().clear()
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
@@ -653,6 +641,10 @@ class LottieTest {
                     continuation.resume(it)
                     isResumed = true
                 }
+    }
+
+    private fun log(message: String) {
+        Log.d(L.TAG, message)
     }
 
     private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)

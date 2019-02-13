@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
 
-    <com.airbnb.lottie.samples.views.FilmStripView
-        android:id="@+id/filmStripView"
-        android:layout_gravity="center"
-        android:layout_width="1000px"
-        android:layout_height="1000px" />
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView"
+    <TextView
+        android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:text="com.airbnb.android" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/counterTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0" />
+</LinearLayout>
