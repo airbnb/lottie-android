@@ -2,7 +2,6 @@ package com.airbnb.lottie
 
 import android.Manifest
 import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -48,7 +47,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
-import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
@@ -85,18 +83,22 @@ class LottieTest {
     private val bitmapPool by lazy { BitmapPool(activity.resources) }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
     @Suppress("DEPRECATION")
-    private val animationView by lazy { LottieAnimationView(activity).apply {
-        isDrawingCacheEnabled = false
-    }}
+    private val animationView by lazy {
+        LottieAnimationView(activity).apply {
+            isDrawingCacheEnabled = false
+        }
+    }
     @Suppress("DEPRECATION")
-    private val filmStripView by lazy { FilmStripView(activity).apply {
-        setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
-        setFontAssetDelegate(object : FontAssetDelegate() {
-            override fun getFontPath(fontFamily: String?): String {
-                return "fonts/Roboto.ttf"
-            }
-        })
-    } }
+    private val filmStripView by lazy {
+        FilmStripView(activity).apply {
+            setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+            setFontAssetDelegate(object : FontAssetDelegate() {
+                override fun getFontPath(fontFamily: String?): String {
+                    return "fonts/Roboto.ttf"
+                }
+            })
+        }
+    }
 
     @Before
     fun setup() {
@@ -107,7 +109,7 @@ class LottieTest {
                 .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
                 .defaultBucket("lottie-prod-animations")
                 .build()
-        LottieCompositionCache.getInstance().resize(1)
+        LottieCompositionCache.getInstance().resize(5)
     }
 
     @Test
@@ -133,8 +135,7 @@ class LottieTest {
 
         val downloadChannel = downloadAnimations(allObjects)
         val compositionsChannel = parseCompositions(downloadChannel)
-        val snapshotChannel = snapshotCompositions(compositionsChannel)
-        recordSnapshots(snapshotChannel)
+        snapshotCompositions(compositionsChannel)
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
@@ -162,12 +163,8 @@ class LottieTest {
         log("Parsed all animations.")
     }
 
-    private fun CoroutineScope.snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = produce<Pair<String, Bitmap>>(
-            context = Dispatchers.Default,
-            capacity = 10
-    ) {
-        while (!compositions.isClosedForReceive) {
-            val (name, composition) = compositions.receive()
+    private suspend fun snapshotCompositions(compositions: ReceiveChannel<Pair<String, LottieComposition>>) = coroutineScope {
+        for ((name, composition) in compositions) {
             log("Snapshotting $name")
             val bitmap = bitmapPool.acquire(1000, 1000)
             val canvas = Canvas(bitmap)
@@ -178,18 +175,11 @@ class LottieTest {
             canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
             filmStripView.draw(canvas)
             LottieCompositionCache.getInstance().clear()
-            send(name to bitmap)
-            log("Snapshotted $name")
-        }
-    }
-
-    private suspend fun recordSnapshots(snapshots: ReceiveChannel<Pair<String, Bitmap>>) = coroutineScope {
-        while (!snapshots.isClosedForReceive) {
-            val (name, bitmap) = snapshots.receive()
             log("Recording $name")
             snapshotter.record(bitmap, name, "default")
             activity.recordSnapshot(name, "default")
             bitmapPool.release(bitmap)
+            log("Snapshotted $name")
         }
     }
 
@@ -197,8 +187,7 @@ class LottieTest {
         log("Starting assets")
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
-        val snapshotChannel = snapshotCompositions(compositionsChannel)
-        recordSnapshots(snapshotChannel)
+        snapshotCompositions(compositionsChannel)
         log("Finished assets")
     }
 
@@ -255,8 +244,9 @@ class LottieTest {
         }
     }
 
-    private suspend fun snapshotScaleTypes() {
+    private suspend fun snapshotScaleTypes() = withContext(Dispatchers.Main) {
         withAnimationView("LottieLogo1.json", "Scale Types", "Wrap Content") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -264,6 +254,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "Match Parent") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
                 height = ViewGroup.LayoutParams.MATCH_PARENT
@@ -271,6 +262,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300@2x") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -279,6 +271,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300@4x") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -287,6 +280,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300 centerCrop") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -295,6 +289,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300 centerInside") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -303,6 +298,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300 centerInside @2x") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -312,6 +308,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300 centerCrop @2x") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 300.dp.toInt()
@@ -321,6 +318,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "600x300 centerInside") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 600.dp.toInt()
                 height = 300.dp.toInt()
@@ -329,6 +327,7 @@ class LottieTest {
         }
 
         withAnimationView("LottieLogo1.json", "Scale Types", "300x600 centerInside") { animationView ->
+            animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
                 height = 600.dp.toInt()
@@ -338,6 +337,7 @@ class LottieTest {
     }
 
     private suspend fun testDynamicProperties() {
+        log("Testing dynamic properties")
         testDynamicProperty(
                 "Fill color (Green)",
                 KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
@@ -565,7 +565,7 @@ class LottieTest {
     }
 
     private fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
-        withDrawable(name, "Dynamic Properties", name) { drawable ->
+        withDrawable("Tests/Shapes.json", "Dynamic Properties", name) { drawable ->
             drawable.addValueCallback(keyPath, property, callback)
             drawable.progress = progress
         }
@@ -585,7 +585,8 @@ class LottieTest {
 
     private fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
-        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value
+                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         val drawable = LottieDrawable()
         drawable.setComposition(composition)
         callback(drawable)
@@ -595,27 +596,43 @@ class LottieTest {
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
         LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
     }
 
-    private suspend fun withAnimationView(
+    private fun withAnimationView(
             assetName: String,
             snapshotName: String = assetName,
             snapshotVariant: String = "default",
-            callback: suspend (LottieAnimationView) -> Unit
+            callback: (LottieAnimationView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
-        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value
+                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         animationView.setComposition(composition)
-        val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        animationView.measure(spec, spec)
-        animationView.layout(0, 0, animationView.measuredWidth, animationView.measuredHeight)
+        animationView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        animationView.scale = 1f
+        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
         callback(animationView)
+        val lp = animationView.layoutParams
+        val widthSpec = if (lp.width > 0) {
+            View.MeasureSpec.makeMeasureSpec(lp.width, View.MeasureSpec.EXACTLY)
+        } else {
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        }
+        val heightSpec = if (lp.height > 0) {
+            View.MeasureSpec.makeMeasureSpec(lp.height, View.MeasureSpec.EXACTLY)
+        } else {
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        }
+        animationView.measure(widthSpec, heightSpec)
+        animationView.layout(0, 0, animationView.measuredWidth, animationView.measuredHeight)
         val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
         val canvas = Canvas(bitmap)
+        Log.d(L.TAG, "Drawing $assetName $snapshotName $snapshotVariant")
         animationView.draw(canvas)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
-        LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
     }
 
     private suspend fun parseComposition(animationName: String) = suspendCoroutine<LottieComposition> { continuation ->
