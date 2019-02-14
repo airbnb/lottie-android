@@ -4,8 +4,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.Log
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
+import kotlin.math.max
 
 internal class BitmapPool(resources: Resources) {
 
@@ -14,7 +14,7 @@ internal class BitmapPool(resources: Resources) {
 
     private val semaphore = Semaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
-    private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()
+    private val releasedBitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
 
     fun acquire(width: Int, height: Int): Bitmap {
         Log.d(L.TAG, "Acquiring bitmap of size " + width + "x" + height)
@@ -31,6 +31,7 @@ internal class BitmapPool(resources: Resources) {
                     ?.also { bitmaps.remove(it) }
         } ?: createNewBitmap(width, height)
 
+        releasedBitmaps += bitmap
         Log.d(L.TAG, "Returning bitmap")
         return bitmap
     }
@@ -42,11 +43,9 @@ internal class BitmapPool(resources: Resources) {
             return
         }
 
-        val originalBitmap = releasedBitmaps.remove(bitmap)
-                ?: throw IllegalArgumentException("Unable to find original bitmap.")
+        if (!releasedBitmaps.remove(bitmap)) throw IllegalArgumentException("Unable to find original bitmap.")
 
-        bitmaps.add(originalBitmap)
-
+        bitmaps += bitmap
         semaphore.release()
     }
 
@@ -54,11 +53,7 @@ internal class BitmapPool(resources: Resources) {
         // Make the bitmap at least as large as the screen so we don't wind up with a fragmented pool of
         // bitmap sizes. We'll crop the right size out of it before returning it in acquire().
         Log.d(L.TAG, "Creating a new bitmap of size " + width + "x" + height)
-        return Bitmap.createBitmap(
-                Math.max(screenWidth, width),
-                Math.max(screenHeight, height),
-                Bitmap.Config.ARGB_8888
-        )
+        return Bitmap.createBitmap(max(screenWidth, width), max(screenHeight, height), Bitmap.Config.ARGB_8888)
     }
 
     companion object {

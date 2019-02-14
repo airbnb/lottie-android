@@ -305,7 +305,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     int saveCount = -1;
-    // The .001 accounts for floating point errors.
     if (extraScale > 1) {
       // This is a bit tricky...
       // We can't draw on a canvas larger than ViewConfiguration.get(context).getScaledMaximumDrawingCacheSize()

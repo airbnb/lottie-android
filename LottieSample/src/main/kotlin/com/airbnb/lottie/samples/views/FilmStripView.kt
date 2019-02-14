@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.FloatRange
@@ -25,10 +26,6 @@ class FilmStripView @JvmOverloads constructor(
 
     init {
         inflate(R.layout.film_strip_view)
-        animationViews.forEach {
-            @Suppress("DEPRECATION")
-            it.isDrawingCacheEnabled = false
-        }
     }
 
     fun setComposition(composition: LottieComposition) {

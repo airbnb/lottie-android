@@ -93,13 +93,13 @@ class LottieTest {
                     return "fonts/Roboto.ttf"
                 }
             })
+            setLayerType(View.LAYER_TYPE_NONE, null)
         }
     }
     @Suppress("DEPRECATION")
     private val animationViewPool = ObjectPool<LottieAnimationView> {
         val animationViewContainer = FrameLayout(activity)
-        LottieAnimationView(activity).apply {
-            isDrawingCacheEnabled = false
+        NoCacheLottieAnimationView(activity).apply {
             animationViewContainer.addView(this)
         }
     }
@@ -146,7 +146,7 @@ class LottieTest {
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
             context = Dispatchers.IO,
-            capacity = 2
+            capacity = 10
     ) {
         for (animation in animations) {
             val file = File(activity.cacheDir, animation.key)
@@ -159,7 +159,7 @@ class LottieTest {
 
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
             context = Dispatchers.Default,
-            capacity = 2
+            capacity = 10
     ) {
         for (file in files) {
             log("Parsing ${file.nameWithoutExtension}")
