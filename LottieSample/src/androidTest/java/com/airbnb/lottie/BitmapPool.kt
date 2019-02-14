@@ -1,17 +1,11 @@
 package com.airbnb.lottie
 
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.Log
 import java.util.*
 import java.util.concurrent.Semaphore
-import kotlin.math.max
 
-internal class BitmapPool(resources: Resources) {
-
-    private val screenWidth = resources.displayMetrics.widthPixels
-    private val screenHeight = resources.displayMetrics.heightPixels
-
+internal class BitmapPool {
     private val semaphore = Semaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
@@ -53,7 +47,7 @@ internal class BitmapPool(resources: Resources) {
         // Make the bitmap at least as large as the screen so we don't wind up with a fragmented pool of
         // bitmap sizes. We'll crop the right size out of it before returning it in acquire().
         Log.d(L.TAG, "Creating a new bitmap of size " + width + "x" + height)
-        return Bitmap.createBitmap(max(screenWidth, width), max(screenHeight, height), Bitmap.Config.ARGB_8888)
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     }
 
     companion object {
@@ -61,7 +55,7 @@ internal class BitmapPool(resources: Resources) {
         // If this limit is reached a thread must wait for another bitmap to be returned.
         // Bitmaps are expensive, and if we aren't careful we can easily allocate too many bitmaps
         // since coroutines run parallelized.
-        private const val MAX_RELEASED_BITMAPS = 1
+        private const val MAX_RELEASED_BITMAPS = 2
 
         private val TRANSPARENT_1X1_BITMAP: Bitmap by lazy {
             Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8)

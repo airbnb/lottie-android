@@ -82,7 +82,7 @@ class LottieTest {
 
     private lateinit var snapshotter: HappoSnapshotter
 
-    private val bitmapPool by lazy { BitmapPool(activity.resources) }
+    private val bitmapPool by lazy { BitmapPool() }
     private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
 
     private val filmStripViewPool = ObjectPool<FilmStripView> {
