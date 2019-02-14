@@ -61,7 +61,7 @@ internal class BitmapPool(resources: Resources) {
         // If this limit is reached a thread must wait for another bitmap to be returned.
         // Bitmaps are expensive, and if we aren't careful we can easily allocate too many bitmaps
         // since coroutines run parallelized.
-        private const val MAX_RELEASED_BITMAPS = 10
+        private const val MAX_RELEASED_BITMAPS = 3
 
         private val TRANSPARENT_1X1_BITMAP: Bitmap by lazy {
             Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8)
