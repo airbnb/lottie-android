@@ -146,7 +146,7 @@ class LottieTest {
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
             context = Dispatchers.IO,
-            capacity = 10
+            capacity = 1
     ) {
         for (animation in animations) {
             val file = File(activity.cacheDir, animation.key)
@@ -159,7 +159,7 @@ class LottieTest {
 
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
             context = Dispatchers.Default,
-            capacity = 10
+            capacity = 1
     ) {
         for (file in files) {
             log("Parsing ${file.nameWithoutExtension}")
@@ -215,7 +215,7 @@ class LottieTest {
 
     private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce<Pair<String, LottieComposition>>(
             context = Dispatchers.Default,
-            capacity = 10
+            capacity = 1
     ) {
         for (asset in assets) {
             log("Parsing $asset")
