@@ -25,16 +25,14 @@ internal class BitmapPool(resources: Resources) {
 
         semaphore.acquire()
 
-        val fullBitmap = synchronized(bitmaps) {
+        val bitmap = synchronized(bitmaps) {
             bitmaps
                     .firstOrNull { it.width >= width && it.height >= height }
                     ?.also { bitmaps.remove(it) }
         } ?: createNewBitmap(width, height)
 
-        val croppedBitmap = Bitmap.createBitmap(fullBitmap, 0, 0, width, height)
-        releasedBitmaps[croppedBitmap] = fullBitmap
         Log.d(L.TAG, "Returning bitmap")
-        return croppedBitmap
+        return bitmap
     }
 
     fun release(bitmap: Bitmap) {
