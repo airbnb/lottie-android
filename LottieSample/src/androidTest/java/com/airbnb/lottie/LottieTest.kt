@@ -36,10 +36,12 @@ import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -127,10 +129,8 @@ class LottieTest {
     }
 
     private suspend fun snapshotProdAnimations() = coroutineScope {
-        log("Downloading prod animation keys from S3.")
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
         val allObjects = s3Client.fetchAllObjects("lottie-prod-animations")
-        log("Downloaded prod animation keys from S3.")
 
         val downloadChannel = downloadAnimations(allObjects)
         val compositionsChannel = parseCompositions(downloadChannel)
@@ -144,7 +144,6 @@ class LottieTest {
         for (animation in animations) {
             val file = File(activity.cacheDir, animation.key)
             file.deleteOnExit()
-            log("Downloading ${animation.key}")
             prodAnimationsTransferUtility.download(animation.key, file).await()
             send(file)
         }
@@ -155,55 +154,43 @@ class LottieTest {
             capacity = 1
     ) {
         for (file in files) {
-            log("Parsing ${file.nameWithoutExtension} ${Thread.currentThread().id}")
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
             val composition = result.value
                     ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}")
-            send(file.nameWithoutExtension to composition)
+            send("prod-${file.nameWithoutExtension}" to composition)
         }
-        log("Parsed all animations.")
     }
 
     private suspend fun snapshotCompositions(channel: ReceiveChannel<Pair<String, LottieComposition>>) {
         for ((name, composition) in channel) {
-            log("Acquired $name")
             snapshotComposition(name, composition)
         }
     }
 
     private suspend fun snapshotComposition(name: String, composition: LottieComposition) = withContext(Dispatchers.Default) {
-        log("Snapshotting $name  ${Thread.currentThread().id}")
         val bitmap = bitmapPool.acquire(1000, 1000)
         val canvas = Canvas(bitmap)
         val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
-        log("Acquiring film strip view")
         val filmStripView = filmStripViewPool.acquire()
-        log("Acquired film strip view")
         filmStripView.measure(spec, spec)
         filmStripView.layout(0, 0, 1000, 1000)
         filmStripView.setComposition(composition)
         canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
-        log("About to draw $name")
         withContext(Dispatchers.Main) {
             filmStripView.draw(canvas)
         }
-        log("Drew $name")
         filmStripViewPool.release(filmStripView)
         LottieCompositionCache.getInstance().clear()
-        log("Recording $name")
         snapshotter.record(bitmap, name, "default")
         activity.recordSnapshot(name, "default")
         bitmapPool.release(bitmap)
-        log("Snapshotted $name")
     }
 
     private suspend fun snapshotAssets() = coroutineScope {
-        log("Starting assets")
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
         repeat(4) { snapshotCompositions(compositionsChannel) }
-        log("Finished assets")
     }
 
     private fun listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
@@ -219,18 +206,16 @@ class LottieTest {
         return assets
     }
 
+    @ObsoleteCoroutinesApi
     private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce<Pair<String, LottieComposition>>(
-            context = Dispatchers.Default,
-            capacity = 1
+            context = newSingleThreadContext("Parsing"),
+            capacity = 10
     ) {
         for (asset in assets) {
-            log("Parsing $asset ${Thread.currentThread().id}")
             val composition = LottieCompositionFactory.fromAssetSync(activity, asset).value
                     ?: throw java.lang.IllegalArgumentException("Unable to parse $asset.")
-            log("Sending $asset ${isFull}")
             send(asset to composition)
         }
-        log("Parsed all animations.")
     }
 
     private suspend fun snapshotFrameBoundaries() {
@@ -582,7 +567,7 @@ class LottieTest {
                 1f)
     }
 
-    private fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
+    private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
         withDrawable("Tests/Shapes.json", "Dynamic Properties", name) { drawable ->
             drawable.addValueCallback(keyPath, property, callback)
             drawable.progress = progress
@@ -601,7 +586,7 @@ class LottieTest {
         }
     }
 
-    private fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
+    private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
         val composition = result.value
                 ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
@@ -617,7 +602,7 @@ class LottieTest {
         bitmapPool.release(bitmap)
     }
 
-    private fun withAnimationView(
+    private suspend fun withAnimationView(
             assetName: String,
             snapshotName: String = assetName,
             snapshotVariant: String = "default",
@@ -648,7 +633,7 @@ class LottieTest {
     }
 
     private fun log(message: String) {
-        Log.d(L.TAG, message)
+        Log.d("LottieTest", message)
     }
 
     private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)

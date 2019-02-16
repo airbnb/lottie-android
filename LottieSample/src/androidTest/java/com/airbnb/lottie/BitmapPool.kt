@@ -3,21 +3,25 @@ package com.airbnb.lottie
 import android.graphics.Bitmap
 import android.util.Log
 import java.util.*
-import java.util.concurrent.Semaphore
 
 internal class BitmapPool {
-    private val semaphore = Semaphore(MAX_RELEASED_BITMAPS)
+    private val semaphore = SuspendingSemaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
 
     fun acquire(width: Int, height: Int): Bitmap {
-        Log.d(L.TAG, "Acquiring bitmap of size " + width + "x" + height)
-
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP
         }
 
+        var blockedStartTime = 0L
+        if (semaphore.isFull()) {
+            blockedStartTime = System.currentTimeMillis()
+        }
         semaphore.acquire()
+        if (blockedStartTime > 0) {
+            Log.d(L.TAG, "Waited ${System.currentTimeMillis() - blockedStartTime}ms for a bitmap.")
+        }
 
         val bitmap = synchronized(bitmaps) {
             bitmaps
@@ -26,13 +30,10 @@ internal class BitmapPool {
         } ?: createNewBitmap(width, height)
 
         releasedBitmaps += bitmap
-        Log.d(L.TAG, "Returning bitmap")
         return bitmap
     }
 
     fun release(bitmap: Bitmap) {
-        Log.d(L.TAG, "Releasing bitmap")
-
         if (bitmap == TRANSPARENT_1X1_BITMAP) {
             return
         }
@@ -46,7 +47,6 @@ internal class BitmapPool {
     private fun createNewBitmap(width: Int, height: Int): Bitmap {
         // Make the bitmap at least as large as the screen so we don't wind up with a fragmented pool of
         // bitmap sizes. We'll crop the right size out of it before returning it in acquire().
-        Log.d(L.TAG, "Creating a new bitmap of size " + width + "x" + height)
         return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     }
 
@@ -62,3 +62,5 @@ internal class BitmapPool {
         }
     }
 }
+
+

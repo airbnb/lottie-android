@@ -30,9 +30,8 @@ class SnapshotTestActivity : AppCompatActivity() {
     }
 
     fun recordSnapshot(snapshotName: String, snapshotVariant: String) {
-        val threadId = Thread.currentThread().id
         counterTextView.post {
-            statusTextView.text = "$snapshotName - $snapshotVariant ($threadId)"
+            statusTextView.text = if (snapshotVariant == "default") snapshotName else "$snapshotName - $snapshotVariant"
             val count = counterTextView.text.toString().toInt()
             counterTextView.text = "${count + 1}"
         }

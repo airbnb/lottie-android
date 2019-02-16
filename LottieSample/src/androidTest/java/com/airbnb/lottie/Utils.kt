@@ -47,7 +47,6 @@ suspend fun TransferObserver.await() = suspendCoroutine<TransferObserver> { cont
         override fun onStateChanged(id: Int, state: TransferState) {
             when (state) {
                 TransferState.COMPLETED -> {
-                    Log.d(L.TAG, "$id finished uploading.")
                     continuation.resume(this@await)
                 }
                 TransferState.CANCELED, TransferState.FAILED -> {

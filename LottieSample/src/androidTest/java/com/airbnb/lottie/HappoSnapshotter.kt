@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Credentials
@@ -46,10 +47,11 @@ private const val TAG = "HappotSnapshotter"
  */
 class HappoSnapshotter(
         private val context: Context
-) : CoroutineScope {
-    private val job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+)  {
+    private val recordJob = Job()
+    val recordContext: CoroutineContext
+        get() = Dispatchers.IO + recordJob
+    val recordScope = CoroutineScope(recordContext)
 
     private val bucket = "lottie-happo"
     private val happoApiKey = BC.HappoApiKey
@@ -72,20 +74,22 @@ class HappoSnapshotter(
     private val snapshots = mutableListOf<Snapshot>()
 
     fun record(bitmap: Bitmap, animationName: String, variant: String) {
-        Log.d(L.TAG, "Recording $animationName $variant")
-        val md5 = bitmap.md5
-        val key = "snapshots/$md5.png"
-        val file = File(context.cacheDir, "$md5.png")
-        val outputStream = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val observer = async { transferUtility.uploadDeferred(key, file) }
-        snapshots += Snapshot(observer, bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        recordScope.launch {
+            val md5 = bitmap.md5
+            val key = "snapshots/$md5.png"
+            val file = File(context.cacheDir, "$md5.png")
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            val observer = async { transferUtility.uploadDeferred(key, file) }
+            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+            observer.await()
+        }
     }
 
     suspend fun finalizeReportAndUpload() {
-        Log.d(L.TAG, "Waiting for snapshots to upload")
-        snapshots.forEach { it.await() }
-        Log.d(L.TAG, "Finished uploading snapshots")
+        val recordJobStart = System.currentTimeMillis()
+        recordJob.join()
+        Log.d(L.TAG, "Waited ${System.currentTimeMillis() - recordJobStart}ms for recordings to finish saving.")
         val json = JsonObject()
         val snaps = JsonArray()
         json.add("snaps", snaps)

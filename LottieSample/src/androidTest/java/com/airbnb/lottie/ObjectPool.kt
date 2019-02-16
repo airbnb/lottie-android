@@ -8,24 +8,29 @@ import kotlin.collections.HashSet
 
 internal class ObjectPool<T>(private val factory: () -> T) {
 
-    private val semaphore = Semaphore(MAX_RELEASED_OBJECTS)
+    private val semaphore = SuspendingSemaphore(MAX_RELEASED_OBJECTS)
     private val objects = Collections.synchronizedList(ArrayList<T>())
     private val releasedObjects = HashSet<T>()
 
     fun acquire(): T {
+        var blockedStartTime = 0L
+        if (semaphore.isFull()) {
+            blockedStartTime = System.currentTimeMillis()
+        }
         semaphore.acquire()
+        if (blockedStartTime > 0) {
+            Log.d(L.TAG, "Waited ${System.currentTimeMillis() - blockedStartTime}ms for an object.")
+        }
 
         val obj = synchronized(objects) {
             objects.firstOrNull()?.also { objects.remove(it) }
         } ?: factory()
 
         releasedObjects += obj
-        Log.d(L.TAG, "Returning bitmap")
         return obj
     }
 
     fun release(obj: T) {
-        Log.d(L.TAG, "Releasing object")
         val removed = releasedObjects.remove(obj)
         if (!removed) throw IllegalArgumentException("Unable to find original obj.")
 
