@@ -21,10 +21,10 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
-  private final Matrix skewMatrix1 = new Matrix();
-  private final Matrix skewMatrix2 = new Matrix();
-  private final Matrix skewMatrix3 = new Matrix();
-  private final float[] skewValues = new float[9];
+  private final Matrix skewMatrix1;
+  private final Matrix skewMatrix2;
+  private final Matrix skewMatrix3;
+  private final float[] skewValues;
 
   private boolean isIdentity;
   private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
@@ -48,12 +48,27 @@ public class TransformKeyframeAnimation {
       rotation = null;
       skew = null;
       skewAngle = null;
+      skewMatrix1 = null;
+      skewMatrix2 = null;
+      skewMatrix3 = null;
+      skewValues = null;
     } else  {
       anchorPoint = animatableTransform.getAnchorPoint().createAnimation();
       position = animatableTransform.getPosition().createAnimation();
       scale = animatableTransform.getScale().createAnimation();
       rotation = animatableTransform.getRotation().createAnimation();
       skew = animatableTransform.getSkew() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkew().createAnimation();
+      if (skew != null) {
+        skewMatrix1 = new Matrix();
+        skewMatrix2 = new Matrix();
+        skewMatrix3 = new Matrix();
+        skewValues = new float[9];
+      } else {
+        skewMatrix1 = null;
+        skewMatrix2 = null;
+        skewMatrix3 = null;
+        skewValues = null;
+      }
       skewAngle = animatableTransform.getSkewAngle() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkewAngle().createAnimation();
     }
     opacity = animatableTransform.getOpacity().createAnimation();
