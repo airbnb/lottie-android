@@ -8,7 +8,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -24,7 +23,6 @@ import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +163,6 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextWithFont(
       DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
-    float fontScale = (float) documentData.size / 100f;
     float parentScale = Utils.getScale(parentMatrix);
     Typeface typeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
     if (typeface == null) {
@@ -181,7 +178,7 @@ public class TextLayer extends BaseLayer {
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
 
-    float totalTextWidth = fillPaint.measureText(text) * fontScale * Utils.dpScale() * parentScale;
+    float totalTextWidth = strokePaint.measureText(text);
     applyJustification(documentData.justification, canvas, totalTextWidth);
 
     for (int i = 0; i < text.length(); i++) {
