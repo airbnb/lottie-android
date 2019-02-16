@@ -1,14 +1,8 @@
-Before opening a new issue:
+**Read this or your issue will be closed**
 
-* Look through open and existing issues for duplicates.
-* Apply an appropriate label.
 
-If this is a bug:
-* Simplify your animation to the simplest animation that reproduces the issue.
-* Attach your After Effects file.
-
-If this is a feature request:
-* Explain what feature you would like and why you need it. There are usually After Effects
-workarounds that we can provide in the meantime that achieve the same effect.
-
-If you leave the template text in your issue, it will be closed.
+* Before opening a new issue, look through existing issues for duplicates.
+* Simplify your animation to the simplest animation that reproduces your issue.
+* Zip your After Effects AEP file and attach it. Your issue will be auto-closed if it doesn't have an AEP or no explicit reason otherwise is given.
+* If you don't know English, run your issue through Google Translate.
+* If you leave the template text in your issue, it will be closed.
