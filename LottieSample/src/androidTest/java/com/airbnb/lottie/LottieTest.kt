@@ -154,6 +154,7 @@ class LottieTest {
             capacity = 1
     ) {
         for (file in files) {
+            log("Parsing ${file.nameWithoutExtension}")
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
             val composition = result.value
@@ -169,6 +170,7 @@ class LottieTest {
     }
 
     private suspend fun snapshotComposition(name: String, composition: LottieComposition) = withContext(Dispatchers.Default) {
+        log("Snapshotting $name")
         val bitmap = bitmapPool.acquire(1000, 1000)
         val canvas = Canvas(bitmap)
         val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
@@ -212,6 +214,7 @@ class LottieTest {
             capacity = 10
     ) {
         for (asset in assets) {
+            log("Parsing $asset")
             val composition = LottieCompositionFactory.fromAssetSync(activity, asset).value
                     ?: throw java.lang.IllegalArgumentException("Unable to parse $asset.")
             send(asset to composition)
