@@ -12,18 +12,24 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.*
-import okhttp3.*
-import java.io.ByteArrayOutputStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
-import java.lang.IllegalStateException
-import java.math.BigInteger
 import java.net.URLEncoder
 import java.nio.charset.Charset
-import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -41,10 +47,11 @@ private const val TAG = "HappotSnapshotter"
  */
 class HappoSnapshotter(
         private val context: Context
-) : CoroutineScope {
-    private val job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
+) {
+    private val recordJob = Job()
+    val recordContext: CoroutineContext
+        get() = Dispatchers.IO + recordJob
+    val recordScope = CoroutineScope(recordContext)
 
     private val bucket = "lottie-happo"
     private val happoApiKey = BC.HappoApiKey
@@ -66,21 +73,21 @@ class HappoSnapshotter(
             .build()
     private val snapshots = mutableListOf<Snapshot>()
 
-    fun record(bitmap: Bitmap, animationName: String, variant: String) {
-        Log.d(L.TAG, "Recording $animationName $variant")
+    suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
         val md5 = bitmap.md5
         val key = "snapshots/$md5.png"
         val file = File(context.cacheDir, "$md5.png")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        val observer = async { transferUtility.uploadDeferred(key, file) }
-        snapshots += Snapshot(observer, bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        recordScope.async { transferUtility.uploadDeferred(key, file) }
+        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {
-        Log.d(L.TAG, "Waiting for snapshots to upload")
-        snapshots.forEach { it.await() }
-        Log.d(L.TAG, "Finished uploading snapshots")
+        val recordJobStart = System.currentTimeMillis()
+        Log.d(L.TAG, "Waiting for record jobs to finish.")
+        recordJob.children.forEach { it.join() }
+        Log.d(L.TAG, "Waited ${System.currentTimeMillis() - recordJobStart}ms for recordings to finish saving.")
         val json = JsonObject()
         val snaps = JsonArray()
         json.add("snaps", snaps)
@@ -111,7 +118,7 @@ class HappoSnapshotter(
     }
 
     private suspend fun OkHttpClient.executeDeferred(request: Request): Response = suspendCoroutine { continuation ->
-        newCall(request).enqueue(object: Callback {
+        newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 continuation.resumeWithException(e)
             }

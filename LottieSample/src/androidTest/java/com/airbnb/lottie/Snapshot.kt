@@ -8,7 +8,6 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.Deferred
 
 class Snapshot(
-        private val transferObserverDeferred: Deferred<*>,
         private val bucket: String,
         private val key: String,
         private val width: Int,
@@ -17,10 +16,6 @@ class Snapshot(
         private val variant: String
 ) {
     private val url get() = "https://s3.amazonaws.com/$bucket/$key"
-
-    suspend fun await() {
-        transferObserverDeferred.await()
-    }
 
     fun toJson(): JsonElement = JsonObject().apply {
         addProperty("url", url)
