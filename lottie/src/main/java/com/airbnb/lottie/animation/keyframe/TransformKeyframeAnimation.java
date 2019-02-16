@@ -21,6 +21,10 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
+  private final Matrix skewMatrix1 = new Matrix();
+  private final Matrix skewMatrix2 = new Matrix();
+  private final Matrix skewMatrix3 = new Matrix();
+  private final float[] skewValues = new float[9];
 
   private boolean isIdentity;
   private final BaseKeyframeAnimation<PointF, PointF> anchorPoint;
@@ -164,6 +168,36 @@ public class TransformKeyframeAnimation {
       matrix.preRotate(rotation);
     }
 
+    if (skew != null) {
+      float mCos = skewAngle == null ? 0f : (float) Math.cos(Math.toRadians(-skewAngle.getFloatValue() + 90));
+      float mSin = skewAngle == null ? 0f : (float) Math.sin(Math.toRadians(-skewAngle.getFloatValue() + 90));
+      float aTan = (float) Math.tan(Math.toRadians(skew.getFloatValue()));
+      clearSkewValues();
+      skewValues[0] = mCos;
+      skewValues[1] = mSin;
+      skewValues[3] = -mSin;
+      skewValues[4] = mCos;
+      skewValues[8] = 1f;
+      skewMatrix1.setValues(skewValues);
+      clearSkewValues();
+      skewValues[0] = 1f;
+      skewValues[3] = aTan;
+      skewValues[4] = 1f;
+      skewValues[8] = 1f;
+      skewMatrix2.setValues(skewValues);
+      clearSkewValues();
+      skewValues[0] = mCos;
+      skewValues[1] = -mSin;
+      skewValues[3] = mSin;
+      skewValues[4] = mCos;
+      skewValues[8] = 1;
+      skewMatrix3.setValues(skewValues);
+      skewMatrix2.preConcat(skewMatrix1);
+      skewMatrix3.preConcat(skewMatrix2);
+
+      matrix.preConcat(skewMatrix3);
+    }
+
     ScaleXY scaleTransform = this.scale.getValue();
     if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
       matrix.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
@@ -174,17 +208,13 @@ public class TransformKeyframeAnimation {
       matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
     }
 
-    if (skew != null) {
-      float skew = this.skew.getFloatValue();
-      float skewAmount = (float) Math.tan(Math.toRadians(skew));
-      float skewAngle = this.skewAngle == null ? 0f : this.skewAngle.getFloatValue();
-      double angle = Math.toRadians(skewAngle);
-      float skewX = (float) (skewAmount * Math.cos(angle));
-      float skewY = (float) (skewAmount * Math.sin(angle));
-      matrix.preSkew(skewX, skewY);
-    }
-
     return matrix;
+  }
+
+  private void clearSkewValues() {
+    for (int i = 0; i < 9; i++) {
+      skewValues[i] = 0f;
+    }
   }
 
   /**
