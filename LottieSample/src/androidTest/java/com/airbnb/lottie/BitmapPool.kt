@@ -7,11 +7,12 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 internal class BitmapPool {
     private val semaphore = SuspendingSemaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
-    private val releasedBitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
+    private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()
     private val clearPaint by lazy {
         Paint().apply {
             xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
@@ -38,12 +39,14 @@ internal class BitmapPool {
                     ?.also { bitmaps.remove(it) }
         } ?: createNewBitmap(width, height)
 
-        Canvas(bitmap).apply {
-            drawRect(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), clearPaint)
+        val croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+        releasedBitmaps[croppedBitmap] = bitmap
+
+        Canvas(croppedBitmap).apply {
+            drawRect(0f, 0f, croppedBitmap.width.toFloat(), croppedBitmap.height.toFloat(), clearPaint)
         }
 
-        releasedBitmaps += bitmap
-        return bitmap
+        return croppedBitmap
     }
 
     fun release(bitmap: Bitmap) {
@@ -51,13 +54,14 @@ internal class BitmapPool {
             return
         }
 
-        if (!releasedBitmaps.remove(bitmap)) throw IllegalArgumentException("Unable to find original bitmap.")
+        val originalBitmap = releasedBitmaps.remove(bitmap) ?: throw IllegalArgumentException("Unable to find original bitmap.")
 
-        bitmaps += bitmap
+        bitmaps += originalBitmap
         semaphore.release()
     }
 
     private fun createNewBitmap(width: Int, height: Int): Bitmap {
+        Log.d("LottieTest", "Creating a new bitmap of $width x $height")
         // Make the bitmap at least as large as the screen so we don't wind up with a fragmented pool of
         // bitmap sizes. We'll crop the right size out of it before returning it in acquire().
         return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)

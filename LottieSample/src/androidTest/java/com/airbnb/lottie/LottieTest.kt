@@ -40,7 +40,6 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -114,6 +113,7 @@ class LottieTest {
     }
 
     @Test
+    @ObsoleteCoroutinesApi
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
             snapshotFrameBoundaries()
@@ -132,7 +132,7 @@ class LottieTest {
 
         val downloadChannel = downloadAnimations(allObjects)
         val compositionsChannel = parseCompositions(downloadChannel)
-        repeat(4) { snapshotCompositions(compositionsChannel)}
+        repeat(4) { snapshotCompositions(compositionsChannel) }
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
