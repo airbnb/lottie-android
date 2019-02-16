@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Credentials
@@ -73,17 +73,14 @@ class HappoSnapshotter(
             .build()
     private val snapshots = mutableListOf<Snapshot>()
 
-    fun record(bitmap: Bitmap, animationName: String, variant: String) {
-        recordScope.launch {
-            val md5 = bitmap.md5
-            val key = "snapshots/$md5.png"
-            val file = File(context.cacheDir, "$md5.png")
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            val observer = async { transferUtility.uploadDeferred(key, file) }
-            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
-            observer.await()
-        }
+    suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
+        val md5 = bitmap.md5
+        val key = "snapshots/$md5.png"
+        val file = File(context.cacheDir, "$md5.png")
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        recordScope.async { transferUtility.uploadDeferred(key, file) }
+        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {

@@ -26,7 +26,11 @@ android {
     buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
   }
   buildTypes {
+    debug {
+      multiDexKeepProguard file('proguard-multidex-rules.pro')
+    }
     release {
+      multiDexKeepProguard file('proguard-multidex-rules.pro')
       minifyEnabled false
     }
   }
@@ -59,7 +63,7 @@ dependencies {
   implementation "androidx.cardview:cardview:${androidXVersion}"
   implementation "androidx.core:core-ktx:${androidXVersion}"
   implementation "androidx.browser:browser:${androidXVersion}"
-  implementation 'androidx.multidex:multidex:2.0.0'
+  implementation 'androidx.multidex:multidex:2.0.1'
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
   kapt "androidx.lifecycle:lifecycle-compiler:2.0.0"
   implementation 'com.airbnb.android:epoxy:2.17.0'

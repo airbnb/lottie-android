@@ -55,8 +55,6 @@ import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import com.airbnb.lottie.samples.R as SampleAppR
 
-private const val SIZE_PX = 200
-
 /**
  * Run these with: ./gradlew recordMode screenshotTests
  * If you run that command, it completes successfully, and nothing shows up in git, then you

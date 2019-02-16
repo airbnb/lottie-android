@@ -1,6 +1,10 @@
 package com.airbnb.lottie
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.util.Log
 import java.util.*
 
@@ -8,6 +12,11 @@ internal class BitmapPool {
     private val semaphore = SuspendingSemaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
+    private val clearPaint by lazy {
+        Paint().apply {
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        }
+    }
 
     fun acquire(width: Int, height: Int): Bitmap {
         if (width <= 0 || height <= 0) {
@@ -28,6 +37,10 @@ internal class BitmapPool {
                     .firstOrNull { it.width >= width && it.height >= height }
                     ?.also { bitmaps.remove(it) }
         } ?: createNewBitmap(width, height)
+
+        Canvas(bitmap).apply {
+            drawRect(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat(), clearPaint)
+        }
 
         releasedBitmaps += bitmap
         return bitmap
