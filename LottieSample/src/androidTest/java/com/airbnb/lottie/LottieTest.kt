@@ -219,12 +219,9 @@ class LottieTest {
     }
 
     private suspend fun snapshotFrameBoundaries() {
-        log("snapshotFrameBoundaries")
         withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 16 Red") { drawable ->
-            log("Setting frame to 16")
             drawable.frame = 16
         }
-        log("Finished setting frame to 16")
         withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 17 Blue") { drawable ->
             drawable.frame = 17
         }
@@ -340,7 +337,6 @@ class LottieTest {
     }
 
     private suspend fun testDynamicProperties() {
-        log("Testing dynamic properties")
         testDynamicProperty(
                 "Fill color (Green)",
                 KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
@@ -624,7 +620,6 @@ class LottieTest {
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
         val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
         val canvas = Canvas(bitmap)
-        Log.d(L.TAG, "Drawing $assetName $snapshotName $snapshotVariant")
         animationView.draw(canvas)
         animationViewPool.release(animationView)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)

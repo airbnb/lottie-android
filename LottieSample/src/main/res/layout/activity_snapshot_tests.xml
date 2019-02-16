@@ -10,11 +10,13 @@
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="10sp"
         tools:text="com.airbnb.android" />
 
     <TextView
         android:id="@+id/counterTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0" />
+        android:text="0"
+        android:textSize="10sp" />
 </LinearLayout>
