@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -85,7 +86,13 @@ class HappoSnapshotter(
 
     suspend fun finalizeReportAndUpload() {
         val recordJobStart = System.currentTimeMillis()
-        Log.d(L.TAG, "Waiting for record jobs to finish.")
+        fun Job.activeJobs() = children.filter { it.isActive }.count()
+        var activeJobs = recordJob.activeJobs()
+        while (activeJobs > 0) {
+            activeJobs = recordJob.activeJobs()
+            Log.d(L.TAG, "Waiting for record $activeJobs jobs to finish.")
+            delay(1000)
+        }
         recordJob.children.forEach { it.join() }
         Log.d(L.TAG, "Waited ${System.currentTimeMillis() - recordJobStart}ms for recordings to finish saving.")
         val json = JsonObject()
