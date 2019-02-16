@@ -47,7 +47,7 @@ private const val TAG = "HappotSnapshotter"
  */
 class HappoSnapshotter(
         private val context: Context
-)  {
+) {
     private val recordJob = Job()
     val recordContext: CoroutineContext
         get() = Dispatchers.IO + recordJob
@@ -88,7 +88,8 @@ class HappoSnapshotter(
 
     suspend fun finalizeReportAndUpload() {
         val recordJobStart = System.currentTimeMillis()
-        recordJob.join()
+        Log.d(L.TAG, "Waiting for record jobs to finish.")
+        recordJob.children.forEach { it.join() }
         Log.d(L.TAG, "Waited ${System.currentTimeMillis() - recordJobStart}ms for recordings to finish saving.")
         val json = JsonObject()
         val snaps = JsonArray()
