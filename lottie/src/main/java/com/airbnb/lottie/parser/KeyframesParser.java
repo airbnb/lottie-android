@@ -60,31 +60,21 @@ class KeyframesParser {
    * keyframe though.
    */
   public static <T> void setEndFrames(List<? extends Keyframe<T>> keyframes) {
-    // There should never be 0 keyframes.
-    // If there is only one, there are no end frames/values to set.
-    if (keyframes.size() < 2) {
-      return;
-    }
     int size = keyframes.size();
     for (int i = 0; i < size - 1; i++) {
       // In the json, the keyframes only contain their starting frame.
       Keyframe<T> keyframe = keyframes.get(i);
-      keyframe.endFrame = keyframes.get(i + 1).startFrame;
-      // Newer versions of bodymovin omits the end value as an optimization
-      // because it is redundant with the start value of the next keyframe.
-      // To complete the keyframe, we set the end value of each keyframe
-      // to the start value of the next one.
-      if (keyframe.endValue == null) {
-        keyframe.endValue = keyframes.get(i + 1).startValue;
-        // This step must be done manually for PathKeyframe so that the
-        // path actually gets calculated.
+      Keyframe<T> nextKeyframe = keyframes.get(i + 1);
+      keyframe.endFrame = nextKeyframe.startFrame;
+      if (keyframe.endValue == null && nextKeyframe.startValue != null) {
+        keyframe.endValue = nextKeyframe.startValue;
         if (keyframe instanceof PathKeyframe) {
           ((PathKeyframe) keyframe).createPath();
         }
       }
     }
     Keyframe<?> lastKeyframe = keyframes.get(size - 1);
-    if (lastKeyframe.endFrame == null) {
+    if (lastKeyframe.startValue == null || lastKeyframe.endValue == null) {
       // The only purpose the last keyframe has is to provide the end frame of the previous
       // keyframe.
       //noinspection SuspiciousMethodCalls
