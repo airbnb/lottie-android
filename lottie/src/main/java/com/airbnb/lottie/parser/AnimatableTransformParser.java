@@ -31,6 +31,8 @@ public class AnimatableTransformParser {
     AnimatableIntegerValue opacity = null;
     AnimatableFloatValue startOpacity = null;
     AnimatableFloatValue endOpacity = null;
+    AnimatableFloatValue skew = null;
+    AnimatableFloatValue skewAngle = null;
 
     boolean isObject = reader.peek() == JsonToken.BEGIN_OBJECT;
     if (isObject) {
@@ -83,6 +85,12 @@ public class AnimatableTransformParser {
         case "eo":
           endOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
+        case "sk":
+          skew = AnimatableValueParser.parseFloat(reader, composition, false);
+          break;
+        case "sa":
+          skewAngle = AnimatableValueParser.parseFloat(reader, composition, false);
+          break;
         default:
           reader.skipValue();
       }
@@ -109,8 +117,7 @@ public class AnimatableTransformParser {
       opacity = new AnimatableIntegerValue();
     }
 
-    return new AnimatableTransform(
-        anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity);
+    return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity, skew, skewAngle);
   }
 
 }
