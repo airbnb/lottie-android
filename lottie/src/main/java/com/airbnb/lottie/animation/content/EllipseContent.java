@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -12,7 +13,6 @@ import com.airbnb.lottie.model.content.CircleShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class EllipseContent
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final CircleShape circleShape;
 
-  @Nullable private TrimPathContent trimPath;
+  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
 
   public EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
@@ -58,9 +58,9 @@ public class EllipseContent
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
-      if (content instanceof TrimPathContent &&
-          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
-        trimPath = (TrimPathContent) content;
+      if (content instanceof TrimPathContent && ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
+        TrimPathContent trimPath = (TrimPathContent) content;
+        trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);
       }
     }
@@ -110,7 +110,7 @@ public class EllipseContent
 
     path.close();
 
-    Utils.applyTrimPathIfNeeded(path, trimPath);
+    trimPaths.apply(path);
 
     isPathValid = true;
     return path;

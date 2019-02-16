@@ -41,7 +41,7 @@ public class PolystarContent
   @Nullable private final BaseKeyframeAnimation<?, Float> innerRoundednessAnimation;
   private final BaseKeyframeAnimation<?, Float> outerRoundednessAnimation;
 
-  @Nullable private TrimPathContent trimPath;
+  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
 
   public PolystarContent(LottieDrawable lottieDrawable, BaseLayer layer,
@@ -99,7 +99,8 @@ public class PolystarContent
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
           ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
-        trimPath = (TrimPathContent) content;
+        TrimPathContent trimPath = (TrimPathContent) content;
+        trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);
       }
     }
@@ -128,7 +129,7 @@ public class PolystarContent
 
     path.close();
 
-    Utils.applyTrimPathIfNeeded(path, trimPath);
+    trimPaths.apply(path);
 
     isPathValid = true;
     return path;
