@@ -1,5 +1,6 @@
 # 3.0.0-beta2
 ### Features and Improvements
+* Added support for skew and skew angle in transforms.
 * Added support for markers. You can now call `setMinFrame`, `setMaxFrame` and `setMinAndMaxFrame` with a marker name.
 
 # 3.0.0-beta1

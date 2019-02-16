@@ -18,6 +18,8 @@ import com.airbnb.lottie.value.LottieValueCallback;
  *    {@link #TRANSFORM_OPACITY}
  *    {@link #TRANSFORM_SCALE}
  *    {@link #TRANSFORM_ROTATION}
+ *    {@link #TRANSFORM_SKEW}
+ *    {@link #TRANSFORM_SKEW_ANGLE}
  *
  * Fill:
  *    {@link #COLOR} (non-gradient)
@@ -77,6 +79,10 @@ public interface LottieProperty {
 
   /** In degrees */
   Float TRANSFORM_ROTATION = 1f;
+  /** 0-85 */
+  Float TRANSFORM_SKEW = 0f;
+  /** In degrees */
+  Float TRANSFORM_SKEW_ANGLE = 0f;
   /** In Px */
   Float STROKE_WIDTH = 2f;
   Float TEXT_TRACKING = 3f;

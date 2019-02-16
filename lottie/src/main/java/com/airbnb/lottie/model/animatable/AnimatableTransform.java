@@ -19,6 +19,8 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatableFloatValue rotation;
   private final AnimatableIntegerValue opacity;
   private final boolean isIdentity;
+  @Nullable private final AnimatableFloatValue skew;
+  @Nullable private final AnimatableFloatValue skewAngle;
 
   // Used for repeaters
   @Nullable private final AnimatableFloatValue startOpacity;
@@ -32,6 +34,8 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
         new AnimatableFloatValue(),
         new AnimatableIntegerValue(),
         new AnimatableFloatValue(),
+        new AnimatableFloatValue(),
+        new AnimatableFloatValue(),
         new AnimatableFloatValue()
     );
   }
@@ -39,7 +43,8 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   public AnimatableTransform(AnimatablePathValue anchorPoint,
       AnimatableValue<PointF, PointF> position, AnimatableScaleValue scale,
       AnimatableFloatValue rotation, AnimatableIntegerValue opacity,
-      @Nullable AnimatableFloatValue startOpacity, @Nullable AnimatableFloatValue endOpacity) {
+      @Nullable AnimatableFloatValue startOpacity, @Nullable AnimatableFloatValue endOpacity,
+      @Nullable AnimatableFloatValue skew, @Nullable AnimatableFloatValue skewAngle) {
     this.anchorPoint = anchorPoint;
     this.position = position;
     this.scale = scale;
@@ -47,12 +52,15 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.opacity = opacity;
     this.startOpacity = startOpacity;
     this.endOpacity = endOpacity;
+    this.skew = skew;
+    this.skewAngle = skewAngle;
     isIdentity = anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f) &&
             !(position instanceof AnimatableSplitDimensionPathValue) &&
             position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f) &&
             scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f) &&
-            (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f ||
-                    rotation.keyframes.isEmpty());
+            (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f || rotation.keyframes.isEmpty()) &&
+            (skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f)) &&
+            (skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f));
   }
 
   public AnimatablePathValue getAnchorPoint() {
@@ -81,6 +89,14 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
 
   @Nullable public AnimatableFloatValue getEndOpacity() {
     return endOpacity;
+  }
+
+  @Nullable public AnimatableFloatValue getSkew() {
+    return skew;
+  }
+
+  @Nullable public AnimatableFloatValue getSkewAngle() {
+    return skewAngle;
   }
 
   public boolean isIdentity() {
