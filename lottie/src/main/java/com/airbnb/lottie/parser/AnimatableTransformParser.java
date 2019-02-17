@@ -74,6 +74,8 @@ public class AnimatableTransformParser {
           rotation = AnimatableValueParser.parseFloat(reader, composition, false);
           if (rotation.getKeyframes().isEmpty()) {
             rotation.getKeyframes().add(new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          } else if (rotation.getKeyframes().get(0).startValue == null) {
+            rotation.getKeyframes().set(0, new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
           }
           break;
         case "o":

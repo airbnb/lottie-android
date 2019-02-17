@@ -178,6 +178,7 @@ class LottieTest {
         filmStripView.setComposition(composition)
         canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
         withContext(Dispatchers.Main) {
+            log("Drawing $name")
             filmStripView.draw(canvas)
         }
         filmStripViewPool.release(filmStripView)
@@ -592,6 +593,7 @@ class LottieTest {
         callback(drawable)
         val bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
         val canvas = Canvas(bitmap)
+        log("Drawing $assetName")
         drawable.draw(canvas)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
@@ -621,6 +623,7 @@ class LottieTest {
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
         val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
         val canvas = Canvas(bitmap)
+        log("Drawing $assetName")
         animationView.draw(canvas)
         animationViewPool.release(animationView)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
