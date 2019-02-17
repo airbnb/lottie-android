@@ -74,7 +74,7 @@ class KeyframesParser {
       }
     }
     Keyframe<?> lastKeyframe = keyframes.get(size - 1);
-    if (lastKeyframe.startValue == null || lastKeyframe.endValue == null) {
+    if ((lastKeyframe.startValue == null || lastKeyframe.endValue == null) && keyframes.size() > 1) {
       // The only purpose the last keyframe has is to provide the end frame of the previous
       // keyframe.
       //noinspection SuspiciousMethodCalls
