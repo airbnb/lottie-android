@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples
 
 import androidx.fragment.app.FragmentActivity
 import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.VisibilityState
 import com.airbnb.lottie.samples.model.AnimationData
 import com.airbnb.lottie.samples.model.AnimationResponse
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -89,14 +90,15 @@ class LottiefilesFragment : BaseEpoxyFragment() {
                 clickListener { _ ->
                     startActivity(PlayerActivity.intent(requireContext(), args))
                 }
-                onBind { _, _, _ -> viewModel.fetchMoreItems() }
             }
         }
 
         if (state.request is Loading) {
             loadingView {
                 id("loading")
-                onBind { _, _, _ -> viewModel.fetchMoreItems() }
+                onVisibilityStateChanged { _, _, visibilityState ->
+                    if (visibilityState == VisibilityState.VISIBLE) viewModel.fetchMoreItems()
+                }
             }
         }
     }
