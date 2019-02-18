@@ -232,14 +232,14 @@ import java.util.Set;
 
   @Override
   protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-    if (visibility == VISIBLE && wasAnimatingWhenVisibilityChanged) {
-      resumeAnimation();
+    if (visibility == VISIBLE) {
+      if (wasAnimatingWhenVisibilityChanged) {
+        resumeAnimation();
+      }
     } else {
+      wasAnimatingWhenVisibilityChanged = isAnimating();
       if (isAnimating()) {
-        wasAnimatingWhenVisibilityChanged = true;
         pauseAnimation();
-      } else {
-        wasAnimatingWhenVisibilityChanged = false;
       }
     }
   }
