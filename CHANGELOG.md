@@ -2,6 +2,18 @@
 ### Features and Improvements
 * Added support for skew and skew angle in transforms.
 * Added support for markers. You can now call `setMinFrame`, `setMaxFrame` and `setMinAndMaxFrame` with a marker name.
+* Added support for skew and skew angle transforms.
+* Added support for a future Bodymovin plugin that will omit duplicated vertex out points to reduce json file size.
+* Allowed multiple trim paths to be applied on a shape.
+### Bugs Fixed
+* Fixed an IndexOutOfBoundsException.
+* Preventded the cache from returning null values after a key was cleared.
+* Pause Lottie in onVisibilityChanged.
+* Properly limited the LRU cache an enable its maximum size to be configured.
+* Properly closed JsonReader in all cases.
+* Fixed text alignment for scaled text when drawn using fonts.
+* Use FutureTask rather than polling for composition parsing to complete.
+* [Sample App] Fixed Lottiefiles integration.
 
 # 3.0.0-beta1
 ### Features and Improvements
