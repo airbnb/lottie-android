@@ -450,7 +450,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.setMaxFrame(maxFrame);
+    animator.setMaxFrame(maxFrame + 0.99f);
   }
 
   /**
@@ -555,7 +555,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.setMinAndMaxFrames(minFrame, maxFrame);
+    // Adding 0.99 ensures that the maxFrame itself gets played.
+    animator.setMinAndMaxFrames(minFrame, maxFrame + 0.99f);
   }
 
   /**
