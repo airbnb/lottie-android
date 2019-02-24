@@ -12,26 +12,26 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 public class MergePaths implements ContentModel {
 
   public enum MergePathsMode {
-    Merge,
-    Add,
-    Subtract,
-    Intersect,
-    ExcludeIntersections;
+    MERGE,
+    ADD,
+    SUBTRACT,
+    INTERSECT,
+    EXCLUDE_INTERSECTIONS;
 
     public static MergePathsMode forId(int id) {
       switch (id) {
         case 1:
-          return Merge;
+          return MERGE;
         case 2:
-          return Add;
+          return ADD;
         case 3:
-          return Subtract;
+          return SUBTRACT;
         case 4:
-          return Intersect;
+          return INTERSECT;
         case 5:
-          return ExcludeIntersections;
+          return EXCLUDE_INTERSECTIONS;
         default:
-          return Merge;
+          return MERGE;
       }
     }
   }
