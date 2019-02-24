@@ -2,12 +2,12 @@ package com.airbnb.lottie;
 
 /**
  * Controls how Lottie should render.
- * Defaults to {@link RenderMode#Automatic}.
+ * Defaults to {@link RenderMode#AUTOMATIC}.
  *
  * @see LottieAnimationView#setRenderMode(RenderMode) for more information.
  */
 public enum RenderMode {
-    Automatic,
-    Hardware,
-    Software
+    AUTOMATIC,
+    HARDWARE,
+    SOFTWARE
 }

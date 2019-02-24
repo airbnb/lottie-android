@@ -75,7 +75,7 @@ import java.util.Set;
   private boolean wasAnimatingWhenVisibilityChanged = false;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
-  private RenderMode renderMode = RenderMode.Automatic;
+  private RenderMode renderMode = RenderMode.AUTOMATIC;
   private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
@@ -807,13 +807,13 @@ import java.util.Set;
 
   private void enableOrDisableHardwareLayer() {
     switch (renderMode) {
-      case Hardware:
+      case HARDWARE:
         setLayerType(LAYER_TYPE_HARDWARE, null);
         break;
-      case Software:
+      case SOFTWARE:
         setLayerType(LAYER_TYPE_SOFTWARE, null);
         break;
-      case Automatic:
+      case AUTOMATIC:
         boolean useHardwareLayer = true;
         if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
           useHardwareLayer = false;
