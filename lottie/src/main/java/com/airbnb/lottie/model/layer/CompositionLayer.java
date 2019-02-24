@@ -60,8 +60,8 @@ public class CompositionLayer extends BaseLayer {
       } else {
         layers.add(0, layer);
         switch (lm.getMatteType()) {
-          case Add:
-          case Invert:
+          case ADD:
+          case INVERT:
             mattedLayer = layer;
             break;
         }

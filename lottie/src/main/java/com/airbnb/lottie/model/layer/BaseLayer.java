@@ -40,20 +40,20 @@ public abstract class BaseLayer
   static BaseLayer forModel(
     Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
-      case Shape:
+      case SHAPE:
         return new ShapeLayer(drawable, layerModel);
-      case PreComp:
+      case PRE_COMP:
         return new CompositionLayer(drawable, layerModel,
             composition.getPrecomps(layerModel.getRefId()), composition);
-      case Solid:
+      case SOLID:
         return new SolidLayer(drawable, layerModel);
-      case Image:
+      case IMAGE:
         return new ImageLayer(drawable, layerModel);
-      case Null:
+      case NULL:
         return new NullLayer(drawable, layerModel);
-      case Text:
+      case TEXT:
         return new TextLayer(drawable, layerModel);
-      case Unknown:
+      case UNKNOWN:
       default:
         // Do nothing
         L.warn("Unknown layer type " + layerModel.getLayerType());
@@ -96,7 +96,7 @@ public abstract class BaseLayer
     clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     addMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
     subtractMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-    if (layerModel.getMatteType() == Layer.MatteType.Invert) {
+    if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
@@ -340,7 +340,7 @@ public abstract class BaseLayer
       return;
     }
 
-    if (layerModel.getMatteType() == Layer.MatteType.Invert) {
+    if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
       // We can't trim the bounds if the mask is inverted since it extends all the way to the
       // composition bounds.
       return;
