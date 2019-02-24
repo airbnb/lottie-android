@@ -58,7 +58,7 @@ public class EllipseContent
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
-      if (content instanceof TrimPathContent && ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
+      if (content instanceof TrimPathContent && ((TrimPathContent) content).getType() == ShapeTrimPath.Type.SIMULTANEOUSLY) {
         TrimPathContent trimPath = (TrimPathContent) content;
         trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);

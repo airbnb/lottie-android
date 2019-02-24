@@ -7,7 +7,6 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapePath;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.utils.Utils;
 
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
-          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.SIMULTANEOUSLY) {
         // Trim path individually will be handled by the stroke where paths are combined.
         TrimPathContent trimPath = (TrimPathContent) content;
         trimPaths.addTrimPath(trimPath);

@@ -13,7 +13,6 @@ import com.airbnb.lottie.model.content.RectangleShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
@@ -67,7 +66,7 @@ public class RectangleContent
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
-          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Simultaneously) {
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.SIMULTANEOUSLY) {
         TrimPathContent trimPath = (TrimPathContent) content;
         trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);

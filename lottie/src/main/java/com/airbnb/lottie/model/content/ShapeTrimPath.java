@@ -9,15 +9,15 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 public class ShapeTrimPath implements ContentModel {
 
   public enum Type {
-    Simultaneously,
-    Individually;
+    SIMULTANEOUSLY,
+    INDIVIDUALLY;
 
     public static Type forId(int id) {
       switch (id) {
         case 1:
-          return Simultaneously;
+          return SIMULTANEOUSLY;
         case 2:
-          return Individually;
+          return INDIVIDUALLY;
         default:
           throw new IllegalArgumentException("Unknown trim path type " + id);
       }

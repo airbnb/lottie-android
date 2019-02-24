@@ -107,7 +107,7 @@ public abstract class BaseStrokeContent
     for (int i = contentsBefore.size() - 1; i >= 0; i--) {
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
-          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Individually) {
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.INDIVIDUALLY) {
         trimPathContentBefore = (TrimPathContent) content;
       }
     }
@@ -119,7 +119,7 @@ public abstract class BaseStrokeContent
     for (int i = contentsAfter.size() - 1; i >= 0; i--) {
       Content content = contentsAfter.get(i);
       if (content instanceof TrimPathContent &&
-          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.Individually) {
+          ((TrimPathContent) content).getType() == ShapeTrimPath.Type.INDIVIDUALLY) {
         if (currentPathGroup != null) {
           pathGroups.add(currentPathGroup);
         }
