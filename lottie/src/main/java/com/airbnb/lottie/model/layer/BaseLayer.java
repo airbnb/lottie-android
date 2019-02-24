@@ -303,14 +303,14 @@ public abstract class BaseLayer
       path.transform(matrix);
 
       switch (mask.getMaskMode()) {
-        case MaskModeSubtract:
+        case MASK_MODE_SUBTRACT:
           // If there is a subtract mask, the mask could potentially be the size of the entire
           // canvas so we can't use the mask bounds.
           return;
-        case MaskModeIntersect:
+        case MASK_MODE_INTERSECT:
           // TODO
           return;
-        case MaskModeAdd:
+        case MASK_MODE_ADD:
         default:
           path.computeBounds(tempMaskBoundsRect, false);
           // As we iterate through the masks, we want to calculate the union region of the masks.
@@ -357,21 +357,21 @@ public abstract class BaseLayer
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
-    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeAdd);
+    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_ADD);
     // Treat intersect masks like add masks. This is not correct but it's closer.
-    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeIntersect);
-    applyMasks(canvas, matrix, Mask.MaskMode.MaskModeSubtract);
+    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_INTERSECT);
+    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_SUBTRACT);
   }
 
   private void applyMasks(Canvas canvas, Matrix matrix,
       Mask.MaskMode maskMode) {
     Paint paint;
     switch (maskMode) {
-      case MaskModeSubtract:
+      case MASK_MODE_SUBTRACT:
         paint = subtractMaskPaint;
         break;
-      case MaskModeIntersect:
-      case MaskModeAdd:
+      case MASK_MODE_INTERSECT:
+      case MASK_MODE_ADD:
       default:
         // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
         // better than nothing.

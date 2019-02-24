@@ -5,9 +5,9 @@ import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 
 public class Mask {
   public enum MaskMode {
-    MaskModeAdd,
-    MaskModeSubtract,
-    MaskModeIntersect
+    MASK_MODE_ADD,
+    MASK_MODE_SUBTRACT,
+    MASK_MODE_INTERSECT
   }
 
   private final MaskMode maskMode;
