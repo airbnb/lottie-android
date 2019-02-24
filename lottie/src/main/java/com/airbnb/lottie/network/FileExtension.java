@@ -1,15 +1,13 @@
 package com.airbnb.lottie.network;
 
-import android.util.JsonReader;
-
 import com.airbnb.lottie.L;
 
 /**
  * Helpers for known Lottie file types.
  */
 public enum FileExtension {
-  Json(".json"),
-  Zip(".zip");
+  JSON(".json"),
+  ZIP(".zip");
 
   public final String extension;
 
@@ -33,6 +31,6 @@ public enum FileExtension {
     }
     // Default to Json.
     L.warn("Unable to find correct extension for " + filename);
-    return Json;
+    return JSON;
   }
 }
