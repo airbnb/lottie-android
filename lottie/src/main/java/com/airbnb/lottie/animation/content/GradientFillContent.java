@@ -110,7 +110,7 @@ public class GradientFillContent
     path.computeBounds(boundsRect, false);
 
     Shader shader;
-    if (type == GradientType.Linear) {
+    if (type == GradientType.LINEAR) {
       shader = getLinearGradient();
     } else {
       shader = getRadialGradient();
