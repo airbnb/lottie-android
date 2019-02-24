@@ -11,8 +11,8 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 
 public class PolystarShape implements ContentModel {
   public enum Type {
-    Star(1),
-    Polygon(2);
+    STAR(1),
+    POLYGON(2);
 
     private final int value;
 

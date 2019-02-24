@@ -12,7 +12,6 @@ import com.airbnb.lottie.model.content.PolystarShape;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class PolystarContent
     rotationAnimation = polystarShape.getRotation().createAnimation();
     outerRadiusAnimation = polystarShape.getOuterRadius().createAnimation();
     outerRoundednessAnimation = polystarShape.getOuterRoundedness().createAnimation();
-    if (type == PolystarShape.Type.Star) {
+    if (type == PolystarShape.Type.STAR) {
       innerRadiusAnimation = polystarShape.getInnerRadius().createAnimation();
       innerRoundednessAnimation = polystarShape.getInnerRoundedness().createAnimation();
     } else {
@@ -69,7 +68,7 @@ public class PolystarContent
     layer.addAnimation(rotationAnimation);
     layer.addAnimation(outerRadiusAnimation);
     layer.addAnimation(outerRoundednessAnimation);
-    if (type == PolystarShape.Type.Star) {
+    if (type == PolystarShape.Type.STAR) {
       layer.addAnimation(innerRadiusAnimation);
       layer.addAnimation(innerRoundednessAnimation);
     }
@@ -79,7 +78,7 @@ public class PolystarContent
     rotationAnimation.addUpdateListener(this);
     outerRadiusAnimation.addUpdateListener(this);
     outerRoundednessAnimation.addUpdateListener(this);
-    if (type == PolystarShape.Type.Star) {
+    if (type == PolystarShape.Type.STAR) {
       innerRadiusAnimation.addUpdateListener(this);
       innerRoundednessAnimation.addUpdateListener(this);
     }
@@ -119,10 +118,10 @@ public class PolystarContent
     }
 
     switch (type) {
-      case Star:
+      case STAR:
         createStarPath();
         break;
-      case Polygon:
+      case POLYGON:
         createPolygonPath();
         break;
     }
