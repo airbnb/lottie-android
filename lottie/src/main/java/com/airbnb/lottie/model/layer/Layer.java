@@ -17,20 +17,20 @@ import java.util.Locale;
 public class Layer {
 
   public enum LayerType {
-    PreComp,
-    Solid,
-    Image,
-    Null,
-    Shape,
-    Text,
-    Unknown
+    PRE_COMP,
+    SOLID,
+    IMAGE,
+    NULL,
+    SHAPE,
+    TEXT,
+    UNKNOWN
   }
 
   public enum MatteType {
-    None,
-    Add,
-    Invert,
-    Unknown
+    NONE,
+    ADD,
+    INVERT,
+    UNKNOWN
   }
 
   private final List<ContentModel> shapes;

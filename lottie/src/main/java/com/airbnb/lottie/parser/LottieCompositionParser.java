@@ -107,7 +107,7 @@ public class LottieCompositionParser {
     reader.beginArray();
     while (reader.hasNext()) {
       Layer layer = LayerParser.parse(reader, composition);
-      if (layer.getLayerType() == Layer.LayerType.Image) {
+      if (layer.getLayerType() == Layer.LayerType.IMAGE) {
         imageCount++;
       }
       layers.add(layer);

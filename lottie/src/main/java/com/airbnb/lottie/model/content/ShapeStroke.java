@@ -15,17 +15,17 @@ import java.util.List;
 
 public class ShapeStroke implements ContentModel {
   public enum LineCapType {
-    Butt,
-    Round,
-    Unknown;
+    BUTT,
+    ROUND,
+    UNKNOWN;
 
     public Paint.Cap toPaintCap() {
       switch (this) {
-        case Butt:
+        case BUTT:
           return Paint.Cap.BUTT;
-        case Round:
+        case ROUND:
           return Paint.Cap.ROUND;
-        case Unknown:
+        case UNKNOWN:
         default:
           return Paint.Cap.SQUARE;
       }
@@ -33,17 +33,17 @@ public class ShapeStroke implements ContentModel {
   }
 
   public enum LineJoinType {
-    Miter,
-    Round,
-    Bevel;
+    MITER,
+    ROUND,
+    BEVEL;
 
     public Paint.Join toPaintJoin() {
       switch (this) {
-        case Bevel:
+        case BEVEL:
           return Paint.Join.BEVEL;
-        case Miter:
+        case MITER:
           return Paint.Join.MITER;
-        case Round:
+        case ROUND:
           return Paint.Join.ROUND;
       }
       return null;

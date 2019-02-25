@@ -1,17 +1,17 @@
 package com.airbnb.lottie.model;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.RestrictTo;
+
+import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
 @RestrictTo(LIBRARY)
 public class DocumentData {
 
   public enum Justification {
-    LeftAlign,
-    RightAlign,
-    Center
+    LEFT_ALIGN,
+    RIGHT_ALIGN,
+    CENTER
   }
 
   public final String text;

@@ -56,9 +56,9 @@ class NetworkCache {
 
     FileExtension extension;
     if (cachedFile.getAbsolutePath().endsWith(".zip")) {
-      extension = FileExtension.Zip;
+      extension = FileExtension.ZIP;
     } else {
-      extension = FileExtension.Json;
+      extension = FileExtension.JSON;
     }
 
     L.debug("Cache hit for " + url + " at " + cachedFile.getAbsolutePath());
@@ -116,11 +116,11 @@ class NetworkCache {
    */
   @Nullable
   private File getCachedFile(String url) throws FileNotFoundException {
-    File jsonFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.Json, false));
+    File jsonFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.JSON, false));
     if (jsonFile.exists()) {
       return jsonFile;
     }
-    File zipFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.Zip, false));
+    File zipFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.ZIP, false));
     if (zipFile.exists()) {
       return zipFile;
     }

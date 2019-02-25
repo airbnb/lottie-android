@@ -28,19 +28,19 @@ class MaskParser {
         case "mode":
           switch (reader.nextString()) {
             case "a":
-              maskMode = Mask.MaskMode.MaskModeAdd;
+              maskMode = Mask.MaskMode.MASK_MODE_ADD;
               break;
             case "s":
-              maskMode = Mask.MaskMode.MaskModeSubtract;
+              maskMode = Mask.MaskMode.MASK_MODE_SUBTRACT;
               break;
             case "i":
               composition.addWarning(
                   "Animation contains intersect masks. They are not supported but will be treated like add masks.");
-              maskMode = Mask.MaskMode.MaskModeIntersect;
+              maskMode = Mask.MaskMode.MASK_MODE_INTERSECT;
               break;
             default:
               Log.w(L.TAG, "Unknown mask mode " + mode + ". Defaulting to Add.");
-              maskMode = Mask.MaskMode.MaskModeAdd;
+              maskMode = Mask.MaskMode.MASK_MODE_ADD;
           }
           break;
         case "pt":

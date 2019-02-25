@@ -55,19 +55,19 @@ public class MergePathsContent implements PathContent, GreedyContent {
     }
 
     switch (mergePaths.getMode()) {
-      case Merge:
+      case MERGE:
         addPaths();
         break;
-      case Add:
+      case ADD:
         opFirstPathWithRest(Path.Op.UNION);
         break;
-      case Subtract:
+      case SUBTRACT:
         opFirstPathWithRest(Path.Op.REVERSE_DIFFERENCE);
         break;
-      case Intersect:
+      case INTERSECT:
         opFirstPathWithRest(Path.Op.INTERSECT);
         break;
-      case ExcludeIntersections:
+      case EXCLUDE_INTERSECTIONS:
         opFirstPathWithRest(Path.Op.XOR);
         break;
     }

@@ -213,13 +213,13 @@ public class TextLayer extends BaseLayer {
 
   private void applyJustification(Justification justification, Canvas canvas, float totalTextWidth) {
     switch (justification) {
-      case LeftAlign:
+      case LEFT_ALIGN:
         // Do nothing. Default is left aligned.
         break;
-      case RightAlign:
+      case RIGHT_ALIGN:
         canvas.translate(-totalTextWidth, 0);
         break;
-      case Center:
+      case CENTER:
         canvas.translate(-totalTextWidth / 2, 0);
         break;
     }

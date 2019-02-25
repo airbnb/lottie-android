@@ -53,7 +53,7 @@ class GradientFillParser {
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "t":
-          gradientType = reader.nextInt() == 1 ? GradientType.Linear : GradientType.Radial;
+          gradientType = reader.nextInt() == 1 ? GradientType.LINEAR : GradientType.RADIAL;
           break;
         case "s":
           startPoint = AnimatableValueParser.parsePoint(reader, composition);

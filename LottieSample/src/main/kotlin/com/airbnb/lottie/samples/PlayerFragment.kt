@@ -151,9 +151,9 @@ class PlayerFragment : BaseMvRxFragment() {
 
         hardwareAccelerationToggle.setOnClickListener {
             val renderMode = if (animationView.layerType == View.LAYER_TYPE_HARDWARE) {
-                RenderMode.Software
+                RenderMode.SOFTWARE
             } else {
-                RenderMode.Hardware
+                RenderMode.HARDWARE
             }
             animationView.setRenderMode(renderMode)
             hardwareAccelerationToggle.isActivated = animationView.layerType == View.LAYER_TYPE_HARDWARE

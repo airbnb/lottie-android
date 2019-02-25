@@ -28,10 +28,10 @@ public class LayerParser {
     Rect bounds = composition.getBounds();
     return new Layer(
         Collections.<ContentModel>emptyList(), composition, "__container", -1,
-        Layer.LayerType.PreComp, -1, null, Collections.<Mask>emptyList(),
+        Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.None, null, false);
+        Layer.MatteType.NONE, null, false);
   }
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
@@ -54,7 +54,7 @@ public class LayerParser {
     String cl = null;
     boolean hidden = false;
 
-    Layer.MatteType matteType = Layer.MatteType.None;
+    Layer.MatteType matteType = Layer.MatteType.NONE;
     AnimatableTransform transform = null;
     AnimatableTextFrame text = null;
     AnimatableTextProperties textProperties = null;
@@ -77,10 +77,10 @@ public class LayerParser {
           break;
         case "ty":
           int layerTypeInt = reader.nextInt();
-          if (layerTypeInt < Layer.LayerType.Unknown.ordinal()) {
+          if (layerTypeInt < Layer.LayerType.UNKNOWN.ordinal()) {
             layerType = Layer.LayerType.values()[layerTypeInt];
           } else {
-            layerType = Layer.LayerType.Unknown;
+            layerType = Layer.LayerType.UNKNOWN;
           }
           break;
         case "parent":

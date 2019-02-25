@@ -16,7 +16,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     String text = null;
     String fontName = null;
     double size = 0;
-    Justification justification = Justification.Center;
+    Justification justification = Justification.CENTER;
     int tracking = 0;
     double lineHeight = 0;
     double baselineShift = 0;
@@ -39,8 +39,8 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           break;
         case "j":
           int justificationInt = reader.nextInt();
-          if (justificationInt > Justification.Center.ordinal() || justificationInt < 0) {
-            justification = Justification.Center;
+          if (justificationInt > Justification.CENTER.ordinal() || justificationInt < 0) {
+            justification = Justification.CENTER;
           } else {
             justification = Justification.values()[justificationInt];
           }
