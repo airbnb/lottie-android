@@ -24,6 +24,7 @@ import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,9 +179,42 @@ public class TextLayer extends BaseLayer {
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
 
-    float totalTextWidth = strokePaint.measureText(text);
-    applyJustification(documentData.justification, canvas, totalTextWidth);
+    // Line height
+    float lineHeight = (float) documentData.lineHeight * Utils.dpScale();
 
+    // Split full text in multiple lines
+    List<String> textLines = getTextLines(text);
+    int textLineCount = textLines.size();
+    for (int l = 0; l < textLineCount; l++) {
+
+      String textLine = textLines.get(l);
+      float textLineWidth = strokePaint.measureText(textLine);
+
+      // Apply horizontal justification
+      applyJustification(documentData.justification, canvas, textLineWidth);
+
+      // Center text vertically
+      float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
+      float translateY = l * lineHeight - multilineTranslateY;
+      canvas.translate(0, translateY);
+
+      // Draw each line
+      drawTextLine(textLines.get(l), documentData, canvas, parentScale);
+
+      // Reset canvas
+      canvas.setMatrix(parentMatrix);
+    }
+  }
+
+  private List<String> getTextLines(String text) {
+    // Split full text by carriage return character
+    String formattedText = text.replaceAll("\r\n", "\r")
+            .replaceAll("\n", "\r");
+    String[] textLinesArray = formattedText.split("\r");
+    return Arrays.asList(textLinesArray);
+  }
+
+  private void drawTextLine(String text, DocumentData documentData, Canvas canvas, float parentScale) {
     for (int i = 0; i < text.length(); i++) {
       char character = text.charAt(i);
       drawCharacterFromFont(character, documentData, canvas);
