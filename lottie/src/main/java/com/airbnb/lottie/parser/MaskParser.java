@@ -20,6 +20,7 @@ class MaskParser {
     Mask.MaskMode maskMode = null;
     AnimatableShapeValue maskPath = null;
     AnimatableIntegerValue opacity = null;
+    boolean inverted = false;
 
     reader.beginObject();
     while (reader.hasNext()) {
@@ -49,13 +50,16 @@ class MaskParser {
         case "o":
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
+        case "inv":
+          inverted = reader.nextBoolean();
+          break;
         default:
           reader.skipValue();
       }
     }
     reader.endObject();
 
-    return new Mask(maskMode, maskPath, opacity);
+    return new Mask(maskMode, maskPath, opacity, inverted);
   }
 
 }
