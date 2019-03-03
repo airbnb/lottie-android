@@ -19,6 +19,7 @@ import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -31,14 +32,14 @@ public abstract class BaseLayer
    * These flags were in Canvas but they were deprecated and removed.
    * TODO: test removing these on older versions of Android.
    */
-    private static final int CLIP_SAVE_FLAG = 0x02;
-    private static final int CLIP_TO_LAYER_SAVE_FLAG = 0x10;
-    private static final int MATRIX_SAVE_FLAG = 0x01;
-    private static final int SAVE_FLAGS = CLIP_SAVE_FLAG | CLIP_TO_LAYER_SAVE_FLAG | MATRIX_SAVE_FLAG;
+  private static final int CLIP_SAVE_FLAG = 0x02;
+  private static final int CLIP_TO_LAYER_SAVE_FLAG = 0x10;
+  private static final int MATRIX_SAVE_FLAG = 0x01;
+  private static final int SAVE_FLAGS = CLIP_SAVE_FLAG | CLIP_TO_LAYER_SAVE_FLAG | MATRIX_SAVE_FLAG;
 
   @Nullable
   static BaseLayer forModel(
-    Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
+      Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case SHAPE:
         return new ShapeLayer(drawable, layerModel);
@@ -64,10 +65,14 @@ public abstract class BaseLayer
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint dstInPaint = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_IN);
   private final Paint addMaskPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint subtractMaskPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint addInvMaskLayerPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint addInvMaskPaintClear = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.CLEAR);
+  private final Paint subtractMaskStartingPaintNormal = new LPaint(Paint.ANTI_ALIAS_FLAG);
+  private final Paint subtractMaskPaintDstOut = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_OUT);
   private final Paint mattePaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint clearPaint = new LPaint();
+  private final Paint clearPaint = new LPaint(PorterDuff.Mode.CLEAR);
   private final RectF rect = new RectF();
   private final RectF maskBoundsRect = new RectF();
   private final RectF matteBoundsRect = new RectF();
@@ -76,13 +81,16 @@ public abstract class BaseLayer
   final Matrix boundsMatrix = new Matrix();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
-  @Nullable private MaskKeyframeAnimation mask;
-  @Nullable private BaseLayer matteLayer;
+  @Nullable
+  private MaskKeyframeAnimation mask;
+  @Nullable
+  private BaseLayer matteLayer;
   /**
    * This should only be used by {@link #buildParentLayerListIfNeeded()}
    * to construct the list of parent layers.
    */
-  @Nullable private BaseLayer parentLayer;
+  @Nullable
+  private BaseLayer parentLayer;
   private List<BaseLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
@@ -93,9 +101,8 @@ public abstract class BaseLayer
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
-    clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-    addMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-    subtractMaskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+    addMaskPaint.setColor(Color.BLUE);
+    subtractMaskStartingPaintNormal.setColor(Color.BLACK);
     if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
@@ -120,7 +127,8 @@ public abstract class BaseLayer
     setupInOutAnimations();
   }
 
-  @Override public void onValueChanged() {
+  @Override
+  public void onValueChanged() {
     invalidateSelf();
   }
 
@@ -146,7 +154,8 @@ public abstract class BaseLayer
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
-        @Override public void onValueChanged() {
+        @Override
+        public void onValueChanged() {
           setVisible(inOutAnimation.getFloatValue() == 1f);
         }
       });
@@ -176,8 +185,10 @@ public abstract class BaseLayer
     animations.add(newAnimation);
   }
 
-  @CallSuper @Override public void getBounds(
-          RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+  @CallSuper
+  @Override
+  public void getBounds(
+      RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     rect.set(0, 0, 0, 0);
     buildParentLayerListIfNeeded();
     boundsMatrix.set(parentMatrix);
@@ -308,9 +319,10 @@ public abstract class BaseLayer
           // canvas so we can't use the mask bounds.
           return;
         case MASK_MODE_INTERSECT:
-          // TODO
-          return;
         case MASK_MODE_ADD:
+          if (mask.isInverted()) {
+            return;
+          }
         default:
           path.computeBounds(tempMaskBoundsRect, false);
           // As we iterate through the masks, we want to calculate the union region of the masks.
@@ -320,10 +332,10 @@ public abstract class BaseLayer
             maskBoundsRect.set(tempMaskBoundsRect);
           } else {
             maskBoundsRect.set(
-              Math.min(maskBoundsRect.left, tempMaskBoundsRect.left),
-              Math.min(maskBoundsRect.top, tempMaskBoundsRect.top),
-              Math.max(maskBoundsRect.right, tempMaskBoundsRect.right),
-              Math.max(maskBoundsRect.bottom, tempMaskBoundsRect.bottom)
+                Math.min(maskBoundsRect.left, tempMaskBoundsRect.left),
+                Math.min(maskBoundsRect.top, tempMaskBoundsRect.top),
+                Math.max(maskBoundsRect.right, tempMaskBoundsRect.right),
+                Math.max(maskBoundsRect.bottom, tempMaskBoundsRect.bottom)
             );
           }
       }
@@ -357,67 +369,95 @@ public abstract class BaseLayer
   abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
-    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_ADD);
-    // Treat intersect masks like add masks. This is not correct but it's closer.
-    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_INTERSECT);
-    applyMasks(canvas, matrix, Mask.MaskMode.MASK_MODE_SUBTRACT);
-  }
-
-  private void applyMasks(Canvas canvas, Matrix matrix,
-      Mask.MaskMode maskMode) {
-    Paint paint;
-    switch (maskMode) {
-      case MASK_MODE_SUBTRACT:
-        paint = subtractMaskPaint;
-        break;
-      case MASK_MODE_INTERSECT:
-      case MASK_MODE_ADD:
-      default:
-        // As a hack, we treat all non-subtract masks like add masks. This is not correct but it's
-        // better than nothing.
-        paint = addMaskPaint;
-    }
-
-    //noinspection ConstantConditions
-    int size = mask.getMasks().size();
-
-    boolean hasMask = false;
-    for (int i = 0; i < size; i++) {
-      if (mask.getMasks().get(i).getMaskMode() == maskMode) {
-        hasMask = true;
-        break;
-      }
-    }
-    if (!hasMask) {
-      return;
-    }
-
-    L.beginSection("Layer#drawMask");
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, paint, false);
+    saveLayerCompat(canvas, rect, dstInPaint, false);
+//    canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, subtractMaskStartingPaintNormal);
     L.endSection("Layer#saveLayer");
-    clearCanvas(canvas);
-
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < mask.getMasks().size(); i++) {
       Mask mask = this.mask.getMasks().get(i);
-      if (mask.getMaskMode() != maskMode) {
-        continue;
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
+      switch (mask.getMaskMode()) {
+        case MASK_MODE_ADD:
+          if (mask.isInverted()) {
+            applyInvertedAddMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          } else {
+            applyAddMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          }
+          break;
+        case MASK_MODE_SUBTRACT:
+          if (i == 0) {
+            // TODO: make a paint for this.
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            canvas.drawRect(rect, paint);
+          }
+          if (mask.isInverted()) {
+            applyInvertedSubtractMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          } else {
+            applySubtractMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          }
+          break;
+        case MASK_MODE_INTERSECT:
+          applyIntersectMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          break;
       }
-      BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
-      Path maskPath = maskAnimation.getValue();
-      path.set(maskPath);
-      path.transform(matrix);
-      BaseKeyframeAnimation<Integer, Integer> opacityAnimation =
-          this.mask.getOpacityAnimations().get(i);
-      int alpha = contentPaint.getAlpha();
-      contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
-      canvas.drawPath(path, contentPaint);
-      contentPaint.setAlpha(alpha);
     }
     L.beginSection("Layer#restoreLayer");
     canvas.restore();
     L.endSection("Layer#restoreLayer");
-    L.endSection("Layer#drawMask");
+  }
+
+  private void applyAddMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    addMaskPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, addMaskPaint);
+  }
+
+  private void applyInvertedAddMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    saveLayerCompat(canvas, rect, addInvMaskLayerPaint, true);
+    canvas.drawRect(rect, addInvMaskLayerPaint);
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    addMaskPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, addInvMaskPaintClear);
+    canvas.restore();
+  }
+
+  private void applySubtractMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    canvas.drawPath(path, subtractMaskPaintDstOut);
+  }
+
+  private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    saveLayerCompat(canvas, rect, subtractMaskPaintDstOut, true);
+    canvas.drawRect(rect, subtractMaskStartingPaintNormal);
+    subtractMaskPaintDstOut.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    canvas.drawPath(path, subtractMaskPaintDstOut);
+    canvas.restore();
+  }
+
+  private void applyIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, contentPaint);
+    canvas.restore();
   }
 
   boolean hasMasksOnThisLayer() {
@@ -469,15 +509,18 @@ public abstract class BaseLayer
     }
   }
 
-  @Override public String getName() {
+  @Override
+  public String getName() {
     return layerModel.getName();
   }
 
-  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+  @Override
+  public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     // Do nothing
   }
 
-  @Override public void resolveKeyPath(
+  @Override
+  public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     if (!keyPath.matches(getName(), depth)) {
       return;

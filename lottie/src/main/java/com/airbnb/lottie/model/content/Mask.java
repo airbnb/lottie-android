@@ -13,11 +13,13 @@ public class Mask {
   private final MaskMode maskMode;
   private final AnimatableShapeValue maskPath;
   private final AnimatableIntegerValue opacity;
+  private final boolean inverted;
 
-  public Mask(MaskMode maskMode, AnimatableShapeValue maskPath, AnimatableIntegerValue opacity) {
+  public Mask(MaskMode maskMode, AnimatableShapeValue maskPath, AnimatableIntegerValue opacity, boolean inverted) {
     this.maskMode = maskMode;
     this.maskPath = maskPath;
     this.opacity = opacity;
+    this.inverted = inverted;
   }
 
   public MaskMode getMaskMode() {
@@ -30,5 +32,9 @@ public class Mask {
 
   public AnimatableIntegerValue getOpacity() {
     return opacity;
+  }
+
+  public boolean isInverted() {
+    return inverted;
   }
 }
