@@ -3,24 +3,22 @@ package com.airbnb.lottie.parser;
 import android.graphics.PointF;
 import android.util.JsonReader;
 import android.util.JsonToken;
-import android.util.Log;
-
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
+import com.airbnb.lottie.model.animatable.AnimatableSplitDimensionPathValue;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.value.Keyframe;
-import com.airbnb.lottie.value.ScaleXY;
 
 import java.io.IOException;
 
 public class AnimatableTransformParser {
 
-  private AnimatableTransformParser() {}
+  private AnimatableTransformParser() {
+  }
 
   public static AnimatableTransform parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -101,25 +99,50 @@ public class AnimatableTransformParser {
       reader.endObject();
     }
 
-    if (anchorPoint == null) {
-      // Cameras don't have an anchor point property. Although we don't support them, at least
-      // we won't crash.
-      Log.w(L.TAG, "Layer has no transform property. You may be using an unsupported " +
-          "layer type such as a camera.");
-      anchorPoint = new AnimatablePathValue();
+    if (isAnchorPointIdentity(anchorPoint)) {
+      anchorPoint = null;
     }
-
-    if (scale == null) {
-      // Somehow some community animations don't have scale in the transform.
-      scale = new AnimatableScaleValue(new ScaleXY(1f, 1f));
+    if (isPositionIdentity(position)) {
+      position = null;
     }
-
-    if (opacity == null) {
-      // Repeaters have start/end opacity instead of opacity
-      opacity = new AnimatableIntegerValue();
+    if (isRotationIdentity(rotation)) {
+      rotation = null;
     }
-
+    if (isScaleIdentity(scale)) {
+      scale = null;
+    }
+    if (isSkewIdentity(skew)) {
+      skew = null;
+    }
+    if (isSkewAngleIdentity(skewAngle)) {
+      skewAngle = null;
+    }
     return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity, skew, skewAngle);
   }
 
+  private static boolean isAnchorPointIdentity(AnimatablePathValue anchorPoint) {
+    return anchorPoint == null || (anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f));
+  }
+
+  private static boolean isPositionIdentity(AnimatableValue<PointF, PointF> position) {
+    return position == null || (
+        !(position instanceof AnimatableSplitDimensionPathValue) &&
+            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f));
+  }
+
+  private static boolean isRotationIdentity(AnimatableFloatValue rotation) {
+    return rotation == null || (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f);
+  }
+
+  private static boolean isScaleIdentity(AnimatableScaleValue scale) {
+    return scale == null || (scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f));
+  }
+
+  private static boolean isSkewIdentity(AnimatableFloatValue skew) {
+    return skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f);
+  }
+
+  private static boolean isSkewAngleIdentity(AnimatableFloatValue skewAngle) {
+    return skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f);
+  }
 }

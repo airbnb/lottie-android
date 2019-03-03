@@ -20,7 +20,6 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   private final AnimatableFloatValue rotation;
   @Nullable
   private final AnimatableIntegerValue opacity;
-  private final boolean isIdentity;
   @Nullable
   private final AnimatableFloatValue skew;
   @Nullable
@@ -50,30 +49,6 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.endOpacity = endOpacity;
     this.skew = skew;
     this.skewAngle = skewAngle;
-    isIdentity = isAnchorPointIdentity() && isPositionIdentity() && isScaleIdentity() &&
-        isScaleIdentity() && isSkewIdentity() && isSkewAngleIdentity();
-  }
-
-  private boolean isAnchorPointIdentity() {
-    return anchorPoint == null || (anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f));
-  }
-
-  private boolean isPositionIdentity() {
-    return position == null || (
-        !(position instanceof AnimatableSplitDimensionPathValue) &&
-            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f));
-  }
-
-  private boolean isScaleIdentity() {
-    return scale == null || (scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f));
-  }
-
-  private boolean isSkewIdentity() {
-    return skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f);
-  }
-
-  private boolean isSkewAngleIdentity() {
-    return skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f);
   }
 
   @Nullable
@@ -119,10 +94,6 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   @Nullable
   public AnimatableFloatValue getSkewAngle() {
     return skewAngle;
-  }
-
-  public boolean isIdentity() {
-    return isIdentity;
   }
 
   public TransformKeyframeAnimation createAnimation() {

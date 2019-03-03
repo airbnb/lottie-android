@@ -44,37 +44,23 @@ public class TransformKeyframeAnimation {
   @Nullable private BaseKeyframeAnimation<?, Float> endOpacity;
 
   public TransformKeyframeAnimation(AnimatableTransform animatableTransform) {
-    isIdentity = animatableTransform.isIdentity();
-    if (isIdentity) {
-      anchorPoint = null;
-      position = null;
-      scale = null;
-      rotation = null;
-      skew = null;
-      skewAngle = null;
+    anchorPoint = animatableTransform.getAnchorPoint() == null ? null : animatableTransform.getAnchorPoint().createAnimation();
+    position = animatableTransform.getPosition() == null ? null : animatableTransform.getPosition().createAnimation();
+    scale = animatableTransform.getScale() == null ? null : animatableTransform.getScale().createAnimation();
+    rotation = animatableTransform.getRotation() == null ? null : animatableTransform.getRotation().createAnimation();
+    skew = animatableTransform.getSkew() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkew().createAnimation();
+    if (skew != null) {
+      skewMatrix1 = new Matrix();
+      skewMatrix2 = new Matrix();
+      skewMatrix3 = new Matrix();
+      skewValues = new float[9];
+    } else {
       skewMatrix1 = null;
       skewMatrix2 = null;
       skewMatrix3 = null;
       skewValues = null;
-    } else  {
-      anchorPoint = animatableTransform.getAnchorPoint() == null ? null : animatableTransform.getAnchorPoint().createAnimation();
-      position = animatableTransform.getPosition() == null ? null : animatableTransform.getPosition().createAnimation();
-      scale = animatableTransform.getScale() == null ? null : animatableTransform.getScale().createAnimation();
-      rotation = animatableTransform.getRotation() == null ? null : animatableTransform.getRotation().createAnimation();
-      skew = animatableTransform.getSkew() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkew().createAnimation();
-      if (skew != null) {
-        skewMatrix1 = new Matrix();
-        skewMatrix2 = new Matrix();
-        skewMatrix3 = new Matrix();
-        skewValues = new float[9];
-      } else {
-        skewMatrix1 = null;
-        skewMatrix2 = null;
-        skewMatrix3 = null;
-        skewValues = null;
-      }
-      skewAngle = animatableTransform.getSkewAngle() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkewAngle().createAnimation();
     }
+    skewAngle = animatableTransform.getSkewAngle() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkewAngle().createAnimation();
     if (animatableTransform.getOpacity() != null) {
       opacity = animatableTransform.getOpacity().createAnimation();
     }
@@ -268,7 +254,6 @@ public class TransformKeyframeAnimation {
     PointF position = this.position == null ? null : this.position.getValue();
     PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
     ScaleXY scale = this.scale == null ? null : this.scale.getValue();
-    float rotation = this.rotation == null ? null : this.rotation.getValue();
 
     matrix.reset();
     if (position != null) {
@@ -279,7 +264,8 @@ public class TransformKeyframeAnimation {
           (float) Math.pow(scale.getScaleX(), amount),
           (float) Math.pow(scale.getScaleY(), amount));
     }
-    if (rotation != 0f) {
+    if (this.rotation != null) {
+      float rotation = this.rotation.getValue();
       matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
     }
 
