@@ -66,11 +66,7 @@ public abstract class BaseLayer
   private final Matrix matrix = new Matrix();
   private final Paint contentPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final Paint dstInPaint = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_IN);
-  private final Paint addMaskPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint addInvMaskLayerPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint addInvMaskPaintClear = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.CLEAR);
-  private final Paint subtractMaskStartingPaintNormal = new LPaint(Paint.ANTI_ALIAS_FLAG);
-  private final Paint subtractMaskPaintDstOut = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_OUT);
+  private final Paint dstOutPaint = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_OUT);
   private final Paint mattePaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new LPaint(PorterDuff.Mode.CLEAR);
   private final RectF rect = new RectF();
@@ -101,8 +97,6 @@ public abstract class BaseLayer
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
-    addMaskPaint.setColor(Color.BLUE);
-    subtractMaskStartingPaintNormal.setColor(Color.BLACK);
     if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
@@ -371,7 +365,6 @@ public abstract class BaseLayer
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");
     saveLayerCompat(canvas, rect, dstInPaint, false);
-//    canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, subtractMaskStartingPaintNormal);
     L.endSection("Layer#saveLayer");
     for (int i = 0; i < mask.getMasks().size(); i++) {
       Mask mask = this.mask.getMasks().get(i);
@@ -399,7 +392,11 @@ public abstract class BaseLayer
           }
           break;
         case MASK_MODE_INTERSECT:
-          applyIntersectMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          if (mask.isInverted()) {
+            applyInvertedIntersectMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          } else {
+            applyIntersectMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          }
           break;
       }
     }
@@ -413,19 +410,19 @@ public abstract class BaseLayer
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    addMaskPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
-    canvas.drawPath(path, addMaskPaint);
+    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, contentPaint);
   }
 
   private void applyInvertedAddMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, addInvMaskLayerPaint, true);
-    canvas.drawRect(rect, addInvMaskLayerPaint);
+    saveLayerCompat(canvas, rect, contentPaint, true);
+    canvas.drawRect(rect, contentPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    addMaskPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
-    canvas.drawPath(path, addInvMaskPaintClear);
+    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, dstOutPaint);
     canvas.restore();
   }
 
@@ -434,18 +431,18 @@ public abstract class BaseLayer
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    canvas.drawPath(path, subtractMaskPaintDstOut);
+    canvas.drawPath(path, dstOutPaint);
   }
 
   private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, subtractMaskPaintDstOut, true);
-    canvas.drawRect(rect, subtractMaskStartingPaintNormal);
-    subtractMaskPaintDstOut.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    saveLayerCompat(canvas, rect, dstOutPaint, true);
+    canvas.drawRect(rect, contentPaint);
+    dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    canvas.drawPath(path, subtractMaskPaintDstOut);
+    canvas.drawPath(path, dstOutPaint);
     canvas.restore();
   }
 
@@ -457,6 +454,18 @@ public abstract class BaseLayer
     path.transform(matrix);
     contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     canvas.drawPath(path, contentPaint);
+    canvas.restore();
+  }
+
+  private void applyInvertedIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    saveLayerCompat(canvas, rect, dstInPaint, true);
+    canvas.drawRect(rect, contentPaint);
+    dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    canvas.drawPath(path, dstOutPaint);
     canvas.restore();
   }
 
