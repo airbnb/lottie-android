@@ -319,8 +319,6 @@ public abstract class BaseLayer
           // canvas so we can't use the mask bounds.
           return;
         case MASK_MODE_INTERSECT:
-          // TODO
-          return;
         case MASK_MODE_ADD:
           if (mask.isInverted()) {
             return;
@@ -401,8 +399,7 @@ public abstract class BaseLayer
           }
           break;
         case MASK_MODE_INTERSECT:
-          // TODO: support intersect masks
-          applyAddMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
+          applyIntersectMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
           break;
       }
     }
@@ -449,6 +446,17 @@ public abstract class BaseLayer
     path.set(maskPath);
     path.transform(matrix);
     canvas.drawPath(path, subtractMaskPaintDstOut);
+    canvas.restore();
+  }
+
+  private void applyIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
+      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Path maskPath = maskAnimation.getValue();
+    path.set(maskPath);
+    path.transform(matrix);
+    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    canvas.drawPath(path, contentPaint);
     canvas.restore();
   }
 
