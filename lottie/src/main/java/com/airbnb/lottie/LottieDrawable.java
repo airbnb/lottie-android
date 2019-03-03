@@ -5,9 +5,13 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -286,6 +290,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Override
   public int getOpacity() {
     return PixelFormat.TRANSLUCENT;
+  }
+
+  private void drawRect(Canvas canvas, float lp, float tp, float rp, float bp, @Nullable PorterDuff.Mode mode, int color) {
+    Paint paint = new Paint();
+    paint.setColor(color);
+    if (mode != null) {
+      paint.setXfermode(new PorterDuffXfermode(mode));
+    }
+    canvas.drawRect(canvas.getWidth() * lp, canvas.getHeight() * tp, canvas.getWidth() * rp, canvas.getHeight() * bp, paint);
   }
 
   @Override
