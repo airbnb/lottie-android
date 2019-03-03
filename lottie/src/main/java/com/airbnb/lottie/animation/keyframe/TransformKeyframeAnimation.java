@@ -185,7 +185,12 @@ public class TransformKeyframeAnimation {
     }
 
     if (rotation != null) {
-      float rotation = ((FloatKeyframeAnimation) this.rotation).getFloatValue();
+      float rotation;
+      if (this.rotation instanceof ValueCallbackKeyframeAnimation) {
+          rotation = this.rotation.getValue();
+      } else {
+        rotation = ((FloatKeyframeAnimation) this.rotation).getFloatValue();
+      }
       if (rotation != 0f) {
         matrix.preRotate(rotation);
       }
