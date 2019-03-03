@@ -423,7 +423,7 @@ public abstract class BaseLayer
   private void applyInvertedAddMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     // TODO: don't save layer if this is the first mask
-    canvas.saveLayer(rect, addInvMaskLayerPaint);
+    canvas.saveLayer(rect.left, rect.top, rect.right, rect.bottom, addInvMaskLayerPaint);
     canvas.drawRect(rect, addInvMaskLayerPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
