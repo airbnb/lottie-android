@@ -269,7 +269,7 @@ public class TransformKeyframeAnimation {
           (float) Math.pow(scale.getScaleX(), amount),
           (float) Math.pow(scale.getScaleY(), amount));
     }
-    if (this.rotation != null) {
+    if (this.rotation != null && anchorPoint != null) {
       float rotation = this.rotation.getValue();
       matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
     }
