@@ -1,10 +1,7 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
-import android.util.Log;
-
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ModifierContent;
@@ -13,36 +10,35 @@ import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
 public class AnimatableTransform implements ModifierContent, ContentModel {
+  @Nullable
   private final AnimatablePathValue anchorPoint;
+  @Nullable
   private final AnimatableValue<PointF, PointF> position;
+  @Nullable
   private final AnimatableScaleValue scale;
+  @Nullable
   private final AnimatableFloatValue rotation;
+  @Nullable
   private final AnimatableIntegerValue opacity;
   private final boolean isIdentity;
-  @Nullable private final AnimatableFloatValue skew;
-  @Nullable private final AnimatableFloatValue skewAngle;
+  @Nullable
+  private final AnimatableFloatValue skew;
+  @Nullable
+  private final AnimatableFloatValue skewAngle;
 
   // Used for repeaters
-  @Nullable private final AnimatableFloatValue startOpacity;
-  @Nullable private final AnimatableFloatValue endOpacity;
+  @Nullable
+  private final AnimatableFloatValue startOpacity;
+  @Nullable
+  private final AnimatableFloatValue endOpacity;
 
   public AnimatableTransform() {
-    this(
-        new AnimatablePathValue(),
-        new AnimatablePathValue(),
-        new AnimatableScaleValue(),
-        new AnimatableFloatValue(),
-        new AnimatableIntegerValue(),
-        new AnimatableFloatValue(),
-        new AnimatableFloatValue(),
-        new AnimatableFloatValue(),
-        new AnimatableFloatValue()
-    );
+    this(null, null, null, null, null, null, null, null, null);
   }
 
-  public AnimatableTransform(AnimatablePathValue anchorPoint,
-      AnimatableValue<PointF, PointF> position, AnimatableScaleValue scale,
-      AnimatableFloatValue rotation, AnimatableIntegerValue opacity,
+  public AnimatableTransform(@Nullable AnimatablePathValue anchorPoint,
+      @Nullable AnimatableValue<PointF, PointF> position, @Nullable AnimatableScaleValue scale,
+      @Nullable AnimatableFloatValue rotation, @Nullable AnimatableIntegerValue opacity,
       @Nullable AnimatableFloatValue startOpacity, @Nullable AnimatableFloatValue endOpacity,
       @Nullable AnimatableFloatValue skew, @Nullable AnimatableFloatValue skewAngle) {
     this.anchorPoint = anchorPoint;
@@ -54,48 +50,74 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.endOpacity = endOpacity;
     this.skew = skew;
     this.skewAngle = skewAngle;
-    isIdentity = anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f) &&
-            !(position instanceof AnimatableSplitDimensionPathValue) &&
-            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f) &&
-            scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f) &&
-            (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f || rotation.keyframes.isEmpty()) &&
-            (skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f)) &&
-            (skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f));
+    isIdentity = isAnchorPointIdentity() && isPositionIdentity() && isScaleIdentity() &&
+        isScaleIdentity() && isSkewIdentity() && isSkewAngleIdentity();
   }
 
+  private boolean isAnchorPointIdentity() {
+    return anchorPoint == null || (anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f));
+  }
+
+  private boolean isPositionIdentity() {
+    return position == null || (
+        !(position instanceof AnimatableSplitDimensionPathValue) &&
+            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f));
+  }
+
+  private boolean isScaleIdentity() {
+    return scale == null || (scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f));
+  }
+
+  private boolean isSkewIdentity() {
+    return skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f);
+  }
+
+  private boolean isSkewAngleIdentity() {
+    return skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f);
+  }
+
+  @Nullable
   public AnimatablePathValue getAnchorPoint() {
     return anchorPoint;
   }
 
+  @Nullable
   public AnimatableValue<PointF, PointF> getPosition() {
     return position;
   }
 
+  @Nullable
   public AnimatableScaleValue getScale() {
     return scale;
   }
 
+  @Nullable
   public AnimatableFloatValue getRotation() {
     return rotation;
   }
 
+  @Nullable
   public AnimatableIntegerValue getOpacity() {
     return opacity;
   }
 
-  @Nullable public AnimatableFloatValue getStartOpacity() {
+  @Nullable
+  public AnimatableFloatValue getStartOpacity() {
     return startOpacity;
   }
 
-  @Nullable public AnimatableFloatValue getEndOpacity() {
+  @Nullable
+  public AnimatableFloatValue getEndOpacity() {
     return endOpacity;
   }
 
-  @Nullable public AnimatableFloatValue getSkew() {
+  @Nullable
+  public AnimatableFloatValue getSkew() {
     return skew;
   }
 
-  @Nullable public AnimatableFloatValue getSkewAngle() {
+  @Nullable
+  public AnimatableFloatValue getSkewAngle() {
     return skewAngle;
   }
 
@@ -107,7 +129,9 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     return new TransformKeyframeAnimation(this);
   }
 
-  @Nullable @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+  @Nullable
+  @Override
+  public Content toContent(LottieDrawable drawable, BaseLayer layer) {
     return null;
   }
 }

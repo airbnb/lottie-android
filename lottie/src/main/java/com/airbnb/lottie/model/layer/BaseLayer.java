@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.os.Build;
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -172,7 +173,10 @@ public abstract class BaseLayer
     }
   }
 
-  public void addAnimation(BaseKeyframeAnimation<?, ?> newAnimation) {
+  public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
+    if (newAnimation == null) {
+      return;
+    }
     animations.add(newAnimation);
   }
 
@@ -210,8 +214,9 @@ public abstract class BaseLayer
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
     L.endSection("Layer#parentMatrix");
+    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
     int alpha = (int)
-        ((parentAlpha / 255f * (float) transform.getOpacity().getValue() / 100f) * 255);
+        ((parentAlpha / 255f * (float) opacity / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
       L.beginSection("Layer#drawLayer");

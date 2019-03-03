@@ -112,7 +112,8 @@ public class TextLayer extends BaseLayer {
     } else {
       strokePaint.setColor(documentData.strokeColor);
     }
-    int alpha = transform.getOpacity().getValue() * 255 / 100;
+    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int alpha = opacity * 255 / 100;
     fillPaint.setAlpha(alpha);
     strokePaint.setAlpha(alpha);
 
