@@ -292,15 +292,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return PixelFormat.TRANSLUCENT;
   }
 
-  private void drawRect(Canvas canvas, float lp, float tp, float rp, float bp, @Nullable PorterDuff.Mode mode, int color) {
-    Paint paint = new Paint();
-    paint.setColor(color);
-    if (mode != null) {
-      paint.setXfermode(new PorterDuffXfermode(mode));
-    }
-    canvas.drawRect(canvas.getWidth() * lp, canvas.getHeight() * tp, canvas.getWidth() * rp, canvas.getHeight() * bp, paint);
-  }
-
   @Override
   public void draw(@NonNull Canvas canvas) {
     isDirty = false;
