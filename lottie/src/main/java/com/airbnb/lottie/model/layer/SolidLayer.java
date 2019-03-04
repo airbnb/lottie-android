@@ -39,7 +39,8 @@ public class SolidLayer extends BaseLayer {
       return;
     }
 
-    int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * transform.getOpacity().getValue() / 100f) * 255);
+    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * opacity / 100f) * 255);
     paint.setAlpha(alpha);
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
