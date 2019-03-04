@@ -30,7 +30,6 @@ public class TransformKeyframeAnimation {
   private final Matrix skewMatrix3;
   private final float[] skewValues;
 
-  private boolean isIdentity;
   @NonNull private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   @NonNull private BaseKeyframeAnimation<?, PointF> position;
   @NonNull private BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
@@ -81,9 +80,6 @@ public class TransformKeyframeAnimation {
     layer.addAnimation(startOpacity);
     layer.addAnimation(endOpacity);
 
-    if (isIdentity) {
-      return;
-    }
     layer.addAnimation(anchorPoint);
     layer.addAnimation(position);
     layer.addAnimation(scale);
@@ -103,9 +99,6 @@ public class TransformKeyframeAnimation {
       endOpacity.addUpdateListener(listener);
     }
 
-    if (isIdentity) {
-      return;
-    }
     if (anchorPoint != null) {
       anchorPoint.addUpdateListener(listener);
     }
@@ -137,9 +130,6 @@ public class TransformKeyframeAnimation {
       endOpacity.setProgress(progress);
     }
 
-    if (isIdentity) {
-      return;
-    }
     if (anchorPoint != null) {
       anchorPoint.setProgress(progress);
     }
@@ -173,9 +163,6 @@ public class TransformKeyframeAnimation {
   }
 
   public Matrix getMatrix() {
-    if (isIdentity) {
-      return matrix;
-    }
     matrix.reset();
     if (position != null) {
       PointF position = this.position.getValue();
@@ -198,7 +185,7 @@ public class TransformKeyframeAnimation {
 
     if (skew != null) {
       float mCos = skewAngle == null ? 0f : (float) Math.cos(Math.toRadians(-skewAngle.getFloatValue() + 90));
-      float mSin = skewAngle == null ? 0f : (float) Math.sin(Math.toRadians(-skewAngle.getFloatValue() + 90));
+      float mSin = skewAngle == null ? 1f : (float) Math.sin(Math.toRadians(-skewAngle.getFloatValue() + 90));
       float aTan = (float) Math.tan(Math.toRadians(skew.getFloatValue()));
       clearSkewValues();
       skewValues[0] = mCos;
@@ -253,11 +240,7 @@ public class TransformKeyframeAnimation {
    * TODO: see if we can use this for the main {@link #getMatrix()} method.
    */
   public Matrix getMatrixForRepeater(float amount) {
-    if (isIdentity) {
-      return matrix;
-    }
     PointF position = this.position == null ? null : this.position.getValue();
-    PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
     ScaleXY scale = this.scale == null ? null : this.scale.getValue();
 
     matrix.reset();
@@ -269,9 +252,10 @@ public class TransformKeyframeAnimation {
           (float) Math.pow(scale.getScaleX(), amount),
           (float) Math.pow(scale.getScaleY(), amount));
     }
-    if (this.rotation != null && anchorPoint != null) {
+    if (this.rotation != null) {
       float rotation = this.rotation.getValue();
-      matrix.preRotate(rotation * amount, anchorPoint.x, anchorPoint.y);
+      PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
+      matrix.preRotate(rotation * amount, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
     }
 
     return matrix;
@@ -282,7 +266,6 @@ public class TransformKeyframeAnimation {
    */
   @SuppressWarnings("unchecked")
   public <T> boolean applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
-    isIdentity = false;
     if (property == TRANSFORM_ANCHOR_POINT) {
       if (anchorPoint == null) {
         anchorPoint = new ValueCallbackKeyframeAnimation(callback, new PointF());
