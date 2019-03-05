@@ -19,7 +19,7 @@ public class DocumentData {
   public final double size;
   @SuppressWarnings("WeakerAccess") public final Justification justification;
   public final int tracking;
-  @SuppressWarnings("WeakerAccess") final double lineHeight;
+  @SuppressWarnings("WeakerAccess") public final double lineHeight;
   public final double baselineShift;
   @ColorInt public final int color;
   @ColorInt public final int strokeColor;
