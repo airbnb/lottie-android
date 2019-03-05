@@ -151,20 +151,20 @@ public class TextLayer extends BaseLayer {
       String textLine = textLines.get(l);
       float textLineWidth = getTextLineWidthForGlyphs(textLine, font, fontScale, parentScale);
 
-			canvas.save();
+      canvas.save();
 
-			// Apply horizontal justification
+      // Apply horizontal justification
       applyJustification(documentData.justification, canvas, textLineWidth);
 
-			// Center text vertically
-			float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
-			float translateY = l * lineHeight - multilineTranslateY;
-			canvas.translate(0, translateY);
+      // Center text vertically
+      float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
+      float translateY = l * lineHeight - multilineTranslateY;
+      canvas.translate(0, translateY);
 
       // Draw each line
       drawGlyphTextLine(textLine, documentData, parentMatrix, font, canvas, parentScale, fontScale);
 
-			// Reset canvas
+      // Reset canvas
       canvas.restore();
     }
   }
@@ -238,7 +238,7 @@ public class TextLayer extends BaseLayer {
   private List<String> getTextLines(String text) {
     // Split full text by carriage return character
     String formattedText = text.replaceAll("\r\n", "\r")
-            .replaceAll("\n", "\r");
+        .replaceAll("\n", "\r");
     String[] textLinesArray = formattedText.split("\r");
     return Arrays.asList(textLinesArray);
   }
@@ -269,7 +269,7 @@ public class TextLayer extends BaseLayer {
       if (character == null) {
         continue;
       }
-        textLineWidth += character.getWidth() * fontScale * Utils.dpScale() * parentScale;
+      textLineWidth += character.getWidth() * fontScale * Utils.dpScale() * parentScale;
     }
     return textLineWidth;
   }
