@@ -2,12 +2,7 @@ package com.airbnb.lottie
 
 import android.Manifest
 import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PointF
-import android.graphics.PorterDuff
+import android.graphics.*
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -24,26 +19,14 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.samples.views.FilmStripView
-import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
-import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
-import com.airbnb.lottie.value.LottieRelativePointValueCallback
-import com.airbnb.lottie.value.LottieValueCallback
-import com.airbnb.lottie.value.ScaleXY
+import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -412,10 +395,30 @@ class LottieTest {
                 LottieValueCallback(ScaleXY(0.5f, 0.5f)))
 
         testDynamicProperty(
+                "Rectangle corner roundedness",
+                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
+                LottieProperty.CORNER_RADIUS,
+                LottieValueCallback(7f))
+
+        testDynamicProperty(
+                "Rectangle position",
+                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
+                LottieProperty.POSITION,
+                LottieRelativePointValueCallback(PointF(20f, 20f)))
+
+        testDynamicProperty(
+                "Rectangle size",
+                KeyPath("Shape Layer 1", "Rectangle"),
+                LottieProperty.RECTANGLE_SIZE,
+                LottieRelativePointValueCallback(PointF(40f, 60f)))
+
+        testDynamicProperty(
                 "Ellipse position",
                 KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
                 LottieProperty.POSITION,
                 LottieRelativePointValueCallback(PointF(20f, 20f)))
+
+
 
         testDynamicProperty(
                 "Ellipse size",
