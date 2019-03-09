@@ -51,13 +51,11 @@ public class RectangleContent
         cornerRadiusAnimation.addUpdateListener(this);
     }
 
-    @Override
-    public String getName() {
+    @Override public String getName() {
         return name;
     }
 
-    @Override
-    public void onValueChanged() {
+    @Override public void onValueChanged() {
         invalidate();
     }
 
@@ -66,8 +64,7 @@ public class RectangleContent
         lottieDrawable.invalidateSelf();
     }
 
-    @Override
-    public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
         for (int i = 0; i < contentsBefore.size(); i++) {
             Content content = contentsBefore.get(i);
             if (content instanceof TrimPathContent &&
@@ -79,8 +76,7 @@ public class RectangleContent
         }
     }
 
-    @Override
-    public Path getPath() {
+    @Override public Path getPath() {
         if (isPathValid) {
             return path;
         }
@@ -154,9 +150,8 @@ public class RectangleContent
         return path;
     }
 
-    @Override
-    public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-                               KeyPath currentPartialKeyPath) {
+    @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+                                         KeyPath currentPartialKeyPath) {
         MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
     }
 
