@@ -408,9 +408,9 @@ class LottieTest {
 
         testDynamicProperty(
                 "Rectangle size",
-                KeyPath("Shape Layer 1", "Rectangle"),
+                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
                 LottieProperty.RECTANGLE_SIZE,
-                LottieRelativePointValueCallback(PointF(40f, 60f)))
+                LottieRelativePointValueCallback(PointF(5f, 5f)))
 
         testDynamicProperty(
                 "Ellipse position",
