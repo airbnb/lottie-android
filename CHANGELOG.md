@@ -1,3 +1,17 @@
+# 3.0.0-beta3
+### Features and Improvements
+* Added support for inverted masks.
+* Added support for intersect masks.
+* Improved support for multiple masks per layer.
+* Added support for optimized bodymovin json with static transforms removed.
+* Added support for multiline text.
+* Added support for dynamic properties on rectangles.
+* Added support for dynamic properties on gradient colors.
+* Added support for emoji in text delegates.
+### Bugs Fixed
+* Ensure that the last frame is played when setMaxFrame is called.
+* Prevent strokes from drawing when the scale is 0.
+
 # 3.0.0-beta2
 ### Features and Improvements
 * Added support for skew and skew angle in transforms.
