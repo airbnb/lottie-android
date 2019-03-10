@@ -232,6 +232,12 @@ import java.util.Set;
 
   @Override
   protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+    // This can happen on older versions of Android because onVisibilityChanged gets called from the
+    // constructor of View so this will get called before lottieDrawable gets initialized.
+    // https://github.com/airbnb/lottie-android/issues/1143
+    if (lottieDrawable == null) {
+      return;
+    }
     if (visibility == VISIBLE) {
       if (wasAnimatingWhenVisibilityChanged) {
         resumeAnimation();
