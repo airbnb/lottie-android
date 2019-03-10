@@ -41,7 +41,7 @@ public abstract class BaseStrokeContent
   private final Path trimPathPath = new Path();
   private final RectF rect = new RectF();
   private final LottieDrawable lottieDrawable;
-  private final BaseLayer layer;
+  protected final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;
   final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);

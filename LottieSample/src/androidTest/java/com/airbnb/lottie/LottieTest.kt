@@ -2,12 +2,7 @@ package com.airbnb.lottie
 
 import android.Manifest
 import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PointF
-import android.graphics.PorterDuff
+import android.graphics.*
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -24,11 +19,7 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.BuildConfig
 import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.samples.views.FilmStripView
-import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
-import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
-import com.airbnb.lottie.value.LottieRelativePointValueCallback
-import com.airbnb.lottie.value.LottieValueCallback
-import com.airbnb.lottie.value.ScaleXY
+import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
@@ -563,6 +554,42 @@ class LottieTest {
                 LottieProperty.TRANSFORM_OPACITY,
                 LottieInterpolatedIntegerValue(10, 100),
                 1f)
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Fill") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Radial", "Rectangle", "Gradient Fill"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Stroke") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Stroke"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Stroke") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Radial", "Rectangle", "Gradient Stroke"), LottieProperty.GRADIENT_COLOR, value)
+        }
     }
 
     private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
