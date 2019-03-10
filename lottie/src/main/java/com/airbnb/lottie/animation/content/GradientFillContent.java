@@ -55,6 +55,7 @@ public class GradientFillContent
   private final BaseKeyframeAnimation<PointF, PointF> startPointAnimation;
   private final BaseKeyframeAnimation<PointF, PointF> endPointAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
+  @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
 
@@ -159,7 +160,7 @@ public class GradientFillContent
     PointF startPoint = startPointAnimation.getValue();
     PointF endPoint = endPointAnimation.getValue();
     GradientColor gradientColor = colorAnimation.getValue();
-    int[] colors = gradientColor.getColors();
+    int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
     gradient = new LinearGradient(startPoint.x, startPoint.y, endPoint.x, endPoint.y, colors,
         positions, Shader.TileMode.CLAMP);
@@ -176,7 +177,7 @@ public class GradientFillContent
     PointF startPoint = startPointAnimation.getValue();
     PointF endPoint = endPointAnimation.getValue();
     GradientColor gradientColor = colorAnimation.getValue();
-    int[] colors = gradientColor.getColors();
+    int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
     float x0 = startPoint.x;
     float y0 = startPoint.y;
@@ -208,6 +209,23 @@ public class GradientFillContent
     return hash;
   }
 
+  private int[] applyDynamicColorsIfNeeded(int[] colors) {
+    if (colorCallbackAnimation != null) {
+      Integer[] dynamicColors = (Integer[]) colorCallbackAnimation.getValue();
+      if (colors.length == dynamicColors.length) {
+        for (int i = 0; i < colors.length; i++) {
+          colors[i] = dynamicColors[i];
+        }
+      } else {
+        colors = new int[dynamicColors.length];
+        for (int i = 0; i < dynamicColors.length; i++) {
+          colors[i] = dynamicColors[i];
+        }
+      }
+    }
+    return colors;
+  }
+
   @Override public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
@@ -224,6 +242,17 @@ public class GradientFillContent
              new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
          colorFilterAnimation.addUpdateListener(this);
          layer.addAnimation(colorFilterAnimation);
+       }
+     } else if (property == LottieProperty.GRADIENT_COLOR) {
+       if (callback == null) {
+         if (colorCallbackAnimation != null) {
+           layer.removeAnimation(colorCallbackAnimation);
+         }
+         colorCallbackAnimation = null;
+       } else {
+         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
+         colorCallbackAnimation.addUpdateListener(this);
+         layer.addAnimation(colorCallbackAnimation);
        }
     }
   }

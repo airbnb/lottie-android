@@ -183,6 +183,10 @@ public abstract class BaseLayer
     animations.add(newAnimation);
   }
 
+  public void removeAnimation(BaseKeyframeAnimation<?, ?> animation) {
+    animations.remove(animation);
+  }
+
   @CallSuper
   @Override
   public void getBounds(

@@ -7,14 +7,18 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientStroke;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 public class GradientStrokeContent extends BaseStrokeContent {
   /**
@@ -33,6 +37,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
   private final BaseKeyframeAnimation<GradientColor, GradientColor> colorAnimation;
   private final BaseKeyframeAnimation<PointF, PointF> startPointAnimation;
   private final BaseKeyframeAnimation<PointF, PointF> endPointAnimation;
+  @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
 
   public GradientStrokeContent(
       final LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) {
@@ -63,11 +68,14 @@ public class GradientStrokeContent extends BaseStrokeContent {
       return;
     }
     getBounds(boundsRect, parentMatrix, false);
+
+    Shader shader;
     if (type == GradientType.LINEAR) {
-      paint.setShader(getLinearGradient());
+      shader = getLinearGradient();
     } else {
-      paint.setShader(getRadialGradient());
+      shader = getRadialGradient();
     }
+    paint.setShader(shader);
 
     super.draw(canvas, parentMatrix, parentAlpha);
   }
@@ -85,7 +93,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     PointF startPoint = startPointAnimation.getValue();
     PointF endPoint = endPointAnimation.getValue();
     GradientColor gradientColor = colorAnimation.getValue();
-    int[] colors = gradientColor.getColors();
+    int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
     int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
     int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
@@ -105,7 +113,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     PointF startPoint = startPointAnimation.getValue();
     PointF endPoint = endPointAnimation.getValue();
     GradientColor gradientColor = colorAnimation.getValue();
-    int[] colors = gradientColor.getColors();
+    int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
     int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
     int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
@@ -132,5 +140,39 @@ public class GradientStrokeContent extends BaseStrokeContent {
       hash = hash * 31 * colorProgress;
     }
     return hash;
+  }
+
+  private int[] applyDynamicColorsIfNeeded(int[] colors) {
+    if (colorCallbackAnimation != null) {
+      Integer[] dynamicColors = (Integer[]) colorCallbackAnimation.getValue();
+      if (colors.length == dynamicColors.length) {
+        for (int i = 0; i < colors.length; i++) {
+          colors[i] = dynamicColors[i];
+        }
+      } else {
+        colors = new int[dynamicColors.length];
+        for (int i = 0; i < dynamicColors.length; i++) {
+          colors[i] = dynamicColors[i];
+        }
+      }
+    }
+    return colors;
+  }
+
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    super.addValueCallback(property, callback);
+    if (property == LottieProperty.GRADIENT_COLOR) {
+      if (callback == null) {
+        if (colorCallbackAnimation != null) {
+          layer.removeAnimation(colorCallbackAnimation);
+        }
+        colorCallbackAnimation = null;
+      } else {
+        colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
+        colorCallbackAnimation.addUpdateListener(this);
+        layer.addAnimation(colorCallbackAnimation);
+      }
+    }
   }
 }

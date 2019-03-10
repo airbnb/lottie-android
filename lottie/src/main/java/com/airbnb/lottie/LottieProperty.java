@@ -108,4 +108,6 @@ public interface LottieProperty {
   Float TIME_REMAP = 13f;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
+
+  Integer[] GRADIENT_COLOR = new Integer[0];
 }

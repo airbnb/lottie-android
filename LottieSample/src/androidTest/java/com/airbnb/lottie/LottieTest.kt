@@ -568,6 +568,42 @@ class LottieTest {
                 LottieProperty.TRANSFORM_OPACITY,
                 LottieInterpolatedIntegerValue(10, 100),
                 1f)
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Fill") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Radial", "Rectangle", "Gradient Fill"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Stroke") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Stroke"), LottieProperty.GRADIENT_COLOR, value)
+        }
+
+        withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Stroke") { drawable ->
+            val value = object : LottieValueCallback<Array<Int>>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                    return arrayOf(Color.YELLOW, Color.GREEN)
+                }
+            }
+            drawable.addValueCallback(KeyPath("Radial", "Rectangle", "Gradient Stroke"), LottieProperty.GRADIENT_COLOR, value)
+        }
     }
 
     private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
