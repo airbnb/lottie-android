@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -16,10 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
-import com.airbnb.lottie.L
-import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.RenderMode
+import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.BackgroundColorView
@@ -110,6 +108,12 @@ class PlayerFragment : BaseMvRxFragment() {
         L.setTraceEnabled(true)
 
         lottieVersionView.text = getString(R.string.lottie_version, com.airbnb.lottie.BuildConfig.VERSION_NAME)
+
+        animationView.setFontAssetDelegate(object : FontAssetDelegate() {
+            override fun fetchFont(fontFamily: String?): Typeface {
+                return Typeface.DEFAULT
+            }
+        })
 
         val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS)
                 ?: throw IllegalArgumentException("No composition args specified")
