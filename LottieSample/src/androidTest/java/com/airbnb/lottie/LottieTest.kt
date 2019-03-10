@@ -24,6 +24,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
+import junit.framework.Assert.assertNotNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
@@ -93,6 +94,12 @@ class LottieTest {
                 .defaultBucket("lottie-prod-animations")
                 .build()
         LottieCompositionCache.getInstance().resize(5)
+    }
+
+    @Test
+    fun benchMark(){
+        val inflatedAsset = LottieCompositionFactory.fromAssetSyncMoshi(activity, "Tests/input.json")
+        assertNotNull(inflatedAsset)
     }
 
     @Test

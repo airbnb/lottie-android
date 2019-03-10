@@ -7,11 +7,14 @@ import android.graphics.BitmapFactory;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.WorkerThread;
+import okio.Okio;
+
 import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
+import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
 import org.json.JSONObject;
@@ -116,6 +119,21 @@ public class LottieCompositionFactory {
     }
   }
 
+
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromAssetSyncMoshi(Context context, String fileName) {
+    try {
+      String cacheKey = "asset_" + fileName;
+      if (fileName.endsWith(".zip")) {
+        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
+      }
+      return fromJsonInputStreamSyncMoshi(context.getAssets().open(fileName), cacheKey);
+    } catch (IOException e) {
+      return new LottieResult<>(e);
+    }
+  }
+
   /**
    * Parse an animation from raw/res. This is recommended over putting your animation in assets because
    * it uses a hard reference to R.
@@ -171,6 +189,11 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonInputStreamSyncMoshi(InputStream stream, @Nullable String cacheKey) {
+    return fromJsonInputStreamSyncMoshi(stream, cacheKey, true);
+  }
+
+  @WorkerThread
   private static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
       return fromJsonReaderSync(new JsonReader(new InputStreamReader(stream)), cacheKey);
@@ -180,6 +203,19 @@ public class LottieCompositionFactory {
       }
     }
   }
+
+  @WorkerThread
+  private static LottieResult<LottieComposition> fromJsonInputStreamSyncMoshi(InputStream stream, @Nullable String cacheKey, boolean close) {
+    try {
+     com.squareup.moshi.JsonReader jsonReader = com.squareup.moshi.JsonReader.of(Okio.buffer(Okio.source(stream)));
+      return fromJsonReaderSyncMoshi(jsonReader, cacheKey);
+    } finally {
+      if (close) {
+        closeQuietly(stream);
+      }
+    }
+  }
+
 
   /**
    * @see #fromJsonSync(JSONObject, String)
@@ -241,6 +277,12 @@ public class LottieCompositionFactory {
     return fromJsonReaderSyncInternal(reader, cacheKey, true);
   }
 
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonReaderSyncMoshi(com.squareup.moshi.JsonReader reader, @Nullable String cacheKey) {
+    return fromJsonReaderSyncInternalMoshi(reader, cacheKey, true);
+  }
+
+
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
           JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
@@ -255,6 +297,23 @@ public class LottieCompositionFactory {
       }
     }
   }
+
+  private static LottieResult<LottieComposition> fromJsonReaderSyncInternalMoshi(
+          com.squareup.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
+    try {
+      LottieComposition composition = LottieCompositionMoshiParser.parse(reader);
+      LottieCompositionCache.getInstance().put(cacheKey, composition);
+      return new LottieResult<>(composition);
+    } catch (Exception e) {
+      return new LottieResult<>(e);
+    } finally {
+      if (close) {
+        closeQuietly(reader);
+      }
+    }
+  }
+
+
 
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
