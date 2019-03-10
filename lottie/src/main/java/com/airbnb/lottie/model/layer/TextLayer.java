@@ -7,9 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.util.LruCache;
 import androidx.annotation.Nullable;
-import androidx.collection.SparseArrayCompat;
+import androidx.collection.LongSparseArray;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -25,6 +24,7 @@ import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,14 +43,18 @@ public class TextLayer extends BaseLayer {
     setStyle(Style.STROKE);
   }};
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
-  private final SparseArrayCompat<String> codePointCache = new SparseArrayCompat<String>();
+  private final LongSparseArray<String> codePointCache = new LongSparseArray<String>();
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
-  @Nullable private BaseKeyframeAnimation<Integer, Integer> colorAnimation;
-  @Nullable private BaseKeyframeAnimation<Integer, Integer> strokeColorAnimation;
-  @Nullable private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
-  @Nullable private BaseKeyframeAnimation<Float, Float> trackingAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Integer, Integer> colorAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Integer, Integer> strokeColorAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> trackingAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -87,13 +91,15 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+  @Override
+  public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     super.getBounds(outBounds, parentMatrix, applyParents);
     // TODO: use the correct text bounds.
     outBounds.set(0, 0, composition.getBounds().width(), composition.getBounds().height());
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override
+  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);
@@ -175,7 +181,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawGlyphTextLine(String text, DocumentData documentData, Matrix parentMatrix,
-                                 Font font, Canvas canvas, float parentScale, float fontScale) {
+      Font font, Canvas canvas, float parentScale, float fontScale) {
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
@@ -250,9 +256,8 @@ public class TextLayer extends BaseLayer {
 
   private void drawFontTextLine(String text, DocumentData documentData, Canvas canvas, float parentScale) {
     for (int i = 0; i < text.length(); ) {
-      int codePoint = text.codePointAt(i);
-      i += Character.charCount(codePoint);
-      String charString = codePointToString(codePoint);
+      String charString = codePointToString(text, i);
+      i += charString.length();
       drawCharacterFromFont(charString, documentData, canvas);
       float charWidth = fillPaint.measureText(charString, 0, 1);
       // Add tracking
@@ -363,15 +368,42 @@ public class TextLayer extends BaseLayer {
     return contents;
   }
 
-  private String codePointToString(int codePoint) {
-    if (codePointCache.containsKey(codePoint)) {
-      return codePointCache.get(codePoint);
+  private String codePointToString(String text, int startIndex) {
+    int firstCodePoint = text.codePointAt(startIndex);
+    int firstCodePointLength = Character.charCount(firstCodePoint);
+    int key = firstCodePoint;
+    int index = startIndex + firstCodePointLength;
+    while (index < text.length()) {
+      int nextCodePoint = text.codePointAt(index);
+      if (!isModifier(nextCodePoint)) {
+        break;
+      }
+      int nextCodePointLength = Character.charCount(nextCodePoint);
+      index += nextCodePointLength;
+      key = key * 31 + nextCodePoint;
     }
+
+    if (codePointCache.containsKey(key)) {
+      return codePointCache.get(key);
+    }
+
     stringBuilder.setLength(0);
-    stringBuilder.appendCodePoint(codePoint);
+    for (int i = startIndex; i < index; ) {
+      int codePoint = text.codePointAt(i);
+      stringBuilder.appendCodePoint(codePoint);
+      i += Character.charCount(codePoint);
+    }
     String str = stringBuilder.toString();
-    codePointCache.put(codePoint, str);
+    codePointCache.put(key, str);
     return str;
+  }
+
+  private boolean isModifier(int codePoint) {
+    return Character.getType(codePoint) == Character.FORMAT ||
+        Character.getType(codePoint) == Character.MODIFIER_SYMBOL ||
+        Character.getType(codePoint) == Character.NON_SPACING_MARK ||
+        Character.getType(codePoint) == Character.OTHER_SYMBOL ||
+        Character.getType(codePoint) == Character.SURROGATE;
   }
 
   @SuppressWarnings("unchecked")
