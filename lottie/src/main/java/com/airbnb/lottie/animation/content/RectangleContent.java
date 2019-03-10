@@ -6,6 +6,7 @@ import android.graphics.RectF;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -153,8 +154,13 @@ public class RectangleContent
     MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
 
-  @Override
-  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
-
+  @Override public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    if (property == LottieProperty.RECTANGLE_SIZE) {
+        sizeAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
+    } else if (property == LottieProperty.POSITION) {
+        positionAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
+    } else if (property == LottieProperty.CORNER_RADIUS) {
+        cornerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    }
   }
 }
