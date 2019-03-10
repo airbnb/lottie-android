@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.util.LruCache;
 import androidx.annotation.Nullable;
+import androidx.collection.SparseArrayCompat;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -30,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TextLayer extends BaseLayer {
-  private final char[] tempCharArray = new char[1];
+  // Capacity is 2 because emojis are 2 characters.
+  private final StringBuilder stringBuilder = new StringBuilder(2);
   private final RectF rectF = new RectF();
   private final Matrix matrix = new Matrix();
   private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
@@ -40,6 +43,7 @@ public class TextLayer extends BaseLayer {
     setStyle(Style.STROKE);
   }};
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
+  private final SparseArrayCompat<String> codePointCache = new SparseArrayCompat<String>();
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
@@ -245,11 +249,12 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawFontTextLine(String text, DocumentData documentData, Canvas canvas, float parentScale) {
-    for (int i = 0; i < text.length(); i++) {
-      char character = text.charAt(i);
-      drawCharacterFromFont(character, documentData, canvas);
-      tempCharArray[0] = character;
-      float charWidth = fillPaint.measureText(tempCharArray, 0, 1);
+    for (int i = 0; i < text.length(); ) {
+      int codePoint = text.codePointAt(i);
+      i += Character.charCount(codePoint);
+      String charString = codePointToString(codePoint);
+      drawCharacterFromFont(charString, documentData, canvas);
+      float charWidth = fillPaint.measureText(charString, 0, 1);
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
@@ -323,25 +328,24 @@ public class TextLayer extends BaseLayer {
     canvas.drawPath(path, paint);
   }
 
-  private void drawCharacterFromFont(char c, DocumentData documentData, Canvas canvas) {
-    tempCharArray[0] = c;
+  private void drawCharacterFromFont(String character, DocumentData documentData, Canvas canvas) {
     if (documentData.strokeOverFill) {
-      drawCharacter(tempCharArray, fillPaint, canvas);
-      drawCharacter(tempCharArray, strokePaint, canvas);
+      drawCharacter(character, fillPaint, canvas);
+      drawCharacter(character, strokePaint, canvas);
     } else {
-      drawCharacter(tempCharArray, strokePaint, canvas);
-      drawCharacter(tempCharArray, fillPaint, canvas);
+      drawCharacter(character, strokePaint, canvas);
+      drawCharacter(character, fillPaint, canvas);
     }
   }
 
-  private void drawCharacter(char[] character, Paint paint, Canvas canvas) {
+  private void drawCharacter(String character, Paint paint, Canvas canvas) {
     if (paint.getColor() == Color.TRANSPARENT) {
       return;
     }
     if (paint.getStyle() == Paint.Style.STROKE && paint.getStrokeWidth() == 0) {
       return;
     }
-    canvas.drawText(character, 0, 1, 0, 0, paint);
+    canvas.drawText(character, 0, character.length(), 0, 0, paint);
   }
 
   private List<ContentGroup> getContentsForCharacter(FontCharacter character) {
@@ -357,6 +361,17 @@ public class TextLayer extends BaseLayer {
     }
     contentsForCharacter.put(character, contents);
     return contents;
+  }
+
+  private String codePointToString(int codePoint) {
+    if (codePointCache.containsKey(codePoint)) {
+      return codePointCache.get(codePoint);
+    }
+    stringBuilder.setLength(0);
+    stringBuilder.appendCodePoint(codePoint);
+    String str = stringBuilder.toString();
+    codePointCache.put(codePoint, str);
+    return str;
   }
 
   @SuppressWarnings("unchecked")

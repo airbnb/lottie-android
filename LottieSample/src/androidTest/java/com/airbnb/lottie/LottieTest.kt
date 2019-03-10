@@ -121,6 +121,7 @@ class LottieTest {
             testDynamicProperties()
             testMarkers()
             snapshotAssets()
+            testText()
             snapshotProdAnimations()
             snapshotter.finalizeReportAndUpload()
         }
@@ -188,6 +189,7 @@ class LottieTest {
         bitmapPool.release(bitmap)
     }
 
+    @ObsoleteCoroutinesApi
     private suspend fun snapshotAssets() = coroutineScope {
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
@@ -581,6 +583,28 @@ class LottieTest {
         withDrawable("Tests/Marker.json", "Marker", "endFrame") { drawable ->
             drawable.setMinAndMaxFrame("Marker A")
             drawable.frame = drawable.maxFrame.toInt()
+        }
+    }
+
+    private suspend fun testText() {
+        withAnimationView("Tests/DynamicText.json", "Dynamic Text", "With Emoji") { animationView ->
+            val textDelegate = TextDelegate(animationView)
+            animationView.setTextDelegate(textDelegate)
+            animationView.progress = 0.5f
+            textDelegate.setText("NAME", "🔥💪💯")
+        }
+
+        withAnimationView("Tests/DynamicText.json", "Dynamic Text", "With Taiwanese") { animationView ->
+            val textDelegate = TextDelegate(animationView)
+            animationView.setTextDelegate(textDelegate)
+            textDelegate.setText("NAME", "我的密碼")
+        }
+
+        withAnimationView("Tests/DynamicText.json", "Dynamic Text", "With Mixed Chars") { animationView ->
+            val textDelegate = TextDelegate(animationView)
+            animationView.setTextDelegate(textDelegate)
+            animationView.progress = 0.5f
+            textDelegate.setText("NAME", "🔥的A")
         }
     }
 
