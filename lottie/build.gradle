@@ -30,7 +30,7 @@ dependencies {
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"
-  implementation("com.squareup.moshi:moshi:1.8.0")
+  implementation("com.squareup.okio:okio:1.16.0")
 
 
 }

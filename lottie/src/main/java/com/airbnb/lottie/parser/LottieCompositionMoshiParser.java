@@ -21,7 +21,7 @@ import androidx.collection.SparseArrayCompat;
 
 
 public class LottieCompositionMoshiParser {
-    static com.squareup.moshi.JsonReader.Options NAMES = com.squareup.moshi.JsonReader.Options.of(
+    static JsonReader.Options NAMES = JsonReader.Options.of(
             "w",
             "h",
             "ip",
@@ -34,7 +34,7 @@ public class LottieCompositionMoshiParser {
             "chars",
             "markers");
 
-    public static LottieComposition parse(com.squareup.moshi.JsonReader reader) throws IOException {
+    public static LottieComposition parse(JsonReader reader) throws IOException {
         float scale = Utils.dpScale();
         float startFrame = 0f;
         float endFrame = 0f;

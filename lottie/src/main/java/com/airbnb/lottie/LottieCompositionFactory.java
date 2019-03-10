@@ -207,7 +207,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   private static LottieResult<LottieComposition> fromJsonInputStreamSyncMoshi(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
-     com.squareup.moshi.JsonReader jsonReader = com.squareup.moshi.JsonReader.of(Okio.buffer(Okio.source(stream)));
+      com.airbnb.lottie.parser.JsonReader jsonReader = com.airbnb.lottie.parser.JsonReader.of(Okio.buffer(Okio.source(stream)));
       return fromJsonReaderSyncMoshi(jsonReader, cacheKey);
     } finally {
       if (close) {
@@ -278,7 +278,7 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSyncMoshi(com.squareup.moshi.JsonReader reader, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonReaderSyncMoshi(com.airbnb.lottie.parser.JsonReader reader, @Nullable String cacheKey) {
     return fromJsonReaderSyncInternalMoshi(reader, cacheKey, true);
   }
 
@@ -299,7 +299,7 @@ public class LottieCompositionFactory {
   }
 
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternalMoshi(
-          com.squareup.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
+          com.airbnb.lottie.parser.JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
       LottieComposition composition = LottieCompositionMoshiParser.parse(reader);
       LottieCompositionCache.getInstance().put(cacheKey, composition);
