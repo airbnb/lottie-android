@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TextLayer extends BaseLayer {
-  // Capacity is 2 because emojis are 2 characters.
+  // Capacity is 2 because emojis are 2 characters. Some are longer in which case, the capacity will
+  // be expanded but that should be pretty rare.
   private final StringBuilder stringBuilder = new StringBuilder(2);
   private final RectF rectF = new RectF();
   private final Matrix matrix = new Matrix();
