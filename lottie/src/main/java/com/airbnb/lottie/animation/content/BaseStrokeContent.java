@@ -139,6 +139,10 @@ public abstract class BaseStrokeContent
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("StrokeContent#draw");
+    if (Utils.hasZeroScaleAxis(parentMatrix)) {
+      L.endSection("StrokeContent#draw");
+      return;
+    }
     int alpha = (int) ((parentAlpha / 255f * ((IntegerKeyframeAnimation) opacityAnimation).getIntValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
     paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue() * Utils.getScale(parentMatrix));
