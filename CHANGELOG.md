@@ -1,3 +1,7 @@
+# 3.0.0-beta4
+### Features and Improvements
+* Added support for dynamic properties on gradient fill opacity.
+
 # 3.0.0-beta3
 ### Features and Improvements
 * Added support for inverted masks.
