@@ -234,7 +234,9 @@ public class GradientFillContent
   @SuppressWarnings("unchecked")
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
-     if (property == LottieProperty.COLOR_FILTER) {
+    if (property == LottieProperty.OPACITY) {
+      opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.COLOR_FILTER) {
        if (callback == null) {
          colorFilterAnimation = null;
        } else {
