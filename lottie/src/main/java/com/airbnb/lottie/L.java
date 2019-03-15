@@ -4,6 +4,8 @@ import androidx.annotation.RestrictTo;
 import androidx.core.os.TraceCompat;
 import android.util.Log;
 
+import org.owasp.encoder.Encode;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,17 +27,29 @@ public class L {
   private static int depthPastMaxDepth = 0;
 
   public static void debug(String msg) {
-    if (DBG) Log.d(TAG, msg);
+
+    if (DBG) {
+
+      // Be sure to neutralize msg for security purpose
+      String encodedMsg = Encode.forJava(msg);
+
+      Log.d(TAG, encodedMsg);
+    }
   }
 
   /**
    * Warn to logcat. Keeps track of messages so they are only logged once ever.
    */
   public static void warn(String msg) {
+
     if (loggedMessages.contains(msg)) {
       return;
     }
-    Log.w(TAG, msg);
+
+    // Be sure to neutralize msg for security purpose
+    String encodedMsg = Encode.forJava(msg);
+    Log.w(TAG, encodedMsg);
+
     loggedMessages.add(msg);
   }
 

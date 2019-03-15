@@ -27,6 +27,7 @@ android {
 
 dependencies {
   implementation "androidx.appcompat:appcompat:${androidXVersion}"
+  implementation "org.owasp.encoder:encoder:1.2.2"
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"
