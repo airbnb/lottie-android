@@ -85,20 +85,28 @@ public class NetworkFetcher {
   @WorkerThread
   private LottieResult fetchFromNetworkInternal() throws IOException {
     L.debug( "Fetching " + url);
-    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
+    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
     connection.connect();
 
     if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+
+      int responseCode = connection.getResponseCode();
       BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
       StringBuilder error = new StringBuilder();
       String line;
       while ((line = r.readLine()) != null) {
         error.append(line).append('\n');
       }
+
+      // Be sure to clean resources
+      r.close();
+      connection.disconnect();
+
+
       return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
-          connection.getResponseCode() + "\n" + error));
+              responseCode + "\n" + error));
     }
 
     File file;
