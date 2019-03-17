@@ -9,13 +9,13 @@ import androidx.annotation.RestrictTo;
 import androidx.annotation.WorkerThread;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import org.json.JSONObject;
 

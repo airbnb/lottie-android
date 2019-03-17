@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.airbnb.lottie.parser;
+package com.airbnb.lottie.parser.moshi;
 
 
 import androidx.annotation.Nullable;
@@ -30,9 +30,9 @@ import androidx.annotation.Nullable;
  * sufficient for all practical applications, but shallow enough to avoid uglier failures like
  * {@link StackOverflowError}.
  */
-public final class JsonDataException extends RuntimeException {
+final class JsonDataException extends RuntimeException {
 
-  public JsonDataException(@Nullable String message) {
+  JsonDataException(@Nullable String message) {
     super(message);
   }
 

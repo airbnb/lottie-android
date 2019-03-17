@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.airbnb.lottie.parser;
+package com.airbnb.lottie.parser.moshi;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -24,10 +24,10 @@ import java.util.Map;
 import androidx.annotation.Nullable;
 import okio.BufferedSource;
 
-import static com.airbnb.lottie.parser.JsonScope.EMPTY_ARRAY;
-import static com.airbnb.lottie.parser.JsonScope.EMPTY_DOCUMENT;
-import static com.airbnb.lottie.parser.JsonScope.EMPTY_OBJECT;
-import static com.airbnb.lottie.parser.JsonScope.NONEMPTY_DOCUMENT;
+import static com.airbnb.lottie.parser.moshi.JsonScope.EMPTY_ARRAY;
+import static com.airbnb.lottie.parser.moshi.JsonScope.EMPTY_DOCUMENT;
+import static com.airbnb.lottie.parser.moshi.JsonScope.EMPTY_OBJECT;
+import static com.airbnb.lottie.parser.moshi.JsonScope.NONEMPTY_DOCUMENT;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 

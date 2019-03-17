@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.airbnb.lottie.parser;
+package com.airbnb.lottie.parser.moshi;
 
 import java.io.IOException;
 
@@ -21,8 +21,8 @@ import androidx.annotation.Nullable;
 
 
 /** Thrown when the data being parsed is not encoded as valid JSON. */
-public final class JsonEncodingException extends IOException {
-  public JsonEncodingException(@Nullable String message) {
+final class JsonEncodingException extends IOException {
+  JsonEncodingException(@Nullable String message) {
     super(message);
   }
 }

@@ -2,9 +2,9 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
@@ -23,6 +23,32 @@ import java.util.List;
 public class LayerParser {
 
   private LayerParser() {}
+
+  static JsonReader.Options NAMES = JsonReader.Options.of(
+      "nm",
+      "ind",
+      "refId",
+      "ty",
+      "parent",
+      "sw",
+      "sh",
+      "sc",
+      "ks",
+      "tt",
+      "masksProperties",
+      "shapes",
+      "t",
+      "ef",
+      "sr",
+      "st",
+      "w",
+      "h",
+      "ip",
+      "op",
+      "tm",
+      "cl",
+      "hd"
+  );
 
   public static Layer parse(LottieComposition composition) {
     Rect bounds = composition.getBounds();
@@ -65,17 +91,17 @@ public class LayerParser {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "nm":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           layerName = reader.nextString();
           break;
-        case "ind":
+        case 1:
           layerId = reader.nextInt();
           break;
-        case "refId":
+        case 2:
           refId = reader.nextString();
           break;
-        case "ty":
+        case 3:
           int layerTypeInt = reader.nextInt();
           if (layerTypeInt < Layer.LayerType.UNKNOWN.ordinal()) {
             layerType = Layer.LayerType.values()[layerTypeInt];
@@ -83,54 +109,55 @@ public class LayerParser {
             layerType = Layer.LayerType.UNKNOWN;
           }
           break;
-        case "parent":
+        case 4:
           parentId = reader.nextInt();
           break;
-        case "sw":
+        case 5:
           solidWidth = (int) (reader.nextInt() * Utils.dpScale());
           break;
-        case "sh":
+        case 6:
           solidHeight = (int) (reader.nextInt() * Utils.dpScale());
           break;
-        case "sc":
+        case 7:
           solidColor = Color.parseColor(reader.nextString());
           break;
-        case "ks":
-          transform = AnimatableTransformParser.parse(reader, composition);
+        case 8:
+//          transform = AnimatableTransformParser.parse(reader, composition);
           break;
-        case "tt":
+        case 9:
           matteType = Layer.MatteType.values()[reader.nextInt()];
           composition.incrementMatteOrMaskCount(1);
           break;
-        case "masksProperties":
+        case 10:
           reader.beginArray();
           while (reader.hasNext()) {
-            masks.add(MaskParser.parse(reader, composition));
+//            masks.add(MaskParser.parse(reader, composition));
           }
           composition.incrementMatteOrMaskCount(masks.size());
           reader.endArray();
           break;
-        case "shapes":
-          reader.beginArray();
-          while (reader.hasNext()) {
-            ContentModel shape = ContentModelParser.parse(reader, composition);
-            if (shape != null) {
-              shapes.add(shape);
-            }
-          }
-          reader.endArray();
+        case 11:
+//          reader.beginArray();
+//          while (reader.hasNext()) {
+////            ContentModel shape = ContentModelParser.parse(reader, composition);
+////            if (shape != null) {
+////              shapes.add(shape);
+////            }
+//          }
+//          reader.endArray();
           break;
-        case "t":
+        case 12:
           reader.beginObject();
+          //TODO MIKE: MIGRATE
           while (reader.hasNext()) {
             switch (reader.nextName()) {
               case "d":
-                text = AnimatableValueParser.parseDocumentData(reader, composition);
+//                text = AnimatableValueParser.parseDocumentData(reader, composition);
                 break;
               case "a":
                 reader.beginArray();
                 if (reader.hasNext()) {
-                  textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
+//                  textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
                 }
                 while (reader.hasNext()) {
                   reader.skipValue();
@@ -143,7 +170,7 @@ public class LayerParser {
           }
           reader.endObject();
           break;
-        case "ef":
+        case 13:
           reader.beginArray();
           List<String> effectNames = new ArrayList<>();
           while (reader.hasNext()) {
@@ -165,31 +192,31 @@ public class LayerParser {
               " fills, strokes, trim paths etc. then try adding them directly as contents " +
               " in your shape. Found: " + effectNames);
           break;
-        case "sr":
+        case 14:
           timeStretch = (float) reader.nextDouble();
           break;
-        case "st":
+        case 15:
           startFrame = (float) reader.nextDouble();
           break;
-        case "w":
+        case 16:
           preCompWidth = (int) (reader.nextInt() * Utils.dpScale());
           break;
-        case "h":
+        case 17:
           preCompHeight = (int) (reader.nextInt() * Utils.dpScale());
           break;
-        case "ip":
+        case 18:
           inFrame = (float) reader.nextDouble();
           break;
-        case "op":
+        case 19:
           outFrame = (float) reader.nextDouble();
           break;
-        case "tm":
-          timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);
+        case 20:
+//          timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case "cl":
+        case 21:
           cl = reader.nextString();
           break;
-        case "hd":
+        case 22:
           hidden = reader.nextBoolean();
           break;
         default:

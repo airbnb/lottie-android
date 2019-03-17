@@ -97,8 +97,8 @@ class LottieTest {
     }
 
     @Test
-    fun benchMark(){
-        val inflatedAsset = LottieCompositionFactory.fromAssetSyncMoshi(activity, "Tests/input.json")
+    fun tddMoshiJsonReaderConversion(){
+        val inflatedAsset = LottieCompositionFactory.fromAssetSync(activity, "Tests/input.json")
         assertNotNull(inflatedAsset)
     }
 

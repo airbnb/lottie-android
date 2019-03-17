@@ -17,17 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.appcompat.widget.AppCompatImageView;
+import okio.Okio;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 
 import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
@@ -313,7 +316,7 @@ import java.util.Set;
    * JSONObject never has to be done.
    */
   public void setAnimationFromJson(String jsonString, @Nullable String cacheKey) {
-    setAnimation(new JsonReader(new StringReader(jsonString)), cacheKey);
+    setAnimation(JsonReader.of(Okio.buffer(Okio.source(new ByteArrayInputStream(jsonString.getBytes())))), cacheKey);
   }
 
   /**
