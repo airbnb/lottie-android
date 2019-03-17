@@ -4,11 +4,11 @@ import android.graphics.PointF;
 import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
-import android.util.JsonReader;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
@@ -26,6 +26,16 @@ class KeyframeParser {
   private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
   private static SparseArrayCompat<WeakReference<Interpolator>> pathInterpolatorCache;
 
+  static JsonReader.Options NAMES = JsonReader.Options.of(
+      "t",
+      "s",
+      "e",
+      "o",
+      "i",
+      "h",
+      "to",
+      "ti"
+  );
   // https://github.com/airbnb/lottie-android/issues/464
   private static SparseArrayCompat<WeakReference<Interpolator>> pathInterpolatorCache() {
     if (pathInterpolatorCache == null) {
@@ -52,7 +62,7 @@ class KeyframeParser {
   }
 
   static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
-      float scale, ValueParser<T> valueParser, boolean animated) throws IOException {
+                               float scale, ValueParser<T> valueParser, boolean animated) throws IOException {
 
     if (animated) {
       return parseKeyframe(composition, reader, scale, valueParser);
@@ -81,29 +91,29 @@ class KeyframeParser {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "t":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           startFrame = (float) reader.nextDouble();
           break;
-        case "s":
+        case 1:
           startValue = valueParser.parse(reader, scale);
           break;
-        case "e":
+        case 2:
           endValue = valueParser.parse(reader, scale);
           break;
-        case "o":
+        case 3:
           cp1 = JsonUtils.jsonToPoint(reader, scale);
           break;
-        case "i":
+        case 4:
           cp2 = JsonUtils.jsonToPoint(reader, scale);
           break;
-        case "h":
+        case 5:
           hold = reader.nextInt() == 1;
           break;
-        case "to":
+        case 6:
           pathCp1 = JsonUtils.jsonToPoint(reader, scale);
           break;
-        case "ti":
+        case 7:
           pathCp2 = JsonUtils.jsonToPoint(reader, scale);
           break;
         default:

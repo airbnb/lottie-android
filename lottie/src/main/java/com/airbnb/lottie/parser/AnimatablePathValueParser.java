@@ -1,10 +1,10 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
 import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatablePathValue;
@@ -23,7 +23,7 @@ public class AnimatablePathValueParser {
   public static AnimatablePathValue parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     List<Keyframe<PointF>> keyframes = new ArrayList<>();
-    if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+    if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
       reader.beginArray();
       while (reader.hasNext()) {
         keyframes.add(PathKeyframeParser.parse(reader, composition));
@@ -49,13 +49,13 @@ public class AnimatablePathValueParser {
     boolean hasExpressions = false;
 
     reader.beginObject();
-    while (reader.peek() != JsonToken.END_OBJECT) {
+    while (reader.peek() != JsonReader.Token.END_OBJECT) {
       switch (reader.nextName()) {
         case "k":
           pathAnimation = AnimatablePathValueParser.parse(reader, composition);
           break;
         case "x":
-          if (reader.peek() == JsonToken.STRING) {
+          if (reader.peek() == JsonReader.Token.STRING) {
             hasExpressions = true;
             reader.skipValue();
           } else {
@@ -63,7 +63,7 @@ public class AnimatablePathValueParser {
           }
           break;
         case "y":
-          if (reader.peek() == JsonToken.STRING) {
+          if (reader.peek() == JsonReader.Token.STRING) {
             hasExpressions = true;
             reader.skipValue();
           } else {

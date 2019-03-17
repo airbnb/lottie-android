@@ -42,19 +42,19 @@ class FontCharacterParser {
           fontFamily = reader.nextString();
           break;
         case "data":
-          reader.beginObject();
-          while (reader.hasNext()) {
-            if ("shapes".equals(reader.nextName())) {
-              reader.beginArray();
-              while (reader.hasNext()) {
-                shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
-              }
-              reader.endArray();
-            } else {
-              reader.skipValue();
-            }
-          }
-          reader.endObject();
+//          reader.beginObject();
+//          while (reader.hasNext()) {
+//            if ("shapes".equals(reader.nextName())) {
+//              reader.beginArray();
+//              while (reader.hasNext()) {
+////                shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
+//              }
+//              reader.endArray();
+//            } else {
+//              reader.skipValue();
+//            }
+//          }
+//          reader.endObject();
           break;
         default:
           reader.skipValue();

@@ -1,11 +1,10 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.content.ShapeData;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import java.io.IOException;
@@ -16,12 +15,14 @@ import java.util.List;
 public class ShapeDataParser implements ValueParser<ShapeData> {
   public static final ShapeDataParser INSTANCE = new ShapeDataParser();
 
-  private ShapeDataParser() {}
+  private ShapeDataParser() {
+  }
 
-  @Override public ShapeData parse(JsonReader reader, float scale) throws IOException {
+  @Override
+  public ShapeData parse(JsonReader reader, float scale) throws IOException {
     // Sometimes the points data is in a array of length 1. Sometimes the data is at the top
     // level.
-    if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+    if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
       reader.beginArray();
     }
 
@@ -37,20 +38,20 @@ public class ShapeDataParser implements ValueParser<ShapeData> {
           closed = reader.nextBoolean();
           break;
         case "v":
-          pointsArray =  JsonUtils.jsonToPoints(reader, scale);
+          pointsArray = JsonUtils.jsonToPoints(reader, scale);
           break;
         case "i":
-          inTangents =  JsonUtils.jsonToPoints(reader, scale);
+          inTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
         case "o":
-          outTangents =  JsonUtils.jsonToPoints(reader, scale);
+          outTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
       }
     }
 
     reader.endObject();
 
-    if (reader.peek() == JsonToken.END_ARRAY) {
+    if (reader.peek() == JsonReader.Token.END_ARRAY) {
       reader.endArray();
     }
 

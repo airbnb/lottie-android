@@ -46,16 +46,16 @@ public class AnimatableTextPropertiesParser {
     while (reader.hasNext()) {
       switch (reader.nextName()) {
         case "fc":
-          color = AnimatableValueParser.parseColor(reader, composition);
+//          color = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "sc":
-          stroke = AnimatableValueParser.parseColor(reader, composition);
+//          stroke = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "sw":
-          strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
+//          strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "t":
-          tracking = AnimatableValueParser.parseFloat(reader, composition);
+//          tracking = AnimatableValueParser.parseFloat(reader, composition);
           break;
         default:
           reader.skipValue();

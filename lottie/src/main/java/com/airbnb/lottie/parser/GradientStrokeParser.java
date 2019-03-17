@@ -1,6 +1,5 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
@@ -10,6 +9,7 @@ import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.content.GradientStroke;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.model.content.ShapeStroke;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +18,25 @@ import java.util.List;
 class GradientStrokeParser {
 
   private GradientStrokeParser() {}
+  private static JsonReader.Options NAMES = JsonReader.Options.of(
+      "nm",
+      "g",
+      "o",
+      "t",
+      "s",
+      "e",
+      "w",
+      "lc",
+      "lj",
+      "ml",
+      "hd",
+      "d"
+
+
+
+
+
+  );
 
   static GradientStroke parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -38,11 +57,11 @@ class GradientStrokeParser {
     List<AnimatableFloatValue> lineDashPattern = new ArrayList<>();
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "nm":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           name = reader.nextString();
           break;
-        case "g":
+        case 1:
           int points = -1;
           reader.beginObject();
           while (reader.hasNext()) {
@@ -59,34 +78,34 @@ class GradientStrokeParser {
           }
           reader.endObject();
           break;
-        case "o":
+        case 2:
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
-        case "t":
+        case 3:
           gradientType = reader.nextInt() == 1 ? GradientType.LINEAR : GradientType.RADIAL;
           break;
-        case "s":
+        case 4:
           startPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
-        case "e":
+        case 5:
           endPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
-        case "w":
+        case 6:
           width = AnimatableValueParser.parseFloat(reader, composition);
           break;
-        case "lc":
+        case 7:
           capType = ShapeStroke.LineCapType.values()[reader.nextInt() - 1];
           break;
-        case "lj":
+        case 8:
           joinType = ShapeStroke.LineJoinType.values()[reader.nextInt() - 1];
           break;
-        case "ml":
+        case 9:
           miterLimit = (float) reader.nextDouble();
           break;
-        case "hd":
+        case 10:
           hidden = reader.nextBoolean();
           break;
-        case "d":
+        case 11:
           reader.beginArray();
           while (reader.hasNext()) {
             String n = null;

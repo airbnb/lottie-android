@@ -1,7 +1,6 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Path;
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
@@ -9,6 +8,7 @@ import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.content.GradientFill;
 import com.airbnb.lottie.model.content.GradientType;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 

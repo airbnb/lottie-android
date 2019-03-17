@@ -122,7 +122,7 @@ public class LayerParser {
           solidColor = Color.parseColor(reader.nextString());
           break;
         case 8:
-//          transform = AnimatableTransformParser.parse(reader, composition);
+          transform = AnimatableTransformParser.parse(reader, composition);
           break;
         case 9:
           matteType = Layer.MatteType.values()[reader.nextInt()];

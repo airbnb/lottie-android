@@ -1,9 +1,9 @@
 package com.airbnb.lottie.parser;
 
 import androidx.annotation.Nullable;
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;

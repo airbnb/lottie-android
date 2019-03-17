@@ -29,10 +29,10 @@ class ShapeFillParser {
           name = reader.nextString();
           break;
         case "c":
-          color = AnimatableValueParser.parseColor(reader, composition);
+//          color = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "o":
-          opacity = AnimatableValueParser.parseInteger(reader, composition);
+//          opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "fillEnabled":
           fillEnabled = reader.nextBoolean();

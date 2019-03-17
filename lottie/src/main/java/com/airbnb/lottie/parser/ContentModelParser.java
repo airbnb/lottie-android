@@ -1,15 +1,15 @@
 package com.airbnb.lottie.parser;
 
 import androidx.annotation.Nullable;
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.content.ContentModel;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
-
+//TODO MIKE: Convert to use Options
 class ContentModelParser {
 
   private ContentModelParser() {}
@@ -54,19 +54,19 @@ class ContentModelParser {
         model = GradientStrokeParser.parse(reader, composition);
         break;
       case "fl":
-        model = ShapeFillParser.parse(reader, composition);
+//        model = ShapeFillParser.parse(reader, composition);
         break;
       case "gf":
-        model = GradientFillParser.parse(reader, composition);
+//        model = GradientFillParser.parse(reader, composition);
         break;
       case "tr":
-        model = AnimatableTransformParser.parse(reader, composition);
+//        model = AnimatableTransformParser.parse(reader, composition);
         break;
       case "sh":
         model = ShapePathParser.parse(reader, composition);
         break;
       case "el":
-        model = CircleShapeParser.parse(reader, composition, d);
+//        model = CircleShapeParser.parse(reader, composition, d);
         break;
       case "rc":
         model = RectangleShapeParser.parse(reader, composition);
@@ -75,10 +75,10 @@ class ContentModelParser {
         model = ShapeTrimPathParser.parse(reader, composition);
         break;
       case "sr":
-        model = PolystarShapeParser.parse(reader, composition);
+//        model = PolystarShapeParser.parse(reader, composition);
         break;
       case "mm":
-        model = MergePathsParser.parse(reader);
+//        model = MergePathsParser.parse(reader);
         composition.addWarning("Animation contains merge paths. Merge paths are only " +
             "supported on KitKat+ and must be manually enabled by calling " +
             "enableMergePathsForKitKatAndAbove().");

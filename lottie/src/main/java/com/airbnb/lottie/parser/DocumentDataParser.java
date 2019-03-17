@@ -1,10 +1,11 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
 
 import com.airbnb.lottie.model.DocumentData;
 
 import com.airbnb.lottie.model.DocumentData.Justification;
+import com.airbnb.lottie.parser.moshi.JsonReader;
+
 import java.io.IOException;
 
 public class DocumentDataParser implements ValueParser<DocumentData> {

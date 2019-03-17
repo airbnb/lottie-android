@@ -1,7 +1,8 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
+
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 

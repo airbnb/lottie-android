@@ -3,8 +3,9 @@ package com.airbnb.lottie.parser;
 import android.graphics.Color;
 import android.graphics.PointF;
 import androidx.annotation.ColorInt;
-import android.util.JsonReader;
 import android.util.JsonToken;
+
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ class JsonUtils {
     List<PointF> points = new ArrayList<>();
 
     reader.beginArray();
-    while (reader.peek() == JsonToken.BEGIN_ARRAY) {
+    while (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
       reader.beginArray();
       points.add(jsonToPoint(reader, scale));
       reader.endArray();
@@ -66,7 +67,7 @@ class JsonUtils {
     reader.beginArray();
     x = (float) reader.nextDouble();
     y = (float) reader.nextDouble();
-    while (reader.peek() != JsonToken.END_ARRAY) {
+    while (reader.peek() != JsonReader.Token.END_ARRAY) {
       reader.skipValue();
     }
     reader.endArray();
@@ -94,7 +95,7 @@ class JsonUtils {
   }
 
   static float valueFromObject(JsonReader reader) throws IOException {
-    JsonToken token = reader.peek();
+    JsonReader.Token token = reader.peek();
     switch (token) {
       case NUMBER:
         return (float) reader.nextDouble();

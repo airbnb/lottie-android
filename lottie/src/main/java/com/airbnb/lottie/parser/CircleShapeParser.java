@@ -28,10 +28,10 @@ class CircleShapeParser {
           name = reader.nextString();
           break;
         case "p":
-          position = AnimatablePathValueParser.parseSplitPath(reader, composition);
+//          position = AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case "s":
-          size = AnimatableValueParser.parsePoint(reader, composition);
+//          size = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "hd":
           hidden = reader.nextBoolean();
