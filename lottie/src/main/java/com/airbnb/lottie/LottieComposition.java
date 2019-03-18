@@ -181,7 +181,7 @@ public class LottieComposition {
     int size = markers.size();
     for (int i = 0; i < markers.size(); i++) {
       Marker marker = markers.get(i);
-      if (markerName.equals(marker.name)) {
+      if (marker.matchesName(markerName)) {
         return marker;
       }
     }
