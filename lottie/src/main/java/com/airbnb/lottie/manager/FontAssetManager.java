@@ -28,7 +28,7 @@ public class FontAssetManager {
   public FontAssetManager(Drawable.Callback callback, @Nullable FontAssetDelegate delegate) {
     this.delegate = delegate;
     if (!(callback instanceof View)) {
-      Log.w(L.TAG, "LottieDrawable must be inside of a view for images to work.");
+      L.logger.warning("LottieDrawable must be inside of a view for images to work.");
       assetManager = null;
       return;
     }

@@ -58,7 +58,7 @@ public abstract class BaseLayer
       case UNKNOWN:
       default:
         // Do nothing
-        L.warn("Unknown layer type " + layerModel.getLayerType());
+        L.logger.warning("Unknown layer type " + layerModel.getLayerType());
         return null;
     }
   }

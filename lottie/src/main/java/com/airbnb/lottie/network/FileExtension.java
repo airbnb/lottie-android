@@ -30,7 +30,7 @@ public enum FileExtension {
       }
     }
     // Default to Json.
-    L.warn("Unable to find correct extension for " + filename);
+    L.logger.warning("Unable to find correct extension for " + filename);
     return JSON;
   }
 }

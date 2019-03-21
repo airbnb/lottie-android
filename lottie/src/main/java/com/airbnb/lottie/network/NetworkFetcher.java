@@ -44,7 +44,7 @@ public class NetworkFetcher {
       return new LottieResult<>(result);
     }
 
-    L.debug("Animation for " + url + " not found in cache. Fetching from network.");
+    L.logger.debug("Animation for " + url + " not found in cache. Fetching from network.");
     return fetchFromNetwork();
   }
 
@@ -84,7 +84,7 @@ public class NetworkFetcher {
 
   @WorkerThread
   private LottieResult fetchFromNetworkInternal() throws IOException {
-    L.debug( "Fetching " + url);
+    L.logger.debug("Fetching " + url);
 
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
@@ -114,14 +114,14 @@ public class NetworkFetcher {
     LottieResult<LottieComposition> result;
     switch (connection.getContentType()) {
       case "application/zip":
-        L.debug("Handling zip response.");
+        L.logger.debug("Handling zip response.");
         extension = FileExtension.ZIP;
         file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
         result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
         break;
       case "application/json":
       default:
-        L.debug("Received json response.");
+        L.logger.debug("Received json response.");
         extension = FileExtension.JSON;
         file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
         result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
@@ -132,7 +132,7 @@ public class NetworkFetcher {
       networkCache.renameTempFile(extension);
     }
 
-    L.debug("Completed fetch from network. Success: " + (result.getValue() != null));
+    L.logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
     return result;
   }
 }

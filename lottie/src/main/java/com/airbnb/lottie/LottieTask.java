@@ -149,7 +149,7 @@ public class LottieTask<T> {
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
     if (listenersCopy.isEmpty()) {
-      Log.w(L.TAG, "Lottie encountered an error but no failure listener was added.", e);
+      L.logger.warning("Lottie encountered an error but no failure listener was added:", e);
       return;
     }
 

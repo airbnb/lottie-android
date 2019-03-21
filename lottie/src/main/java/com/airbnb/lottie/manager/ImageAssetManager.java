@@ -36,7 +36,7 @@ public class ImageAssetManager {
     }
 
     if (!(callback instanceof View)) {
-      Log.w(L.TAG, "LottieDrawable must be inside of a view for images to work.");
+      L.logger.warning("LottieDrawable must be inside of a view for images to work.");
       this.imageAssets = new HashMap<>();
       context = null;
       return;
@@ -95,7 +95,7 @@ public class ImageAssetManager {
       try {
         data = Base64.decode(filename.substring(filename.indexOf(',') + 1), Base64.DEFAULT);
       } catch (IllegalArgumentException e) {
-        Log.w(L.TAG, "data URL did not have correct base64 format.", e);
+        L.logger.warning("data URL did not have correct base64 format.", e);
         return null;
       }
       bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
@@ -110,7 +110,7 @@ public class ImageAssetManager {
       }
       is = context.getAssets().open(imagesFolder + filename);
     } catch (IOException e) {
-      Log.w(L.TAG, "Unable to open asset.", e);
+      L.logger.warning("Unable to open asset.", e);
       return null;
     }
     bitmap = BitmapFactory.decodeStream(is, null, opts);

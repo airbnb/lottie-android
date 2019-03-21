@@ -85,7 +85,7 @@ public class LottieComposition {
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void addWarning(String warning) {
-    Log.w(L.TAG, warning);
+    L.logger.warning(warning);
     warnings.add(warning);
   }
 
@@ -301,7 +301,7 @@ public class LottieComposition {
     @Deprecated
     public static LottieComposition fromInputStreamSync(InputStream stream, boolean close) {
       if (close) {
-        Log.w(L.TAG, "Lottie now auto-closes input stream!");
+        L.logger.warning("Lottie now auto-closes input stream!");
       }
       return LottieCompositionFactory.fromJsonInputStreamSync(stream, null).getValue();
     }

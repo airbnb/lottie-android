@@ -40,7 +40,7 @@ class MaskParser {
               maskMode = Mask.MaskMode.MASK_MODE_INTERSECT;
               break;
             default:
-              Log.w(L.TAG, "Unknown mask mode " + mode + ". Defaulting to Add.");
+              L.logger.warning("Unknown mask mode " + mode + ". Defaulting to Add.");
               maskMode = Mask.MaskMode.MASK_MODE_ADD;
           }
           break;

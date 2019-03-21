@@ -87,7 +87,7 @@ class ContentModelParser {
         model = RepeaterParser.parse(reader, composition);
         break;
       default:
-        Log.w(L.TAG, "Unknown shape type " + type);
+        L.logger.warning("Unknown shape type " + type);
     }
 
     while (reader.hasNext()) {

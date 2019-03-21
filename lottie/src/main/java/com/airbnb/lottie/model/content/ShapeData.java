@@ -53,7 +53,7 @@ public class ShapeData {
 
 
     if (shapeData1.getCurves().size() != shapeData2.getCurves().size()) {
-      L.warn("Curves must have the same number of control points. Shape 1: " +
+      L.logger.warning("Curves must have the same number of control points. Shape 1: " +
           shapeData1.getCurves().size() + "\tShape 2: " + shapeData2.getCurves().size());
     }
     

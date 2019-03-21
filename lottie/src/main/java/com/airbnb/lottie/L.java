@@ -1,23 +1,16 @@
 package com.airbnb.lottie;
 
+import com.airbnb.lottie.utils.DefaultLogger;
+import com.airbnb.lottie.utils.LottieLogger;
+
 import androidx.annotation.RestrictTo;
 import androidx.core.os.TraceCompat;
-import android.util.Log;
-
-import org.owasp.encoder.Encode;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {
-  public static final String TAG = "LOTTIE";
-  public static boolean DBG = false;
 
-  /**
-   * Set to ensure that we only log each message one time max.
-   */
-  private static final Set<String> loggedMessages = new HashSet<>();
+  public static boolean DBG = false;
+  public static final String TAG = "LOTTIE";
 
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
@@ -26,32 +19,7 @@ public class L {
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
 
-  public static void debug(String msg) {
-
-    if (DBG) {
-
-      // Be sure to neutralize msg for security purpose
-      String encodedMsg = Encode.forJava(msg);
-
-      Log.d(TAG, encodedMsg);
-    }
-  }
-
-  /**
-   * Warn to logcat. Keeps track of messages so they are only logged once ever.
-   */
-  public static void warn(String msg) {
-
-    if (loggedMessages.contains(msg)) {
-      return;
-    }
-
-    // Be sure to neutralize msg for security purpose
-    String encodedMsg = Encode.forJava(msg);
-    Log.w(TAG, encodedMsg);
-
-    loggedMessages.add(msg);
-  }
+  public static LottieLogger logger = new DefaultLogger();
 
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {

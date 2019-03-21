@@ -114,7 +114,7 @@ public class LottieCompositionParser {
       layerMap.put(layer.getId(), layer);
 
       if (imageCount > 4) {
-        L.warn("You have " + imageCount + " images. Lottie should primarily be " +
+        L.logger.warning("You have " + imageCount + " images. Lottie should primarily be " +
             "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
             " to shape layers.");
       }

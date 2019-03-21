@@ -61,7 +61,7 @@ class NetworkCache {
       extension = FileExtension.JSON;
     }
 
-    L.debug("Cache hit for " + url + " at " + cachedFile.getAbsolutePath());
+    L.logger.debug("Cache hit for " + url + " at " + cachedFile.getAbsolutePath());
     return new Pair<>(extension, (InputStream) inputStream);
   }
 
@@ -104,9 +104,9 @@ class NetworkCache {
     String newFileName = file.getAbsolutePath().replace(".temp", "");
     File newFile = new File(newFileName);
     boolean renamed = file.renameTo(newFile);
-    L.debug("Copying temp file to real file (" + newFile + ")");
+    L.logger.debug("Copying temp file to real file (" + newFile + ")");
     if (!renamed) {
-      L.warn( "Unable to rename cache file " + file.getAbsolutePath() + " to " + newFile.getAbsolutePath() + ".");
+      L.logger.warning("Unable to rename cache file " + file.getAbsolutePath() + " to " + newFile.getAbsolutePath() + ".");
     }
   }
 

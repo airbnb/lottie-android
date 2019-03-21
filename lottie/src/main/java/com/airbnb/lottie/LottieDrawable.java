@@ -154,7 +154,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      Log.w(TAG, "Merge paths are not supported pre-Kit Kat.");
+      L.logger.warning("Merge paths are not supported pre-Kit Kat.");
       return;
     }
     enableMergePaths = enable;
@@ -284,7 +284,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Override
   public void setColorFilter(@Nullable ColorFilter colorFilter) {
-    Log.w(L.TAG, "Use addColorFilter instead.");
+    L.logger.warning("Use addColorFilter instead.");
   }
 
   @Override
@@ -846,7 +846,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {
-      Log.w(L.TAG, "Cannot resolve KeyPath. Composition is not set yet.");
+      L.logger.warning("Cannot resolve KeyPath. Composition is not set yet.");
       return Collections.emptyList();
     }
     List<KeyPath> keyPaths = new ArrayList<>();
@@ -922,7 +922,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
     ImageAssetManager bm = getImageAssetManager();
     if (bm == null) {
-      Log.w(L.TAG, "Cannot update bitmap. Most likely the drawable is not added to a View " +
+      L.logger.warning("Cannot update bitmap. Most likely the drawable is not added to a View " +
           "which prevents Lottie from getting a Context.");
       return null;
     }
