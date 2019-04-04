@@ -101,12 +101,15 @@ public class NetworkFetcher {
       }
 
       // Be sure to clean resources
-      r.close();
-      connection.disconnect();
-
+      try {
+        r.close();
+        connection.disconnect();
+      } catch (Exception e) {
+        L.logger.warning("Unable to release fetch resources for url " + url);
+      }
 
       return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
-              responseCode + "\n" + error));
+            responseCode + "\n" + error));
     }
 
     File file;

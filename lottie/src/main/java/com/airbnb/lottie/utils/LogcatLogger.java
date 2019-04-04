@@ -7,8 +7,11 @@ import com.airbnb.lottie.L;
 import java.util.HashSet;
 import java.util.Set;
 
-// Default logger
-public class DefaultLogger implements LottieLogger {
+/**
+ * Default logger.
+ * Warnings with same message will only be logged once.
+ */
+public class LogcatLogger implements LottieLogger {
 
   /**
    * Set to ensure that we only log each message one time max.
@@ -21,11 +24,9 @@ public class DefaultLogger implements LottieLogger {
   }
 
   public void debug(String message, Throwable exception) {
-
     if (L.DBG) {
       Log.d(L.TAG, message, exception);
     }
-
   }
 
   public void warning(String message) {
@@ -33,7 +34,6 @@ public class DefaultLogger implements LottieLogger {
   }
 
   public void warning(String message, Throwable exception) {
-
     if (loggedMessages.contains(message)) {
       return;
     }
@@ -42,5 +42,4 @@ public class DefaultLogger implements LottieLogger {
 
     loggedMessages.add(message);
   }
-
 }

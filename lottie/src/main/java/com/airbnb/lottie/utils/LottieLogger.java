@@ -1,7 +1,8 @@
 package com.airbnb.lottie.utils;
 
-// Give ability to integrators to provide
-// another logging mechanism.
+/**
+ * Give ability to integrators to provide another logging mechanism.
+ */
 public interface LottieLogger {
 
   void debug(String message);

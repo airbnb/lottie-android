@@ -1,6 +1,6 @@
 package com.airbnb.lottie;
 
-import com.airbnb.lottie.utils.DefaultLogger;
+import com.airbnb.lottie.utils.LogcatLogger;
 import com.airbnb.lottie.utils.LottieLogger;
 
 import androidx.annotation.RestrictTo;
@@ -19,7 +19,7 @@ public class L {
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
 
-  public static LottieLogger logger = new DefaultLogger();
+  public static LottieLogger logger = new LogcatLogger();
 
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {
