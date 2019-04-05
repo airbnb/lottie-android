@@ -72,7 +72,7 @@ import java.util.Set;
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private String animationName;
   private @RawRes int animationResId;
-  private boolean wasAnimatingWhenVisibilityChanged = false;
+  private boolean wasAnimatingWhenNotShown = false;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
@@ -238,14 +238,15 @@ import java.util.Set;
     if (lottieDrawable == null) {
       return;
     }
-    if (visibility == VISIBLE) {
-      if (wasAnimatingWhenVisibilityChanged) {
+    if (isShown()) {
+      if (wasAnimatingWhenNotShown) {
         resumeAnimation();
+        wasAnimatingWhenNotShown = false;
       }
     } else {
-      wasAnimatingWhenVisibilityChanged = isAnimating();
       if (isAnimating()) {
         pauseAnimation();
+        wasAnimatingWhenNotShown = true;
       }
     }
   }
@@ -411,8 +412,12 @@ import java.util.Set;
    */
   @MainThread
   public void playAnimation() {
-    lottieDrawable.playAnimation();
-    enableOrDisableHardwareLayer();
+    if (isShown()) {
+      lottieDrawable.playAnimation();
+      enableOrDisableHardwareLayer();
+    } else {
+      wasAnimatingWhenNotShown = true;
+    }
   }
 
   /**
@@ -421,8 +426,12 @@ import java.util.Set;
    */
   @MainThread
   public void resumeAnimation() {
-    lottieDrawable.resumeAnimation();
-    enableOrDisableHardwareLayer();
+    if (isShown()) {
+      lottieDrawable.resumeAnimation();
+      enableOrDisableHardwareLayer();
+    } else {
+      wasAnimatingWhenNotShown = true;
+    }
   }
 
   /**
@@ -740,12 +749,14 @@ import java.util.Set;
 
   @MainThread
   public void cancelAnimation() {
+    wasAnimatingWhenNotShown = false;
     lottieDrawable.cancelAnimation();
     enableOrDisableHardwareLayer();
   }
 
   @MainThread
   public void pauseAnimation() {
+    wasAnimatingWhenNotShown = false;
     lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();
   }
