@@ -86,30 +86,37 @@ public class NetworkFetcher {
   private LottieResult fetchFromNetworkInternal() throws IOException {
     L.logger.debug("Fetching " + url);
 
+
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
-    connection.connect();
 
-    if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+    try {
+      connection.connect();
 
-      int responseCode = connection.getResponseCode();
-      BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-      StringBuilder error = new StringBuilder();
-      String line;
-      while ((line = r.readLine()) != null) {
-        error.append(line).append('\n');
-      }
+      if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
 
-      // Be sure to clean resources
-      try {
-        r.close();
-        connection.disconnect();
-      } catch (Exception e) {
-        L.logger.warning("Unable to release fetch resources for url " + url);
-      }
+        int responseCode = connection.getResponseCode();
+        BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        StringBuilder error = new StringBuilder();
+        String line;
 
-      return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
+        try {
+          while ((line = r.readLine()) != null) {
+            error.append(line).append('\n');
+          }
+        } catch (Exception e) {
+          throw e;
+        } finally{
+          r.close();
+        }
+
+        return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
             responseCode + "\n" + error));
+      }
+    } catch (Exception e) {
+      return new LottieResult<>(e);
+    } finally {
+      connection.disconnect();
     }
 
     File file;
