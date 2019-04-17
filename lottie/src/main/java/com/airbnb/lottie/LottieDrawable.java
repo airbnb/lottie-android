@@ -64,6 +64,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
+  private boolean systemAnimationsEnabled = true;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
@@ -375,7 +376,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.playAnimation();
+
+    if (systemAnimationsEnabled || getRepeatCount() == 0) {
+      animator.playAnimation();
+    }
+    if (!systemAnimationsEnabled) {
+      setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+    }
   }
 
   @MainThread
@@ -730,6 +737,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public boolean isAnimating() {
     return animator.isRunning();
+  }
+
+  void setSystemAnimationsAreEnabled(Boolean areEnabled) {
+    systemAnimationsEnabled = areEnabled;
   }
 
 // </editor-fold>
