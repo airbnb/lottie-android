@@ -34,6 +34,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.airbnb.lottie.RenderMode.HARDWARE;
+import static com.airbnb.lottie.RenderMode.SOFTWARE;
+
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
  * bodymovin (https://github.com/bodymovin/bodymovin).
@@ -804,6 +807,21 @@ import java.util.Set;
   private void clearComposition() {
     composition = null;
     lottieDrawable.clearComposition();
+  }
+
+  /**
+   * If rendering via software, Android will fail to generate a bitmap if the view is too large. Rather than displaying
+   * nothing, fallback on hardware acceleration which may incur a performance hit.
+   *
+   * @see #setRenderMode(RenderMode)
+   * @see com.airbnb.lottie.LottieDrawable#draw(android.graphics.Canvas)
+   */
+  @Override
+  public void buildDrawingCache(boolean autoScale) {
+    super.buildDrawingCache(autoScale);
+    if (getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
+      setRenderMode(HARDWARE);
+    }
   }
 
   /**
