@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
-import androidx.annotation.Nullable;
+
+import android.support.annotation.Nullable;
 
 /**
  * @see LottieCompositionFactory

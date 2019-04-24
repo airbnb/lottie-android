@@ -7,8 +7,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import androidx.annotation.Nullable;
-import androidx.collection.LongSparseArray;
+import android.support.annotation.Nullable;
+import android.support.v4.util.LongSparseArray;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;

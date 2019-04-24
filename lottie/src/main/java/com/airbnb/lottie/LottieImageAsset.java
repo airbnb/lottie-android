@@ -1,8 +1,8 @@
 package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
+import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 /**
  * Data class describing an image asset exported by bodymovin.

@@ -2,7 +2,7 @@ package com.airbnb.lottie.utils;
 
 import android.graphics.Path;
 import android.graphics.PointF;
-import androidx.annotation.FloatRange;
+import android.support.annotation.FloatRange;
 
 import com.airbnb.lottie.animation.content.KeyPathElementContent;
 import com.airbnb.lottie.model.CubicCurveData;
