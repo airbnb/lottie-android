@@ -1,16 +1,14 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import android.util.Log;
+import android.support.annotation.FloatRange;
+import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.Nullable;
 
 /**
  * @param <K> Keyframe type

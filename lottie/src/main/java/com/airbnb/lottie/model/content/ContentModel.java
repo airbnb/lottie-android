@@ -1,7 +1,8 @@
 package com.airbnb.lottie.model.content;
 
 
-import androidx.annotation.Nullable;
+
+import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;

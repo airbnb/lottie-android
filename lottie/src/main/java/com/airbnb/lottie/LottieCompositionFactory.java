@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-import androidx.annotation.WorkerThread;
+import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
+import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
-import android.util.Log;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
@@ -25,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 

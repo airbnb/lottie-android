@@ -2,8 +2,8 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;

@@ -14,7 +14,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LPaint;

@@ -1,7 +1,8 @@
 package com.airbnb.lottie;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.Map;

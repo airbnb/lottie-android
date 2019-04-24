@@ -1,13 +1,15 @@
 package com.airbnb.lottie.model;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
+
+import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY;
+import static android.support.annotation.RestrictTo.Scope.LIBRARY;
+
 
 /**
  * Any item that can be a part of a {@link KeyPath} should implement this.
