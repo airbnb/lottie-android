@@ -5,10 +5,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieResult;
+import com.airbnb.lottie.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +44,7 @@ public class NetworkFetcher {
       return new LottieResult<>(result);
     }
 
-    L.logger.debug("Animation for " + url + " not found in cache. Fetching from network.");
+    Logger.debug("Animation for " + url + " not found in cache. Fetching from network.");
     return fetchFromNetwork();
   }
 
@@ -84,7 +84,7 @@ public class NetworkFetcher {
 
   @WorkerThread
   private LottieResult fetchFromNetworkInternal() throws IOException {
-    L.logger.debug("Fetching " + url);
+    Logger.debug("Fetching " + url);
 
 
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -124,14 +124,14 @@ public class NetworkFetcher {
     LottieResult<LottieComposition> result;
     switch (connection.getContentType()) {
       case "application/zip":
-        L.logger.debug("Handling zip response.");
+        Logger.debug("Handling zip response.");
         extension = FileExtension.ZIP;
         file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
         result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
         break;
       case "application/json":
       default:
-        L.logger.debug("Received json response.");
+        Logger.debug("Received json response.");
         extension = FileExtension.JSON;
         file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
         result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
@@ -142,7 +142,7 @@ public class NetworkFetcher {
       networkCache.renameTempFile(extension);
     }
 
-    L.logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
+    Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
     return result;
   }
 }

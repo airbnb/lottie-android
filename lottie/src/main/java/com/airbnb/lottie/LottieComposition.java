@@ -10,12 +10,12 @@ import androidx.annotation.WorkerThread;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
 import android.util.JsonReader;
-import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.utils.Logger;
 
 import org.json.JSONObject;
 
@@ -85,7 +85,7 @@ public class LottieComposition {
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void addWarning(String warning) {
-    L.logger.warning(warning);
+    Logger.warning(warning);
     warnings.add(warning);
   }
 
@@ -301,7 +301,7 @@ public class LottieComposition {
     @Deprecated
     public static LottieComposition fromInputStreamSync(InputStream stream, boolean close) {
       if (close) {
-        L.logger.warning("Lottie now auto-closes input stream!");
+        Logger.warning("Lottie now auto-closes input stream!");
       }
       return LottieCompositionFactory.fromJsonInputStreamSync(stream, null).getValue();
     }

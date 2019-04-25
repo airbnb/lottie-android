@@ -5,13 +5,13 @@ import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
 import android.util.JsonReader;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 
 import java.io.IOException;
@@ -114,7 +114,7 @@ public class LottieCompositionParser {
       layerMap.put(layer.getId(), layer);
 
       if (imageCount > 4) {
-        L.logger.warning("You have " + imageCount + " images. Lottie should primarily be " +
+        Logger.warning("You have " + imageCount + " images. Lottie should primarily be " +
             "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
             " to shape layers.");
       }

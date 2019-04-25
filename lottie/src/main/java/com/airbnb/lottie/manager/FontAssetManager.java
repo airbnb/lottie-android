@@ -10,6 +10,7 @@ import android.view.View;
 import com.airbnb.lottie.FontAssetDelegate;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.model.MutablePair;
+import com.airbnb.lottie.utils.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class FontAssetManager {
   public FontAssetManager(Drawable.Callback callback, @Nullable FontAssetDelegate delegate) {
     this.delegate = delegate;
     if (!(callback instanceof View)) {
-      L.logger.warning("LottieDrawable must be inside of a view for images to work.");
+      Logger.warning("LottieDrawable must be inside of a view for images to work.");
       assetManager = null;
       return;
     }

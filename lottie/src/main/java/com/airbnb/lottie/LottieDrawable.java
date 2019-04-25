@@ -16,7 +16,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.FloatRange;
@@ -32,6 +31,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.parser.LayerParser;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieFrameInfo;
@@ -154,7 +154,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      L.logger.warning("Merge paths are not supported pre-Kit Kat.");
+      Logger.warning("Merge paths are not supported pre-Kit Kat.");
       return;
     }
     enableMergePaths = enable;
@@ -284,7 +284,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Override
   public void setColorFilter(@Nullable ColorFilter colorFilter) {
-    L.logger.warning("Use addColorFilter instead.");
+    Logger.warning("Use addColorFilter instead.");
   }
 
   @Override
@@ -846,7 +846,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public List<KeyPath> resolveKeyPath(KeyPath keyPath) {
     if (compositionLayer == null) {
-      L.logger.warning("Cannot resolve KeyPath. Composition is not set yet.");
+      Logger.warning("Cannot resolve KeyPath. Composition is not set yet.");
       return Collections.emptyList();
     }
     List<KeyPath> keyPaths = new ArrayList<>();
@@ -922,7 +922,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public Bitmap updateBitmap(String id, @Nullable Bitmap bitmap) {
     ImageAssetManager bm = getImageAssetManager();
     if (bm == null) {
-      L.logger.warning("Cannot update bitmap. Most likely the drawable is not added to a View " +
+      Logger.warning("Cannot update bitmap. Most likely the drawable is not added to a View " +
           "which prevents Lottie from getting a Context.");
       return null;
     }

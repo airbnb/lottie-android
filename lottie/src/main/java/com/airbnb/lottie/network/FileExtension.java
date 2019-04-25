@@ -1,6 +1,6 @@
 package com.airbnb.lottie.network;
 
-import com.airbnb.lottie.L;
+import com.airbnb.lottie.utils.Logger;
 
 /**
  * Helpers for known Lottie file types.
@@ -30,7 +30,7 @@ public enum FileExtension {
       }
     }
     // Default to Json.
-    L.logger.warning("Unable to find correct extension for " + filename);
+    Logger.warning("Unable to find correct extension for " + filename);
     return JSON;
   }
 }

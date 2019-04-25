@@ -19,8 +19,6 @@ public class L {
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
 
-  public static LottieLogger logger = new LogcatLogger();
-
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {
       return;
