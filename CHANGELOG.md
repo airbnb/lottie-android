@@ -1,3 +1,9 @@
+# 3.0.1
+### Bugs Fixed
+* Fixed an edge case that would resume an animation when it is not shown.
+* Disable animations when the system animation scale is 0.
+* Fall back to hardware rendering when the animation is too large to create a drawing cache.
+
 # 3.0.0
 ### Features and Improvements
 * **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.
