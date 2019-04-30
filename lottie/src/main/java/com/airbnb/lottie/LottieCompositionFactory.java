@@ -286,13 +286,14 @@ public class LottieCompositionFactory {
     try {
       ZipEntry entry = inputStream.getNextEntry();
       while (entry != null) {
-        if (entry.getName().contains("__MACOSX")) {
+        final String entryName = entry.getName();
+        if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
-        } else if (entry.getName().contains(".json")) {
+        } else if (entryName.contains(".json")) {
           JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
-        } else if (entry.getName().contains(".png")) {
-          String[] splitName = entry.getName().split("/");
+        } else if (entryName.contains(".png") || entryName.contains(".webp")) {
+          String[] splitName = entryName.split("/");
           String name = splitName[splitName.length - 1];
           images.put(name, BitmapFactory.decodeStream(inputStream));
         } else {
