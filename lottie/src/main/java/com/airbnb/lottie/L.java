@@ -1,8 +1,5 @@
 package com.airbnb.lottie;
 
-import com.airbnb.lottie.utils.LogcatLogger;
-import com.airbnb.lottie.utils.LottieLogger;
-
 import androidx.annotation.RestrictTo;
 import androidx.core.os.TraceCompat;
 

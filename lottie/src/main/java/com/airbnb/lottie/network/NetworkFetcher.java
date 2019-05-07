@@ -106,7 +106,7 @@ public class NetworkFetcher {
           }
         } catch (Exception e) {
           throw e;
-        } finally{
+        } finally {
           r.close();
         }
 

@@ -1,4 +1,4 @@
-package com.airbnb.lottie.utils;
+package com.airbnb.lottie;
 
 /**
  * Give ability to integrators to provide another logging mechanism.
