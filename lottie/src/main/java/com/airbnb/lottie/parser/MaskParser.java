@@ -1,13 +1,12 @@
 package com.airbnb.lottie.parser;
 
 import android.util.JsonReader;
-import android.util.Log;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.utils.Logger;
 
 import java.io.IOException;
 
@@ -40,7 +39,7 @@ class MaskParser {
               maskMode = Mask.MaskMode.MASK_MODE_INTERSECT;
               break;
             default:
-              Log.w(L.TAG, "Unknown mask mode " + mode + ". Defaulting to Add.");
+              Logger.warning("Unknown mask mode " + mode + ". Defaulting to Add.");
               maskMode = Mask.MaskMode.MASK_MODE_ADD;
           }
           break;

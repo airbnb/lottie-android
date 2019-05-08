@@ -2,20 +2,12 @@ package com.airbnb.lottie;
 
 import androidx.annotation.RestrictTo;
 import androidx.core.os.TraceCompat;
-import android.util.Log;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {
-  public static final String TAG = "LOTTIE";
-  public static boolean DBG = false;
 
-  /**
-   * Set to ensure that we only log each message one time max.
-   */
-  private static final Set<String> loggedMessages = new HashSet<>();
+  public static boolean DBG = false;
+  public static final String TAG = "LOTTIE";
 
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
@@ -23,21 +15,6 @@ public class L {
   private static long[] startTimeNs;
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
-
-  public static void debug(String msg) {
-    if (DBG) Log.d(TAG, msg);
-  }
-
-  /**
-   * Warn to logcat. Keeps track of messages so they are only logged once ever.
-   */
-  public static void warn(String msg) {
-    if (loggedMessages.contains(msg)) {
-      return;
-    }
-    Log.w(TAG, msg);
-    loggedMessages.add(msg);
-  }
 
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {

@@ -2,11 +2,10 @@ package com.airbnb.lottie.parser;
 
 import androidx.annotation.Nullable;
 import android.util.JsonReader;
-import android.util.Log;
 
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.content.ContentModel;
+import com.airbnb.lottie.utils.Logger;
 
 import java.io.IOException;
 
@@ -87,7 +86,7 @@ class ContentModelParser {
         model = RepeaterParser.parse(reader, composition);
         break;
       default:
-        Log.w(L.TAG, "Unknown shape type " + type);
+        Logger.warning("Unknown shape type " + type);
     }
 
     while (reader.hasNext()) {
