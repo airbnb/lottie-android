@@ -762,6 +762,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
   @MainThread
   public void pauseAnimation() {
+    wasAnimatingWhenDetached = false;
     wasAnimatingWhenNotShown = false;
     lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();
