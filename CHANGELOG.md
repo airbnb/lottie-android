@@ -1,3 +1,9 @@
+# 3.0.2
+### Features and Improvements
+* Zipped animations with images now support WebP.
+* Use frameTimeNanos LottieAnimator.
+* Set wasAnimatingWhenDetached to false at pause().
+
 # 3.0.1
 ### Bugs Fixed
 * Fixed an edge case that would resume an animation when it is not shown.
