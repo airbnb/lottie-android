@@ -82,7 +82,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
       return;
     }
 
-    long now = System.nanoTime();
+    long now = frameTimeNanos;
     long timeSinceFrame = now - lastFrameTimeNs;
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
