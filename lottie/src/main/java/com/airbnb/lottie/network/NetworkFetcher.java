@@ -107,7 +107,11 @@ public class NetworkFetcher {
         } catch (Exception e) {
           throw e;
         } finally {
-          r.close();
+          try {
+            r.close();
+          } catch (Exception e) {
+            // Do nothing.
+          }
         }
 
         return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
