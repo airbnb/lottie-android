@@ -134,8 +134,14 @@ public class NetworkFetcher {
   private LottieResult<LottieComposition> getResultFromConnection(HttpURLConnection connection) throws IOException {
     File file;
     FileExtension extension;
-    LottieResult<LottieComposition> result = null;
-    switch (connection.getContentType()) {
+    LottieResult<LottieComposition> result;
+    String contentType = connection.getContentType();
+    if (contentType == null) {
+      // Assume JSON for best effort parsing. If it fails, it will just deliver the parse exception
+      // in the result which is more useful than failing here.
+      contentType = "application/json";
+    }
+    switch (contentType) {
       case "application/zip":
         Logger.debug("Handling zip response.");
         extension = FileExtension.ZIP;
