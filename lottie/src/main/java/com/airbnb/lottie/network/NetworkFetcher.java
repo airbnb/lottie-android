@@ -94,34 +94,47 @@ public class NetworkFetcher {
       connection.connect();
 
       if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-
-        int responseCode = connection.getResponseCode();
-        BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        StringBuilder error = new StringBuilder();
-        String line;
-
-        try {
-          while ((line = r.readLine()) != null) {
-            error.append(line).append('\n');
-          }
-        } catch (Exception e) {
-          throw e;
-        } finally {
-          r.close();
-        }
-
-        return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " +
-            responseCode + "\n" + error));
+        String error = getErrorFromConnection(connection);
+        return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error));
       }
+
+      LottieResult<LottieComposition> result = getResultFromConnection(connection);
+      Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
+      return result;
     } catch (Exception e) {
       return new LottieResult<>(e);
     } finally {
       connection.disconnect();
     }
+  }
 
+  private String getErrorFromConnection(HttpURLConnection connection) throws IOException {
+    int responseCode = connection.getResponseCode();
+    BufferedReader r = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+    StringBuilder error = new StringBuilder();
+    String line;
+
+    try {
+      while ((line = r.readLine()) != null) {
+        error.append(line).append('\n');
+      }
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      try {
+        r.close();
+      } catch (Exception e) {
+        // Do nothing.
+      }
+    }
+    return error.toString();
+  }
+
+  @Nullable
+  private LottieResult<LottieComposition> getResultFromConnection(HttpURLConnection connection) throws IOException {
     File file;
     FileExtension extension;
-    LottieResult<LottieComposition> result;
+    LottieResult<LottieComposition> result = null;
     switch (connection.getContentType()) {
       case "application/zip":
         Logger.debug("Handling zip response.");
@@ -141,8 +154,6 @@ public class NetworkFetcher {
     if (result.getValue() != null) {
       networkCache.renameTempFile(extension);
     }
-
-    Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
     return result;
   }
 }
