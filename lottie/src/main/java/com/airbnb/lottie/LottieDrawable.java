@@ -276,6 +276,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Override
   public void setAlpha(@IntRange(from = 0, to = 255) int alpha) {
     this.alpha = alpha;
+    invalidateSelf();
   }
 
   @Override
