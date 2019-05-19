@@ -96,7 +96,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     notifyUpdate();
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
-        frame = getMaxFrame();
+        frame = speed < 0 ? getMinFrame() : getMaxFrame();
         removeFrameCallback();
         notifyEnd(isReversed());
       } else {
