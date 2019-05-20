@@ -14,6 +14,7 @@ import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionParser;
 
+import com.airbnb.lottie.utils.Utils;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -314,7 +315,7 @@ public class LottieCompositionFactory {
     for (Map.Entry<String, Bitmap> e : images.entrySet()) {
       LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
       if (imageAsset != null) {
-        imageAsset.setBitmap(e.getValue());
+        imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
       }
     }
 
