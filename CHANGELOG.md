@@ -1,6 +1,16 @@
+# 3.0.3
+### Bugs Fixed
+* Prevent network connections from being closed before parsing is finished.
+* invalidateSelf() after settings alpha.
+* Set the correct frame when animations end but speed is < 0.
+* Default missing content types to application/json.
+* Consistently use frameTimeNanos to prevent animation frame time from being < 0.
+
 # 3.0.2
 ### Features and Improvements
 * Zipped animations with images now support WebP.
+
+### Bugs Fixed
 * Use frameTimeNanos LottieAnimator.
 * Set wasAnimatingWhenDetached to false at pause().
 
