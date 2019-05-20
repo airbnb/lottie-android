@@ -12,6 +12,7 @@ import android.view.View;
 import com.airbnb.lottie.ImageAssetDelegate;
 import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.utils.Logger;
+import com.airbnb.lottie.utils.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,6 +114,7 @@ public class ImageAssetManager {
       return null;
     }
     bitmap = BitmapFactory.decodeStream(is, null, opts);
+    bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
     return putBitmap(id, bitmap);
   }
 
