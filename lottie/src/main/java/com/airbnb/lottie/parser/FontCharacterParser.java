@@ -10,8 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 class FontCharacterParser {
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+      "ch",
+      "size",
+      "w",
+      "style",
+      "fFamily",
+      "data"
+  );
+  private static final JsonReader.Options DATA_NAMES = JsonReader.Options.of("shapes");
 
-  private FontCharacterParser() {}
+  private FontCharacterParser() {
+  }
 
   static FontCharacter parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -24,38 +34,42 @@ class FontCharacterParser {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "ch":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           character = reader.nextString().charAt(0);
           break;
-        case "size":
+        case 1:
           size = reader.nextDouble();
           break;
-        case "w":
+        case 2:
           width = reader.nextDouble();
           break;
-        case "style":
+        case 3:
           style = reader.nextString();
           break;
-        case "fFamily":
+        case 4:
           fontFamily = reader.nextString();
           break;
-        case "data":
+        case 5:
           reader.beginObject();
           while (reader.hasNext()) {
-            if ("shapes".equals(reader.nextName())) {
-              reader.beginArray();
-              while (reader.hasNext()) {
-                shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
-              }
-              reader.endArray();
-            } else {
-              reader.skipValue();
+            switch (reader.selectName(DATA_NAMES)) {
+              case 0:
+                reader.beginArray();
+                while (reader.hasNext()) {
+                  shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
+                }
+                reader.endArray();
+                break;
+              default:
+                reader.skipName();
+                reader.skipValue();
             }
           }
           reader.endObject();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

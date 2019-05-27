@@ -32,6 +32,14 @@ class GradientStrokeParser {
       "hd",
       "d"
   );
+  private static final JsonReader.Options GRADIENT_NAMES = JsonReader.Options.of(
+      "p",
+      "k"
+  );
+  private static final JsonReader.Options DASH_PATTERN_NAMES = JsonReader.Options.of(
+      "n",
+      "v"
+  );
 
   static GradientStroke parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -60,14 +68,15 @@ class GradientStrokeParser {
           int points = -1;
           reader.beginObject();
           while (reader.hasNext()) {
-            switch (reader.nextName()) {
-              case "p":
+            switch (reader.selectName(GRADIENT_NAMES)) {
+              case 0:
                 points = reader.nextInt();
                 break;
-              case "k":
+              case 1:
                 color = AnimatableValueParser.parseGradientColor(reader, composition, points);
                 break;
               default:
+                reader.skipName();
                 reader.skipValue();
             }
           }
@@ -107,14 +116,15 @@ class GradientStrokeParser {
             AnimatableFloatValue val = null;
             reader.beginObject();
             while (reader.hasNext()) {
-              switch (reader.nextName()) {
-                case "n":
+              switch (reader.selectName(DASH_PATTERN_NAMES)) {
+                case 0:
                   n = reader.nextString();
                   break;
-                case "v":
+                case 1:
                   val = AnimatableValueParser.parseFloat(reader, composition);
                   break;
                 default:
+                  reader.skipName();
                   reader.skipValue();
               }
             }
@@ -134,6 +144,7 @@ class GradientStrokeParser {
           }
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

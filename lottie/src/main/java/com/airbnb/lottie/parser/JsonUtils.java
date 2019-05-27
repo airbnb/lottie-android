@@ -74,19 +74,22 @@ class JsonUtils {
     return new PointF(x * scale, y * scale);
   }
 
+  private static final JsonReader.Options POINT_NAMES = JsonReader.Options.of("x", "y");
+
   private static PointF jsonObjectToPoint(JsonReader reader, float scale) throws IOException {
     float x = 0f;
     float y = 0f;
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "x":
+      switch (reader.selectName(POINT_NAMES)) {
+        case 0:
           x = valueFromObject(reader);
           break;
-        case "y":
+        case 1:
           y = valueFromObject(reader);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

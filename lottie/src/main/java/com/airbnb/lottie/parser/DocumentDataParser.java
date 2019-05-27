@@ -2,7 +2,6 @@ package com.airbnb.lottie.parser;
 
 
 import com.airbnb.lottie.model.DocumentData;
-
 import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 
@@ -10,10 +9,25 @@ import java.io.IOException;
 
 public class DocumentDataParser implements ValueParser<DocumentData> {
   public static final DocumentDataParser INSTANCE = new DocumentDataParser();
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+      "t",
+      "f",
+      "s",
+      "j",
+      "tr",
+      "lh",
+      "ls",
+      "fc",
+      "sc",
+      "sw",
+      "of"
+  );
 
-  private DocumentDataParser() {}
+  private DocumentDataParser() {
+  }
 
-  @Override public DocumentData parse(JsonReader reader, float scale) throws IOException {
+  @Override
+  public DocumentData parse(JsonReader reader, float scale) throws IOException {
     String text = null;
     String fontName = null;
     double size = 0;
@@ -28,17 +42,17 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "t":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           text = reader.nextString();
           break;
-        case "f":
+        case 1:
           fontName = reader.nextString();
           break;
-        case "s":
+        case 2:
           size = reader.nextDouble();
           break;
-        case "j":
+        case 3:
           int justificationInt = reader.nextInt();
           if (justificationInt > Justification.CENTER.ordinal() || justificationInt < 0) {
             justification = Justification.CENTER;
@@ -46,28 +60,29 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
             justification = Justification.values()[justificationInt];
           }
           break;
-        case "tr":
+        case 4:
           tracking = reader.nextInt();
           break;
-        case "lh":
+        case 5:
           lineHeight = reader.nextDouble();
           break;
-        case "ls":
+        case 6:
           baselineShift = reader.nextDouble();
           break;
-        case "fc":
+        case 7:
           fillColor = JsonUtils.jsonToColor(reader);
           break;
-        case "sc":
+        case 8:
           strokeColor = JsonUtils.jsonToColor(reader);
           break;
-        case "sw":
+        case 9:
           strokeWidth = reader.nextDouble();
           break;
-        case "of":
+        case 10:
           strokeOverFill = reader.nextBoolean();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

@@ -10,6 +10,14 @@ import java.io.IOException;
 
 public class AnimatableTextPropertiesParser {
 
+  private static JsonReader.Options PROPERTIES_NAMES = JsonReader.Options.of("a");
+  private static JsonReader.Options ANIMATABLE_PROPERTIES_NAMES = JsonReader.Options.of(
+      "fc",
+      "sc",
+      "sw",
+      "t"
+  );
+
   private AnimatableTextPropertiesParser() {}
 
   public static AnimatableTextProperties parse(
@@ -18,11 +26,12 @@ public class AnimatableTextPropertiesParser {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "a":
+      switch (reader.selectName(PROPERTIES_NAMES)) {
+        case 0:
           anim = parseAnimatableTextProperties(reader, composition);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }
@@ -43,20 +52,21 @@ public class AnimatableTextPropertiesParser {
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "fc":
+      switch (reader.selectName(ANIMATABLE_PROPERTIES_NAMES)) {
+        case 0:
           color = AnimatableValueParser.parseColor(reader, composition);
           break;
-        case "sc":
+        case 1:
           stroke = AnimatableValueParser.parseColor(reader, composition);
           break;
-        case "sw":
+        case 2:
           strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
           break;
-        case "t":
+        case 3:
           tracking = AnimatableValueParser.parseFloat(reader, composition);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

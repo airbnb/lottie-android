@@ -24,7 +24,7 @@ import androidx.collection.SparseArrayCompat;
 
 
 public class LottieCompositionMoshiParser {
-  static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "w", // 0
       "h", // 1
       "ip", // 2
@@ -201,11 +201,13 @@ public class LottieCompositionMoshiParser {
     reader.endArray();
   }
 
+  private static final JsonReader.Options FONT_NAMES = JsonReader.Options.of("list");
+
   private static void parseFonts(JsonReader reader, Map<String, Font> fonts) throws IOException {
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "list":
+      switch (reader.selectName(FONT_NAMES)) {
+        case 0:
           reader.beginArray();
           while (reader.hasNext()) {
             Font font = FontParser.parse(reader);
@@ -214,6 +216,7 @@ public class LottieCompositionMoshiParser {
           reader.endArray();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }
@@ -231,6 +234,12 @@ public class LottieCompositionMoshiParser {
     reader.endArray();
   }
 
+  private static final JsonReader.Options MARKER_NAMES = JsonReader.Options.of(
+      "cm",
+      "tm",
+      "dr"
+  );
+
   private static void parseMarkers(
       JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException{
     reader.beginArray();
@@ -240,17 +249,18 @@ public class LottieCompositionMoshiParser {
       float durationFrames = 0f;
       reader.beginObject();
       while (reader.hasNext()) {
-        switch (reader.nextName()) {
-          case "cm":
+        switch (reader.selectName(MARKER_NAMES)) {
+          case 0:
             comment = reader.nextString();
             break;
-          case "tm":
+          case 1:
             frame = (float) reader.nextDouble();
             break;
-          case "dr":
+          case 2:
             durationFrames = (float) reader.nextDouble();
             break;
           default:
+            reader.skipName();
             reader.skipValue();
         }
       }

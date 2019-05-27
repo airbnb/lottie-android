@@ -24,7 +24,7 @@ public class LayerParser {
 
   private LayerParser() {}
 
-  static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm", // 0
       "ind", // 1
       "refId", // 2
@@ -59,6 +59,13 @@ public class LayerParser {
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
         Layer.MatteType.NONE, null, false);
   }
+
+  private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
+      "d",
+      "a"
+  );
+
+  private static final JsonReader.Options EFFECTS_NAMES = JsonReader.Options.of("nm");
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
     // This should always be set by After Effects. However, if somebody wants to minify
@@ -148,13 +155,12 @@ public class LayerParser {
           break;
         case 12:
           reader.beginObject();
-          //TODO MIKE: MIGRATE
           while (reader.hasNext()) {
-            switch (reader.nextName()) {
-              case "d":
+            switch (reader.selectName(TEXT_NAMES)) {
+              case 0:
                 text = AnimatableValueParser.parseDocumentData(reader, composition);
                 break;
-              case "a":
+              case 1:
                 reader.beginArray();
                 if (reader.hasNext()) {
                   textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
@@ -165,6 +171,7 @@ public class LayerParser {
                 reader.endArray();
                 break;
               default:
+                reader.skipName();
                 reader.skipValue();
             }
           }
@@ -176,11 +183,12 @@ public class LayerParser {
           while (reader.hasNext()) {
             reader.beginObject();
             while (reader.hasNext()) {
-              switch (reader.nextName()) {
-                case "nm":
+              switch (reader.selectName(EFFECTS_NAMES)) {
+                case 0:
                   effectNames.add(reader.nextString());
                   break;
                 default:
+                  reader.skipName();
                   reader.skipValue();
 
               }
@@ -220,6 +228,7 @@ public class LayerParser {
           hidden = reader.nextBoolean();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

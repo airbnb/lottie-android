@@ -18,6 +18,12 @@ import java.util.List;
 
 public class AnimatablePathValueParser {
 
+  private static JsonReader.Options NAMES = JsonReader.Options.of(
+      "k",
+      "x",
+      "y"
+  );
+
   private AnimatablePathValueParser() {}
 
   public static AnimatablePathValue parse(
@@ -50,11 +56,11 @@ public class AnimatablePathValueParser {
 
     reader.beginObject();
     while (reader.peek() != JsonReader.Token.END_OBJECT) {
-      switch (reader.nextName()) {
-        case "k":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           pathAnimation = AnimatablePathValueParser.parse(reader, composition);
           break;
-        case "x":
+        case 1:
           if (reader.peek() == JsonReader.Token.STRING) {
             hasExpressions = true;
             reader.skipValue();
@@ -62,7 +68,7 @@ public class AnimatablePathValueParser {
             xAnimation = AnimatableValueParser.parseFloat(reader, composition);
           }
           break;
-        case "y":
+        case 2:
           if (reader.peek() == JsonReader.Token.STRING) {
             hasExpressions = true;
             reader.skipValue();
@@ -71,6 +77,7 @@ public class AnimatablePathValueParser {
           }
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

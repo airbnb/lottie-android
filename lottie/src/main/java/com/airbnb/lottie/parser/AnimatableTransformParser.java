@@ -21,7 +21,7 @@ public class AnimatableTransformParser {
   }
 
 
-  static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static JsonReader.Options NAMES = JsonReader.Options.of(
       "a",
       "p",
       "s",
@@ -33,6 +33,7 @@ public class AnimatableTransformParser {
       "sk",
       "sa"
   );
+  private static JsonReader.Options ANIMATABLE_NAMES = JsonReader.Options.of("k");
 
   public static AnimatableTransform parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -55,10 +56,13 @@ public class AnimatableTransformParser {
         case 0:
           reader.beginObject();
           while (reader.hasNext()) {
-            if (reader.nextName().equals("k")) {
-              anchorPoint = AnimatablePathValueParser.parse(reader, composition);
-            } else {
-              reader.skipValue();
+            switch (reader.selectName(ANIMATABLE_NAMES)) {
+              case 0:
+                anchorPoint = AnimatablePathValueParser.parse(reader, composition);
+                break;
+                default:
+                  reader.skipName();
+                  reader.skipValue();
             }
           }
           reader.endObject();
@@ -106,6 +110,7 @@ public class AnimatableTransformParser {
           skewAngle = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

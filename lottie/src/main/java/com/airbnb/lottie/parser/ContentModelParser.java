@@ -1,18 +1,22 @@
 package com.airbnb.lottie.parser;
 
 import androidx.annotation.Nullable;
-import android.util.Log;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Logger;
 
 import java.io.IOException;
-//TODO MIKE: Convert to use Options
+
 class ContentModelParser {
 
-  private ContentModelParser() {}
+  private static JsonReader.Options NAMES = JsonReader.Options.of(
+      "ty",
+      "d"
+  );
+
+  private ContentModelParser() {
+  }
 
   @Nullable
   static ContentModel parse(JsonReader reader, LottieComposition composition)
@@ -26,14 +30,15 @@ class ContentModelParser {
     int d = 2;
     typeLoop:
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "ty":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           type = reader.nextString();
           break typeLoop;
-        case "d":
+        case 1:
           d = reader.nextInt();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }
