@@ -31,11 +31,6 @@ class GradientStrokeParser {
       "ml",
       "hd",
       "d"
-
-
-
-
-
   );
 
   static GradientStroke parse(

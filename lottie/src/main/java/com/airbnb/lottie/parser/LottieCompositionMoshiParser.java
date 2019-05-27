@@ -90,16 +90,13 @@ public class LottieCompositionMoshiParser {
           parseAssets(reader, composition, precomps, images);
           break;
         case 8:
-//          parseFonts(reader, fonts);
-          reader.skipValue();
+          parseFonts(reader, fonts);
           break;
         case 9:
-//          parseChars(reader, composition, characters);
-          reader.skipValue();
+          parseChars(reader, composition, characters);
           break;
         case 10:
-//          parseMarkers(reader, composition, markers);
-          reader.skipValue();
+          parseMarkers(reader, composition, markers);
           break;
         default:
           reader.skipName();
@@ -204,4 +201,62 @@ public class LottieCompositionMoshiParser {
     reader.endArray();
   }
 
+  private static void parseFonts(JsonReader reader, Map<String, Font> fonts) throws IOException {
+    reader.beginObject();
+    while (reader.hasNext()) {
+      switch (reader.nextName()) {
+        case "list":
+          reader.beginArray();
+          while (reader.hasNext()) {
+            Font font = FontParser.parse(reader);
+            fonts.put(font.getName(), font);
+          }
+          reader.endArray();
+          break;
+        default:
+          reader.skipValue();
+      }
+    }
+    reader.endObject();
+  }
+
+  private static void parseChars(
+      JsonReader reader, LottieComposition composition,
+      SparseArrayCompat<FontCharacter> characters) throws IOException {
+    reader.beginArray();
+    while (reader.hasNext()) {
+      FontCharacter character = FontCharacterParser.parse(reader, composition);
+      characters.put(character.hashCode(), character);
+    }
+    reader.endArray();
+  }
+
+  private static void parseMarkers(
+      JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException{
+    reader.beginArray();
+    while (reader.hasNext()) {
+      String comment = null;
+      float frame = 0f;
+      float durationFrames = 0f;
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.nextName()) {
+          case "cm":
+            comment = reader.nextString();
+            break;
+          case "tm":
+            frame = (float) reader.nextDouble();
+            break;
+          case "dr":
+            durationFrames = (float) reader.nextDouble();
+            break;
+          default:
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
+      markers.add(new Marker(comment, frame, durationFrames));
+    }
+    reader.endArray();
+  }
 }

@@ -75,10 +75,10 @@ class ContentModelParser {
         model = ShapeTrimPathParser.parse(reader, composition);
         break;
       case "sr":
-//        model = PolystarShapeParser.parse(reader, composition);
+        model = PolystarShapeParser.parse(reader, composition);
         break;
       case "mm":
-//        model = MergePathsParser.parse(reader);
+        model = MergePathsParser.parse(reader);
         composition.addWarning("Animation contains merge paths. Merge paths are only " +
             "supported on KitKat+ and must be manually enabled by calling " +
             "enableMergePathsForKitKatAndAbove().");

@@ -24,12 +24,6 @@ class ShapeStrokeParser {
       "ml",
       "hd",
       "d"
-
-
-
-
-
-
   );
 
   private ShapeStrokeParser() {

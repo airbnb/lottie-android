@@ -131,7 +131,7 @@ public class LayerParser {
         case 10:
           reader.beginArray();
           while (reader.hasNext()) {
-//            masks.add(MaskParser.parse(reader, composition));
+            masks.add(MaskParser.parse(reader, composition));
           }
           composition.incrementMatteOrMaskCount(masks.size());
           reader.endArray();
@@ -152,12 +152,12 @@ public class LayerParser {
           while (reader.hasNext()) {
             switch (reader.nextName()) {
               case "d":
-//                text = AnimatableValueParser.parseDocumentData(reader, composition);
+                text = AnimatableValueParser.parseDocumentData(reader, composition);
                 break;
               case "a":
                 reader.beginArray();
                 if (reader.hasNext()) {
-//                  textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
+                  textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
                 }
                 while (reader.hasNext()) {
                   reader.skipValue();
@@ -211,7 +211,7 @@ public class LayerParser {
           outFrame = (float) reader.nextDouble();
           break;
         case 20:
-//          timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);
+          timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         case 21:
           cl = reader.nextString();

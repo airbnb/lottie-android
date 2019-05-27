@@ -1,10 +1,9 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.content.ShapeGroup;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,19 +41,19 @@ class FontCharacterParser {
           fontFamily = reader.nextString();
           break;
         case "data":
-//          reader.beginObject();
-//          while (reader.hasNext()) {
-//            if ("shapes".equals(reader.nextName())) {
-//              reader.beginArray();
-//              while (reader.hasNext()) {
-////                shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
-//              }
-//              reader.endArray();
-//            } else {
-//              reader.skipValue();
-//            }
-//          }
-//          reader.endObject();
+          reader.beginObject();
+          while (reader.hasNext()) {
+            if ("shapes".equals(reader.nextName())) {
+              reader.beginArray();
+              while (reader.hasNext()) {
+                shapes.add((ShapeGroup) ContentModelParser.parse(reader, composition));
+              }
+              reader.endArray();
+            } else {
+              reader.skipValue();
+            }
+          }
+          reader.endObject();
           break;
         default:
           reader.skipValue();

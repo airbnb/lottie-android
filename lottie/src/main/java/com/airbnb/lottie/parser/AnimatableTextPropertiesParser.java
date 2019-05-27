@@ -1,11 +1,10 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 
@@ -46,16 +45,16 @@ public class AnimatableTextPropertiesParser {
     while (reader.hasNext()) {
       switch (reader.nextName()) {
         case "fc":
-//          color = AnimatableValueParser.parseColor(reader, composition);
+          color = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "sc":
-//          stroke = AnimatableValueParser.parseColor(reader, composition);
+          stroke = AnimatableValueParser.parseColor(reader, composition);
           break;
         case "sw":
-//          strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
+          strokeWidth = AnimatableValueParser.parseFloat(reader, composition);
           break;
         case "t":
-//          tracking = AnimatableValueParser.parseFloat(reader, composition);
+          tracking = AnimatableValueParser.parseFloat(reader, composition);
           break;
         default:
           reader.skipValue();

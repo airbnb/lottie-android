@@ -1,8 +1,7 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
-
 import com.airbnb.lottie.model.content.MergePaths;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 
