@@ -1,12 +1,12 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.model.content.CircleShape;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 
@@ -28,10 +28,10 @@ class CircleShapeParser {
           name = reader.nextString();
           break;
         case "p":
-//          position = AnimatablePathValueParser.parseSplitPath(reader, composition);
+          position = AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case "s":
-//          size = AnimatableValueParser.parsePoint(reader, composition);
+          size = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case "hd":
           hidden = reader.nextBoolean();

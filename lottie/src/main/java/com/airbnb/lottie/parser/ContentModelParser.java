@@ -54,19 +54,19 @@ class ContentModelParser {
         model = GradientStrokeParser.parse(reader, composition);
         break;
       case "fl":
-//        model = ShapeFillParser.parse(reader, composition);
+        model = ShapeFillParser.parse(reader, composition);
         break;
       case "gf":
-//        model = GradientFillParser.parse(reader, composition);
+        model = GradientFillParser.parse(reader, composition);
         break;
       case "tr":
-//        model = AnimatableTransformParser.parse(reader, composition);
+        model = AnimatableTransformParser.parse(reader, composition);
         break;
       case "sh":
         model = ShapePathParser.parse(reader, composition);
         break;
       case "el":
-//        model = CircleShapeParser.parse(reader, composition, d);
+        model = CircleShapeParser.parse(reader, composition, d);
         break;
       case "rc":
         model = RectangleShapeParser.parse(reader, composition);

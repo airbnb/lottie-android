@@ -10,6 +10,7 @@ import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 
 import java.io.IOException;
@@ -86,8 +87,7 @@ public class LottieCompositionMoshiParser {
           parseLayers(reader, composition, layers, layerMap);
           break;
         case 7:
-//          parseAssets(reader, composition, precomps, images);
-          reader.skipValue();
+          parseAssets(reader, composition, precomps, images);
           break;
         case 8:
 //          parseFonts(reader, fonts);
@@ -129,11 +129,79 @@ public class LottieCompositionMoshiParser {
       layerMap.put(layer.getId(), layer);
 
       if (imageCount > 4) {
-        L.warn("You have " + imageCount + " images. Lottie should primarily be " +
+        Logger.warning("You have " + imageCount + " images. Lottie should primarily be " +
             "used with shapes. If you are using Adobe Illustrator, convert the Illustrator layers" +
             " to shape layers.");
       }
     }
     reader.endArray();
   }
+
+
+  static JsonReader.Options ASSETS_NAMES = JsonReader.Options.of(
+      "id", // 0
+      "layers", // 1
+      "w", // 2
+      "h", // 3
+      "p", // 4
+      "u" // 5
+  );
+
+  private static void parseAssets(JsonReader reader, LottieComposition composition,
+      Map<String, List<Layer>> precomps, Map<String, LottieImageAsset> images) throws IOException {
+    reader.beginArray();
+    while (reader.hasNext()) {
+      String id = null;
+      // For precomps
+      List<Layer> layers = new ArrayList<>();
+      LongSparseArray<Layer> layerMap = new LongSparseArray<>();
+      // For images
+      int width = 0;
+      int height = 0;
+      String imageFileName = null;
+      String relativeFolder = null;
+      reader.beginObject();
+      while (reader.hasNext()) {
+        switch (reader.selectName(ASSETS_NAMES)) {
+          case 0:
+            id = reader.nextString();
+            break;
+          case 1:
+            reader.beginArray();
+            while (reader.hasNext()) {
+              Layer layer = LayerParser.parse(reader, composition);
+              layerMap.put(layer.getId(), layer);
+              layers.add(layer);
+            }
+            reader.endArray();
+            break;
+          case 2:
+            width = reader.nextInt();
+            break;
+          case 3:
+            height = reader.nextInt();
+            break;
+          case 4:
+            imageFileName = reader.nextString();
+            break;
+          case 5:
+            relativeFolder = reader.nextString();
+            break;
+          default:
+            reader.skipName();
+            reader.skipValue();
+        }
+      }
+      reader.endObject();
+      if (imageFileName != null) {
+        LottieImageAsset image =
+            new LottieImageAsset(width, height, id, imageFileName, relativeFolder);
+        images.put(image.getId(), image);
+      } else {
+        precomps.put(id, layers);
+      }
+    }
+    reader.endArray();
+  }
+
 }

@@ -25,29 +25,29 @@ public class LayerParser {
   private LayerParser() {}
 
   static JsonReader.Options NAMES = JsonReader.Options.of(
-      "nm",
-      "ind",
-      "refId",
-      "ty",
-      "parent",
-      "sw",
-      "sh",
-      "sc",
-      "ks",
-      "tt",
-      "masksProperties",
-      "shapes",
-      "t",
-      "ef",
-      "sr",
-      "st",
-      "w",
-      "h",
-      "ip",
-      "op",
-      "tm",
-      "cl",
-      "hd"
+      "nm", // 0
+      "ind", // 1
+      "refId", // 2
+      "ty", // 3
+      "parent", // 4
+      "sw", // 5
+      "sh", // 6
+      "sc", // 7
+      "ks", // 8
+      "tt", // 9
+      "masksProperties", // 10
+      "shapes", // 11
+      "t", // 12
+      "ef", // 13
+      "sr", // 14
+      "st", // 15
+      "w", // 16
+      "h", // 17
+      "ip", // 18
+      "op", // 19
+      "tm", // 20
+      "cl", // 21
+      "hd" // 22
   );
 
   public static Layer parse(LottieComposition composition) {
@@ -137,14 +137,14 @@ public class LayerParser {
           reader.endArray();
           break;
         case 11:
-//          reader.beginArray();
-//          while (reader.hasNext()) {
-////            ContentModel shape = ContentModelParser.parse(reader, composition);
-////            if (shape != null) {
-////              shapes.add(shape);
-////            }
-//          }
-//          reader.endArray();
+          reader.beginArray();
+          while (reader.hasNext()) {
+            ContentModel shape = ContentModelParser.parse(reader, composition);
+            if (shape != null) {
+              shapes.add(shape);
+            }
+          }
+          reader.endArray();
           break;
         case 12:
           reader.beginObject();
