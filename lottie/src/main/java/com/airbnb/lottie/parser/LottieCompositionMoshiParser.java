@@ -24,17 +24,18 @@ import androidx.collection.SparseArrayCompat;
 
 public class LottieCompositionMoshiParser {
   static JsonReader.Options NAMES = JsonReader.Options.of(
-      "w",
-      "h",
-      "ip",
-      "op",
-      "fr",
-      "v",
-      "layers",
-      "assets",
-      "fonts",
-      "chars",
-      "markers");
+      "w", // 0
+      "h", // 1
+      "ip", // 2
+      "op", // 3
+      "fr", // 4
+      "v", // 5
+      "layers", // 6
+      "assets", // 7
+      "fonts", // 8
+      "chars", // 9
+      "markers" // 10
+  );
 
   public static LottieComposition parse(JsonReader reader) throws IOException {
     float scale = Utils.dpScale();
@@ -83,9 +84,26 @@ public class LottieCompositionMoshiParser {
           break;
         case 6:
           parseLayers(reader, composition, layers, layerMap);
-        default:
+          break;
+        case 7:
+//          parseAssets(reader, composition, precomps, images);
           reader.skipValue();
-
+          break;
+        case 8:
+//          parseFonts(reader, fonts);
+          reader.skipValue();
+          break;
+        case 9:
+//          parseChars(reader, composition, characters);
+          reader.skipValue();
+          break;
+        case 10:
+//          parseMarkers(reader, composition, markers);
+          reader.skipValue();
+          break;
+        default:
+          reader.skipName();
+          reader.skipValue();
       }
     }
     int scaledWidth = (int) (width * scale);

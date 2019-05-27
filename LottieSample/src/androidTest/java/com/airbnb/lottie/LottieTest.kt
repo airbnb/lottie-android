@@ -24,7 +24,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import junit.framework.Assert.assertNotNull
+import junit.framework.Assert.assertNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
@@ -98,8 +98,10 @@ class LottieTest {
 
     @Test
     fun tddMoshiJsonReaderConversion(){
-        val inflatedAsset = LottieCompositionFactory.fromAssetSync(activity, "Tests/input.json")
-        assertNotNull(inflatedAsset)
+        val exception = LottieCompositionFactory.fromAssetSync(activity, "Tests/input.json").exception
+        if (exception != null) {
+            throw exception
+        }
     }
 
     @Test
