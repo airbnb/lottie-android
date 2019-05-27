@@ -1,53 +1,50 @@
-# 3.0.0-beta4
-### Features and Improvements
-* Added support for dynamic properties on gradient fill opacity.
-
-# 3.0.0-beta3
-### Features and Improvements
-* Added support for inverted masks.
-* Added support for intersect masks.
-* Improved support for multiple masks per layer.
-* Added support for optimized bodymovin json with static transforms removed.
-* Added support for multiline text.
-* Added support for dynamic properties on rectangles.
-* Added support for dynamic properties on gradient colors.
-* Added support for emoji in text delegates.
+# 3.0.3
 ### Bugs Fixed
-* Ensure that the last frame is played when setMaxFrame is called.
-* Prevent strokes from drawing when the scale is 0.
+* Prevent network connections from being closed before parsing is finished.
+* invalidateSelf() after settings alpha.
+* Set the correct frame when animations end but speed is < 0.
+* Default missing content types to application/json.
+* Consistently use frameTimeNanos to prevent animation frame time from being < 0.
 
-# 3.0.0-beta2
+# 3.0.2
 ### Features and Improvements
-* Added support for skew and skew angle in transforms.
-* Added support for markers. You can now call `setMinFrame`, `setMaxFrame` and `setMinAndMaxFrame` with a marker name.
-* Added support for skew and skew angle transforms.
-* Added support for a future Bodymovin plugin that will omit duplicated vertex out points to reduce json file size.
-* Allowed multiple trim paths to be applied on a shape.
-### Bugs Fixed
-* Fixed an IndexOutOfBoundsException.
-* Preventded the cache from returning null values after a key was cleared.
-* Pause Lottie in onVisibilityChanged.
-* Properly limited the LRU cache an enable its maximum size to be configured.
-* Properly closed JsonReader in all cases.
-* Fixed text alignment for scaled text when drawn using fonts.
-* Use FutureTask rather than polling for composition parsing to complete.
-* [Sample App] Fixed Lottiefiles integration.
+* Zipped animations with images now support WebP.
 
-# 3.0.0-beta1
+### Bugs Fixed
+* Use frameTimeNanos LottieAnimator.
+* Set wasAnimatingWhenDetached to false at pause().
+
+# 3.0.1
+### Bugs Fixed
+* Fixed an edge case that would resume an animation when it is not shown.
+* Disable animations when the system animation scale is 0.
+* Fall back to hardware rendering when the animation is too large to create a drawing cache.
+
+# 3.0.0
 ### Features and Improvements
 * **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.
-* Removed **all** memory allocations during playback including autoboxing.
-* Added support for centered text.
+* Added support for dynamic properties on rectangles, gradient colors, and gradient fill opacity.
+* Added support for inverted and intersect masks.
+* Improved support for multiple masks per layer.
+* Added support for optimized bodymovin json with static transforms removed (v5.5.0+).
+* Added support for optimized bodymovin json that will omit duplicated vertex out points to reduce json file size (v5.5.0+).
+* Added support for centered, multiline text, and emojis.
+* Added support for masked text.
+* Added support for skew and skew angle in transforms.
+* Added support for markers. You can now call `setMinFrame`, `setMaxFrame` and `setMinAndMaxFrame` with a marker name.
 * Added support for hidden layers and properties (the eye button in After Effects).
-* Only redraw the animation when a value changed. This will have a major impact on animations that are static for part of their playback.
+* Added support for multiple trim paths to be applied on a shape.
+* Removed **all** memory allocations during playback including autoboxing.
 * Replaced `enableHardwareAcceleration` with a new `setRenderMode` API because it has a third (`Automatic`) option. Refer to the docs for more info.
 * Added an XML attr for animation speed (lottie_speed).
 * Removed the recycleBitmaps() API because it is not neccesary anymore.
 * Prevented `invalidateSelf()` from being called and recalculating bounds many times per frame.
-* Optimize keyframes to recalculate values less frequently
-* Optimize static identity transforms so their matrix doesn't get recalculated on every frame.
-* Allow text to be masked.
 ### Bugs Fixed
+* Only redraw the animation when a value changed. This will have a major impact on animations that are static for part of their playback.
+* Optimized keyframes to recalculate values less frequently
+* Optimized static identity transforms so their matrix doesn't get recalculated on every frame.
+* Ensure that the last frame is played when setMaxFrame is called.
+* Prevent strokes from drawing when the scale is 0.
 * Prevented minFrame from being larger than maxFrame.
 * Return the correct (previous) bitmap when updating the BitmapAssetManager.
 * Properly use the in-memory cache for network animations.
@@ -56,6 +53,14 @@
 * Fixed a bug in the local file cache that would save it with the wrong extensions.
 * Fixed a crash when an animation was missing gradient fill type.
 * Prevent shapes that have different numbers of control points in different keyframes from crashing.
+* Fixed an IndexOutOfBoundsException.
+* Pause Lottie in onVisibilityChanged.
+* Properly limited the LRU cache an enable its maximum size to be configured.
+* Prevented the cache from returning null values after a key was cleared.
+* Properly closed JsonReader in all cases.
+* Fixed text alignment for scaled text when drawn using fonts.
+* Use FutureTask rather than polling for composition parsing to complete.
+* [Sample App] Fixed Lottiefiles integration.
 
 # 2.8.0
 ### Features and Improvements

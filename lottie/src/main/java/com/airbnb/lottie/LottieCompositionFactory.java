@@ -10,6 +10,7 @@ import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 
+import com.airbnb.lottie.utils.Utils;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -302,13 +303,14 @@ public class LottieCompositionFactory {
     try {
       ZipEntry entry = inputStream.getNextEntry();
       while (entry != null) {
-        if (entry.getName().contains("__MACOSX")) {
+        final String entryName = entry.getName();
+        if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
           com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
-        } else if (entry.getName().contains(".png")) {
-          String[] splitName = entry.getName().split("/");
+        } else if (entryName.contains(".png") || entryName.contains(".webp")) {
+          String[] splitName = entryName.split("/");
           String name = splitName[splitName.length - 1];
           images.put(name, BitmapFactory.decodeStream(inputStream));
         } else {
@@ -329,7 +331,7 @@ public class LottieCompositionFactory {
     for (Map.Entry<String, Bitmap> e : images.entrySet()) {
       LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
       if (imageAsset != null) {
-        imageAsset.setBitmap(e.getValue());
+        imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
       }
     }
 

@@ -1,5 +1,6 @@
 package com.airbnb.lottie.utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,6 +11,8 @@ import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Build;
+import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 
@@ -211,6 +214,32 @@ public final class Utils {
       dpScale = Resources.getSystem().getDisplayMetrics().density;
     }
     return dpScale;
+  }
+
+  public static float getAnimationScale(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      return Settings.Global.getFloat(context.getContentResolver(),
+              Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+    } else {
+      //noinspection deprecation
+      return Settings.System.getFloat(context.getContentResolver(),
+              Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
+    }
+  }
+
+  /**
+   * Resize the bitmap to exactly the same size as the specified dimension, changing the aspect ratio if needed.
+   * Returns the original bitmap if the dimensions already match.
+   */
+  public static Bitmap resizeBitmapIfNeeded(Bitmap bitmap, int width, int height) {
+    if (bitmap.getWidth() == width && bitmap.getHeight() == height) {
+      return bitmap;
+    }
+    float scaleWidth = ((float) width) / bitmap.getWidth();
+    float scaleHeight = ((float) height) / bitmap.getHeight();
+    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+    bitmap.recycle();
+    return resizedBitmap;
   }
 
   /**

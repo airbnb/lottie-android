@@ -21,6 +21,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public abstract class BaseLayer
       case UNKNOWN:
       default:
         // Do nothing
-        L.warn("Unknown layer type " + layerModel.getLayerType());
+        Logger.warning("Unknown layer type " + layerModel.getLayerType());
         return null;
     }
   }

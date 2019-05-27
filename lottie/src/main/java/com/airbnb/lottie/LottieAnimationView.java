@@ -26,6 +26,7 @@ import android.view.View;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -35,6 +36,9 @@ import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static com.airbnb.lottie.RenderMode.HARDWARE;
+import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -75,7 +79,7 @@ import java.util.Set;
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private String animationName;
   private @RawRes int animationResId;
-  private boolean wasAnimatingWhenVisibilityChanged = false;
+  private boolean wasAnimatingWhenNotShown = false;
   private boolean wasAnimatingWhenDetached = false;
   private boolean autoPlay = false;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
@@ -166,6 +170,8 @@ import java.util.Set;
 
     ta.recycle();
 
+    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
+
     enableOrDisableHardwareLayer();
   }
 
@@ -241,14 +247,15 @@ import java.util.Set;
     if (lottieDrawable == null) {
       return;
     }
-    if (visibility == VISIBLE) {
-      if (wasAnimatingWhenVisibilityChanged) {
+    if (isShown()) {
+      if (wasAnimatingWhenNotShown) {
         resumeAnimation();
+        wasAnimatingWhenNotShown = false;
       }
     } else {
-      wasAnimatingWhenVisibilityChanged = isAnimating();
       if (isAnimating()) {
         pauseAnimation();
+        wasAnimatingWhenNotShown = true;
       }
     }
   }
@@ -414,8 +421,12 @@ import java.util.Set;
    */
   @MainThread
   public void playAnimation() {
-    lottieDrawable.playAnimation();
-    enableOrDisableHardwareLayer();
+    if (isShown()) {
+      lottieDrawable.playAnimation();
+      enableOrDisableHardwareLayer();
+    } else {
+      wasAnimatingWhenNotShown = true;
+    }
   }
 
   /**
@@ -424,8 +435,12 @@ import java.util.Set;
    */
   @MainThread
   public void resumeAnimation() {
-    lottieDrawable.resumeAnimation();
-    enableOrDisableHardwareLayer();
+    if (isShown()) {
+      lottieDrawable.resumeAnimation();
+      enableOrDisableHardwareLayer();
+    } else {
+      wasAnimatingWhenNotShown = true;
+    }
   }
 
   /**
@@ -743,12 +758,15 @@ import java.util.Set;
 
   @MainThread
   public void cancelAnimation() {
+    wasAnimatingWhenNotShown = false;
     lottieDrawable.cancelAnimation();
     enableOrDisableHardwareLayer();
   }
 
   @MainThread
   public void pauseAnimation() {
+    wasAnimatingWhenDetached = false;
+    wasAnimatingWhenNotShown = false;
     lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();
   }
@@ -793,6 +811,21 @@ import java.util.Set;
   private void clearComposition() {
     composition = null;
     lottieDrawable.clearComposition();
+  }
+
+  /**
+   * If rendering via software, Android will fail to generate a bitmap if the view is too large. Rather than displaying
+   * nothing, fallback on hardware acceleration which may incur a performance hit.
+   *
+   * @see #setRenderMode(RenderMode)
+   * @see com.airbnb.lottie.LottieDrawable#draw(android.graphics.Canvas)
+   */
+  @Override
+  public void buildDrawingCache(boolean autoScale) {
+    super.buildDrawingCache(autoScale);
+    if (getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
+      setRenderMode(HARDWARE);
+    }
   }
 
   /**
