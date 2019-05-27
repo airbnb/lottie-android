@@ -97,14 +97,6 @@ class LottieTest {
     }
 
     @Test
-    fun tddMoshiJsonReaderConversion(){
-        val exception = LottieCompositionFactory.fromAssetSync(activity, "Tests/input.json").exception
-        if (exception != null) {
-            throw exception
-        }
-    }
-
-    @Test
     @ObsoleteCoroutinesApi
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
