@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples.model
 
 import android.graphics.Color
 import android.os.Parcelable
-import androidx.annotation.ColorInt
+import android.support.annotation.ColorInt
 import android.util.Log
 import androidx.core.graphics.toColorInt
 import com.airbnb.lottie.L

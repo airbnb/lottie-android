@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
+import android.support.annotation.DrawableRes
+import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import androidx.fragment.app.Fragment

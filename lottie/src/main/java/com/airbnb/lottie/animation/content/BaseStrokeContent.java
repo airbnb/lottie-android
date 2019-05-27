@@ -8,8 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
-import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
+import android.support.annotation.CallSuper;
+import android.support.annotation.Nullable;;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;

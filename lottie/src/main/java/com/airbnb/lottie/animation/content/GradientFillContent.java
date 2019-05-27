@@ -10,9 +10,9 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.LongSparseArray;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;;
+import android.support.v4.util.LongSparseArray;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;

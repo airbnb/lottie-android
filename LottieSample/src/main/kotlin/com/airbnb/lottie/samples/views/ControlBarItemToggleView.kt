@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.graphics.Color
-import androidx.annotation.DrawableRes
+import android.support.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import android.util.AttributeSet

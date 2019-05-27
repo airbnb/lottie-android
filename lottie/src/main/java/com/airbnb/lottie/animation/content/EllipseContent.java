@@ -3,7 +3,7 @@ package com.airbnb.lottie.animation.content;
 import android.graphics.Path;
 import android.graphics.PointF;
 
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;

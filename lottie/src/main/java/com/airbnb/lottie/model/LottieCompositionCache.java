@@ -1,9 +1,9 @@
 package com.airbnb.lottie.model;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.VisibleForTesting;
-import androidx.collection.LruCache;
+import android.util.LruCache;
+import android.support.annotation.Nullable;;
+import android.support.annotation.RestrictTo;
+import android.support.annotation.VisibleForTesting;
 
 import com.airbnb.lottie.LottieComposition;
 

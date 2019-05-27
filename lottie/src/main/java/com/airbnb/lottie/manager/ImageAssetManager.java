@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;

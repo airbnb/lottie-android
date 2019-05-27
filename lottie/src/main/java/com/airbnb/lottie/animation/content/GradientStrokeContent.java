@@ -7,8 +7,8 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import androidx.annotation.Nullable;
-import androidx.collection.LongSparseArray;
+import android.util.LongSparseArray;
+import android.support.annotation.Nullable;;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
