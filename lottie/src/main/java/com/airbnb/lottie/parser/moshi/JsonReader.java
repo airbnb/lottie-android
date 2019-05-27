@@ -24,6 +24,7 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import okio.Buffer;
+import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.ByteString;
 
@@ -177,6 +178,31 @@ import okio.ByteString;
  * of this class are not thread safe.
  */
 public abstract class JsonReader implements Closeable {
+  /*
+   * From RFC 7159, "All Unicode characters may be placed within the
+   * quotation marks except for the characters that must be escaped:
+   * quotation mark, reverse solidus, and the control characters
+   * (U+0000 through U+001F)."
+   *
+   * We also escape '\u2028' and '\u2029', which JavaScript interprets as
+   * newline characters. This prevents eval() from failing with a syntax
+   * error. http://code.google.com/p/google-gson/issues/detail?id=341
+   */
+  private static final String[] REPLACEMENT_CHARS;
+  static {
+    REPLACEMENT_CHARS = new String[128];
+    for (int i = 0; i <= 0x1f; i++) {
+      REPLACEMENT_CHARS[i] = String.format("\\u%04x", (int) i);
+    }
+    REPLACEMENT_CHARS['"'] = "\\\"";
+    REPLACEMENT_CHARS['\\'] = "\\\\";
+    REPLACEMENT_CHARS['\t'] = "\\t";
+    REPLACEMENT_CHARS['\b'] = "\\b";
+    REPLACEMENT_CHARS['\n'] = "\\n";
+    REPLACEMENT_CHARS['\r'] = "\\r";
+    REPLACEMENT_CHARS['\f'] = "\\f";
+  }
+
   // The nesting stack. Using a manual array rather than an ArrayList saves 20%. This stack will
   // grow itself up to 256 levels of nesting including the top-level document. Deeper nesting is
   // prone to trigger StackOverflowErrors.
@@ -446,7 +472,7 @@ public abstract class JsonReader implements Closeable {
         ByteString[] result = new ByteString[strings.length];
         Buffer buffer = new Buffer();
         for (int i = 0; i < strings.length; i++) {
-          JsonUtf8Writer.string(buffer, strings[i]);
+          string(buffer, strings[i]);
           buffer.readByte(); // Skip the leading double quote (but leave the trailing one).
           result[i] = buffer.readByteString();
         }
@@ -458,38 +484,73 @@ public abstract class JsonReader implements Closeable {
   }
 
   /**
+   * Writes {@code value} as a string literal to {@code sink}. This wraps the value in double quotes
+   * and escapes those characters that require it.
+   */
+  private static void string(BufferedSink sink, String value) throws IOException {
+    String[] replacements = REPLACEMENT_CHARS;
+    sink.writeByte('"');
+    int last = 0;
+    int length = value.length();
+    for (int i = 0; i < length; i++) {
+      char c = value.charAt(i);
+      String replacement;
+      if (c < 128) {
+        replacement = replacements[c];
+        if (replacement == null) {
+          continue;
+        }
+      } else if (c == '\u2028') {
+        replacement = "\\u2028";
+      } else if (c == '\u2029') {
+        replacement = "\\u2029";
+      } else {
+        continue;
+      }
+      if (last < i) {
+        sink.writeUtf8(value, last, i);
+      }
+      sink.writeUtf8(replacement);
+      last = i + 1;
+    }
+    if (last < length) {
+      sink.writeUtf8(value, last, length);
+    }
+    sink.writeByte('"');
+  }
+
+  /**
    * A structure, name, or value type in a JSON-encoded string.
    */
   public enum Token {
 
     /**
-     * The opening of a JSON array. Written using {@link JsonWriter#beginArray}
+     * The opening of a JSON array.
      * and read using {@link JsonReader#beginArray}.
      */
     BEGIN_ARRAY,
 
     /**
-     * The closing of a JSON array. Written using {@link JsonWriter#endArray}
+     * The closing of a JSON array.
      * and read using {@link JsonReader#endArray}.
      */
     END_ARRAY,
 
     /**
-     * The opening of a JSON object. Written using {@link JsonWriter#beginObject}
+     * The opening of a JSON object.
      * and read using {@link JsonReader#beginObject}.
      */
     BEGIN_OBJECT,
 
     /**
-     * The closing of a JSON object. Written using {@link JsonWriter#endObject}
+     * The closing of a JSON object.
      * and read using {@link JsonReader#endObject}.
      */
     END_OBJECT,
 
     /**
      * A JSON property name. Within objects, tokens alternate between names and
-     * their values. Written using {@link JsonWriter#name} and read using {@link
-     * JsonReader#nextName}
+     * their values.
      */
     NAME,
 
