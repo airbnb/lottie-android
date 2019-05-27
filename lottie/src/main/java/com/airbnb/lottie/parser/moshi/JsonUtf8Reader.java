@@ -17,7 +17,6 @@ package com.airbnb.lottie.parser.moshi;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import androidx.annotation.Nullable;
 import okio.Buffer;
@@ -630,38 +629,6 @@ final class JsonUtf8Reader extends JsonReader {
     return result;
   }
 
-  @Override public int selectString(Options options) throws IOException {
-    int p = peeked;
-    if (p == PEEKED_NONE) {
-      p = doPeek();
-    }
-    if (p < PEEKED_SINGLE_QUOTED || p > PEEKED_BUFFERED) {
-      return -1;
-    }
-    if (p == PEEKED_BUFFERED) {
-      return findString(peekedString, options);
-    }
-
-    int result = source.select(options.doubleQuoteSuffix);
-    if (result != -1) {
-      peeked = PEEKED_NONE;
-      pathIndices[stackSize - 1]++;
-
-      return result;
-    }
-
-    String nextString = nextString();
-    result = findString(nextString, options);
-
-    if (result == -1) {
-      peeked = PEEKED_BUFFERED;
-      peekedString = nextString;
-      pathIndices[stackSize - 1]--;
-    }
-
-    return result;
-  }
-
   /**
    * If {@code string} is in {@code options} this consumes it and returns its index.
    * Otherwise this returns -1 and no string is consumed.
@@ -693,20 +660,6 @@ final class JsonUtf8Reader extends JsonReader {
       return false;
     }
     throw new JsonDataException("Expected a boolean but was " + peek() + " at path " + getPath());
-  }
-
-  @Override public @Nullable <T> T nextNull() throws IOException {
-    int p = peeked;
-    if (p == PEEKED_NONE) {
-      p = doPeek();
-    }
-    if (p == PEEKED_NULL) {
-      peeked = PEEKED_NONE;
-      pathIndices[stackSize - 1]++;
-      return null;
-    } else {
-      throw new JsonDataException("Expected null but was " + peek() + " at path " + getPath());
-    }
   }
 
   @Override public double nextDouble() throws IOException {
@@ -743,52 +696,6 @@ final class JsonUtf8Reader extends JsonReader {
     }
     if (!lenient && (Double.isNaN(result) || Double.isInfinite(result))) {
       throw new JsonEncodingException("JSON forbids NaN and infinities: " + result
-          + " at path " + getPath());
-    }
-    peekedString = null;
-    peeked = PEEKED_NONE;
-    pathIndices[stackSize - 1]++;
-    return result;
-  }
-
-  @Override public long nextLong() throws IOException {
-    int p = peeked;
-    if (p == PEEKED_NONE) {
-      p = doPeek();
-    }
-
-    if (p == PEEKED_LONG) {
-      peeked = PEEKED_NONE;
-      pathIndices[stackSize - 1]++;
-      return peekedLong;
-    }
-
-    if (p == PEEKED_NUMBER) {
-      peekedString = buffer.readUtf8(peekedNumberLength);
-    } else if (p == PEEKED_DOUBLE_QUOTED || p == PEEKED_SINGLE_QUOTED) {
-      peekedString = p == PEEKED_DOUBLE_QUOTED
-          ? nextQuotedValue(DOUBLE_QUOTE_OR_SLASH)
-          : nextQuotedValue(SINGLE_QUOTE_OR_SLASH);
-      try {
-        long result = Long.parseLong(peekedString);
-        peeked = PEEKED_NONE;
-        pathIndices[stackSize - 1]++;
-        return result;
-      } catch (NumberFormatException ignored) {
-        // Fall back to parse as a BigDecimal below.
-      }
-    } else if (p != PEEKED_BUFFERED) {
-      throw new JsonDataException("Expected a long but was " + peek()
-          + " at path " + getPath());
-    }
-
-    peeked = PEEKED_BUFFERED;
-    long result;
-    try {
-      BigDecimal asDecimal = new BigDecimal(peekedString);
-      result = asDecimal.longValueExact();
-    } catch (NumberFormatException | ArithmeticException e) {
-      throw new JsonDataException("Expected a long but was " + peekedString
           + " at path " + getPath());
     }
     peekedString = null;
@@ -1134,10 +1041,4 @@ final class JsonUtf8Reader extends JsonReader {
     }
   }
 
-  @Override void promoteNameToValue() throws IOException {
-    if (hasNext()) {
-      peekedString = nextName();
-      peeked = PEEKED_BUFFERED;
-    }
-  }
 }

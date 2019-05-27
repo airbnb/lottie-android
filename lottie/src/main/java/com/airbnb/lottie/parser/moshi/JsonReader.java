@@ -229,16 +229,6 @@ public abstract class JsonReader implements Closeable {
     pathIndices = new int[32];
   }
 
-  // Package-private to control subclasses.
-  JsonReader(JsonReader copyFrom) {
-    this.stackSize = copyFrom.stackSize;
-    this.scopes = copyFrom.scopes.clone();
-    this.pathNames = copyFrom.pathNames.clone();
-    this.pathIndices = copyFrom.pathIndices.clone();
-    this.lenient = copyFrom.lenient;
-    this.failOnUnknown = copyFrom.failOnUnknown;
-  }
-
   final void pushScope(int newTop) {
     if (stackSize == scopes.length) {
       if (stackSize == 256) {
@@ -328,25 +318,11 @@ public abstract class JsonReader implements Closeable {
   public abstract String nextString() throws IOException;
 
   /**
-   * If the next token is a {@linkplain Token#STRING string} that's in {@code options}, this
-   * consumes it and returns its index. Otherwise this returns -1 and no string is consumed.
-   */
-   public abstract int selectString(Options options) throws IOException;
-
-  /**
    * Returns the {@linkplain Token#BOOLEAN boolean} value of the next token, consuming it.
    *
    * @throws JsonDataException if the next token is not a boolean or if this reader is closed.
    */
   public abstract boolean nextBoolean() throws IOException;
-
-  /**
-   * Consumes the next token from the JSON stream and asserts that it is a literal null. Returns
-   * null.
-   *
-   * @throws JsonDataException if the next token is not null or if this reader is closed.
-   */
-  public abstract @Nullable <T> T nextNull() throws IOException;
 
   /**
    * Returns the {@linkplain Token#NUMBER double} value of the next token, consuming it. If the next
@@ -357,16 +333,6 @@ public abstract class JsonReader implements Closeable {
    *     value cannot be parsed as a double, or is non-finite.
    */
   public abstract double nextDouble() throws IOException;
-
-  /**
-   * Returns the {@linkplain Token#NUMBER long} value of the next token, consuming it. If the next
-   * token is a string, this method will attempt to parse it as a long. If the next token's numeric
-   * value cannot be exactly represented by a Java {@code long}, this method throws.
-   *
-   * @throws JsonDataException if the next token is not a literal value, if the next literal value
-   *     cannot be parsed as a number, or exactly represented as a long.
-   */
-  public abstract long nextLong() throws IOException;
 
   /**
    * Returns the {@linkplain Token#NUMBER int} value of the next token, consuming it. If the next
@@ -388,57 +354,6 @@ public abstract class JsonReader implements Closeable {
    */
   public abstract void skipValue() throws IOException;
 
-  /**
-   * Returns the value of the next token, consuming it. The result may be a string, number, boolean,
-   * null, map, or list, according to the JSON structure.
-   *
-   * @throws JsonDataException if the next token is not a literal value, if a JSON object has a
-   * duplicate key.
-   */
-  public final @Nullable Object readJsonValue() throws IOException {
-    switch (peek()) {
-      case BEGIN_ARRAY:
-        List<Object> list = new ArrayList<>();
-        beginArray();
-        while (hasNext()) {
-          list.add(readJsonValue());
-        }
-        endArray();
-        return list;
-
-      case BEGIN_OBJECT:
-        Map<String, Object> map = new LinkedHashTreeMap<>();
-        beginObject();
-        while (hasNext()) {
-          String name = nextName();
-          Object value = readJsonValue();
-          Object replaced = map.put(name, value);
-          if (replaced != null) {
-            throw new JsonDataException("Map key '" + name + "' has multiple values at path "
-                    + getPath() + ": " + replaced + " and " + value);
-          }
-        }
-        endObject();
-        return map;
-
-      case STRING:
-        return nextString();
-
-      case NUMBER:
-        return nextDouble();
-
-      case BOOLEAN:
-        return nextBoolean();
-
-      case NULL:
-        return nextNull();
-
-      default:
-        throw new IllegalStateException(
-                "Expected a value but was " + peek() + " at path " + getPath());
-    }
-  }
-
 
   /**
    * Returns a <a href="http://goessner.net/articles/JsonPath/">JsonPath</a> to
@@ -447,12 +362,6 @@ public abstract class JsonReader implements Closeable {
    public final String getPath() {
     return JsonScope.getPath(stackSize, scopes, pathNames, pathIndices);
   }
-
-  /**
-   * Changes the reader to treat the next name as a string value. This is useful for map adapters so
-   * that arbitrary type adapters can use {@link #nextString} to read a name value.
-   */
-  abstract void promoteNameToValue() throws IOException;
 
   /**
    * A set of strings to be chosen with {@link #selectName} or {@link #selectString}. This prepares
