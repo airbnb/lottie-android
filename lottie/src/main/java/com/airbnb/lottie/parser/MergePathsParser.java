@@ -6,6 +6,11 @@ import com.airbnb.lottie.parser.moshi.JsonReader;
 import java.io.IOException;
 
 class MergePathsParser {
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+      "nm",
+      "mm",
+      "hd"
+  );
 
   private MergePathsParser() {}
 
@@ -15,17 +20,18 @@ class MergePathsParser {
     boolean hidden = false;
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "nm":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           name = reader.nextString();
           break;
-        case "mm":
+        case 1:
           mode =  MergePaths.MergePathsMode.forId(reader.nextInt());
           break;
-        case "hd":
+        case 2:
           hidden = reader.nextBoolean();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

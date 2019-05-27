@@ -25,6 +25,10 @@ class ShapeStrokeParser {
       "hd",
       "d"
   );
+  private static final JsonReader.Options DASH_PATTERN_NAMES = JsonReader.Options.of(
+      "n",
+      "v"
+  );
 
   private ShapeStrokeParser() {
   }
@@ -77,14 +81,15 @@ class ShapeStrokeParser {
 
             reader.beginObject();
             while (reader.hasNext()) {
-              switch (reader.nextName()) {
-                case "n":
+              switch (reader.selectName(DASH_PATTERN_NAMES)) {
+                case 0:
                   n = reader.nextString();
                   break;
-                case "v":
+                case 1:
                   val = AnimatableValueParser.parseFloat(reader, composition);
                   break;
                 default:
+                  reader.skipName();
                   reader.skipValue();
               }
             }

@@ -43,10 +43,10 @@ class MaskParser {
           }
           break;
         case "pt":
-//          maskPath = AnimatableValueParser.parseShapeData(reader, composition);
+          maskPath = AnimatableValueParser.parseShapeData(reader, composition);
           break;
         case "o":
-//          opacity = AnimatableValueParser.parseInteger(reader, composition);
+          opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
         case "inv":
           inverted = reader.nextBoolean();

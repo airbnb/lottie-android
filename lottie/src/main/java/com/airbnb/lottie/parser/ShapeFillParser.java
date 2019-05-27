@@ -1,7 +1,6 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Path;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
@@ -11,8 +10,17 @@ import com.airbnb.lottie.parser.moshi.JsonReader;
 import java.io.IOException;
 
 class ShapeFillParser {
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+      "nm",
+      "c",
+      "o",
+      "fillEnabled",
+      "r",
+      "hd"
+  );
 
-  private ShapeFillParser() {}
+  private ShapeFillParser() {
+  }
 
   static ShapeFill parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -24,26 +32,27 @@ class ShapeFillParser {
     boolean hidden = false;
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "nm":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           name = reader.nextString();
           break;
-        case "c":
+        case 1:
           color = AnimatableValueParser.parseColor(reader, composition);
           break;
-        case "o":
+        case 2:
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
-        case "fillEnabled":
+        case 3:
           fillEnabled = reader.nextBoolean();
           break;
-        case "r":
+        case 4:
           fillTypeInt = reader.nextInt();
           break;
-        case "hd":
+        case 5:
           hidden = reader.nextBoolean();
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

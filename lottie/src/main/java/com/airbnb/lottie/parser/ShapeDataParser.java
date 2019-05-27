@@ -14,6 +14,12 @@ import java.util.List;
 
 public class ShapeDataParser implements ValueParser<ShapeData> {
   public static final ShapeDataParser INSTANCE = new ShapeDataParser();
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+    "c",
+    "v",
+    "i",
+    "o"
+  );
 
   private ShapeDataParser() {
   }
@@ -33,19 +39,22 @@ public class ShapeDataParser implements ValueParser<ShapeData> {
     reader.beginObject();
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "c":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           closed = reader.nextBoolean();
           break;
-        case "v":
+        case 1:
           pointsArray = JsonUtils.jsonToPoints(reader, scale);
           break;
-        case "i":
+        case 2:
           inTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
-        case "o":
+        case 3:
           outTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
+        default:
+          reader.skipName();
+          reader.skipValue();
       }
     }
 
