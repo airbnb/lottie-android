@@ -1,10 +1,8 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
-import android.util.JsonToken;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
@@ -13,26 +11,29 @@ import java.util.List;
 
 class KeyframesParser {
 
-  private KeyframesParser() {}
+  static JsonReader.Options NAMES = JsonReader.Options.of("k");
+
+  private KeyframesParser() {
+  }
 
   static <T> List<Keyframe<T>> parse(JsonReader reader,
-      LottieComposition composition, float scale, ValueParser<T> valueParser)
+                                     LottieComposition composition, float scale, ValueParser<T> valueParser)
       throws IOException {
     List<Keyframe<T>> keyframes = new ArrayList<>();
 
-    if (reader.peek() == JsonToken.STRING) {
+    if (reader.peek() == JsonReader.Token.STRING) {
       composition.addWarning("Lottie doesn't support expressions.");
       return keyframes;
     }
 
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "k":
-          if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+      switch (reader.selectName(NAMES)) {
+        case 0:
+          if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
             reader.beginArray();
 
-            if (reader.peek() == JsonToken.NUMBER) {
+            if (reader.peek() == JsonReader.Token.NUMBER) {
               // For properties in which the static value is an array of numbers.
               keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false));
             } else {
