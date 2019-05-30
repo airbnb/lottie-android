@@ -259,8 +259,15 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (autoPlay && wasAnimatingWhenDetached) {
+    if (autoPlay || wasAnimatingWhenDetached) {
       playAnimation();
+      // Autoplay from xml should only apply once.
+      autoPlay = false;
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // This is needed to mimic newer platform behavior.
+      // https://stackoverflow.com/a/53625860/715633
+      onVisibilityChanged(this, getVisibility());
     }
   }
 
