@@ -1,3 +1,9 @@
+# 3.0.4
+### Bugs Fixes
+* Use a copy of [Moshi's](https://github.com/square/moshi) JsonReader implementation to fix [#667](https://github.com/airbnb/lottie-android/issues/667).
+* Fix animations not autoplaying when they became visible on pre-marshmallow devices.
+* Fix PerformanceTracker#removeFrameListener not working.
+
 # 3.0.3
 ### Bugs Fixed
 * Prevent network connections from being closed before parsing is finished.
