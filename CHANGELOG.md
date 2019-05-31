@@ -1,3 +1,9 @@
+# 3.0.5
+### Bugs Fixes
+* Fixed a native crash on Nougat.
+* Improved the performance of animations that have masks and mattes that are partially or fully off screen.
+
+
 # 3.0.4
 ### Bugs Fixes
 * Use a copy of [Moshi's](https://github.com/square/moshi) JsonReader implementation to fix [#667](https://github.com/airbnb/lottie-android/issues/667).
