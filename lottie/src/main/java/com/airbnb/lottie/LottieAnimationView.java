@@ -396,6 +396,11 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
     setImageDrawable(null);
     setImageDrawable(lottieDrawable);
 
+    // This is needed to makes sure that the animation is properly played/paused for the current visibility state.
+    // It is possible that the drawable had a lazy composition task to play the animation but this view subsequently
+    // became invisible. Comment this out and run the espresso tests to see a failing test.
+    onVisibilityChanged(this, getVisibility());
+
     requestLayout();
 
     for (LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener : lottieOnCompositionLoadedListeners) {
@@ -772,6 +777,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
   @MainThread
   public void pauseAnimation() {
+    autoPlay = false;
     wasAnimatingWhenDetached = false;
     wasAnimatingWhenNotShown = false;
     lottieDrawable.pauseAnimation();
@@ -876,6 +882,10 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
   }
 
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
+    LottieComposition composition = this.composition;
+    if (composition != null) {
+      lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
+    }
     return lottieOnCompositionLoadedListeners.add(lottieOnCompositionLoadedListener);
   }
 
