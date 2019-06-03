@@ -1,11 +1,15 @@
+# 3.0.6
+### Bugs Fixed
+* Fixed another LottieAnimationView visibility bug
+
 # 3.0.5
-### Bugs Fixes
+### Bugs Fixed
 * Fixed a native crash on Nougat.
 * Improved the performance of animations that have masks and mattes that are partially or fully off screen.
 
 
 # 3.0.4
-### Bugs Fixes
+### Bugs Fixed
 * Use a copy of [Moshi's](https://github.com/square/moshi) JsonReader implementation to fix [#667](https://github.com/airbnb/lottie-android/issues/667).
 * Fix animations not autoplaying when they became visible on pre-marshmallow devices.
 * Fix PerformanceTracker#removeFrameListener not working.
