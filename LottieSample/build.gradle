@@ -57,12 +57,12 @@ android {
 
 dependencies {
   implementation project(':lottie')
-  implementation "androidx.appcompat:appcompat:${androidXVersion}"
-  implementation "androidx.recyclerview:recyclerview:${androidXVersion}"
-  implementation "com.google.android.material:material:${androidXVersion}"
-  implementation "androidx.cardview:cardview:${androidXVersion}"
-  implementation "androidx.core:core-ktx:${androidXVersion}"
-  implementation "androidx.browser:browser:${androidXVersion}"
+  implementation "androidx.appcompat:appcompat:1.1.0-alpha05"
+  implementation "androidx.recyclerview:recyclerview:1.0.0"
+  implementation "com.google.android.material:material:1.0.0"
+  implementation "androidx.cardview:cardview:1.0.0"
+  implementation "androidx.core:core-ktx:1.1.0-beta01"
+  implementation "androidx.browser:browser:1.0.0"
   implementation 'androidx.multidex:multidex:2.0.1'
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
   kapt "androidx.lifecycle:lifecycle-compiler:2.0.0"
@@ -73,8 +73,8 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
   implementation 'com.jakewharton:butterknife:9.0.0-rc1'
   kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
@@ -84,25 +84,6 @@ dependencies {
   implementation 'com.amazonaws:aws-android-sdk-s3:2.7.+'
   implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
   implementation ('com.amazonaws:aws-android-sdk-auth-userpools:2.7.+@aar') { transitive = true }
-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
-  androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
-  androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0-alpha4'
-  androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.2.1'
-  androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-  androidTestImplementation 'com.squareup.okhttp3:okhttp:3.11.0'
-  androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.31'
-  androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.31'
-  androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.0'
-  androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
-    exclude group: 'com.android.support', module: 'support-annotations'
-    exclude group: 'org.hamcrest', module: 'hamcrest-integration'
-  })
-  androidTestImplementation('androidx.test:runner:1.1.0-alpha4', {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
-  androidTestImplementation('androidx.test:rules:1.1.0-alpha4', {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
   implementation 'com.google.code.gson:gson:2.8.2'
   implementation 'com.squareup.okhttp3:okhttp:3.11.0'
   implementation 'com.squareup.retrofit2:retrofit:2.4.0'
@@ -111,6 +92,18 @@ dependencies {
   implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
   implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
   implementation 'com.github.bumptech.glide:glide:4.8.0'
+  androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0-alpha4'
+  androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.2.1'
+  androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+  androidTestImplementation 'com.squareup.okhttp3:okhttp:3.11.0'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-core:2.6.31'
+  androidTestImplementation 'com.amazonaws:aws-android-sdk-s3:2.6.31'
+  androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.0'
+  androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+  androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+  androidTestImplementation 'androidx.fragment:fragment-testing:1.1.0-alpha09'
+  androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+  androidTestImplementation "org.mockito:mockito-android:2.28.2"
 }
 repositories {
   mavenCentral()

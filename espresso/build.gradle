@@ -27,8 +27,8 @@ dependencies {
     implementation project(':lottie')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
-    implementation "androidx.recyclerview:recyclerview:$androidXVersion"
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
+    implementation "androidx.recyclerview:recyclerview:1.0.0"
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha09'
     implementation 'androidx.fragment:fragment:1.1.0-alpha09'
     implementation 'androidx.core:core:1.2.0-alpha01'
     implementation 'androidx.core:core-ktx:1.1.0-beta01'
