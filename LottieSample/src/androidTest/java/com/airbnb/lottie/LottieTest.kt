@@ -230,6 +230,22 @@ class LottieTest {
         withDrawable("Tests/RGB.json", "Frame Boundary", "Frame 2 Blue") { drawable ->
             drawable.frame = 2
         }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.0") { drawable ->
+            drawable.progress = 0f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.5") { drawable ->
+            drawable.progress = 0.5f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.52") { drawable ->
+            drawable.progress = 0.52f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "1.0") { drawable ->
+            drawable.progress = 1f
+        }
     }
 
     private suspend fun snapshotScaleTypes() = withContext(Dispatchers.Main) {
