@@ -1,4 +1,4 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.Manifest
 import android.content.res.Resources
@@ -10,21 +10,19 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
-import androidx.test.runner.AndroidJUnit4
+import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
-import com.airbnb.lottie.samples.BuildConfig
-import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.samples.views.FilmStripView
 import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import junit.framework.Assert.assertNull
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce

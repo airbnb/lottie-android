@@ -1,4 +1,4 @@
-package com.airbnb.lottie.tests.espresso
+package com.airbnb.lottie.samples
 
 import android.os.Bundle
 import android.view.View

@@ -1,9 +1,7 @@
-package com.airbnb.lottie.tests.espresso
+package com.airbnb.lottie.samples
+
 
 import android.view.View
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.ViewAssertion
-import androidx.test.espresso.matcher.ViewMatchers
 import com.airbnb.lottie.LottieAnimationView
 import org.hamcrest.Description
 import org.hamcrest.Matcher

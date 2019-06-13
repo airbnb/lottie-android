@@ -2,8 +2,6 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext.kotlinVersion = '1.3.31'
-  ext.androidXVersion = '1.0.0'
-  ext.navVersion = '1.0.0-alpha06'
 
   repositories {
     jcenter()

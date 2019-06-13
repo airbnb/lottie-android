@@ -1,4 +1,4 @@
-package com.airbnb.lottie.tests.espresso
+package com.airbnb.lottie.samples
 
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource

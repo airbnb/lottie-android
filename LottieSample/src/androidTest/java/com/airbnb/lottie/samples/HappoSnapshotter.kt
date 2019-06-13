@@ -1,9 +1,11 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
+import com.airbnb.lottie.BuildConfig
+import com.airbnb.lottie.L
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility

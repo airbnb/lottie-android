@@ -1,4 +1,4 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
+import com.airbnb.lottie.L
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 

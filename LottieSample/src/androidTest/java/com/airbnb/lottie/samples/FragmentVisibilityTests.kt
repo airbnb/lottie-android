@@ -1,4 +1,4 @@
-package com.airbnb.lottie.tests.espresso
+package com.airbnb.lottie.samples
 
 import android.animation.Animator
 import android.content.Intent
@@ -15,17 +15,22 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.samples.R
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.nhaarman.mockitokotlin2.mock
+import org.junit.Assert
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -34,7 +39,7 @@ import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class FragmentTests {
+class FragmentVisibilityTests {
 
     @Test
     fun setup() {
@@ -153,7 +158,7 @@ class FragmentTests {
         scenario1.onFragment { fragment ->
             assertFalse(fragment.animationView.isAnimating)
         }
-        onView(withId(R.id.finish)).perform(click())
+        onView(withId(R.id.finish)).perform(ViewActions.click())
 
         scenario1.waitForState(Lifecycle.State.RESUMED)
         scenario1.onFragment { fragment ->

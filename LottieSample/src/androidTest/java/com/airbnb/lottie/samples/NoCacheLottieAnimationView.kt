@@ -1,7 +1,8 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.content.Context
 import android.util.AttributeSet
+import com.airbnb.lottie.LottieAnimationView
 
 class NoCacheLottieAnimationView @JvmOverloads constructor(
         context: Context,
