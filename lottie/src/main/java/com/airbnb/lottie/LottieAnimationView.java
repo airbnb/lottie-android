@@ -168,6 +168,14 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
       lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_renderMode)) {
+      int renderModeOrdinal = ta.getInt(R.styleable.LottieAnimationView_lottie_renderMode, RenderMode.AUTOMATIC.ordinal());
+      if (renderModeOrdinal >= RenderMode.values().length) {
+        renderModeOrdinal = RenderMode.AUTOMATIC.ordinal();
+      }
+      renderMode = RenderMode.values()[renderModeOrdinal];
+    }
+
     ta.recycle();
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
@@ -861,12 +869,13 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
   }
 
   private void enableOrDisableHardwareLayer() {
+    int layerType = LAYER_TYPE_SOFTWARE;
     switch (renderMode) {
       case HARDWARE:
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        layerType = LAYER_TYPE_HARDWARE;
         break;
       case SOFTWARE:
-        setLayerType(LAYER_TYPE_SOFTWARE, null);
+        layerType = LAYER_TYPE_SOFTWARE;
         break;
       case AUTOMATIC:
         boolean useHardwareLayer = true;
@@ -874,11 +883,15 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
           useHardwareLayer = false;
         } else if (composition != null && composition.getMaskAndMatteCount() > 4) {
           useHardwareLayer = false;
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+          useHardwareLayer = false;
         }
-        setLayerType(useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE, null);
+        layerType = useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE;
         break;
     }
-
+    if (layerType != getLayerType()) {
+      setLayerType(layerType, null);
+    }
   }
 
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
