@@ -16,7 +16,7 @@
         android:layout_weight="1"/>
 
 
-    <com.airbnb.lottie.samples.views.NoShiftBottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="56dp"
