@@ -106,6 +106,7 @@ class LottieTest {
             testMarkers()
             snapshotAssets()
             testText()
+            testPartialFrameProgress()
             snapshotProdAnimations()
             snapshotter.finalizeReportAndUpload()
         }
@@ -234,13 +235,19 @@ class LottieTest {
         withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.0") { drawable ->
             drawable.progress = 0f
         }
+    }
+
+    private suspend fun testPartialFrameProgress() {
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0") { drawable ->
+            drawable.progress = 0f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.25") { drawable ->
+            drawable.progress = 0.25f
+        }
 
         withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.5") { drawable ->
             drawable.progress = 0.5f
-        }
-
-        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.52") { drawable ->
-            drawable.progress = 0.52f
         }
 
         withDrawable("Tests/2FrameAnimation.json", "Float Progress", "1.0") { drawable ->
