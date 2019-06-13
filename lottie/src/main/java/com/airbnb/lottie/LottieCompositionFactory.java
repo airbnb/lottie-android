@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
@@ -88,7 +87,6 @@ public class LottieCompositionFactory {
    * The asset file name will be used as a cache key so future usages won't have to parse the json again.
    * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
    *
-   * @see #fromZipStream(ZipInputStream, String)
    */
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
     // Prevent accidentally leaking an Activity.
@@ -106,14 +104,13 @@ public class LottieCompositionFactory {
    * The asset file name will be used as a cache key so future usages won't have to parse the json again.
    * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
    *
-   * @see #fromZipStreamSync(ZipInputStream, String)
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
     try {
       String cacheKey = "asset_" + fileName;
       if (fileName.endsWith(".zip")) {
-        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
+        // return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
     } catch (IOException e) {
@@ -272,79 +269,79 @@ public class LottieCompositionFactory {
   }
 
 
-  public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromZipStreamSync(inputStream, cacheKey);
-      }
-    });
-  }
+  // public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
+  //   return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
+  //     @Override
+  //     public LottieResult<LottieComposition> call() {
+  //       return fromZipStreamSync(inputStream, cacheKey);
+  //     }
+  //   });
+  // }
 
   /**
    * Parses a zip input stream into a Lottie composition.
    * Your zip file should just be a folder with your json file and images zipped together.
    * It will automatically store and configure any images inside the animation if they exist.
    */
-  @WorkerThread
-  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
-    try {
-      return fromZipStreamSyncInternal(inputStream, cacheKey);
-    } finally {
-      closeQuietly(inputStream);
-    }
-  }
+  // @WorkerThread
+  // public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
+  //   try {
+  //     return fromZipStreamSyncInternal(inputStream, cacheKey);
+  //   } finally {
+  //     closeQuietly(inputStream);
+  //   }
+  // }
 
-  @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream, @Nullable String cacheKey) {
-    LottieComposition composition = null;
-    Map<String, Bitmap> images = new HashMap<>();
-
-    try {
-      ZipEntry entry = inputStream.getNextEntry();
-      while (entry != null) {
-        final String entryName = entry.getName();
-        if (entryName.contains("__MACOSX")) {
-          inputStream.closeEntry();
-        } else if (entry.getName().contains(".json")) {
-          com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
-          composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
-        } else if (entryName.contains(".png") || entryName.contains(".webp")) {
-          String[] splitName = entryName.split("/");
-          String name = splitName[splitName.length - 1];
-          images.put(name, BitmapFactory.decodeStream(inputStream));
-        } else {
-          inputStream.closeEntry();
-        }
-
-        entry = inputStream.getNextEntry();
-      }
-    } catch (IOException e) {
-      return new LottieResult<>(e);
-    }
-
-
-    if (composition == null) {
-      return new LottieResult<>(new IllegalArgumentException("Unable to parse composition"));
-    }
-
-    for (Map.Entry<String, Bitmap> e : images.entrySet()) {
-      LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
-      if (imageAsset != null) {
-        imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
-      }
-    }
-
-    // Ensure that all bitmaps have been set.
-    for (Map.Entry<String, LottieImageAsset> entry : composition.getImages().entrySet()) {
-      if (entry.getValue().getBitmap() == null) {
-        return new LottieResult<>(new IllegalStateException("There is no image for " + entry.getValue().getFileName()));
-      }
-    }
-
-    LottieCompositionCache.getInstance().put(cacheKey, composition);
-    return new LottieResult<>(composition);
-  }
+  // @WorkerThread
+  // private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream, @Nullable String cacheKey) {
+  //   LottieComposition composition = null;
+  //   Map<String, Bitmap> images = new HashMap<>();
+  //
+  //   try {
+  //     ZipEntry entry = inputStream.getNextEntry();
+  //     while (entry != null) {
+  //       final String entryName = entry.getName();
+  //       if (entryName.contains("__MACOSX")) {
+  //         inputStream.closeEntry();
+  //       } else if (entry.getName().contains(".json")) {
+  //         com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
+  //         composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
+  //       } else if (entryName.contains(".png") || entryName.contains(".webp")) {
+  //         String[] splitName = entryName.split("/");
+  //         String name = splitName[splitName.length - 1];
+  //         images.put(name, BitmapFactory.decodeStream(inputStream));
+  //       } else {
+  //         inputStream.closeEntry();
+  //       }
+  //
+  //       entry = inputStream.getNextEntry();
+  //     }
+  //   } catch (IOException e) {
+  //     return new LottieResult<>(e);
+  //   }
+  //
+  //
+  //   if (composition == null) {
+  //     return new LottieResult<>(new IllegalArgumentException("Unable to parse composition"));
+  //   }
+  //
+  //   for (Map.Entry<String, Bitmap> e : images.entrySet()) {
+  //     LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
+  //     if (imageAsset != null) {
+  //       imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
+  //     }
+  //   }
+  //
+  //   // Ensure that all bitmaps have been set.
+  //   for (Map.Entry<String, LottieImageAsset> entry : composition.getImages().entrySet()) {
+  //     if (entry.getValue().getBitmap() == null) {
+  //       return new LottieResult<>(new IllegalStateException("There is no image for " + entry.getValue().getFileName()));
+  //     }
+  //   }
+  //
+  //   LottieCompositionCache.getInstance().put(cacheKey, composition);
+  //   return new LottieResult<>(composition);
+  // }
 
   @Nullable
   private static LottieImageAsset findImageAssetForFileName(LottieComposition composition, String fileName) {

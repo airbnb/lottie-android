@@ -35,7 +35,6 @@ import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
-import java.util.zip.ZipInputStream
 import com.airbnb.lottie.samples.R as SampleAppR
 
 /**
@@ -138,8 +137,8 @@ class LottieTest {
     ) {
         for (file in files) {
             log("Parsing ${file.nameWithoutExtension}")
-            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
-            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
+            // val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name) else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
+            val result = LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
             val composition = result.value
                     ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}")
             send("prod-${file.nameWithoutExtension}" to composition)
