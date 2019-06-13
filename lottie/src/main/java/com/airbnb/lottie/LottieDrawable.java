@@ -737,6 +737,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   public boolean isAnimating() {
+    // If this gets called from the constructor of LottieAnimationView (which can happen pre-API 23), LottieDrawable will be
+    // initialized but its fields won't be.
+    if (animator == null) {
+      return false;
+    }
     return animator.isRunning();
   }
 
