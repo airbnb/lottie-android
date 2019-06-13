@@ -146,7 +146,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     setFrame((int) frame);
   }
 
-  public void setFrame(int frame) {
+  public void setFrame(float frame) {
     if (this.frame == frame) {
       return;
     }
