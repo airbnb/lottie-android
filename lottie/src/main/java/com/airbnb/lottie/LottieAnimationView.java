@@ -77,6 +77,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
   };
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
+  private boolean isInitialized;
   private String animationName;
   private @RawRes int animationResId;
   private boolean wasAnimatingWhenNotShown = false;
@@ -181,6 +182,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
 
     enableOrDisableHardwareLayer();
+    isInitialized = true;
   }
 
   @Override public void setImageResource(int resId) {
@@ -252,7 +254,13 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
     // This can happen on older versions of Android because onVisibilityChanged gets called from the
     // constructor of View so this will get called before lottieDrawable gets initialized.
     // https://github.com/airbnb/lottie-android/issues/1143
-    if (lottieDrawable == null) {
+    // A simple null check on lottieDrawable would not work because when using Proguard optimization, a
+    // null check on a final field gets removed. As "usually" final fields cannot be null.
+    // However because this is called by super (View) before the initializer of the LottieAnimationView
+    // is called, it actually can be null here.
+    // Working around this by using a non final boolean that is set to true after the class initializer
+    // has run.
+    if (!isInitialized) {
       return;
     }
     if (isShown()) {
