@@ -1,6 +1,11 @@
+# 3.0.7
+* Fixed renderMode XML attr being ignored.
+* Allow progress to be set in between frames.
+* Fix a NullPointerException on 5.x.x devices for apps that use Proguard.
+
 # 3.0.6
 ### Bugs Fixed
-* Fixed another LottieAnimationView visibility bug
+* Fixed another LottieAnimationView visibility bug.
 
 # 3.0.5
 ### Bugs Fixed
