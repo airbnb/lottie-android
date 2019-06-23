@@ -295,7 +295,7 @@ public abstract class BaseStrokeContent
       }
       dashPatternValues[i] *= scale;
     }
-    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
+    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue() * scale;
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     L.endSection("StrokeContent#applyDashPattern");
   }
