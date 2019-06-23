@@ -40,7 +40,7 @@ public abstract class BaseStrokeContent
   private final Path path = new Path();
   private final Path trimPathPath = new Path();
   private final RectF rect = new RectF();
-  private final LottieDrawable lottieDrawable;
+  protected final LottieDrawable lottieDrawable;
   protected final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;

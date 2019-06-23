@@ -9,7 +9,6 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -18,6 +17,7 @@ import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientStroke;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 public class GradientStrokeContent extends BaseStrokeContent {
@@ -31,6 +31,9 @@ public class GradientStrokeContent extends BaseStrokeContent {
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final RectF boundsRect = new RectF();
+  private final PointF startPoint = new PointF();
+  private final PointF endPoint = new PointF();
+  private final float[] mappedPoints = new float[4];
 
   private final GradientType type;
   private final int cacheSteps;
@@ -71,9 +74,9 @@ public class GradientStrokeContent extends BaseStrokeContent {
 
     Shader shader;
     if (type == GradientType.LINEAR) {
-      shader = getLinearGradient();
+      shader = getLinearGradient(parentMatrix, canvas);
     } else {
-      shader = getRadialGradient();
+      shader = getRadialGradient(parentMatrix);
     }
     paint.setShader(shader);
 
@@ -84,14 +87,15 @@ public class GradientStrokeContent extends BaseStrokeContent {
     return name;
   }
 
-  private LinearGradient getLinearGradient() {
-    int gradientHash = getGradientHash();
+  private LinearGradient getLinearGradient(Matrix parentMatrix, Canvas canvas) {
+    int gradientHash = getGradientHash(parentMatrix);
     LinearGradient gradient = linearGradientCache.get(gradientHash);
     if (gradient != null) {
       return gradient;
     }
-    PointF startPoint = startPointAnimation.getValue();
-    PointF endPoint = endPointAnimation.getValue();
+
+    updateStartAndEndPoints(parentMatrix);
+
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
@@ -99,19 +103,21 @@ public class GradientStrokeContent extends BaseStrokeContent {
     int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
     int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
     int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+
     gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
     linearGradientCache.put(gradientHash, gradient);
     return gradient;
   }
 
-  private RadialGradient getRadialGradient() {
-    int gradientHash = getGradientHash();
+  private RadialGradient getRadialGradient(Matrix parentMatrix) {
+    int gradientHash = getGradientHash(parentMatrix);
     RadialGradient gradient = radialGradientCache.get(gradientHash);
     if (gradient != null) {
       return gradient;
     }
-    PointF startPoint = startPointAnimation.getValue();
-    PointF endPoint = endPointAnimation.getValue();
+
+    updateStartAndEndPoints(parentMatrix);
+
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
@@ -120,25 +126,49 @@ public class GradientStrokeContent extends BaseStrokeContent {
     int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
     int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
     float r = (float) Math.hypot(x1 - x0, y1 - y0);
+    if (r <= 0) {
+      r = 0.001f;
+    }
     gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.CLAMP);
     radialGradientCache.put(gradientHash, gradient);
     return gradient;
   }
 
-  private int getGradientHash() {
+  private void updateStartAndEndPoints(Matrix parentMatrix) {
+    startPoint.set(startPointAnimation.getValue());
+    endPoint.set(endPointAnimation.getValue());
+
+    float cx = lottieDrawable.getComposition().getBounds().centerX();
+    float cy = lottieDrawable.getComposition().getBounds().centerY();
+
+    startPoint.set(startPoint.x - cx, startPoint.y - cy);
+    endPoint.set(endPoint.x - cx, endPoint.y - cy);
+
+    mappedPoints[0] = startPoint.x;
+    mappedPoints[1] = startPoint.y;
+    mappedPoints[2] = endPoint.x;
+    mappedPoints[3] = endPoint.y;
+    parentMatrix.mapPoints(mappedPoints);
+    startPoint.set(mappedPoints[0], mappedPoints[1]);
+    endPoint.set(mappedPoints[2], mappedPoints[3]);
+  }
+
+  private int getGradientHash(Matrix parentMatrix) {
     int startPointProgress = Math.round(startPointAnimation.getProgress() * cacheSteps);
     int endPointProgress = Math.round(endPointAnimation.getProgress() * cacheSteps);
     int colorProgress = Math.round(colorAnimation.getProgress() * cacheSteps);
     int hash = 17;
     if (startPointProgress != 0) {
-      hash = hash * 31 * startPointProgress;
+      hash = hash * 31 + startPointProgress;
     }
     if (endPointProgress != 0) {
-      hash = hash * 31 * endPointProgress;
+      hash = hash * 31 + endPointProgress;
     }
     if (colorProgress != 0) {
-      hash = hash * 31 * colorProgress;
+      hash = hash * 31 + colorProgress;
     }
+
+    hash = hash * 31 + Utils.getHashCode(parentMatrix);
     return hash;
   }
 

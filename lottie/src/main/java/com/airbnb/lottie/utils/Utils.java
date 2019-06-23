@@ -22,6 +22,7 @@ import com.airbnb.lottie.animation.content.TrimPathContent;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 
 import java.io.Closeable;
+import java.util.Arrays;
 
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;
@@ -31,6 +32,7 @@ public final class Utils {
   private static final Path tempPath2 = new Path();
   private static final float[] points = new float[4];
   private static final float SQRT_2 = (float) Math.sqrt(2);
+  private static float[] matrixValues;
   private static float dpScale = -1;
 
   private Utils() {
@@ -225,6 +227,14 @@ public final class Utils {
       return Settings.System.getFloat(context.getContentResolver(),
               Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
     }
+  }
+
+  public static int getHashCode(Matrix matrix) {
+    if (matrixValues == null) {
+      matrixValues = new float[9];
+    }
+    matrix.getValues(matrixValues);
+    return Arrays.hashCode(matrixValues);
   }
 
   /**
