@@ -30,11 +30,10 @@ import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import okio.Okio;
 
 import static com.airbnb.lottie.RenderMode.HARDWARE;
 
@@ -344,18 +343,18 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * JSONObject never has to be done.
    */
   public void setAnimationFromJson(String jsonString, @Nullable String cacheKey) {
-    setAnimation(JsonReader.of(Okio.buffer(Okio.source(new ByteArrayInputStream(jsonString.getBytes())))), cacheKey);
+    setAnimation(new ByteArrayInputStream(jsonString.getBytes()), cacheKey);
   }
 
   /**
-   * Sets the animation from a JSONReader.
+   * Sets the animation from an arbitrary InputStream.
    * This will load and deserialize the file asynchronously.
    * <p>
    * This is particularly useful for animations loaded from the network. You can fetch the
    * bodymovin json from the network and pass it directly here.
    */
-  public void setAnimation(JsonReader reader, @Nullable String cacheKey) {
-    setCompositionTask(LottieCompositionFactory.fromJsonReader(reader, cacheKey));
+  public void setAnimation(InputStream stream, @Nullable String cacheKey) {
+    setCompositionTask(LottieCompositionFactory.fromJsonInputStream(stream, cacheKey));
   }
 
   /**
