@@ -14,11 +14,8 @@ import com.airbnb.lottie.utils.LottieValueAnimator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,9 +26,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public class LottieValueAnimatorUnitTest {
+public class LottieValueAnimatorUnitTest extends BaseTest {
   private interface VerifyListener {
     void verify(InOrder inOrder);
   }
