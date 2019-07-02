@@ -1,8 +1,8 @@
 package com.airbnb.lottie.samples;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 
 public class TestColorFilterActivity extends AppCompatActivity {
 

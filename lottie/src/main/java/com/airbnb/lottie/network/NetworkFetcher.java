@@ -1,9 +1,9 @@
 package com.airbnb.lottie.network;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import androidx.core.util.Pair;
+import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
+import android.support.v4.util.Pair;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;

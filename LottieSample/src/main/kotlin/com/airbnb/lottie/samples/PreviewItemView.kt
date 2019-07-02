@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples
 
 import android.content.Context
-import androidx.annotation.DrawableRes
+import android.support.annotation.DrawableRes
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout

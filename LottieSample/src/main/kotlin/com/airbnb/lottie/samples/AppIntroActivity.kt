@@ -1,7 +1,8 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +60,7 @@ class AppIntroActivity : IntroActivity() {
         animationView.progress = startProgress.lerp(endProgress, positionOffset)
     }
 
-    class EmptyFragment : androidx.fragment.app.Fragment() {
+    class EmptyFragment : Fragment() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             return container!!.inflate(R.layout.fragment_empty, false)
@@ -74,9 +75,9 @@ class AppIntroActivity : IntroActivity() {
 
     private fun setViewPagerScroller() {
         try {
-            val scrollerField = androidx.viewpager.widget.ViewPager::class.java.getDeclaredField("mScroller")
+            val scrollerField = ViewPager::class.java.getDeclaredField("mScroller")
             scrollerField.isAccessible = true
-            val interpolator = androidx.viewpager.widget.ViewPager::class.java.getDeclaredField("sInterpolator")
+            val interpolator = ViewPager::class.java.getDeclaredField("sInterpolator")
             interpolator.isAccessible = true
 
             val scroller = object : Scroller(this, interpolator.get(null) as Interpolator) {

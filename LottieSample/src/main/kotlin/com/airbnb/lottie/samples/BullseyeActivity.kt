@@ -2,8 +2,8 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import androidx.customview.widget.ViewDragHelper
-import androidx.appcompat.app.AppCompatActivity
+import android.support.v4.widget.ViewDragHelper
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
