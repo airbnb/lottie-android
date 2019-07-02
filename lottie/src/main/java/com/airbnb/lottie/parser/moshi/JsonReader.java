@@ -17,12 +17,8 @@ package com.airbnb.lottie.parser.moshi;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import androidx.annotation.Nullable;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;

@@ -15,9 +15,10 @@
  */
 package com.airbnb.lottie.parser.moshi;
 
+import android.support.annotation.Nullable;
+
 import java.io.IOException;
 
-import androidx.annotation.Nullable;
 
 
 /** Thrown when the data being parsed is not encoded as valid JSON. */

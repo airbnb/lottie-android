@@ -88,8 +88,8 @@ dependencies {
   implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.7.+@aar') { transitive = true }
   implementation ('com.amazonaws:aws-android-sdk-auth-userpools:2.7.+@aar') { transitive = true }
   implementation 'com.google.code.gson:gson:2.8.2'
-  implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-  implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+  implementation 'com.squareup.okhttp3:okhttp:3.12.3'
+  implementation 'com.squareup.retrofit2:retrofit:2.5.0'
   implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
   implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
   implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'

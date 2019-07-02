@@ -887,7 +887,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
         break;
       case AUTOMATIC:
         boolean useHardwareLayer = true;
-        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < 28) {
           useHardwareLayer = false;
         } else if (composition != null && composition.getMaskAndMatteCount() > 4) {
           useHardwareLayer = false;

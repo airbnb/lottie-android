@@ -32,8 +32,6 @@ dependencies {
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"
   // Do not ugprade to 2.0 because it will bring in Kotlin as a transitive dependency.
   implementation("com.squareup.okio:okio:1.17.4")
-
-
 }
 
 task javadoc(type: Javadoc) {

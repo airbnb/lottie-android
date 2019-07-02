@@ -384,7 +384,7 @@ public class TextLayer extends BaseLayer {
       key = key * 31 + nextCodePoint;
     }
 
-    if (codePointCache.containsKey(key)) {
+    if (codePointCache.indexOfKey(key) >= 0) {
       return codePointCache.get(key);
     }
 

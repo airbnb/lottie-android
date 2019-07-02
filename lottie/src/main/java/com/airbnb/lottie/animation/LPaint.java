@@ -4,8 +4,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.LocaleList;
+import android.support.annotation.NonNull;
 
-import androidx.annotation.NonNull;
 
 /**
  * Custom paint that doesn't set text locale.

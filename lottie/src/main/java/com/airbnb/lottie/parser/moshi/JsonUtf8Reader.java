@@ -15,10 +15,11 @@
  */
 package com.airbnb.lottie.parser.moshi;
 
+import android.support.annotation.Nullable;
+
 import java.io.EOFException;
 import java.io.IOException;
 
-import androidx.annotation.Nullable;
 import okio.Buffer;
 import okio.BufferedSource;
 import okio.ByteString;
