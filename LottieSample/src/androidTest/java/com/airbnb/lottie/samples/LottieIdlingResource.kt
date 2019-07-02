@@ -1,7 +1,8 @@
 package com.airbnb.lottie.samples
 
-import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.IdlingResource
+
+import android.support.test.espresso.IdlingRegistry
+import android.support.test.espresso.IdlingResource
 import com.airbnb.lottie.LottieAnimationView
 
 class LottieIdlingResource(animationView: LottieAnimationView? = null, private val name: String = "Lottie") : IdlingResource {

@@ -3,17 +3,16 @@ package com.airbnb.lottie.samples
 import android.Manifest
 import android.content.res.Resources
 import android.graphics.*
+import android.support.test.filters.LargeTest
+import android.support.test.rule.ActivityTestRule
+import android.support.test.rule.GrantPermissionRule
+import android.support.test.runner.AndroidJUnit4
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.view.updateLayoutParams
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import androidx.test.rule.ActivityTestRule
-import androidx.test.rule.GrantPermissionRule
 import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
@@ -34,7 +33,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
-import com.airbnb.lottie.samples.R as SampleAppR
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests
@@ -816,4 +814,16 @@ class LottieTest {
     }
 
     private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+
+}
+
+inline fun View.updateLayoutParams(block: ViewGroup.LayoutParams.() -> Unit) {
+    updateLayoutParams<ViewGroup.LayoutParams>(block)
+}
+
+@JvmName("updateLayoutParamsTyped")
+inline fun <reified T : ViewGroup.LayoutParams> View.updateLayoutParams(block: T.() -> Unit) {
+    val params = layoutParams as T
+    block(params)
+    layoutParams = params
 }
