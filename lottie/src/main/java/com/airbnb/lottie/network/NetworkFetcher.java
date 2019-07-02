@@ -141,20 +141,16 @@ public class NetworkFetcher {
       // in the result which is more useful than failing here.
       contentType = "application/json";
     }
-    switch (contentType) {
-      case "application/zip":
-        Logger.debug("Handling zip response.");
-        extension = FileExtension.ZIP;
-        file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
-        result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
-        break;
-      case "application/json":
-      default:
-        Logger.debug("Received json response.");
-        extension = FileExtension.JSON;
-        file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
-        result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
-        break;
+    if (contentType.contains("application/zip")) {
+      Logger.debug("Handling zip response.");
+      extension = FileExtension.ZIP;
+      file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
+      result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
+    } else {
+      Logger.debug("Received json response.");
+      extension = FileExtension.JSON;
+      file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
+      result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
     }
 
     if (result.getValue() != null) {
