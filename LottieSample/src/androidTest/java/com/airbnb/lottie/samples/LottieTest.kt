@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.view.updateLayoutParams
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.L
