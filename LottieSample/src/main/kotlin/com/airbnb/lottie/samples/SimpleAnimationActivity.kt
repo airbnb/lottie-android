@@ -1,15 +1,16 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.model.LottieCompositionCache
-import kotlinx.android.synthetic.main.activity_simple_animation.*
-import kotlinx.android.synthetic.main.activity_simple_animation.view.*
-import java.lang.IllegalArgumentException
+import kotlinx.android.synthetic.main.activity_simple_animation.animationView
+import kotlinx.android.synthetic.main.activity_simple_animation.parse
+import kotlinx.android.synthetic.main.activity_simple_animation.play
+import kotlinx.android.synthetic.main.activity_simple_animation.setComposition
 
 /**
  * Useful for performance debugging.

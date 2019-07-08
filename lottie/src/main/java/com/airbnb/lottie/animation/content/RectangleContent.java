@@ -17,7 +17,7 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;
 
 public class RectangleContent
     implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, PathContent {

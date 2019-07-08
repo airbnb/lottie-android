@@ -1,16 +1,10 @@
 package com.airbnb.lottie.model;
 
 import com.airbnb.lottie.BaseTest;
-import com.airbnb.lottie.BuildConfig;
-import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

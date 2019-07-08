@@ -2,23 +2,25 @@ package com.airbnb.lottie.samples
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.os.Bundle
 import android.os.Environment
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.core.view.doOnNextLayout
+import androidx.view.doOnNextLayout
 import com.airbnb.lottie.L
-import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieCompositionFactory
-import kotlinx.android.synthetic.main.activity_film_strip_snapshots.*
+import kotlinx.android.synthetic.main.activity_film_strip_snapshots.filmStripView
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlin.IllegalStateException
 
 private const val RC_PERMISSION = 12345
 

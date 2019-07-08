@@ -32,8 +32,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.bottom_sheet_key_paths.*
 import kotlinx.android.synthetic.main.bottom_sheet_render_times.*
 import kotlinx.android.synthetic.main.bottom_sheet_warnings.*

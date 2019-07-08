@@ -2,30 +2,58 @@ package com.airbnb.lottie.samples
 
 import android.Manifest
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PointF
+import android.graphics.PorterDuff
+import android.support.test.filters.LargeTest
+import android.support.test.rule.ActivityTestRule
+import android.support.test.rule.GrantPermissionRule
+import android.support.test.runner.AndroidJUnit4
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.view.updateLayoutParams
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import androidx.test.rule.ActivityTestRule
-import androidx.test.rule.GrantPermissionRule
-import com.airbnb.lottie.*
+import androidx.view.updateLayoutParams
+import com.airbnb.lottie.FontAssetDelegate
+import com.airbnb.lottie.ImageAssetDelegate
+import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.SimpleColorFilter
+import com.airbnb.lottie.TextDelegate
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.views.FilmStripView
-import com.airbnb.lottie.value.*
+import com.airbnb.lottie.value.LottieFrameInfo
+import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
+import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
+import com.airbnb.lottie.value.LottieRelativePointValueCallback
+import com.airbnb.lottie.value.LottieValueCallback
+import com.airbnb.lottie.value.ScaleXY
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,7 +62,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
-import com.airbnb.lottie.samples.R as SampleAppR
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests
@@ -816,4 +843,29 @@ class LottieTest {
     }
 
     private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+
+    /**
+     * Executes [block] with the ViewGroup's layoutParams and reassigns the layoutParams with the
+     * updated version.
+     *
+     * @see ViewGroup.getLayoutParams
+     * @see ViewGroup.setLayoutParams
+     **/
+    inline fun View.updateLayoutParams(block: LayoutParams.() -> Unit) {
+        updateLayoutParams<LayoutParams>(block)
+    }
+
+    /**
+     * Executes [block] with a typed version of the ViewGroup's layoutParams and reassigns the
+     * layoutParams with the updated version.
+     *
+     * @see ViewGroup.getLayoutParams
+     * @see ViewGroup.setLayoutParams
+     **/
+    @JvmName("updateLayoutParamsTyped")
+    inline fun <reified T : LayoutParams> View.updateLayoutParams(block: T.() -> Unit) {
+        val params = layoutParams as T
+        block(params)
+        layoutParams = params
+    }
 }

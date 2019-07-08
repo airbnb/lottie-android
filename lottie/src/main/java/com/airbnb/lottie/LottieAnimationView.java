@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static android.view.View.LAYER_TYPE_HARDWARE;
+import static android.view.View.LAYER_TYPE_SOFTWARE;
 import static com.airbnb.lottie.RenderMode.HARDWARE;
 import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
@@ -888,7 +890,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
         break;
       case AUTOMATIC:
         boolean useHardwareLayer = true;
-        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < 28) {
           useHardwareLayer = false;
         } else if (composition != null && composition.getMaskAndMatteCount() > 4) {
           useHardwareLayer = false;

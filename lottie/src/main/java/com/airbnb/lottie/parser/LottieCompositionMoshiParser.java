@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.collection.LongSparseArray;
-import androidx.collection.SparseArrayCompat;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 
 
 public class LottieCompositionMoshiParser {
