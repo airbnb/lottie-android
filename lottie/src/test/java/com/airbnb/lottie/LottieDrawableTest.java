@@ -1,21 +1,20 @@
 package com.airbnb.lottie;
 
 import android.graphics.Rect;
-import androidx.collection.LongSparseArray;
-import androidx.collection.SparseArrayCompat;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-public class LottieDrawableTest extends BaseTest {
+public class LottieDrawableTest extends BaseTest{
 
   @SuppressWarnings("SameParameterValue")
   private LottieComposition createComposition(int startFrame, int endFrame) {

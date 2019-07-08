@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.support.v7.app.AppCompatActivity
 
 /**
  * To have a full screen animation, make an animation that is wider than the screen and set the

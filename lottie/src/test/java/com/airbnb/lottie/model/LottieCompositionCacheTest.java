@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class LottieCompositionCacheTest extends BaseTest  {
+public class LottieCompositionCacheTest extends BaseTest {
 
   private LottieComposition composition;
   private LottieCompositionCache cache;

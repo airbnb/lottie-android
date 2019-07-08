@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples.views
 
 import android.content.Context
-import androidx.customview.widget.ViewDragHelper
+import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout

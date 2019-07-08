@@ -3,12 +3,12 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.WorkerThread;
-import androidx.collection.LongSparseArray;
-import androidx.collection.SparseArrayCompat;
+import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
+import android.support.annotation.RestrictTo;
+import android.support.annotation.WorkerThread;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import android.util.Log;
 
 import com.airbnb.lottie.model.Font;

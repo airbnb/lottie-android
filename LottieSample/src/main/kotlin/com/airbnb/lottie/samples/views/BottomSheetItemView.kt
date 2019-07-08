@@ -5,7 +5,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import androidx.core.view.isVisible
+import androidx.view.isVisible
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.lottie.samples.R

@@ -2,15 +2,15 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.graphics.Color
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
+import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.view.isVisible
-import androidx.core.view.setPadding
+import androidx.view.isVisible
+import androidx.view.setPadding
 import com.airbnb.lottie.samples.R
 import com.airbnb.lottie.samples.getText
 import kotlinx.android.synthetic.main.item_view_control_bar.view.*
@@ -26,6 +26,7 @@ class ControlBarItemToggleView @JvmOverloads constructor(
         orientation = HORIZONTAL
         setBackgroundResource(R.drawable.control_bar_item_view_background)
         setPadding(resources.getDimensionPixelSize(R.dimen.control_bar_button_padding))
+
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.ControlBarItemToggleView, 0, 0)
 

@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples.model
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
+import android.support.annotation.DrawableRes
+import android.support.annotation.StringRes
 
 data class ShowcaseItem(
         @DrawableRes val drawableRes: Int,

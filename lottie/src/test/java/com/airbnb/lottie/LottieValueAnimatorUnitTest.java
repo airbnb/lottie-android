@@ -3,28 +3,28 @@ package com.airbnb.lottie;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.graphics.Rect;
-import androidx.collection.LongSparseArray;
-import androidx.collection.SparseArrayCompat;
+import android.support.v4.util.LongSparseArray;
+import android.support.v4.util.SparseArrayCompat;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 
-public class LottieValueAnimatorUnitTest extends BaseTest {
+
+public class LottieValueAnimatorUnitTest extends BaseTest{
   private interface VerifyListener {
     void verify(InOrder inOrder);
   }

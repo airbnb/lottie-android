@@ -1,6 +1,6 @@
 package com.airbnb.lottie;
 
-import androidx.core.util.Pair;
+import android.support.v4.util.Pair;
 
 import org.junit.Before;
 import org.junit.Test;

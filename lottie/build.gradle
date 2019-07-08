@@ -2,12 +2,12 @@ apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 27
   resourcePrefix 'lottie_'
 
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 28
+    targetSdkVersion 27
   }
   lintOptions {
     abortOnError true
@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-  implementation "androidx.appcompat:appcompat:1.0.0"
+  implementation "com.android.support:appcompat-v7:$supportLibVersion"
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"

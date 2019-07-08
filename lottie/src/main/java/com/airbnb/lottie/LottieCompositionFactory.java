@@ -22,9 +22,9 @@ import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-import androidx.annotation.WorkerThread;
+import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
+import android.support.annotation.WorkerThread;
 
 import static com.airbnb.lottie.parser.moshi.JsonReader.*;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;

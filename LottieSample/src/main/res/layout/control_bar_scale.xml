@@ -23,7 +23,7 @@
             android:textColor="#222222"
             android:textSize="14sp"/>
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <android.support.v7.widget.AppCompatSeekBar
             android:id="@+id/scaleSeekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

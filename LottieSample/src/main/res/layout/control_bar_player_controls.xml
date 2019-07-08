@@ -64,7 +64,7 @@
                 android:textSize="10sp"/>
         </RelativeLayout>
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <android.support.v7.widget.AppCompatSeekBar
             android:id="@+id/seekBar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

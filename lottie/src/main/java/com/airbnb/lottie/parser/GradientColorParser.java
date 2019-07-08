@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.IntRange;
+import android.support.annotation.IntRange;
 
 public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser<GradientColor> {
   /**

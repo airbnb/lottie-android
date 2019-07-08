@@ -6,15 +6,11 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.google.android.material.snackbar.Snackbar
+import android.support.design.widget.Snackbar
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.lottie.samples.R.id.coordinatorLayout
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.views.marquee
 import kotlinx.android.synthetic.main.fragment_player.*
