@@ -2,12 +2,12 @@ apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 27
+  compileSdkVersion 28
   resourcePrefix 'lottie_'
 
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 27
+    targetSdkVersion 28
   }
   lintOptions {
     abortOnError true
