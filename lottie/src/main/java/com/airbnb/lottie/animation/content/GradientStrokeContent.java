@@ -1,8 +1,10 @@
 package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
@@ -81,6 +83,11 @@ public class GradientStrokeContent extends BaseStrokeContent {
     paint.setShader(shader);
 
     super.draw(canvas, parentMatrix, parentAlpha);
+
+    Paint paint = new Paint();
+    paint.setColor(Color.YELLOW);
+    canvas.drawCircle(startPoint.x, startPoint.y, 3f, paint);
+    canvas.drawCircle(endPoint.x, endPoint.y, 3f, paint);
   }
 
   @Override public String getName() {
@@ -99,13 +106,13 @@ public class GradientStrokeContent extends BaseStrokeContent {
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
-    int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
-    int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
-    int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
-    int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+    int x0 = (int)  startPoint.x; //(boundsRect.left + boundsRect.width() / 2 + startPoint.x);
+    int y0 = (int) startPoint.y; // (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
+    int x1 = (int) endPoint.x; // (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
+    int y1 = (int) endPoint.y; //(boundsRect.top + boundsRect.height() / 2 + endPoint.y);
 
     gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
-    linearGradientCache.put(gradientHash, gradient);
+//    linearGradientCache.put(gradientHash, gradient);
     return gradient;
   }
 
@@ -141,20 +148,24 @@ public class GradientStrokeContent extends BaseStrokeContent {
     float cx = lottieDrawable.getComposition().getBounds().centerX();
     float cy = lottieDrawable.getComposition().getBounds().centerY();
 
-    startPoint.set(startPoint.x - cx, startPoint.y - cy);
-    endPoint.set(endPoint.x - cx, endPoint.y - cy);
+    startPoint.set(startPoint.x + cx, startPoint.y + cy);
+    endPoint.set(endPoint.x + cx, endPoint.y + cy);
 
     mappedPoints[0] = startPoint.x;
     mappedPoints[1] = startPoint.y;
     mappedPoints[2] = endPoint.x;
     mappedPoints[3] = endPoint.y;
+
     float[] values = new float[9];
     parentMatrix.getValues(values);
-    values[0] = lottieDrawable.getScale();
-    values[4] = lottieDrawable.getScale();
+    values[2] = 0f;
+    values[5] = 0f;
     Matrix matrix = new Matrix();
     matrix.setValues(values);
     matrix.mapPoints(mappedPoints);
+
+//    parentMatrix.mapPoints(mappedPoints);
+
     startPoint.set(mappedPoints[0], mappedPoints[1]);
     endPoint.set(mappedPoints[2], mappedPoints[3]);
   }
