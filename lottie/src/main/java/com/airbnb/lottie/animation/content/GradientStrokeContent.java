@@ -148,7 +148,13 @@ public class GradientStrokeContent extends BaseStrokeContent {
     mappedPoints[1] = startPoint.y;
     mappedPoints[2] = endPoint.x;
     mappedPoints[3] = endPoint.y;
-    parentMatrix.mapPoints(mappedPoints);
+    float[] values = new float[9];
+    parentMatrix.getValues(values);
+    values[0] = lottieDrawable.getScale();
+    values[4] = lottieDrawable.getScale();
+    Matrix matrix = new Matrix();
+    matrix.setValues(values);
+    matrix.mapPoints(mappedPoints);
     startPoint.set(mappedPoints[0], mappedPoints[1]);
     endPoint.set(mappedPoints[2], mappedPoints[3]);
   }
