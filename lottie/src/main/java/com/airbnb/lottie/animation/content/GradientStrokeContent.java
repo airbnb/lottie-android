@@ -9,8 +9,10 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -36,13 +38,16 @@ public class GradientStrokeContent extends BaseStrokeContent {
   private final PointF startPoint = new PointF();
   private final PointF endPoint = new PointF();
   private final float[] mappedPoints = new float[4];
+  private final float[] mappedPointsMatrixValues = new float[9];
+  private final Matrix mappedPointsMatrix = new Matrix();
 
   private final GradientType type;
   private final int cacheSteps;
   private final BaseKeyframeAnimation<GradientColor, GradientColor> colorAnimation;
   private final BaseKeyframeAnimation<PointF, PointF> startPointAnimation;
   private final BaseKeyframeAnimation<PointF, PointF> endPointAnimation;
-  @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
+  @Nullable
+  private ValueCallbackKeyframeAnimation colorCallbackAnimation;
 
   public GradientStrokeContent(
       final LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) {
@@ -68,7 +73,8 @@ public class GradientStrokeContent extends BaseStrokeContent {
     layer.addAnimation(endPointAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     if (hidden) {
       return;
     }
@@ -83,14 +89,10 @@ public class GradientStrokeContent extends BaseStrokeContent {
     paint.setShader(shader);
 
     super.draw(canvas, parentMatrix, parentAlpha);
-
-    Paint paint = new Paint();
-    paint.setColor(Color.YELLOW);
-    canvas.drawCircle(startPoint.x, startPoint.y, 3f, paint);
-    canvas.drawCircle(endPoint.x, endPoint.y, 3f, paint);
   }
 
-  @Override public String getName() {
+  @Override
+  public String getName() {
     return name;
   }
 
@@ -106,13 +108,13 @@ public class GradientStrokeContent extends BaseStrokeContent {
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
-    int x0 = (int)  startPoint.x; //(boundsRect.left + boundsRect.width() / 2 + startPoint.x);
-    int y0 = (int) startPoint.y; // (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
-    int x1 = (int) endPoint.x; // (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
-    int y1 = (int) endPoint.y; //(boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+    int x0 = (int) startPoint.x;
+    int y0 = (int) startPoint.y;
+    int x1 = (int) endPoint.x;
+    int y1 = (int) endPoint.y;
 
-    gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
-//    linearGradientCache.put(gradientHash, gradient);
+    gradient = new LinearGradient(startPoint.x, startPoint.y, endPoint.x, endPoint.y, colors, positions, Shader.TileMode.CLAMP);
+    linearGradientCache.put(gradientHash, gradient);
     return gradient;
   }
 
@@ -145,29 +147,25 @@ public class GradientStrokeContent extends BaseStrokeContent {
     startPoint.set(startPointAnimation.getValue());
     endPoint.set(endPointAnimation.getValue());
 
-    float cx = lottieDrawable.getComposition().getBounds().centerX();
-    float cy = lottieDrawable.getComposition().getBounds().centerY();
-
-    startPoint.set(startPoint.x + cx, startPoint.y + cy);
-    endPoint.set(endPoint.x + cx, endPoint.y + cy);
-
     mappedPoints[0] = startPoint.x;
     mappedPoints[1] = startPoint.y;
     mappedPoints[2] = endPoint.x;
     mappedPoints[3] = endPoint.y;
 
-    float[] values = new float[9];
-    parentMatrix.getValues(values);
-    values[2] = 0f;
-    values[5] = 0f;
+    parentMatrix.getValues(mappedPointsMatrixValues);
+    // Scale the start and end points but translation is taken into account with the bounds
+    // centerpoint below.
+    mappedPointsMatrixValues[Matrix.MTRANS_X] = 0f;
+    mappedPointsMatrixValues[Matrix.MTRANS_Y] = 0f;
     Matrix matrix = new Matrix();
-    matrix.setValues(values);
+    matrix.setValues(mappedPointsMatrixValues);
     matrix.mapPoints(mappedPoints);
-
-//    parentMatrix.mapPoints(mappedPoints);
 
     startPoint.set(mappedPoints[0], mappedPoints[1]);
     endPoint.set(mappedPoints[2], mappedPoints[3]);
+
+    startPoint.set(startPoint.x + boundsRect.centerX(), startPoint.y + boundsRect.centerY());
+    endPoint.set(endPoint.x + boundsRect.centerX(), endPoint.y + boundsRect.centerY());
   }
 
   private int getGradientHash(Matrix parentMatrix) {
