@@ -394,10 +394,9 @@ public abstract class BaseLayer
           break;
         case MASK_MODE_SUBTRACT:
           if (i == 0) {
-            // TODO: make a paint for this.
-            Paint paint = new Paint();
-            paint.setColor(Color.BLACK);
-            canvas.drawRect(rect, paint);
+            contentPaint.setColor(Color.BLACK);
+            contentPaint.setAlpha(255);
+            canvas.drawRect(rect, contentPaint);
           }
           if (mask.isInverted()) {
             applyInvertedSubtractMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
