@@ -33,13 +33,9 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.net.ssl.SSLException;
 
 import static com.airbnb.lottie.RenderMode.HARDWARE;
 
@@ -69,8 +65,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = new LottieListener<Throwable>() {
     @Override public void onResult(Throwable throwable) {
       // By default, fail silently for network errors.
-      if (throwable instanceof UnknownHostException || throwable instanceof SocketException || throwable instanceof SSLException) {
+      if (Utils.isNetworkException(throwable)) {
         Logger.warning("Unable to load composition.", throwable);
+        return;
       }
       throw new IllegalStateException("Unable to parse composition", throwable);
     }
