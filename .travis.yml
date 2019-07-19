@@ -14,6 +14,8 @@ before_install:
 - export GIT_MERGE_BASE=$(git merge-base master)
 - echo GIT_SHA $GIT_SHA
 - echo GIT_MERGE_BASE $GIT_MERGE_BASE
+after_success:
+  - gradle/deploy_snapshot.sh
 android:
   components:
   - tools
