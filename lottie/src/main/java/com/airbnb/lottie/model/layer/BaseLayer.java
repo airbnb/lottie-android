@@ -379,6 +379,11 @@ public abstract class BaseLayer
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");
     saveLayerCompat(canvas, rect, dstInPaint, false);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      // Pre-Pie, offscreen buffers were opaque which meant that outer border of a mask
+      // might get drawn depending on the result of float rounding.
+      canvas.drawColor(Color.TRANSPARENT);
+    }
     L.endSection("Layer#saveLayer");
     for (int i = 0; i < mask.getMasks().size(); i++) {
       Mask mask = this.mask.getMasks().get(i);
@@ -394,10 +399,9 @@ public abstract class BaseLayer
           break;
         case MASK_MODE_SUBTRACT:
           if (i == 0) {
-            // TODO: make a paint for this.
-            Paint paint = new Paint();
-            paint.setColor(Color.BLACK);
-            canvas.drawRect(rect, paint);
+            contentPaint.setColor(Color.BLACK);
+            contentPaint.setAlpha(255);
+            canvas.drawRect(rect, contentPaint);
           }
           if (mask.isInverted()) {
             applyInvertedSubtractMask(canvas, matrix, mask, maskAnimation, opacityAnimation);

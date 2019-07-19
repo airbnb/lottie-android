@@ -24,6 +24,11 @@
             android:id="@+id/warningsButton"
             style="@style/ControlBarItem" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/scaleToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_scale"
+            app:text="@string/control_bar_scale" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/borderToggle"
             style="@style/ControlBarItem"
             app:src="@drawable/ic_device"
@@ -38,11 +43,6 @@
             style="@style/ControlBarItem"
             app:src="@drawable/ic_content_cut"
             app:text="@string/control_bar_trim" />
-        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
-            android:id="@+id/scaleToggle"
-            style="@style/ControlBarItem"
-            app:src="@drawable/ic_scale"
-            app:text="@string/control_bar_scale" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/speedToggle"
             style="@style/ControlBarItem"
