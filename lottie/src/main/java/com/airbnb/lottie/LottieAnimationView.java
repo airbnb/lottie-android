@@ -11,21 +11,21 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+
 import androidx.annotation.FloatRange;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.appcompat.widget.AppCompatImageView;
-import okio.Okio;
-
-import android.text.TextUtils;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -33,13 +33,11 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static com.airbnb.lottie.RenderMode.HARDWARE;
-import static com.airbnb.lottie.RenderMode.SOFTWARE;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -64,6 +62,16 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
 @SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
 
   private static final String TAG = LottieAnimationView.class.getSimpleName();
+  private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = new LottieListener<Throwable>() {
+    @Override public void onResult(Throwable throwable) {
+      // By default, fail silently for network errors.
+      if (Utils.isNetworkException(throwable)) {
+        Logger.warning("Unable to load composition.", throwable);
+        return;
+      }
+      throw new IllegalStateException("Unable to parse composition", throwable);
+    }
+  };
 
   private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
     @Override public void onResult(LottieComposition composition) {
@@ -71,11 +79,7 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
     }
   };
 
-  private final LottieListener<Throwable> failureListener = new LottieListener<Throwable>() {
-    @Override public void onResult(Throwable throwable) {
-      throw new IllegalStateException("Unable to parse composition", throwable);
-    }
-  };
+  private LottieListener<Throwable> failureListener = DEFAULT_FAILURE_LISTENER;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private boolean isInitialized;
@@ -371,6 +375,34 @@ import static com.airbnb.lottie.RenderMode.SOFTWARE;
    */
   public void setAnimationFromUrl(String url) {
     setCompositionTask(LottieCompositionFactory.fromUrl(getContext(), url));
+  }
+
+  /**
+   * Set a default failure listener that will be called if any of the setAnimation APIs fail for any reason.
+   * This can be used to replace the default behavior which is to crash.
+   *
+   * @see #resetFailureListener()
+   */
+  public void setFailureListener(LottieListener<Throwable> failureListener) {
+    if (compositionTask != null) {
+      compositionTask.removeFailureListener(this.failureListener);
+      compositionTask.addFailureListener(failureListener);
+    }
+    this.failureListener = failureListener;
+  }
+
+  /**
+   * Clears the failure listener set with {@link #setFailureListener(LottieListener)} and restores the default behavior
+   * which is to crash.
+   */
+  public void resetFailureListener() {
+    if (failureListener == DEFAULT_FAILURE_LISTENER) {
+      return;
+    }
+    if (compositionTask != null) {
+      compositionTask.removeFailureListener(failureListener);
+    }
+    this.failureListener = DEFAULT_FAILURE_LISTENER;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
