@@ -13,7 +13,7 @@ before_install:
 - echo GIT_SHA $GIT_SHA
 - echo GIT_MERGE_BASE $GIT_MERGE_BASE
 after_success:
-  - deploy_snapshot.sh
+  - ./deploy_snapshot.sh
 android:
   components:
   - tools
