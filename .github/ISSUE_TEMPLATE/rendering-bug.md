@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+** If you don't use this template, your issue will be closed **
+
 **Checklist**
 1. My animation doesn't use any [unsupported features](http://airbnb.io/lottie/#/supported-features).
 2. I know what part of my animation doesn't work.

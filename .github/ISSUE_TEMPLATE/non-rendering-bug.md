@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+** If you don't use this template, your issue will be closed **
+
 **Checklist**
 1. Create a sample project that reproduces your bug.
 1. Attach your project as a zip file.
