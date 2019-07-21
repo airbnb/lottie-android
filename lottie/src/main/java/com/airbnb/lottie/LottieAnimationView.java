@@ -90,6 +90,14 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private boolean autoPlay = false;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
   private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
+  /**
+   * Prevents a StackOverflowException on 4.4 in which getDrawingCache() calls buildDrawingCache().
+   * This isn't a great solution but it works and has very little performance overhead.
+   * At some point in the future, the original goal of falling back to hardware rendering when
+   * the animation is set to software rendering but it is too large to fit in a software bitmap
+   * should be reevaluated.
+   */
+  private int buildDrawingCacheDepth = 0;
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
   /** Can be null because it is created async */
@@ -884,10 +892,12 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    */
   @Override
   public void buildDrawingCache(boolean autoScale) {
+    buildDrawingCacheDepth++;
     super.buildDrawingCache(autoScale);
-    if (getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
+    if (buildDrawingCacheDepth == 1 && isAttachedToWindow() && getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
       setRenderMode(HARDWARE);
     }
+    buildDrawingCacheDepth--;
   }
 
   /**
