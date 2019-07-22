@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
@@ -79,7 +80,18 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     }
   };
 
-  private LottieListener<Throwable> failureListener = DEFAULT_FAILURE_LISTENER;
+  private final LottieListener<Throwable> wrappedFailureListener = new LottieListener<Throwable>() {
+    @Override
+    public void onResult(Throwable result) {
+      if (fallbackResource != 0) {
+        setImageResource(fallbackResource);
+      }
+      LottieListener<Throwable> l = failureListener == null ? DEFAULT_FAILURE_LISTENER : failureListener;
+      l.onResult(result);
+    }
+  };
+  @Nullable private LottieListener<Throwable> failureListener;
+  @DrawableRes private int fallbackResource = 0;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private boolean isInitialized;
@@ -143,6 +155,8 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
           setAnimationFromUrl(url);
         }
       }
+
+      setFallbackResource(ta.getResourceId(R.styleable.LottieAnimationView_lottie_fallbackRes, 0));
     }
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
       wasAnimatingWhenDetached = true;
@@ -388,30 +402,32 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Set a default failure listener that will be called if any of the setAnimation APIs fail for any reason.
-   * This can be used to replace the default behavior which is to crash.
+   * This can be used to replace the default behavior.
    *
-   * @see #resetFailureListener()
+   * The default behavior will log any network errors and rethrow all other exceptions.
+   *
+   * If you are loading an animation from the network, errors may occur if your user has no internet.
+   * You can use this listener to retry the download or you can have it default to an error drawable
+   * with {@link #setFallbackResource(int)}.
+   *
+   * Unless you are using {@link #setAnimationFromUrl(String)}, errors are unexpected.
+   *
+   * Set the listener to null to revert to the default behavior.
    */
-  public void setFailureListener(LottieListener<Throwable> failureListener) {
-    if (compositionTask != null) {
-      compositionTask.removeFailureListener(this.failureListener);
-      compositionTask.addFailureListener(failureListener);
-    }
+  public void setFailureListener(@Nullable LottieListener<Throwable> failureListener) {
     this.failureListener = failureListener;
   }
 
   /**
-   * Clears the failure listener set with {@link #setFailureListener(LottieListener)} and restores the default behavior
-   * which is to crash.
+   * Set a drawable that will be rendered if the LottieComposition fails to load for any reason.
+   * Unless you are using {@link #setAnimationFromUrl(String)}, this is an unexpected error and
+   * you should handle it with {@link #setFailureListener(LottieListener)}.
+   *
+   * If this is a network animation, you may use this to show an error to the user or
+   * you can use a failure listener to retry the download.
    */
-  public void resetFailureListener() {
-    if (failureListener == DEFAULT_FAILURE_LISTENER) {
-      return;
-    }
-    if (compositionTask != null) {
-      compositionTask.removeFailureListener(failureListener);
-    }
-    this.failureListener = DEFAULT_FAILURE_LISTENER;
+  public void setFallbackResource(@DrawableRes int fallbackResource) {
+    this.fallbackResource = fallbackResource;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
@@ -419,13 +435,13 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     cancelLoaderTask();
     this.compositionTask = compositionTask
             .addListener(loadedListener)
-            .addFailureListener(failureListener);
+            .addFailureListener(wrappedFailureListener);
   }
 
   private void cancelLoaderTask() {
     if (compositionTask != null) {
       compositionTask.removeListener(loadedListener);
-      compositionTask.removeFailureListener(failureListener);
+      compositionTask.removeFailureListener(wrappedFailureListener);
     }
   }
 

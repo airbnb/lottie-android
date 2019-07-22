@@ -49,6 +49,7 @@ class DynamicActivity : AppCompatActivity() {
                 Log.d(TAG, it.keysToString())
             }
         }
+        animationView.setFailureListener { /* do nothing */ }
 
         jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()

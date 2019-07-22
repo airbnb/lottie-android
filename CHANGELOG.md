@@ -1,3 +1,19 @@
+# 3.1.0
+### Features and Improvements
+* **Breaking Change** Replace JsonReader parsing APIs with InputStream variants to prevent 
+exposing Lottie's copy of Moshi's json parser.
+* Add the ability to catch all Lottie composition errors with `setFailureListener` and 
+`resetFailureListener` (#1321).
+* Add the ability to set a fallback drawable res when Lottie failes to parse a composition or 
+load it from the internet with `setFallbackResource` and the `setFallbackRes` xml attribute.
+## Bugs Fixed
+* Prevent masks from either clipping edges or having thin borders pre-Pie.
+* Apply animation scale to dash pattern offsets.
+* Apply animation scale to gradient strokes.
+* Fuzzy match content types when downloading animations from the internet.
+* Prevent a StackOverflowException on KitKat.
+* Prevent resume from resuming when system animations are disabled.
+
 # 3.0.7
 * Fixed renderMode XML attr being ignored.
 * Allow progress to be set in between frames.
