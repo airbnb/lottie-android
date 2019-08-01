@@ -295,6 +295,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       playAnimation();
       // Autoplay from xml should only apply once.
       autoPlay = false;
+      wasAnimatingWhenDetached = false;
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This is needed to mimic newer platform behavior.
