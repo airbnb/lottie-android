@@ -407,7 +407,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    animator.resumeAnimation();
+    if (systemAnimationsEnabled) {
+      animator.resumeAnimation();
+    }
   }
 
   /**
