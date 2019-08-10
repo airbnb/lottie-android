@@ -1,8 +1,10 @@
 package com.airbnb.lottie.samples
 
 import android.Manifest
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.*
+import android.os.Build.VERSION
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -34,7 +36,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
-import com.airbnb.lottie.samples.R as SampleAppR
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests
@@ -106,6 +107,7 @@ class LottieTest {
             testText()
             testPartialFrameProgress()
             snapshotProdAnimations()
+            testNightMode()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -762,6 +764,44 @@ class LottieTest {
             animationView.setTextDelegate(textDelegate)
             textDelegate.setText("NAME", "\uD83D\uDC91")
         }
+    }
+
+    private suspend fun testNightMode() {
+        if (VERSION.SDK_INT < 29 /* Build.VERSION_CODES.Q */) return
+
+        var newConfig = Configuration(activity.getResources().getConfiguration())
+		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
+		newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO;
+		val dayContext = activity.createConfigurationContext(newConfig)
+        var result = LottieCompositionFactory.fromRawResSync(dayContext, R.raw.day_night)
+        var composition = result.value!!
+        var drawable = LottieDrawable()
+        drawable.setComposition(composition)
+        var bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+        var canvas = Canvas(bitmap)
+        log("Drawing day_night day")
+        drawable.draw(canvas)
+        snapshotter.record(bitmap, "Day/Night", "Day")
+        activity.recordSnapshot("Day/Night", "Day")
+        LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
+
+        newConfig = Configuration(activity.getResources().getConfiguration())
+        newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
+        newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_YES;
+        val nightContext = activity.createConfigurationContext(newConfig)
+        result = LottieCompositionFactory.fromRawResSync(nightContext, R.raw.day_night)
+        composition = result.value!!
+        drawable = LottieDrawable()
+        drawable.setComposition(composition)
+        bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+        canvas = Canvas(bitmap)
+        log("Drawing day_night day")
+        drawable.draw(canvas)
+        snapshotter.record(bitmap, "Day/Night", "Night")
+        activity.recordSnapshot("Day/Night", "Night")
+        LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
     }
 
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
