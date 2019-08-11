@@ -633,6 +633,27 @@ class LottieTest {
             }
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
+
+        withDrawable("Tests/Text.json", "Text", "Text Fill (Blue -> Green)") { drawable ->
+            val value = object : LottieValueCallback<Int>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.GREEN
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.COLOR, value)
+        }
+
+        withDrawable("Tests/Text.json", "Text", "Text Stroke (Red -> Yellow)") { drawable ->
+            val value = object : LottieValueCallback<Int>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.YELLOW
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.STROKE_COLOR, value)
+        }
+
+        withDrawable("Tests/Text.json", "Text", "Text Stroke Width") { drawable ->
+            val value = object : LottieValueCallback<Float>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Float>?) = 200f
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.STROKE_WIDTH, value)
+        }
     }
 
     private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
