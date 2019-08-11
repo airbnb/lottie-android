@@ -6,6 +6,9 @@ buildscript {
   repositories {
     jcenter()
     google()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
@@ -13,6 +16,7 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
+    classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.6"
   }
 }
 
