@@ -68,6 +68,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
+  private final ValueAnimator.AnimatorUpdateListener  progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
+    @Override
+    public void onAnimationUpdate(ValueAnimator animation) {
+      if (compositionLayer != null) {
+        compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
+      }
+    }
+  };
   @Nullable
   private ImageAssetManager imageAssetManager;
   @Nullable
@@ -114,14 +122,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public static final int INFINITE = ValueAnimator.INFINITE;
 
   public LottieDrawable() {
-    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        if (compositionLayer != null) {
-          compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
-        }
-      }
-    });
+    animator.addUpdateListener(progressUpdateListener);
   }
 
   /**
@@ -629,6 +630,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public void removeAllUpdateListeners() {
     animator.removeAllUpdateListeners();
+    animator.addUpdateListener(progressUpdateListener);
   }
 
   public void addAnimatorListener(Animator.AnimatorListener listener) {
