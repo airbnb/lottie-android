@@ -767,8 +767,6 @@ class LottieTest {
     }
 
     private suspend fun testNightMode() {
-        if (VERSION.SDK_INT < 29 /* Build.VERSION_CODES.Q */) return
-
         var newConfig = Configuration(activity.getResources().getConfiguration())
 		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
 		newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO;
