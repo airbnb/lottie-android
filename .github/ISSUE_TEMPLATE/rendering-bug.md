@@ -1,6 +1,6 @@
 ---
 name: Rendering Bug
-about: Lottie isn't rendering my animation correctly
+about: Lottie isn't visually rendering my animation correctly
 title: ''
 labels: Rendering bug
 assignees: ''
