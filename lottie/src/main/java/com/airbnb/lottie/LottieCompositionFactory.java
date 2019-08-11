@@ -40,7 +40,7 @@ import static okio.Okio.source;
  * In-progress tasks will also be held so they can be returned for subsequent requests for the same
  * animation prior to the cache being populated.
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "NullAway"})
 public class LottieCompositionFactory {
   /**
    * Keep a map of cache keys to in-progress tasks and return them for new requests.
