@@ -1,9 +1,11 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
@@ -130,7 +132,7 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return cache(rawResCacheKey(rawRes), new Callable<LottieResult<LottieComposition>>() {
+    return cache(rawResCacheKey(context, rawRes), new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
         return fromRawResSync(appContext, rawRes);
@@ -146,14 +148,22 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(rawRes));
+      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(context, rawRes));
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
   }
 
-  private static String rawResCacheKey(@RawRes int resId) {
-    return "rawRes_" + resId;
+  private static String rawResCacheKey(Context context, @RawRes int resId) {
+    return "rawRes" + (isNightMode(context) ? "_night_" : "_day_") + resId;
+  }
+
+  /**
+   * It is important to include day/night in the cache key so that if it changes, the cache won't return an animation from the wrong bucket.
+   */
+  private static boolean isNightMode(Context context) {
+    int nightModeMasked = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    return nightModeMasked == Configuration.UI_MODE_NIGHT_YES;
   }
 
   /**

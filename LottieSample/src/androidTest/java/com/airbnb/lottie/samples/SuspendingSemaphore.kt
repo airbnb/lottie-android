@@ -29,5 +29,6 @@ class SuspendingSemaphore(limit: Int) {
         }
     }
 
+    @Suppress("EXPERIMENTAL_API_USAGE")
     fun isFull() = bufferedChannel.isFull
 }
