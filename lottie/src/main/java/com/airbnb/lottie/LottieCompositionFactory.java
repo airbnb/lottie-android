@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -128,14 +129,19 @@ public class LottieCompositionFactory {
    * Parse an animation from raw/res. This is recommended over putting your animation in assets because
    * it uses a hard reference to R.
    * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
    */
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
     // Prevent accidentally leaking an Activity.
+    final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
     return cache(rawResCacheKey(context, rawRes), new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
-        return fromRawResSync(appContext, rawRes);
+        @Nullable Context originalContext = contextRef.get();
+        Context context = originalContext != null ? originalContext : appContext;
+        return fromRawResSync(context, rawRes);
       }
     });
   }
@@ -144,6 +150,8 @@ public class LottieCompositionFactory {
    * Parse an animation from raw/res. This is recommended over putting your animation in assets because
    * it uses a hard reference to R.
    * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes) {
