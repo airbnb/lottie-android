@@ -265,6 +265,20 @@ public final class Utils {
         e instanceof UnknownServiceException;
   }
 
+  public static void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) {
+    saveLayerCompat(canvas, rect, paint, Canvas.ALL_SAVE_FLAG);
+  }
+
+  public static void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, int flag) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // This method was deprecated in API level 26 and not recommended since 22, but its
+      // 2-parameter replacement is only available starting at API level 21.
+      canvas.saveLayer(rect, paint, flag);
+    } else {
+      canvas.saveLayer(rect, paint);
+    }
+  }
+
   /**
    * For testing purposes only. DO NOT USE IN PRODUCTION.
    */
