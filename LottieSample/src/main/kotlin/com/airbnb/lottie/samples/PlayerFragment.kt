@@ -163,6 +163,12 @@ class PlayerFragment : BaseMvRxFragment() {
             hardwareAccelerationToggle.isActivated = animationView.layerType == View.LAYER_TYPE_HARDWARE
         }
 
+        enableOffScreenRendering.setOnClickListener {
+            val isOffScreenRenderingEnabled = !enableOffScreenRendering.isActivated
+            animationView.setOffScreenRenderingEnabled(isOffScreenRenderingEnabled)
+            enableOffScreenRendering.isActivated = isOffScreenRenderingEnabled
+        }
+
         viewModel.selectSubscribe(PlayerState::controlsVisible) { controlsContainer.animateVisible(it) }
 
         viewModel.selectSubscribe(PlayerState::controlBarVisible) { controlBar.animateVisible(it) }

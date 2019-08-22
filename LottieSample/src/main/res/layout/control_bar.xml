@@ -63,5 +63,10 @@
             style="@style/ControlBarItem"
             app:src="@drawable/ic_merge_paths"
             app:text="@string/control_bar_merge_paths" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/enableOffScreenRendering"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_layers"
+            app:text="@string/control_bar_off_screen_rendering" />
     </LinearLayout>
 </HorizontalScrollView>
