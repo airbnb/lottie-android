@@ -2,11 +2,12 @@ package com.airbnb.lottie.animation.content;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -15,14 +16,20 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+
+  private Paint offScreenPaint = new LPaint();
+  private RectF offScreenRectF = new RectF();
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
       List<ContentModel> contentModels) {
@@ -60,12 +67,12 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   public ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
     this(lottieDrawable, layer, shapeGroup.getName(),
-            shapeGroup.isHidden(), contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
+        shapeGroup.isHidden(), contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
         findTransform(shapeGroup.getItems()));
   }
 
   ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer,
-               String name, boolean hidden, List<Content> contents, @Nullable AnimatableTransform transform) {
+      String name, boolean hidden, List<Content> contents, @Nullable AnimatableTransform transform) {
     this.name = name;
     this.lottieDrawable = lottieDrawable;
     this.hidden = hidden;
@@ -164,18 +171,32 @@ public class ContentGroup implements DrawingContent, PathContent,
       return;
     }
     matrix.set(parentMatrix);
-    int alpha;
+    int layerAlpha;
     if (transformAnimation != null) {
       matrix.preConcat(transformAnimation.getMatrix());
       int opacity = transformAnimation.getOpacity() == null ? 100 : transformAnimation.getOpacity().getValue();
-      alpha = (int) ((opacity / 100f * parentAlpha / 255f) * 255);
+      layerAlpha = (int) ((opacity / 100f * parentAlpha / 255f) * 255);
     } else {
-      alpha = parentAlpha;
+      layerAlpha = parentAlpha;
     }
 
+    // Apply off-screen rendering only when needed in order to improve rendering performance.
+    boolean isRenderingWithOffScreen = isOffScreenRenderingEnabled && drawingContents.size() > 1 && layerAlpha != 255;
+    if (isRenderingWithOffScreen) {
+      offScreenRectF.set(0, 0, 0, 0);
+      getBounds(offScreenRectF, matrix, true);
+      offScreenPaint.setAlpha(layerAlpha);
+      Utils.saveLayerCompat(canvas, offScreenRectF, offScreenPaint);
+    }
+
+    int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
     for (int i = drawingContents.size() - 1; i >= 0; i--) {
       DrawingContent content = drawingContents.get(i);
-      content.draw(canvas, matrix, alpha, isOffScreenRenderingEnabled);
+      content.draw(canvas, matrix, childAlpha, isOffScreenRenderingEnabled);
+    }
+
+    if (isRenderingWithOffScreen) {
+      canvas.restore();
     }
   }
 
