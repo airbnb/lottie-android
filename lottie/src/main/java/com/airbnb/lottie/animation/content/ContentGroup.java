@@ -18,6 +18,7 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ContentGroup implements DrawingContent, PathContent,
@@ -52,6 +53,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final String name;
   private final boolean hidden;
   private final List<Content> contents;
+  private final List<DrawingContent> drawingContents;
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
@@ -68,6 +70,15 @@ public class ContentGroup implements DrawingContent, PathContent,
     this.lottieDrawable = lottieDrawable;
     this.hidden = hidden;
     this.contents = contents;
+
+    List<DrawingContent> drawingContents = new ArrayList<>();
+    for (int i = 0; i < contents.size(); i++) {
+      Content content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        drawingContents.add((DrawingContent) content);
+      }
+    }
+    this.drawingContents = Collections.unmodifiableList(drawingContents);
 
     if (transform != null) {
       transformAnimation = transform.createAnimation();
@@ -162,11 +173,9 @@ public class ContentGroup implements DrawingContent, PathContent,
       alpha = parentAlpha;
     }
 
-    for (int i = contents.size() - 1; i >= 0; i--) {
-      Object content = contents.get(i);
-      if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(canvas, matrix, alpha, isOffScreenRenderingEnabled);
-      }
+    for (int i = drawingContents.size() - 1; i >= 0; i--) {
+      DrawingContent content = drawingContents.get(i);
+      content.draw(canvas, matrix, alpha, isOffScreenRenderingEnabled);
     }
   }
 
@@ -176,12 +185,10 @@ public class ContentGroup implements DrawingContent, PathContent,
       matrix.preConcat(transformAnimation.getMatrix());
     }
     rect.set(0, 0, 0, 0);
-    for (int i = contents.size() - 1; i >= 0; i--) {
-      Content content = contents.get(i);
-      if (content instanceof DrawingContent) {
-        ((DrawingContent) content).getBounds(rect, matrix, applyParents);
-        outBounds.union(rect);
-      }
+    for (int i = drawingContents.size() - 1; i >= 0; i--) {
+      DrawingContent content = drawingContents.get(i);
+      content.getBounds(rect, matrix, applyParents);
+      outBounds.union(rect);
     }
   }
 
