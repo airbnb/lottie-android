@@ -11,7 +11,7 @@ public class NullLayer extends BaseLayer {
     super(lottieDrawable, layerModel);
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     // Do nothing.
   }
 

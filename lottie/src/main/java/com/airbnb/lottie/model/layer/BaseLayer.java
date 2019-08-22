@@ -200,7 +200,7 @@ public abstract class BaseLayer
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
@@ -220,7 +220,7 @@ public abstract class BaseLayer
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha);
+      drawLayer(canvas, matrix, alpha, isOffScreenRenderingEnabled);
       L.endSection("Layer#drawLayer");
       recordRenderTime(L.endSection(drawTraceName));
       return;
@@ -255,7 +255,7 @@ public abstract class BaseLayer
       // Clear the off screen buffer. This is necessary for some phones.
       clearCanvas(canvas);
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha);
+      drawLayer(canvas, matrix, alpha, isOffScreenRenderingEnabled);
       L.endSection("Layer#drawLayer");
 
       if (hasMasksOnThisLayer()) {
@@ -269,7 +269,7 @@ public abstract class BaseLayer
         L.endSection("Layer#saveLayer");
         clearCanvas(canvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha);
+        matteLayer.draw(canvas, parentMatrix, alpha, isOffScreenRenderingEnabled);
         L.beginSection("Layer#restoreLayer");
         canvas.restore();
         L.endSection("Layer#restoreLayer");
@@ -364,7 +364,7 @@ public abstract class BaseLayer
     }
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");

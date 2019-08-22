@@ -84,7 +84,7 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     L.beginSection("CompositionLayer#draw");
     canvas.save();
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
@@ -97,7 +97,7 @@ public class CompositionLayer extends BaseLayer {
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
-        layer.draw(canvas, parentMatrix, parentAlpha);
+        layer.draw(canvas, parentMatrix, parentAlpha, isOffScreenRenderingEnabled);
       }
     }
     canvas.restore();

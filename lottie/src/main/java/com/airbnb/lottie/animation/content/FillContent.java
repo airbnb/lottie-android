@@ -77,7 +77,7 @@ public class FillContent
     return name;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     if (hidden) {
       return;
     }

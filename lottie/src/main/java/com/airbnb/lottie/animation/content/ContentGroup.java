@@ -148,7 +148,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     if (hidden) {
       return;
     }
@@ -165,7 +165,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     for (int i = contents.size() - 1; i >= 0; i--) {
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(canvas, matrix, alpha);
+        ((DrawingContent) content).draw(canvas, matrix, alpha, isOffScreenRenderingEnabled);
       }
     }
   }

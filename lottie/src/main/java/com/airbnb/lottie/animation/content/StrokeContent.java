@@ -37,7 +37,7 @@ public class StrokeContent extends BaseStrokeContent {
     layer.addAnimation(colorAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     if (hidden) {
       return;
     }
@@ -45,7 +45,7 @@ public class StrokeContent extends BaseStrokeContent {
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
-    super.draw(canvas, parentMatrix, parentAlpha);
+    super.draw(canvas, parentMatrix, parentAlpha, isOffScreenRenderingEnabled);
   }
 
   @Override public String getName() {

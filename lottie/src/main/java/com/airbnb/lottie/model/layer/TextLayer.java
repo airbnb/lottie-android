@@ -102,7 +102,7 @@ public class TextLayer extends BaseLayer {
   }
 
   @Override
-  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);

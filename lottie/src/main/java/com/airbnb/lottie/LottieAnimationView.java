@@ -920,6 +920,15 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     enableOrDisableHardwareLayer();
   }
 
+  /**
+   * Sets whether to use an off-screen buffer to draw the layers contained in this composition.
+   * <p>
+   * Note: This process is very expensive and it's highly recommended that enable hardware acceleration if you want to turn on.
+   */
+  public void setOffScreenRenderingEnabled(boolean isOffScreenRenderingEnabled) {
+    lottieDrawable.setOffScreenRenderingEnabled(isOffScreenRenderingEnabled);
+  }
+
   private void enableOrDisableHardwareLayer() {
     int layerType = LAYER_TYPE_SOFTWARE;
     switch (renderMode) {
