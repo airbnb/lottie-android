@@ -117,14 +117,17 @@ public class CompositionLayer extends BaseLayer {
     super.setProgress(progress);
     if (timeRemapping != null) {
       float duration = lottieDrawable.getComposition().getDuration();
-      long remappedTime = (long) (timeRemapping.getValue() * 1000);
+      float compositionDelayTime = layerModel.getComposition().getStartFrame() / layerModel.getComposition().getFrameRate() * 1000;
+      long remappedTime = (long) (timeRemapping.getValue() * 1000 - compositionDelayTime);
       progress = remappedTime / duration;
     }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }
 
-    progress -= layerModel.getStartProgress();
+    if (timeRemapping == null) {
+      progress -= layerModel.getStartProgress();
+    }
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
     }
