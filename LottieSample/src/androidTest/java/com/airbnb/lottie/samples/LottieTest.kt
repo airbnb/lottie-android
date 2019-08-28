@@ -108,6 +108,7 @@ class LottieTest {
             testPartialFrameProgress()
             snapshotProdAnimations()
             testNightMode()
+            testApplyOpacityToLayer()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -149,16 +150,22 @@ class LottieTest {
 
     private suspend fun snapshotCompositions(channel: ReceiveChannel<Pair<String, LottieComposition>>) {
         for ((name, composition) in channel) {
-            snapshotComposition(name, composition)
+            snapshotComposition(name, composition = composition)
         }
     }
 
-    private suspend fun snapshotComposition(name: String, composition: LottieComposition) = withContext(Dispatchers.Default) {
+    private suspend fun snapshotComposition(
+            name: String,
+            variant: String = "default",
+            composition: LottieComposition,
+            callback: ((FilmStripView) -> Unit)? = null
+    ) = withContext(Dispatchers.Default) {
         log("Snapshotting $name")
         val bitmap = bitmapPool.acquire(1000, 1000)
         val canvas = Canvas(bitmap)
         val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
         val filmStripView = filmStripViewPool.acquire()
+        callback?.invoke(filmStripView)
         filmStripView.measure(spec, spec)
         filmStripView.layout(0, 0, 1000, 1000)
         filmStripView.setComposition(composition)
@@ -169,8 +176,8 @@ class LottieTest {
         }
         filmStripViewPool.release(filmStripView)
         LottieCompositionCache.getInstance().clear()
-        snapshotter.record(bitmap, name, "default")
-        activity.recordSnapshot(name, "default")
+        snapshotter.record(bitmap, name, variant)
+        activity.recordSnapshot(name, variant)
         bitmapPool.release(bitmap)
     }
 
@@ -823,6 +830,23 @@ class LottieTest {
         bitmapPool.release(bitmap)
     }
 
+    private suspend fun testApplyOpacityToLayer() {
+        withFilmStripView(
+                "Tests/OverlapShapeWithOpacity.json",
+                "Apply Opacity To Layer",
+                "Enabled"
+        ) { filmStripView ->
+            filmStripView.setApplyingOpacityToLayersEnabled(true)
+        }
+        withFilmStripView(
+                "Tests/OverlapShapeWithOpacity.json",
+                "Apply Opacity To Layer",
+                "Disabled"
+        ) { filmStripView ->
+            filmStripView.setApplyingOpacityToLayersEnabled(false)
+        }
+    }
+
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
         val composition = result.value
@@ -868,6 +892,18 @@ class LottieTest {
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
         bitmapPool.release(bitmap)
+    }
+
+    private suspend fun withFilmStripView(
+            assetName: String,
+            snapshotName: String = assetName,
+            snapshotVariant: String = "default",
+            callback: (FilmStripView) -> Unit
+    ) {
+        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val composition = result.value
+                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        snapshotComposition(snapshotName, snapshotVariant, composition, callback)
     }
 
     private fun log(message: String) {
