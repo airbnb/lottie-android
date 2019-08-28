@@ -921,12 +921,19 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Sets whether to use an off-screen buffer to draw the layers contained in this composition.
+   * Sets whether to apply opacity to the each layer instead of shape.
    * <p>
-   * Note: This process is very expensive and it's highly recommended that enable hardware acceleration if you want to turn on.
+   * Opacity is normally applied directly to a shape. In cases where translucent shapes overlap, applying opacity to a layer will be more accurate
+   * at the expense of performance.
+   * <p>
+   * The default value is false.
+   * <p>
+   * Note: This process is very expensive. The performance impact will be reduced when hardware acceleration is enabled.
+   *
+   * @see #setRenderMode(RenderMode)
    */
-  public void setOffScreenRenderingEnabled(boolean isOffScreenRenderingEnabled) {
-    lottieDrawable.setOffScreenRenderingEnabled(isOffScreenRenderingEnabled);
+  public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
+    lottieDrawable.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled);
   }
 
   private void enableOrDisableHardwareLayer() {

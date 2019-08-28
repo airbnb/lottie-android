@@ -89,7 +89,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
-  private boolean isOffScreenRenderingEnabled;
+  private boolean isApplyingOpacityToLayersEnabled;
   /**
    * True if the drawable has not been drawn since the last invalidateSelf.
    * We can do this to prevent things like bounds from getting recalculated
@@ -244,12 +244,20 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Sets whether to use an off-screen buffer to draw the layers contained in this composition.
+   * Sets whether to apply opacity to the each layer instead of shape.
    * <p>
-   * Note: This process is very expensive and it's highly recommended that enable hardware acceleration if you want to turn on.
+   * Opacity is normally applied directly to a shape. In cases where translucent shapes overlap, applying opacity to a layer will be more accurate
+   * at the expense of performance.
+   * <p>
+   * The default value is false.
+   * <p>
+   * Note: This process is very expensive. The performance impact will be reduced when hardware acceleration is enabled.
+   *
+   * @see android.view.View#setLayerType(int, android.graphics.Paint)
+   * @see LottieAnimationView#setRenderMode(RenderMode)
    */
-  public void setOffScreenRenderingEnabled(boolean isOffScreenDrawingEnabled) {
-    this.isOffScreenRenderingEnabled = isOffScreenDrawingEnabled;
+  public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
+    this.isApplyingOpacityToLayersEnabled = isApplyingOpacityToLayersEnabled;
   }
 
   private void buildCompositionLayer() {
@@ -342,7 +350,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha, isOffScreenRenderingEnabled);
+    compositionLayer.draw(canvas, matrix, alpha, isApplyingOpacityToLayersEnabled);
     L.endSection("Drawable#draw");
 
     if (saveCount > 0) {
