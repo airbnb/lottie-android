@@ -116,10 +116,13 @@ public class CompositionLayer extends BaseLayer {
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
     super.setProgress(progress);
     if (timeRemapping != null) {
-      float durationInMillis = lottieDrawable.getComposition().getDuration();
-      float compositionDelayTimeInSecond = layerModel.getComposition().getStartFrame() / layerModel.getComposition().getFrameRate();
-      float remappedTimeInMillis = (timeRemapping.getValue() - compositionDelayTimeInSecond) * 1000;
-      progress = remappedTimeInMillis / durationInMillis;
+      // The duration has 0.01 frame offset to show end of animation properly.
+      // https://github.com/airbnb/lottie-android/pull/766
+      // Ignore this offset for calculating time-remapping because time-remapping value is based on original duration.
+      float durationFrames = lottieDrawable.getComposition().getDurationFrames() + 0.01f;
+      float compositionDelayFrames = layerModel.getComposition().getStartFrame();
+      float remappedFrames = timeRemapping.getValue() * layerModel.getComposition().getFrameRate() - compositionDelayFrames;
+      progress = remappedFrames / durationFrames;
     }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
