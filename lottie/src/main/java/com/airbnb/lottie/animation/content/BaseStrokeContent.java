@@ -137,7 +137,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("StrokeContent#draw");
     if (Utils.hasZeroScaleAxis(parentMatrix)) {
       L.endSection("StrokeContent#draw");

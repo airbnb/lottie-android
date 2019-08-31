@@ -97,7 +97,7 @@ public class GradientFillContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     if (hidden) {
       return;
     }

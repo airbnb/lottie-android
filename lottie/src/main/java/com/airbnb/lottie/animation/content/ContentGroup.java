@@ -166,7 +166,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     if (hidden) {
       return;
     }
@@ -181,7 +181,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
 
     // Apply off-screen rendering only when needed in order to improve rendering performance.
-    boolean isRenderingWithOffScreen = isOffScreenRenderingEnabled && drawingContents.size() > 1 && layerAlpha != 255;
+    boolean isRenderingWithOffScreen = lottieDrawable.isApplyingOpacityToLayersEnabled() && drawingContents.size() > 1 && layerAlpha != 255;
     if (isRenderingWithOffScreen) {
       offScreenRectF.set(0, 0, 0, 0);
       getBounds(offScreenRectF, matrix, true);
@@ -192,7 +192,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
     for (int i = drawingContents.size() - 1; i >= 0; i--) {
       DrawingContent content = drawingContents.get(i);
-      content.draw(canvas, matrix, childAlpha, isOffScreenRenderingEnabled);
+      content.draw(canvas, matrix, childAlpha);
     }
 
     if (isRenderingWithOffScreen) {

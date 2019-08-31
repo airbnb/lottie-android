@@ -2,7 +2,6 @@ package com.airbnb.lottie.model.layer;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -102,7 +101,7 @@ public class TextLayer extends BaseLayer {
   }
 
   @Override
-  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
       canvas.setMatrix(parentMatrix);

@@ -260,6 +260,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     this.isApplyingOpacityToLayersEnabled = isApplyingOpacityToLayersEnabled;
   }
 
+  public boolean isApplyingOpacityToLayersEnabled() {
+    return isApplyingOpacityToLayersEnabled;
+  }
+
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
         this, LayerParser.parse(composition), composition.getLayers(), composition);
@@ -350,7 +354,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha, isApplyingOpacityToLayersEnabled);
+    compositionLayer.draw(canvas, matrix, alpha);
     L.endSection("Drawable#draw");
 
     if (saveCount > 0) {

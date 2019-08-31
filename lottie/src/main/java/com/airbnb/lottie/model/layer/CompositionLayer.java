@@ -88,13 +88,13 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("CompositionLayer#draw");
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
     parentMatrix.mapRect(newClipRect);
 
     // Apply off-screen rendering only when needed in order to improve rendering performance.
-    boolean isDrawingWithOffScreen = isOffScreenRenderingEnabled && layers.size() > 1 && parentAlpha != 255;
+    boolean isDrawingWithOffScreen = lottieDrawable.isApplyingOpacityToLayersEnabled() && layers.size() > 1 && parentAlpha != 255;
     if (isDrawingWithOffScreen) {
       layerPaint.setAlpha(parentAlpha);
       Utils.saveLayerCompat(canvas, newClipRect, layerPaint);
@@ -110,7 +110,7 @@ public class CompositionLayer extends BaseLayer {
       }
       if (nonEmptyClip) {
         BaseLayer layer = layers.get(i);
-        layer.draw(canvas, parentMatrix, childAlpha, isOffScreenRenderingEnabled);
+        layer.draw(canvas, parentMatrix, childAlpha);
       }
     }
     canvas.restore();

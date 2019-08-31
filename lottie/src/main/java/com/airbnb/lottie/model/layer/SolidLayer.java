@@ -33,7 +33,7 @@ public class SolidLayer extends BaseLayer {
     paint.setColor(layerModel.getSolidColor());
   }
 
-  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     int backgroundAlpha = Color.alpha(layerModel.getSolidColor());
     if (backgroundAlpha == 0) {
       return;

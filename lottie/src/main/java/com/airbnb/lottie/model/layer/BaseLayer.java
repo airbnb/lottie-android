@@ -1,11 +1,9 @@
 package com.airbnb.lottie.model.layer;
 
-import android.annotation.SuppressLint;
 import android.graphics.*;
 import android.os.Build;
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -200,7 +198,7 @@ public abstract class BaseLayer
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
@@ -220,7 +218,7 @@ public abstract class BaseLayer
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
       matrix.preConcat(transform.getMatrix());
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha, isOffScreenRenderingEnabled);
+      drawLayer(canvas, matrix, alpha);
       L.endSection("Layer#drawLayer");
       recordRenderTime(L.endSection(drawTraceName));
       return;
@@ -255,7 +253,7 @@ public abstract class BaseLayer
       // Clear the off screen buffer. This is necessary for some phones.
       clearCanvas(canvas);
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha, isOffScreenRenderingEnabled);
+      drawLayer(canvas, matrix, alpha);
       L.endSection("Layer#drawLayer");
 
       if (hasMasksOnThisLayer()) {
@@ -269,7 +267,7 @@ public abstract class BaseLayer
         L.endSection("Layer#saveLayer");
         clearCanvas(canvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha, isOffScreenRenderingEnabled);
+        matteLayer.draw(canvas, parentMatrix, alpha);
         L.beginSection("Layer#restoreLayer");
         canvas.restore();
         L.endSection("Layer#restoreLayer");
@@ -364,7 +362,7 @@ public abstract class BaseLayer
     }
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");

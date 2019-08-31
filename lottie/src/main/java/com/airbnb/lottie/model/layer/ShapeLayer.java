@@ -26,8 +26,8 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, boolean isOffScreenRenderingEnabled) {
-    contentGroup.draw(canvas, parentMatrix, parentAlpha, isOffScreenRenderingEnabled);
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    contentGroup.draw(canvas, parentMatrix, parentAlpha);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
