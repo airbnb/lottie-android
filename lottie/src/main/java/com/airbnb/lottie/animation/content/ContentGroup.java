@@ -20,7 +20,6 @@ import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -60,7 +59,6 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final String name;
   private final boolean hidden;
   private final List<Content> contents;
-  private final List<DrawingContent> drawingContents;
   private final LottieDrawable lottieDrawable;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
@@ -77,15 +75,6 @@ public class ContentGroup implements DrawingContent, PathContent,
     this.lottieDrawable = lottieDrawable;
     this.hidden = hidden;
     this.contents = contents;
-
-    List<DrawingContent> drawingContents = new ArrayList<>();
-    for (int i = 0; i < contents.size(); i++) {
-      Content content = contents.get(i);
-      if (content instanceof DrawingContent) {
-        drawingContents.add((DrawingContent) content);
-      }
-    }
-    this.drawingContents = Collections.unmodifiableList(drawingContents);
 
     if (transform != null) {
       transformAnimation = transform.createAnimation();
@@ -181,7 +170,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
 
     // Apply off-screen rendering only when needed in order to improve rendering performance.
-    boolean isRenderingWithOffScreen = lottieDrawable.isApplyingOpacityToLayersEnabled() && drawingContents.size() > 1 && layerAlpha != 255;
+    boolean isRenderingWithOffScreen = lottieDrawable.isApplyingOpacityToLayersEnabled() && hasTwoOrMoreDrawableContent() && layerAlpha != 255;
     if (isRenderingWithOffScreen) {
       offScreenRectF.set(0, 0, 0, 0);
       getBounds(offScreenRectF, matrix, true);
@@ -190,14 +179,29 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
 
     int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
-    for (int i = drawingContents.size() - 1; i >= 0; i--) {
-      DrawingContent content = drawingContents.get(i);
-      content.draw(canvas, matrix, childAlpha);
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Object content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        ((DrawingContent) content).draw(canvas, matrix, childAlpha);
+      }
     }
 
     if (isRenderingWithOffScreen) {
       canvas.restore();
     }
+  }
+
+  private boolean hasTwoOrMoreDrawableContent() {
+    boolean hasOneOrMoreDrawableContent = false;
+    for (int i = 0; i < contents.size(); i++) {
+      if (contents.get(i) instanceof DrawingContent) {
+        if (hasOneOrMoreDrawableContent) {
+          return true;
+        }
+        hasOneOrMoreDrawableContent = true;
+      }
+    }
+    return false;
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
@@ -206,10 +210,12 @@ public class ContentGroup implements DrawingContent, PathContent,
       matrix.preConcat(transformAnimation.getMatrix());
     }
     rect.set(0, 0, 0, 0);
-    for (int i = drawingContents.size() - 1; i >= 0; i--) {
-      DrawingContent content = drawingContents.get(i);
-      content.getBounds(rect, matrix, applyParents);
-      outBounds.union(rect);
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof DrawingContent) {
+        ((DrawingContent) content).getBounds(rect, matrix, applyParents);
+        outBounds.union(rect);
+      }
     }
   }
 
