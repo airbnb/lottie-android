@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.util.Log;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -82,7 +83,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   protected Keyframe<K> getCurrentKeyframe() {
+    L.beginSection("BaseKeyframeAnimation#getCurrentKeyframe");
     if (cachedKeyframe != null && cachedKeyframe.containsProgress(progress)) {
+      L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
       return cachedKeyframe;
     }
 
@@ -97,6 +100,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     cachedKeyframe = keyframe;
+    L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
     return keyframe;
   }
 

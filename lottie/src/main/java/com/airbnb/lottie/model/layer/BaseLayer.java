@@ -168,6 +168,7 @@ public abstract class BaseLayer
 
   @SuppressLint("WrongConstant")
   private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
+    L.beginSection("BaseLayer#saveLayer");
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This method was deprecated in API level 26 and not recommended since 22, but its
       // 2-parameter replacement is only available starting at API level 21.
@@ -175,6 +176,7 @@ public abstract class BaseLayer
     } else {
       canvas.saveLayer(rect, paint);
     }
+    L.endSection("BaseLayer#saveLayer");
   }
 
   public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
