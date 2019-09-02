@@ -270,6 +270,7 @@ public final class Utils {
   }
 
   public static void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, int flag) {
+    L.beginSection("Utils#saveLayer");
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       // This method was deprecated in API level 26 and not recommended since 22, but its
       // 2-parameter replacement is only available starting at API level 21.
@@ -277,6 +278,7 @@ public final class Utils {
     } else {
       canvas.saveLayer(rect, paint);
     }
+    L.endSection("Utils#saveLayer");
   }
 
   /**

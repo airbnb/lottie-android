@@ -187,7 +187,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       if (renderModeOrdinal >= RenderMode.values().length) {
         renderModeOrdinal = RenderMode.AUTOMATIC.ordinal();
       }
-      renderMode = RenderMode.values()[renderModeOrdinal];
+      setRenderMode(RenderMode.values()[renderModeOrdinal]);
     }
 
     ta.recycle();
@@ -893,12 +893,15 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    */
   @Override
   public void buildDrawingCache(boolean autoScale) {
+    L.beginSection("buildDrawingCache");
     buildDrawingCacheDepth++;
     super.buildDrawingCache(autoScale);
-    if (buildDrawingCacheDepth == 1 && getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
+    if (buildDrawingCacheDepth == 1 && getWidth() > 0 && getHeight() > 0 &&
+        getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
       setRenderMode(HARDWARE);
     }
     buildDrawingCacheDepth--;
+    L.endSection("buildDrawingCache");
   }
 
   /**
