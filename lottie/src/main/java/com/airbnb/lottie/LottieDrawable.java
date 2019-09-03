@@ -5,13 +5,9 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -93,6 +89,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+  private boolean isApplyingOpacityToLayersEnabled;
   /**
    * True if the drawable has not been drawn since the last invalidateSelf.
    * We can do this to prevent things like bounds from getting recalculated
@@ -244,6 +241,27 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return composition.getPerformanceTracker();
     }
     return null;
+  }
+
+  /**
+   * Sets whether to apply opacity to the each layer instead of shape.
+   * <p>
+   * Opacity is normally applied directly to a shape. In cases where translucent shapes overlap, applying opacity to a layer will be more accurate
+   * at the expense of performance.
+   * <p>
+   * The default value is false.
+   * <p>
+   * Note: This process is very expensive. The performance impact will be reduced when hardware acceleration is enabled.
+   *
+   * @see android.view.View#setLayerType(int, android.graphics.Paint)
+   * @see LottieAnimationView#setRenderMode(RenderMode)
+   */
+  public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
+    this.isApplyingOpacityToLayersEnabled = isApplyingOpacityToLayersEnabled;
+  }
+
+  public boolean isApplyingOpacityToLayersEnabled() {
+    return isApplyingOpacityToLayersEnabled;
   }
 
   private void buildCompositionLayer() {

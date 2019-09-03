@@ -63,5 +63,10 @@
             style="@style/ControlBarItem"
             app:src="@drawable/ic_merge_paths"
             app:text="@string/control_bar_merge_paths" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/enableApplyingOpacityToLayers"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_layers"
+            app:text="@string/control_bar_apply_opacity_to_layers" />
     </LinearLayout>
 </HorizontalScrollView>

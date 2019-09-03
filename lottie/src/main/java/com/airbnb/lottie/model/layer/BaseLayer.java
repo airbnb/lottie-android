@@ -1,11 +1,9 @@
 package com.airbnb.lottie.model.layer;
 
-import android.annotation.SuppressLint;
 import android.graphics.*;
 import android.os.Build;
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -22,6 +20,7 @@ import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.Logger;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -166,19 +165,6 @@ public abstract class BaseLayer
     lottieDrawable.invalidateSelf();
   }
 
-  @SuppressLint("WrongConstant")
-  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
-    L.beginSection("BaseLayer#saveLayer");
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // This method was deprecated in API level 26 and not recommended since 22, but its
-      // 2-parameter replacement is only available starting at API level 21.
-      canvas.saveLayer(rect, paint, all ? Canvas.ALL_SAVE_FLAG : SAVE_FLAGS);
-    } else {
-      canvas.saveLayer(rect, paint);
-    }
-    L.endSection("BaseLayer#saveLayer");
-  }
-
   public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
     if (newAnimation == null) {
       return;
@@ -261,7 +247,7 @@ public abstract class BaseLayer
 
     if (!rect.isEmpty()) {
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, contentPaint, true);
+      Utils.saveLayerCompat(canvas, rect, contentPaint);
       L.endSection("Layer#saveLayer");
 
       // Clear the off screen buffer. This is necessary for some phones.
@@ -277,7 +263,7 @@ public abstract class BaseLayer
       if (hasMatteOnThisLayer()) {
         L.beginSection("Layer#drawMatte");
         L.beginSection("Layer#saveLayer");
-        saveLayerCompat(canvas, rect, mattePaint, false);
+        Utils.saveLayerCompat(canvas, rect, mattePaint, SAVE_FLAGS);
         L.endSection("Layer#saveLayer");
         clearCanvas(canvas);
         //noinspection ConstantConditions
@@ -380,7 +366,7 @@ public abstract class BaseLayer
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, dstInPaint, false);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint, SAVE_FLAGS);
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
       // Pre-Pie, offscreen buffers were opaque which meant that outer border of a mask
       // might get drawn depending on the result of float rounding.
@@ -436,7 +422,7 @@ public abstract class BaseLayer
 
   private void applyInvertedAddMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, contentPaint, true);
+    Utils.saveLayerCompat(canvas, rect, contentPaint);
     canvas.drawRect(rect, contentPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
@@ -456,7 +442,7 @@ public abstract class BaseLayer
 
   private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstOutPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstOutPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     Path maskPath = maskAnimation.getValue();
@@ -468,7 +454,7 @@ public abstract class BaseLayer
 
   private void applyIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
@@ -479,7 +465,7 @@ public abstract class BaseLayer
 
   private void applyInvertedIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     Path maskPath = maskAnimation.getValue();
