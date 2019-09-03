@@ -192,13 +192,13 @@ public class ContentGroup implements DrawingContent, PathContent,
   }
 
   private boolean hasTwoOrMoreDrawableContent() {
-    boolean hasOneOrMoreDrawableContent = false;
+    int drawableContentCount = 0;
     for (int i = 0; i < contents.size(); i++) {
       if (contents.get(i) instanceof DrawingContent) {
-        if (hasOneOrMoreDrawableContent) {
+        drawableContentCount += 1;
+        if (drawableContentCount >= 2) {
           return true;
         }
-        hasOneOrMoreDrawableContent = true;
       }
     }
     return false;
