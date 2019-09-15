@@ -248,14 +248,7 @@ public final class Utils {
     if (bitmap.getWidth() == width && bitmap.getHeight() == height) {
       return bitmap;
     }
-    float scaleWidth = ((float) width) / bitmap.getWidth();
-    float scaleHeight = ((float) height) / bitmap.getHeight();
-
-    Matrix matrix = new Matrix();
-    matrix.postScale(scaleWidth, scaleHeight);
-
-    Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
-
+    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
     bitmap.recycle();
     return resizedBitmap;
   }
