@@ -248,8 +248,6 @@ public final class Utils {
     if (bitmap.getWidth() == width && bitmap.getHeight() == height) {
       return bitmap;
     }
-    float scaleWidth = ((float) width) / bitmap.getWidth();
-    float scaleHeight = ((float) height) / bitmap.getHeight();
     Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
     bitmap.recycle();
     return resizedBitmap;
