@@ -398,9 +398,6 @@ public class LottieCompositionFactory {
     task.addListener(new LottieListener<LottieComposition>() {
       @Override
       public void onResult(LottieComposition result) {
-        if (cacheKey != null) {
-          LottieCompositionCache.getInstance().put(cacheKey, result);
-        }
         taskCache.remove(cacheKey);
       }
     });
