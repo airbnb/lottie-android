@@ -278,7 +278,9 @@ public class LottieCompositionFactory {
       com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
       LottieComposition composition = LottieCompositionMoshiParser.parse(reader);
-      LottieCompositionCache.getInstance().put(cacheKey, composition);
+      if (cacheKey != null) {
+        LottieCompositionCache.getInstance().put(cacheKey, composition);
+      }
       return new LottieResult<>(composition);
     } catch (Exception e) {
       return new LottieResult<>(e);
@@ -360,7 +362,9 @@ public class LottieCompositionFactory {
       }
     }
 
-    LottieCompositionCache.getInstance().put(cacheKey, composition);
+    if (cacheKey != null) {
+      LottieCompositionCache.getInstance().put(cacheKey, composition);
+    }
     return new LottieResult<>(composition);
   }
 
