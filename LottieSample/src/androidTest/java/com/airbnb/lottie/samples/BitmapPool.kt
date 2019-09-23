@@ -7,6 +7,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
 import com.airbnb.lottie.L
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,6 +21,7 @@ internal class BitmapPool {
         }
     }
 
+    @ExperimentalCoroutinesApi
     fun acquire(width: Int, height: Int): Bitmap {
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP

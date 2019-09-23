@@ -62,7 +62,7 @@ class LottieTest {
     private lateinit var snapshotter: HappoSnapshotter
 
     private val bitmapPool by lazy { BitmapPool() }
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, R.drawable.airbnb); }
 
     private val filmStripViewPool = ObjectPool<FilmStripView> {
         FilmStripView(activity).apply {
@@ -99,6 +99,7 @@ class LottieTest {
     @ObsoleteCoroutinesApi
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
+            snapshotFailure()
             snapshotFrameBoundaries()
             snapshotScaleTypes()
             testDynamicProperties()
@@ -212,6 +213,32 @@ class LottieTest {
                     ?: throw java.lang.IllegalArgumentException("Unable to parse $asset.")
             send(asset to composition)
         }
+    }
+
+    private suspend fun snapshotFailure() {
+        val animationView = animationViewPool.acquire()
+        val semaphore = SuspendingSemaphore(0)
+        animationView.setFailureListener { semaphore.release() }
+        animationView.setFallbackResource(SampleAppR.drawable.ic_close)
+        animationView.setAnimationFromJson("Not Valid Json", null)
+        semaphore.acquire()
+        animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        animationView.scale = 1f
+        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        val animationViewContainer = animationView.parent as ViewGroup
+        animationViewContainer.measure(widthSpec, heightSpec)
+        animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
+        val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
+        val canvas = Canvas(bitmap)
+        animationView.draw(canvas)
+        animationViewPool.release(animationView)
+        val snapshotName = "Failure"
+        val snapshotVariant = "Default"
+        snapshotter.record(bitmap, snapshotName, snapshotVariant)
+        activity.recordSnapshot(snapshotName, snapshotVariant)
+        bitmapPool.release(bitmap)
     }
 
     private suspend fun snapshotFrameBoundaries() {
