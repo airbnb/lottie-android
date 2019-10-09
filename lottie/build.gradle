@@ -40,6 +40,11 @@ dependencies {
   errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 }
 
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+
 task javadoc(type: Javadoc) {
   source = android.sourceSets.main.java.srcDirs
   configurations.implementation.setCanBeResolved(true)
