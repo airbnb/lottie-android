@@ -4,7 +4,7 @@ package com.airbnb.lottie.utils;
  * Use this instead of {@link android.animation.ArgbEvaluator} because it interpolates through the gamma color
  * space which looks better to us humans.
  * <p>
- * Writted by Romain Guy and Francois Blavoet.
+ * Written by Romain Guy and Francois Blavoet.
  * https://androidstudygroup.slack.com/archives/animation/p1476461064000335
  */
 public class GammaEvaluator {
@@ -25,6 +25,9 @@ public class GammaEvaluator {
   }
 
   public static int evaluate(float fraction, int startInt, int endInt) {
+    if (startInt == endInt) {
+      return startInt;
+    }
     float startA = ((startInt >> 24) & 0xff) / 255.0f;
     float startR = ((startInt >> 16) & 0xff) / 255.0f;
     float startG = ((startInt >> 8) & 0xff) / 255.0f;
