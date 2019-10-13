@@ -6,13 +6,20 @@ exposing Lottie's copy of Moshi's json parser.
 `resetFailureListener` (#1321).
 * Add the ability to set a fallback drawable res when Lottie fails to parse a composition or 
 load it from the internet. Use `setFallbackResource` from code or`lottie_fallbackRes` from xml.
+* Add the ability to render opacity on the layer level rather than the shape level. View the docs
+ for `setApplyingOpacityToLayersEnabled` for more info.
+* Add the ability to use dynamic properties on text that wasn't already animated.
+* Minor performance optimization when interpolating between colors.
 ## Bugs Fixed
+* Fix the renderMode attribute from getting overwritten.
 * Prevent masks from either clipping edges or having thin borders pre-Pie.
 * Apply animation scale to dash pattern offsets.
 * Apply animation scale to gradient strokes.
 * Fuzzy match content types when downloading animations from the internet.
 * Prevent a StackOverflowException on KitKat.
-* Prevent resume from resuming when system animations are disabled.
+* Prevent resume() from resuming when system animations are disabled.
+* Prevent removeAllUpdateListeners() from removing internally used listeners.
+* Fix some time remap calculations.
 
 # 3.0.7
 * Fixed renderMode XML attr being ignored.
