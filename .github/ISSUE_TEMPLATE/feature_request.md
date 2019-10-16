@@ -4,7 +4,6 @@ about: Suggest an idea for this project
 title: ''
 labels: New feature
 assignees: ''
-
 ---
 
 ** If you don't use this template, your issue will be closed **
@@ -20,3 +19,7 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context or screenshots about the feature request here.
+
+
+
+*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie]([https://github.com/users/gpeal/sponsorship](https://github.com/users/gpeal/sponsorship) to help support this issue as well as future investments.*
