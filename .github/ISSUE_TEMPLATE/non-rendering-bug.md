@@ -28,4 +28,4 @@ Steps to reproduce the behavior:
 
 
 
-*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie](%5Bhttps://github.com/users/gpeal/sponsorship%5D(https://github.com/users/gpeal/sponsorship) to help support this issue as well as future investments.*
+*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie](https://github.com/users/gpeal/sponsorship) to prioritize this issue and help support this issue as well as future investments.*

@@ -22,4 +22,4 @@ Add any other context or screenshots about the feature request here.
 
 
 
-*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie]([https://github.com/users/gpeal/sponsorship](https://github.com/users/gpeal/sponsorship) to help support this issue as well as future investments.*
+*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie](https://github.com/users/gpeal/sponsorship) to prioritize this issue and help support this issue as well as future investments.*
