@@ -1,5 +1,6 @@
 package com.airbnb.lottie;
 
+import android.animation.Animator;
 import android.graphics.Rect;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
@@ -7,15 +8,30 @@ import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 public class LottieDrawableTest extends BaseTest {
+
+  @Mock Animator.AnimatorListener animatorListener;
+
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+  }
 
   @SuppressWarnings("SameParameterValue")
   private LottieComposition createComposition(int startFrame, int endFrame) {
@@ -62,5 +78,29 @@ public class LottieDrawableTest extends BaseTest {
     drawable.setMinAndMaxProgress(0.25f, 0.42f);
     assertEquals(121f, drawable.getMinFrame());
     assertEquals(182.99f, drawable.getMaxFrame());
+  }
+
+  @Test
+  public void testPlayWhenSystemAnimationDisabled() {
+    LottieComposition composition = createComposition(31, 391);
+    LottieDrawable drawable = new LottieDrawable();
+    drawable.addAnimatorListener(animatorListener);
+    drawable.setSystemAnimationsAreEnabled(false);
+    drawable.setComposition(composition);
+    drawable.playAnimation();
+    assertEquals(391, drawable.getFrame());
+    verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
+  }
+
+  @Test
+  public void testResumeWhenSystemAnimationDisabled() {
+    LottieComposition composition = createComposition(31, 391);
+    LottieDrawable drawable = new LottieDrawable();
+    drawable.addAnimatorListener(animatorListener);
+    drawable.setSystemAnimationsAreEnabled(false);
+    drawable.setComposition(composition);
+    drawable.resumeAnimation();
+    assertEquals(391, drawable.getFrame());
+    verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
   }
 }
