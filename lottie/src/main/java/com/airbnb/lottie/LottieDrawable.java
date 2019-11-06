@@ -402,6 +402,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
     if (!systemAnimationsEnabled) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      animator.endAnimation();
     }
   }
 
@@ -426,8 +427,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       });
       return;
     }
-    if (systemAnimationsEnabled) {
+
+    if (systemAnimationsEnabled || getRepeatCount() == 0) {
       animator.resumeAnimation();
+    }
+    if (!systemAnimationsEnabled) {
+      setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      animator.endAnimation();
     }
   }
 
