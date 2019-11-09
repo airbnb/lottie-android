@@ -1,17 +1,15 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import android.util.Log;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.FloatRange;
-import androidx.annotation.Nullable;
 
 /**
  * @param <K> Keyframe type
@@ -26,11 +24,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   final List<AnimationListener> listeners = new ArrayList<>(1);
   private boolean isDiscrete = false;
 
-  private final List<? extends Keyframe<K>> keyframes;
+  private final KeyframesWrapper<K> keyframesWrapper;
   private float progress = 0f;
   @Nullable protected LottieValueCallback<A> valueCallback;
-
-  @Nullable private Keyframe<K> cachedKeyframe;
 
   @Nullable private Keyframe<K> cachedGetValueKeyframe;
   private float cachedGetValueProgress = -1f;
@@ -40,7 +36,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   private float cachedEndProgress = -1f;
 
   BaseKeyframeAnimation(List<? extends Keyframe<K>> keyframes) {
-    this.keyframes = keyframes;
+    keyframesWrapper = wrap(keyframes);
   }
 
   public void setIsDiscrete() {
@@ -52,12 +48,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    if (keyframes.isEmpty()) {
+    if (keyframesWrapper.isEmpty()) {
       return;
     }
-    // Must use hashCode() since the actual object instance will be returned
-    // from getValue() below with the new values.
-    Keyframe<K> previousKeyframe = getCurrentKeyframe();
     if (progress < getStartDelayProgress()) {
       progress = getStartDelayProgress();
     } else if (progress > getEndProgress()) {
@@ -68,10 +61,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
       return;
     }
     this.progress = progress;
-    // Just trigger a change but don't compute values if there is a value callback.
-    Keyframe<K> newKeyframe = getCurrentKeyframe();
-
-    if (previousKeyframe != newKeyframe || !newKeyframe.isStatic()) {
+    if (keyframesWrapper.isValueChanged(progress)) {
       notifyListeners();
     }
   }
@@ -84,22 +74,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   protected Keyframe<K> getCurrentKeyframe() {
     L.beginSection("BaseKeyframeAnimation#getCurrentKeyframe");
-    if (cachedKeyframe != null && cachedKeyframe.containsProgress(progress)) {
-      L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
-      return cachedKeyframe;
-    }
-
-    Keyframe<K> keyframe = keyframes.get(keyframes.size() - 1);
-    if (progress < keyframe.getStartProgress()) {
-      for (int i = keyframes.size() - 1; i >= 0; i--) {
-        keyframe = keyframes.get(i);
-        if (keyframe.containsProgress(progress)) {
-          break;
-        }
-      }
-    }
-
-    cachedKeyframe = keyframe;
+    final Keyframe<K> keyframe = keyframesWrapper.getCurrentKeyframe();
     L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
     return keyframe;
   }
@@ -138,7 +113,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   @FloatRange(from = 0f, to = 1f)
   private float getStartDelayProgress() {
       if (cachedStartDelayProgress == -1f) {
-            cachedStartDelayProgress = keyframes.isEmpty() ? 0f : keyframes.get(0).getStartProgress();
+        cachedStartDelayProgress = keyframesWrapper.getStartDelayProgress();
       }
       return cachedStartDelayProgress;
   }
@@ -146,7 +121,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   @FloatRange(from = 0f, to = 1f)
   float getEndProgress() {
       if (cachedEndProgress == -1f) {
-        cachedEndProgress = keyframes.isEmpty() ? 1f : keyframes.get(keyframes.size() - 1).getEndProgress();
+        cachedEndProgress = keyframesWrapper.getEndProgress();
       }
       return cachedEndProgress;
   }
@@ -185,4 +160,147 @@ public abstract class BaseKeyframeAnimation<K, A> {
    * should be able to handle values outside of that range.
    */
   abstract A getValue(Keyframe<K> keyframe, float keyframeProgress);
+
+  private static <T> KeyframesWrapper<T> wrap(List<? extends Keyframe<T>> keyframes) {
+    if (keyframes.isEmpty()) {
+      return new EmptyKeyframeWrapper<>();
+    }
+    if (keyframes.size() == 1) {
+      return new SingleKeyframeWrapper<>(keyframes);
+    }
+    return new KeyframesWrapperImpl<>(keyframes);
+  }
+
+  private interface KeyframesWrapper<T> {
+    boolean isEmpty();
+
+    boolean isValueChanged(float progress);
+
+    Keyframe<T> getCurrentKeyframe();
+
+    @FloatRange(from = 0f, to = 1f)
+    float getStartDelayProgress();
+
+    @FloatRange(from = 0f, to = 1f)
+    float getEndProgress();
+  }
+
+  private static final class EmptyKeyframeWrapper<T> implements KeyframesWrapper<T> {
+    @Override
+    public boolean isEmpty() {
+      return true;
+    }
+
+    @Override
+    public boolean isValueChanged(float progress) {
+      return false;
+    }
+
+    @Override
+    public Keyframe<T> getCurrentKeyframe() {
+      throw new IllegalStateException("not implemented");
+    }
+
+    @Override
+    public float getStartDelayProgress() {
+      return 0f;
+    }
+
+    @Override
+    public float getEndProgress() {
+      return 1f;
+    }
+  }
+
+  private static final class SingleKeyframeWrapper<T> implements KeyframesWrapper<T> {
+    @NonNull
+    private final Keyframe<T> keyframe;
+
+    SingleKeyframeWrapper(List<? extends Keyframe<T>> keyframes) {
+      this.keyframe = keyframes.get(0);
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return false;
+    }
+
+    @Override
+    public boolean isValueChanged(float progress) {
+      return !keyframe.isStatic();
+    }
+
+    @Override
+    public Keyframe<T> getCurrentKeyframe() {
+      return keyframe;
+    }
+
+    @Override
+    public float getStartDelayProgress() {
+      return keyframe.getStartProgress();
+    }
+
+    @Override
+    public float getEndProgress() {
+      return keyframe.getEndProgress();
+    }
+  }
+
+  private static final class KeyframesWrapperImpl<T> implements KeyframesWrapper<T> {
+    private final List<? extends Keyframe<T>> keyframes;
+    @NonNull
+    private Keyframe<T> currentKeyframe;
+
+    KeyframesWrapperImpl(List<? extends Keyframe<T>> keyframes) {
+      this.keyframes = keyframes;
+      currentKeyframe = keyframes.get(0);
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return false;
+    }
+
+    @Override
+    public boolean isValueChanged(float progress) {
+      if (currentKeyframe.containsProgress(progress)) {
+        return !currentKeyframe.isStatic();
+      }
+      currentKeyframe = findKeyframe(progress);
+      return true;
+    }
+
+    private Keyframe<T> findKeyframe(float progress) {
+      Keyframe<T> keyframe = keyframes.get(keyframes.size() - 1);
+      if (progress >= keyframe.getStartProgress()) {
+        return keyframe;
+      }
+      for (int i = keyframes.size() - 2; i >= 1; i--) {
+        keyframe = keyframes.get(i);
+        if (currentKeyframe == keyframe) {
+          continue;
+        }
+        if (keyframe.containsProgress(progress)) {
+          return keyframe;
+        }
+      }
+      return keyframes.get(0);
+    }
+
+    @Override
+    @NonNull
+    public Keyframe<T> getCurrentKeyframe() {
+      return currentKeyframe;
+    }
+
+    @Override
+    public float getStartDelayProgress() {
+      return keyframes.get(0).getStartProgress();
+    }
+
+    @Override
+    public float getEndProgress() {
+      return keyframes.get(keyframes.size() - 1).getEndProgress();
+    }
+  }
 }
