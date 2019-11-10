@@ -28,8 +28,6 @@ public abstract class BaseKeyframeAnimation<K, A> {
   private float progress = 0f;
   @Nullable protected LottieValueCallback<A> valueCallback;
 
-  @Nullable private Keyframe<K> cachedGetValueKeyframe;
-  private float cachedGetValueProgress = -1f;
   @Nullable private A cachedGetValue = null;
 
   private float cachedStartDelayProgress = -1f;
@@ -127,14 +125,12 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public A getValue() {
-    Keyframe<K> keyframe = getCurrentKeyframe();
     float progress = getInterpolatedCurrentKeyframeProgress();
-    if (valueCallback == null && keyframe == cachedGetValueKeyframe && cachedGetValueProgress == progress) {
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(progress)) {
       return cachedGetValue;
     }
 
-    cachedGetValueKeyframe = keyframe;
-    cachedGetValueProgress = progress;
+    final Keyframe<K> keyframe = getCurrentKeyframe();
     A value = getValue(keyframe, progress);
     cachedGetValue = value;
 
@@ -183,6 +179,8 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
     @FloatRange(from = 0f, to = 1f)
     float getEndProgress();
+
+    boolean isCachedValueEnabled(float interpolatedProgress);
   }
 
   private static final class EmptyKeyframeWrapper<T> implements KeyframesWrapper<T> {
@@ -210,11 +208,17 @@ public abstract class BaseKeyframeAnimation<K, A> {
     public float getEndProgress() {
       return 1f;
     }
+
+    @Override
+    public boolean isCachedValueEnabled(float interpolatedProgress) {
+      throw new IllegalStateException("not implemented");
+    }
   }
 
   private static final class SingleKeyframeWrapper<T> implements KeyframesWrapper<T> {
     @NonNull
     private final Keyframe<T> keyframe;
+    private float cachedInterpolatedProgress = -1f;
 
     SingleKeyframeWrapper(List<? extends Keyframe<T>> keyframes) {
       this.keyframe = keyframes.get(0);
@@ -244,12 +248,23 @@ public abstract class BaseKeyframeAnimation<K, A> {
     public float getEndProgress() {
       return keyframe.getEndProgress();
     }
+
+    @Override
+    public boolean isCachedValueEnabled(float interpolatedProgress) {
+      if (cachedInterpolatedProgress == interpolatedProgress) {
+        return true;
+      }
+      cachedInterpolatedProgress = interpolatedProgress;
+      return false;
+    }
   }
 
   private static final class KeyframesWrapperImpl<T> implements KeyframesWrapper<T> {
     private final List<? extends Keyframe<T>> keyframes;
     @NonNull
     private Keyframe<T> currentKeyframe;
+    private Keyframe<T> cachedCurrentKeyframe = null;
+    private float cachedInterpolatedProgress = -1f;
 
     KeyframesWrapperImpl(List<? extends Keyframe<T>> keyframes) {
       this.keyframes = keyframes;
@@ -301,6 +316,17 @@ public abstract class BaseKeyframeAnimation<K, A> {
     @Override
     public float getEndProgress() {
       return keyframes.get(keyframes.size() - 1).getEndProgress();
+    }
+
+    @Override
+    public boolean isCachedValueEnabled(float interpolatedProgress) {
+      if (cachedCurrentKeyframe == currentKeyframe
+              && cachedInterpolatedProgress == interpolatedProgress) {
+        return true;
+      }
+      cachedCurrentKeyframe = currentKeyframe;
+      cachedInterpolatedProgress = interpolatedProgress;
+      return false;
     }
   }
 }
