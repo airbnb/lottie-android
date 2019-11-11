@@ -842,6 +842,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     return lottieDrawable.getScale();
   }
 
+  @Override public void setScaleType(ScaleType scaleType) {
+    super.setScaleType(scaleType);
+    lottieDrawable.setScaleType(scaleType);
+  }
+
   @MainThread
   public void cancelAnimation() {
     wasAnimatingWhenNotShown = false;
@@ -953,6 +958,21 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    */
   public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
     lottieDrawable.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled);
+  }
+
+  /**
+   * Disable the extraScale mode in {@link #draw(Canvas)} function when scaleType is FitXY. It doesn't affect the rendering with other scaleTypes.
+   *
+   * <p>When there are 2 animation layout side by side, the default extra scale mode might leave 1 pixel not drawn between 2 animation, and
+   * disabling the extraScale mode can fix this problem</p>
+   *
+   * <b>Attention:</b> Disable the extra scale mode can downgrade the performance and may lead to larger memory footprint. Please only disable this
+   * mode when using animation with a reasonable dimension (smaller than screen size).
+   *
+   * @see LottieDrawable#drawWithNewAspectRatio(Canvas)
+   */
+  public void disableExtraScaleModeInFitXY() {
+    lottieDrawable.disableExtraScaleModeInFitXY();
   }
 
   private void enableOrDisableHardwareLayer() {
