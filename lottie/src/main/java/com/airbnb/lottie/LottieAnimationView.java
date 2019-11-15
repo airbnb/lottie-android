@@ -204,6 +204,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       setRenderMode(RenderMode.values()[renderModeOrdinal]);
     }
 
+    if (getScaleType() != null) {
+      lottieDrawable.setScaleType(getScaleType());
+    }
     ta.recycle();
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
@@ -844,7 +847,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   @Override public void setScaleType(ScaleType scaleType) {
     super.setScaleType(scaleType);
-    lottieDrawable.setScaleType(scaleType);
+    if (lottieDrawable != null) {
+      lottieDrawable.setScaleType(scaleType);
+    }
   }
 
   @MainThread
