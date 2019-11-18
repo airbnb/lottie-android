@@ -1,3 +1,7 @@
+# 3.2.1
+# Bugs Fixed
+* Fixed two potential NPEs.
+
 # 3.2.0
 ### Feature and Improvements
 * Added support for FIT_XY scale type.
