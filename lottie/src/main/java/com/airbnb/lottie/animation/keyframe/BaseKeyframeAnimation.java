@@ -25,7 +25,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   private boolean isDiscrete = false;
 
   private final KeyframesWrapper<K> keyframesWrapper;
-  private float progress = -1f;
+  private float progress = 0f;
   @Nullable protected LottieValueCallback<A> valueCallback;
 
   @Nullable private A cachedGetValue = null;
@@ -268,7 +268,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
     KeyframesWrapperImpl(List<? extends Keyframe<T>> keyframes) {
       this.keyframes = keyframes;
-      currentKeyframe = keyframes.get(0);
+      currentKeyframe = findKeyframe(0);
     }
 
     @Override

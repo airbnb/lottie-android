@@ -148,7 +148,6 @@ public abstract class BaseLayer
       final FloatKeyframeAnimation inOutAnimation =
           new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
-      inOutAnimation.setProgress(0f);
       inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
         @Override
         public void onValueChanged() {
