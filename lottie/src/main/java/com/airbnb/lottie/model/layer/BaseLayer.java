@@ -310,6 +310,9 @@ public abstract class BaseLayer
       path.transform(matrix);
 
       switch (mask.getMaskMode()) {
+        case MASK_MODE_NONE:
+          // Mask mode none will just render the original content so it is the whole bounds.
+          return;
         case MASK_MODE_SUBTRACT:
           // If there is a subtract mask, the mask could potentially be the size of the entire
           // canvas so we can't use the mask bounds.
@@ -378,6 +381,10 @@ public abstract class BaseLayer
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
       BaseKeyframeAnimation<Integer, Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
       switch (mask.getMaskMode()) {
+        case MASK_MODE_NONE:
+          contentPaint.setAlpha(255);
+          canvas.drawRect(rect, contentPaint);
+          break;
         case MASK_MODE_ADD:
           if (mask.isInverted()) {
             applyInvertedAddMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
