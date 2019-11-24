@@ -382,8 +382,14 @@ public abstract class BaseLayer
       BaseKeyframeAnimation<Integer, Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
       switch (mask.getMaskMode()) {
         case MASK_MODE_NONE:
-          contentPaint.setAlpha(255);
-          canvas.drawRect(rect, contentPaint);
+          // None mask should have no effect. If all masks are NONE, fill the
+          // mask canvas with a rectangle so it fully covers the original layer content.
+          // However, if there are other masks, they should be the only ones that have an effect so
+          // this should noop.
+          if (areAllMasksNone()) {
+            contentPaint.setAlpha(255);
+            canvas.drawRect(rect, contentPaint);
+          }
           break;
         case MASK_MODE_ADD:
           if (mask.isInverted()) {
@@ -416,6 +422,19 @@ public abstract class BaseLayer
     L.beginSection("Layer#restoreLayer");
     canvas.restore();
     L.endSection("Layer#restoreLayer");
+  }
+
+  private boolean areAllMasksNone() {
+    if (mask.getMaskAnimations().isEmpty()) {
+      return false;
+    }
+    boolean areAllMasksNone = true;
+    for (int i = 0; i < mask.getMasks().size(); i++) {
+      if (mask.getMasks().get(i).getMaskMode() != Mask.MaskMode.MASK_MODE_NONE) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private void applyAddMask(Canvas canvas, Matrix matrix, Mask mask,
