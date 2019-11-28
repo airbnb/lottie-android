@@ -1,8 +1,9 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
-import android.util.JsonReader;
 import android.util.JsonToken;
+
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 
@@ -12,7 +13,7 @@ public class ColorParser implements ValueParser<Integer> {
   private ColorParser() {}
 
   @Override public Integer parse(JsonReader reader, float scale) throws IOException {
-    boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
+    boolean isArray = reader.peek() == JsonReader.Token.BEGIN_ARRAY;
     if (isArray) {
       reader.beginArray();
     }

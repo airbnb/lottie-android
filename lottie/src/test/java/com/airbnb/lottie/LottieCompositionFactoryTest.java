@@ -1,9 +1,9 @@
 package com.airbnb.lottie;
 
-import android.util.JsonReader;
-
 import com.airbnb.lottie.model.LottieCompositionCache;
 
+import com.airbnb.lottie.parser.moshi.JsonReader;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
@@ -11,10 +11,13 @@ import org.robolectric.RuntimeEnvironment;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 
+import static com.airbnb.lottie.parser.moshi.JsonReader.of;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static okio.Okio.buffer;
+import static okio.Okio.source;
 import static org.junit.Assert.assertTrue;
 
 public class LottieCompositionFactoryTest extends BaseTest {
@@ -50,7 +53,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testLoadJsonReader() {
-        JsonReader reader = new JsonReader(new StringReader(JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
         LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
         assertNull(result.getException());
         assertNotNull(result.getValue());
@@ -58,7 +61,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testLoadInvalidJsonReader() {
-        JsonReader reader = new JsonReader(new StringReader(NOT_JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(NOT_JSON))));
         LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
         assertNotNull(result.getException());
         assertNull(result.getValue());
@@ -87,7 +90,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testNullMultipleTimesAsync() {
-        JsonReader reader = new JsonReader(new StringReader(JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
         LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, null);
         LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, null);
         assertFalse(task1 == task2);
@@ -95,7 +98,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testNullMultipleTimesSync() {
-        JsonReader reader = new JsonReader(new StringReader(JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
         LottieResult<LottieComposition> task1 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
         LottieResult<LottieComposition> task2 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
         assertFalse(task1 == task2);
@@ -103,7 +106,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testCacheWorks() {
-        JsonReader reader = new JsonReader(new StringReader(JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
         LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, "foo");
         LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, "foo");
         assertTrue(task1 == task2);
@@ -111,7 +114,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testZeroCacheWorks() {
-        JsonReader reader = new JsonReader(new StringReader(JSON));
+        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
         LottieCompositionFactory.setMaxCacheSize(1);
         LottieResult<LottieComposition> taskFoo1 = LottieCompositionFactory.fromJsonReaderSync(reader, "foo");
         LottieResult<LottieComposition> taskBar = LottieCompositionFactory.fromJsonReaderSync(reader, "bar");

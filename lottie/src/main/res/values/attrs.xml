@@ -4,6 +4,7 @@
         <attr name="lottie_fileName" format="string" />
         <attr name="lottie_rawRes" format="reference" />
         <attr name="lottie_url" format="string" />
+        <attr name="lottie_fallbackRes" format="reference" />
         <attr name="lottie_autoPlay" format="boolean" />
         <attr name="lottie_loop" format="boolean" />
         <attr name="lottie_repeatMode" format="enum">

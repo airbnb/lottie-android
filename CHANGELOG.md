@@ -1,3 +1,79 @@
+# 3.2.1
+# Bugs Fixed
+* Fixed two potential NPEs.
+
+# 3.2.0
+### Feature and Improvements
+* Added support for FIT_XY scale type.
+### Bugs Fixed
+* Improved testability while system animations are disabled.
+
+# 3.1.0
+### Features and Improvements
+* **Breaking Change** Replace JsonReader parsing APIs with InputStream variants to prevent 
+exposing Lottie's copy of Moshi's json parser.
+* Add the ability to catch all Lottie composition errors with `setFailureListener` and 
+`resetFailureListener` (#1321).
+* Add the ability to set a fallback drawable res when Lottie fails to parse a composition or 
+load it from the internet. Use `setFallbackResource` from code or`lottie_fallbackRes` from xml.
+* Add the ability to render opacity on the layer level rather than the shape level. View the docs
+ for `setApplyingOpacityToLayersEnabled` for more info.
+* Add the ability to use dynamic properties on text that wasn't already animated.
+* Minor performance optimization when interpolating between colors.
+## Bugs Fixed
+* Fix the renderMode attribute from getting overwritten.
+* Prevent masks from either clipping edges or having thin borders pre-Pie.
+* Apply animation scale to dash pattern offsets.
+* Apply animation scale to gradient strokes.
+* Fuzzy match content types when downloading animations from the internet.
+* Prevent a StackOverflowException on KitKat.
+* Prevent resume() from resuming when system animations are disabled.
+* Prevent removeAllUpdateListeners() from removing internally used listeners.
+* Fix some time remap calculations.
+
+# 3.0.7
+* Fixed renderMode XML attr being ignored.
+* Allow progress to be set in between frames.
+* Fix a NullPointerException on 5.x.x devices for apps that use Proguard.
+
+# 3.0.6
+### Bugs Fixed
+* Fixed another LottieAnimationView visibility bug.
+
+# 3.0.5
+### Bugs Fixed
+* Fixed a native crash on Nougat.
+* Improved the performance of animations that have masks and mattes that are partially or fully off screen.
+
+
+# 3.0.4
+### Bugs Fixed
+* Use a copy of [Moshi's](https://github.com/square/moshi) JsonReader implementation to fix [#667](https://github.com/airbnb/lottie-android/issues/667).
+* Fix animations not autoplaying when they became visible on pre-marshmallow devices.
+* Fix PerformanceTracker#removeFrameListener not working.
+
+# 3.0.3
+### Bugs Fixed
+* Prevent network connections from being closed before parsing is finished.
+* invalidateSelf() after settings alpha.
+* Set the correct frame when animations end but speed is < 0.
+* Default missing content types to application/json.
+* Consistently use frameTimeNanos to prevent animation frame time from being < 0.
+
+# 3.0.2
+### Features and Improvements
+* Zipped animations with images now support WebP.
+
+### Bugs Fixed
+* Use frameTimeNanos LottieAnimator.
+* Set wasAnimatingWhenDetached to false at pause().
+
+# 3.0.1
+### Bugs Fixed
+* Fixed an edge case that would resume an animation when it is not shown.
+* Disable animations when the system animation scale is 0.
+* Fall back to hardware rendering when the animation is too large to create a drawing cache.
+
 # 3.0.0
 ### Features and Improvements
 * **Significant** mask and matte performance improvements by only calling saveLayer() on the intersection bounds of the content and mask/matte.

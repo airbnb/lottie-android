@@ -1,8 +1,10 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.Manifest
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.*
+import android.os.Build.VERSION
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -10,14 +12,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
-import androidx.test.runner.AndroidJUnit4
+import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
-import com.airbnb.lottie.samples.BuildConfig
-import com.airbnb.lottie.samples.SnapshotTestActivity
 import com.airbnb.lottie.samples.views.FilmStripView
 import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
@@ -35,7 +36,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
-import com.airbnb.lottie.samples.R as SampleAppR
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests
@@ -62,7 +62,7 @@ class LottieTest {
     private lateinit var snapshotter: HappoSnapshotter
 
     private val bitmapPool by lazy { BitmapPool() }
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, com.airbnb.lottie.samples.R.drawable.airbnb); }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, R.drawable.airbnb); }
 
     private val filmStripViewPool = ObjectPool<FilmStripView> {
         FilmStripView(activity).apply {
@@ -99,13 +99,17 @@ class LottieTest {
     @ObsoleteCoroutinesApi
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
+            snapshotFailure()
             snapshotFrameBoundaries()
             snapshotScaleTypes()
             testDynamicProperties()
             testMarkers()
             snapshotAssets()
             testText()
+            testPartialFrameProgress()
             snapshotProdAnimations()
+            testNightMode()
+            testApplyOpacityToLayer()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -147,16 +151,22 @@ class LottieTest {
 
     private suspend fun snapshotCompositions(channel: ReceiveChannel<Pair<String, LottieComposition>>) {
         for ((name, composition) in channel) {
-            snapshotComposition(name, composition)
+            snapshotComposition(name, composition = composition)
         }
     }
 
-    private suspend fun snapshotComposition(name: String, composition: LottieComposition) = withContext(Dispatchers.Default) {
+    private suspend fun snapshotComposition(
+            name: String,
+            variant: String = "default",
+            composition: LottieComposition,
+            callback: ((FilmStripView) -> Unit)? = null
+    ) = withContext(Dispatchers.Default) {
         log("Snapshotting $name")
         val bitmap = bitmapPool.acquire(1000, 1000)
         val canvas = Canvas(bitmap)
         val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
         val filmStripView = filmStripViewPool.acquire()
+        callback?.invoke(filmStripView)
         filmStripView.measure(spec, spec)
         filmStripView.layout(0, 0, 1000, 1000)
         filmStripView.setComposition(composition)
@@ -167,8 +177,8 @@ class LottieTest {
         }
         filmStripViewPool.release(filmStripView)
         LottieCompositionCache.getInstance().clear()
-        snapshotter.record(bitmap, name, "default")
-        activity.recordSnapshot(name, "default")
+        snapshotter.record(bitmap, name, variant)
+        activity.recordSnapshot(name, variant)
         bitmapPool.release(bitmap)
     }
 
@@ -205,6 +215,32 @@ class LottieTest {
         }
     }
 
+    private suspend fun snapshotFailure() {
+        val animationView = animationViewPool.acquire()
+        val semaphore = SuspendingSemaphore(0)
+        animationView.setFailureListener { semaphore.release() }
+        animationView.setFallbackResource(R.drawable.ic_close)
+        animationView.setAnimationFromJson("Not Valid Json", null)
+        semaphore.acquire()
+        animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        animationView.scale = 1f
+        animationView.scaleType = ImageView.ScaleType.FIT_CENTER
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        val animationViewContainer = animationView.parent as ViewGroup
+        animationViewContainer.measure(widthSpec, heightSpec)
+        animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
+        val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
+        val canvas = Canvas(bitmap)
+        animationView.draw(canvas)
+        animationViewPool.release(animationView)
+        val snapshotName = "Failure"
+        val snapshotVariant = "Default"
+        snapshotter.record(bitmap, snapshotName, snapshotVariant)
+        activity.recordSnapshot(snapshotName, snapshotVariant)
+        bitmapPool.release(bitmap)
+    }
+
     private suspend fun snapshotFrameBoundaries() {
         withDrawable("Tests/Frame.json", "Frame Boundary", "Frame 16 Red") { drawable ->
             drawable.frame = 16
@@ -228,6 +264,28 @@ class LottieTest {
         }
         withDrawable("Tests/RGB.json", "Frame Boundary", "Frame 2 Blue") { drawable ->
             drawable.frame = 2
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.0") { drawable ->
+            drawable.progress = 0f
+        }
+    }
+
+    private suspend fun testPartialFrameProgress() {
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0") { drawable ->
+            drawable.progress = 0f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.25") { drawable ->
+            drawable.progress = 0.25f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "0.5") { drawable ->
+            drawable.progress = 0.5f
+        }
+
+        withDrawable("Tests/2FrameAnimation.json", "Float Progress", "1.0") { drawable ->
+            drawable.progress = 1f
         }
     }
 
@@ -284,6 +342,26 @@ class LottieTest {
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
+        withAnimationView("LottieLogo1.json", "Scale Types", "300x300 fitXY") { animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
+        }
+
+        withAnimationView("LottieLogo1.json", "Scale Types", "300x300 fitXY DisableExtraScale") {
+            animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.disableExtraScaleModeInFitXY()
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
+        }
+
         withAnimationView("LottieLogo1.json", "Scale Types", "300x300 centerInside @2x") { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
@@ -313,6 +391,25 @@ class LottieTest {
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
+        withAnimationView("LottieLogo1.json", "Scale Types", "600x300 fitXY") { animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 600.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
+        }
+
+        withAnimationView("LottieLogo1.json", "Scale Types", "600x300 fitXY DisableExtraScale") { animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 600.dp.toInt()
+                height = 300.dp.toInt()
+            }
+            animationView.disableExtraScaleModeInFitXY()
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
+        }
+
         withAnimationView("LottieLogo1.json", "Scale Types", "300x600 centerInside") { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
@@ -320,6 +417,25 @@ class LottieTest {
                 height = 600.dp.toInt()
             }
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+        }
+
+        withAnimationView("LottieLogo1.json", "Scale Types", "300x600 fitXY") { animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 600.dp.toInt()
+            }
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
+        }
+
+        withAnimationView("LottieLogo1.json", "Scale Types", "300x600 fitXY DisableExtraScale") { animationView ->
+            animationView.progress = 1f
+            animationView.updateLayoutParams {
+                width = 300.dp.toInt()
+                height = 600.dp.toInt()
+            }
+            animationView.disableExtraScaleModeInFitXY()
+            animationView.scaleType = ImageView.ScaleType.FIT_XY
         }
     }
 
@@ -611,6 +727,27 @@ class LottieTest {
             }
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
+
+        withDrawable("Tests/Text.json", "Text", "Text Fill (Blue -> Green)") { drawable ->
+            val value = object : LottieValueCallback<Int>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.GREEN
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.COLOR, value)
+        }
+
+        withDrawable("Tests/Text.json", "Text", "Text Stroke (Red -> Yellow)") { drawable ->
+            val value = object : LottieValueCallback<Int>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.YELLOW
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.STROKE_COLOR, value)
+        }
+
+        withDrawable("Tests/Text.json", "Text", "Text Stroke Width") { drawable ->
+            val value = object : LottieValueCallback<Float>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Float>?) = 200f
+            }
+            drawable.addValueCallback(KeyPath("Text"), LottieProperty.STROKE_WIDTH, value)
+        }
     }
 
     private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
@@ -742,6 +879,59 @@ class LottieTest {
         }
     }
 
+    private suspend fun testNightMode() {
+        var newConfig = Configuration(activity.getResources().getConfiguration())
+		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
+		newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO;
+		val dayContext = activity.createConfigurationContext(newConfig)
+        var result = LottieCompositionFactory.fromRawResSync(dayContext, R.raw.day_night)
+        var composition = result.value!!
+        var drawable = LottieDrawable()
+        drawable.setComposition(composition)
+        var bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+        var canvas = Canvas(bitmap)
+        log("Drawing day_night day")
+        drawable.draw(canvas)
+        snapshotter.record(bitmap, "Day/Night", "Day")
+        activity.recordSnapshot("Day/Night", "Day")
+        LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
+
+        newConfig = Configuration(activity.getResources().getConfiguration())
+        newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
+        newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_YES;
+        val nightContext = activity.createConfigurationContext(newConfig)
+        result = LottieCompositionFactory.fromRawResSync(nightContext, R.raw.day_night)
+        composition = result.value!!
+        drawable = LottieDrawable()
+        drawable.setComposition(composition)
+        bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+        canvas = Canvas(bitmap)
+        log("Drawing day_night day")
+        drawable.draw(canvas)
+        snapshotter.record(bitmap, "Day/Night", "Night")
+        activity.recordSnapshot("Day/Night", "Night")
+        LottieCompositionCache.getInstance().clear()
+        bitmapPool.release(bitmap)
+    }
+
+    private suspend fun testApplyOpacityToLayer() {
+        withFilmStripView(
+                "Tests/OverlapShapeWithOpacity.json",
+                "Apply Opacity To Layer",
+                "Enabled"
+        ) { filmStripView ->
+            filmStripView.setApplyingOpacityToLayersEnabled(true)
+        }
+        withFilmStripView(
+                "Tests/OverlapShapeWithOpacity.json",
+                "Apply Opacity To Layer",
+                "Disabled"
+        ) { filmStripView ->
+            filmStripView.setApplyingOpacityToLayersEnabled(false)
+        }
+    }
+
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
         val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
         val composition = result.value
@@ -787,6 +977,18 @@ class LottieTest {
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
         activity.recordSnapshot(snapshotName, snapshotVariant)
         bitmapPool.release(bitmap)
+    }
+
+    private suspend fun withFilmStripView(
+            assetName: String,
+            snapshotName: String = assetName,
+            snapshotVariant: String = "default",
+            callback: (FilmStripView) -> Unit
+    ) {
+        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val composition = result.value
+                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        snapshotComposition(snapshotName, snapshotVariant, composition, callback)
     }
 
     private fun log(message: String) {

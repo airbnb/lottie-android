@@ -1,5 +1,8 @@
+import net.ltgt.gradle.errorprone.CheckSeverity
+
 apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
+apply plugin: 'net.ltgt.errorprone'
 
 android {
   compileSdkVersion 28
@@ -30,6 +33,16 @@ dependencies {
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"
+  // Do not ugprade to 2.0 because it will bring in Kotlin as a transitive dependency.
+  implementation("com.squareup.okio:okio:1.17.4")
+  annotationProcessor "com.uber.nullaway:nullaway:0.7.5"
+  errorprone "com.google.errorprone:error_prone_core:2.3.2"
+  errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+}
+
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
@@ -37,6 +50,27 @@ task javadoc(type: Javadoc) {
   configurations.implementation.setCanBeResolved(true)
   classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
   failOnError false
+}
+
+tasks.withType(JavaCompile) {
+  // remove the if condition if you want to run NullAway on test code
+  if (!name.toLowerCase().contains("test")) {
+    options.errorprone {
+      option("NullAway:AnnotatedPackages", "com.airbnb.lottie")
+      // TODO: enable these and fix errors one by one.
+      check("NullAway", CheckSeverity.OFF)
+      check("StringSplitter", CheckSeverity.OFF)
+      check("DefaultCharset", CheckSeverity.OFF)
+      check("HidingField", CheckSeverity.OFF)
+      check("NarrowingCompoundAssignment", CheckSeverity.OFF)
+      check("MissingOverride", CheckSeverity.OFF)
+      check("ReferenceEquality", CheckSeverity.OFF)
+      check("FallThrough", CheckSeverity.OFF)
+      check("FloatingPointLiteralPrecision", CheckSeverity.OFF)
+      check("MissingCasesInEnumSwitch", CheckSeverity.OFF)
+      check("OperatorPrecedence", CheckSeverity.OFF)
+    }
+  }
 }
 
 // Re-enable this if releases are uploaded from CI.

@@ -1,9 +1,11 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
+import com.airbnb.lottie.BuildConfig
+import com.airbnb.lottie.L
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
@@ -59,11 +61,8 @@ class HappoSnapshotter(
     private val happoSecretKey = BC.HappoSecretKey
     private val gitBranch = URLEncoder.encode((if (BC.BITRISE_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
-    private val reportNames = listOfNotNull(
-            "${BC.GIT_SHA}-$androidVersion",
-            "$gitBranch-$androidVersion",
-            "${BuildConfig.VERSION_NAME}-$androidVersion"
-    )
+    private val reportNamePrefixes = listOf(BC.GIT_SHA, gitBranch, BuildConfig.VERSION_NAME).filter { it.isNotBlank() }
+    private val reportNames = reportNamePrefixes.map { "$it-$androidVersion" }
 
     private val okhttp = OkHttpClient()
 

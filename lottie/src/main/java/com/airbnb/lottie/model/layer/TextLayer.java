@@ -17,6 +17,7 @@ import com.airbnb.lottie.TextDelegate;
 import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
@@ -412,14 +413,66 @@ public class TextLayer extends BaseLayer {
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
-    if (property == LottieProperty.COLOR && colorAnimation != null) {
-      colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_COLOR && strokeColorAnimation != null) {
-      strokeColorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_WIDTH && strokeWidthAnimation != null) {
-      strokeWidthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.TEXT_TRACKING && trackingAnimation != null) {
-      trackingAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    if (property == LottieProperty.COLOR) {
+      if (colorAnimation != null) {
+        colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+      } else {
+        if (callback == null) {
+          if (colorAnimation != null) {
+            removeAnimation(colorAnimation);
+          }
+          colorAnimation = null;
+        } else {
+          colorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+          colorAnimation.addUpdateListener(this);
+          addAnimation(colorAnimation);
+        }
+      }
+    } else if (property == LottieProperty.STROKE_COLOR) {
+      if (strokeColorAnimation != null) {
+        strokeColorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+      } else {
+        if (callback == null) {
+          if (strokeColorAnimation != null) {
+            removeAnimation(strokeColorAnimation);
+          }
+          strokeColorAnimation = null;
+        } else {
+          strokeColorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+          strokeColorAnimation.addUpdateListener(this);
+          addAnimation(strokeColorAnimation);
+        }
+      }
+    } else if (property == LottieProperty.STROKE_WIDTH) {
+      if (strokeWidthAnimation != null) {
+        strokeWidthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+      } else {
+        if (callback == null) {
+          if (strokeWidthAnimation != null) {
+            removeAnimation(strokeWidthAnimation);
+          }
+          strokeWidthAnimation = null;
+        } else {
+          strokeWidthAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+          strokeWidthAnimation.addUpdateListener(this);
+          addAnimation(strokeWidthAnimation);
+        }
+      }
+    } else if (property == LottieProperty.TEXT_TRACKING) {
+      if (trackingAnimation != null) {
+        trackingAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+      } else {
+        if (callback == null) {
+          if (trackingAnimation != null) {
+            removeAnimation(trackingAnimation);
+          }
+          trackingAnimation = null;
+        } else {
+          trackingAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+          trackingAnimation.addUpdateListener(this);
+          addAnimation(trackingAnimation);
+        }
+      }
     }
   }
 }

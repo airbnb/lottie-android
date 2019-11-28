@@ -1,5 +1,6 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 
@@ -29,5 +30,6 @@ class SuspendingSemaphore(limit: Int) {
         }
     }
 
+    @ExperimentalCoroutinesApi
     fun isFull() = bufferedChannel.isFull
 }

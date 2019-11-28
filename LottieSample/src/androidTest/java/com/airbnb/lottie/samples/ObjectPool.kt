@@ -1,9 +1,9 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
-import android.graphics.Bitmap
 import android.util.Log
+import com.airbnb.lottie.L
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
-import java.util.concurrent.Semaphore
 import kotlin.collections.HashSet
 
 internal class ObjectPool<T>(private val factory: () -> T) {
@@ -12,6 +12,7 @@ internal class ObjectPool<T>(private val factory: () -> T) {
     private val objects = Collections.synchronizedList(ArrayList<T>())
     private val releasedObjects = HashSet<T>()
 
+    @ExperimentalCoroutinesApi
     fun acquire(): T {
         var blockedStartTime = 0L
         if (semaphore.isFull()) {

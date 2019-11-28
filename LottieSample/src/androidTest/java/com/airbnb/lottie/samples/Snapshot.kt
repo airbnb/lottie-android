@@ -1,11 +1,8 @@
-package com.airbnb.lottie
+package com.airbnb.lottie.samples
 
-import android.graphics.Bitmap
 import android.os.Build
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.Deferred
 
 class Snapshot(
         private val bucket: String,

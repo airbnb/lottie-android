@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.support.v4.util.Pair;
 
-import com.airbnb.lottie.L;
+import com.airbnb.lottie.utils.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,7 +61,7 @@ class NetworkCache {
       extension = FileExtension.JSON;
     }
 
-    L.debug("Cache hit for " + url + " at " + cachedFile.getAbsolutePath());
+    Logger.debug("Cache hit for " + url + " at " + cachedFile.getAbsolutePath());
     return new Pair<>(extension, (InputStream) inputStream);
   }
 
@@ -104,9 +104,9 @@ class NetworkCache {
     String newFileName = file.getAbsolutePath().replace(".temp", "");
     File newFile = new File(newFileName);
     boolean renamed = file.renameTo(newFile);
-    L.debug("Copying temp file to real file (" + newFile + ")");
+    Logger.debug("Copying temp file to real file (" + newFile + ")");
     if (!renamed) {
-      L.warn( "Unable to rename cache file " + file.getAbsolutePath() + " to " + newFile.getAbsolutePath() + ".");
+      Logger.warning("Unable to rename cache file " + file.getAbsolutePath() + " to " + newFile.getAbsolutePath() + ".");
     }
   }
 

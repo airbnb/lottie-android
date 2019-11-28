@@ -1,13 +1,11 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
-import android.util.Log;
-
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.Logger;
 
 import java.io.IOException;
 
@@ -34,13 +32,16 @@ class MaskParser {
             case "s":
               maskMode = Mask.MaskMode.MASK_MODE_SUBTRACT;
               break;
+            case "n":
+              maskMode = Mask.MaskMode.MASK_MODE_NONE;
+              break;
             case "i":
               composition.addWarning(
                   "Animation contains intersect masks. They are not supported but will be treated like add masks.");
               maskMode = Mask.MaskMode.MASK_MODE_INTERSECT;
               break;
             default:
-              Log.w(L.TAG, "Unknown mask mode " + mode + ". Defaulting to Add.");
+              Logger.warning("Unknown mask mode " + mode + ". Defaulting to Add.");
               maskMode = Mask.MaskMode.MASK_MODE_ADD;
           }
           break;

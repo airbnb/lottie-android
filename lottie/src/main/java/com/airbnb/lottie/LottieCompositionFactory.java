@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,34 +9,39 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.WorkerThread;
 import android.util.JsonReader;
+import android.os.Build;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
-import com.airbnb.lottie.parser.LottieCompositionParser;
+import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
+import com.airbnb.lottie.utils.Utils;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
+import static com.airbnb.lottie.parser.moshi.JsonReader.*;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
+import static okio.Okio.buffer;
+import static okio.Okio.source;
 
 /**
  * Helpers to create or cache a LottieComposition.
- *
+ * <p>
  * All factory methods take a cache key. The animation will be stored in an LRU cache for future use.
  * In-progress tasks will also be held so they can be returned for subsequent requests for the same
  * animation prior to the cache being populated.
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "NullAway"})
 public class LottieCompositionFactory {
   /**
    * Keep a map of cache keys to in-progress tasks and return them for new requests.
@@ -63,7 +69,8 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromUrl(final Context context, final String url) {
     String urlCacheKey = "url_" + url;
     return cache(urlCacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return NetworkFetcher.fetchSync(context, url);
       }
     });
@@ -90,7 +97,8 @@ public class LottieCompositionFactory {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
     return cache(fileName, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return fromAssetSync(appContext, fileName);
       }
     });
@@ -116,17 +124,24 @@ public class LottieCompositionFactory {
     }
   }
 
+
   /**
    * Parse an animation from raw/res. This is recommended over putting your animation in assets because
    * it uses a hard reference to R.
    * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
    */
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
     // Prevent accidentally leaking an Activity.
+    final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
-    return cache(rawResCacheKey(rawRes), new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
-        return fromRawResSync(appContext, rawRes);
+    return cache(rawResCacheKey(context, rawRes), new Callable<LottieResult<LottieComposition>>() {
+      @Override
+      public LottieResult<LottieComposition> call() {
+        @Nullable Context originalContext = contextRef.get();
+        Context context = originalContext != null ? originalContext : appContext;
+        return fromRawResSync(context, rawRes);
       }
     });
   }
@@ -135,18 +150,28 @@ public class LottieCompositionFactory {
    * Parse an animation from raw/res. This is recommended over putting your animation in assets because
    * it uses a hard reference to R.
    * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(rawRes));
+      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(context, rawRes));
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
   }
 
-  private static String rawResCacheKey(@RawRes int resId) {
-    return "rawRes_" + resId;
+  private static String rawResCacheKey(Context context, @RawRes int resId) {
+    return "rawRes" + (isNightMode(context) ? "_night_" : "_day_") + resId;
+  }
+
+  /**
+   * It is important to include day/night in the cache key so that if it changes, the cache won't return an animation from the wrong bucket.
+   */
+  private static boolean isNightMode(Context context) {
+    int nightModeMasked = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+    return nightModeMasked == Configuration.UI_MODE_NIGHT_YES;
   }
 
   /**
@@ -156,7 +181,8 @@ public class LottieCompositionFactory {
    */
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return fromJsonInputStreamSync(stream, cacheKey);
       }
     });
@@ -170,10 +196,11 @@ public class LottieCompositionFactory {
     return fromJsonInputStreamSync(stream, cacheKey, true);
   }
 
+
   @WorkerThread
   private static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
-      return fromJsonReaderSync(new JsonReader(new InputStreamReader(stream)), cacheKey);
+      return fromJsonReaderSync(of(buffer(source(stream))), cacheKey);
     } finally {
       if (close) {
         closeQuietly(stream);
@@ -181,13 +208,15 @@ public class LottieCompositionFactory {
     }
   }
 
+
   /**
    * @see #fromJsonSync(JSONObject, String)
    */
   @Deprecated
   public static LottieTask<LottieComposition> fromJson(final JSONObject json, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         //noinspection deprecation
         return fromJsonSync(json, cacheKey);
       }
@@ -210,7 +239,8 @@ public class LottieCompositionFactory {
    */
   public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return fromJsonStringSync(json, cacheKey);
       }
     });
@@ -222,30 +252,35 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
-    return fromJsonReaderSync(new JsonReader(new StringReader(json)), cacheKey);
+
+
+    ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
+    return fromJsonReaderSync(of(buffer(source(stream))), cacheKey);
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return fromJsonReaderSync(reader, cacheKey);
       }
     });
   }
 
-  /**
-   * Return a LottieComposition for the specified json.
-   */
+
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(JsonReader reader, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey) {
     return fromJsonReaderSyncInternal(reader, cacheKey, true);
   }
 
+
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
-          JsonReader reader, @Nullable String cacheKey, boolean close) {
+      com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
-      LottieComposition composition = LottieCompositionParser.parse(reader);
-      LottieCompositionCache.getInstance().put(cacheKey, composition);
+      LottieComposition composition = LottieCompositionMoshiParser.parse(reader);
+      if (cacheKey != null) {
+        LottieCompositionCache.getInstance().put(cacheKey, composition);
+      }
       return new LottieResult<>(composition);
     } catch (Exception e) {
       return new LottieResult<>(e);
@@ -256,9 +291,11 @@ public class LottieCompositionFactory {
     }
   }
 
+
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override public LottieResult<LottieComposition> call() {
+      @Override
+      public LottieResult<LottieComposition> call() {
         return fromZipStreamSync(inputStream, cacheKey);
       }
     });
@@ -286,13 +323,14 @@ public class LottieCompositionFactory {
     try {
       ZipEntry entry = inputStream.getNextEntry();
       while (entry != null) {
-        if (entry.getName().contains("__MACOSX")) {
+        final String entryName = entry.getName();
+        if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
-          JsonReader reader = new JsonReader(new InputStreamReader(inputStream));
+          com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
-        } else if (entry.getName().contains(".png")) {
-          String[] splitName = entry.getName().split("/");
+        } else if (entryName.contains(".png") || entryName.contains(".webp")) {
+          String[] splitName = entryName.split("/");
           String name = splitName[splitName.length - 1];
           images.put(name, BitmapFactory.decodeStream(inputStream));
         } else {
@@ -313,7 +351,7 @@ public class LottieCompositionFactory {
     for (Map.Entry<String, Bitmap> e : images.entrySet()) {
       LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
       if (imageAsset != null) {
-        imageAsset.setBitmap(e.getValue());
+        imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
       }
     }
 
@@ -324,7 +362,9 @@ public class LottieCompositionFactory {
       }
     }
 
-    LottieCompositionCache.getInstance().put(cacheKey, composition);
+    if (cacheKey != null) {
+      LottieCompositionCache.getInstance().put(cacheKey, composition);
+    }
     return new LottieResult<>(composition);
   }
 
@@ -344,7 +384,7 @@ public class LottieCompositionFactory {
    * Then, add the new task to the task cache and set up listeners so it gets cleared when done.
    */
   private static LottieTask<LottieComposition> cache(
-          @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
+      @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
     final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
@@ -360,15 +400,14 @@ public class LottieCompositionFactory {
 
     LottieTask<LottieComposition> task = new LottieTask<>(callable);
     task.addListener(new LottieListener<LottieComposition>() {
-      @Override public void onResult(LottieComposition result) {
-        if (cacheKey != null) {
-          LottieCompositionCache.getInstance().put(cacheKey, result);
-        }
+      @Override
+      public void onResult(LottieComposition result) {
         taskCache.remove(cacheKey);
       }
     });
     task.addFailureListener(new LottieListener<Throwable>() {
-      @Override public void onResult(Throwable result) {
+      @Override
+      public void onResult(Throwable result) {
         taskCache.remove(cacheKey);
       }
     });

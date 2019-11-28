@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RestrictTo;
 import android.util.Log;
 
+
+import com.airbnb.lottie.utils.Logger;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -149,7 +152,7 @@ public class LottieTask<T> {
     // Otherwise we risk ConcurrentModificationException.
     List<LottieListener<Throwable>> listenersCopy = new ArrayList<>(failureListeners);
     if (listenersCopy.isEmpty()) {
-      Log.w(L.TAG, "Lottie encountered an error but no failure listener was added.", e);
+      Logger.warning("Lottie encountered an error but no failure listener was added:", e);
       return;
     }
 

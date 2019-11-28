@@ -22,6 +22,19 @@ import com.airbnb.lottie.animation.content.TrimPathContent;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 
 import java.io.Closeable;
+import java.io.InterruptedIOException;
+import java.net.BindException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
+import java.net.ProtocolException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.net.UnknownServiceException;
+import java.nio.channels.ClosedChannelException;
+
+import javax.net.ssl.SSLException;
 
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;
@@ -225,6 +238,45 @@ public final class Utils {
       return Settings.System.getFloat(context.getContentResolver(),
               Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
     }
+  }
+
+  /**
+   * Resize the bitmap to exactly the same size as the specified dimension, changing the aspect ratio if needed.
+   * Returns the original bitmap if the dimensions already match.
+   */
+  public static Bitmap resizeBitmapIfNeeded(Bitmap bitmap, int width, int height) {
+    if (bitmap.getWidth() == width && bitmap.getHeight() == height) {
+      return bitmap;
+    }
+    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+    bitmap.recycle();
+    return resizedBitmap;
+  }
+
+  /**
+   * From http://vaibhavblogs.org/2012/12/common-java-networking-exceptions/
+   */
+  public static boolean isNetworkException(Throwable e) {
+    return e instanceof SocketException || e instanceof ClosedChannelException ||
+        e instanceof InterruptedIOException || e instanceof ProtocolException ||
+        e instanceof SSLException || e instanceof UnknownHostException ||
+        e instanceof UnknownServiceException;
+  }
+
+  public static void saveLayerCompat(Canvas canvas, RectF rect, Paint paint) {
+    saveLayerCompat(canvas, rect, paint, Canvas.ALL_SAVE_FLAG);
+  }
+
+  public static void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, int flag) {
+    L.beginSection("Utils#saveLayer");
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // This method was deprecated in API level 26 and not recommended since 22, but its
+      // 2-parameter replacement is only available starting at API level 21.
+      canvas.saveLayer(rect, paint, flag);
+    } else {
+      canvas.saveLayer(rect, paint);
+    }
+    L.endSection("Utils#saveLayer");
   }
 
   /**

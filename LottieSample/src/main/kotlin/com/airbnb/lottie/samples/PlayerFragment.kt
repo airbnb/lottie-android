@@ -163,6 +163,12 @@ class PlayerFragment : BaseMvRxFragment() {
             hardwareAccelerationToggle.isActivated = animationView.layerType == View.LAYER_TYPE_HARDWARE
         }
 
+        enableApplyingOpacityToLayers.setOnClickListener {
+            val isApplyingOpacityToLayersEnabled = !enableApplyingOpacityToLayers.isActivated
+            animationView.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled)
+            enableApplyingOpacityToLayers.isActivated = isApplyingOpacityToLayersEnabled
+        }
+
         viewModel.selectSubscribe(PlayerState::controlsVisible) { controlsContainer.animateVisible(it) }
 
         viewModel.selectSubscribe(PlayerState::controlBarVisible) { controlBar.animateVisible(it) }

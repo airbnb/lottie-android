@@ -5,15 +5,21 @@ import android.support.annotation.IntRange;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+
 import com.airbnb.lottie.model.content.GradientColor;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.IntRange;
+
 public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser<GradientColor> {
-  /** The number of colors if it exists in the json or -1 if it doesn't (legacy bodymovin) */
+  /**
+   * The number of colors if it exists in the json or -1 if it doesn't (legacy bodymovin)
+   */
   private int colorPoints;
 
   public GradientColorParser(int colorPoints) {
@@ -24,35 +30,36 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
    * Both the color stops and opacity stops are in the same array.
    * There are {@link #colorPoints} colors sequentially as:
    * [
-   *     ...,
-   *     position,
-   *     red,
-   *     green,
-   *     blue,
-   *     ...
+   * ...,
+   * position,
+   * red,
+   * green,
+   * blue,
+   * ...
    * ]
-   *
+   * <p>
    * The remainder of the array is the opacity stops sequentially as:
    * [
-   *     ...,
-   *     position,
-   *     opacity,
-   *     ...
+   * ...,
+   * position,
+   * opacity,
+   * ...
    * ]
    */
-  @Override public GradientColor parse(JsonReader reader, float scale)
+  @Override
+  public GradientColor parse(JsonReader reader, float scale)
       throws IOException {
     List<Float> array = new ArrayList<>();
     // The array was started by Keyframe because it thought that this may be an array of keyframes
     // but peek returned a number so it considered it a static array of numbers.
-    boolean isArray = reader.peek() == JsonToken.BEGIN_ARRAY;
+    boolean isArray = reader.peek() == JsonReader.Token.BEGIN_ARRAY;
     if (isArray) {
       reader.beginArray();
     }
     while (reader.hasNext()) {
       array.add((float) reader.nextDouble());
     }
-    if(isArray) {
+    if (isArray) {
       reader.endArray();
     }
     if (colorPoints == -1) {
@@ -95,7 +102,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
    * Opacity stops can be at arbitrary intervals independent of color stops.
    * This uses the existing color stops and modifies the opacity at each existing color stop
    * based on what the opacity would be.
-   *
+   * <p>
    * This should be a good approximation is nearly all cases. However, if there are many more
    * opacity stops than color stops, information will be lost.
    */
@@ -130,7 +137,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     }
   }
 
-  @IntRange(from=0, to=255)
+  @IntRange(from = 0, to = 255)
   private int getOpacityAtPosition(double position, double[] positions, double[] opacities) {
     for (int i = 1; i < positions.length; i++) {
       double lastPosition = positions[i - 1];

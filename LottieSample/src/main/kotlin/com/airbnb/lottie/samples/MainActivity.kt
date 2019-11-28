@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     private fun showShowcase() {
         val intent = CustomTabsIntent.Builder().build()
-        intent.launchUrl(this, "http://airbnb.io/lottie/android/android.html".toUri())
+        intent.launchUrl(this, "http://airbnb.io/lottie/#/android".toUri())
     }
 
     private fun showFragment(fragment: Fragment) {
