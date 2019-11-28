@@ -247,7 +247,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     ss.animationName = animationName;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
-    ss.isAnimating = lottieDrawable.isAnimating();
+    ss.isAnimating = lottieDrawable.isAnimating() || (!isAttachedToWindow() && wasAnimatingWhenDetached);
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     ss.repeatMode = lottieDrawable.getRepeatMode();
     ss.repeatCount = lottieDrawable.getRepeatCount();
