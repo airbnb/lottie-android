@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-  implementation "com.android.support:appcompat-v7:${androidXVersion}"
+  implementation "com.android.support:appcompat-v7:28.0.0"
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.0-alpha-3"

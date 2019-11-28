@@ -16,7 +16,7 @@
 package com.airbnb.lottie.parser.moshi;
 
 
-import androidx.annotation.Nullable;
+import android.support.annotation.Nullable;
 
 /**
  * Thrown when the data in a JSON document doesn't match the data expected by the caller. For

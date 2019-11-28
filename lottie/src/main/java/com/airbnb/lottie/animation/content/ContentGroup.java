@@ -24,7 +24,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
 
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {

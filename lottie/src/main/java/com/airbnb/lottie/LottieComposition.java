@@ -9,9 +9,6 @@ import android.support.annotation.RestrictTo;
 import android.support.annotation.WorkerThread;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SparseArrayCompat;
-import android.util.JsonReader;
-
-import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;

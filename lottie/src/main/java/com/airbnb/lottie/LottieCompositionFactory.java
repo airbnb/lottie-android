@@ -8,15 +8,13 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.annotation.WorkerThread;
-import android.util.JsonReader;
-import android.os.Build;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
-
 import com.airbnb.lottie.utils.Utils;
+
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +27,7 @@ import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.airbnb.lottie.parser.moshi.JsonReader.*;
+import static com.airbnb.lottie.parser.moshi.JsonReader.of;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
@@ -200,7 +198,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   private static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
-      return fromJsonReaderSync(of(buffer(source(stream))), cacheKey);
+      return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
     } finally {
       if (close) {
         closeQuietly(stream);
@@ -255,7 +253,7 @@ public class LottieCompositionFactory {
 
 
     ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
-    return fromJsonReaderSync(of(buffer(source(stream))), cacheKey);
+    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
@@ -327,7 +325,7 @@ public class LottieCompositionFactory {
         if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
-          com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
+          com.airbnb.lottie.parser.moshi.JsonReader reader = JsonReader.of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
         } else if (entryName.contains(".png") || entryName.contains(".webp")) {
           String[] splitName = entryName.split("/");
