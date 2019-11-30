@@ -23,13 +23,8 @@ import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 
 import java.io.Closeable;
 import java.io.InterruptedIOException;
-import java.net.BindException;
-import java.net.ConnectException;
-import java.net.NoRouteToHostException;
-import java.net.PortUnreachableException;
 import java.net.ProtocolException;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
 import java.nio.channels.ClosedChannelException;
@@ -43,7 +38,7 @@ public final class Utils {
   private static final Path tempPath = new Path();
   private static final Path tempPath2 = new Path();
   private static final float[] points = new float[4];
-  private static final float SQRT_2 = (float) Math.sqrt(2);
+  private static final float INV_SQRT_2 = (float) (Math.sqrt(2) / 2.0);
   private static float dpScale = -1;
 
   private Utils() {
@@ -78,15 +73,14 @@ public final class Utils {
   public static float getScale(Matrix matrix) {
     points[0] = 0;
     points[1] = 0;
-    // Use sqrt(2) so that the hypotenuse is of length 1.
-    points[2] = SQRT_2;
-    points[3] = SQRT_2;
+    // Use 1/sqrt(2) so that the hypotenuse is of length 1.
+    points[2] = INV_SQRT_2;
+    points[3] = INV_SQRT_2;
     matrix.mapPoints(points);
     float dx = points[2] - points[0];
     float dy = points[3] - points[1];
 
-    // TODO: figure out why the result needs to be divided by 2.
-    return (float) Math.hypot(dx, dy) / 2f;
+    return (float) Math.hypot(dx, dy);
   }
 
   public static boolean hasZeroScaleAxis(Matrix matrix) {
