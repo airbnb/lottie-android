@@ -594,7 +594,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (endMarkerName == null) {
       throw new IllegalArgumentException("Cannot find marker with name " + endMarkerName + ".");
     }
-    int endFrame = (int) (endMarker.startFrame + (playEndMarkerStartFrame ? 0.99f : 0f));
+    int endFrame = (int) (endMarker.startFrame + (playEndMarkerStartFrame ? 1f : 0f));
 
     setMinAndMaxFrame(startFrame, endFrame);
   }
