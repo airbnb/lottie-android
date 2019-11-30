@@ -767,6 +767,26 @@ class LottieTest {
             drawable.setMinAndMaxFrame("Marker A")
             drawable.frame = drawable.maxFrame.toInt()
         }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "->[Green, Blue)") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", false)
+            drawable.frame = drawable.minFrame.toInt()
+        }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "->[Green, Blue]") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", true)
+            drawable.frame = drawable.minFrame.toInt()
+        }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "[Green, Blue)<-") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", false)
+            drawable.frame = drawable.maxFrame.toInt()
+        }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "[Green, Blue]<-") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", true)
+            drawable.frame = drawable.maxFrame.toInt()
+        }
     }
 
     private suspend fun testText() {
