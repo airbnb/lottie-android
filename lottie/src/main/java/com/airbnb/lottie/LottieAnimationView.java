@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.view.ViewCompat;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -247,7 +248,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     ss.animationName = animationName;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
-    ss.isAnimating = lottieDrawable.isAnimating() || (!isAttachedToWindow() && wasAnimatingWhenDetached);
+    ss.isAnimating = lottieDrawable.isAnimating() || (!ViewCompat.isAttachedToWindow(this) && wasAnimatingWhenDetached);
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     ss.repeatMode = lottieDrawable.getRepeatMode();
     ss.repeatCount = lottieDrawable.getRepeatCount();
