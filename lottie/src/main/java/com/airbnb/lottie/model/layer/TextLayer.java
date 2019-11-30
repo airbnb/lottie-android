@@ -57,6 +57,8 @@ public class TextLayer extends BaseLayer {
   private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
   @Nullable
   private BaseKeyframeAnimation<Float, Float> trackingAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -471,6 +473,17 @@ public class TextLayer extends BaseLayer {
           trackingAnimation.addUpdateListener(this);
           addAnimation(trackingAnimation);
         }
+      }
+    } else if (property == LottieProperty.TEXT_SIZE) {
+      if (callback == null) {
+        if (textSizeAnimation != null) {
+          removeAnimation(textSizeAnimation);
+        }
+        textSizeAnimation = null;
+      } else {
+        textSizeAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        textSizeAnimation.addUpdateListener(this);
+        addAnimation(textSizeAnimation);
       }
     }
   }
