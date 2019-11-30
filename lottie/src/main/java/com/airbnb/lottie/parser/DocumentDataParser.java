@@ -30,14 +30,14 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
   public DocumentData parse(JsonReader reader, float scale) throws IOException {
     String text = null;
     String fontName = null;
-    double size = 0;
+    float size = 0f;
     Justification justification = Justification.CENTER;
     int tracking = 0;
-    double lineHeight = 0;
-    double baselineShift = 0;
+    float lineHeight = 0f;
+    float baselineShift = 0f;
     int fillColor = 0;
     int strokeColor = 0;
-    double strokeWidth = 0;
+    float strokeWidth = 0f;
     boolean strokeOverFill = true;
 
     reader.beginObject();
@@ -50,7 +50,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           fontName = reader.nextString();
           break;
         case 2:
-          size = reader.nextDouble();
+          size = (float) reader.nextDouble();
           break;
         case 3:
           int justificationInt = reader.nextInt();
@@ -64,10 +64,10 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           tracking = reader.nextInt();
           break;
         case 5:
-          lineHeight = reader.nextDouble();
+          lineHeight = (float) reader.nextDouble();
           break;
         case 6:
-          baselineShift = reader.nextDouble();
+          baselineShift = (float) reader.nextDouble();
           break;
         case 7:
           fillColor = JsonUtils.jsonToColor(reader);
@@ -76,7 +76,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           strokeColor = JsonUtils.jsonToColor(reader);
           break;
         case 9:
-          strokeWidth = reader.nextDouble();
+          strokeWidth = (float) reader.nextDouble();
           break;
         case 10:
           strokeOverFill = reader.nextBoolean();
