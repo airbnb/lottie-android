@@ -106,6 +106,8 @@ public interface LottieProperty {
   Float TRANSFORM_END_OPACITY = 12f;
   /** The time value in seconds */
   Float TIME_REMAP = 13f;
+  /** In Dp */
+  Float TEXT_SIZE = 14f;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
 

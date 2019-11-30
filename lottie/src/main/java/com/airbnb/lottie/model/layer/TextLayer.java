@@ -57,6 +57,8 @@ public class TextLayer extends BaseLayer {
   private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
   @Nullable
   private BaseKeyframeAnimation<Float, Float> trackingAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -134,7 +136,7 @@ public class TextLayer extends BaseLayer {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
       float parentScale = Utils.getScale(parentMatrix);
-      strokePaint.setStrokeWidth((float) (documentData.strokeWidth * Utils.dpScale() * parentScale));
+      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
     }
 
     if (lottieDrawable.useTextGlyphs()) {
@@ -148,13 +150,14 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextGlyphs(
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
-    float fontScale = (float) documentData.size / 100f;
+    float textSize = textSizeAnimation == null ? documentData.size : textSizeAnimation.getValue();
+    float fontScale = textSize / 100f;
     float parentScale = Utils.getScale(parentMatrix);
 
     String text = documentData.text;
 
     // Line height
-    float lineHeight = (float) documentData.lineHeight * Utils.dpScale();
+    float lineHeight = documentData.lineHeight * Utils.dpScale();
 
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
@@ -217,12 +220,13 @@ public class TextLayer extends BaseLayer {
       text = textDelegate.getTextInternal(text);
     }
     fillPaint.setTypeface(typeface);
-    fillPaint.setTextSize((float) (documentData.size * Utils.dpScale()));
+    float textSize = textSizeAnimation == null ? documentData.size : textSizeAnimation.getValue();
+    fillPaint.setTextSize(textSize * Utils.dpScale());
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
 
     // Line height
-    float lineHeight = (float) documentData.lineHeight * Utils.dpScale();
+    float lineHeight = documentData.lineHeight * Utils.dpScale();
 
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
@@ -312,7 +316,7 @@ public class TextLayer extends BaseLayer {
       Path path = contentGroups.get(j).getPath();
       path.computeBounds(rectF, false);
       matrix.set(parentMatrix);
-      matrix.preTranslate(0, (float) -documentData.baselineShift * Utils.dpScale());
+      matrix.preTranslate(0, -documentData.baselineShift * Utils.dpScale());
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
       if (documentData.strokeOverFill) {
@@ -471,6 +475,17 @@ public class TextLayer extends BaseLayer {
           trackingAnimation.addUpdateListener(this);
           addAnimation(trackingAnimation);
         }
+      }
+    } else if (property == LottieProperty.TEXT_SIZE) {
+      if (callback == null) {
+        if (textSizeAnimation != null) {
+          removeAnimation(textSizeAnimation);
+        }
+        textSizeAnimation = null;
+      } else {
+        textSizeAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        textSizeAnimation.addUpdateListener(this);
+        addAnimation(textSizeAnimation);
       }
     }
   }
