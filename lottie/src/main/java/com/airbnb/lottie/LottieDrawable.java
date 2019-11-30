@@ -567,6 +567,39 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Sets the minimum and maximum frame to the start marker start and the maximum frame to the end marker start.
+   * playEndMarkerStartFrame determines whether or not to play the frame that the end marker is on. If the end marker
+   * represents the end of the section that you want, it should be true. If the marker represents the beginning of the
+   * next section, it should be false.
+   *
+   * @throws IllegalArgumentException if either marker is not found.
+   */
+  public void setMinAndMaxFrame(final String startMarkerName, final String endMarkerName, final boolean playEndMarkerStartFrame) {
+    if (composition == null) {
+      lazyCompositionTasks.add(new LazyCompositionTask() {
+        @Override
+        public void run(LottieComposition composition) {
+          setMinAndMaxFrame(startMarkerName, endMarkerName, playEndMarkerStartFrame);
+        }
+      });
+      return;
+    }
+    Marker startMarker = composition.getMarker(startMarkerName);
+    if (startMarker == null) {
+      throw new IllegalArgumentException("Cannot find marker with name " + startMarkerName + ".");
+    }
+    int startFrame = (int) startMarker.startFrame;
+
+    Marker endMarker = composition.getMarker(endMarkerName);
+    if (endMarkerName == null) {
+      throw new IllegalArgumentException("Cannot find marker with name " + endMarkerName + ".");
+    }
+    int endFrame = (int) (endMarker.startFrame + (playEndMarkerStartFrame ? 0.99f : 0f));
+
+    setMinAndMaxFrame(startFrame, endFrame);
+  }
+
+  /**
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */

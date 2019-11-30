@@ -767,6 +767,16 @@ class LottieTest {
             drawable.setMinAndMaxFrame("Marker A")
             drawable.frame = drawable.maxFrame.toInt()
         }
+
+        withDrawable("Tests/Marker.json", "Marker", "minAndMax non-inclusive") { drawable ->
+            drawable.setMinAndMaxFrame("Marker A", "Marker B", false)
+            drawable.frame = drawable.maxFrame.toInt()
+        }
+
+        withDrawable("Tests/Marker.json", "Marker", "minAndMax inclusive") { drawable ->
+            drawable.setMinAndMaxFrame("Marker A", "Marker B", true)
+            drawable.frame = drawable.maxFrame.toInt()
+        }
     }
 
     private suspend fun testText() {
