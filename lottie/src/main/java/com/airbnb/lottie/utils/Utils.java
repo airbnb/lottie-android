@@ -38,7 +38,7 @@ public final class Utils {
   private static final Path tempPath = new Path();
   private static final Path tempPath2 = new Path();
   private static final float[] points = new float[4];
-  private static final float INV_SQRT_2 = (float) (1.0 / Math.sqrt(2));
+  private static final float INV_SQRT_2 = (float) (Math.sqrt(2) / 2.0);
   private static float dpScale = -1;
 
   private Utils() {
