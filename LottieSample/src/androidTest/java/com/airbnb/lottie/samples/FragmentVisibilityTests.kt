@@ -3,6 +3,8 @@ package com.airbnb.lottie.samples
 import android.animation.Animator
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -419,6 +421,34 @@ class FragmentVisibilityTests {
         scenario.onFragment { it.requireView().scrollBy(0, 10_000) }
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
+    }
+
+    @Test
+    fun testResumesWhenStateSavedAndRestored() {
+        class TestFragment : Fragment() {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+                return inflater.inflate(R.layout.auto_play, container, false)
+            }
+
+            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
+            }
+        }
+
+        val scenario = launchFragmentInContainer<TestFragment>()
+        onView(withId(R.id.animation_view)).check(matches(isAnimating()))
+        scenario.onFragment { frag ->
+            val savedState = SparseArray<Parcelable>()
+            val animationView = frag.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
+            val parent = animationView.parent as ViewGroup
+            val fragmentViewParent = frag.requireView().parent as ViewGroup
+            fragmentViewParent.removeView(parent)
+            parent.saveHierarchyState(savedState)
+            fragmentViewParent.addView(parent)
+            parent.restoreHierarchyState(savedState)
+
+        }
+        onView(withId(R.id.animation_view)).check(matches(isAnimating()))
     }
 
     private fun FragmentScenario<*>.waitForState(desiredState: Lifecycle.State) {
