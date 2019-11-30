@@ -600,6 +600,18 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
+   * Sets the minimum and maximum frame to the start marker start and the maximum frame to the end marker start.
+   * playEndMarkerStartFrame determines whether or not to play the frame that the end marker is on. If the end marker
+   * represents the end of the section that you want, it should be true. If the marker represents the beginning of the
+   * next section, it should be false.
+   *
+   * @throws IllegalArgumentException if either marker is not found.
+   */
+  public void setMinAndMaxFrame(final String startMarkerName, final String endMarkerName, final boolean playEndMarkerStartFrame) {
+    lottieDrawable.setMinAndMaxFrame(startMarkerName, endMarkerName, playEndMarkerStartFrame);
+  }
+
+  /**
    * @see #setMinFrame(int)
    * @see #setMaxFrame(int)
    */
