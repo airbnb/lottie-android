@@ -768,13 +768,23 @@ class LottieTest {
             drawable.frame = drawable.maxFrame.toInt()
         }
 
-        withDrawable("Tests/Marker.json", "Marker", "minAndMax non-inclusive") { drawable ->
-            drawable.setMinAndMaxFrame("Marker A", "Marker B", false)
+        withDrawable("Tests/RGBMarker.json", "Marker", "minAndMax non-inclusive (min)") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", false)
+            drawable.frame = drawable.minFrame.toInt()
+        }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "minAndMax inclusive (min)") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", true)
+            drawable.frame = drawable.minFrame.toInt()
+        }
+
+        withDrawable("Tests/RGBMarker.json", "Marker", "minAndMax non-inclusive (max)") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", false)
             drawable.frame = drawable.maxFrame.toInt()
         }
 
-        withDrawable("Tests/Marker.json", "Marker", "minAndMax inclusive") { drawable ->
-            drawable.setMinAndMaxFrame("Marker A", "Marker B", true)
+        withDrawable("Tests/RGBMarker.json", "Marker", "minAndMax inclusive (max)") { drawable ->
+            drawable.setMinAndMaxFrame("Green Section", "Blue Section", true)
             drawable.frame = drawable.maxFrame.toInt()
         }
     }
