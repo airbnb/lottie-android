@@ -150,7 +150,8 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextGlyphs(
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
-    float fontScale = documentData.size / 100f;
+    float textSize = textSizeAnimation == null ? documentData.size : textSizeAnimation.getValue();
+    float fontScale = textSize / 100f;
     float parentScale = Utils.getScale(parentMatrix);
 
     String text = documentData.text;
