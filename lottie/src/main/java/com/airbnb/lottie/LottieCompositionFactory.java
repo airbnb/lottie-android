@@ -65,10 +65,20 @@ public class LottieCompositionFactory {
    * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
    * might need an animation in the future.
+   *
+   * To skip the cache, add null as a third parameter.
    */
   public static LottieTask<LottieComposition> fromUrl(final Context context, final String url) {
-    String urlCacheKey = "url_" + url;
-    return cache(urlCacheKey, new Callable<LottieResult<LottieComposition>>() {
+    return fromUrl(context, url, "url_" + url);
+  }
+
+  /**
+   * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
+   * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
+   * might need an animation in the future.
+   */
+  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable String cacheKey) {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
         return NetworkFetcher.fetchSync(context, url);
@@ -91,15 +101,31 @@ public class LottieCompositionFactory {
    * The asset file name will be used as a cache key so future usages won't have to parse the json again.
    * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
    *
+   * To skip the cache, add null as a third parameter.
+   *
    * @see #fromZipStream(ZipInputStream, String)
    */
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
+    String cacheKey = "asset_" + fileName;
+    return fromAsset(context, fileName, cacheKey);
+  }
+
+  /**
+   * Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+   * The asset file name will be used as a cache key so future usages won't have to parse the json again.
+   * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
+   *
+   * Pass null as the cache key to skip the cache.
+   *
+   * @see #fromZipStream(ZipInputStream, String)
+   */
+  public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName, @Nullable final String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return cache(fileName, new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
-        return fromAssetSync(appContext, fileName);
+        return fromAssetSync(appContext, fileName, cacheKey);
       }
     });
   }
@@ -109,12 +135,28 @@ public class LottieCompositionFactory {
    * The asset file name will be used as a cache key so future usages won't have to parse the json again.
    * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
    *
+   * To skip the cache, add null as a third parameter.
+   *
    * @see #fromZipStreamSync(ZipInputStream, String)
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
-    try {
       String cacheKey = "asset_" + fileName;
+      return fromAssetSync(context, fileName, cacheKey);
+  }
+
+  /**
+   * Parse an animation from src/main/assets. It is recommended to use {@link #fromRawRes(Context, int)} instead.
+   * The asset file name will be used as a cache key so future usages won't have to parse the json again.
+   * However, if your animation has images, you may package the json and images as a single flattened zip file in assets.
+   *
+   * Pass null as the cache key to skip the cache.
+   *
+   * @see #fromZipStreamSync(ZipInputStream, String)
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
+    try {
       if (fileName.endsWith(".zip")) {
         return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
@@ -131,12 +173,27 @@ public class LottieCompositionFactory {
    * The resource id will be used as a cache key so future usages won't parse the json again.
    * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
    * The Activity won't be leaked.
+   *
+   * To skip the cache, add null as a third parameter.
    */
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes) {
+    return fromRawRes(context, rawRes, rawResCacheKey(context, rawRes));
+  }
+
+  /**
+   * Parse an animation from raw/res. This is recommended over putting your animation in assets because
+   * it uses a hard reference to R.
+   * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
+   *
+   * Pass null as the cache key to skip caching.
+   */
+  public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes, @Nullable String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
-    return cache(rawResCacheKey(context, rawRes), new Callable<LottieResult<LottieComposition>>() {
+    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
         @Nullable Context originalContext = contextRef.get();
@@ -152,11 +209,27 @@ public class LottieCompositionFactory {
    * The resource id will be used as a cache key so future usages won't parse the json again.
    * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
    * The Activity won't be leaked.
+   *
+   * To skip the cache, add null as a third parameter.
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes) {
+    return fromRawResSync(context, rawRes, rawResCacheKey(context, rawRes));
+  }
+
+  /**
+   * Parse an animation from raw/res. This is recommended over putting your animation in assets because
+   * it uses a hard reference to R.
+   * The resource id will be used as a cache key so future usages won't parse the json again.
+   * Note: to correctly load dark mode (-night) resources, make sure you pass Activity as a context (instead of e.g. the application context).
+   * The Activity won't be leaked.
+   *
+   * Pass null as the cache key to skip caching.
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), rawResCacheKey(context, rawRes));
+      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
@@ -399,19 +472,21 @@ public class LottieCompositionFactory {
     }
 
     LottieTask<LottieComposition> task = new LottieTask<>(callable);
-    task.addListener(new LottieListener<LottieComposition>() {
-      @Override
-      public void onResult(LottieComposition result) {
-        taskCache.remove(cacheKey);
-      }
-    });
-    task.addFailureListener(new LottieListener<Throwable>() {
-      @Override
-      public void onResult(Throwable result) {
-        taskCache.remove(cacheKey);
-      }
-    });
-    taskCache.put(cacheKey, task);
+    if (cacheKey != null) {
+      task.addListener(new LottieListener<LottieComposition>() {
+        @Override
+        public void onResult(LottieComposition result) {
+          taskCache.remove(cacheKey);
+        }
+      });
+      task.addFailureListener(new LottieListener<Throwable>() {
+        @Override
+        public void onResult(Throwable result) {
+          taskCache.remove(cacheKey);
+        }
+      });
+      taskCache.put(cacheKey, task);
+    }
     return task;
   }
 }
