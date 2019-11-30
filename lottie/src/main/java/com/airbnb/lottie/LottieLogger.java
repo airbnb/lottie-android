@@ -12,4 +12,6 @@ public interface LottieLogger {
   void warning(String message);
 
   void warning(String message, Throwable exception);
+
+  void error(String message, Throwable exception);
 }

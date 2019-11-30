@@ -43,4 +43,10 @@ public class LogcatLogger implements LottieLogger {
 
     loggedMessages.add(message);
   }
+
+  @Override public void error(String message, Throwable exception) {
+    if (L.DBG) {
+      Log.d(L.TAG, message, exception);
+    }
+  }
 }
