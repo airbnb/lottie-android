@@ -912,6 +912,21 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
+   * If you are experiencing a device specific crash that happens during drawing, you can set this to true
+   * for those devices. If set to true, draw will be wrapped with a try/catch which will cause Lottie to
+   * render an empty frame rather than crash your app.
+   *
+   * Ideally, you will never need this and the vast majority of apps and animations won't. However, you may use
+   * this for very specific cases if absolutely necessary.
+   *
+   * There is no XML attr for this because it should be set programmatically and only for specific devices that
+   * are known to be problematic.
+   */
+  public void setSafeMode(boolean safeMode) {
+    lottieDrawable.setSafeMode(safeMode);
+  }
+
+  /**
    * If rendering via software, Android will fail to generate a bitmap if the view is too large. Rather than displaying
    * nothing, fallback on hardware acceleration which may incur a performance hit.
    *

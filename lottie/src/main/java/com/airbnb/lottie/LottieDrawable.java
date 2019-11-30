@@ -63,6 +63,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
   private boolean systemAnimationsEnabled = true;
+  private boolean safeMode = false;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
@@ -300,6 +301,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     invalidateSelf();
   }
 
+  /**
+   * If you are experiencing a device specific crash that happens during drawing, you can set this to true
+   * for those devices. If set to true, draw will be wrapped with a try/catch which will cause Lottie to
+   * render an empty frame rather than crash your app.
+   *
+   * Ideally, you will never need this and the vast majority of apps and animations won't. However, you may use
+   * this for very specific cases if absolutely necessary.
+   */
+  public void setSafeMode(boolean safeMode) {
+    this.safeMode = safeMode;
+  }
+
   @Override
   public void invalidateSelf() {
     if (isDirty) {
@@ -339,13 +352,25 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     L.beginSection("Drawable#draw");
 
+    if (safeMode) {
+      try {
+        drawInternal(canvas);
+      } catch (Throwable e) {
+        Logger.error("Lottie crashed in draw!", e);
+      }
+    } else {
+      drawInternal(canvas);
+    }
+
+    L.endSection("Drawable#draw");
+  }
+
+  private void drawInternal(@NonNull Canvas canvas) {
     if (ImageView.ScaleType.FIT_XY == scaleType) {
       drawWithNewAspectRatio(canvas);
     } else {
       drawWithOriginalAspectRatio(canvas);
     }
-
-    L.endSection("Drawable#draw");
   }
 
 // <editor-fold desc="animator">
