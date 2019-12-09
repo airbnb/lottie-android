@@ -247,7 +247,7 @@ public abstract class BaseLayer
 
     if (!rect.isEmpty()) {
       L.beginSection("Layer#saveLayer");
-      contentPaint.setAlpha(alpha);
+      contentPaint.setAlpha(255);
       Utils.saveLayerCompat(canvas, rect, contentPaint);
       L.endSection("Layer#saveLayer");
 
