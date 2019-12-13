@@ -34,13 +34,20 @@ public class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
       }
     }
 
-    return MiscUtils.lerp(keyframe.getStartValueInt(), keyframe.getEndValueInt(), keyframeProgress);
+    int value = MiscUtils.lerp(keyframe.getStartValueInt(), keyframe.getEndValueInt(), keyframeProgress);
+    cachedValue = value;
+    return value;
   }
 
   /**
    * Optimization to avoid autoboxing.
    */
+  private int cachedValue = 0;
   public int getIntValue() {
-    return getIntValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
+    float interpolatedProgress = getInterpolatedCurrentKeyframeProgress();
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(interpolatedProgress)) {
+      return cachedValue;
+    }
+    return getIntValue(getCurrentKeyframe(), interpolatedProgress);
   }
 }

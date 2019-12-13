@@ -33,13 +33,20 @@ public class FloatKeyframeAnimation extends KeyframeAnimation<Float> {
       }
     }
 
-    return MiscUtils.lerp(keyframe.getStartValueFloat(), keyframe.getEndValueFloat(), keyframeProgress);
+    float value = MiscUtils.lerp(keyframe.getStartValueFloat(), keyframe.getEndValueFloat(), keyframeProgress);
+    cachedValue = value;
+    return value;
   }
 
   /**
    * Optimization to avoid autoboxing.
    */
+  private float cachedValue = 0f;
   public float getFloatValue() {
-    return getFloatValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
+    float interpolatedProgress = getInterpolatedCurrentKeyframeProgress();
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(interpolatedProgress)) {
+      return cachedValue;
+    }
+    return getFloatValue(getCurrentKeyframe(), interpolatedProgress);
   }
 }

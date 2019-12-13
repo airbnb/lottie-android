@@ -24,7 +24,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   final List<AnimationListener> listeners = new ArrayList<>(1);
   private boolean isDiscrete = false;
 
-  private final KeyframesWrapper<K> keyframesWrapper;
+  final KeyframesWrapper<K> keyframesWrapper;
   private float progress = 0f;
   @Nullable protected LottieValueCallback<A> valueCallback;
 
@@ -167,7 +167,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     return new KeyframesWrapperImpl<>(keyframes);
   }
 
-  private interface KeyframesWrapper<T> {
+  interface KeyframesWrapper<T> {
     boolean isEmpty();
 
     boolean isValueChanged(float progress);

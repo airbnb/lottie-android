@@ -36,13 +36,20 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
       }
     }
 
-    return GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), startColor, endColor);
+    int value = GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), startColor, endColor);
+    cachedValue = value;
+    return value;
   }
 
   /**
    * Optimization to avoid autoboxing.
    */
+  private int cachedValue = 0;
   public int getIntValue() {
-    return getIntValue(getCurrentKeyframe(), getInterpolatedCurrentKeyframeProgress());
+    float interpolatedProgress = getInterpolatedCurrentKeyframeProgress();
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(interpolatedProgress)) {
+      return cachedValue;
+    }
+    return getIntValue(getCurrentKeyframe(), interpolatedProgress);
   }
 }
