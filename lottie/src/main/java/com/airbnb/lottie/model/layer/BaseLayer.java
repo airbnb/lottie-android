@@ -154,7 +154,7 @@ public abstract class BaseLayer
           setVisible(inOutAnimation.getFloatValue() == 1f);
         }
       });
-      setVisible(inOutAnimation.getValue() == 1f);
+      setVisible(inOutAnimation.getFloatValue() == 1f);
       addAnimation(inOutAnimation);
     } else {
       setVisible(true);
