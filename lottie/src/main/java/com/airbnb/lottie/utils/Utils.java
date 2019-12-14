@@ -14,12 +14,16 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.TrimPathContent;
+import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ColorKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
 
 import java.io.Closeable;
 import java.io.InterruptedIOException;
@@ -271,6 +275,31 @@ public final class Utils {
       canvas.saveLayer(rect, paint);
     }
     L.endSection("Utils#saveLayer");
+  }
+
+  public static float getFloatValue(@Nullable BaseKeyframeAnimation<?, Float> keyframeAnimation, float defValue) {
+    return keyframeAnimation == null ? defValue : getFloatValue(keyframeAnimation);
+  }
+
+  public static float getFloatValue(@NonNull BaseKeyframeAnimation<?, Float> keyframeAnimation) {
+    if (keyframeAnimation instanceof FloatKeyframeAnimation) {
+      return ((FloatKeyframeAnimation) keyframeAnimation).getFloatValue();
+    }
+    return keyframeAnimation.getValue();
+  }
+
+  public static int getIntValue(@Nullable BaseKeyframeAnimation<?, Integer> keyframeAnimation, int defValue) {
+    return keyframeAnimation == null ? defValue : getIntValue(keyframeAnimation);
+  }
+
+  public static int getIntValue(@NonNull BaseKeyframeAnimation<?, Integer> keyframeAnimation) {
+    if (keyframeAnimation instanceof IntegerKeyframeAnimation) {
+      return ((IntegerKeyframeAnimation) keyframeAnimation).getIntValue();
+    }
+    if (keyframeAnimation instanceof ColorKeyframeAnimation) {
+      return ((ColorKeyframeAnimation) keyframeAnimation).getIntValue();
+    }
+    return keyframeAnimation.getValue();
   }
 
   /**
