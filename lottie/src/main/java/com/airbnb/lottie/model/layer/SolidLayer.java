@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -15,6 +16,8 @@ import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.value.LottieValueCallback;
+
+import static com.airbnb.lottie.utils.Utils.getIntValue;
 
 public class SolidLayer extends BaseLayer {
   private final RectF rect = new RectF();
@@ -39,7 +42,7 @@ public class SolidLayer extends BaseLayer {
       return;
     }
 
-    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int opacity = getIntValue(transform.getOpacity(), 100);
     int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * opacity / 100f) * 255);
     paint.setAlpha(alpha);
     if (colorFilterAnimation != null) {

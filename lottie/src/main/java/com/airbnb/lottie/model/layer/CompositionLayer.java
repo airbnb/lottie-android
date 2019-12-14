@@ -5,6 +5,10 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
+import androidx.collection.LongSparseArray;
+
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -19,9 +23,7 @@ import com.airbnb.lottie.value.LottieValueCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.Nullable;
-import androidx.collection.LongSparseArray;
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
 
 public class CompositionLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
@@ -134,7 +136,7 @@ public class CompositionLayer extends BaseLayer {
       // Ignore this offset for calculating time-remapping because time-remapping value is based on original duration.
       float durationFrames = lottieDrawable.getComposition().getDurationFrames() + 0.01f;
       float compositionDelayFrames = layerModel.getComposition().getStartFrame();
-      float remappedFrames = timeRemapping.getValue() * layerModel.getComposition().getFrameRate() - compositionDelayFrames;
+      float remappedFrames = getFloatValue(timeRemapping) * layerModel.getComposition().getFrameRate() - compositionDelayFrames;
       progress = remappedFrames / durationFrames;
     }
     if (layerModel.getTimeStretch() != 0) {

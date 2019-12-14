@@ -10,6 +10,7 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
+import static com.airbnb.lottie.utils.Utils.getIntValue;
 
 public class GradientFillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -122,7 +124,7 @@ public class GradientFillContent
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+    int alpha = (int) ((parentAlpha / 255f * getIntValue(opacityAnimation) / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
 
     canvas.drawPath(path, paint);

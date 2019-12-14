@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
 
 public abstract class BaseStrokeContent
     implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, DrawingContent {
@@ -193,11 +194,11 @@ public abstract class BaseStrokeContent
     while (pm.nextContour()) {
       totalLength += pm.getLength();
     }
-    float offsetLength = totalLength * pathGroup.trimPath.getOffset().getValue() / 360f;
+    float offsetLength = totalLength * getFloatValue(pathGroup.trimPath.getOffset()) / 360f;
     float startLength =
-        totalLength * pathGroup.trimPath.getStart().getValue() / 100f + offsetLength;
+        totalLength * getFloatValue(pathGroup.trimPath.getStart()) / 100f + offsetLength;
     float endLength =
-        totalLength * pathGroup.trimPath.getEnd().getValue() / 100f + offsetLength;
+        totalLength * getFloatValue(pathGroup.trimPath.getEnd()) / 100f + offsetLength;
 
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
@@ -279,7 +280,7 @@ public abstract class BaseStrokeContent
 
     float scale = Utils.getScale(parentMatrix);
     for (int i = 0; i < dashPatternAnimations.size(); i++) {
-      dashPatternValues[i] = dashPatternAnimations.get(i).getValue();
+      dashPatternValues[i] = getFloatValue(dashPatternAnimations.get(i));
       // If the value of the dash pattern or gap is too small, the number of individual sections
       // approaches infinity as the value approaches 0.
       // To mitigate this, we essentially put a minimum value on the dash pattern size of 1px
@@ -295,7 +296,7 @@ public abstract class BaseStrokeContent
       }
       dashPatternValues[i] *= scale;
     }
-    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue() * scale;
+    float offset = getFloatValue(dashPatternOffsetAnimation, 0f) * scale;
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     L.endSection("StrokeContent#applyDashPattern");
   }

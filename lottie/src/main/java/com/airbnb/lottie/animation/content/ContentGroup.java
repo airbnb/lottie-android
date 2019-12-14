@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -22,7 +24,7 @@ import com.airbnb.lottie.value.LottieValueCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
+import static com.airbnb.lottie.utils.Utils.getIntValue;
 
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {
@@ -163,7 +165,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     int layerAlpha;
     if (transformAnimation != null) {
       matrix.preConcat(transformAnimation.getMatrix());
-      int opacity = transformAnimation.getOpacity() == null ? 100 : transformAnimation.getOpacity().getValue();
+      int opacity = getIntValue(transformAnimation.getOpacity(), 100);
       layerAlpha = (int) ((opacity / 100f * parentAlpha / 255f) * 255);
     } else {
       layerAlpha = parentAlpha;

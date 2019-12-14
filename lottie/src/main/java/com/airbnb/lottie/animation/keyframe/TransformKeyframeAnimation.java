@@ -2,14 +2,15 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.model.animatable.AnimatableTransform;
+import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
-import com.airbnb.lottie.model.animatable.AnimatableTransform;
-import com.airbnb.lottie.model.layer.BaseLayer;
 
 import java.util.Collections;
 
@@ -22,6 +23,7 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_SCALE;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_SKEW;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_SKEW_ANGLE;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
 
 public class TransformKeyframeAnimation {
   private final Matrix matrix = new Matrix();
@@ -172,12 +174,7 @@ public class TransformKeyframeAnimation {
     }
 
     if (rotation != null) {
-      float rotation;
-      if (this.rotation instanceof ValueCallbackKeyframeAnimation) {
-          rotation = this.rotation.getValue();
-      } else {
-        rotation = ((FloatKeyframeAnimation) this.rotation).getFloatValue();
-      }
+      float rotation = getFloatValue(this.rotation);
       if (rotation != 0f) {
         matrix.preRotate(rotation);
       }
@@ -253,7 +250,7 @@ public class TransformKeyframeAnimation {
           (float) Math.pow(scale.getScaleY(), amount));
     }
     if (this.rotation != null) {
-      float rotation = this.rotation.getValue();
+      float rotation = getFloatValue(this.rotation);
       PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
       matrix.preRotate(rotation * amount, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
     }

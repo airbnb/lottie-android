@@ -6,6 +6,8 @@ import com.airbnb.lottie.value.Keyframe;
 
 import java.util.Collections;
 
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
+
 public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<PointF, PointF> {
   private final PointF point = new PointF();
   private final BaseKeyframeAnimation<Float, Float> xAnimation;
@@ -25,7 +27,7 @@ public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<P
   @Override public void setProgress(float progress) {
     xAnimation.setProgress(progress);
     yAnimation.setProgress(progress);
-    point.set(xAnimation.getValue(), yAnimation.getValue());
+    point.set(getFloatValue(xAnimation), getFloatValue(yAnimation));
     for (int i = 0; i < listeners.size(); i++) {
       listeners.get(i).onValueChanged();
     }

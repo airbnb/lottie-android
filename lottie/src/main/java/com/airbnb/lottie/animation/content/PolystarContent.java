@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -15,6 +16,8 @@ import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
+
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
 
 public class PolystarContent
     implements PathContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -139,8 +142,8 @@ public class PolystarContent
   }
 
   private void createStarPath() {
-    float points = pointsAnimation.getValue();
-    double currentAngle = rotationAnimation == null ? 0f : rotationAnimation.getValue();
+    float points = getFloatValue(pointsAnimation);
+    double currentAngle = getFloatValue(rotationAnimation, 0f);
     // Start at +y instead of +x
     currentAngle -= 90;
     // convert to radians
@@ -153,18 +156,12 @@ public class PolystarContent
       currentAngle += halfAnglePerPoint * (1f - partialPointAmount);
     }
 
-    float outerRadius = outerRadiusAnimation.getValue();
+    float outerRadius = getFloatValue(outerRadiusAnimation);
     //noinspection ConstantConditions
-    float innerRadius = innerRadiusAnimation.getValue();
+    float innerRadius = getFloatValue(innerRadiusAnimation);
 
-    float innerRoundedness = 0f;
-    if (innerRoundednessAnimation != null) {
-      innerRoundedness = innerRoundednessAnimation.getValue() / 100f;
-    }
-    float outerRoundedness = 0f;
-    if (outerRoundednessAnimation != null) {
-      outerRoundedness = outerRoundednessAnimation.getValue() / 100f;
-    }
+    final float innerRoundedness = getFloatValue(innerRoundednessAnimation, 0f) / 100f;
+    final float outerRoundedness = getFloatValue(outerRoundednessAnimation, 0f) / 100f;
 
     float x;
     float y;
@@ -245,8 +242,8 @@ public class PolystarContent
   }
 
   private void createPolygonPath() {
-    int points = (int) Math.floor(pointsAnimation.getValue());
-    double currentAngle = rotationAnimation == null ? 0f : rotationAnimation.getValue();
+    int points = (int) Math.floor(getFloatValue(pointsAnimation));
+    double currentAngle = getFloatValue(rotationAnimation, 0f);
     // Start at +y instead of +x
     currentAngle -= 90;
     // convert to radians
@@ -254,8 +251,8 @@ public class PolystarContent
     // adjust current angle for partial points
     float anglePerPoint = (float) (2 * Math.PI / points);
 
-    float roundedness = outerRoundednessAnimation.getValue() / 100f;
-    float radius = outerRadiusAnimation.getValue();
+    float roundedness = getFloatValue(outerRoundednessAnimation) / 100f;
+    float radius = getFloatValue(outerRadiusAnimation);
     float x;
     float y;
     float previousX;

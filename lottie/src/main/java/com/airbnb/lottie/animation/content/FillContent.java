@@ -6,6 +6,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
+import static com.airbnb.lottie.utils.Utils.getIntValue;
 
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -83,7 +85,7 @@ public class FillContent
     }
     L.beginSection("FillContent#draw");
     paint.setColor(((ColorKeyframeAnimation) colorAnimation).getIntValue());
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+    int alpha = (int) ((parentAlpha / 255f * getIntValue(opacityAnimation) / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
 
     if (colorFilterAnimation != null) {

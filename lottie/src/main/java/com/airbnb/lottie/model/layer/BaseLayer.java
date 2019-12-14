@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.airbnb.lottie.utils.Utils.getIntValue;
+
 public abstract class BaseLayer
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
   /**
@@ -212,7 +214,7 @@ public abstract class BaseLayer
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
     L.endSection("Layer#parentMatrix");
-    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int opacity = getIntValue(transform.getOpacity(), 100);
     int alpha = (int)
         ((parentAlpha / 255f * (float) opacity / 100f) * 255);
     if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
@@ -443,7 +445,7 @@ public abstract class BaseLayer
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    contentPaint.setAlpha((int) (getIntValue(opacityAnimation) * 2.55f));
     canvas.drawPath(path, contentPaint);
   }
 
@@ -454,7 +456,7 @@ public abstract class BaseLayer
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    contentPaint.setAlpha((int) (getIntValue(opacityAnimation) * 2.55f));
     canvas.drawPath(path, dstOutPaint);
     canvas.restore();
   }
@@ -471,7 +473,7 @@ public abstract class BaseLayer
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, dstOutPaint);
     canvas.drawRect(rect, contentPaint);
-    dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    dstOutPaint.setAlpha((int) (getIntValue(opacityAnimation) * 2.55f));
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
@@ -485,7 +487,7 @@ public abstract class BaseLayer
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
-    contentPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    contentPaint.setAlpha((int) (getIntValue(opacityAnimation) * 2.55f));
     canvas.drawPath(path, contentPaint);
     canvas.restore();
   }
@@ -494,7 +496,7 @@ public abstract class BaseLayer
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, dstInPaint);
     canvas.drawRect(rect, contentPaint);
-    dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
+    dstOutPaint.setAlpha((int) (getIntValue(opacityAnimation) * 2.55f));
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);

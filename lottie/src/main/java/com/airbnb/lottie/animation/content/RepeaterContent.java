@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
 
 public class RepeaterContent implements DrawingContent, PathContent, GreedyContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -94,8 +97,8 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
   @Override public Path getPath() {
     Path contentPath = contentGroup.getPath();
     path.reset();
-    float copies = this.copies.getValue();
-    float offset = this.offset.getValue();
+    float copies = getFloatValue(this.copies);
+    float offset = getFloatValue(this.offset);
     for (int i = (int) copies - 1; i >= 0; i--) {
       matrix.set(transform.getMatrixForRepeater(i + offset));
       path.addPath(contentPath, matrix);
@@ -104,12 +107,12 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
-    float copies = this.copies.getValue();
-    float offset = this.offset.getValue();
+    float copies = getFloatValue(this.copies);
+    float offset = getFloatValue(this.offset);
     //noinspection ConstantConditions
-    float startOpacity = this.transform.getStartOpacity().getValue() / 100f;
+    float startOpacity = getFloatValue(this.transform.getStartOpacity()) / 100f;
     //noinspection ConstantConditions
-    float endOpacity = this.transform.getEndOpacity().getValue() / 100f;
+    float endOpacity = getFloatValue(this.transform.getEndOpacity()) / 100f;
     for (int i = (int) copies - 1; i >= 0; i--) {
       matrix.set(parentMatrix);
       matrix.preConcat(transform.getMatrixForRepeater(i + offset));

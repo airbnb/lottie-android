@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.airbnb.lottie.utils.Utils.getFloatValue;
+import static com.airbnb.lottie.utils.Utils.getIntValue;
+
 public class TextLayer extends BaseLayer {
   // Capacity is 2 because emojis are 2 characters. Some are longer in which case, the capacity will
   // be expanded but that should be pretty rare.
@@ -116,24 +119,16 @@ public class TextLayer extends BaseLayer {
       return;
     }
 
-    if (colorAnimation != null) {
-      fillPaint.setColor(colorAnimation.getValue());
-    } else {
-      fillPaint.setColor(documentData.color);
-    }
+    fillPaint.setColor(getIntValue(colorAnimation, documentData.color));
+    strokePaint.setColor(getIntValue(strokeColorAnimation, documentData.strokeColor));
 
-    if (strokeColorAnimation != null) {
-      strokePaint.setColor(strokeColorAnimation.getValue());
-    } else {
-      strokePaint.setColor(documentData.strokeColor);
-    }
-    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int opacity = getIntValue(transform.getOpacity(), 100);
     int alpha = opacity * 255 / 100;
     fillPaint.setAlpha(alpha);
     strokePaint.setAlpha(alpha);
 
     if (strokeWidthAnimation != null) {
-      strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
+      strokePaint.setStrokeWidth(getFloatValue(strokeWidthAnimation));
     } else {
       float parentScale = Utils.getScale(parentMatrix);
       strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
@@ -150,7 +145,7 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextGlyphs(
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
-    float textSize = textSizeAnimation == null ? documentData.size : textSizeAnimation.getValue();
+    float textSize = getFloatValue(textSizeAnimation, documentData.size);
     float fontScale = textSize / 100f;
     float parentScale = Utils.getScale(parentMatrix);
 
@@ -200,7 +195,7 @@ public class TextLayer extends BaseLayer {
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
-        tracking += trackingAnimation.getValue();
+        tracking += getFloatValue(trackingAnimation);
       }
       tx += tracking * parentScale;
       canvas.translate(tx, 0);
@@ -220,7 +215,7 @@ public class TextLayer extends BaseLayer {
       text = textDelegate.getTextInternal(text);
     }
     fillPaint.setTypeface(typeface);
-    float textSize = textSizeAnimation == null ? documentData.size : textSizeAnimation.getValue();
+    float textSize = getFloatValue(textSizeAnimation, documentData.size);
     fillPaint.setTextSize(textSize * Utils.dpScale());
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
@@ -269,7 +264,7 @@ public class TextLayer extends BaseLayer {
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingAnimation != null) {
-        tracking += trackingAnimation.getValue();
+        tracking += getFloatValue(trackingAnimation);
       }
       float tx = charWidth + tracking * parentScale;
       canvas.translate(tx, 0);
