@@ -1,13 +1,20 @@
-package com.airbnb.lottie;
+package com.airbnb.lottie.samples;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
-public class LottieAnimationViewTest extends BaseTest {
+@RunWith(RobolectricTestRunner.class)
+@Config
+@Ignore
+public class LottieAnimationViewTest {
 
   private Activity activity;
 
