@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        airbnb:lottie_fileName="AndroidWave2.json"
+        airbnb:lottie_fileName="AndroidWave.json"
         airbnb:lottie_fallbackRes="@drawable/ic_error"
         airbnb:lottie_autoPlay="true"
         airbnb:lottie_loop="true"/>

@@ -235,6 +235,10 @@ public class GradientFillContent
     if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation != null) {
+        layer.removeAnimation(colorFilterAnimation);
+      }
+
        if (callback == null) {
          colorFilterAnimation = null;
        } else {
@@ -244,12 +248,14 @@ public class GradientFillContent
          layer.addAnimation(colorFilterAnimation);
        }
      } else if (property == LottieProperty.GRADIENT_COLOR) {
+      if (colorCallbackAnimation != null) {
+        layer.removeAnimation(colorCallbackAnimation);
+      }
+
        if (callback == null) {
-         if (colorCallbackAnimation != null) {
-           layer.removeAnimation(colorCallbackAnimation);
-         }
          colorCallbackAnimation = null;
        } else {
+         //noinspection rawtypes
          colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
          colorCallbackAnimation.addUpdateListener(this);
          layer.addAnimation(colorCallbackAnimation);

@@ -418,69 +418,55 @@ public class TextLayer extends BaseLayer {
     super.addValueCallback(property, callback);
     if (property == LottieProperty.COLOR) {
       if (colorAnimation != null) {
-        colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+        removeAnimation(colorAnimation);
+      }
+
+      if (callback == null) {
+        colorAnimation = null;
       } else {
-        if (callback == null) {
-          if (colorAnimation != null) {
-            removeAnimation(colorAnimation);
-          }
-          colorAnimation = null;
-        } else {
-          colorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
-          colorAnimation.addUpdateListener(this);
-          addAnimation(colorAnimation);
-        }
+        colorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+        colorAnimation.addUpdateListener(this);
+        addAnimation(colorAnimation);
       }
     } else if (property == LottieProperty.STROKE_COLOR) {
       if (strokeColorAnimation != null) {
-        strokeColorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
+        removeAnimation(strokeColorAnimation);
+      }
+      if (callback == null) {
+        strokeColorAnimation = null;
       } else {
-        if (callback == null) {
-          if (strokeColorAnimation != null) {
-            removeAnimation(strokeColorAnimation);
-          }
-          strokeColorAnimation = null;
-        } else {
-          strokeColorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
-          strokeColorAnimation.addUpdateListener(this);
-          addAnimation(strokeColorAnimation);
-        }
+        strokeColorAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+        strokeColorAnimation.addUpdateListener(this);
+        addAnimation(strokeColorAnimation);
       }
     } else if (property == LottieProperty.STROKE_WIDTH) {
       if (strokeWidthAnimation != null) {
-        strokeWidthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+        removeAnimation(strokeWidthAnimation);
+      }
+      if (callback == null) {
+        strokeWidthAnimation = null;
       } else {
-        if (callback == null) {
-          if (strokeWidthAnimation != null) {
-            removeAnimation(strokeWidthAnimation);
-          }
-          strokeWidthAnimation = null;
-        } else {
-          strokeWidthAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
-          strokeWidthAnimation.addUpdateListener(this);
-          addAnimation(strokeWidthAnimation);
-        }
+        strokeWidthAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        strokeWidthAnimation.addUpdateListener(this);
+        addAnimation(strokeWidthAnimation);
       }
     } else if (property == LottieProperty.TEXT_TRACKING) {
       if (trackingAnimation != null) {
-        trackingAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+        removeAnimation(trackingAnimation);
+      }
+      if (callback == null) {
+        trackingAnimation = null;
       } else {
-        if (callback == null) {
-          if (trackingAnimation != null) {
-            removeAnimation(trackingAnimation);
-          }
-          trackingAnimation = null;
-        } else {
-          trackingAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
-          trackingAnimation.addUpdateListener(this);
-          addAnimation(trackingAnimation);
-        }
+        trackingAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        trackingAnimation.addUpdateListener(this);
+        addAnimation(trackingAnimation);
       }
     } else if (property == LottieProperty.TEXT_SIZE) {
+      if (textSizeAnimation != null) {
+        removeAnimation(textSizeAnimation);
+      }
+
       if (callback == null) {
-        if (textSizeAnimation != null) {
-          removeAnimation(textSizeAnimation);
-        }
         textSizeAnimation = null;
       } else {
         textSizeAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);

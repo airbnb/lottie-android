@@ -204,6 +204,7 @@ public class CompositionLayer extends BaseLayer {
         timeRemapping = null;
       } else {
         timeRemapping = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        timeRemapping.addUpdateListener(this);
         addAnimation(timeRemapping);
       }
     }
