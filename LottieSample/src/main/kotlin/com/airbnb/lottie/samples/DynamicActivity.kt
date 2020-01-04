@@ -42,6 +42,7 @@ class DynamicActivity : AppCompatActivity() {
         jumpHeight.setOnClickListener {
             extraJumpIndex = (extraJumpIndex + 1) % EXTRA_JUMP.size
             updateButtonText()
+            setupValueCallbacks()
         }
 
         animationView.addLottieOnCompositionLoadedListener { _ ->
@@ -49,9 +50,10 @@ class DynamicActivity : AppCompatActivity() {
                 Log.d(TAG, it.keysToString())
             }
         }
-        animationView.setFailureListener { /* do nothing */ }
+        animationView.setFailureListener { e ->
+            Log.e(TAG, "Failed to load composition", e)
+        }
 
-        jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()
 
     }
