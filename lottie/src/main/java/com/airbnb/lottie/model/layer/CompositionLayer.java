@@ -137,12 +137,11 @@ public class CompositionLayer extends BaseLayer {
       float remappedFrames = timeRemapping.getValue() * layerModel.getComposition().getFrameRate() - compositionDelayFrames;
       progress = remappedFrames / durationFrames;
     }
-    if (layerModel.getTimeStretch() != 0) {
-      progress /= layerModel.getTimeStretch();
-    }
-
     if (timeRemapping == null) {
       progress -= layerModel.getStartProgress();
+    }
+    if (layerModel.getTimeStretch() != 0) {
+      progress /= layerModel.getTimeStretch();
     }
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
