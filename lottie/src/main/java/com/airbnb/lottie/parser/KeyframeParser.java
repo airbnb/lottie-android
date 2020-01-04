@@ -137,8 +137,14 @@ class KeyframeParser {
         interpolator = interpolatorRef.get();
       }
       if (interpolatorRef == null || interpolator == null) {
-        interpolator = PathInterpolatorCompat.create(
-            cp1.x / scale, cp1.y / scale, cp2.x / scale, cp2.y / scale);
+        // If a control point extends beyond the previous/next point then it will cause the value of the interpolator to no
+        // longer monotonously increase. This clips the control point bounds to prevent that from happening.
+        // NOTE: this will make the rendered animation behave slightly differently than the original.
+        float cp1x = Math.min(cp1.x / scale, 1f);
+        float cp1y = Math.min(cp1.y / scale, 1f);
+        float cp2x = Math.max(cp2.x / scale, 0f);
+        float cp2y = Math.max(cp2.y / scale, 0f);
+        interpolator = PathInterpolatorCompat.create(cp1x, cp1y, cp2x, cp2y);
         try {
           putInterpolator(hash, new WeakReference<>(interpolator));
         } catch (ArrayIndexOutOfBoundsException e) {
