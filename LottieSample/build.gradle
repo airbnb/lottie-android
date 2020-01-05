@@ -7,11 +7,11 @@ androidExtensions {
 }
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 29
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 28
+    targetSdkVersion 29
     versionCode 67
     versionName VERSION_NAME
     multiDexEnabled true
@@ -41,8 +41,8 @@ android {
     baseline file("lint-baseline.xml")
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
