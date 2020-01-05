@@ -79,8 +79,6 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
-  implementation 'com.jakewharton:butterknife:9.0.0-rc1'
-  kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
