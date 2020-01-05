@@ -5,12 +5,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'net.ltgt.errorprone'
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 29
   resourcePrefix 'lottie_'
 
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 28
+    targetSdkVersion 29
   }
   lintOptions {
     abortOnError true
@@ -32,7 +32,7 @@ dependencies {
   implementation "androidx.appcompat:appcompat:1.0.0"
   testImplementation "org.mockito:mockito-core:2.15.0"
   testImplementation 'junit:junit:4.12'
-  testImplementation "org.robolectric:robolectric:4.0-alpha-3"
+  testImplementation "org.robolectric:robolectric:4.3.1"
   // Do not ugprade to 2.0 because it will bring in Kotlin as a transitive dependency.
   implementation("com.squareup.okio:okio:1.17.4")
   annotationProcessor "com.uber.nullaway:nullaway:0.7.5"

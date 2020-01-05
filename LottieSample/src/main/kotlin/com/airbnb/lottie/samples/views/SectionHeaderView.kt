@@ -28,7 +28,7 @@ class SectionHeaderView @JvmOverloads constructor(
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
-    override fun setOnClickListener(listener: View.OnClickListener) {
+    override fun setOnClickListener(listener: OnClickListener?) {
         super.setOnClickListener(listener)
     }
 }

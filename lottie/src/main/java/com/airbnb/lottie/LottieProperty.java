@@ -103,7 +103,7 @@ public interface LottieProperty {
   /** [0,100] */
   Float TRANSFORM_START_OPACITY = 12f;
   /** [0,100] */
-  Float TRANSFORM_END_OPACITY = 12f;
+  Float TRANSFORM_END_OPACITY = 12.1f;
   /** The time value in seconds */
   Float TIME_REMAP = 13f;
   /** In Dp */

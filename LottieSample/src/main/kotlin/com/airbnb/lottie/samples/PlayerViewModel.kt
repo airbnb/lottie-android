@@ -43,7 +43,7 @@ class PlayerViewModel(
             url != null -> LottieCompositionFactory.fromUrl(application, url, null)
             args.fileUri != null -> taskForUri(args.fileUri)
             args.asset != null -> LottieCompositionFactory.fromAsset(application, args.asset, null)
-            else -> throw IllegalArgumentException("Don't know how to fetch animation for $args")
+            else -> error("Don't know how to fetch animation for $args")
         }
                 .addListener {
                     setState {
@@ -54,14 +54,10 @@ class PlayerViewModel(
     }
 
     private fun taskForUri(uri: Uri): LottieTask<LottieComposition> {
-        val fis = try {
-            when (uri.scheme) {
-                "file" -> FileInputStream(uri.path)
-                "content" -> application.contentResolver.openInputStream(uri)
-                else -> return LottieTask() { throw IllegalArgumentException("Unknown scheme ${uri.scheme}") }
-            }
-        } catch (e: FileNotFoundException) {
-            return LottieTask { throw e }
+        val fis = when (uri.scheme) {
+            "file" -> FileInputStream(uri.path ?: error("File has no path!"))
+            "content" -> application.contentResolver.openInputStream(uri)
+            else -> error("Unknown scheme ${uri.scheme}")
         }
 
         return LottieCompositionFactory.fromJsonInputStream(fis, null)
