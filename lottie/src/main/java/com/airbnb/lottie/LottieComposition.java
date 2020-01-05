@@ -141,12 +141,12 @@ public class LottieComposition {
     return (long) (getDurationFrames() / frameRate * 1000);
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public float getStartFrame() {
     return startFrame;
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public float getEndFrame() {
     return endFrame;
   }
