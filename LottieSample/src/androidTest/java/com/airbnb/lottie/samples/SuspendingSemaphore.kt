@@ -29,7 +29,4 @@ class SuspendingSemaphore(limit: Int) {
             bufferedChannel.receive()
         }
     }
-
-    @ExperimentalCoroutinesApi
-    fun isFull() = bufferedChannel.isFull
 }
