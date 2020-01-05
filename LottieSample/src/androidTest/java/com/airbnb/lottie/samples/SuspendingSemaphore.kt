@@ -31,5 +31,5 @@ class SuspendingSemaphore(limit: Int) {
     }
 
     @ExperimentalCoroutinesApi
-    fun isFull() = bufferedChannel.isFull
+    fun isFull() = !bufferedChannel.isEmpty
 }
