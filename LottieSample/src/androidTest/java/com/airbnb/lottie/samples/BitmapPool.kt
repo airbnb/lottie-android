@@ -27,13 +27,11 @@ internal class BitmapPool {
             return TRANSPARENT_1X1_BITMAP
         }
 
-        var blockedStartTime = 0L
-        if (semaphore.isFull()) {
-            blockedStartTime = System.currentTimeMillis()
-        }
+        var blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
-        if (blockedStartTime > 0) {
-            Log.d(L.TAG, "Waited ${System.currentTimeMillis() - blockedStartTime}ms for a bitmap.")
+        val waitingTimeMs = System.currentTimeMillis() - blockedStartTime
+        if (waitingTimeMs > 100) {
+            Log.d(L.TAG, "Waited ${waitingTimeMs}ms for a bitmap.")
         }
 
         val bitmap = synchronized(bitmaps) {

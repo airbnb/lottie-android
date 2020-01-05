@@ -24,6 +24,8 @@ private const val RC_PERMISSION = 12345
 
 class FilmStripSnapshotActivity : AppCompatActivity() {
 
+    // TODO: fix this.
+    @Suppress("DEPRECATION")
     private val rootDir = "${Environment.getExternalStorageDirectory()}/lottie"
     private val animationsDir = File("$rootDir/animations")
     private val snapshotsDir = File("$rootDir/snapshots")

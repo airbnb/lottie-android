@@ -105,8 +105,6 @@ class PlayerFragment : BaseMvRxFragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
 
-        L.setTraceEnabled(true)
-
         lottieVersionView.text = getString(R.string.lottie_version, com.airbnb.lottie.BuildConfig.VERSION_NAME)
 
         animationView.setFontAssetDelegate(object : FontAssetDelegate() {
