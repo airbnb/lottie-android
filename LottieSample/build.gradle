@@ -53,22 +53,8 @@ android {
   packagingOptions {
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
-    exclude 'META-INF/DEPENDENCIES'
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/NOTICE'
-    exclude 'META-INF/plexus/components.xml'
-    exclude 'licenses/thoughtworks.TXT'
-    exclude 'licenses/extreme.indiana.edu.license.TXT'
-    exclude 'licenses/javolution.license.TXT'
-    exclude 'org/apache/maven/project/pom-4.0.0.xml'
-    exclude 'org/codehaus/plexus/plexus-bootstrap.xml'
-    exclude 'org/cyberneko/html/res/HTMLsymbol.properties'
-    exclude 'org/cyberneko/html/res/HTMLspecial.properties'
-    exclude 'org/cyberneko/html/res/HTMLlat1.properties'
-    exclude 'org/cyberneko/html/res/ErrorMessages_ja.properties'
-    exclude 'org/cyberneko/html/res/ErrorMessages_ja.txt'
-    exclude 'org/cyberneko/html/res/ErrorMessages.properties'
-    exclude 'org/cyberneko/html/res/XMLbuiltin.properties'
   }
 }
 
