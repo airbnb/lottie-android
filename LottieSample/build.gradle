@@ -7,11 +7,11 @@ androidExtensions {
 }
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 29
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdkVersion 16
-    targetSdkVersion 28
+    targetSdkVersion 29
     versionCode 67
     versionName VERSION_NAME
     multiDexEnabled true
@@ -41,8 +41,11 @@ android {
     baseline file("lint-baseline.xml")
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = "1.8"
   }
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
@@ -57,30 +60,27 @@ android {
 
 dependencies {
   implementation project(':lottie')
-  implementation "androidx.fragment:fragment:1.1.0-alpha09"
-  implementation("androidx.appcompat:appcompat:1.1.0-alpha05") {
-    exclude group: 'androidx.fragment'
-  }
-  implementation "androidx.recyclerview:recyclerview:1.0.0"
-  implementation "com.google.android.material:material:1.0.0"
-  implementation "androidx.cardview:cardview:1.0.0"
-  implementation 'androidx.core:core:1.2.0-alpha01'
-  implementation 'androidx.core:core-ktx:1.1.0-beta01'
-  implementation "androidx.browser:browser:1.0.0"
   implementation 'androidx.multidex:multidex:2.0.1'
+
+  implementation "androidx.fragment:fragment:1.2.0-rc04"
+  implementation("androidx.appcompat:appcompat:1.1.0")
+  implementation "androidx.recyclerview:recyclerview:1.0.0"
+  implementation "androidx.cardview:cardview:1.0.0"
+  implementation 'androidx.core:core-ktx:1.2.0-rc01'
+  implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
+  implementation "androidx.browser:browser:1.0.0"
   implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0-beta01'
   kapt "androidx.lifecycle:lifecycle-common-java8:2.1.0-beta01"
+  implementation "com.google.android.material:material:1.0.0"
+
   implementation 'com.airbnb.android:epoxy:2.17.0'
   kapt 'com.airbnb.android:epoxy-processor:2.17.0'
   implementation 'com.airbnb.android:mvrx:0.5.0'
-  implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta1'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
   implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
-  implementation 'com.jakewharton:butterknife:9.0.0-rc1'
-  kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
   implementation 'com.matthew-tamlin:sliding-intro-screen:3.2.0'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'
@@ -96,18 +96,15 @@ dependencies {
   implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
   implementation 'com.github.bumptech.glide:glide:4.8.0'
 
-  debugImplementation("androidx.fragment:fragment-testing:1.1.0-alpha09") {
-    exclude group: 'androidx.test'
-  }
+  debugImplementation("androidx.fragment:fragment-testing:1.2.0-rc04")
 
   testImplementation 'junit:junit:4.12'
 
   androidTestImplementation 'androidx.test:core:1.2.0'
-  androidTestImplementation "org.robolectric:robolectric:4.0-alpha-3"
   androidTestImplementation 'androidx.test.ext:junit:1.1.0'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
   androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0-alpha4'
-  androidTestImplementation "androidx.fragment:fragment-testing:1.1.0-alpha09"
+  androidTestImplementation "androidx.fragment:fragment-testing:1.2.0-rc04"
   androidTestImplementation 'androidx.test:rules:1.2.0'
   androidTestImplementation 'io.reactivex.rxjava2:rxjava:2.2.1'
   androidTestImplementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
