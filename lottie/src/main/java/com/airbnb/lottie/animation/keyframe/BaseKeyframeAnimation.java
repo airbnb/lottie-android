@@ -25,7 +25,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   private boolean isDiscrete = false;
 
   private final KeyframesWrapper<K> keyframesWrapper;
-  private float progress = 0f;
+  protected float progress = 0f;
   @Nullable protected LottieValueCallback<A> valueCallback;
 
   @Nullable private A cachedGetValue = null;
