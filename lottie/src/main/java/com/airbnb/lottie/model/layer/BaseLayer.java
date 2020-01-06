@@ -527,7 +527,7 @@ public abstract class BaseLayer
     if (matteLayer != null) {
       // The matte layer's time stretch is pre-calculated.
       float matteTimeStretch = matteLayer.layerModel.getTimeStretch();
-      matteLayer.setProgress(Math.min(progress * matteTimeStretch + matteLayer.layerModel.getStartProgress(), 1f));
+      matteLayer.setProgress(Math.min(progress * matteTimeStretch, 1f));
     }
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
