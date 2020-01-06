@@ -81,6 +81,8 @@ public abstract class BaseLayer
   @Nullable
   private MaskKeyframeAnimation mask;
   @Nullable
+  private FloatKeyframeAnimation inOutAnimation;
+  @Nullable
   private BaseLayer matteLayer;
   /**
    * This should only be used by {@link #buildParentLayerListIfNeeded()}
@@ -145,8 +147,7 @@ public abstract class BaseLayer
 
   private void setupInOutAnimations() {
     if (!layerModel.getInOutKeyframes().isEmpty()) {
-      final FloatKeyframeAnimation inOutAnimation =
-          new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
+      inOutAnimation = new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
         @Override
@@ -155,7 +156,6 @@ public abstract class BaseLayer
         }
       });
       setVisible(inOutAnimation.getValue() == 1f);
-      addAnimation(inOutAnimation);
     } else {
       setVisible(true);
     }
@@ -524,10 +524,14 @@ public abstract class BaseLayer
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
     }
+    if (inOutAnimation != null) {
+      // Time stretch needs to be divided again for the inOutAnimation.
+      inOutAnimation.setProgress(progress / layerModel.getTimeStretch());
+    }
     if (matteLayer != null) {
       // The matte layer's time stretch is pre-calculated.
       float matteTimeStretch = matteLayer.layerModel.getTimeStretch();
-      matteLayer.setProgress(Math.min(progress * matteTimeStretch, 1f));
+      matteLayer.setProgress(progress * matteTimeStretch);
     }
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
