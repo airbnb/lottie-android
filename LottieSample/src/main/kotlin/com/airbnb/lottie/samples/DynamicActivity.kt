@@ -42,6 +42,7 @@ class DynamicActivity : AppCompatActivity() {
         jumpHeight.setOnClickListener {
             extraJumpIndex = (extraJumpIndex + 1) % EXTRA_JUMP.size
             updateButtonText()
+            setupValueCallbacks()
         }
 
         animationView.addLottieOnCompositionLoadedListener { _ ->
