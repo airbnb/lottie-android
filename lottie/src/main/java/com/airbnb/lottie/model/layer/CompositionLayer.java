@@ -201,9 +201,12 @@ public class CompositionLayer extends BaseLayer {
 
     if (property == LottieProperty.TIME_REMAP) {
       if (callback == null) {
-        timeRemapping = null;
+        if (timeRemapping != null) {
+          timeRemapping.setValueCallback(null);
+        }
       } else {
         timeRemapping = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        timeRemapping.addUpdateListener(this);
         addAnimation(timeRemapping);
       }
     }

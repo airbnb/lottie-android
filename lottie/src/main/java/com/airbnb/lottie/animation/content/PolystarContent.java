@@ -316,8 +316,7 @@ public class PolystarContent
       innerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.POLYSTAR_OUTER_RADIUS) {
       outerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.POLYSTAR_INNER_ROUNDEDNESS &&
-        innerRoundednessAnimation != null) {
+    } else if (property == LottieProperty.POLYSTAR_INNER_ROUNDEDNESS && innerRoundednessAnimation != null) {
       innerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS) {
       outerRoundednessAnimation.setValueCallback((LottieValueCallback<Float>) callback);
