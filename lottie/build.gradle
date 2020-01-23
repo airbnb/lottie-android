@@ -29,20 +29,20 @@ android {
 }
 
 dependencies {
-  implementation "androidx.appcompat:appcompat:1.0.0"
-  testImplementation "org.mockito:mockito-core:2.15.0"
+  implementation "androidx.appcompat:appcompat:1.1.0"
+  testImplementation "org.mockito:mockito-core:2.28.2"
   testImplementation 'junit:junit:4.12'
   testImplementation "org.robolectric:robolectric:4.3.1"
   // Do not ugprade to 2.0 because it will bring in Kotlin as a transitive dependency.
   implementation("com.squareup.okio:okio:1.17.4")
   annotationProcessor "com.uber.nullaway:nullaway:0.7.5"
   errorprone "com.google.errorprone:error_prone_core:2.3.2"
-  errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+  errorproneJavac "com.google.errorprone:javac:2.3.4"
 }
 
 task sourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
-  classifier = 'sources'
+  archiveClassifier.set("sources")
 }
 
 task javadoc(type: Javadoc) {

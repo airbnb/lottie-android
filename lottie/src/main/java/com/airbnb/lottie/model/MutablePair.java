@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.core.util.Pair;
@@ -38,7 +39,7 @@ public class MutablePair<T> {
   }
 
   private static boolean objectsEqual(Object a, Object b) {
-    return a == b || (a != null && a.equals(b));
+    return a.equals(b);
   }
 
   /**
@@ -52,7 +53,8 @@ public class MutablePair<T> {
   }
 
   @Override
+  @NonNull
   public String toString() {
-    return "Pair{" + String.valueOf(first) + " " + String.valueOf(second) + "}";
+    return "Pair{" + first + " " + second + "}";
   }
 }
