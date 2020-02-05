@@ -102,6 +102,25 @@ public class ImageAssetManager {
       return putBitmap(id, bitmap);
     }
 
+    //if no images folder given assume drawable res
+    if (TextUtils.isEmpty(imagesFolder)) {
+      try
+      {
+        int drawableId = context.getResources().getIdentifier(filename, "drawable", context.getPackageName())
+        if(drawableId != -1)
+        {
+          //we dont pass "opts" we rely on system scaling drawables
+          bitmap = BitmapFactory.decodeResource(context.getResources(), drawableId);
+          bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
+          return putBitmap(id, bitmap);
+        }
+      }
+      catch (Exception e) 
+      {
+        Logger.warning("Unable to open resource.", e);
+      }
+    }
+    
     InputStream is;
     try {
       if (TextUtils.isEmpty(imagesFolder)) {
