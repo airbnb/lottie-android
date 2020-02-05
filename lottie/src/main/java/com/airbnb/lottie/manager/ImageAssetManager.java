@@ -106,7 +106,7 @@ public class ImageAssetManager {
     if (TextUtils.isEmpty(imagesFolder)) {
       try
       {
-        int drawableId = context.getResources().getIdentifier(filename, "drawable", context.getPackageName())
+        int drawableId = context.getResources().getIdentifier(filename, "drawable", context.getPackageName());
         if (drawableId != -1)
         {
           // We don't pass BitmapFactor.Options because we rely on system scaling drawables.
