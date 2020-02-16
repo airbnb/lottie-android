@@ -164,10 +164,11 @@ public class GradientStrokeContent extends BaseStrokeContent {
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
     if (property == LottieProperty.GRADIENT_COLOR) {
+      if (colorCallbackAnimation != null) {
+        layer.removeAnimation(colorCallbackAnimation);
+      }
+
       if (callback == null) {
-        if (colorCallbackAnimation != null) {
-          layer.removeAnimation(colorCallbackAnimation);
-        }
         colorCallbackAnimation = null;
       } else {
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);

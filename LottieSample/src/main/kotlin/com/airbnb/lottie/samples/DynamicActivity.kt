@@ -48,19 +48,18 @@ class DynamicActivity : AppCompatActivity() {
         animationView.addLottieOnCompositionLoadedListener { _ ->
             animationView.resolveKeyPath(KeyPath("**")).forEach {
                 Log.d(TAG, it.keysToString())
+                setupValueCallbacks()
             }
         }
         animationView.setFailureListener { e ->
-            Log.e(TAG, "Failed to load composition", e)
+            Log.e(TAG, "Failed to load animation!", e)
         }
 
         updateButtonText()
-
     }
 
     private fun setupValueCallbacks() {
-        animationView.addValueCallback(KeyPath("LeftArmWave"),
-            LottieProperty.TIME_REMAP) { frameInfo ->
+        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
             2 * speed.toFloat() * frameInfo.overallProgress
         }
 
