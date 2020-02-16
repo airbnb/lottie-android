@@ -489,11 +489,6 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       return;
     }
 
-    // If you set a different composition on the view, the bounds will not update unless
-    // the drawable is different than the original.
-    setImageDrawable(null);
-    setImageDrawable(lottieDrawable);
-
     // This is needed to makes sure that the animation is properly played/paused for the current visibility state.
     // It is possible that the drawable had a lazy composition task to play the animation but this view subsequently
     // became invisible. Comment this out and run the espresso tests to see a failing test.
