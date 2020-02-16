@@ -156,6 +156,7 @@ public abstract class BaseLayer
         }
       });
       setVisible(inOutAnimation.getValue() == 1f);
+      addAnimation(inOutAnimation);
     } else {
       setVisible(true);
     }
