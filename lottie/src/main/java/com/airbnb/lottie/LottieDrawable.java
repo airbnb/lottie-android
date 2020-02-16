@@ -231,14 +231,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
-    // Prior to Marshmallow, ImageView would not update a drawable's width and height
-    // when it was invalidated. Because a LottieDrawable's width and height can change
-    // when a new composition is set, this can lead to an ImageView having the wrong
-    // cached width and height for this drawable.
-    // ImageView updates the builds on every invalidation on Marshmallow and above.
-    // https://android.googlesource.com/platform/frameworks/base/+/8473f5a768a1eafda92c81d208c00db334dfa9d4%5E%21/#F0
+    // Ensure that ImageView updates the drawable width/height so it can
+    // properly calculate its drawable matrix.
     Callback callback = getCallback();
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1 && callback instanceof ImageView) {
+    if (callback instanceof ImageView) {
       ((ImageView) callback).setImageDrawable(null);
       ((ImageView) callback).setImageDrawable(this);
     }
