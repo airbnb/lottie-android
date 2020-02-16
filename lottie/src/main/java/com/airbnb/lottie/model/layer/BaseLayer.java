@@ -375,7 +375,7 @@ public abstract class BaseLayer
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
       // Pre-Pie, offscreen buffers were opaque which meant that outer border of a mask
       // might get drawn depending on the result of float rounding.
-      canvas.drawColor(Color.TRANSPARENT);
+      clearCanvas(canvas);
     }
     L.endSection("Layer#saveLayer");
     for (int i = 0; i < mask.getMasks().size(); i++) {
