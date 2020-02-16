@@ -128,6 +128,10 @@ public class FillContent
     } else if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation != null) {
+        layer.removeAnimation(colorFilterAnimation);
+      }
+
       if (callback == null) {
         colorFilterAnimation = null;
       } else {

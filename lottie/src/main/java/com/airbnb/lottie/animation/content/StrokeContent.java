@@ -58,6 +58,10 @@ public class StrokeContent extends BaseStrokeContent {
     if (property == STROKE_COLOR) {
       colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation != null) {
+        layer.removeAnimation(colorFilterAnimation);
+      }
+
       if (callback == null) {
         colorFilterAnimation = null;
       } else {
