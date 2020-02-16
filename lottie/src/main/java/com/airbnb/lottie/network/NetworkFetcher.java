@@ -25,16 +25,20 @@ public class NetworkFetcher {
   private final Context appContext;
   private final String url;
 
-  private final NetworkCache networkCache;
+  @Nullable private final NetworkCache networkCache;
 
-  public static LottieResult<LottieComposition> fetchSync(Context context, String url) {
-    return new NetworkFetcher(context, url).fetchSync();
+  public static LottieResult<LottieComposition> fetchSync(Context context, String url, @Nullable String cacheKey) {
+    return new NetworkFetcher(context, url, cacheKey).fetchSync();
   }
 
-  private NetworkFetcher(Context context, String url) {
+  private NetworkFetcher(Context context, String url, @Nullable String cacheKey) {
     appContext = context.getApplicationContext();
     this.url = url;
-    networkCache = new NetworkCache(appContext, url);
+    if (cacheKey == null) {
+      networkCache = null;
+    } else {
+      networkCache = new NetworkCache(appContext);
+    }
   }
 
   @WorkerThread
@@ -54,7 +58,10 @@ public class NetworkFetcher {
   @Nullable
   @WorkerThread
   private LottieComposition fetchFromCache() {
-    Pair<FileExtension, InputStream> cacheResult = networkCache.fetch();
+    if (networkCache == null) {
+      return null;
+    }
+    Pair<FileExtension, InputStream> cacheResult = networkCache.fetch(url);
     if (cacheResult == null) {
       return null;
     }
@@ -83,7 +90,7 @@ public class NetworkFetcher {
   }
 
   @WorkerThread
-  private LottieResult fetchFromNetworkInternal() throws IOException {
+  private LottieResult<LottieComposition> fetchFromNetworkInternal() throws IOException {
     Logger.debug("Fetching " + url);
 
 
@@ -95,7 +102,7 @@ public class NetworkFetcher {
 
       if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
         String error = getErrorFromConnection(connection);
-        return new LottieResult<>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error));
+        return new LottieResult<LottieComposition>(new IllegalArgumentException("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error));
       }
 
       LottieResult<LottieComposition> result = getResultFromConnection(connection);
@@ -134,7 +141,7 @@ public class NetworkFetcher {
   private LottieResult<LottieComposition> getResultFromConnection(HttpURLConnection connection) throws IOException {
     File file;
     FileExtension extension;
-    LottieResult<LottieComposition> result = null;
+    LottieResult<LottieComposition> result;
     String contentType = connection.getContentType();
     if (contentType == null) {
       // Assume JSON for best effort parsing. If it fails, it will just deliver the parse exception
@@ -144,17 +151,25 @@ public class NetworkFetcher {
     if (contentType.contains("application/zip")) {
       Logger.debug("Handling zip response.");
       extension = FileExtension.ZIP;
-      file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
-      result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
+      if (networkCache == null) {
+        result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(connection.getInputStream()), null);
+      } else {
+        file = networkCache.writeTempCacheFile(url, connection.getInputStream(), extension);
+        result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
+      }
     } else {
       Logger.debug("Received json response.");
       extension = FileExtension.JSON;
-      file = networkCache.writeTempCacheFile(connection.getInputStream(), extension);
-      result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
+      if (networkCache == null) {
+        result = LottieCompositionFactory.fromJsonInputStreamSync(connection.getInputStream(), null);
+      } else {
+        file = networkCache.writeTempCacheFile(url, connection.getInputStream(), extension);
+        result = LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
+      }
     }
 
-    if (result.getValue() != null) {
-      networkCache.renameTempFile(extension);
+    if (networkCache != null && result.getValue() != null) {
+      networkCache.renameTempFile(url, extension);
     }
     return result;
   }

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
+import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -61,6 +62,12 @@ public class LottieCompositionFactory {
     LottieCompositionCache.getInstance().resize(size);
   }
 
+  public static void clearCache(Context context) {
+    taskCache.clear();
+    LottieCompositionCache.getInstance().clear();
+    new NetworkCache(context).clear();
+  }
+
   /**
    * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
@@ -77,11 +84,11 @@ public class LottieCompositionFactory {
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
    * might need an animation in the future.
    */
-  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable String cacheKey) {
+  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable final String cacheKey) {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
-        return NetworkFetcher.fetchSync(context, url);
+        return NetworkFetcher.fetchSync(context, url, cacheKey);
       }
     });
   }
@@ -93,7 +100,18 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromUrlSync(Context context, String url) {
-    return NetworkFetcher.fetchSync(context, url);
+    return fromUrlSync(context, url, url);
+  }
+
+
+  /**
+   * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
+   * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
+   * might need an animation in the future.
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromUrlSync(Context context, String url, @Nullable String cacheKey) {
+    return NetworkFetcher.fetchSync(context, url, cacheKey);
   }
 
   /**
