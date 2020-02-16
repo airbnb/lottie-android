@@ -231,6 +231,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
 
+    // Ensure that ImageView updates the drawable width/height so it can
+    // properly calculate its drawable matrix.
+    Callback callback = getCallback();
+    if (callback instanceof ImageView) {
+      ((ImageView) callback).setImageDrawable(null);
+      ((ImageView) callback).setImageDrawable(this);
+    }
+
     return true;
   }
 
