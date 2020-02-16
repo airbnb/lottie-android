@@ -425,6 +425,19 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
+   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and lottie
+   * will unzip and link the images automatically.
+   *
+   * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
+   * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
+   * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
+   */
+  public void setAnimationFromUrl(String url, @Nullable String cacheKey) {
+    LottieTask<LottieComposition> task = LottieCompositionFactory.fromUrl(getContext(), url, cacheKey);
+    setCompositionTask(task);
+  }
+
+  /**
    * Set a default failure listener that will be called if any of the setAnimation APIs fail for any reason.
    * This can be used to replace the default behavior.
    *
