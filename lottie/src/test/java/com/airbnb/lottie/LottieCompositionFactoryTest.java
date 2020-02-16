@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
 import java.io.FileNotFoundException;
-import java.io.StringReader;
+import java.io.IOException;
+import java.io.InputStream;
 
-import static com.airbnb.lottie.parser.moshi.JsonReader.of;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -20,6 +20,7 @@ import static okio.Okio.buffer;
 import static okio.Okio.source;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("ReferenceEquality")
 public class LottieCompositionFactoryTest extends BaseTest {
     private static final String JSON = "{\"v\":\"4.11.1\",\"fr\":60,\"ip\":0,\"op\":180,\"w\":300,\"h\":300,\"nm\":\"Comp 1\",\"ddd\":0,\"assets\":[]," +
             "\"layers\":[{\"ddd\":0,\"ind\":1,\"ty\":4,\"nm\":\"Shape Layer 1\",\"sr\":1,\"ks\":{\"o\":{\"a\":0,\"k\":100,\"ix\":11},\"r\":{\"a\":0," +
@@ -90,7 +91,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testNullMultipleTimesAsync() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, null);
         LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, null);
         assertFalse(task1 == task2);
@@ -98,7 +99,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testNullMultipleTimesSync() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieResult<LottieComposition> task1 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
         LottieResult<LottieComposition> task2 = LottieCompositionFactory.fromJsonReaderSync(reader, null);
         assertFalse(task1 == task2);
@@ -106,7 +107,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testCacheWorks() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, "foo");
         LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, "foo");
         assertTrue(task1 == task2);
@@ -114,7 +115,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testZeroCacheWorks() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieCompositionFactory.setMaxCacheSize(1);
         LottieResult<LottieComposition> taskFoo1 = LottieCompositionFactory.fromJsonReaderSync(reader, "foo");
         LottieResult<LottieComposition> taskBar = LottieCompositionFactory.fromJsonReaderSync(reader, "bar");
@@ -125,5 +126,13 @@ public class LottieCompositionFactoryTest extends BaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCannotSetCacheSizeToZero() {
         LottieCompositionFactory.setMaxCacheSize(0);
+    }
+
+    private static InputStream getNeverCompletingInputStream() {
+        return new InputStream() {
+            @Override public int read() throws IOException {
+                return 100;
+            }
+        };
     }
 }
