@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
@@ -18,8 +20,13 @@ import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.core.content.getSystemService
+import androidx.core.graphics.toColorInt
+import com.airbnb.lottie.L
 import com.bumptech.glide.Glide
 
 fun Fragment.startActivity(cls: Class<*>) {
@@ -72,4 +79,36 @@ fun Vibrator.vibrateCompat(millis: Long) {
         @Suppress("DEPRECATION")
         vibrate(millis)
     }
+}
+
+@ColorInt
+fun String?.toColorIntSafe(): Int {
+    var bgColor = this ?: "#ffffff"
+    bgColor = if (bgColor.startsWith("#")) bgColor else "#$bgColor"
+
+    return try {
+        when (bgColor.length) {
+            0 -> "#ffffff"
+            4 -> "#%c%c%c%c%c%c".format(
+                    bgColor[1], bgColor[1],
+                    bgColor[2], bgColor[2],
+                    bgColor[3], bgColor[3]
+            )
+            5 -> "#%c%c%c%c%c%c%c%c".format(
+                    bgColor[1], bgColor[1],
+                    bgColor[2], bgColor[2],
+                    bgColor[3], bgColor[3],
+                    bgColor[4], bgColor[4]
+            )
+            else -> bgColor
+        }.toColorInt()
+    } catch (e: IllegalArgumentException) {
+        Log.w(L.TAG, "Unable to parse $bgColor.")
+        Color.WHITE
+    }
+}
+
+fun Context.hideKeyboard() {
+    val inputMethodManager = getSystemService<InputMethodManager>()!!
+    inputMethodManager.hideSoftInputFromWindow((this as Activity).currentFocus?.windowToken, 0)
 }

@@ -1,30 +1,36 @@
 package com.airbnb.lottie.samples
 
 import android.content.Intent
-import androidx.fragment.app.FragmentActivity
 import com.airbnb.epoxy.EpoxyController
-import com.airbnb.lottie.samples.model.AnimationResponse
+import com.airbnb.lottie.samples.model.AnimationResponseV2
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.model.ShowcaseItem
+import com.airbnb.lottie.samples.views.animationItemView
 import com.airbnb.lottie.samples.views.loadingView
 import com.airbnb.lottie.samples.views.marquee
-import com.airbnb.lottie.samples.views.showcaseAnimationItemView
 import com.airbnb.lottie.samples.views.showcaseCarousel
-import com.airbnb.mvrx.*
+import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.MvRxState
+import com.airbnb.mvrx.MvRxViewModelFactory
+import com.airbnb.mvrx.Uninitialized
+import com.airbnb.mvrx.ViewModelContext
+import com.airbnb.mvrx.fragmentViewModel
+import com.airbnb.mvrx.withState
+import io.reactivex.schedulers.Schedulers
 
-data class ShowcaseState(val response: Async<AnimationResponse> = Uninitialized) : MvRxState
+data class ShowcaseState(val response: Async<AnimationResponseV2> = Uninitialized) : MvRxState
 
-class ShowcaseViewModel(initialState: ShowcaseState, service: LottiefilesService) : MvRxViewModel<ShowcaseState>(initialState) {
+class ShowcaseViewModel(initialState: ShowcaseState, api: LottiefilesApi) : MvRxViewModel<ShowcaseState>(initialState) {
     init {
-        service.getCollection("lottie-showcase")
+        api.getCollection()
+                .subscribeOn(Schedulers.io())
                 .retry(3)
                 .execute { copy(response = it) }
     }
 
-    companion object : MvRxViewModelFactory<ShowcaseState> {
-        @JvmStatic
-        override fun create(activity: FragmentActivity, state: ShowcaseState): ShowcaseViewModel {
-            val service = (activity.applicationContext as LottieApplication).lottiefilesService
+    companion object : MvRxViewModelFactory<ShowcaseViewModel, ShowcaseState> {
+        override fun create(viewModelContext: ViewModelContext, state: ShowcaseState): ShowcaseViewModel? {
+            val service = viewModelContext.app<LottieApplication>().lottiefilesService
             return ShowcaseViewModel(state, service)
         }
     }
@@ -72,11 +78,12 @@ class ShowcaseFragment : BaseEpoxyFragment() {
             }
         } else {
             collectionItems.forEach {
-                showcaseAnimationItemView {
+                animationItemView {
                     id(it.id)
                     title(it.title)
-                    previewUrl(it.preview)
-                    onClickListener { _ -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationData = it))) }
+                    previewUrl("https://assets9.lottiefiles.com/${it.preview}")
+                    previewBackgroundColor(it.bgColorInt)
+                    onClickListener { _ -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationDataV2 = it))) }
                 }
             }
         }
