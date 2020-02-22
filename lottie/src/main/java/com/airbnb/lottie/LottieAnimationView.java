@@ -98,8 +98,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private boolean isInitialized;
   private String animationName;
   private @RawRes int animationResId;
+
+  private boolean playAnimationWhenShown = false;
   private boolean wasAnimatingWhenNotShown = false;
   private boolean wasAnimatingWhenDetached = false;
+
   private boolean autoPlay = false;
   private boolean cacheComposition = true;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
@@ -299,8 +302,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     if (isShown()) {
       if (wasAnimatingWhenNotShown) {
         resumeAnimation();
-        wasAnimatingWhenNotShown = false;
+      } else if (playAnimationWhenShown) {
+        playAnimation();
       }
+      wasAnimatingWhenNotShown = false;
+      playAnimationWhenShown = false;
     } else {
       if (isAnimating()) {
         pauseAnimation();
@@ -543,7 +549,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       lottieDrawable.playAnimation();
       enableOrDisableHardwareLayer();
     } else {
-      wasAnimatingWhenNotShown = true;
+      playAnimationWhenShown = true;
     }
   }
 
@@ -557,6 +563,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       lottieDrawable.resumeAnimation();
       enableOrDisableHardwareLayer();
     } else {
+      playAnimationWhenShown = false;
       wasAnimatingWhenNotShown = true;
     }
   }
@@ -895,7 +902,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   @MainThread
   public void cancelAnimation() {
+    wasAnimatingWhenDetached = false;
     wasAnimatingWhenNotShown = false;
+    playAnimationWhenShown = false;
     lottieDrawable.cancelAnimation();
     enableOrDisableHardwareLayer();
   }
@@ -905,6 +914,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     autoPlay = false;
     wasAnimatingWhenDetached = false;
     wasAnimatingWhenNotShown = false;
+    playAnimationWhenShown = false;
     lottieDrawable.pauseAnimation();
     enableOrDisableHardwareLayer();
   }
