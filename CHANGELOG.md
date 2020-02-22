@@ -1,3 +1,19 @@
+# 3.4.0
+### Features and Improvements
+* Added optional cache key parameters to url loading to enable skipping the cache.
+* Added the ability to clear the Lottie cache via `LottieCompositionFactory.clearCache()`.
+
+### Bugs Fixed
+* Properly pass in progress to ValueCallbacks.
+* Clear existing ValueCallbacks if new ones overwrite old ones.
+* Clip interpolators that might loop back on themself to render something very close rather than crashing.
+* Fix time stretch  + time remap when there is a start offset.
+* Ensure that the first frame is rendered when a new composition is set even if it is not yet playing.
+* Properly render Telegram stickers that use [0,1] for color but [0,255] for alpha.
+* Ensure that LottieDrawable has the correct bounds when the composition updates before Marshmallow.
+* Fully clear off screen buffers pre-pie to prevent artifacts.
+* Play, not resume animations if they are played while not shown.
+
 # 3.3.1
 ### Bugs Fixed
 * Clear alpha values when applying a mask or matte
