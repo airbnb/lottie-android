@@ -14,7 +14,7 @@ import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 
-import java.io.Exception;
+import java.lang.Exception;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
