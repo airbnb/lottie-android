@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples.views
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import androidx.annotation.ColorInt
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
@@ -12,7 +13,7 @@ import com.airbnb.lottie.samples.setImageUrl
 import kotlinx.android.synthetic.main.item_view_showcase_animation.view.*
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
-class ShowcaseAnimationItemView @JvmOverloads constructor(
+class AnimationItemView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
@@ -28,8 +29,18 @@ class ShowcaseAnimationItemView @JvmOverloads constructor(
     }
 
     @TextProp
-    fun setTitle(title: CharSequence) {
+    fun setTitle(title: CharSequence?) {
         titleView.text = title
+    }
+
+    @ModelProp
+    fun setPreviewBackgroundColor(@ColorInt bgColor: Int?) {
+        if (bgColor == null) {
+            imageView.setBackgroundResource(R.color.loading_placeholder)
+            imageView.setImageDrawable(null)
+        } else {
+            imageView.setBackgroundColor(bgColor)
+        }
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])

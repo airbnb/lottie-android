@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.lottie.samples.views.WishListIconView
 import com.airbnb.lottie.samples.views.listingCard
 import com.airbnb.lottie.samples.views.marquee
@@ -18,7 +19,11 @@ class ListActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         toolbar.setNavigationOnClickListener { finish() }
 
-        recyclerView.buildModelsWith { it.buildModels() }
+        recyclerView.buildModelsWith(object : EpoxyRecyclerView.ModelBuilderCallback {
+            override fun buildModels(controller: EpoxyController) {
+                controller.buildModels()
+            }
+        })
     }
 
     private fun EpoxyController.buildModels() {

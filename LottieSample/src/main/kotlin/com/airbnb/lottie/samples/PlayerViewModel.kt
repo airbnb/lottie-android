@@ -3,15 +3,12 @@ package com.airbnb.lottie.samples
 import android.animation.ValueAnimator
 import android.app.Application
 import android.net.Uri
-import androidx.fragment.app.FragmentActivity
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
-import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.mvrx.*
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 
 data class PlayerState(
         val composition: Async<LottieComposition> = Uninitialized,
@@ -37,7 +34,7 @@ class PlayerViewModel(
 ) : MvRxViewModel<PlayerState>(initialState) {
 
     fun fetchAnimation(args: CompositionArgs) {
-        val url = args.url ?: args.animationData?.lottieLink
+        val url = args.url ?: args.animationDataV2?.file ?: args.animationData?.lottieLink
 
         when {
             url != null -> LottieCompositionFactory.fromUrl(application, url, null)
@@ -112,8 +109,9 @@ class PlayerViewModel(
         )
     }
 
-    companion object : MvRxViewModelFactory<PlayerState> {
-        @JvmStatic
-        override fun create(activity: FragmentActivity, state: PlayerState) = PlayerViewModel(state, activity.application)
+    companion object : MvRxViewModelFactory<PlayerViewModel, PlayerState> {
+        override fun create(viewModelContext: ViewModelContext, state: PlayerState): PlayerViewModel? {
+            return PlayerViewModel(state, viewModelContext.app())
+        }
     }
 }

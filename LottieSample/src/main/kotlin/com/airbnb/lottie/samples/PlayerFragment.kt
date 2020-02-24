@@ -12,11 +12,14 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.model.CompositionArgs
@@ -105,7 +108,7 @@ class PlayerFragment : BaseMvRxFragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
         setHasOptionsMenu(true)
 
-        lottieVersionView.text = getString(R.string.lottie_version, com.airbnb.lottie.BuildConfig.VERSION_NAME)
+        lottieVersionView.text = getString(R.string.lottie_version, BuildConfig.VERSION_NAME)
 
         animationView.setFontAssetDelegate(object : FontAssetDelegate() {
             override fun fetchFont(fontFamily: String?): Typeface {
@@ -115,7 +118,13 @@ class PlayerFragment : BaseMvRxFragment() {
 
         val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS)
                 ?: throw IllegalArgumentException("No composition args specified")
-        args.animationData?.bgColorInt()?.let {
+        args.animationData?.bgColorInt?.let {
+            backgroundButton1.setBackgroundColor(it)
+            animationContainer.setBackgroundColor(it)
+            invertColor(it)
+        }
+
+        args.animationDataV2?.bgColorInt?.let {
             backgroundButton1.setBackgroundColor(it)
             animationContainer.setBackgroundColor(it)
             invertColor(it)
@@ -438,15 +447,16 @@ class PlayerFragment : BaseMvRxFragment() {
         // Scale up to fill the screen
         scaleSeekBar.progress = 100
 
-        keyPathsRecyclerView.buildModelsWith { controller ->
-            animationView.resolveKeyPath(KeyPath("**")).forEachIndexed { index, keyPath ->
-                BottomSheetItemViewModel_()
-                        .id(index)
-                        .text(keyPath.keysToString())
-                        .addTo(controller)
-
+        keyPathsRecyclerView.buildModelsWith(object : EpoxyRecyclerView.ModelBuilderCallback {
+            override fun buildModels(controller: EpoxyController) {
+                animationView.resolveKeyPath(KeyPath("**")).forEachIndexed { index, keyPath ->
+                    BottomSheetItemViewModel_()
+                            .id(index)
+                            .text(keyPath.keysToString())
+                            .addTo(controller)
+                }
             }
-        }
+        })
 
         updateWarnings()
     }
