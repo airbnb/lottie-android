@@ -36,6 +36,7 @@ class LottieApplication : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         L.DBG = true
+        @Suppress("RestrictedApi")
         L.setTraceEnabled(true)
     }
 }
