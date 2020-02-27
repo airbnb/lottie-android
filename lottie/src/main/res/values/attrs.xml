@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="lottieAnimationViewStyle" format="reference" />
+
     <declare-styleable name="LottieAnimationView">
         <attr name="lottie_fileName" format="string" />
         <attr name="lottie_rawRes" format="reference" />
