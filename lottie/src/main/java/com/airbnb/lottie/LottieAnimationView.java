@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.MainThread;
@@ -122,21 +123,21 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   public LottieAnimationView(Context context) {
     super(context);
-    init(null);
+    init(null, R.attr.lottieAnimationViewStyle);
   }
 
   public LottieAnimationView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init(attrs);
+    init(attrs, R.attr.lottieAnimationViewStyle);
   }
 
   public LottieAnimationView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init(attrs);
+    init(attrs, defStyleAttr);
   }
 
-  private void init(@Nullable AttributeSet attrs) {
-    TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView);
+  private void init(@Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+    TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView, defStyleAttr, 0);
     if (!isInEditMode()) {
       cacheComposition = ta.getBoolean(R.styleable.LottieAnimationView_lottie_cacheComposition, true);
       boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
