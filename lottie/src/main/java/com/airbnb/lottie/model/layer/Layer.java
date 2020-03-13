@@ -3,6 +3,8 @@ package com.airbnb.lottie.model.layer;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.model.layer.effect.BlurLayerEffect;
+import com.airbnb.lottie.model.layer.effect.LayerEffect;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
@@ -55,6 +57,7 @@ public class Layer {
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
   private final boolean hidden;
+  @Nullable private final LayerEffect layerEffect;
 
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
                LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
@@ -62,7 +65,7 @@ public class Layer {
                float timeStretch, float startFrame, int preCompWidth, int preCompHeight,
                @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
                List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
-               @Nullable AnimatableFloatValue timeRemapping, boolean hidden) {
+               @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable LayerEffect layerEffect) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -85,6 +88,7 @@ public class Layer {
     this.matteType = matteType;
     this.timeRemapping = timeRemapping;
     this.hidden = hidden;
+    this.layerEffect = layerEffect;
   }
 
   LottieComposition getComposition() {
@@ -179,6 +183,11 @@ public class Layer {
     return hidden;
   }
 
+  @Nullable
+  public LayerEffect getLayerEffect() {
+    return layerEffect;
+  }
+
   public String toString(String prefix) {
     StringBuilder sb = new StringBuilder();
     sb.append(prefix).append(getName()).append("\n");
@@ -204,6 +213,10 @@ public class Layer {
       for (Object shape : shapes) {
         sb.append(prefix).append("\t\t").append(shape).append("\n");
       }
+    }
+    if (layerEffect != null) {
+      sb.append(prefix).append("\tEffects:\n");
+      sb.append(prefix).append("\t\t").append(layerEffect).append("\n");
     }
     return sb.toString();
   }

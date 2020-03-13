@@ -27,7 +27,7 @@ public class StrokeContent extends BaseStrokeContent {
   public StrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeStroke stroke) {
     super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),
         stroke.getJoinType().toPaintJoin(), stroke.getMiterLimit(), stroke.getOpacity(),
-        stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset());
+        stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset(), layer.getLayerEffect());
     this.layer = layer;
     name = stroke.getName();
     hidden = stroke.isHidden();

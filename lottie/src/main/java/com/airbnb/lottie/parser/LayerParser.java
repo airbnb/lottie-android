@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.model.layer.effect.BlurLayerEffect;
+import com.airbnb.lottie.model.layer.effect.LayerEffect;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
@@ -57,7 +59,7 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false);
+        Layer.MatteType.NONE, null, false, null);
   }
 
   private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
@@ -66,6 +68,7 @@ public class LayerParser {
   );
 
   private static final JsonReader.Options EFFECTS_NAMES = JsonReader.Options.of("nm");
+  private static final JsonReader.Options EFFECTS_TYPES = JsonReader.Options.of("ty", "ef");
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
     // This should always be set by After Effects. However, if somebody wants to minify
@@ -95,6 +98,7 @@ public class LayerParser {
 
     List<Mask> masks = new ArrayList<>();
     List<ContentModel> shapes = new ArrayList<>();
+    LayerEffect effect = null;
 
     reader.beginObject();
     while (reader.hasNext()) {
@@ -181,8 +185,9 @@ public class LayerParser {
           reader.beginArray();
           List<String> effectNames = new ArrayList<>();
           while (reader.hasNext()) {
+
             reader.beginObject();
-            while (reader.hasNext()) {
+            /*while (reader.hasNext()) {
               switch (reader.selectName(EFFECTS_NAMES)) {
                 case 0:
                   effectNames.add(reader.nextString());
@@ -192,6 +197,79 @@ public class LayerParser {
                   reader.skipValue();
 
               }
+            }*/
+
+            int effectType = -1;
+            double blurriness = -1;
+
+            while (reader.hasNext()) {
+              final int index = reader.selectName(EFFECTS_TYPES);
+
+              switch (index) {
+                case 0:
+
+                  effectType = reader.nextInt();
+                  break;
+
+                case 1:
+                  if (effectType == 29) {
+                    reader.beginArray();
+
+                    int propertyType = -1;
+                    while(reader.hasNext()) {
+
+                      reader.beginObject();
+
+                      while(reader.hasNext()) {
+                        switch (reader.selectName(JsonReader.Options.of("ty", "v"))) {
+                          case 0:
+                            propertyType = reader.nextInt();
+                            break;
+
+                          case 1:
+                            if (propertyType == 0) {
+                              reader.beginObject();
+
+                              while (reader.hasNext()) {
+                                switch (reader.selectName(JsonReader.Options.of("k"))) {
+                                  case 0:
+                                    blurriness = reader.nextDouble();
+                                  default:
+                                    reader.skipName();
+                                    reader.skipValue();
+                                }
+                              }
+
+                              reader.endObject();
+                            } else {
+                              reader.skipValue();
+                            }
+                            break;
+
+                          default:
+                            reader.skipName();
+                            reader.skipValue();
+                        }
+                      }
+                      reader.endObject();
+                    }
+
+                    reader.endArray();
+                  } else {
+                    reader.skipValue();
+                  }
+
+                  break;
+
+                default:
+                  reader.skipName();
+                  reader.skipValue();
+              }
+
+              if (blurriness != -1) {
+                effect = new BlurLayerEffect(blurriness);
+              }
+
             }
             reader.endObject();
           }
@@ -264,6 +342,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden);
+        timeRemapping, hidden, effect);
   }
 }

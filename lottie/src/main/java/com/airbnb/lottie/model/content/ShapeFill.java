@@ -49,7 +49,7 @@ public class ShapeFill implements ContentModel {
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
-    return new FillContent(drawable, layer, this);
+    return new FillContent(drawable, layer, this, layer.getLayerEffect());
   }
 
   @Override

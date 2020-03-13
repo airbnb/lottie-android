@@ -43,7 +43,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
       final LottieDrawable lottieDrawable, BaseLayer layer, GradientStroke stroke) {
     super(lottieDrawable, layer, stroke.getCapType().toPaintCap(),
         stroke.getJoinType().toPaintJoin(), stroke.getMiterLimit(), stroke.getOpacity(),
-        stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset());
+        stroke.getWidth(), stroke.getLineDashPattern(), stroke.getDashOffset(), layer.getLayerEffect());
 
     name = stroke.getName();
     type = stroke.getGradientType();

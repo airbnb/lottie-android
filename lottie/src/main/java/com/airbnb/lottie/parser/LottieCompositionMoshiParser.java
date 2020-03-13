@@ -25,16 +25,16 @@ import androidx.collection.SparseArrayCompat;
 
 public class LottieCompositionMoshiParser {
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
-      "w", // 0
-      "h", // 1
-      "ip", // 2
-      "op", // 3
-      "fr", // 4
-      "v", // 5
-      "layers", // 6
-      "assets", // 7
+      "w", // 0             width
+      "h", // 1             height
+      "ip", // 2            in point (In Point of the Time Ruler. Sets the initial Frame of the animation.)
+      "op", // 3            out point (Out Point of the Time Ruler. Sets the final Frame of the animation)
+      "fr", // 4            frame rate
+      "v", // 5             Version (bodymovin)
+      "layers", // 6        layers (list)
+      "assets", // 7        assets list
       "fonts", // 8
-      "chars", // 9
+      "chars", // 9         source for text layers
       "markers" // 10
   );
 

@@ -18,6 +18,7 @@ import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.model.layer.effect.LayerEffect;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -39,11 +40,14 @@ public class FillContent
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   private final LottieDrawable lottieDrawable;
 
-  public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
+  public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill, @Nullable LayerEffect effect) {
     this.layer = layer;
     name = fill.getName();
     hidden = fill.isHidden();
     this.lottieDrawable = lottieDrawable;
+    if (effect != null) {
+      this.paint.setMaskFilter(effect.getMaskFilter());
+    }
     if (fill.getColor() == null || fill.getOpacity() == null ) {
       colorAnimation = null;
       opacityAnimation = null;

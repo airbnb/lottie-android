@@ -19,6 +19,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
+import com.airbnb.lottie.model.layer.effect.LayerEffect;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -95,6 +96,7 @@ public abstract class BaseLayer
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   final TransformKeyframeAnimation transform;
   private boolean visible = true;
+  private final LayerEffect layerEffect;
 
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
@@ -122,6 +124,8 @@ public abstract class BaseLayer
       }
     }
     setupInOutAnimations();
+
+    layerEffect = layerModel.getLayerEffect();
   }
 
   @Override
@@ -143,6 +147,10 @@ public abstract class BaseLayer
 
   void setParentLayer(@Nullable BaseLayer parentLayer) {
     this.parentLayer = parentLayer;
+  }
+
+  public LayerEffect getLayerEffect() {
+    return layerEffect;
   }
 
   private void setupInOutAnimations() {

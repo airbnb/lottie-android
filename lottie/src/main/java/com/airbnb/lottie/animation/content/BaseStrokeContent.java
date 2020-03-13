@@ -24,6 +24,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.model.layer.effect.LayerEffect;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -54,7 +55,7 @@ public abstract class BaseStrokeContent
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
-      List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset) {
+      List<AnimatableFloatValue> dashPattern, AnimatableFloatValue offset, @Nullable LayerEffect effect) {
     this.lottieDrawable = lottieDrawable;
     this.layer = layer;
 
@@ -62,6 +63,9 @@ public abstract class BaseStrokeContent
     paint.setStrokeCap(cap);
     paint.setStrokeJoin(join);
     paint.setStrokeMiter(miterLimit);
+    if (effect != null) {
+      paint.setMaskFilter(effect.getMaskFilter());
+    }
 
     opacityAnimation = opacity.createAnimation();
     widthAnimation = width.createAnimation();
