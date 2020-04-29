@@ -1047,6 +1047,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     lottieDrawable.disableExtraScaleModeInFitXY();
   }
 
+  public void setIsMirror(boolean isMirror) {
+    lottieDrawable.setIsMirror(isMirror);
+  }
+
   private void enableOrDisableHardwareLayer() {
     int layerType = LAYER_TYPE_SOFTWARE;
     switch (renderMode) {

@@ -64,6 +64,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private float scale = 1f;
   private boolean systemAnimationsEnabled = true;
   private boolean safeMode = false;
+  private boolean isMirror = false;
 
   private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
@@ -319,6 +320,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setSafeMode(boolean safeMode) {
     this.safeMode = safeMode;
+  }
+
+  public void setIsMirror(boolean isMirror) {
+    this.isMirror = isMirror;
   }
 
   @Override
@@ -1173,6 +1178,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scaleX, scaleY);
+    if (isMirror) {
+      matrix.preScale(-1, 1, composition.getBounds().width() / 2f, composition.getBounds().height() / 2f);
+    }
     compositionLayer.draw(canvas, matrix, alpha);
 
     if (saveCount > 0) {
@@ -1218,6 +1226,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     matrix.reset();
     matrix.preScale(scale, scale);
+    if (isMirror) {
+      matrix.preScale(-1, 1, composition.getBounds().width() / 2f, composition.getBounds().height() / 2f);
+    }
     compositionLayer.draw(canvas, matrix, alpha);
 
     if (saveCount > 0) {
