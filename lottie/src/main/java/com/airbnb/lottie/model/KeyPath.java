@@ -41,6 +41,7 @@ import java.util.List;
  * a {@link KeyPath}. This may be fixed in the future.
  */
 public class KeyPath {
+  public final static KeyPath COMPOSITION = new KeyPath("COMPOSITION");
 
   private final List<String> keys;
   @Nullable private KeyPathElement resolvedElement;
