@@ -730,9 +730,6 @@ class LottieTest {
 
         withDrawable("Tests/DynamicGradient.json", "Mirror animation", "Mirror animation") {
             drawable ->
-            val value = object : LottieValueCallback<Int>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = 50
-            }
             drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT,
                     { PointF(drawable.bounds.width().toFloat(), 0f) })
             drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE,
