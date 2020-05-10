@@ -728,6 +728,17 @@ class LottieTest {
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
 
+        withDrawable("Tests/DynamicGradient.json", "Mirror animation", "Mirror animation") {
+            drawable ->
+            val value = object : LottieValueCallback<Int>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Int>?) = 50
+            }
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT,
+                    { PointF(drawable.bounds.width().toFloat(), 0f) })
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE,
+                    { ScaleXY(-1.0f, 1.0f) })
+        }
+
         withDrawable("Tests/Text.json", "Text", "Text Fill (Blue -> Green)") { drawable ->
             val value = object : LottieValueCallback<Int>() {
                 override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.GREEN
