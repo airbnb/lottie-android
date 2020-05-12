@@ -728,7 +728,7 @@ class LottieTest {
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
 
-        withDrawable("Tests/DynamicGradient.json", "Mirror animation", "Mirror animation") {
+        withDrawable("Tests/MatteTimeStretchScan.json", "Mirror animation", "Mirror animation") {
             drawable ->
             drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT,
                     { PointF(drawable.bounds.width().toFloat(), 0f) })
