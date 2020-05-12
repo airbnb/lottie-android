@@ -44,8 +44,10 @@ import java.util.List;
  * a {@link KeyPath}. This may be fixed in the future.
  */
 public class KeyPath {
-  // A singleton KeyPath that targets on the root composition layer.
-  // This is useful if you want to apply transformer to the animation as a whole.
+  /**
+   * A singleton KeyPath that targets on the root composition layer.
+   * This is useful if you want to apply transformer to the animation as a whole.
+   */
   public final static KeyPath COMPOSITION = new KeyPath("COMPOSITION");
 
   private final List<String> keys;
