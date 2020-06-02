@@ -379,7 +379,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
 
-  public LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
+  private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
         @Override public LottieResult<LottieComposition> call() throws Exception {
@@ -399,7 +399,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     setCompositionTask(fromAssets(assetName));
   }
 
-  public LottieTask<LottieComposition> fromAssets(final String assetName) {
+  private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
         @Override public LottieResult<LottieComposition> call() throws Exception {
