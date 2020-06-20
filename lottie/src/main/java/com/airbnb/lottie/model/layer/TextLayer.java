@@ -103,7 +103,7 @@ public class TextLayer extends BaseLayer {
   void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     canvas.save();
     if (!lottieDrawable.useTextGlyphs()) {
-      canvas.setMatrix(parentMatrix);
+      canvas.concat(parentMatrix);
     }
     DocumentData documentData = textAnimation.getValue();
     Font font = composition.getFonts().get(documentData.fontName);
@@ -231,6 +231,8 @@ public class TextLayer extends BaseLayer {
       String textLine = textLines.get(l);
       float textLineWidth = strokePaint.measureText(textLine);
 
+      canvas.save();
+
       // Apply horizontal justification
       applyJustification(documentData.justification, canvas, textLineWidth);
 
@@ -243,7 +245,8 @@ public class TextLayer extends BaseLayer {
       drawFontTextLine(textLine, documentData, canvas, parentScale);
 
       // Reset canvas
-      canvas.setMatrix(parentMatrix);
+      //canvas.setMatrix(parentMatrix);
+      canvas.restore();
     }
   }
 
