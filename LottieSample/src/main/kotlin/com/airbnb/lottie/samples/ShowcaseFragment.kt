@@ -54,7 +54,7 @@ class ShowcaseFragment : BaseEpoxyFragment() {
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
                 startActivity(Intent(requireContext(), BullseyeActivity::class.java))
             },
-            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_recycler_viwe) {
+            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_recycler_view) {
                 startActivity(Intent(requireContext(), ListActivity::class.java))
             }
     )
