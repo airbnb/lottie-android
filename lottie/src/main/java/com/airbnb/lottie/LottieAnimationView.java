@@ -1064,6 +1064,8 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
           useHardwareLayer = false;
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
           useHardwareLayer = false;
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
+          useHardwareLayer = false;
         }
         layerType = useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE;
         break;
