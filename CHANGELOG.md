@@ -1,5 +1,5 @@
 # 3.4.1
-#### Feature and Improvements
+### Feature and Improvements
 * Added a KeyPath.COMPOSITION constant to set dynamic properties on the animation's root composition layer ([#1559](https://github.com/airbnb/lottie-android/pull/1559)).
 * A default style can now be set for all AnimationViews with lottieAnimationViewStyle ([#1524](https://github.com/airbnb/lottie-android/pull/1524)).
 
