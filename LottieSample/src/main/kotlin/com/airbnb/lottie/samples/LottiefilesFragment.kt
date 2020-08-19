@@ -14,13 +14,7 @@ import com.airbnb.lottie.samples.views.AnimationItemViewModel_
 import com.airbnb.lottie.samples.views.lottiefilesTabBar
 import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.lottie.samples.views.searchInputItemView
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
-import com.airbnb.mvrx.ViewModelContext
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
-import io.reactivex.schedulers.Schedulers
+import com.airbnb.mvrx.*
 import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
 import kotlin.properties.Delegates
 
@@ -70,16 +64,26 @@ class LottiefilesDataSource(
             callback.onResult(emptyList(), null, null)
             return
         }
-        when (mode) {
-            LottiefilesMode.Popular -> api.getPopular(1)
-            LottiefilesMode.Recent -> api.getRecent(1)
-            LottiefilesMode.Search -> api.search(query, 1)
+
+        try {
+            val response = when (mode) {
+                LottiefilesMode.Popular -> api.getPopular(1)
+                LottiefilesMode.Recent -> api.getRecent(1)
+                LottiefilesMode.Search -> api.search(query, 1)
+            }.blockingGet()
+
+            callback.onResult(
+                    response.data,
+                    0,
+                    response.total,
+                    null,
+                    2.takeIf {
+                        !response.nextPageUrl.isNullOrEmpty()
+                    }
+            )
+        } catch (e: Exception) {
+            callback.onError(e)
         }
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        { d -> callback.onResult(d.data, 0, d.total, null, 2.takeIf { d.data.isNotEmpty() }) },
-                        { callback.onError(it) }
-                )
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
@@ -87,20 +91,27 @@ class LottiefilesDataSource(
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
-        loadPage(params.key, callback)
+        // ignored, prepend will never happen.
     }
 
     private fun loadPage(page: Int, callback: LoadCallback<Int, AnimationData>) {
-        when (mode) {
-            LottiefilesMode.Popular -> api.getPopular(page)
-            LottiefilesMode.Recent -> api.getRecent(page)
-            LottiefilesMode.Search -> api.search(query, page)
+        try {
+            val response = when (mode) {
+                LottiefilesMode.Popular -> api.getPopular(page)
+                LottiefilesMode.Recent -> api.getRecent(page)
+                LottiefilesMode.Search -> api.search(query, page)
+            }.blockingGet()
+
+            callback.onResult(
+                    response.data,
+                    (page + 1).takeIf {
+                        !response.nextPageUrl.isNullOrEmpty()
+                    }
+            )
+
+        } catch (e: Exception) {
+            callback.onError(e)
         }
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        { callback.onResult(it.data, page + 1) },
-                        { callback.onError(it) }
-                )
     }
 }
 
