@@ -317,7 +317,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (!isInEditMode() && autoPlay || wasAnimatingWhenDetached) {
+    if (!isInEditMode() &&( autoPlay || wasAnimatingWhenDetached)) {
       playAnimation();
       // Autoplay from xml should only apply once.
       autoPlay = false;
