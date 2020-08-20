@@ -95,6 +95,7 @@ final class JsonUtf8Reader extends JsonReader {
       throw new NullPointerException("source == null");
     }
     this.source = source;
+    // Don't use source.getBuffer(). Because android studio use old version okio instead of your own okio.
     this.buffer = source.buffer();
     pushScope(JsonScope.EMPTY_DOCUMENT);
   }
