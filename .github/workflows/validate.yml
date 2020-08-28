@@ -33,6 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, unit-test]
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
       - name: "Deploy Snapshot"
         run: ./deploy_snapshot.sh
 
