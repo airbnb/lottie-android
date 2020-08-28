@@ -30,9 +30,9 @@ jobs:
           name: Lint Results
           path: lottie/build/reports
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     needs: [lint, unit-test]
-    #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
