@@ -17,15 +17,15 @@ jobs:
           with:
             name: Lint Results
             path: lottie/build/reports/tests/testDebugUnitTest/index.html
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
-      - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
-      - name: Lint Results
-          uses: actions/upload-artifact@v1
-          with:
-            name: Lint Results
-            path: lottie/build/reports/tests/testDebugUnitTest/index.html
+#  unit-test:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout the code
+#        uses: actions/checkout@v2
+#      - name: Run Unit Tests
+#        run: ./gradlew testDebugUnitTest
+#      - name: Lint Results
+#          uses: actions/upload-artifact@v1
+#          with:
+#            name: Lint Results
+#            path: lottie/build/reports/tests/testDebugUnitTest/index.html
