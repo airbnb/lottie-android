@@ -207,7 +207,7 @@ public class LottieCompositionFactory {
    *
    * Pass null as the cache key to skip caching.
    */
-  public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes, @Nullable String cacheKey) {
+  public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes, @Nullable final String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
@@ -216,7 +216,7 @@ public class LottieCompositionFactory {
       public LottieResult<LottieComposition> call() {
         @Nullable Context originalContext = contextRef.get();
         Context context = originalContext != null ? originalContext : appContext;
-        return fromRawResSync(context, rawRes);
+        return fromRawResSync(context, rawRes, cacheKey);
       }
     });
   }
