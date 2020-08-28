@@ -34,8 +34,8 @@ jobs:
     needs: [lint, unit-test]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-     - name: Checkout the code
-        uses: actions/checkout@v2
+      - name: Checkout the code
+          uses: actions/checkout@v2
       - name: "Deploy Snapshot"
         run: ./deploy_snapshot.sh
 
