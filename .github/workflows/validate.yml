@@ -42,5 +42,8 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
       - name: "Deploy Snapshot"
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./deploy_snapshot.sh
 
