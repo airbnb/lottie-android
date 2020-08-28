@@ -1,7 +1,6 @@
 # 3.4.2
 ### Feature and Improvements
-* Disable hardware acceleration by default on Android 7.x ([#1586](https://github
-.com/airbnb/lottie-android/pull/1586))
+* Disable hardware acceleration by default on Android 7.x ([#1586](https://github.com/airbnb/lottie-android/pull/1586))
 * Enable Lottie animations to preview in Android Studio (they may not be accurate, though)
 ([#1572](https://github.com/airbnb/lottie-android/pull/1572))
 * More leniently parse opacity and colors to render Telegram stickers better ([#1612]
