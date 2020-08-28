@@ -5,6 +5,11 @@ on:
     branches:
       - master
 jobs:
+  gradle-wrapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
   lint:
     runs-on: ubuntu-latest
     steps:
