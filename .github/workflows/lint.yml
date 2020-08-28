@@ -1,4 +1,4 @@
-name: Unit Test
+name: Lint
 on: [pull_request, push]
 jobs:
   build:
