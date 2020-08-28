@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import static com.airbnb.lottie.RenderMode.HARDWARE;
 
@@ -138,33 +139,31 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   private void init(@Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
     TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.LottieAnimationView, defStyleAttr, 0);
-    if (!isInEditMode()) {
-      cacheComposition = ta.getBoolean(R.styleable.LottieAnimationView_lottie_cacheComposition, true);
-      boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
-      boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
-      boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
-      if (hasRawRes && hasFileName) {
-        throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
-            "the same time. Please use only one at once.");
-      } else if (hasRawRes) {
-        int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
-        if (rawResId != 0) {
-          setAnimation(rawResId);
-        }
-      } else if (hasFileName) {
-        String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
-        if (fileName != null) {
-          setAnimation(fileName);
-        }
-      } else if (hasUrl) {
-        String url = ta.getString(R.styleable.LottieAnimationView_lottie_url);
-        if (url != null) {
-          setAnimationFromUrl(url);
-        }
+    cacheComposition = ta.getBoolean(R.styleable.LottieAnimationView_lottie_cacheComposition, true);
+    boolean hasRawRes = ta.hasValue(R.styleable.LottieAnimationView_lottie_rawRes);
+    boolean hasFileName = ta.hasValue(R.styleable.LottieAnimationView_lottie_fileName);
+    boolean hasUrl = ta.hasValue(R.styleable.LottieAnimationView_lottie_url);
+    if (hasRawRes && hasFileName) {
+      throw new IllegalArgumentException("lottie_rawRes and lottie_fileName cannot be used at " +
+          "the same time. Please use only one at once.");
+    } else if (hasRawRes) {
+      int rawResId = ta.getResourceId(R.styleable.LottieAnimationView_lottie_rawRes, 0);
+      if (rawResId != 0) {
+        setAnimation(rawResId);
       }
-
-      setFallbackResource(ta.getResourceId(R.styleable.LottieAnimationView_lottie_fallbackRes, 0));
+    } else if (hasFileName) {
+      String fileName = ta.getString(R.styleable.LottieAnimationView_lottie_fileName);
+      if (fileName != null) {
+        setAnimation(fileName);
+      }
+    } else if (hasUrl) {
+      String url = ta.getString(R.styleable.LottieAnimationView_lottie_url);
+      if (url != null) {
+        setAnimationFromUrl(url);
+      }
     }
+
+    setFallbackResource(ta.getResourceId(R.styleable.LottieAnimationView_lottie_fallbackRes, 0));
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
       wasAnimatingWhenDetached = true;
       autoPlay = true;
@@ -318,7 +317,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (autoPlay || wasAnimatingWhenDetached) {
+    if (!isInEditMode() &&( autoPlay || wasAnimatingWhenDetached)) {
       playAnimation();
       // Autoplay from xml should only apply once.
       autoPlay = false;
@@ -376,17 +375,42 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   public void setAnimation(@RawRes final int rawRes) {
     this.animationResId = rawRes;
     animationName = null;
-    LottieTask<LottieComposition> task = cacheComposition ?
-        LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
-    setCompositionTask(task);
+    setCompositionTask(fromRawRes(rawRes));
+  }
+
+
+  private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
+    if (isInEditMode()) {
+      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+        @Override public LottieResult<LottieComposition> call() throws Exception {
+          return cacheComposition
+              ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null);
+        }
+      }, true);
+    } else {
+      return cacheComposition ?
+          LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
+    }
   }
 
   public void setAnimation(final String assetName) {
     this.animationName = assetName;
     animationResId = 0;
-    LottieTask<LottieComposition> task = cacheComposition ?
-        LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
-    setCompositionTask(task);
+    setCompositionTask(fromAssets(assetName));
+  }
+
+  private LottieTask<LottieComposition> fromAssets(final String assetName) {
+    if (isInEditMode()) {
+      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
+        @Override public LottieResult<LottieComposition> call() throws Exception {
+          return cacheComposition ?
+              LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null);
+        }
+      }, true);
+    } else {
+      return cacheComposition ?
+          LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
+    }
   }
 
   /**
