@@ -5,10 +5,14 @@ on:
     branches:
       - master
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v2
-      - name: Run Lint
-        run: ./gradlew lintDebug
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: Run Lint
+      run: ./gradlew lintDebug
+    - name: Lint Results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Lint Results
+          path: */build/reports/lint-results-debug.html
