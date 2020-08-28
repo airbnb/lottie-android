@@ -2,30 +2,26 @@ package com.airbnb.lottie.samples
 
 import android.content.Intent
 import com.airbnb.epoxy.EpoxyController
+import com.airbnb.lottie.samples.api.LottiefilesApi
 import com.airbnb.lottie.samples.model.AnimationResponseV2
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.model.ShowcaseItem
+import com.airbnb.lottie.samples.utils.BaseEpoxyFragment
+import com.airbnb.lottie.samples.utils.MvRxViewModel
 import com.airbnb.lottie.samples.views.animationItemView
 import com.airbnb.lottie.samples.views.loadingView
 import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.lottie.samples.views.showcaseCarousel
-import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
-import com.airbnb.mvrx.Uninitialized
-import com.airbnb.mvrx.ViewModelContext
-import com.airbnb.mvrx.fragmentViewModel
-import com.airbnb.mvrx.withState
-import io.reactivex.schedulers.Schedulers
+import com.airbnb.mvrx.*
+import kotlinx.coroutines.Dispatchers
 
 data class ShowcaseState(val response: Async<AnimationResponseV2> = Uninitialized) : MvRxState
 
 class ShowcaseViewModel(initialState: ShowcaseState, api: LottiefilesApi) : MvRxViewModel<ShowcaseState>(initialState) {
     init {
-        api.getCollection()
-                .subscribeOn(Schedulers.io())
-                .retry(3)
-                .execute { copy(response = it) }
+        suspend {
+            api.getCollection()
+        }.execute(Dispatchers.IO) { copy(response = it) }
     }
 
     companion object : MvRxViewModelFactory<ShowcaseViewModel, ShowcaseState> {
@@ -55,7 +51,7 @@ class ShowcaseFragment : BaseEpoxyFragment() {
                 startActivity(Intent(requireContext(), BullseyeActivity::class.java))
             },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_recycler_view) {
-                startActivity(Intent(requireContext(), ListActivity::class.java))
+                startActivity(Intent(requireContext(), WishListActivity::class.java))
             }
     )
     private val viewModel: ShowcaseViewModel by fragmentViewModel()

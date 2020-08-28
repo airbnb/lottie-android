@@ -6,11 +6,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.samples.model.CompositionArgs
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerActivity : AppCompatActivity(R.layout.player_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
 
         if (savedInstanceState == null) {
             val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS) ?:

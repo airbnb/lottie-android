@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.*
-import android.os.Build.VERSION
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
@@ -19,6 +18,7 @@ import androidx.test.rule.GrantPermissionRule
 import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
+import com.airbnb.lottie.samples.testing.NoCacheLottieAnimationView
 import com.airbnb.lottie.samples.views.FilmStripView
 import com.airbnb.lottie.value.*
 import com.amazonaws.auth.BasicAWSCredentials
@@ -33,9 +33,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
-import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
-import java.util.zip.ZipInputStream
 
 /**
  * Run these with: ./gradlew recordMode screenshotTests

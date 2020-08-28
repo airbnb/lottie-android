@@ -8,9 +8,8 @@ import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
-import com.airbnb.lottie.samples.R
-import com.airbnb.lottie.samples.inflate
-import kotlinx.android.synthetic.main.item_view_bottom_sheet.view.*
+import com.airbnb.lottie.samples.databinding.ItemViewBottomSheetBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class BottomSheetItemView @JvmOverloads constructor(
@@ -18,16 +17,13 @@ class BottomSheetItemView @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-
-    init {
-        inflate(R.layout.item_view_bottom_sheet)
-    }
+    private val binding: ItemViewBottomSheetBinding by viewBinding()
 
     @SuppressLint("SetTextI18n")
     fun set(left: String, right: String? = null) {
-        leftTextView.text = left
-        rightTextView.isVisible = !TextUtils.isEmpty(right)
-        rightTextView.text = right
+        binding.leftTextView.text = left
+        binding.rightTextView.isVisible = !TextUtils.isEmpty(right)
+        binding.rightTextView.text = right
     }
 
     @ModelProp

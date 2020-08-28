@@ -41,10 +41,6 @@
         <activity
             android:name=".QRScanActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".FullScreenActivity" />
-        <activity
-            android:name=".TestColorFilterActivity"
-            android:screenOrientation="portrait" />
         <activity android:name=".DynamicActivity" />
         <activity
             android:name=".PlayerActivity"
@@ -63,9 +59,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".DynamicTextActivity" />
-        <activity android:name=".ListActivity" />
+        <activity android:name=".WishListActivity" />
         <activity
-            android:name=".FilmStripSnapshotActivity"
+            android:name=".testing.FilmStripSnapshotActivity"
             android:exported="true" />
 
         <activity

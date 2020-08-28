@@ -1,4 +1,4 @@
-package com.airbnb.lottie.samples
+package com.airbnb.lottie.samples.testing
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -9,27 +9,25 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import androidx.core.view.doOnNextLayout
 import com.airbnb.lottie.L
-import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieCompositionFactory
-import kotlinx.android.synthetic.main.activity_film_strip_snapshots.*
+import com.airbnb.lottie.samples.databinding.FilmStripSnapshotsActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlin.IllegalStateException
 
 private const val RC_PERMISSION = 12345
 
 class FilmStripSnapshotActivity : AppCompatActivity() {
+    private val binding: FilmStripSnapshotsActivityBinding by viewBinding()
 
     // TODO: fix this.
     @Suppress("DEPRECATION")
     private val rootDir = "${Environment.getExternalStorageDirectory()}/lottie"
     private val animationsDir = File("$rootDir/animations")
     private val snapshotsDir = File("$rootDir/snapshots")
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(resources, R.drawable.airbnb) }
 
     private val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
     private val canvas = Canvas(bitmap)
@@ -39,13 +37,12 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_film_strip_snapshots)
         Log.i(L.TAG, "Starting Snapshots")
 
         if (!animationsDir.exists() || !animationsDir.isDirectory) throw IllegalStateException("Animations directory ($animationsDir) does not exist!")
         if (!snapshotsDir.exists()) snapshotsDir.mkdirs()
 
-        filmStripView.doOnNextLayout {
+        binding.filmStripView.doOnNextLayout {
             createSnapshots()
             Log.i(L.TAG, "Finished Snapshots")
             finish()
@@ -78,17 +75,18 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
             return
         }
 
-        Log.d(L.TAG, "Found ${animationsDir.listFiles().size} files.")
-        animationsDir.listFiles()
+        val files = animationsDir.listFiles() ?: emptyArray()
+        Log.d(L.TAG, "Found ${files.size} files.")
+        files
                 .filter { it.name.endsWith(".json") }
                 .forEach { file ->
                     Log.d(L.TAG, "Creating snapshotFilmstrip for ${file.name}")
                     val fis = FileInputStream(file)
                     val result = LottieCompositionFactory.fromJsonInputStreamSync(fis, file.name)
                     val composition = result.value ?: throw IllegalStateException("Unable to parse composition for $file", result.exception)
-                    filmStripView.setComposition(composition)
+                    binding.filmStripView.setComposition(composition)
                     canvas.clear()
-                    filmStripView.draw(canvas)
+                    binding.filmStripView.draw(canvas)
 
                     val outputFileName = file.name.replace(".json", ".png")
                     val outputFilePath = "${Environment.getExternalStorageDirectory()}/lottie/snapshots/$outputFileName"
