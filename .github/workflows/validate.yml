@@ -1,0 +1,41 @@
+name: Verify
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Run Lint
+        run: ./gradlew lintDebug
+      - name: Lint Results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Lint Results
+          path: lottie/build/reports
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+      - name: Lint Results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Lint Results
+          path: lottie/build/reports
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test]
+    #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: "Deploy Snapshot"
+        run: ./deploy_snapshot.sh
+
