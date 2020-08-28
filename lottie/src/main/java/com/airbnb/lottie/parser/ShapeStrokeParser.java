@@ -7,9 +7,11 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class ShapeStrokeParser {
@@ -118,6 +120,9 @@ class ShapeStrokeParser {
       }
     }
 
+    // Telegram sometimes omits opacity.
+    // https://github.com/airbnb/lottie-android/issues/1600
+    opacity = opacity == null ? new AnimatableIntegerValue(Collections.singletonList(new Keyframe<>(100))) : opacity;
     return new ShapeStroke(
         name, offset, lineDashPattern, color, opacity, width, capType, joinType, miterLimit, hidden);
   }
