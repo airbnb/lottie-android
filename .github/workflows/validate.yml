@@ -12,11 +12,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Lint
         run: ./gradlew lintDebug
-      - name: Lint Results
-          uses: actions/upload-artifact@v1
-          with:
-            name: Lint Results
-            path: lottie/build/reports/tests/testDebugUnitTest/index.html
+#      - name: Lint Results
+#          uses: actions/upload-artifact@v1
+#          with:
+#            name: Lint Results
+#            path: lottie/build/reports/tests/testDebugUnitTest/index.html
 #  unit-test:
 #    runs-on: ubuntu-latest
 #    steps:
