@@ -16,7 +16,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Lint Results
-          path: */build/reports
+          path: lottie/build/reports
   unit-test:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Lint Results
-          path: */build/reports
+          path: lottie/build/reports
   deploy:
     runs-on: ubuntu-latest
     needs: [lint, unit-test]
