@@ -1,4 +1,4 @@
-name: Lint
+name: Verify
 on:
   pull_request:
   push:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Lint Results
-          path: lottie/build/reports/tests/testDebugUnitTest/index.html
+          path: */build/reports
   unit-test:
     runs-on: ubuntu-latest
     steps:
@@ -28,4 +28,11 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: Lint Results
-          path: lottie/build/reports/tests/testDebugUnitTest/index.html
+          path: */build/reports
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test]
+    steps:
+      - name: "Deploy Snapshot"
+        run: ./deploy_snapshot.sh
+
