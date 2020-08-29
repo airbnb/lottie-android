@@ -3,13 +3,9 @@
 * Disable hardware acceleration by default on Android 7.x ([#1586](https://github.com/airbnb/lottie-android/pull/1586))
 * Enable Lottie animations to preview in Android Studio (they may not be accurate, though)
 ([#1572](https://github.com/airbnb/lottie-android/pull/1572))
-* More leniently parse opacity and colors to render Telegram stickers better ([#1612]
-(https://github.com/airbnb/lottie-android/pull/1612) and ([#1613](https://github
-.com/airbnb/lottie-android/pull/1612))
-* Use the correct cacheKey when LottieAnimationView loads an rawRes animation ([#1617]
-(https://github.com/airbnb/lottie-android/pull/1617))
-* Prevent animations from blinking if they are rendered on multiple threads ([#1575]
-(https://github.com/airbnb/lottie-android/pull/1575))
+* More leniently parse opacity and colors to render Telegram stickers better ([#1612](https://github.com/airbnb/lottie-android/pull/1612) and [#1613](https://github.com/airbnb/lottie-android/pull/1612))
+* Use the correct cacheKey when LottieAnimationView loads an rawRes animation ([#1617](https://github.com/airbnb/lottie-android/pull/1617))
+* Prevent animations from blinking if they are rendered on multiple threads ([#1575](https://github.com/airbnb/lottie-android/pull/1575))
 
 
 # 3.4.1
