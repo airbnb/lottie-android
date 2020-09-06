@@ -1,6 +1,7 @@
 package com.airbnb.lottie.samples
 
 import android.Manifest
+import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.*
@@ -11,6 +12,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
@@ -30,21 +34,23 @@ import kotlinx.coroutines.channels.produce
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 @LargeTest
 class LottieTest {
 
     @Suppress("DEPRECATION")
-    @get:Rule
-    private val snapshotActivityRule = ActivityTestRule(SnapshotTestActivity::class.java)
-    private val activity get() = snapshotActivityRule.activity
+    @Rule
+    private val snapshotActivityRule = ActivityScenarioRule(SnapshotTestActivity::class.java)
+    private val application get() = ApplicationProvider.getApplicationContext<Context>()
 
-    @get:Rule
+    @Rule
     private val permissionRule = GrantPermissionRule.grant(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -55,11 +61,11 @@ class LottieTest {
     private lateinit var snapshotter: HappoSnapshotter
 
     private val bitmapPool by lazy { BitmapPool() }
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, R.drawable.airbnb) }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(application.resources, R.drawable.airbnb) }
 
     private val filmStripViewPool = ObjectPool {
-        FilmStripView(activity).apply {
-            setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
+        FilmStripView(application).apply {
+            setImageAssetDelegate { dummyBitmap }
             setFontAssetDelegate(object : FontAssetDelegate() {
                 override fun getFontPath(fontFamily: String?): String {
                     return "fonts/Roboto.ttf"
@@ -70,8 +76,8 @@ class LottieTest {
     }
     @Suppress("DEPRECATION")
     private val animationViewPool = ObjectPool<LottieAnimationView> {
-        val animationViewContainer = FrameLayout(activity)
-        NoCacheLottieAnimationView(activity).apply {
+        val animationViewContainer = FrameLayout(application)
+        NoCacheLottieAnimationView(application).apply {
             animationViewContainer.addView(this)
         }
     }
@@ -79,9 +85,9 @@ class LottieTest {
     @Before
     fun setup() {
         L.DBG = false
-        snapshotter = HappoSnapshotter(activity)
+        snapshotter = HappoSnapshotter(application)
         prodAnimationsTransferUtility = TransferUtility.builder()
-                .context(activity)
+                .context(application)
                 .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
                 .defaultBucket("lottie-prod-animations")
                 .build()
@@ -120,7 +126,7 @@ class LottieTest {
             capacity = 10
     ) {
         for (animation in animations) {
-            val file = File(activity.cacheDir, animation.key)
+            val file = File(application.cacheDir, animation.key)
             file.deleteOnExit()
             prodAnimationsTransferUtility.download(animation.key, file).await()
             send(file)
@@ -170,7 +176,9 @@ class LottieTest {
         filmStripViewPool.release(filmStripView)
         LottieCompositionCache.getInstance().clear()
         snapshotter.record(bitmap, name, variant)
-        activity.recordSnapshot(name, variant)
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot(name, variant)
+        }
         bitmapPool.release(bitmap)
     }
 
@@ -182,7 +190,7 @@ class LottieTest {
     }
 
     private fun listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
-        activity.assets.list(pathPrefix)?.forEach { animation ->
+        application.assets.list(pathPrefix)?.forEach { animation ->
             val pathWithPrefix = if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation"
             if (!animation.contains('.')) {
                 listAssets(assets, pathWithPrefix)
@@ -201,7 +209,7 @@ class LottieTest {
     ) {
         for (asset in assets) {
             log("Parsing $asset")
-            val composition = LottieCompositionFactory.fromAssetSync(activity, asset).value
+            val composition = LottieCompositionFactory.fromAssetSync(application, asset).value
                     ?: throw java.lang.IllegalArgumentException("Unable to parse $asset.")
             send(asset to composition)
         }
@@ -217,8 +225,11 @@ class LottieTest {
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+                .widthPixels,
+                View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+                .heightPixels, View.MeasureSpec.EXACTLY)
         val animationViewContainer = animationView.parent as ViewGroup
         animationViewContainer.measure(widthSpec, heightSpec)
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
@@ -229,7 +240,9 @@ class LottieTest {
         val snapshotName = "Failure"
         val snapshotVariant = "Default"
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
-        activity.recordSnapshot(snapshotName, snapshotVariant)
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot(snapshotName, snapshotVariant)
+        }
         bitmapPool.release(bitmap)
     }
 
@@ -914,37 +927,41 @@ class LottieTest {
     }
 
     private suspend fun testNightMode() {
-        var newConfig = Configuration(activity.resources.configuration)
+        var newConfig = Configuration(application.resources.configuration)
 		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
         newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO
-		val dayContext = activity.createConfigurationContext(newConfig)
+		val dayContext = application.createConfigurationContext(newConfig)
         var result = LottieCompositionFactory.fromRawResSync(dayContext, R.raw.day_night)
         var composition = result.value!!
         var drawable = LottieDrawable()
-        drawable.setComposition(composition)
+        drawable.composition = composition
         var bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
         var canvas = Canvas(bitmap)
         log("Drawing day_night day")
         drawable.draw(canvas)
         snapshotter.record(bitmap, "Day/Night", "Day")
-        activity.recordSnapshot("Day/Night", "Day")
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot("Day/Night", "Day")
+        }
         LottieCompositionCache.getInstance().clear()
         bitmapPool.release(bitmap)
 
-        newConfig = Configuration(activity.resources.configuration)
+        newConfig = Configuration(application.resources.configuration)
         newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
         newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_YES
-        val nightContext = activity.createConfigurationContext(newConfig)
+        val nightContext = application.createConfigurationContext(newConfig)
         result = LottieCompositionFactory.fromRawResSync(nightContext, R.raw.day_night)
         composition = result.value!!
         drawable = LottieDrawable()
-        drawable.setComposition(composition)
+        drawable.composition = composition
         bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
         canvas = Canvas(bitmap)
         log("Drawing day_night day")
         drawable.draw(canvas)
         snapshotter.record(bitmap, "Day/Night", "Night")
-        activity.recordSnapshot("Day/Night", "Night")
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot("Day/Night", "Night")
+        }
         LottieCompositionCache.getInstance().clear()
         bitmapPool.release(bitmap)
     }
@@ -967,18 +984,20 @@ class LottieTest {
     }
 
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
-        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val result = LottieCompositionFactory.fromAssetSync(application, assetName)
         val composition = result.value
                 ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         val drawable = LottieDrawable()
-        drawable.setComposition(composition)
+        drawable.composition = composition
         callback(drawable)
         val bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
         val canvas = Canvas(bitmap)
         log("Drawing $assetName")
         drawable.draw(canvas)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
-        activity.recordSnapshot(snapshotName, snapshotVariant)
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot(snapshotName, snapshotVariant)
+        }
         LottieCompositionCache.getInstance().clear()
         bitmapPool.release(bitmap)
     }
@@ -989,7 +1008,7 @@ class LottieTest {
             snapshotVariant: String = "default",
             callback: (LottieAnimationView) -> Unit
     ) {
-        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val result = LottieCompositionFactory.fromAssetSync(application, assetName)
         val composition = result.value
                 ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         val animationView = animationViewPool.acquire()
@@ -998,8 +1017,11 @@ class LottieTest {
         animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
         callback(animationView)
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.widthPixels, View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(activity.resources.displayMetrics.heightPixels, View.MeasureSpec.EXACTLY)
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+                .widthPixels,
+                View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+                .heightPixels, View.MeasureSpec.EXACTLY)
         val animationViewContainer = animationView.parent as ViewGroup
         animationViewContainer.measure(widthSpec, heightSpec)
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
@@ -1009,7 +1031,9 @@ class LottieTest {
         animationView.draw(canvas)
         animationViewPool.release(animationView)
         snapshotter.record(bitmap, snapshotName, snapshotVariant)
-        activity.recordSnapshot(snapshotName, snapshotVariant)
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot(snapshotName, snapshotVariant)
+        }
         bitmapPool.release(bitmap)
     }
 
@@ -1019,7 +1043,7 @@ class LottieTest {
             snapshotVariant: String = "default",
             callback: (FilmStripView) -> Unit
     ) {
-        val result = LottieCompositionFactory.fromAssetSync(activity, assetName)
+        val result = LottieCompositionFactory.fromAssetSync(application, assetName)
         val composition = result.value
                 ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         snapshotComposition(snapshotName, snapshotVariant, composition, callback)
