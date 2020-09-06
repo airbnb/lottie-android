@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.view.updateLayoutParams
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
@@ -31,28 +30,22 @@ import kotlinx.coroutines.channels.produce
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 
-/**
- * Run these with: ./gradlew recordMode screenshotTests
- * If you run that command, it completes successfully, and nothing shows up in git, then you
- * haven't broken anything!
- */
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
 @LargeTest
 class LottieTest {
 
+    @Suppress("DEPRECATION")
     @get:Rule
-    var snapshotActivityRule = ActivityTestRule(SnapshotTestActivity::class.java)
+    private val snapshotActivityRule = ActivityTestRule(SnapshotTestActivity::class.java)
     private val activity get() = snapshotActivityRule.activity
 
     @get:Rule
-    var permissionRule = GrantPermissionRule.grant(
+    private val permissionRule = GrantPermissionRule.grant(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
     )
@@ -62,9 +55,9 @@ class LottieTest {
     private lateinit var snapshotter: HappoSnapshotter
 
     private val bitmapPool by lazy { BitmapPool() }
-    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, R.drawable.airbnb); }
+    private val dummyBitmap by lazy { BitmapFactory.decodeResource(activity.resources, R.drawable.airbnb) }
 
-    private val filmStripViewPool = ObjectPool<FilmStripView> {
+    private val filmStripViewPool = ObjectPool {
         FilmStripView(activity).apply {
             setImageAssetDelegate(ImageAssetDelegate { dummyBitmap })
             setFontAssetDelegate(object : FontAssetDelegate() {
@@ -96,7 +89,6 @@ class LottieTest {
     }
 
     @Test
-    @ObsoleteCoroutinesApi
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
             snapshotFailure()
@@ -190,7 +182,7 @@ class LottieTest {
     }
 
     private fun listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
-        activity.getAssets().list(pathPrefix)?.forEach { animation ->
+        activity.assets.list(pathPrefix)?.forEach { animation ->
             val pathWithPrefix = if (pathPrefix.isEmpty()) animation else "$pathPrefix/$animation"
             if (!animation.contains('.')) {
                 listAssets(assets, pathWithPrefix)
@@ -922,9 +914,9 @@ class LottieTest {
     }
 
     private suspend fun testNightMode() {
-        var newConfig = Configuration(activity.getResources().getConfiguration())
-		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
-		newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO;
+        var newConfig = Configuration(activity.resources.configuration)
+		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
+        newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO
 		val dayContext = activity.createConfigurationContext(newConfig)
         var result = LottieCompositionFactory.fromRawResSync(dayContext, R.raw.day_night)
         var composition = result.value!!
@@ -939,9 +931,9 @@ class LottieTest {
         LottieCompositionCache.getInstance().clear()
         bitmapPool.release(bitmap)
 
-        newConfig = Configuration(activity.getResources().getConfiguration())
-        newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv();
-        newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_YES;
+        newConfig = Configuration(activity.resources.configuration)
+        newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
+        newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_YES
         val nightContext = activity.createConfigurationContext(newConfig)
         result = LottieCompositionFactory.fromRawResSync(nightContext, R.raw.day_night)
         composition = result.value!!
