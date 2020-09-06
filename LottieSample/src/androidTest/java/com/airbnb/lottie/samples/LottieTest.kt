@@ -46,12 +46,12 @@ import java.util.zip.ZipInputStream
 class LottieTest {
 
     @Suppress("DEPRECATION")
-    @Rule
-    private val snapshotActivityRule = ActivityScenarioRule(SnapshotTestActivity::class.java)
+    @get:Rule
+    val snapshotActivityRule = ActivityScenarioRule(SnapshotTestActivity::class.java)
     private val application get() = ApplicationProvider.getApplicationContext<Context>()
 
-    @Rule
-    private val permissionRule = GrantPermissionRule.grant(
+    @get:Rule
+    val permissionRule = GrantPermissionRule.grant(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
     )
