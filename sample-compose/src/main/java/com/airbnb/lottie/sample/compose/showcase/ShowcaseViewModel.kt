@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.airbnb.lottie.sample.compose.LottieComposeApplication
 import com.airbnb.lottie.sample.compose.api.FeaturedAnimationsResponse
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.mvrx.*
@@ -14,19 +15,17 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import javax.inject.Inject
 
 class ShowcaseViewModel(application: Application) : AndroidViewModel(application) {
     private val _featuredAnimations = MutableStateFlow(Uninitialized as Async<FeaturedAnimationsResponse>)
     val featuredAnimations: StateFlow<Async<FeaturedAnimationsResponse>> = _featuredAnimations
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.lottiefiles.com/")
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-
-    private val api = retrofit.create<LottieFilesApi>()
+    @Inject
+    lateinit var api: LottieFilesApi
 
     init {
+        (application as LottieComposeApplication).component.inject(this)
         fetchFeatured()
     }
 

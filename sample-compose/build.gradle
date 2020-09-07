@@ -3,7 +3,6 @@ plugins {
   id 'kotlin-android'
   id 'kotlin-android-extensions'
   id 'kotlin-kapt'
-  id 'dagger.hilt.android.plugin'
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
@@ -74,8 +73,8 @@ dependencies {
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 
-  implementation "com.google.dagger:hilt-android:$daggerVersion"
-  kapt "com.google.dagger:hilt-android-compiler:$daggerVersion"
+  implementation "com.google.dagger:dagger:$daggerVersion"
+  kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'

@@ -4,7 +4,7 @@ buildscript {
   ext {
     composeVersion = '1.0.0-alpha02'
     kotlinVersion = '1.4.0'
-    daggerVersion = '2.28.3-alpha'
+    daggerVersion = '2.28.3'
   }
 
   repositories {
@@ -21,7 +21,6 @@ buildscript {
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.6"
-    classpath "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
   }
 }
 
