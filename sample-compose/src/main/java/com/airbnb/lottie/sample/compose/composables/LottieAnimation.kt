@@ -17,38 +17,61 @@ import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.platform.LifecycleOwnerAmbient
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.whenStarted
+import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 
+sealed class LottieAnimationSpec {
+    class RawRes(@androidx.annotation.RawRes val resId: Int) : LottieAnimationSpec()
+    class Url(val url: String) : LottieAnimationSpec()
+}
+
 @Composable
 fun LottieAnimation(
-    @RawRes animationRes: Int,
+    spec: LottieAnimationSpec,
     modifier: Modifier = Modifier
 ) {
     val context = ContextAmbient.current
-    val drawable = remember { LottieDrawable() }
-    val animationTime = animationTimeMillis()
-    drawable.progress = (animationTime.value / (drawable.composition?.duration ?: 1f)) % 1f
-    onCommit(animationRes) {
+    var composition: LottieComposition? by remember { mutableStateOf(null) }
+    onCommit(spec) {
         var isDisposed = false
-        LottieCompositionFactory.fromRawRes(context, animationRes)
-            .addListener { c ->
-                if (!isDisposed) drawable.composition = c
-            }
+        val task = when(spec) {
+            is LottieAnimationSpec.RawRes -> LottieCompositionFactory.fromRawRes(context, spec.resId)
+            is LottieAnimationSpec.Url -> LottieCompositionFactory.fromUrl(context, spec.url)
+        }
+        task.addListener { c ->
+            if (!isDisposed) composition = c
+        }.addFailureListener { e ->
+            Log.d("Gabe", "Animation failed to load", e)
+        }
         onDispose {
             isDisposed = true
         }
     }
 
-    val matrix = remember { Matrix() }
+    LottieAnimation(composition, modifier)
+}
+
+@Composable
+fun LottieAnimation(
+    composition: LottieComposition?,
+    modifier: Modifier = Modifier
+) {
+    val drawable = remember { LottieDrawable() }
+    val animationTime = animationTimeMillis()
+    drawable.progress = (animationTime.value / (drawable.composition?.duration ?: 1f)) % 1f
+    onCommit(composition) {
+        drawable.composition = composition
+    }
+
+    if (composition == null || composition.duration == 0f) return
+    drawable.progress = (animationTime.value / (composition.duration)) % 1f
 
     Canvas(modifier = modifier) {
         drawCanvas { canvas, size ->
-            val composition = drawable.composition ?: return@drawCanvas
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), 0f, 0f)
             }) {
-                Log.d("Gabe", "LottieAnimation: ${size} ${size.width / composition.bounds.width().toFloat()}")
                 drawable.draw(canvas.nativeCanvas)
             }
         }

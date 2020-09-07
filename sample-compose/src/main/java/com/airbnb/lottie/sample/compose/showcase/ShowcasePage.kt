@@ -22,8 +22,9 @@ import androidx.compose.ui.viewinterop.viewModel
 import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
-import com.airbnb.lottie.sample.compose.api.AnimationResponseV2
+import com.airbnb.lottie.sample.compose.api.FeaturedAnimationsResponse
 import com.airbnb.lottie.sample.compose.composables.LottieAnimation
+import com.airbnb.lottie.sample.compose.composables.LottieAnimationSpec
 import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.findNavController
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
@@ -47,7 +48,7 @@ fun ShowcasePage() {
 }
 
 @Composable
-fun ShowcasePage(featuredAnimations: Async<AnimationResponseV2>) {
+fun ShowcasePage(featuredAnimations: Async<FeaturedAnimationsResponse>) {
     val scrollState = rememberScrollState()
     val navController = findNavController()
     Log.d("Gabe", "ShowcasePage: $featuredAnimations")
@@ -64,7 +65,7 @@ fun ShowcasePage(featuredAnimations: Async<AnimationResponseV2>) {
                     previewUrl = data.preview_url ?: "",
                     previewBackgroundColor = data.bgColor,
                 ) {
-                    navController.navigate(R.id.player, data.id.asMavericksArgs())
+                    navController.navigate(R.id.player, data.asMavericksArgs())
                 }
                 Divider(color = Color.LightGray)
             }
@@ -91,7 +92,7 @@ fun Loader(
     modifier: Modifier = Modifier
 ) {
     LottieAnimation(
-        R.raw.loading,
+        LottieAnimationSpec.RawRes(R.raw.loading),
         modifier = Modifier
             .preferredSize(100.dp)
             .then(modifier)

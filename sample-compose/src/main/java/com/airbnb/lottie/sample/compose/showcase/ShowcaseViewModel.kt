@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.airbnb.lottie.sample.compose.api.AnimationResponseV2
+import com.airbnb.lottie.sample.compose.api.FeaturedAnimationsResponse
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.mvrx.*
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +16,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 
 class ShowcaseViewModel(application: Application) : AndroidViewModel(application) {
-    private val _featuredAnimations = MutableStateFlow(Uninitialized as Async<AnimationResponseV2>)
-    val featuredAnimations: StateFlow<Async<AnimationResponseV2>> = _featuredAnimations
+    private val _featuredAnimations = MutableStateFlow(Uninitialized as Async<FeaturedAnimationsResponse>)
+    val featuredAnimations: StateFlow<Async<FeaturedAnimationsResponse>> = _featuredAnimations
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://api.lottiefiles.com/")
