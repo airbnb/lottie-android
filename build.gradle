@@ -1,7 +1,11 @@
 import org.ajoberstar.grgit.Grgit
 
 buildscript {
-  ext.kotlinVersion = '1.4.0'
+  ext {
+    composeVersion = '1.0.0-alpha02'
+    kotlinVersion = '1.4.10'
+    daggerVersion = '2.28.3'
+  }
 
   repositories {
     jcenter()

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/showcase">
+    <fragment
+        android:id="@+id/player"
+        android:name="com.airbnb.lottie.sample.compose.player.PlayerFragment" />
+
+    <fragment
+        android:id="@+id/showcase"
+        android:name="com.airbnb.lottie.sample.compose.showcase.ShowcaseFragment" />
+
+    <fragment
+        android:id="@+id/lottie_files"
+        android:name="com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesFragment" />
+</navigation>

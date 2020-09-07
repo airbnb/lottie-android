@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">LottieCompose</string>
+
+    <string name="tab_recent">Recent</string>
+    <string name="tab_popular">Popular</string>
+    <string name="tab_search">Search</string>
+</resources>
