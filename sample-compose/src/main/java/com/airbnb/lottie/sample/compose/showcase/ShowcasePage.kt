@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Providers
+import androidx.compose.runtime.ambientOf
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,23 +34,28 @@ import com.airbnb.lottie.sample.compose.ui.textColorDark
 import com.airbnb.mvrx.*
 import dev.chrisbanes.accompanist.coil.CoilImage
 
-class ShowcaseFragment : Fragment() {
+val ShowcaseStateAmbient = ambientOf { ShowcaseState() }
+
+class ShowcaseFragment : Fragment(), MavericksView {
+    private val viewModel by fragmentViewModel<ShowcaseFragment, ShowcaseViewModel, ShowcaseState>()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return LottieComposeScaffoldView(requireContext()) {
-            ShowcasePage()
+            val showcaseState = viewModel.stateFlow.collectAsState(ShowcaseState())
+            Providers(ShowcaseStateAmbient provides showcaseState.value) {
+                ShowcasePage()
+            }
         }
+    }
+
+    override fun invalidate() {
     }
 }
 
-@Composable
-fun ShowcasePage() {
-    val viewModel: ShowcaseViewModel = viewModel()
-    val featuredAnimations = viewModel.featuredAnimations.collectAsState()
-    ShowcasePage(featuredAnimations.value)
-}
 
 @Composable
-fun ShowcasePage(featuredAnimations: Async<FeaturedAnimationsResponse>) {
+fun ShowcasePage() {
+    val featuredAnimations = ShowcaseStateAmbient.current.featuredAnimations
     val scrollState = rememberScrollState()
     val navController = findNavController()
     Log.d("Gabe", "ShowcasePage: $featuredAnimations")

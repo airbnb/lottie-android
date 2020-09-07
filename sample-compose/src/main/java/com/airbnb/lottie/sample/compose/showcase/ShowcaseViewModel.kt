@@ -9,6 +9,7 @@ import com.airbnb.lottie.sample.compose.LottieComposeApplication
 import com.airbnb.lottie.sample.compose.api.FeaturedAnimationsResponse
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
+import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
 import com.airbnb.mvrx.*
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -29,22 +30,17 @@ class ShowcaseViewModel @AssistedInject constructor(
     @Assisted initialState: ShowcaseState,
     private var api: LottieFilesApi
 ) : MavericksViewModel<ShowcaseState>(initialState) {
-    private val _featuredAnimations = MutableStateFlow(Uninitialized as Async<FeaturedAnimationsResponse>)
-    val featuredAnimations: StateFlow<Async<FeaturedAnimationsResponse>> = _featuredAnimations
 
     init {
         fetchFeatured()
     }
 
     fun fetchFeatured() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _featuredAnimations.value = Loading()
-            _featuredAnimations.value = try {
-                Success(api.getFeatured())
-            } catch (e: Throwable) {
-                Log.d("Gabe", "fetchFeatured: failed", e)
-                Fail(e)
-            }
+        suspend {
+            api.getFeatured()
+        }.execute(Dispatchers.IO) {
+            Log.d("Gabe", "fetchFeatured: $it")
+            copy(featuredAnimations = it)
         }
     }
 
@@ -52,4 +48,6 @@ class ShowcaseViewModel @AssistedInject constructor(
     interface Factory : AssistedViewModelFactory<ShowcaseViewModel, ShowcaseState> {
         override fun create(initialState: ShowcaseState): ShowcaseViewModel
     }
+
+    companion object : DaggerMvRxViewModelFactory<ShowcaseViewModel, ShowcaseState>(ShowcaseViewModel::class.java)
 }

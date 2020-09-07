@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class AnimationData(
     val id: Int,
-    @Json(name = "bgColor") private val bgColorString: String,
+    @Json(name = "bgColor") private val bgColorString: String?,
     val preview_url: String?,
     val title: String,
     val file: String
