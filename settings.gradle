@@ -1,1 +1,2 @@
 include ':LottieSample', ':lottie', ':issue-repro'
+include ':sample-compose'

@@ -1,6 +1,9 @@
 import org.ajoberstar.grgit.Grgit
 
 buildscript {
+  ext {
+    compose_version = '1.0.0-alpha01'
+  }
   ext.kotlinVersion = '1.4.0'
 
   repositories {
