@@ -10,4 +10,8 @@
     <fragment
         android:id="@+id/showcase"
         android:name="com.airbnb.lottie.sample.compose.showcase.ShowcaseFragment" />
+
+    <fragment
+        android:id="@+id/lottie_files"
+        android:name="com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesFragment" />
 </navigation>
