@@ -30,6 +30,7 @@ public class NetworkFetcher {
   }
 
   @NonNull
+  @WorkerThread
   public LottieResult<LottieComposition> fetchSync(@NonNull String url, @Nullable String cacheKey) {
     LottieComposition result = fetchFromCache(url, cacheKey);
     if (result != null) {
