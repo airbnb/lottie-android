@@ -19,17 +19,7 @@ public class Lottie {
 
   public static void initialize(@NonNull final LottieConfig lottieConfig) {
     fetcher = lottieConfig.networkFetcher;
-    if (fetcher == null) {
-      fetcher = new DefaultFetcher();
-    }
     cacheDirSupplier = lottieConfig.cacheDirSupplier;
-    if (cacheDirSupplier == null) {
-      cacheDirSupplier = new Supplier<File>() {
-        @Override public File get() {
-          return new File(lottieConfig.applicationContext.getCacheDir(), "lottie_network_cache");
-        }
-      };
-    }
   }
 
   @NonNull
