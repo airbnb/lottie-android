@@ -17,6 +17,9 @@ public class Lottie {
   private static Fetcher fetcher;
   private static CacheProvider cacheDirCacheProvider;
 
+  private static volatile NetworkFetcher networkFetcher;
+  private static volatile NetworkCache networkCache;
+
   public static void initialize(@NonNull final LottieConfig lottieConfig) {
     fetcher = lottieConfig.networkFetcher;
     cacheDirCacheProvider = lottieConfig.cacheDirCacheProvider;
@@ -24,15 +27,33 @@ public class Lottie {
 
   @NonNull
   public static NetworkFetcher networkFetcher(@NonNull Context context) {
-    return new NetworkFetcher(networkCache(context), fetcher != null ? fetcher : new DefaultFetcher());
+    NetworkFetcher local = networkFetcher;
+    if (local == null) {
+      synchronized (NetworkFetcher.class) {
+        local = networkFetcher;
+        if (local == null) {
+          networkFetcher = local = new NetworkFetcher(networkCache(context), fetcher != null ? fetcher : new DefaultFetcher());
+        }
+      }
+    }
+    return local;
   }
 
   @NonNull
   public static NetworkCache networkCache(@NonNull final Context context) {
-    return new NetworkCache(cacheDirCacheProvider != null ? cacheDirCacheProvider : new CacheProvider() {
-      @Override @NonNull public File getCacheDir() {
-        return new File(context.getCacheDir(), "lottie_network_cache");
+    NetworkCache local = networkCache;
+    if (local == null) {
+      synchronized (NetworkCache.class) {
+        local = networkCache;
+        if (local == null) {
+          networkCache = local = new NetworkCache(cacheDirCacheProvider != null ? cacheDirCacheProvider : new CacheProvider() {
+            @Override @NonNull public File getCacheDir() {
+              return new File(context.getCacheDir(), "lottie_network_cache");
+            }
+          });
+        }
       }
-    });
+    }
+    return local;
   }
 }
