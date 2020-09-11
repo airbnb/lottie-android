@@ -1,6 +1,7 @@
 package com.airbnb.lottie.network;
 
-import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
@@ -19,10 +20,12 @@ import java.io.OutputStream;
  * Helper class to save and restore animations fetched from an URL to the app disk cache.
  */
 public class NetworkCache {
-  private final Context appContext;
 
-  public NetworkCache(Context appContext) {
-    this.appContext = appContext.getApplicationContext();
+  @NonNull
+  private final Supplier<File> cacheDir;
+
+  public NetworkCache(@NonNull Supplier<File> cacheDir) {
+    this.cacheDir = cacheDir;
   }
 
   public void clear() {
@@ -139,7 +142,7 @@ public class NetworkCache {
   }
 
   private File parentDir() {
-    File file = new File(appContext.getCacheDir(), "lottie_network_cache");
+    File file= cacheDir.get();
     if (file.isFile()) {
       file.delete();
     }
