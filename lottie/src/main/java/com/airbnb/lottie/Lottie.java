@@ -6,7 +6,7 @@ import com.airbnb.lottie.network.DefaultFetcher;
 import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.network.Fetcher;
 import com.airbnb.lottie.network.NetworkCache;
-import com.airbnb.lottie.network.Supplier;
+import com.airbnb.lottie.network.CacheProvider;
 
 import java.io.File;
 
@@ -15,11 +15,11 @@ import androidx.annotation.NonNull;
 public class Lottie {
 
   private static Fetcher fetcher;
-  private static Supplier<File> cacheDirSupplier;
+  private static CacheProvider cacheDirCacheProvider;
 
   public static void initialize(@NonNull final LottieConfig lottieConfig) {
     fetcher = lottieConfig.networkFetcher;
-    cacheDirSupplier = lottieConfig.cacheDirSupplier;
+    cacheDirCacheProvider = lottieConfig.cacheDirCacheProvider;
   }
 
   @NonNull
@@ -29,9 +29,9 @@ public class Lottie {
 
   @NonNull
   public static NetworkCache networkCache(@NonNull final Context context) {
-    return new NetworkCache(cacheDirSupplier != null ? cacheDirSupplier : new Supplier<File>() {
-      @Override public File get() {
-        return context.getCacheDir();
+    return new NetworkCache(cacheDirCacheProvider != null ? cacheDirCacheProvider : new CacheProvider() {
+      @Override @NonNull public File getCacheDir() {
+        return new File(context.getCacheDir(), "lottie_network_cache");
       }
     });
   }

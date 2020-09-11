@@ -3,7 +3,7 @@ package com.airbnb.lottie;
 import android.content.Context;
 
 import com.airbnb.lottie.network.Fetcher;
-import com.airbnb.lottie.network.Supplier;
+import com.airbnb.lottie.network.CacheProvider;
 
 import java.io.File;
 
@@ -14,12 +14,12 @@ public class LottieConfig {
 
   @NonNull final Context applicationContext;
   @Nullable final Fetcher networkFetcher;
-  @Nullable final Supplier<File> cacheDirSupplier;
+  @Nullable final CacheProvider cacheDirCacheProvider;
 
-  public LottieConfig(@NonNull Context applicationContext, @Nullable Fetcher networkFetcher, @Nullable Supplier<File> cacheDirSupplier) {
+  public LottieConfig(@NonNull Context applicationContext, @Nullable Fetcher networkFetcher, @Nullable CacheProvider cacheDirCacheProvider) {
     this.applicationContext = applicationContext;
     this.networkFetcher = networkFetcher;
-    this.cacheDirSupplier = cacheDirSupplier;
+    this.cacheDirCacheProvider = cacheDirCacheProvider;
   }
 
   public static final class Builder {
@@ -29,7 +29,7 @@ public class LottieConfig {
     @Nullable
     private Fetcher networkFetcher;
     @Nullable
-    private Supplier<File> cacheDirSupplier;
+    private CacheProvider cacheDirCacheProvider;
 
     public Builder(@NonNull Context context) {
       this.context = context.getApplicationContext();
@@ -43,8 +43,8 @@ public class LottieConfig {
 
     @NonNull
     public Builder setCacheDir(@NonNull final File file) {
-      this.cacheDirSupplier = new Supplier<File>() {
-        @Override public File get() {
+      this.cacheDirCacheProvider = new CacheProvider() {
+        @Override @NonNull public File getCacheDir() {
           return file;
         }
       };
@@ -52,14 +52,14 @@ public class LottieConfig {
     }
 
     @NonNull
-    public Builder setCacheDirSupplier(@NonNull Supplier<File> fileSupplier) {
-      this.cacheDirSupplier = fileSupplier;
+    public Builder setCacheDirCacheProvider(@NonNull CacheProvider fileCacheProvider) {
+      this.cacheDirCacheProvider = fileCacheProvider;
       return this;
     }
 
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(context, networkFetcher, cacheDirSupplier);
+      return new LottieConfig(context, networkFetcher, cacheDirCacheProvider);
     }
   }
 }

@@ -39,11 +39,7 @@ public class NetworkFetcher {
 
     Logger.debug("Animation for " + url + " not found in cache. Fetching from network.");
 
-    try {
-      return fetchFromNetwork(url, cacheKey);
-    } catch (IOException e) {
-      return new LottieResult<>(e);
-    }
+    return fetchFromNetwork(url, cacheKey);
   }
 
   @Nullable
@@ -73,7 +69,7 @@ public class NetworkFetcher {
 
   @NonNull
   @WorkerThread
-  private LottieResult<LottieComposition> fetchFromNetwork(@NonNull String url, @Nullable String cacheKey) throws IOException {
+  private LottieResult<LottieComposition> fetchFromNetwork(@NonNull String url, @Nullable String cacheKey) {
     Logger.debug("Fetching " + url);
 
     try {

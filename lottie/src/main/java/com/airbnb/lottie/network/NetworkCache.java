@@ -22,9 +22,9 @@ import java.io.OutputStream;
 public class NetworkCache {
 
   @NonNull
-  private final Supplier<File> cacheDir;
+  private final CacheProvider cacheDir;
 
-  public NetworkCache(@NonNull Supplier<File> cacheDir) {
+  public NetworkCache(@NonNull CacheProvider cacheDir) {
     this.cacheDir = cacheDir;
   }
 
@@ -142,7 +142,7 @@ public class NetworkCache {
   }
 
   private File parentDir() {
-    File file= cacheDir.get();
+    File file= cacheDir.getCacheDir();
     if (file.isFile()) {
       file.delete();
     }
