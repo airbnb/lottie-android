@@ -1,22 +1,29 @@
 package com.airbnb.lottie.samples
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
-import androidx.paging.DataSource
-import androidx.paging.LivePagedListBuilder
-import androidx.paging.PageKeyedDataSource
-import com.airbnb.epoxy.EpoxyModel
-import com.airbnb.epoxy.paging.PagedListEpoxyController
+import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import androidx.paging.*
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.samples.api.LottiefilesApi
+import com.airbnb.lottie.samples.databinding.LottiefilesFragmentBinding
 import com.airbnb.lottie.samples.model.AnimationData
+import com.airbnb.lottie.samples.model.AnimationResponse
 import com.airbnb.lottie.samples.model.CompositionArgs
-import com.airbnb.lottie.samples.views.AnimationItemViewModel_
-import com.airbnb.lottie.samples.views.lottiefilesTabBar
-import com.airbnb.lottie.samples.views.marquee
-import com.airbnb.lottie.samples.views.searchInputItemView
+import com.airbnb.lottie.samples.utils.MvRxViewModel
+import com.airbnb.lottie.samples.utils.hideKeyboard
+import com.airbnb.lottie.samples.utils.viewBinding
+import com.airbnb.lottie.samples.views.AnimationItemView
 import com.airbnb.mvrx.*
-import kotlinx.android.synthetic.main.fragment_epoxy_recycler_view.*
-import kotlin.properties.Delegates
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 data class LottiefilesState(
         val mode: LottiefilesMode = LottiefilesMode.Recent,
@@ -28,17 +35,16 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
     private var mode = initialState.mode
     private var query = initialState.query
 
-    val pagedList = LivePagedListBuilder<Int, AnimationData>(object : DataSource.Factory<Int, AnimationData>() {
-        override fun create(): DataSource<Int, AnimationData> {
-            return LottiefilesDataSource(api, mode, query)
-        }
-    }, 16).build()
+    private var dataSource: LottiefilesDataSource? = null
+    val pager = Pager(PagingConfig(pageSize = 16)) {
+        LottiefilesDataSource(api, mode, query).also { dataSource = it }
+    }.flow.cachedIn(viewModelScope)
 
     init {
         selectSubscribe(LottiefilesState::mode, LottiefilesState::query) { mode, query ->
             this.mode = mode
             this.query = query
-            pagedList.value?.dataSource?.invalidate()
+            dataSource?.invalidate()
         }
     }
 
@@ -57,136 +63,90 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
 class LottiefilesDataSource(
         private val api: LottiefilesApi,
         val mode: LottiefilesMode,
-        val query: String
-) : PageKeyedDataSource<Int, AnimationData>() {
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, AnimationData>) {
-        if (mode == LottiefilesMode.Search && query.isEmpty()) {
-            callback.onResult(emptyList(), null, null)
-            return
-        }
+        private val query: String
+) : PagingSource<Int, AnimationData>() {
 
-        try {
-            val response = when (mode) {
-                LottiefilesMode.Popular -> api.getPopular(1)
-                LottiefilesMode.Recent -> api.getRecent(1)
-                LottiefilesMode.Search -> api.search(query, 1)
-            }.blockingGet()
-
-            callback.onResult(
-                    response.data,
-                    0,
-                    response.total,
-                    null,
-                    2.takeIf {
-                        !response.nextPageUrl.isNullOrEmpty()
-                    }
-            )
-        } catch (e: Exception) {
-            callback.onError(e)
-        }
-    }
-
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
-        loadPage(params.key, callback)
-    }
-
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, AnimationData>) {
-        // ignored, prepend will never happen.
-    }
-
-    private fun loadPage(page: Int, callback: LoadCallback<Int, AnimationData>) {
-        try {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, AnimationData> {
+        val page = params.key ?: 1
+        return try {
             val response = when (mode) {
                 LottiefilesMode.Popular -> api.getPopular(page)
                 LottiefilesMode.Recent -> api.getRecent(page)
-                LottiefilesMode.Search -> api.search(query, page)
-            }.blockingGet()
-
-            callback.onResult(
-                    response.data,
-                    (page + 1).takeIf {
-                        !response.nextPageUrl.isNullOrEmpty()
+                LottiefilesMode.Search -> {
+                    if (query.isBlank()) {
+                        AnimationResponse(page, emptyList(), "", page, null, "", 0, "", 0, 0)
+                    } else {
+                        api.search(query, page)
                     }
-            )
+                }
+            }
 
+            LoadResult.Page(
+                    response.data,
+                    if (page == 1) null else page + 1,
+                    (page + 1).takeIf { page < response.lastPage }
+            )
         } catch (e: Exception) {
-            callback.onError(e)
+            LoadResult.Error(e)
         }
     }
 }
 
-class LottiefilesFragment : BaseMvRxFragment(R.layout.fragment_epoxy_recycler_view) {
+class LottiefilesFragment : BaseMvRxFragment(R.layout.lottiefiles_fragment) {
+    private val binding: LottiefilesFragmentBinding by viewBinding()
     private val viewModel: LottiefilesViewModel by fragmentViewModel()
 
-    private val controller by lazy {
-        object : PagedListEpoxyController<AnimationData>() {
+    private object AnimationItemDataDiffCallback : DiffUtil.ItemCallback<AnimationData>() {
+        override fun areItemsTheSame(oldItem: AnimationData, newItem: AnimationData) = oldItem.id == newItem.id
 
-            var mode by Delegates.observable(LottiefilesMode.Recent) { _, _, _ -> requestModelBuild() }
+        override fun areContentsTheSame(oldItem: AnimationData, newItem: AnimationData) = oldItem == newItem
+    }
 
-            override fun buildItemModel(currentPosition: Int, item: AnimationData?): EpoxyModel<*> {
-                return if (item == null) {
-                    AnimationItemViewModel_().id(-currentPosition)
-                } else {
-                    AnimationItemViewModel_()
-                            .id(item.id)
-                            .previewUrl(item.preview)
-                            .title(item.title)
-                            .previewBackgroundColor(item.bgColorInt)
-                            .onClickListener { _ ->
-                                val intent = PlayerActivity.intent(requireContext(), CompositionArgs(animationData = item))
-                                requireContext().startActivity(intent)
-                            }
-
-                }
-            }
-
-            override fun addModels(models: List<EpoxyModel<*>>) {
-                marquee {
-                    id("lottiefiles")
-                    title(R.string.lottiefiles)
-                    subtitle(R.string.lottiefiles_airbnb)
-                }
-
-                lottiefilesTabBar {
-                    id("mode")
-                    mode(mode)
-                    recentClickListener { _ ->
-                        viewModel.setMode(LottiefilesMode.Recent)
-                        requireContext().hideKeyboard()
-                    }
-                    popularClickListener { _ ->
-                        viewModel.setMode(LottiefilesMode.Popular)
-                        requireContext().hideKeyboard()
-                    }
-                    searchClickListener { _ ->
-                        viewModel.setMode(LottiefilesMode.Search)
-                        requireContext().hideKeyboard()
-                    }
-                }
-
-                if (mode == LottiefilesMode.Search) {
-                    searchInputItemView {
-                        id("search")
-                        searchClickListener(viewModel::setQuery)
-                    }
-                }
-                super.addModels(models)
+    private class AnimationItemViewHolder(context: Context) : RecyclerView.ViewHolder(AnimationItemView(context)) {
+        fun bind(data: AnimationData?) {
+            val view = itemView as AnimationItemView
+            view.setTitle(data?.title)
+            view.setPreviewUrl(data?.preview)
+            view.setPreviewBackgroundColor(data?.bgColorInt)
+            view.setOnClickListener {
+                val intent = PlayerActivity.intent(view.context, CompositionArgs(animationData = data))
+                view.context.startActivity(intent)
             }
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.pagedList.observe(this, Observer {
-            controller.submitList(it)
-        })
+
+    private val adapter = object : PagingDataAdapter<AnimationData, AnimationItemViewHolder>(AnimationItemDataDiffCallback) {
+        override fun onBindViewHolder(holder: AnimationItemViewHolder, position: Int) = holder.bind(getItem(position))
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = AnimationItemViewHolder(parent.context)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        recyclerView.setController(controller)
+        binding.recyclerView.adapter = adapter
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.pager.collectLatest(adapter::submitData)
+        }
+        binding.tabBar.setRecentClickListener {
+            viewModel.setMode(LottiefilesMode.Recent)
+            requireContext().hideKeyboard()
+        }
+        binding.tabBar.setPopularClickListener {
+            viewModel.setMode(LottiefilesMode.Popular)
+            requireContext().hideKeyboard()
+        }
+        binding.tabBar.setSearchClickListener {
+            viewModel.setMode(LottiefilesMode.Search)
+            requireContext().hideKeyboard()
+        }
+        binding.searchView.query.onEach { query ->
+            viewModel.setQuery(query)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun invalidate(): Unit = withState(viewModel) { state ->
-        controller.mode = state.mode
+        binding.searchView.isVisible = state.mode == LottiefilesMode.Search
+        binding.tabBar.setMode(state.mode)
     }
 }

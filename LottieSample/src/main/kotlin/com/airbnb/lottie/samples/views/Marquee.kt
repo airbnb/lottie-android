@@ -6,10 +6,10 @@ import android.widget.LinearLayout
 import com.airbnb.epoxy.ModelView
 import com.airbnb.epoxy.TextProp
 import com.airbnb.lottie.samples.R
-import com.airbnb.lottie.samples.getText
-import com.airbnb.lottie.samples.inflate
-import com.airbnb.lottie.samples.setVisibleIf
-import kotlinx.android.synthetic.main.marquee.view.*
+import com.airbnb.lottie.samples.databinding.MarqueeBinding
+import com.airbnb.lottie.samples.utils.getText
+import com.airbnb.lottie.samples.utils.setVisibleIf
+import com.airbnb.lottie.samples.utils.viewBinding
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class Marquee @JvmOverloads constructor(
@@ -17,9 +17,9 @@ class Marquee @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
+    private val binding: MarqueeBinding by viewBinding()
 
     init {
-        inflate(R.layout.marquee)
         orientation = VERTICAL
         attrs?.let {
             val typedArray = context.obtainStyledAttributes(it, R.styleable.Marquee, 0, 0)
@@ -40,12 +40,12 @@ class Marquee @JvmOverloads constructor(
 
     @TextProp
     fun setTitle(title: CharSequence) {
-        titleView.text = title
+        binding.titleView.text = title
     }
 
     @TextProp
     fun setSubtitle(subtitle: CharSequence?) {
-        subtitleView.text = subtitle
-        subtitleView.setVisibleIf(!subtitle.isNullOrEmpty())
+        binding.subtitleView.text = subtitle
+        binding.subtitleView.setVisibleIf(!subtitle.isNullOrEmpty())
     }
 }

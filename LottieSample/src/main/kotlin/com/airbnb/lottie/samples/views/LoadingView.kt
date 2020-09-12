@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.airbnb.epoxy.ModelView
 import com.airbnb.lottie.samples.R
-import com.airbnb.lottie.samples.inflate
+import com.airbnb.lottie.samples.utils.inflate
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class LoadingView @JvmOverloads constructor(
