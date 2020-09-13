@@ -48,7 +48,6 @@ fun ShowcasePage() {
     val featuredAnimations = ShowcaseStateAmbient.current.featuredAnimations
     val scrollState = rememberScrollState()
     val navController = findNavController()
-    Log.d("Gabe", "ShowcasePage: $featuredAnimations")
     Stack(
         modifier = Modifier.fillMaxSize()
     ) {

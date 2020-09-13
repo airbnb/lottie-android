@@ -35,11 +35,10 @@ class ShowcaseViewModel @AssistedInject constructor(
         fetchFeatured()
     }
 
-    fun fetchFeatured() {
+    private fun fetchFeatured() {
         suspend {
             api.getFeatured()
         }.execute(Dispatchers.IO) {
-            Log.d("Gabe", "fetchFeatured: $it")
             copy(featuredAnimations = it)
         }
     }

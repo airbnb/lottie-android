@@ -1,24 +1,18 @@
 package com.airbnb.lottie.sample.compose.player
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope.weight
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.remember
-import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -28,19 +22,17 @@ import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
 import com.airbnb.lottie.sample.compose.api.AnimationData
 import com.airbnb.lottie.sample.compose.composables.LottieAnimation
+import com.airbnb.lottie.sample.compose.composables.LottieAnimationController
 import com.airbnb.lottie.sample.compose.composables.LottieAnimationSpec
 import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.composables.SeekBar
@@ -59,10 +51,9 @@ class PlayerFragment : Fragment() {
 @Composable
 fun PlayerPage(animationData: AnimationData) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
-    val spec = LottieAnimationSpec.Url(animationData.file)
-    var progress by remember { mutableStateOf(0.5f) }
-    var isPlaying by remember { mutableStateOf(true) }
-    var isLooping by remember { mutableStateOf(true) }
+    val spec = remember { LottieAnimationSpec.Url(animationData.file) }
+    val animationController = remember { LottieAnimationController() }
+    val animationState by animationController.state.collectAsState()
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight()
@@ -84,38 +75,34 @@ fun PlayerPage(animationData: AnimationData) {
         }
         LottieAnimation(
             spec,
+            animationController,
             modifier = Modifier.fillMaxSize()
         )
         Row(
             verticalGravity = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = { isPlaying = !isPlaying }) {
-                Icon(if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
+            IconButton(onClick = { animationController.toggleIsPlaying() }) {
+                Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
             }
             SeekBar(
-                progress = progress,
+                progress = animationState.progress,
                 onProgressChanged = {
-                    progress = it
+                    animationController.setProgress(it)
                 },
                 modifier = Modifier
             )
-            IconButton(onClick = { isLooping = !isLooping }) {
+            IconButton(onClick = {
+                val repeatCount = if (animationState.repeatCount== Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
+                animationController.setRepeatCount(repeatCount)
+            }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (isLooping) Color.Green else Color.Black,
+                    tint = if (animationState.repeatCount > 0) Color.Green else Color.Black,
                 )
             }
         }
     }
 }
-
-@Composable
-fun PlayPauseButton(isPlaying: Boolean, onClick: () -> Unit) {
-    IconButton(onClick = onClick) {
-        Icon(if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
-    }
-}
-
 @Preview(name = "Player")
 @Composable
 fun PlayerPagePreview() {
