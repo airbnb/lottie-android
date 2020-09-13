@@ -4,5 +4,5 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MvRxState
 
 interface AssistedViewModelFactory<VM : MavericksViewModel<S>, S : MvRxState> {
-    fun create(state: S): VM
+    fun create(initialState: S): VM
 }

@@ -30,16 +30,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
-import com.airbnb.lottie.sample.compose.api.AnimationData
+import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.composables.LottieAnimation
 import com.airbnb.lottie.sample.compose.composables.LottieAnimationController
 import com.airbnb.lottie.sample.compose.composables.LottieAnimationSpec
+import com.airbnb.lottie.sample.compose.composables.LottieAnimationState
 import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.composables.SeekBar
 import com.airbnb.mvrx.args
 
 class PlayerFragment : Fragment() {
-    private val animationData: AnimationData by args()
+    private val animationData: AnimationDataV2 by args()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return LottieComposeScaffoldView(requireContext()) {
@@ -49,10 +50,10 @@ class PlayerFragment : Fragment() {
 }
 
 @Composable
-fun PlayerPage(animationData: AnimationData) {
+fun PlayerPage(animationData: AnimationDataV2) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
     val spec = remember { LottieAnimationSpec.Url(animationData.file) }
-    val animationController = remember { LottieAnimationController() }
+    val animationController = remember { LottieAnimationController(LottieAnimationState(repeatCount = Integer.MAX_VALUE, isPlaying = true)) }
     val animationState by animationController.state.collectAsState()
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -109,6 +110,6 @@ fun PlayerPagePreview() {
     Providers(
         BackPressedDispatcherAmbient provides OnBackPressedDispatcher()
     ) {
-        PlayerPage(animationData = AnimationData(123, null, null, "Title", "https://lottiefiles.com/download/public/32922"))
+        PlayerPage(animationData = AnimationDataV2(123, null, null, "Title", "https://lottiefiles.com/download/public/32922"))
     }
 }

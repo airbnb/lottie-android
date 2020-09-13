@@ -21,7 +21,7 @@ object ApiModule {
     @Provides
     @Singleton
     fun providesLottieFilesApi(retrofit: Retrofit): LottieFilesApi {
-        return retrofit.create<LottieFilesApi>()
+        return retrofit.create()
     }
 }
 

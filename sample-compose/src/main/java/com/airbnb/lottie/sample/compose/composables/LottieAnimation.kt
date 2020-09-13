@@ -35,12 +35,12 @@ sealed class LottieAnimationSpec {
 
 data class LottieAnimationState(
     val progress: Float = 0f,
-    val isPlaying: Boolean = true,
+    val isPlaying: Boolean = false,
     val repeatCount: Int = 0
 )
 
-class LottieAnimationController {
-    private val _state = MutableStateFlow(LottieAnimationState())
+class LottieAnimationController(initialState: LottieAnimationState = LottieAnimationState()) {
+    private val _state = MutableStateFlow(initialState)
     val state: StateFlow<LottieAnimationState> = _state
 
     internal val updateProgressChannel = Channel<Float>(Channel.CONFLATED)
@@ -126,7 +126,6 @@ fun LottieAnimation(
         var repeatCount = 0
         if (isPlaying && progress == 1f) progress = 0f
         var lastFrameTime = withFrameNanos { it }
-        Log.d("Gabe", "LottieAnimation: $repeatCount $progress")
         while (true) {
             withFrameNanos { frameTime ->
                 val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
