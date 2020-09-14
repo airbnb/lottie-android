@@ -88,6 +88,8 @@ public class NetworkFetcher {
       }
     } catch (Exception e) {
       return new LottieResult<>(e);
+    } finally {
+      fetcher.disconnect();
     }
   }
 

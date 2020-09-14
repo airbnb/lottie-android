@@ -7,26 +7,32 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class DefaultLottieNetworkFetcher implements LottieNetworkFetcher {
+
+  @Nullable
+  private HttpURLConnection connection;
 
   @Override
   @NonNull
   public LottieNetworkResult fetchSync(@NonNull String url) throws IOException {
-    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+    connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
 
-    try {
-      connection.connect();
+    connection.connect();
 
-      if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        String error = getErrorFromConnection(connection);
-        return new LottieNetworkResult.Error("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error,
-            connection.getResponseCode());
-      }
+    if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      String error = getErrorFromConnection(connection);
+      return new LottieNetworkResult.Error("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error,
+          connection.getResponseCode());
+    }
 
-      return new LottieNetworkResult.Success(connection.getInputStream(), connection.getContentType());
-    } finally {
+    return new LottieNetworkResult.Success(connection.getInputStream(), connection.getContentType());
+  }
+
+  @Override public void disconnect() {
+    if (connection != null) {
       connection.disconnect();
     }
   }

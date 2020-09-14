@@ -12,4 +12,6 @@ public interface LottieNetworkFetcher {
     @WorkerThread
     @NonNull
     LottieNetworkResult fetchSync(@NonNull String url) throws IOException;
+
+    void disconnect();
 }
