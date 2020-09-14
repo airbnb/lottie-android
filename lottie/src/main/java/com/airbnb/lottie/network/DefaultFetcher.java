@@ -12,7 +12,7 @@ public class DefaultFetcher implements Fetcher {
 
   @Override
   @NonNull
-  public Result fetchSync(@NonNull String url) throws IOException {
+  public LottieNetworkResult fetchSync(@NonNull String url) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
 
@@ -21,11 +21,11 @@ public class DefaultFetcher implements Fetcher {
 
       if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
         String error = getErrorFromConnection(connection);
-        return new Result.Error("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error,
+        return new LottieNetworkResult.Error("Unable to fetch " + url + ". Failed with " + connection.getResponseCode() + "\n" + error,
             connection.getResponseCode());
       }
 
-      return new Result.Success(connection.getInputStream(), connection.getContentType());
+      return new LottieNetworkResult.Success(connection.getInputStream(), connection.getContentType());
     } finally {
       connection.disconnect();
     }

@@ -73,16 +73,16 @@ public class NetworkFetcher {
     Logger.debug("Fetching " + url);
 
     try {
-      Result fetchResult = fetcher.fetchSync(url);
-      if (fetchResult instanceof Result.Success) {
-        InputStream inputStream = ((Result.Success) fetchResult).inputStream;
-        String contentType = ((Result.Success) fetchResult).contentType;
+      LottieNetworkResult fetchResult = fetcher.fetchSync(url);
+      if (fetchResult instanceof LottieNetworkResult.Success) {
+        InputStream inputStream = ((LottieNetworkResult.Success) fetchResult).inputStream;
+        String contentType = ((LottieNetworkResult.Success) fetchResult).contentType;
         LottieResult<LottieComposition> result = fromInputStream(url, inputStream, contentType, cacheKey);
         Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
         return result;
       } else {
-        String error = ((Result.Error) fetchResult).message;
-        int responseCode = ((Result.Error) fetchResult).responseCode;
+        String error = ((LottieNetworkResult.Error) fetchResult).message;
+        int responseCode = ((LottieNetworkResult.Error) fetchResult).responseCode;
         return new LottieResult<>(
             new IllegalArgumentException("Unable to fetch " + url + ". Failed with " + responseCode + "\n" + error));
       }

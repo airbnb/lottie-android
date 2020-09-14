@@ -142,7 +142,7 @@ public class NetworkCache {
   }
 
   private File parentDir() {
-    File file= cacheDir.getCacheDir();
+    File file = cacheDir.getCacheDir();
     if (file.isFile()) {
       file.delete();
     }

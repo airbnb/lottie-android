@@ -10,16 +10,19 @@ import java.io.File;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * Class for custom library configuration
+ */
 public class LottieConfig {
 
   @NonNull final Context applicationContext;
   @Nullable final Fetcher networkFetcher;
-  @Nullable final CacheProvider cacheDirCacheProvider;
+  @Nullable final CacheProvider cacheProvider;
 
-  public LottieConfig(@NonNull Context applicationContext, @Nullable Fetcher networkFetcher, @Nullable CacheProvider cacheDirCacheProvider) {
+  public LottieConfig(@NonNull Context applicationContext, @Nullable Fetcher networkFetcher, @Nullable CacheProvider cacheProvider) {
     this.applicationContext = applicationContext;
     this.networkFetcher = networkFetcher;
-    this.cacheDirCacheProvider = cacheDirCacheProvider;
+    this.cacheProvider = cacheProvider;
   }
 
   public static final class Builder {
@@ -29,7 +32,7 @@ public class LottieConfig {
     @Nullable
     private Fetcher networkFetcher;
     @Nullable
-    private CacheProvider cacheDirCacheProvider;
+    private CacheProvider cacheProvider;
 
     public Builder(@NonNull Context context) {
       this.context = context.getApplicationContext();
@@ -43,7 +46,7 @@ public class LottieConfig {
 
     @NonNull
     public Builder setCacheDir(@NonNull final File file) {
-      this.cacheDirCacheProvider = new CacheProvider() {
+      this.cacheProvider = new CacheProvider() {
         @Override @NonNull public File getCacheDir() {
           return file;
         }
@@ -52,14 +55,14 @@ public class LottieConfig {
     }
 
     @NonNull
-    public Builder setCacheDirCacheProvider(@NonNull CacheProvider fileCacheProvider) {
-      this.cacheDirCacheProvider = fileCacheProvider;
+    public Builder setCacheProvider(@NonNull CacheProvider fileCacheProvider) {
+      this.cacheProvider = fileCacheProvider;
       return this;
     }
 
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(context, networkFetcher, cacheDirCacheProvider);
+      return new LottieConfig(context, networkFetcher, cacheProvider);
     }
   }
 }

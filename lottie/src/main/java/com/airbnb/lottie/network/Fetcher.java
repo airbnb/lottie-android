@@ -5,8 +5,11 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+/**
+ * Interface for custom fetcher
+ */
 public interface Fetcher {
     @WorkerThread
     @NonNull
-    Result fetchSync(@NonNull String url) throws IOException;
+    LottieNetworkResult fetchSync(@NonNull String url) throws IOException;
 }
