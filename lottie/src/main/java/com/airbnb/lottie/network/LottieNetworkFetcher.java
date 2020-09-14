@@ -8,7 +8,7 @@ import androidx.annotation.WorkerThread;
 /**
  * Interface for custom fetcher
  */
-public interface Fetcher {
+public interface LottieNetworkFetcher {
     @WorkerThread
     @NonNull
     LottieNetworkResult fetchSync(@NonNull String url) throws IOException;

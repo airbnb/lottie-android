@@ -8,7 +8,7 @@ import java.net.URL;
 
 import androidx.annotation.NonNull;
 
-public class DefaultFetcher implements Fetcher {
+public class DefaultLottieNetworkFetcher implements LottieNetworkFetcher {
 
   @Override
   @NonNull

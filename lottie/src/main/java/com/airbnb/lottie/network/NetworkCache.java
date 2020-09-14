@@ -22,9 +22,9 @@ import java.io.OutputStream;
 public class NetworkCache {
 
   @NonNull
-  private final CacheProvider cacheDir;
+  private final LottieNetworkCacheProvider cacheDir;
 
-  public NetworkCache(@NonNull CacheProvider cacheDir) {
+  public NetworkCache(@NonNull LottieNetworkCacheProvider cacheDir) {
     this.cacheDir = cacheDir;
   }
 

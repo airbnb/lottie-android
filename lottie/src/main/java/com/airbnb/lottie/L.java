@@ -2,9 +2,9 @@ package com.airbnb.lottie;
 
 import android.content.Context;
 
-import com.airbnb.lottie.network.CacheProvider;
-import com.airbnb.lottie.network.DefaultFetcher;
-import com.airbnb.lottie.network.Fetcher;
+import com.airbnb.lottie.network.LottieNetworkCacheProvider;
+import com.airbnb.lottie.network.DefaultLottieNetworkFetcher;
+import com.airbnb.lottie.network.LottieNetworkFetcher;
 import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.network.NetworkFetcher;
 
@@ -27,8 +27,8 @@ public class L {
   private static int traceDepth = 0;
   private static int depthPastMaxDepth = 0;
 
-  private static Fetcher fetcher;
-  private static CacheProvider cacheProvider;
+  private static LottieNetworkFetcher fetcher;
+  private static LottieNetworkCacheProvider cacheProvider;
 
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
@@ -78,11 +78,11 @@ public class L {
     return (System.nanoTime() - startTimeNs[traceDepth]) / 1000000f;
   }
 
-  public static void setFetcher(Fetcher customFetcher) {
+  public static void setFetcher(LottieNetworkFetcher customFetcher) {
     fetcher = customFetcher;
   }
 
-  public static void setCacheProvider(CacheProvider customProvider) {
+  public static void setCacheProvider(LottieNetworkCacheProvider customProvider) {
     cacheProvider = customProvider;
   }
 
@@ -93,7 +93,7 @@ public class L {
       synchronized (NetworkFetcher.class) {
         local = networkFetcher;
         if (local == null) {
-          networkFetcher = local = new NetworkFetcher(networkCache(context), fetcher != null ? fetcher : new DefaultFetcher());
+          networkFetcher = local = new NetworkFetcher(networkCache(context), fetcher != null ? fetcher : new DefaultLottieNetworkFetcher());
         }
       }
     }
@@ -107,7 +107,7 @@ public class L {
       synchronized (NetworkCache.class) {
         local = networkCache;
         if (local == null) {
-          networkCache = local = new NetworkCache(cacheProvider != null ? cacheProvider : new CacheProvider() {
+          networkCache = local = new NetworkCache(cacheProvider != null ? cacheProvider : new LottieNetworkCacheProvider() {
             @Override @NonNull public File getCacheDir() {
               return new File(context.getCacheDir(), "lottie_network_cache");
             }

@@ -5,9 +5,9 @@ import java.io.File;
 import androidx.annotation.NonNull;
 
 /**
- * Interface for providing the custom cache directory
+ * Interface for providing the custom cache directory where animations downloaded via url are saved
  */
-public interface CacheProvider {
+public interface LottieNetworkCacheProvider {
 
   /**
    * Called during cache operations

@@ -22,9 +22,9 @@ public class NetworkFetcher {
   @NonNull
   private final NetworkCache networkCache;
   @NonNull
-  private final Fetcher fetcher;
+  private final LottieNetworkFetcher fetcher;
 
-  public NetworkFetcher(@NonNull NetworkCache networkCache, @NonNull Fetcher fetcher) {
+  public NetworkFetcher(@NonNull NetworkCache networkCache, @NonNull LottieNetworkFetcher fetcher) {
     this.networkCache = networkCache;
     this.fetcher = fetcher;
   }
