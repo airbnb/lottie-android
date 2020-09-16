@@ -22,10 +22,10 @@ import java.io.OutputStream;
 public class NetworkCache {
 
   @NonNull
-  private final LottieNetworkCacheProvider cacheDir;
+  private final LottieNetworkCacheProvider cacheProvider;
 
-  public NetworkCache(@NonNull LottieNetworkCacheProvider cacheDir) {
-    this.cacheDir = cacheDir;
+  public NetworkCache(@NonNull LottieNetworkCacheProvider cacheProvider) {
+    this.cacheProvider = cacheProvider;
   }
 
   public void clear() {
@@ -142,7 +142,7 @@ public class NetworkCache {
   }
 
   private File parentDir() {
-    File file = cacheDir.getCacheDir();
+    File file = cacheProvider.getCacheDir();
     if (file.isFile()) {
       file.delete();
     }
