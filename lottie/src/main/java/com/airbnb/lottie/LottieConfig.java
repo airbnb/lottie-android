@@ -19,7 +19,7 @@ public class LottieConfig {
   @Nullable final LottieNetworkFetcher networkFetcher;
   @Nullable final LottieNetworkCacheProvider cacheProvider;
 
-  public LottieConfig(@NonNull Context applicationContext, @Nullable LottieNetworkFetcher networkFetcher, @Nullable
+  private LottieConfig(@NonNull Context applicationContext, @Nullable LottieNetworkFetcher networkFetcher, @Nullable
       LottieNetworkCacheProvider cacheProvider) {
     this.applicationContext = applicationContext;
     this.networkFetcher = networkFetcher;
