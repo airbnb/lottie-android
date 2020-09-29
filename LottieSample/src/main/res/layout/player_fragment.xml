@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
+
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <FrameLayout
             android:id="@+id/animationContainer"
             android:layout_width="match_parent"
@@ -23,27 +24,44 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
-                app:lottie_autoPlay="true"/>
+                app:lottie_autoPlay="true" />
 
             <ProgressBar
                 android:id="@+id/loadingView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/divider_height"
                 android:layout_gravity="bottom"
-                android:background="@color/divider"/>
+                android:background="@color/divider" />
         </FrameLayout>
 
-        <include layout="@layout/control_bar_speed" />
-        <include layout="@layout/control_bar_scale" />
-        <include layout="@layout/control_bar_background_color" />
-        <include layout="@layout/control_bar_trim" />
-        <include layout="@layout/control_bar_player_controls" />
-        <include layout="@layout/control_bar" />
+        <include
+            android:id="@+id/control_bar_speed"
+            layout="@layout/control_bar_speed" />
+
+        <include
+            android:id="@+id/control_bar_scale"
+            layout="@layout/control_bar_scale" />
+
+        <include
+            android:id="@+id/control_bar_background_color"
+            layout="@layout/control_bar_background_color" />
+
+        <include
+            android:id="@+id/control_bar_trim"
+            layout="@layout/control_bar_trim" />
+
+        <include
+            android:id="@+id/control_bar_player_controls"
+            layout="@layout/control_bar_player_controls" />
+
+        <include
+            android:id="@+id/control_bar"
+            layout="@layout/control_bar" />
     </LinearLayout>
 
     <androidx.appcompat.widget.Toolbar
@@ -52,9 +70,17 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_gravity="top"
         app:navigationIcon="@drawable/ic_nav_close_selector"
-        app:title=""/>
+        app:title="" />
 
-    <include layout="@layout/bottom_sheet_render_times" />
-    <include layout="@layout/bottom_sheet_warnings" />
-    <include layout="@layout/bottom_sheet_key_paths" />
+    <include
+        android:id="@+id/bottom_sheet_render_times"
+        layout="@layout/bottom_sheet_render_times" />
+
+    <include
+        android:id="@+id/bottom_sheet_warnings"
+        layout="@layout/bottom_sheet_warnings" />
+
+    <include
+        android:id="@+id/bottom_sheet_key_paths"
+        layout="@layout/bottom_sheet_key_paths" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,34 +2,35 @@ package com.airbnb.lottie.samples
 
 import android.graphics.PointF
 import android.os.Bundle
-import androidx.customview.widget.ViewDragHelper
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.customview.widget.ViewDragHelper
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.samples.databinding.BullseyeActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.value.LottieRelativePointValueCallback
-import kotlinx.android.synthetic.main.activity_bullseye.*
 
 class BullseyeActivity : AppCompatActivity() {
+    private val binding: BullseyeActivityBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bullseye)
 
         val largeValueCallback = LottieRelativePointValueCallback(PointF(0f, 0f))
-        animationView.addValueCallback(KeyPath("First"), LottieProperty.TRANSFORM_POSITION, largeValueCallback)
+        binding.animationView.addValueCallback(KeyPath("First"), LottieProperty.TRANSFORM_POSITION, largeValueCallback)
 
         val mediumValueCallback = LottieRelativePointValueCallback(PointF(0f, 0f))
-        animationView.addValueCallback(KeyPath("Fourth"), LottieProperty.TRANSFORM_POSITION, mediumValueCallback)
+        binding.animationView.addValueCallback(KeyPath("Fourth"), LottieProperty.TRANSFORM_POSITION, mediumValueCallback)
 
         val smallValueCallback = LottieRelativePointValueCallback(PointF(0f, 0f))
-        animationView.addValueCallback(KeyPath("Seventh"), LottieProperty.TRANSFORM_POSITION, smallValueCallback)
+        binding.animationView.addValueCallback(KeyPath("Seventh"), LottieProperty.TRANSFORM_POSITION, smallValueCallback)
 
         var totalDx = 0f
         var totalDy = 0f
 
-        val viewDragHelper = ViewDragHelper.create(containerView, object : ViewDragHelper.Callback() {
-            override fun tryCaptureView(child: View, pointerId: Int) = child == targetView
+        val viewDragHelper = ViewDragHelper.create(binding.containerView, object : ViewDragHelper.Callback() {
+            override fun tryCaptureView(child: View, pointerId: Int) = child == binding.targetView
 
             override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
                 return top
@@ -48,7 +49,7 @@ class BullseyeActivity : AppCompatActivity() {
             }
         })
 
-        containerView.viewDragHelper = viewDragHelper
+        binding.containerView.viewDragHelper = viewDragHelper
     }
 
     private fun getPoint(dx: Float, dy: Float, factor: Float) = PointF(dx * factor, dy * factor)

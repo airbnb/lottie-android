@@ -1,14 +1,15 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.lottie.samples.databinding.EmptyActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 
 class EmptyActivity : AppCompatActivity() {
+    private val binding: EmptyActivityBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_empty)
-        findViewById<View>(R.id.finish).setOnClickListener { finish() }
+        binding.finish.setOnClickListener { finish() }
     }
 }

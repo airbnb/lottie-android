@@ -4,22 +4,24 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_typography_demo.*
+import com.airbnb.lottie.samples.databinding.TypographyDemoActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 
 class TypographyDemoActivity : AppCompatActivity() {
+    private val binding: TypographyDemoActivityBinding by viewBinding()
+
     private val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-        scrollView.fullScroll(View.FOCUS_DOWN)
+        binding.scrollView.fullScroll(View.FOCUS_DOWN)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_typography_demo)
-        fontView.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+        binding.fontView.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
     }
 
 
     override fun onDestroy() {
-        fontView.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
+        binding.fontView.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
         super.onDestroy()
     }
 }

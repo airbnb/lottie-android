@@ -1,4 +1,4 @@
-package com.airbnb.lottie.samples
+package com.airbnb.lottie.samples.testing
 
 import android.content.Context
 import android.util.AttributeSet

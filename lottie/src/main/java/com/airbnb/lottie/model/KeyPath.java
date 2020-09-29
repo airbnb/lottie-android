@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Defines which content to target.
  * The keypath can contain wildcards ('*') with match exactly 1 item.
- * or globstars ('**') which match 0 or more items.
+ * or globstars ('**') which match 0 or more items. or KeyPath.COMPOSITION
+ * to represent the root composition layer.
  *
  * For example, if your content were arranged like this:
  * Gabriel (Shape Layer)
@@ -35,12 +36,19 @@ import java.util.List;
  *        new KeyPath("*", "Body", Left Hand", "Fill");
  *     Match anything with the name Fill:
  *        new KeyPath("**", "Fill");
+ *     Target the the root composition layer:
+ *        KeyPath.COMPOSITION
  *
  *
  * NOTE: Content that are part of merge paths or repeaters cannot currently be resolved with
  * a {@link KeyPath}. This may be fixed in the future.
  */
 public class KeyPath {
+  /**
+   * A singleton KeyPath that targets on the root composition layer.
+   * This is useful if you want to apply transformer to the animation as a whole.
+   */
+  public final static KeyPath COMPOSITION = new KeyPath("COMPOSITION");
 
   private final List<String> keys;
   @Nullable private KeyPathElement resolvedElement;

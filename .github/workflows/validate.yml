@@ -1,0 +1,49 @@
+name: Validate
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  gradle-wrapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Run Lint
+        run: ./gradlew lintDebug
+      - name: Lint Results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Lint Results
+          path: lottie/build/reports
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+      - name: Lint Results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Lint Results
+          path: lottie/build/reports
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test]
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: "Deploy Snapshot"
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: ./deploy_snapshot.sh
+

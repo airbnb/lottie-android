@@ -2,27 +2,28 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.graphics.Color
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import com.airbnb.lottie.samples.R
-import com.airbnb.lottie.samples.getText
-import kotlinx.android.synthetic.main.item_view_control_bar.view.*
+import com.airbnb.lottie.samples.databinding.ItemViewControlBarBinding
+import com.airbnb.lottie.samples.utils.getText
+import com.airbnb.lottie.samples.utils.viewBinding
 
 class ControlBarItemToggleView @JvmOverloads constructor(
         context: Context,
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
+    private val binding: ItemViewControlBarBinding by viewBinding()
 
     init {
-        inflate(context, R.layout.item_view_control_bar, this)
         orientation = HORIZONTAL
         setBackgroundResource(R.drawable.control_bar_item_view_background)
         setPadding(resources.getDimensionPixelSize(R.dimen.control_bar_button_padding))
@@ -31,14 +32,14 @@ class ControlBarItemToggleView @JvmOverloads constructor(
 
             val textRes = typedArray.getResourceId(R.styleable.ControlBarItemToggleView_text, 0)
             if (textRes != 0) {
-                textView.text = getText(textRes)
+                binding.textView.text = getText(textRes)
             }
 
             val drawableRes = typedArray.getResourceId(R.styleable.ControlBarItemToggleView_src, 0)
             if (drawableRes == 0) {
-                imageView.isVisible = false
+                binding.imageView.isVisible = false
             } else {
-                imageView.setImageResource(drawableRes)
+                binding.imageView.setImageResource(drawableRes)
             }
 
             typedArray.recycle()
@@ -55,14 +56,14 @@ class ControlBarItemToggleView @JvmOverloads constructor(
         }
     }
 
-    fun getText() = textView.text.toString()
+    fun getText() = binding.textView.text.toString()
 
     fun setText(text: String) {
-        textView.text = text
+        binding.textView.text = text
     }
 
     fun setImageResource(@DrawableRes drawableRes: Int) {
-        imageView.setImageResource(drawableRes)
-        childDrawableStateChanged(imageView)
+        binding.imageView.setImageResource(drawableRes)
+        childDrawableStateChanged(binding.imageView)
     }
 }

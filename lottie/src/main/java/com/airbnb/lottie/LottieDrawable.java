@@ -386,7 +386,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @MainThread
   @Override
   public void start() {
-    playAnimation();
+    // Don't auto play when in edit mode.
+    Callback callback = getCallback();
+    if (callback instanceof View && !((View) callback).isInEditMode()) {
+      playAnimation();
+    }
   }
 
   @MainThread
@@ -972,7 +976,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     boolean invalidate;
-    if (keyPath.getResolvedElement() != null) {
+    if (keyPath == KeyPath.COMPOSITION) {
+      compositionLayer.addValueCallback(property, callback);
+      invalidate = true;
+    } else if (keyPath.getResolvedElement() != null) {
       keyPath.getResolvedElement().addValueCallback(property, callback);
       invalidate = true;
     } else {

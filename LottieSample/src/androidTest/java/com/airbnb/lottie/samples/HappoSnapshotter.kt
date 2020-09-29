@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
-import com.airbnb.lottie.BuildConfig
 import com.airbnb.lottie.L
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
@@ -14,20 +13,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Credentials
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
+import kotlinx.coroutines.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -61,7 +50,7 @@ class HappoSnapshotter(
     private val happoSecretKey = BC.HappoSecretKey
     private val gitBranch = URLEncoder.encode((if (BC.BITRISE_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
-    private val reportNamePrefixes = listOf(BC.GIT_SHA, gitBranch, BuildConfig.VERSION_NAME).filter { it.isNotBlank() }
+    private val reportNamePrefixes = listOf(BC.GIT_SHA, gitBranch, BC.VERSION_NAME).filter { it.isNotBlank() }
     private val reportNames = reportNamePrefixes.map { "$it-$androidVersion" }
 
     private val okhttp = OkHttpClient()
@@ -104,7 +93,7 @@ class HappoSnapshotter(
     }
 
     private suspend fun upload(reportName: String, json: JsonElement) {
-        val body = RequestBody.create(MediaType.get("application/json"), json.toString())
+        val body = json.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
                 .addHeader("Authorization", Credentials.basic(happoApiKey, happoSecretKey, Charset.forName("UTF-8")))
                 .url("https://happo.io/api/reports/$reportName")
@@ -115,7 +104,7 @@ class HappoSnapshotter(
         if (response.isSuccessful) {
             Log.d(TAG, "Uploaded $reportName to happo")
         } else {
-            throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code()}. " + response.body()?.string())
+            throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code}. " + response.body?.string())
         }
     }
 

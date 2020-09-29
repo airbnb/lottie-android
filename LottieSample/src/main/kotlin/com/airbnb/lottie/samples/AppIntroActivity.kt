@@ -1,36 +1,26 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.animation.Interpolator
 import android.widget.Scroller
+import androidx.fragment.app.Fragment
 import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.samples.utils.inflate
+import com.airbnb.lottie.samples.utils.lerp
 import com.matthewtamlin.sliding_intro_screen_library.buttons.IntroButton
 import com.matthewtamlin.sliding_intro_screen_library.core.IntroActivity
 import com.matthewtamlin.sliding_intro_screen_library.core.LockableViewPager
 
 
 class AppIntroActivity : IntroActivity() {
-    private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
-
     private val animationView: LottieAnimationView by lazy {
         rootView.inflate(R.layout.app_intro_animation_view, false) as LottieAnimationView
     }
     private val viewPager: LockableViewPager by lazy {
-        findViewById<LockableViewPager>(R.id.intro_activity_viewPager)
+        findViewById(R.id.intro_activity_viewPager)
     }
 
-    override fun generatePages(savedInstanceState: Bundle?): Collection<Fragment> {
-        return listOf(
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance(),
-                EmptyFragment.newInstance()
-        )
-    }
+    override fun generatePages(savedInstanceState: Bundle?) = listOf(EmptyFragment(), EmptyFragment(), EmptyFragment(), EmptyFragment())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,18 +49,7 @@ class AppIntroActivity : IntroActivity() {
         animationView.progress = startProgress.lerp(endProgress, positionOffset)
     }
 
-    class EmptyFragment : androidx.fragment.app.Fragment() {
-
-        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            return container!!.inflate(R.layout.fragment_empty, false)
-        }
-
-        companion object {
-            internal fun newInstance(): EmptyFragment {
-                return EmptyFragment()
-            }
-        }
-    }
+    class EmptyFragment : Fragment(R.layout.empty_fragment)
 
     private fun setViewPagerScroller() {
         try {
@@ -90,5 +69,9 @@ class AppIntroActivity : IntroActivity() {
         } catch (e: IllegalAccessException) {
             // Do nothing.
         }
+    }
+
+    companion object {
+        private val ANIMATION_TIMES = floatArrayOf(0f, 0.3333f, 0.6666f, 1f, 1f)
     }
 }

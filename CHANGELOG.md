@@ -1,3 +1,18 @@
+# 3.4.2
+### Feature and Improvements
+* Disable hardware acceleration by default on Android 7.x ([#1586](https://github.com/airbnb/lottie-android/pull/1586))
+* Enable Lottie animations to preview in Android Studio (they may not be accurate, though)
+([#1572](https://github.com/airbnb/lottie-android/pull/1572))
+* More leniently parse opacity and colors to render Telegram stickers better ([#1612](https://github.com/airbnb/lottie-android/pull/1612) and [#1613](https://github.com/airbnb/lottie-android/pull/1612))
+* Use the correct cacheKey when LottieAnimationView loads an rawRes animation ([#1617](https://github.com/airbnb/lottie-android/pull/1617))
+* Prevent animations from blinking if they are rendered on multiple threads ([#1575](https://github.com/airbnb/lottie-android/pull/1575))
+
+
+# 3.4.1
+### Feature and Improvements
+* Added a KeyPath.COMPOSITION constant to set dynamic properties on the animation's root composition layer ([#1559](https://github.com/airbnb/lottie-android/pull/1559)).
+* A default style can now be set for all AnimationViews with lottieAnimationViewStyle ([#1524](https://github.com/airbnb/lottie-android/pull/1524)).
+
 # 3.4.0
 ### Features and Improvements
 * Added optional cache key parameters to url loading to enable skipping the cache.
@@ -44,11 +59,11 @@
 
 # 3.1.0
 ### Features and Improvements
-* **Breaking Change** Replace JsonReader parsing APIs with InputStream variants to prevent 
+* **Breaking Change** Replace JsonReader parsing APIs with InputStream variants to prevent
 exposing Lottie's copy of Moshi's json parser.
-* Add the ability to catch all Lottie composition errors with `setFailureListener` and 
+* Add the ability to catch all Lottie composition errors with `setFailureListener` and
 `resetFailureListener` (#1321).
-* Add the ability to set a fallback drawable res when Lottie fails to parse a composition or 
+* Add the ability to set a fallback drawable res when Lottie fails to parse a composition or
 load it from the internet. Use `setFallbackResource` from code or`lottie_fallbackRes` from xml.
 * Add the ability to render opacity on the layer level rather than the shape level. View the docs
  for `setApplyingOpacityToLayersEnabled` for more info.

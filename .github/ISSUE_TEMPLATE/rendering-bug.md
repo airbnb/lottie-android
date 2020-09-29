@@ -6,7 +6,9 @@ labels: Rendering bug
 assignees: ''
 ---
 
-** If you don't use this template, your issue will be closed **
+*Lottie is supported and developed on nights and weekends. Issues from [Lottie sponsors](https://github.com/users/gpeal/sponsorship) will be prioritized.*
+
+**If you don't use this template, your issue will be closed. Delete this text once completed.**
 
 **Checklist**
 
@@ -31,7 +33,3 @@ Steps to reproduce the behavior:
 4. See error
 
 **Screenshots**
-
-
-
-*Lottie is supported and developed on nights and weekends. Please consider [sponsoring Lottie](https://github.com/users/gpeal/sponsorship) to prioritize this issue and help support this issue as well as future investments.*

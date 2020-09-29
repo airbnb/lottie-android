@@ -2,6 +2,7 @@ package com.airbnb.lottie.samples
 
 import androidx.multidex.MultiDexApplication
 import com.airbnb.lottie.L
+import com.airbnb.lottie.samples.api.LottiefilesApi
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
