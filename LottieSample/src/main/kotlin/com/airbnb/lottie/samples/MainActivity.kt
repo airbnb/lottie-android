@@ -7,15 +7,17 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.samples.databinding.MainActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+    private val binding: MainActivityBinding by viewBinding()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        bottomNavigation.setOnNavigationItemSelectedListener(this)
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(this)
 
         savedInstanceState ?: showFragment(ShowcaseFragment())
     }

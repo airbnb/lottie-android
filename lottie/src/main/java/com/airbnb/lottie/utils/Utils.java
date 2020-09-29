@@ -34,10 +34,37 @@ import javax.net.ssl.SSLException;
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;
 
-  private static final PathMeasure pathMeasure = new PathMeasure();
-  private static final Path tempPath = new Path();
-  private static final Path tempPath2 = new Path();
-  private static final float[] points = new float[4];
+  /**
+   * Wrap in Local Thread is necessary for prevent race condition in multi-threaded mode
+   */
+  private static final ThreadLocal<PathMeasure> threadLocalPathMeasure = new ThreadLocal<PathMeasure>() {
+    @Override
+    protected PathMeasure initialValue() {
+      return new PathMeasure();
+    }
+  };
+
+  private static final ThreadLocal<Path> threadLocalTempPath = new ThreadLocal<Path>() {
+    @Override
+    protected Path initialValue() {
+      return new Path();
+    }
+  };
+
+  private static final ThreadLocal<Path> threadLocalTempPath2 = new ThreadLocal<Path>() {
+    @Override
+    protected Path initialValue() {
+      return new Path();
+    }
+  };
+
+  private static final ThreadLocal<float[]> threadLocalPoints = new ThreadLocal<float[]>() {
+    @Override
+    protected float[] initialValue() {
+      return new float[4];
+    }
+  };
+
   private static final float INV_SQRT_2 = (float) (Math.sqrt(2) / 2.0);
   private static float dpScale = -1;
 
@@ -71,6 +98,8 @@ public final class Utils {
   }
 
   public static float getScale(Matrix matrix) {
+    final float[] points = threadLocalPoints.get();
+
     points[0] = 0;
     points[1] = 0;
     // Use 1/sqrt(2) so that the hypotenuse is of length 1.
@@ -84,6 +113,8 @@ public final class Utils {
   }
 
   public static boolean hasZeroScaleAxis(Matrix matrix) {
+    final float[] points = threadLocalPoints.get();
+
     points[0] = 0;
     points[1] = 0;
     // Random numbers. The only way these should map to the same thing as 0,0 is if the scale is 0.
@@ -109,6 +140,10 @@ public final class Utils {
   public static void applyTrimPathIfNeeded(
       Path path, float startValue, float endValue, float offsetValue) {
     L.beginSection("applyTrimPathIfNeeded");
+    final PathMeasure pathMeasure = threadLocalPathMeasure.get();
+    final Path tempPath = threadLocalTempPath.get();
+    final Path tempPath2 = threadLocalTempPath2.get();
+
     pathMeasure.setPath(path, false);
 
     float length = pathMeasure.getLength();

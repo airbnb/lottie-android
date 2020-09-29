@@ -1,20 +1,21 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.TextDelegate
-import kotlinx.android.synthetic.main.activity_dynamic_text.*
+import com.airbnb.lottie.samples.databinding.DynamicTextActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 
 class DynamicTextActivity : AppCompatActivity() {
+    private val binding: DynamicTextActivityBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dynamic_text)
 
-        val textDelegate = TextDelegate(dynamicTextView)
-        nameEditText.addTextChangedListener(object: TextWatcher {
+        val textDelegate = TextDelegate(binding.dynamicTextView)
+        binding.nameEditText.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 textDelegate.setText("NAME", s.toString())
             }
@@ -23,6 +24,6 @@ class DynamicTextActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-        dynamicTextView.setTextDelegate(textDelegate)
+        binding.dynamicTextView.setTextDelegate(textDelegate)
     }
 }

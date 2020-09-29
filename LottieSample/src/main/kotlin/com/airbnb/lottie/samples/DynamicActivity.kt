@@ -1,13 +1,15 @@
 package com.airbnb.lottie.samples
 
+import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
+import com.airbnb.lottie.samples.databinding.DynamicActivityBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.utils.MiscUtils
-import kotlinx.android.synthetic.main.activity_dynamic.*
 
 private val COLORS = arrayOf(
     0xff5a5f,
@@ -17,41 +19,38 @@ private val COLORS = arrayOf(
 private val EXTRA_JUMP = arrayOf(0f, 20f, 50f)
 
 class DynamicActivity : AppCompatActivity() {
+    private val binding: DynamicActivityBinding by viewBinding()
+
     private var speed = 1
     private var colorIndex = 0
     private var extraJumpIndex = 0
 
-    companion object {
-        val TAG = DynamicActivity::class.simpleName
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dynamic)
 
-        speedButton.setOnClickListener {
+        binding.speedButton.setOnClickListener {
             speed = ++speed % 4
             updateButtonText()
         }
 
-        colorButton.setOnClickListener {
+        binding.colorButton.setOnClickListener {
             colorIndex = (colorIndex + 1) % COLORS.size
             updateButtonText()
         }
 
-        jumpHeight.setOnClickListener {
+        binding.jumpHeight.setOnClickListener {
             extraJumpIndex = (extraJumpIndex + 1) % EXTRA_JUMP.size
             updateButtonText()
             setupValueCallbacks()
         }
 
-        animationView.addLottieOnCompositionLoadedListener { _ ->
-            animationView.resolveKeyPath(KeyPath("**")).forEach {
+        binding.animationView.addLottieOnCompositionLoadedListener { _ ->
+            binding.animationView.resolveKeyPath(KeyPath("**")).forEach {
                 Log.d(TAG, it.keysToString())
                 setupValueCallbacks()
             }
         }
-        animationView.setFailureListener { e ->
+        binding.animationView.setFailureListener { e ->
             Log.e(TAG, "Failed to load animation!", e)
         }
 
@@ -59,7 +58,7 @@ class DynamicActivity : AppCompatActivity() {
     }
 
     private fun setupValueCallbacks() {
-        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
+        binding.animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
             2 * speed.toFloat() * frameInfo.overallProgress
         }
 
@@ -67,11 +66,11 @@ class DynamicActivity : AppCompatActivity() {
         val leftArm = KeyPath("LeftArmWave", "LeftArm", "Group 6", "Fill 1")
         val rightArm = KeyPath("RightArm", "Group 6", "Fill 1")
 
-        animationView.addValueCallback(shirt, LottieProperty.COLOR) { COLORS[colorIndex] }
-        animationView.addValueCallback(leftArm, LottieProperty.COLOR) { COLORS[colorIndex] }
-        animationView.addValueCallback(rightArm, LottieProperty.COLOR) { COLORS[colorIndex] }
+        binding.animationView.addValueCallback(shirt, LottieProperty.COLOR) { COLORS[colorIndex] }
+        binding.animationView.addValueCallback(leftArm, LottieProperty.COLOR) { COLORS[colorIndex] }
+        binding.animationView.addValueCallback(rightArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         val point = PointF()
-        animationView.addValueCallback(KeyPath("Body"),
+        binding.animationView.addValueCallback(KeyPath("Body"),
             LottieProperty.TRANSFORM_POSITION) { frameInfo ->
             val startX = frameInfo.startValue.x
             var startY = frameInfo.startValue.y
@@ -87,8 +86,13 @@ class DynamicActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateButtonText() {
-        speedButton.text = "Wave: ${speed}x Speed"
-        jumpHeight.text = "Extra jump height ${EXTRA_JUMP[extraJumpIndex]}"
+        binding.speedButton.text = "Wave: ${speed}x Speed"
+        binding.jumpHeight.text = "Extra jump height ${EXTRA_JUMP[extraJumpIndex]}"
+    }
+
+    companion object {
+        val TAG = DynamicActivity::class.simpleName
     }
 }

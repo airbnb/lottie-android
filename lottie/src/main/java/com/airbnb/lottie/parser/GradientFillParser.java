@@ -10,8 +10,10 @@ import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.content.GradientFill;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
+import java.util.Collections;
 
 class GradientFillParser {
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
@@ -89,6 +91,9 @@ class GradientFillParser {
       }
     }
 
+    // Telegram sometimes omits opacity.
+    // https://github.com/airbnb/lottie-android/issues/1600
+    opacity = opacity == null ? new AnimatableIntegerValue(Collections.singletonList(new Keyframe<>(100))) : opacity;
     return new GradientFill(
         name, gradientType, fillType, color, opacity, startPoint, endPoint, null, null, hidden);
   }

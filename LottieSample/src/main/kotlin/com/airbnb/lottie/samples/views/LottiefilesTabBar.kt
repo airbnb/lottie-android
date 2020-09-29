@@ -7,9 +7,8 @@ import android.widget.LinearLayout
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.lottie.samples.LottiefilesMode
-import com.airbnb.lottie.samples.R
-import com.airbnb.lottie.samples.inflate
-import kotlinx.android.synthetic.main.lottiefiles_tab_bar.view.*
+import com.airbnb.lottie.samples.databinding.LottiefilesTabBarBinding
+import com.airbnb.lottie.samples.utils.viewBinding
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class LottiefilesTabBar @JvmOverloads constructor(
@@ -17,30 +16,27 @@ class LottiefilesTabBar @JvmOverloads constructor(
         attrs: AttributeSet? = null,
         defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
-
-    init {
-        inflate(R.layout.lottiefiles_tab_bar)
-    }
+    private val binding: LottiefilesTabBarBinding by viewBinding()
 
     @ModelProp
     fun setMode(mode: LottiefilesMode) {
-        popularView.isActivated = mode == LottiefilesMode.Popular
-        recentView.isActivated = mode == LottiefilesMode.Recent
-        searchView.isActivated = mode == LottiefilesMode.Search
+        binding.popularView.isActivated = mode == LottiefilesMode.Popular
+        binding.recentView.isActivated = mode == LottiefilesMode.Recent
+        binding.searchView.isActivated = mode == LottiefilesMode.Search
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
     fun setPopularClickListener(listener: View.OnClickListener) {
-        popularView.setOnClickListener(listener)
+        binding.popularView.setOnClickListener(listener)
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
-    fun setRecentClickListener(listener: View.OnClickListener) {
-        recentView.setOnClickListener(listener)
+    fun setRecentClickListener(listener: OnClickListener) {
+        binding.recentView.setOnClickListener(listener)
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
-    fun setSearchClickListener(listener: View.OnClickListener) {
-        searchView.setOnClickListener(listener)
+    fun setSearchClickListener(listener: OnClickListener) {
+        binding.searchView.setOnClickListener(listener)
     }
 }
