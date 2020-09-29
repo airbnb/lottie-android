@@ -29,4 +29,8 @@ public class Logger {
   public static void warning(String message, Throwable exception) {
     INSTANCE.warning(message, exception);
   }
+
+  public static void error(String message, Throwable exception) {
+    INSTANCE.error(message, exception);
+  }
 }

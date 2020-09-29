@@ -1,1 +1,1 @@
-include ':LottieSample', ':lottie'
+include ':LottieSample', ':lottie', ':issue-repro'

@@ -295,7 +295,7 @@ public abstract class BaseStrokeContent
       }
       dashPatternValues[i] *= scale;
     }
-    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
+    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue() * scale;
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     L.endSection("StrokeContent#applyDashPattern");
   }
@@ -314,6 +314,10 @@ public abstract class BaseStrokeContent
     } else if (property == LottieProperty.STROKE_WIDTH) {
       widthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation != null) {
+        layer.removeAnimation(colorFilterAnimation);
+      }
+
       if (callback == null) {
         colorFilterAnimation = null;
       } else {

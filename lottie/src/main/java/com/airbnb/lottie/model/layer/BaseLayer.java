@@ -1,12 +1,10 @@
 package com.airbnb.lottie.model.layer;
 
-import android.annotation.SuppressLint;
 import android.graphics.*;
 import android.os.Build;
-import android.support.annotation.CallSuper;
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;;
+import androidx.annotation.CallSuper;
+import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -22,6 +20,7 @@ import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.Logger;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -81,6 +80,8 @@ public abstract class BaseLayer
   final Layer layerModel;
   @Nullable
   private MaskKeyframeAnimation mask;
+  @Nullable
+  private FloatKeyframeAnimation inOutAnimation;
   @Nullable
   private BaseLayer matteLayer;
   /**
@@ -146,8 +147,7 @@ public abstract class BaseLayer
 
   private void setupInOutAnimations() {
     if (!layerModel.getInOutKeyframes().isEmpty()) {
-      final FloatKeyframeAnimation inOutAnimation =
-          new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
+      inOutAnimation = new FloatKeyframeAnimation(layerModel.getInOutKeyframes());
       inOutAnimation.setIsDiscrete();
       inOutAnimation.addUpdateListener(new BaseKeyframeAnimation.AnimationListener() {
         @Override
@@ -164,17 +164,6 @@ public abstract class BaseLayer
 
   private void invalidateSelf() {
     lottieDrawable.invalidateSelf();
-  }
-
-  @SuppressLint("WrongConstant")
-  private void saveLayerCompat(Canvas canvas, RectF rect, Paint paint, boolean all) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // This method was deprecated in API level 26 and not recommended since 22, but its
-      // 2-parameter replacement is only available starting at API level 21.
-      canvas.saveLayer(rect, paint, all ? Canvas.ALL_SAVE_FLAG : SAVE_FLAGS);
-    } else {
-      canvas.saveLayer(rect, paint);
-    }
   }
 
   public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
@@ -251,11 +240,16 @@ public abstract class BaseLayer
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
+    if (!rect.intersect(0, 0, canvas.getWidth(), canvas.getHeight())) {
+      rect.set(0, 0, 0, 0);
+    }
+
     L.endSection("Layer#computeBounds");
 
     if (!rect.isEmpty()) {
       L.beginSection("Layer#saveLayer");
-      saveLayerCompat(canvas, rect, contentPaint, true);
+      contentPaint.setAlpha(255);
+      Utils.saveLayerCompat(canvas, rect, contentPaint);
       L.endSection("Layer#saveLayer");
 
       // Clear the off screen buffer. This is necessary for some phones.
@@ -271,7 +265,7 @@ public abstract class BaseLayer
       if (hasMatteOnThisLayer()) {
         L.beginSection("Layer#drawMatte");
         L.beginSection("Layer#saveLayer");
-        saveLayerCompat(canvas, rect, mattePaint, false);
+        Utils.saveLayerCompat(canvas, rect, mattePaint, SAVE_FLAGS);
         L.endSection("Layer#saveLayer");
         clearCanvas(canvas);
         //noinspection ConstantConditions
@@ -318,6 +312,9 @@ public abstract class BaseLayer
       path.transform(matrix);
 
       switch (mask.getMaskMode()) {
+        case MASK_MODE_NONE:
+          // Mask mode none will just render the original content so it is the whole bounds.
+          return;
         case MASK_MODE_SUBTRACT:
           // If there is a subtract mask, the mask could potentially be the size of the entire
           // canvas so we can't use the mask bounds.
@@ -374,13 +371,28 @@ public abstract class BaseLayer
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     L.beginSection("Layer#saveLayer");
-    saveLayerCompat(canvas, rect, dstInPaint, false);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint, SAVE_FLAGS);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      // Pre-Pie, offscreen buffers were opaque which meant that outer border of a mask
+      // might get drawn depending on the result of float rounding.
+      clearCanvas(canvas);
+    }
     L.endSection("Layer#saveLayer");
     for (int i = 0; i < mask.getMasks().size(); i++) {
       Mask mask = this.mask.getMasks().get(i);
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
       BaseKeyframeAnimation<Integer, Integer> opacityAnimation = this.mask.getOpacityAnimations().get(i);
       switch (mask.getMaskMode()) {
+        case MASK_MODE_NONE:
+          // None mask should have no effect. If all masks are NONE, fill the
+          // mask canvas with a rectangle so it fully covers the original layer content.
+          // However, if there are other masks, they should be the only ones that have an effect so
+          // this should noop.
+          if (areAllMasksNone()) {
+            contentPaint.setAlpha(255);
+            canvas.drawRect(rect, contentPaint);
+          }
+          break;
         case MASK_MODE_ADD:
           if (mask.isInverted()) {
             applyInvertedAddMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
@@ -390,10 +402,9 @@ public abstract class BaseLayer
           break;
         case MASK_MODE_SUBTRACT:
           if (i == 0) {
-            // TODO: make a paint for this.
-            Paint paint = new Paint();
-            paint.setColor(Color.BLACK);
-            canvas.drawRect(rect, paint);
+            contentPaint.setColor(Color.BLACK);
+            contentPaint.setAlpha(255);
+            canvas.drawRect(rect, contentPaint);
           }
           if (mask.isInverted()) {
             applyInvertedSubtractMask(canvas, matrix, mask, maskAnimation, opacityAnimation);
@@ -415,6 +426,19 @@ public abstract class BaseLayer
     L.endSection("Layer#restoreLayer");
   }
 
+  private boolean areAllMasksNone() {
+    if (mask.getMaskAnimations().isEmpty()) {
+      return false;
+    }
+    boolean areAllMasksNone = true;
+    for (int i = 0; i < mask.getMasks().size(); i++) {
+      if (mask.getMasks().get(i).getMaskMode() != Mask.MaskMode.MASK_MODE_NONE) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private void applyAddMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Path maskPath = maskAnimation.getValue();
@@ -426,7 +450,7 @@ public abstract class BaseLayer
 
   private void applyInvertedAddMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, contentPaint, true);
+    Utils.saveLayerCompat(canvas, rect, contentPaint);
     canvas.drawRect(rect, contentPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
@@ -446,7 +470,7 @@ public abstract class BaseLayer
 
   private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstOutPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstOutPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     Path maskPath = maskAnimation.getValue();
@@ -458,7 +482,7 @@ public abstract class BaseLayer
 
   private void applyIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
@@ -469,7 +493,7 @@ public abstract class BaseLayer
 
   private void applyInvertedIntersectMask(Canvas canvas, Matrix matrix, Mask mask,
       BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
-    saveLayerCompat(canvas, rect, dstInPaint, true);
+    Utils.saveLayerCompat(canvas, rect, dstInPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
     Path maskPath = maskAnimation.getValue();
@@ -500,6 +524,10 @@ public abstract class BaseLayer
     }
     if (layerModel.getTimeStretch() != 0) {
       progress /= layerModel.getTimeStretch();
+    }
+    if (inOutAnimation != null) {
+      // Time stretch needs to be divided again for the inOutAnimation.
+      inOutAnimation.setProgress(progress / layerModel.getTimeStretch());
     }
     if (matteLayer != null) {
       // The matte layer's time stretch is pre-calculated.

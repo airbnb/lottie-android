@@ -44,7 +44,6 @@ public class GradientFillContent
   private final BaseLayer layer;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
-  private final Matrix shaderMatrix = new Matrix();
   private final Path path = new Path();
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final RectF boundsRect = new RectF();
@@ -116,8 +115,7 @@ public class GradientFillContent
     } else {
       shader = getRadialGradient();
     }
-    shaderMatrix.set(parentMatrix);
-    shader.setLocalMatrix(shaderMatrix);
+    shader.setLocalMatrix(parentMatrix);
     paint.setShader(shader);
 
     if (colorFilterAnimation != null) {
@@ -237,6 +235,10 @@ public class GradientFillContent
     if (property == LottieProperty.OPACITY) {
       opacityAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
     } else if (property == LottieProperty.COLOR_FILTER) {
+      if (colorFilterAnimation != null) {
+        layer.removeAnimation(colorFilterAnimation);
+      }
+
        if (callback == null) {
          colorFilterAnimation = null;
        } else {
@@ -246,12 +248,14 @@ public class GradientFillContent
          layer.addAnimation(colorFilterAnimation);
        }
      } else if (property == LottieProperty.GRADIENT_COLOR) {
+      if (colorCallbackAnimation != null) {
+        layer.removeAnimation(colorCallbackAnimation);
+      }
+
        if (callback == null) {
-         if (colorCallbackAnimation != null) {
-           layer.removeAnimation(colorCallbackAnimation);
-         }
          colorCallbackAnimation = null;
        } else {
+         //noinspection rawtypes
          colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
          colorCallbackAnimation.addUpdateListener(this);
          layer.addAnimation(colorCallbackAnimation);

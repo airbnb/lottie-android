@@ -3,7 +3,6 @@ package com.airbnb.lottie.animation.content;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;;
 
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -17,6 +16,8 @@ import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 public class RectangleContent
     implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, PathContent {
@@ -50,11 +51,13 @@ public class RectangleContent
     cornerRadiusAnimation.addUpdateListener(this);
   }
 
-  @Override public String getName() {
+  @Override
+  public String getName() {
     return name;
   }
 
-  @Override public void onValueChanged() {
+  @Override
+  public void onValueChanged() {
     invalidate();
   }
 
@@ -63,7 +66,8 @@ public class RectangleContent
     lottieDrawable.invalidateSelf();
   }
 
-  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+  @Override
+  public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
@@ -75,7 +79,8 @@ public class RectangleContent
     }
   }
 
-  @Override public Path getPath() {
+  @Override
+  public Path getPath() {
     if (isPathValid) {
       return path;
     }
@@ -91,7 +96,7 @@ public class RectangleContent
     float halfWidth = size.x / 2f;
     float halfHeight = size.y / 2f;
     float radius = cornerRadiusAnimation == null ?
-            0f : ((FloatKeyframeAnimation) cornerRadiusAnimation).getFloatValue();
+        0f : ((FloatKeyframeAnimation) cornerRadiusAnimation).getFloatValue();
     float maxRadius = Math.min(halfWidth, halfHeight);
     if (radius > maxRadius) {
       radius = maxRadius;
@@ -149,18 +154,20 @@ public class RectangleContent
     return path;
   }
 
-  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
+  @Override
+  public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
+                             KeyPath currentPartialKeyPath) {
     MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
   }
 
-  @Override public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  @Override
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     if (property == LottieProperty.RECTANGLE_SIZE) {
-        sizeAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
+      sizeAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
     } else if (property == LottieProperty.POSITION) {
-        positionAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
+      positionAnimation.setValueCallback((LottieValueCallback<PointF>) callback);
     } else if (property == LottieProperty.CORNER_RADIUS) {
-        cornerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+      cornerRadiusAnimation.setValueCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

@@ -42,22 +42,24 @@ class DynamicActivity : AppCompatActivity() {
         jumpHeight.setOnClickListener {
             extraJumpIndex = (extraJumpIndex + 1) % EXTRA_JUMP.size
             updateButtonText()
+            setupValueCallbacks()
         }
 
         animationView.addLottieOnCompositionLoadedListener { _ ->
             animationView.resolveKeyPath(KeyPath("**")).forEach {
                 Log.d(TAG, it.keysToString())
+                setupValueCallbacks()
             }
         }
+        animationView.setFailureListener { e ->
+            Log.e(TAG, "Failed to load animation!", e)
+        }
 
-        jumpHeight.postDelayed({ setupValueCallbacks() }, 1000)
         updateButtonText()
-
     }
 
     private fun setupValueCallbacks() {
-        animationView.addValueCallback(KeyPath("LeftArmWave"),
-            LottieProperty.TIME_REMAP) { frameInfo ->
+        animationView.addValueCallback(KeyPath("LeftArmWave"), LottieProperty.TIME_REMAP) { frameInfo ->
             2 * speed.toFloat() * frameInfo.overallProgress
         }
 

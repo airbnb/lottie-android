@@ -2,10 +2,8 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.support.annotation.FloatRange
 import androidx.core.view.children
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.ImageAssetDelegate
@@ -41,5 +39,9 @@ class FilmStripView @JvmOverloads constructor(
 
     fun setFontAssetDelegate(delegate: FontAssetDelegate) {
         animationViews.forEach { it.setFontAssetDelegate(delegate) }
+    }
+
+    fun setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled: Boolean) {
+        animationViews.forEach { it.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled) }
     }
 }

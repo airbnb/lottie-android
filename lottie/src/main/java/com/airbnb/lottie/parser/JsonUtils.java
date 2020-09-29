@@ -2,9 +2,10 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
 import android.graphics.PointF;
-import android.support.annotation.ColorInt;
-import android.util.JsonReader;
+import androidx.annotation.ColorInt;
 import android.util.JsonToken;
+
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ class JsonUtils {
     List<PointF> points = new ArrayList<>();
 
     reader.beginArray();
-    while (reader.peek() == JsonToken.BEGIN_ARRAY) {
+    while (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
       reader.beginArray();
       points.add(jsonToPoint(reader, scale));
       reader.endArray();
@@ -66,26 +67,29 @@ class JsonUtils {
     reader.beginArray();
     x = (float) reader.nextDouble();
     y = (float) reader.nextDouble();
-    while (reader.peek() != JsonToken.END_ARRAY) {
+    while (reader.peek() != JsonReader.Token.END_ARRAY) {
       reader.skipValue();
     }
     reader.endArray();
     return new PointF(x * scale, y * scale);
   }
 
+  private static final JsonReader.Options POINT_NAMES = JsonReader.Options.of("x", "y");
+
   private static PointF jsonObjectToPoint(JsonReader reader, float scale) throws IOException {
     float x = 0f;
     float y = 0f;
     reader.beginObject();
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "x":
+      switch (reader.selectName(POINT_NAMES)) {
+        case 0:
           x = valueFromObject(reader);
           break;
-        case "y":
+        case 1:
           y = valueFromObject(reader);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }
@@ -94,7 +98,7 @@ class JsonUtils {
   }
 
   static float valueFromObject(JsonReader reader) throws IOException {
-    JsonToken token = reader.peek();
+    JsonReader.Token token = reader.peek();
     switch (token) {
       case NUMBER:
         return (float) reader.nextDouble();

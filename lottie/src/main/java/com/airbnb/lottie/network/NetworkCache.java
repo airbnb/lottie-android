@@ -18,13 +18,24 @@ import java.io.OutputStream;
 /**
  * Helper class to save and restore animations fetched from an URL to the app disk cache.
  */
-class NetworkCache {
+public class NetworkCache {
   private final Context appContext;
-  private final String url;
 
-  NetworkCache(Context appContext, String url) {
+  public NetworkCache(Context appContext) {
     this.appContext = appContext.getApplicationContext();
-    this.url = url;
+  }
+
+  public void clear() {
+    File parentDir = parentDir();
+    if (parentDir.exists()) {
+      File[] files = parentDir.listFiles();
+      if (files != null && files.length > 0) {
+        for (File file : parentDir.listFiles()) {
+          file.delete();
+        }
+      }
+      parentDir.delete();
+    }
   }
 
   /**
@@ -36,8 +47,8 @@ class NetworkCache {
    */
   @Nullable
   @WorkerThread
-  Pair<FileExtension, InputStream> fetch() {
-    File cachedFile = null;
+  Pair<FileExtension, InputStream> fetch(String url) {
+    File cachedFile;
     try {
       cachedFile = getCachedFile(url);
     } catch (FileNotFoundException e) {
@@ -70,9 +81,9 @@ class NetworkCache {
    * to an composition, {@link #renameTempFile(FileExtension)} should be called to move the file
    * to its final location for future cache hits.
    */
-  File writeTempCacheFile(InputStream stream, FileExtension extension) throws IOException {
+  File writeTempCacheFile(String url, InputStream stream, FileExtension extension) throws IOException {
     String fileName = filenameForUrl(url, extension, true);
-    File file = new File(appContext.getCacheDir(), fileName);
+    File file = new File(parentDir(), fileName);
     try {
       OutputStream output = new FileOutputStream(file);
       //noinspection TryFinallyCanBeTryWithResources
@@ -98,9 +109,9 @@ class NetworkCache {
    * If the file created by {@link #writeTempCacheFile(InputStream, FileExtension)} was successfully parsed,
    * this should be called to remove the temporary part of its name which will allow it to be a cache hit in the future.
    */
-  void renameTempFile(FileExtension extension) {
+  void renameTempFile(String url, FileExtension extension) {
     String fileName = filenameForUrl(url, extension, true);
-    File file = new File(appContext.getCacheDir(), fileName);
+    File file = new File(parentDir(), fileName);
     String newFileName = file.getAbsolutePath().replace(".temp", "");
     File newFile = new File(newFileName);
     boolean renamed = file.renameTo(newFile);
@@ -116,15 +127,26 @@ class NetworkCache {
    */
   @Nullable
   private File getCachedFile(String url) throws FileNotFoundException {
-    File jsonFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.JSON, false));
+    File jsonFile = new File(parentDir(), filenameForUrl(url, FileExtension.JSON, false));
     if (jsonFile.exists()) {
       return jsonFile;
     }
-    File zipFile = new File(appContext.getCacheDir(), filenameForUrl(url, FileExtension.ZIP, false));
+    File zipFile = new File(parentDir(), filenameForUrl(url, FileExtension.ZIP, false));
     if (zipFile.exists()) {
       return zipFile;
     }
     return null;
+  }
+
+  private File parentDir() {
+    File file = new File(appContext.getCacheDir(), "lottie_network_cache");
+    if (file.isFile()) {
+      file.delete();
+    }
+    if (!file.exists()) {
+      file.mkdirs();
+    }
+    return file;
   }
 
   private static String filenameForUrl(String url, FileExtension extension, boolean isTemp) {

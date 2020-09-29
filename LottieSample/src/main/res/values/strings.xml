@@ -50,6 +50,7 @@
     <string name="control_bar_speed">Speed</string>
     <string name="control_bar_key_paths">Show KeyPaths</string>
     <string name="control_bar_merge_paths">Merge Paths (KitKat+)</string>
+    <string name="control_bar_apply_opacity_to_layers">Apply Opacity To Layers</string>
 
     <string name="minus_one_x">-1x</string>
     <string name="minus_half_x">-0.5x</string>

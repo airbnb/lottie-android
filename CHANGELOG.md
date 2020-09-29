@@ -1,3 +1,91 @@
+# 3.4.0
+### Features and Improvements
+* Added optional cache key parameters to url loading to enable skipping the cache.
+* Added the ability to clear the Lottie cache via `LottieCompositionFactory.clearCache()`.
+
+### Bugs Fixed
+* Properly pass in progress to ValueCallbacks.
+* Clear existing ValueCallbacks if new ones overwrite old ones.
+* Clip interpolators that might loop back on themself to render something very close rather than crashing.
+* Fix time stretch  + time remap when there is a start offset.
+* Ensure that the first frame is rendered when a new composition is set even if it is not yet playing.
+* Properly render Telegram stickers that use [0,1] for color but [0,255] for alpha.
+* Ensure that LottieDrawable has the correct bounds when the composition updates before Marshmallow.
+* Fully clear off screen buffers pre-pie to prevent artifacts.
+* Play, not resume animations if they are played while not shown.
+
+# 3.3.1
+### Bugs Fixed
+* Clear alpha values when applying a mask or matte
+
+# 3.3.0
+### Features and Improvements
+* Added a safeMode API that wraps draw with a try/catch. Can be used for problematic devices
+ ([#1449](https://github.com/airbnb/lottie-android/pull/1449)).
+* Add the ability to skip composition caching ([#1450](https://github.com/airbnb/lottie-android/pull/1450)).
+* Add support for mask mode none.
+* Add an API to set the min and max frame from 2 markers.
+* Add support for TEXT_SIZE as a dynamic property for text layers.
+### Bugs Fixed
+* Improve the performance of setProgress, particularly for animations with many non-animated
+ properties.
+ * Fix a bug where animations may not resume on reattach if their state was saved after they were
+  detached.
+
+# 3.2.2
+# Bugs Fixed
+* Fixed two potential NPEs.
+
+# 3.2.0
+### Feature and Improvements
+* Added support for FIT_XY scale type.
+### Bugs Fixed
+* Improved testability while system animations are disabled.
+
+# 3.1.0
+### Features and Improvements
+* **Breaking Change** Replace JsonReader parsing APIs with InputStream variants to prevent 
+exposing Lottie's copy of Moshi's json parser.
+* Add the ability to catch all Lottie composition errors with `setFailureListener` and 
+`resetFailureListener` (#1321).
+* Add the ability to set a fallback drawable res when Lottie fails to parse a composition or 
+load it from the internet. Use `setFallbackResource` from code or`lottie_fallbackRes` from xml.
+* Add the ability to render opacity on the layer level rather than the shape level. View the docs
+ for `setApplyingOpacityToLayersEnabled` for more info.
+* Add the ability to use dynamic properties on text that wasn't already animated.
+* Minor performance optimization when interpolating between colors.
+## Bugs Fixed
+* Fix the renderMode attribute from getting overwritten.
+* Prevent masks from either clipping edges or having thin borders pre-Pie.
+* Apply animation scale to dash pattern offsets.
+* Apply animation scale to gradient strokes.
+* Fuzzy match content types when downloading animations from the internet.
+* Prevent a StackOverflowException on KitKat.
+* Prevent resume() from resuming when system animations are disabled.
+* Prevent removeAllUpdateListeners() from removing internally used listeners.
+* Fix some time remap calculations.
+
+# 3.0.7
+* Fixed renderMode XML attr being ignored.
+* Allow progress to be set in between frames.
+* Fix a NullPointerException on 5.x.x devices for apps that use Proguard.
+
+# 3.0.6
+### Bugs Fixed
+* Fixed another LottieAnimationView visibility bug.
+
+# 3.0.5
+### Bugs Fixed
+* Fixed a native crash on Nougat.
+* Improved the performance of animations that have masks and mattes that are partially or fully off screen.
+
+
+# 3.0.4
+### Bugs Fixed
+* Use a copy of [Moshi's](https://github.com/square/moshi) JsonReader implementation to fix [#667](https://github.com/airbnb/lottie-android/issues/667).
+* Fix animations not autoplaying when they became visible on pre-marshmallow devices.
+* Fix PerformanceTracker#removeFrameListener not working.
+
 # 3.0.3
 ### Bugs Fixed
 * Prevent network connections from being closed before parsing is finished.

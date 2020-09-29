@@ -22,6 +22,10 @@ public class ValueCallbackKeyframeAnimation<K, A> extends BaseKeyframeAnimation<
     this.valueCallbackValue = valueCallbackValue;
   }
 
+  @Override public void setProgress(float progress) {
+    this.progress = progress;
+  }
+
   /**
    * If this doesn't return 1, then {@link #setProgress(float)} will always clamp the progress
    * to 0.

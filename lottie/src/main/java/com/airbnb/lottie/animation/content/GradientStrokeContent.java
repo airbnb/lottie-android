@@ -75,6 +75,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     } else {
       shader = getRadialGradient();
     }
+    shader.setLocalMatrix(parentMatrix);
     paint.setShader(shader);
 
     super.draw(canvas, parentMatrix, parentAlpha);
@@ -95,10 +96,10 @@ public class GradientStrokeContent extends BaseStrokeContent {
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
-    int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
-    int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
-    int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
-    int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+    float x0 = startPoint.x;
+    float y0 = startPoint.y;
+    float x1 = endPoint.x;
+    float y1 = endPoint.y;
     gradient = new LinearGradient(x0, y0, x1, y1, colors, positions, Shader.TileMode.CLAMP);
     linearGradientCache.put(gradientHash, gradient);
     return gradient;
@@ -115,10 +116,10 @@ public class GradientStrokeContent extends BaseStrokeContent {
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
-    int x0 = (int) (boundsRect.left + boundsRect.width() / 2 + startPoint.x);
-    int y0 = (int) (boundsRect.top + boundsRect.height() / 2 + startPoint.y);
-    int x1 = (int) (boundsRect.left + boundsRect.width() / 2 + endPoint.x);
-    int y1 = (int) (boundsRect.top + boundsRect.height() / 2 + endPoint.y);
+    float x0 = startPoint.x;
+    float y0 = startPoint.y;
+    float x1 = endPoint.x;
+    float y1 = endPoint.y;
     float r = (float) Math.hypot(x1 - x0, y1 - y0);
     gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.CLAMP);
     radialGradientCache.put(gradientHash, gradient);
@@ -163,10 +164,11 @@ public class GradientStrokeContent extends BaseStrokeContent {
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
     if (property == LottieProperty.GRADIENT_COLOR) {
+      if (colorCallbackAnimation != null) {
+        layer.removeAnimation(colorCallbackAnimation);
+      }
+
       if (callback == null) {
-        if (colorCallbackAnimation != null) {
-          layer.removeAnimation(colorCallbackAnimation);
-        }
         colorCallbackAnimation = null;
       } else {
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);

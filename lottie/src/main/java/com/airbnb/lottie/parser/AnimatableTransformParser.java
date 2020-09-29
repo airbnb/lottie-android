@@ -1,7 +1,6 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
 import android.util.JsonToken;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
@@ -11,6 +10,7 @@ import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.model.animatable.AnimatableSplitDimensionPathValue;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
@@ -19,6 +19,21 @@ public class AnimatableTransformParser {
 
   private AnimatableTransformParser() {
   }
+
+
+  private static JsonReader.Options NAMES = JsonReader.Options.of(
+      "a",
+      "p",
+      "s",
+      "rz",
+      "r",
+      "o",
+      "so",
+      "eo",
+      "sk",
+      "sa"
+  );
+  private static JsonReader.Options ANIMATABLE_NAMES = JsonReader.Options.of("k");
 
   public static AnimatableTransform parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -32,33 +47,36 @@ public class AnimatableTransformParser {
     AnimatableFloatValue skew = null;
     AnimatableFloatValue skewAngle = null;
 
-    boolean isObject = reader.peek() == JsonToken.BEGIN_OBJECT;
+    boolean isObject = reader.peek() == JsonReader.Token.BEGIN_OBJECT;
     if (isObject) {
       reader.beginObject();
     }
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "a":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           reader.beginObject();
           while (reader.hasNext()) {
-            if (reader.nextName().equals("k")) {
-              anchorPoint = AnimatablePathValueParser.parse(reader, composition);
-            } else {
-              reader.skipValue();
+            switch (reader.selectName(ANIMATABLE_NAMES)) {
+              case 0:
+                anchorPoint = AnimatablePathValueParser.parse(reader, composition);
+                break;
+                default:
+                  reader.skipName();
+                  reader.skipValue();
             }
           }
           reader.endObject();
           break;
-        case "p":
+        case 1:
           position =
               AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
-        case "s":
+        case 2:
           scale = AnimatableValueParser.parseScale(reader, composition);
           break;
-        case "rz":
+        case 3:
           composition.addWarning("Lottie doesn't support 3D layers.");
-        case "r":
+        case 4:
           /**
            * Sometimes split path rotation gets exported like:
            *         "rz": {
@@ -76,22 +94,23 @@ public class AnimatableTransformParser {
             rotation.getKeyframes().set(0, new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
           }
           break;
-        case "o":
+        case 5:
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
-        case "so":
+        case 6:
           startOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case "eo":
+        case 7:
           endOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case "sk":
+        case 8:
           skew = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case "sa":
+        case 9:
           skewAngle = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         default:
+          reader.skipName();
           reader.skipValue();
       }
     }

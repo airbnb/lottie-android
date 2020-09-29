@@ -16,6 +16,7 @@ import com.airbnb.lottie.TextDelegate;
 import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
@@ -51,11 +52,23 @@ public class TextLayer extends BaseLayer {
   @Nullable
   private BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   @Nullable
+  private BaseKeyframeAnimation<Integer, Integer> colorCallbackAnimation;
+  @Nullable
   private BaseKeyframeAnimation<Integer, Integer> strokeColorAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Integer, Integer> strokeColorCallbackAnimation;
   @Nullable
   private BaseKeyframeAnimation<Float, Float> strokeWidthAnimation;
   @Nullable
+  private BaseKeyframeAnimation<Float, Float> strokeWidthCallbackAnimation;
+  @Nullable
   private BaseKeyframeAnimation<Float, Float> trackingAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> trackingCallbackAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Float, Float> textSizeCallbackAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -113,13 +126,17 @@ public class TextLayer extends BaseLayer {
       return;
     }
 
-    if (colorAnimation != null) {
+    if (colorCallbackAnimation != null) {
+      fillPaint.setColor(colorCallbackAnimation.getValue());
+    } else if (colorAnimation != null) {
       fillPaint.setColor(colorAnimation.getValue());
     } else {
       fillPaint.setColor(documentData.color);
     }
 
-    if (strokeColorAnimation != null) {
+    if (strokeColorCallbackAnimation != null) {
+      strokePaint.setColor(strokeColorCallbackAnimation.getValue());
+    } else if (strokeColorAnimation != null) {
       strokePaint.setColor(strokeColorAnimation.getValue());
     } else {
       strokePaint.setColor(documentData.strokeColor);
@@ -129,11 +146,13 @@ public class TextLayer extends BaseLayer {
     fillPaint.setAlpha(alpha);
     strokePaint.setAlpha(alpha);
 
-    if (strokeWidthAnimation != null) {
+    if (strokeWidthCallbackAnimation != null) {
+      strokePaint.setStrokeWidth(strokeWidthCallbackAnimation.getValue());
+    } else if (strokeWidthAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
       float parentScale = Utils.getScale(parentMatrix);
-      strokePaint.setStrokeWidth((float) (documentData.strokeWidth * Utils.dpScale() * parentScale));
+      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
     }
 
     if (lottieDrawable.useTextGlyphs()) {
@@ -147,13 +166,21 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextGlyphs(
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
-    float fontScale = (float) documentData.size / 100f;
+    float textSize;
+    if (textSizeCallbackAnimation != null) {
+      textSize = textSizeCallbackAnimation.getValue();
+    } else if (textSizeAnimation != null) {
+      textSize = textSizeAnimation.getValue();
+    } else {
+      textSize = documentData.size;
+    }
+    float fontScale = textSize / 100f;
     float parentScale = Utils.getScale(parentMatrix);
 
     String text = documentData.text;
 
     // Line height
-    float lineHeight = (float) documentData.lineHeight * Utils.dpScale();
+    float lineHeight = documentData.lineHeight * Utils.dpScale();
 
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
@@ -195,7 +222,9 @@ public class TextLayer extends BaseLayer {
       float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
-      if (trackingAnimation != null) {
+      if (trackingCallbackAnimation != null) {
+        tracking += trackingCallbackAnimation.getValue();
+      } else if (trackingAnimation != null) {
         tracking += trackingAnimation.getValue();
       }
       tx += tracking * parentScale;
@@ -216,12 +245,20 @@ public class TextLayer extends BaseLayer {
       text = textDelegate.getTextInternal(text);
     }
     fillPaint.setTypeface(typeface);
-    fillPaint.setTextSize((float) (documentData.size * Utils.dpScale()));
+    float textSize;
+    if (textSizeCallbackAnimation != null) {
+      textSize = textSizeCallbackAnimation.getValue();
+    } else if (textSizeAnimation != null) {
+      textSize = textSizeAnimation.getValue();
+    } else {
+      textSize = documentData.size;
+    }
+    fillPaint.setTextSize(textSize * Utils.dpScale());
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
 
     // Line height
-    float lineHeight = (float) documentData.lineHeight * Utils.dpScale();
+    float lineHeight = documentData.lineHeight * Utils.dpScale();
 
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
@@ -266,7 +303,9 @@ public class TextLayer extends BaseLayer {
       float charWidth = fillPaint.measureText(charString, 0, 1);
       // Add tracking
       float tracking = documentData.tracking / 10f;
-      if (trackingAnimation != null) {
+      if (trackingCallbackAnimation != null) {
+        tracking += trackingCallbackAnimation.getValue();
+      } else if (trackingAnimation != null) {
         tracking += trackingAnimation.getValue();
       }
       float tx = charWidth + tracking * parentScale;
@@ -314,7 +353,7 @@ public class TextLayer extends BaseLayer {
       Path path = contentGroups.get(j).getPath();
       path.computeBounds(rectF, false);
       matrix.set(parentMatrix);
-      matrix.preTranslate(0, (float) -documentData.baselineShift * Utils.dpScale());
+      matrix.preTranslate(0, -documentData.baselineShift * Utils.dpScale());
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
       if (documentData.strokeOverFill) {
@@ -414,14 +453,66 @@ public class TextLayer extends BaseLayer {
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
-    if (property == LottieProperty.COLOR && colorAnimation != null) {
-      colorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_COLOR && strokeColorAnimation != null) {
-      strokeColorAnimation.setValueCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.STROKE_WIDTH && strokeWidthAnimation != null) {
-      strokeWidthAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.TEXT_TRACKING && trackingAnimation != null) {
-      trackingAnimation.setValueCallback((LottieValueCallback<Float>) callback);
+    if (property == LottieProperty.COLOR) {
+      if (colorCallbackAnimation != null) {
+        removeAnimation(colorCallbackAnimation);
+      }
+
+      if (callback == null) {
+          colorCallbackAnimation = null;
+      } else {
+        colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+        colorCallbackAnimation.addUpdateListener(this);
+        addAnimation(colorCallbackAnimation);
+      }
+    } else if (property == LottieProperty.STROKE_COLOR) {
+      if (strokeColorCallbackAnimation != null) {
+        removeAnimation(strokeColorCallbackAnimation);
+      }
+
+      if (callback == null) {
+        strokeColorCallbackAnimation = null;
+      } else {
+        strokeColorCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
+        strokeColorCallbackAnimation.addUpdateListener(this);
+        addAnimation(strokeColorCallbackAnimation);
+      }
+    } else if (property == LottieProperty.STROKE_WIDTH) {
+      if (strokeWidthCallbackAnimation != null) {
+        removeAnimation(strokeWidthCallbackAnimation);
+      }
+
+      if (callback == null) {
+        strokeWidthCallbackAnimation = null;
+      } else {
+        strokeWidthCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        strokeWidthCallbackAnimation.addUpdateListener(this);
+        addAnimation(strokeWidthCallbackAnimation);
+      }
+    } else if (property == LottieProperty.TEXT_TRACKING) {
+      if (trackingCallbackAnimation != null) {
+        removeAnimation(trackingCallbackAnimation);
+      }
+
+      if (callback == null) {
+        trackingCallbackAnimation = null;
+      } else {
+        trackingCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        trackingCallbackAnimation.addUpdateListener(this);
+        addAnimation(trackingCallbackAnimation);
+      }
+    } else if (property == LottieProperty.TEXT_SIZE) {
+      if (textSizeCallbackAnimation != null) {
+        removeAnimation(textSizeCallbackAnimation);
+      }
+
+      if (callback == null) {
+        textSizeCallbackAnimation = null;
+      } else {
+        textSizeCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        textSizeCallbackAnimation.addUpdateListener(this);
+        addAnimation(textSizeCallbackAnimation);
+      }
     }
   }
 }

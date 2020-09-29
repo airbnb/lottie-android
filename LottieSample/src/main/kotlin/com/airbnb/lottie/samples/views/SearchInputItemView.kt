@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import androidx.core.content.getSystemService
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
 import com.airbnb.lottie.samples.R
@@ -36,8 +37,8 @@ class SearchInputItemView @JvmOverloads constructor(
     @ModelProp(options = [ModelProp.Option.DoNotHash])
     fun setSearchClickListener(listener: (String) -> Unit) {
         searchButton.setOnClickListener {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromInputMethod(windowToken, 0)
+            val inputMethodManager = context.getSystemService<InputMethodManager>()!!
+            inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
             listener(searchEditText.text.toString())
         }
     }

@@ -1,11 +1,10 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonReader;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.content.ShapeData;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import java.io.IOException;
@@ -15,13 +14,21 @@ import java.util.List;
 
 public class ShapeDataParser implements ValueParser<ShapeData> {
   public static final ShapeDataParser INSTANCE = new ShapeDataParser();
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+    "c",
+    "v",
+    "i",
+    "o"
+  );
 
-  private ShapeDataParser() {}
+  private ShapeDataParser() {
+  }
 
-  @Override public ShapeData parse(JsonReader reader, float scale) throws IOException {
+  @Override
+  public ShapeData parse(JsonReader reader, float scale) throws IOException {
     // Sometimes the points data is in a array of length 1. Sometimes the data is at the top
     // level.
-    if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+    if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
       reader.beginArray();
     }
 
@@ -32,25 +39,28 @@ public class ShapeDataParser implements ValueParser<ShapeData> {
     reader.beginObject();
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "c":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           closed = reader.nextBoolean();
           break;
-        case "v":
-          pointsArray =  JsonUtils.jsonToPoints(reader, scale);
+        case 1:
+          pointsArray = JsonUtils.jsonToPoints(reader, scale);
           break;
-        case "i":
-          inTangents =  JsonUtils.jsonToPoints(reader, scale);
+        case 2:
+          inTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
-        case "o":
-          outTangents =  JsonUtils.jsonToPoints(reader, scale);
+        case 3:
+          outTangents = JsonUtils.jsonToPoints(reader, scale);
           break;
+        default:
+          reader.skipName();
+          reader.skipValue();
       }
     }
 
     reader.endObject();
 
-    if (reader.peek() == JsonToken.END_ARRAY) {
+    if (reader.peek() == JsonReader.Token.END_ARRAY) {
       reader.endArray();
     }
 

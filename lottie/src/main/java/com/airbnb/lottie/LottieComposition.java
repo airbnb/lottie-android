@@ -3,18 +3,19 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.support.v4.util.SparseArrayCompat;
-import android.util.LongSparseArray;
-import android.support.annotation.Nullable;;
-import android.support.annotation.RawRes;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.WorkerThread;
-import android.util.JsonReader;
+import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.WorkerThread;
+import androidx.collection.LongSparseArray;
+import androidx.collection.SparseArrayCompat;
+import android.util.Log;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Logger;
 
 import org.json.JSONObject;
@@ -140,12 +141,12 @@ public class LottieComposition {
     return (long) (getDurationFrames() / frameRate * 1000);
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public float getStartFrame() {
     return startFrame;
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public float getEndFrame() {
     return endFrame;
   }

@@ -64,7 +64,7 @@ public class PerformanceTracker {
   }
 
   @SuppressWarnings("unused") public void removeFrameListener(FrameListener frameListener) {
-    frameListeners.add(frameListener);
+    frameListeners.remove(frameListener);
   }
 
   public void clearRenderTimes() {

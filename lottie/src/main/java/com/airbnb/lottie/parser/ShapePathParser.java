@@ -1,16 +1,24 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonReader;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 import com.airbnb.lottie.model.content.ShapePath;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
 
 class ShapePathParser {
 
-  private ShapePathParser() {}
+  static JsonReader.Options NAMES = JsonReader.Options.of(
+      "nm",
+      "ind",
+      "ks",
+      "hd"
+  );
+
+  private ShapePathParser() {
+  }
 
   static ShapePath parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -20,17 +28,17 @@ class ShapePathParser {
     boolean hidden = false;
 
     while (reader.hasNext()) {
-      switch (reader.nextName()) {
-        case "nm":
+      switch (reader.selectName(NAMES)) {
+        case 0:
           name = reader.nextString();
           break;
-        case "ind":
+        case 1:
           ind = reader.nextInt();
           break;
-        case "ks":
+        case 2:
           shape = AnimatableValueParser.parseShapeData(reader, composition);
           break;
-        case "hd":
+        case 3:
           hidden = reader.nextBoolean();
           break;
         default:
