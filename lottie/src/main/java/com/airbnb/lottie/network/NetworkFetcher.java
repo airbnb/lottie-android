@@ -1,5 +1,7 @@
 package com.airbnb.lottie.network;
 
+import android.util.Pair;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieCompositionFactory;
 import com.airbnb.lottie.LottieResult;
@@ -15,7 +17,6 @@ import java.util.zip.ZipInputStream;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.core.util.Pair;
 
 public class NetworkFetcher {
 
@@ -89,7 +90,7 @@ public class NetworkFetcher {
     } catch (Exception e) {
       return new LottieResult<>(e);
     } finally {
-      fetcher.disconnect();
+      fetcher.disconnect(url);
     }
   }
 

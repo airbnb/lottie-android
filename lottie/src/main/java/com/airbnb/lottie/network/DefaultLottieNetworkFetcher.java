@@ -5,22 +5,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class DefaultLottieNetworkFetcher implements LottieNetworkFetcher {
 
-  @Nullable
-  private HttpURLConnection connection;
+  @NonNull
+  private final Map<String, HttpURLConnection> connections = new HashMap<>();
 
   @Override
   @NonNull
   public LottieNetworkResult fetchSync(@NonNull String url) throws IOException {
-    connection = (HttpURLConnection) new URL(url).openConnection();
+    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
     connection.setRequestMethod("GET");
 
     connection.connect();
+    connections.put(url, connection);
 
     if (connection.getErrorStream() != null || connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
       String error = getErrorFromConnection(connection);
@@ -31,7 +33,11 @@ public class DefaultLottieNetworkFetcher implements LottieNetworkFetcher {
     return new LottieNetworkResult.Success(connection.getInputStream(), connection.getContentType());
   }
 
-  @Override public void disconnect() {
+  @Override public void disconnect(@NonNull String url) {
+    if (!connections.containsKey(url)) {
+      return;
+    }
+    HttpURLConnection connection = connections.get(url);
     if (connection != null) {
       connection.disconnect();
     }
