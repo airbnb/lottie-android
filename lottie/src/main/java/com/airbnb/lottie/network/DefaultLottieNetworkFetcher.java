@@ -41,6 +41,7 @@ public class DefaultLottieNetworkFetcher implements LottieNetworkFetcher {
     if (connection != null) {
       connection.disconnect();
     }
+    connections.remove(url);
   }
 
   private String getErrorFromConnection(HttpURLConnection connection) throws IOException {
