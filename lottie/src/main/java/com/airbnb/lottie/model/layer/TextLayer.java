@@ -260,13 +260,23 @@ public class TextLayer extends BaseLayer {
     // Line height
     float lineHeight = documentData.lineHeight * Utils.dpScale();
 
+    // Calculate tracking
+    float tracking = documentData.tracking / 10f;
+    if (trackingCallbackAnimation != null) {
+      tracking += trackingCallbackAnimation.getValue();
+    } else if (trackingAnimation != null) {
+      tracking += trackingAnimation.getValue();
+    }
+    tracking = tracking * Utils.dpScale() * textSize / 100.0f;
+
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
     int textLineCount = textLines.size();
     for (int l = 0; l < textLineCount; l++) {
 
       String textLine = textLines.get(l);
-      float textLineWidth = strokePaint.measureText(textLine);
+      // We have to manually add the tracking between characters as the strokePaint ignores it
+      float textLineWidth = strokePaint.measureText(textLine) + (textLine.length() - 1) * tracking;
 
       canvas.save();
 
@@ -279,7 +289,7 @@ public class TextLayer extends BaseLayer {
       canvas.translate(0, translateY);
 
       // Draw each line
-      drawFontTextLine(textLine, documentData, canvas, parentScale);
+      drawFontTextLine(textLine, documentData, canvas, tracking);
 
       // Reset canvas
       canvas.restore();
@@ -294,20 +304,13 @@ public class TextLayer extends BaseLayer {
     return Arrays.asList(textLinesArray);
   }
 
-  private void drawFontTextLine(String text, DocumentData documentData, Canvas canvas, float parentScale) {
+  private void drawFontTextLine(String text, DocumentData documentData, Canvas canvas, float tracking) {
     for (int i = 0; i < text.length(); ) {
       String charString = codePointToString(text, i);
       i += charString.length();
       drawCharacterFromFont(charString, documentData, canvas);
-      float charWidth = fillPaint.measureText(charString, 0, 1);
-      // Add tracking
-      float tracking = documentData.tracking / 10f;
-      if (trackingCallbackAnimation != null) {
-        tracking += trackingCallbackAnimation.getValue();
-      } else if (trackingAnimation != null) {
-        tracking += trackingAnimation.getValue();
-      }
-      float tx = charWidth + tracking * parentScale;
+      float charWidth = fillPaint.measureText(charString);
+      float tx = charWidth + tracking;
       canvas.translate(tx, 0);
     }
   }
