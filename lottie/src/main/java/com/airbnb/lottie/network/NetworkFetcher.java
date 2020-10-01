@@ -73,8 +73,9 @@ public class NetworkFetcher {
   private LottieResult<LottieComposition> fetchFromNetwork(@NonNull String url, @Nullable String cacheKey) {
     Logger.debug("Fetching " + url);
 
+    LottieNetworkResult fetchResult = null;
     try {
-      LottieNetworkResult fetchResult = fetcher.fetchSync(url);
+      fetchResult = fetcher.fetchSync(url);
       if (fetchResult instanceof LottieNetworkResult.Success) {
         InputStream inputStream = ((LottieNetworkResult.Success) fetchResult).inputStream;
         String contentType = ((LottieNetworkResult.Success) fetchResult).contentType;
@@ -90,7 +91,9 @@ public class NetworkFetcher {
     } catch (Exception e) {
       return new LottieResult<>(e);
     } finally {
-      fetcher.disconnect(url);
+      if (fetchResult != null) {
+        fetchResult.close();
+      }
     }
   }
 

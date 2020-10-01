@@ -16,10 +16,4 @@ public interface LottieNetworkFetcher {
     @WorkerThread
     @NonNull
     LottieNetworkResult fetchSync(@NonNull String url) throws IOException;
-
-    /**
-     * The method will be called after the animation has loaded.
-     * You can close your connection here.
-     */
-    void disconnect(@NonNull String url);
 }
