@@ -15,5 +15,5 @@ import androidx.annotation.WorkerThread;
 public interface LottieNetworkFetcher {
     @WorkerThread
     @NonNull
-    LottieNetworkResult fetchSync(@NonNull String url) throws IOException;
+    LottieFetchResult fetchSync(@NonNull String url) throws IOException;
 }

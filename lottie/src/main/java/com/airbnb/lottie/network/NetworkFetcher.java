@@ -73,26 +73,27 @@ public class NetworkFetcher {
   private LottieResult<LottieComposition> fetchFromNetwork(@NonNull String url, @Nullable String cacheKey) {
     Logger.debug("Fetching " + url);
 
-    LottieNetworkResult fetchResult = null;
+    LottieFetchResult fetchResult = null;
     try {
       fetchResult = fetcher.fetchSync(url);
-      if (fetchResult instanceof LottieNetworkResult.Success) {
-        InputStream inputStream = ((LottieNetworkResult.Success) fetchResult).inputStream;
-        String contentType = ((LottieNetworkResult.Success) fetchResult).contentType;
+      if (fetchResult.isSuccessful()) {
+        InputStream inputStream = fetchResult.bodyByteStream();
+        String contentType = fetchResult.contentType();
         LottieResult<LottieComposition> result = fromInputStream(url, inputStream, contentType, cacheKey);
         Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
         return result;
       } else {
-        String error = ((LottieNetworkResult.Error) fetchResult).message;
-        int responseCode = ((LottieNetworkResult.Error) fetchResult).responseCode;
-        return new LottieResult<>(
-            new IllegalArgumentException("Unable to fetch " + url + ". Failed with " + responseCode + "\n" + error));
+        return new LottieResult<>(new IllegalArgumentException(fetchResult.error()));
       }
     } catch (Exception e) {
       return new LottieResult<>(e);
     } finally {
       if (fetchResult != null) {
-        fetchResult.close();
+        try {
+          fetchResult.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
   }
