@@ -256,6 +256,8 @@ public class GradientFillContent
          colorCallbackAnimation = null;
        } else {
          //noinspection rawtypes
+         linearGradientCache.clear();
+         radialGradientCache.clear();
          colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
          colorCallbackAnimation.addUpdateListener(this);
          layer.addAnimation(colorCallbackAnimation);
