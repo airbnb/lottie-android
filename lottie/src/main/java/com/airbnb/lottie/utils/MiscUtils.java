@@ -85,6 +85,10 @@ public class MiscUtils {
     return Math.max(min, Math.min(max, number));
   }
 
+  public static double clamp(double number, double min, double max) {
+    return Math.max(min, Math.min(max, number));
+  }
+
   public static boolean contains(float number, float rangeMin, float rangeMax) {
     return number >= rangeMin && number <= rangeMax;
   }

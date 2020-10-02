@@ -139,7 +139,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       double lastPosition = positions[i - 1];
       double thisPosition = positions[i];
       if (positions[i] >= position) {
-        double progress = (position - lastPosition) / (thisPosition - lastPosition);
+        double progress = MiscUtils.clamp((position - lastPosition) / (thisPosition - lastPosition), 0, 1);
         return (int) (255 * MiscUtils.lerp(opacities[i - 1], opacities[i], progress));
       }
     }
