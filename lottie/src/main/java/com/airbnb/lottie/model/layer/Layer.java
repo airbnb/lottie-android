@@ -30,6 +30,8 @@ public class Layer {
     NONE,
     ADD,
     INVERT,
+    LUMA,
+    LUMA_INVERTED,
     UNKNOWN
   }
 
