@@ -1,8 +1,9 @@
-# 3.4.3
+# 3.4.4
 ### Bugs Fixed
 * Properly clamp gradient values ([#1636](https://github.com/airbnb/lottie-android/pull/1636))
 * Fix some scaling issues with text ([#1635](https://github.com/airbnb/lottie-android/pull/1635))
 * Add a warning instead of crashing when parsing an unknown matte type ([#1638](https://github.com/airbnb/lottie-android/pull/1638))
+* Clear cached gradients when setting a new value callback ([#1639](https://github.com/airbnb/lottie-android/pull/1639))
 
 # 3.4.2
 ### Feature and Improvements
