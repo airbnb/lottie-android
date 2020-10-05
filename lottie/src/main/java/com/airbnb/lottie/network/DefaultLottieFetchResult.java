@@ -18,16 +18,16 @@ public class DefaultLottieFetchResult implements LottieFetchResult {
     this.connection = connection;
   }
 
-  @Override public boolean isSuccessful() throws IOException {
-    return resultCode() / 100 == 2;
+  @Override public boolean isSuccessful() {
+    try {
+      return resultCode() / 100 == 2;
+    } catch (IOException e) {
+      return false;
+    }
   }
 
   @Override public int resultCode() throws IOException {
     return connection.getResponseCode();
-  }
-
-  @Nullable @Override public String message() throws IOException {
-    return connection.getResponseMessage();
   }
 
   @Nullable @Override public InputStream bodyByteStream() throws IOException {
