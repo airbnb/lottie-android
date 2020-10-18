@@ -1,4 +1,4 @@
-package com.airbnb.lottie.sample.compose.composables
+package com.airbnb.lottie.compose
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
@@ -61,7 +61,7 @@ class LottieAnimationState(isPlaying: Boolean, repeatCount: Int = 0, initialProg
 @Composable
 fun LottieAnimation(
     spec: LottieAnimationSpec,
-    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true)},
+    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true) },
     modifier: Modifier = Modifier
 ) {
     val context = ContextAmbient.current

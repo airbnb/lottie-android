@@ -1,0 +1,48 @@
+plugins {
+  id 'com.android.library'
+  id 'kotlin-android'
+}
+
+android {
+  compileSdkVersion 30
+  buildToolsVersion "30.0.2"
+
+  defaultConfig {
+    minSdkVersion 21
+    targetSdkVersion 30
+    versionCode 1
+    versionName "1.0"
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = '1.8'
+    freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check", "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+  }
+  buildFeatures {
+    compose true
+  }
+  composeOptions {
+    kotlinCompilerExtensionVersion composeVersion
+    kotlinCompilerVersion '1.4.10'
+  }
+}
+
+dependencies {
+  api project(':lottie')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+  implementation "androidx.compose.ui:ui:$composeVersion"
+  implementation "androidx.compose.material:material:$composeVersion"
+  implementation "androidx.compose.material:material-icons-extended:$composeVersion"
+  implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.0-beta01'
+}
