@@ -14,49 +14,10 @@ import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.platform.LifecycleOwnerAmbient
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.LottieCompositionFactory
-import com.airbnb.lottie.LottieDrawable
-import kotlinx.coroutines.channels.Channel
 import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
-
-sealed class LottieAnimationSpec {
-    class RawRes(@androidx.annotation.RawRes val resId: Int) : LottieAnimationSpec()
-    class Url(val url: String) : LottieAnimationSpec()
-}
-
-@Composable
-fun rememberLottieAnimationState(
-    autoPlay: Boolean = true,
-    repeatCount: Int = 0,
-    initialProgress: Float = 0f
-): LottieAnimationState {
-    return remember(repeatCount, autoPlay) {
-        LottieAnimationState(isPlaying = autoPlay, repeatCount, initialProgress)
-    }
-}
-
-class LottieAnimationState(isPlaying: Boolean, repeatCount: Int = 0, initialProgress: Float = 0f) {
-    private var _progress = mutableStateOf(initialProgress)
-    val progress: Float by _progress
-    var isPlaying by mutableStateOf(isPlaying)
-    var repeatCount by mutableStateOf(repeatCount)
-
-    internal val updateProgressChannel = Channel<Float>(Channel.CONFLATED)
-
-    fun setProgress(progress: Float) {
-        updateProgressChannel.offer(progress)
-    }
-
-    internal fun updateProgress(progress: Float) {
-        _progress.value = progress
-    }
-
-    fun toggleIsPlaying() {
-        isPlaying = !isPlaying
-    }
-}
+import com.airbnb.lottie.*
+import com.airbnb.lottie.utils.Logger
 
 @Composable
 fun LottieAnimation(
@@ -75,7 +36,7 @@ fun LottieAnimation(
         task.addListener { c ->
             if (!isDisposed) composition = c
         }.addFailureListener { e ->
-            Log.d("Gabe", "Animation failed to load", e)
+            if (!isDisposed) Logger.error("Failed to parse composition.", e)
         }
         onDispose {
             isDisposed = true

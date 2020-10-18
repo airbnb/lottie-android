@@ -5,12 +5,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.InnerPadding
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Stack
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -23,9 +18,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
-import com.airbnb.lottie.sample.compose.NavControllerAmbient
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
+import com.airbnb.lottie.sample.compose.utils.NavControllerAmbient
 
 fun Fragment.LottieComposeScaffoldView(context: Context, Content: @Composable () -> Unit): View {
     return ComposeView(context).apply {

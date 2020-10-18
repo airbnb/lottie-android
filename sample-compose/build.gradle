@@ -37,7 +37,7 @@ android {
   }
   composeOptions {
     kotlinCompilerExtensionVersion composeVersion
-    kotlinCompilerVersion '1.4.10'
+    kotlinCompilerVersion kotlinVersion
   }
 }
 
@@ -76,10 +76,10 @@ dependencies {
 
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
-  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.2.1"
+  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.3.1"
   implementation 'com.airbnb.android:mvrx:2.0.0-beta1'
 
-  testImplementation 'junit:junit:4.13'
+  testImplementation 'junit:junit:4.13.1'
   androidTestImplementation 'androidx.test.ext:junit:1.1.2'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

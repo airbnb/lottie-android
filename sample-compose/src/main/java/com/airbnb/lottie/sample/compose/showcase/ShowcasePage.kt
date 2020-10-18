@@ -20,7 +20,7 @@ import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
 import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.composables.Marquee
-import com.airbnb.lottie.sample.compose.findNavController
+import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.Loading

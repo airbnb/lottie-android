@@ -10,8 +10,6 @@ android {
   defaultConfig {
     minSdkVersion 21
     targetSdkVersion 30
-    versionCode 1
-    versionName "1.0"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -27,20 +25,19 @@ android {
   }
   kotlinOptions {
     jvmTarget = '1.8'
-    freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check", "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+    freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check"]
   }
   buildFeatures {
     compose true
   }
   composeOptions {
     kotlinCompilerExtensionVersion composeVersion
-    kotlinCompilerVersion '1.4.10'
+    kotlinCompilerVersion kotlinVersion
   }
 }
 
 dependencies {
   api project(':lottie')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
   implementation "androidx.compose.material:material:$composeVersion"
   implementation "androidx.compose.material:material-icons-extended:$composeVersion"

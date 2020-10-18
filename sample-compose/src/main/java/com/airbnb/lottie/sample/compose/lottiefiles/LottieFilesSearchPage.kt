@@ -27,7 +27,7 @@ import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
-import com.airbnb.lottie.sample.compose.findNavController
+import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
