@@ -31,15 +31,16 @@ import androidx.compose.ui.platform.DensityAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.composables.Marquee
 
-class LottieFilesFragment : Fragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return LottieComposeScaffoldView(requireContext()) {
-            LottieFilesPage()
-        }
+class LottieFilesFragment : ComposeFragment() {
+
+    @Composable
+    override fun root() {
+        LottieFilesPage()
     }
 }
 

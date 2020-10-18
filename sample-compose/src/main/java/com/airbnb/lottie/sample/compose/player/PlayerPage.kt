@@ -1,9 +1,5 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Icon
 import androidx.compose.foundation.layout.*
@@ -16,23 +12,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieAnimationSpec
 import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
+import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
-import com.airbnb.lottie.sample.compose.composables.*
+import com.airbnb.lottie.sample.compose.composables.SeekBar
 import com.airbnb.mvrx.args
 
-class PlayerFragment : Fragment() {
+class PlayerFragment : ComposeFragment() {
     private val animationData: AnimationDataV2 by args()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return LottieComposeScaffoldView(requireContext()) {
-            PlayerPage(animationData)
-        }
+    @Composable
+    override fun root() {
+        PlayerPage(animationData)
     }
 }
 

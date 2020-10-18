@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
+import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
@@ -28,14 +29,10 @@ import com.airbnb.mvrx.MavericksView
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.asMavericksArgs
 
-class ShowcaseFragment : Fragment(), MavericksView {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return LottieComposeScaffoldView(requireContext()) {
-            ShowcasePage()
-        }
-    }
-
-    override fun invalidate() {
+class ShowcaseFragment : ComposeFragment() {
+    @Composable
+    override fun root() {
+        ShowcasePage()
     }
 }
 
