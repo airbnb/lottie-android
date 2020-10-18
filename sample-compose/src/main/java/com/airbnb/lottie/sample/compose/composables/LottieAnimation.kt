@@ -29,24 +29,19 @@ sealed class LottieAnimationSpec {
 @Composable
 fun rememberLottieAnimationState(
     autoPlay: Boolean = true,
-    repeatCount: Int = 0
-): LottieAnimationController {
+    repeatCount: Int = 0,
+    initialProgress: Float = 0f
+): LottieAnimationState {
     return remember(repeatCount, autoPlay) {
-        LottieAnimationController(LottieAnimationState(repeatCount = repeatCount, isPlaying = autoPlay))
+        LottieAnimationState(isPlaying = autoPlay, repeatCount, initialProgress)
     }
 }
 
-data class LottieAnimationState(
-    val progress: Float = 0f,
-    val isPlaying: Boolean = false,
-    val repeatCount: Int = 0
-)
-
-class LottieAnimationController(initialState: LottieAnimationState = LottieAnimationState()) {
-    private var _progress = mutableStateOf(0f)
+class LottieAnimationState(isPlaying: Boolean, repeatCount: Int = 0, initialProgress: Float = 0f) {
+    private var _progress = mutableStateOf(initialProgress)
     val progress: Float by _progress
-    var isPlaying by mutableStateOf(false)
-    var repeatCount by mutableStateOf(0)
+    var isPlaying by mutableStateOf(isPlaying)
+    var repeatCount by mutableStateOf(repeatCount)
 
     internal val updateProgressChannel = Channel<Float>(Channel.CONFLATED)
 
@@ -66,7 +61,7 @@ class LottieAnimationController(initialState: LottieAnimationState = LottieAnima
 @Composable
 fun LottieAnimation(
     spec: LottieAnimationSpec,
-    animationController: LottieAnimationController = remember { LottieAnimationController() },
+    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true)},
     modifier: Modifier = Modifier
 ) {
     val context = ContextAmbient.current
@@ -87,32 +82,33 @@ fun LottieAnimation(
         }
     }
 
-    LottieAnimation(composition, animationController, modifier)
+    LottieAnimation(composition, animationState, modifier)
 }
 
 @Composable
 fun LottieAnimation(
     composition: LottieComposition?,
-    animationController: LottieAnimationController,
+    animationState: LottieAnimationState,
     modifier: Modifier = Modifier
 ) {
     val drawable = remember { LottieDrawable() }
     val isStarted by isStarted()
-    val isPlaying = animationController.isPlaying && isStarted
+    val isPlaying = animationState.isPlaying && isStarted
     var progress by remember { mutableStateOf(0f) }
+
 
     onCommit(composition) {
         drawable.composition = composition
     }
 
-    LaunchedTask(animationController.updateProgressChannel) {
-        for (p in animationController.updateProgressChannel) {
+    LaunchedTask(animationState.updateProgressChannel) {
+        for (p in animationState.updateProgressChannel) {
             progress = p
-            animationController.updateProgress(progress)
+            animationState.updateProgress(progress)
         }
     }
 
-    LaunchedTask(composition, isPlaying) {
+    LaunchedTask(composition, isPlaying, animationState.repeatCount) {
         if (!isPlaying || composition == null) return@LaunchedTask
         var repeatCount = 0
         if (isPlaying && progress == 1f) progress = 0f
@@ -126,12 +122,12 @@ fun LottieAnimation(
                 progress = (progress + dProgress) % 1f
                 if (previousProgress > progress) {
                     repeatCount++
-                    if (repeatCount != 0 && repeatCount > animationController.repeatCount) {
+                    if (repeatCount != 0 && repeatCount > animationState.repeatCount) {
                         progress = 1f
-                        animationController.isPlaying = false
+                        animationState.isPlaying = false
                     }
                 }
-                animationController.updateProgress(progress)
+                animationState.updateProgress(progress)
             }
         }
     }
@@ -155,7 +151,7 @@ fun LottieAnimation(
 }
 
 @Composable
-fun isStarted(): State<Boolean> {
+private fun isStarted(): State<Boolean> {
     val state = remember { mutableStateOf(false) }
     val lifecycleOwner = LifecycleOwnerAmbient.current
     onCommit(lifecycleOwner) {
@@ -173,7 +169,7 @@ fun isStarted(): State<Boolean> {
 }
 
 @Composable
-fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modifier {
+private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modifier {
     composition ?: return this
-    return aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat())
+    return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
 }
