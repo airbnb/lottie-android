@@ -3,13 +3,9 @@ package com.airbnb.lottie.sample.compose.lottiefiles
 import android.util.Log
 import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Stack
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.lazy.LazyColumnFor
-import androidx.compose.material.Button
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Surface
 import androidx.compose.material.TextField
@@ -33,8 +29,8 @@ import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
 import com.airbnb.lottie.sample.compose.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
+import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.asMavericksArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
@@ -48,7 +44,7 @@ data class LottieFilesSearchState(
     val currentPage: Int = 1,
     val lastPage: Int = 0,
     val fetchException: Boolean = false,
-) : MvRxState
+) : MavericksState
 
 class LottieFilesSearchViewModel @AssistedInject constructor(
     @Assisted initialState: LottieFilesSearchState,
@@ -142,7 +138,7 @@ fun LottieFilesSearchPage(
         if (readyToFetchNextPage) fetchNextPage()
     }
 
-    Stack {
+    Box {
         Column(
             modifier = Modifier.then(modifier)
         ) {
@@ -173,7 +169,7 @@ fun LottieFilesSearchPage(
                     Icon(Icons.Filled.Repeat, tint = Color.White)
                 },
                 modifier = Modifier
-                    .gravity(Alignment.BottomCenter)
+                    .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
             )
         }

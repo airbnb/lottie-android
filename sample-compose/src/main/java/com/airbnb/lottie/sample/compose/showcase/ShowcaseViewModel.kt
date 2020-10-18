@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 
 data class ShowcaseState(
     val animations: Async<AnimationsResponseV2> = Uninitialized
-) : MvRxState
+) : MavericksState
 
 class ShowcaseViewModel @AssistedInject constructor(
     @Assisted initialState: ShowcaseState,

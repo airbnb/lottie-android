@@ -1,11 +1,7 @@
 package com.airbnb.lottie.sample.compose.composables
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope.weight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredHeight
@@ -17,7 +13,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.dragGestureFilter
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.onPositioned
+import androidx.compose.ui.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview
@@ -57,10 +53,10 @@ fun SeekBar(
     }
     Row(
         modifier = Modifier
-            .onPositioned { width = it.size.width }
+            .onGloballyPositioned { width = it.size.width }
             .dragGestureFilter(dragObserver, startDragImmediately = true)
             .padding(vertical = 12.dp)
-            .weight(1f)
+            .fillMaxWidth(1f)
             .then(modifier)
     ) {
         Canvas(

@@ -80,7 +80,7 @@ fun PlayerPage(animationData: AnimationDataV2) {
             modifier = Modifier.fillMaxSize()
         )
         Row(
-            verticalGravity = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = { animationController.toggleIsPlaying() }) {
                 Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)

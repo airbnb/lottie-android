@@ -28,7 +28,7 @@ fun AnimationRow(
         modifier = Modifier.clickable(onClick = onClick)
     ) {
         Row(
-            verticalGravity = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth()
