@@ -18,13 +18,22 @@ import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.TimeUnit
+import androidx.compose.runtime.getValue
 
 sealed class LottieAnimationSpec {
     class RawRes(@androidx.annotation.RawRes val resId: Int) : LottieAnimationSpec()
     class Url(val url: String) : LottieAnimationSpec()
+}
+
+@Composable
+fun rememberLottieAnimationState(
+    autoPlay: Boolean = true,
+    repeatCount: Int = 0
+): LottieAnimationController {
+    return remember(repeatCount, autoPlay) {
+        LottieAnimationController(LottieAnimationState(repeatCount = repeatCount, isPlaying = autoPlay))
+    }
 }
 
 data class LottieAnimationState(
@@ -34,8 +43,10 @@ data class LottieAnimationState(
 )
 
 class LottieAnimationController(initialState: LottieAnimationState = LottieAnimationState()) {
-    private val _state = MutableStateFlow(initialState)
-    val state: StateFlow<LottieAnimationState> = _state
+    private var _progress = mutableStateOf(0f)
+    val progress: Float by _progress
+    var isPlaying by mutableStateOf(false)
+    var repeatCount by mutableStateOf(0)
 
     internal val updateProgressChannel = Channel<Float>(Channel.CONFLATED)
 
@@ -44,24 +55,11 @@ class LottieAnimationController(initialState: LottieAnimationState = LottieAnima
     }
 
     internal fun updateProgress(progress: Float) {
-        setState { copy(progress = progress) }
-    }
-
-    fun setRepeatCount(repeatCount: Int) {
-        setState { copy(repeatCount = repeatCount) }
+        _progress.value = progress
     }
 
     fun toggleIsPlaying() {
-        setIsPlaying(!state.value.isPlaying)
-    }
-
-    fun setIsPlaying(isPlaying: Boolean) {
-        setState { copy(isPlaying = isPlaying) }
-    }
-
-    @Synchronized
-    fun setState(reducer: LottieAnimationState.() -> LottieAnimationState) {
-        _state.value = _state.value.reducer()
+        isPlaying = !isPlaying
     }
 }
 
@@ -99,9 +97,8 @@ fun LottieAnimation(
     modifier: Modifier = Modifier
 ) {
     val drawable = remember { LottieDrawable() }
-    val animationState by animationController.state.collectAsState()
     val isStarted by isStarted()
-    val isPlaying = animationState.isPlaying && isStarted
+    val isPlaying = animationController.isPlaying && isStarted
     var progress by remember { mutableStateOf(0f) }
 
     onCommit(composition) {
@@ -129,9 +126,9 @@ fun LottieAnimation(
                 progress = (progress + dProgress) % 1f
                 if (previousProgress > progress) {
                     repeatCount++
-                    if (repeatCount != 0 && repeatCount > animationState.repeatCount) {
+                    if (repeatCount != 0 && repeatCount > animationController.repeatCount) {
                         progress = 1f
-                        animationController.setIsPlaying(false)
+                        animationController.isPlaying = false
                     }
                 }
                 animationController.updateProgress(progress)

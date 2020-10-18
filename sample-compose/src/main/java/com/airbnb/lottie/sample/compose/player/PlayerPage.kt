@@ -6,12 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.remember
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -22,21 +17,16 @@ import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
-import com.airbnb.lottie.sample.compose.composables.LottieAnimation
-import com.airbnb.lottie.sample.compose.composables.LottieAnimationController
-import com.airbnb.lottie.sample.compose.composables.LottieAnimationSpec
-import com.airbnb.lottie.sample.compose.composables.LottieAnimationState
-import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
-import com.airbnb.lottie.sample.compose.composables.SeekBar
+import com.airbnb.lottie.sample.compose.composables.*
 import com.airbnb.mvrx.args
 
 class PlayerFragment : Fragment() {
@@ -53,8 +43,7 @@ class PlayerFragment : Fragment() {
 fun PlayerPage(animationData: AnimationDataV2) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
     val spec = remember { LottieAnimationSpec.Url(animationData.file) }
-    val animationController = remember { LottieAnimationController(LottieAnimationState(repeatCount = Integer.MAX_VALUE, isPlaying = true)) }
-    val animationState by animationController.state.collectAsState()
+    val animationController = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxHeight()
@@ -83,22 +72,22 @@ fun PlayerPage(animationData: AnimationDataV2) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = { animationController.toggleIsPlaying() }) {
-                Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
+                Icon(if (animationController.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
             }
             SeekBar(
-                progress = animationState.progress,
+                progress = animationController.progress,
                 onProgressChanged = {
                     animationController.setProgress(it)
                 },
-                modifier = Modifier
+                modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                val repeatCount = if (animationState.repeatCount== Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
-                animationController.setRepeatCount(repeatCount)
+                val repeatCount = if (animationController.repeatCount== Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
+                animationController.repeatCount = repeatCount
             }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (animationState.repeatCount > 0) Color.Green else Color.Black,
+                    tint = if (animationController.repeatCount > 0) Color.Green else Color.Black,
                 )
             }
         }

@@ -56,7 +56,6 @@ fun SeekBar(
             .onGloballyPositioned { width = it.size.width }
             .dragGestureFilter(dragObserver, startDragImmediately = true)
             .padding(vertical = 12.dp)
-            .fillMaxWidth(1f)
             .then(modifier)
     ) {
         Canvas(
