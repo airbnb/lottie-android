@@ -1,11 +1,7 @@
 package com.airbnb.lottie.sample.compose.showcase
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.layout.Stack
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Divider
@@ -13,19 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.fragment.app.Fragment
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
-import com.airbnb.lottie.sample.compose.composables.LottieComposeScaffoldView
 import com.airbnb.lottie.sample.compose.composables.Marquee
-import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
+import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.Loading
-import com.airbnb.mvrx.MavericksView
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.asMavericksArgs
 
@@ -43,7 +36,7 @@ fun ShowcasePage() {
     val featuredAnimations = showcaseState.animations
     val scrollState = rememberScrollState()
     val navController = findNavController()
-    Stack(
+    Box(
         modifier = Modifier.fillMaxSize()
     ) {
         ScrollableColumn(
@@ -62,7 +55,7 @@ fun ShowcasePage() {
             }
         }
         if (featuredAnimations is Uninitialized || featuredAnimations is Loading) {
-            Loader(modifier = Modifier.gravity(Alignment.Center))
+            Loader(modifier = Modifier.align(Alignment.Center))
         }
     }
 }
