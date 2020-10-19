@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.drawBehind
@@ -18,15 +17,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.ui.tooling.preview.Preview
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieAnimationSpec
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.lottie.compose.rememberLottieAnimationState
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
 import com.airbnb.lottie.sample.compose.ComposeFragment
+import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.SeekBar
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
 import com.airbnb.mvrx.args
@@ -56,8 +55,10 @@ class PlayerFragment : ComposeFragment() {
         /** colorStr is the value from the LottieFiles API. */
         @Parcelize
         class Url(val url: String, val backgroundColorStr: String? = null) : Args()
+
         @Parcelize
         class File(val fileName: String) : Args()
+
         @Parcelize
         class Asset(val assetName: String) : Args()
     }
@@ -71,12 +72,7 @@ fun PlayerPage(
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
     val composition = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
-
-    val totalTime = ((composition?.duration ?: 0L / animationState.speed) / 1000.0)
-    val totalTimeFormatted = ("%.1f").format(totalTime)
-
-    val progress = (totalTime / 100.0) * ((animationState.progress * 100.0).roundToInt())
-    val progressFormatted = ("%.1f").format(progress)
+    var border by remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -108,45 +104,87 @@ fun PlayerPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .align(Alignment.Center)
+                    .maybeDrawBorder(border)
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .drawTopBorder()
+        PlayerControlsRow(animationState, composition)
+        Toolbar(
+            border = border,
+            onBorderToggled = { border = it }
+        )
+    }
+}
+
+@Composable
+fun PlayerControlsRow(
+    animationState: LottieAnimationState,
+    composition: LottieComposition?,
+) {
+    val totalTime = ((composition?.duration ?: 0L / animationState.speed) / 1000.0)
+    val totalTimeFormatted = ("%.1f").format(totalTime)
+
+    val progress = (totalTime / 100.0) * ((animationState.progress * 100.0).roundToInt())
+    val progressFormatted = ("%.1f").format(progress)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .drawTopBorder()
+    ) {
+        Box(
+            alignment = Alignment.Center
         ) {
-            Box(
-                alignment = Alignment.Center
+            IconButton(
+                onClick = { animationState.toggleIsPlaying() },
             ) {
-                IconButton(
-                    onClick = { animationState.toggleIsPlaying() },
-                ) {
-                    Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
-                }
-                Text(
-                    "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
-                    style = TextStyle(fontSize = 8.sp),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .padding(top = 48.dp, bottom = 8.dp)
-                )
+                Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
             }
-            SeekBar(
-                progress = animationState.progress,
-                onProgressChanged = {
-                    animationState.setProgress(it)
-                },
-                modifier = Modifier.weight(1f)
+            Text(
+                "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
+                style = TextStyle(fontSize = 8.sp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(top = 48.dp, bottom = 8.dp)
             )
-            IconButton(onClick = {
-                val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
-                animationState.repeatCount = repeatCount
-            }) {
-                Icon(
-                    Icons.Filled.Repeat,
-                    tint = if (animationState.repeatCount > 0) Color.Green else Color.Black,
-                )
-            }
+        }
+        SeekBar(
+            progress = animationState.progress,
+            onProgressChanged = {
+                animationState.setProgress(it)
+            },
+            modifier = Modifier.weight(1f)
+        )
+        IconButton(onClick = {
+            val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
+            animationState.repeatCount = repeatCount
+        }) {
+            Icon(
+                Icons.Filled.Repeat,
+                tint = if (animationState.repeatCount > 0) Color.Green else Color.Black,
+            )
+        }
+    }
+}
+
+@Composable
+fun Toolbar(
+    border: Boolean,
+    onBorderToggled: (showBorder: Boolean) -> Unit
+) {
+    ScrollableRow(
+        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
+        modifier = Modifier
+            .drawTopBorder()
+    ) {
+        repeat(7) {
+            ToolbarChip(
+                iconRes = R.drawable.ic_border,
+                labelRes = R.string.toolbar_item_border,
+                isActivated = border,
+                onClick = onBorderToggled,
+                modifier = Modifier
+                    .padding(end = 8.dp)
+            )
         }
     }
 }
@@ -168,6 +206,15 @@ private fun Modifier.maybeBackground(color: Color?): Modifier {
         this.then(background(color))
     }
 }
+
 private fun Modifier.drawTopBorder(color: Color = Color.DarkGray) = this.then(drawBehind {
-    drawRect(Color.DarkGray, Offset.Zero, size = Size(size.width, 1f))
+    drawRect(color, Offset.Zero, size = Size(size.width, 1f))
 })
+
+private fun Modifier.maybeDrawBorder(draw: Boolean, color: Color = Color.Black, width: Dp = 1.dp): Modifier {
+    return if (draw) {
+        this.then(border(width, color))
+    } else {
+        this
+    }
+}

@@ -11,6 +11,7 @@ val purple500 = Color(0xFF6200EE)
 val purple700 = Color(0xFF3700B3)
 val teal200 = Color(0xFF03DAC5)
 val textColorDark = Color(0xFF484848)
+val teal = Color(0xFF009587)
 
 val bottomBarBackground = Color(0xFFF7F7F7)
 

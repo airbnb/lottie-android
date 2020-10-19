@@ -14,4 +14,6 @@
     <string name="open_file">Open a file</string>
     <string name="enter_url">Enter a URL to a json or zip file</string>
     <string name="load_from_assets">Load from assets</string>
+
+    <string name="toolbar_item_border">Border</string>
 </resources>
