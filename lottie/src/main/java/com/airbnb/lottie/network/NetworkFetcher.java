@@ -92,7 +92,7 @@ public class NetworkFetcher {
         try {
           fetchResult.close();
         } catch (IOException e) {
-          e.printStackTrace();
+          Logger.warning("LottieFetchResult close failed ", e);
         }
       }
     }

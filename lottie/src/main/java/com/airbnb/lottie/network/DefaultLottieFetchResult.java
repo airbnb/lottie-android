@@ -1,5 +1,7 @@
 package com.airbnb.lottie.network;
 
+import com.airbnb.lottie.utils.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,17 +22,13 @@ public class DefaultLottieFetchResult implements LottieFetchResult {
 
   @Override public boolean isSuccessful() {
     try {
-      return resultCode() / 100 == 2;
+      return connection.getResponseCode() / 100 == 2;
     } catch (IOException e) {
       return false;
     }
   }
 
-  @Override public int resultCode() throws IOException {
-    return connection.getResponseCode();
-  }
-
-  @Nullable @Override public InputStream bodyByteStream() throws IOException {
+  @NonNull @Override public InputStream bodyByteStream() throws IOException {
     return connection.getInputStream();
   }
 
@@ -38,9 +36,14 @@ public class DefaultLottieFetchResult implements LottieFetchResult {
     return connection.getContentType();
   }
 
-  @Nullable @Override public String error() throws IOException {
-    return isSuccessful() ? null :
-        "Unable to fetch " + connection.getURL() + ". Failed with " + connection.getResponseCode() + "\n" + getErrorFromConnection(connection);
+  @Nullable @Override public String error() {
+    try {
+      return isSuccessful() ? null :
+          "Unable to fetch " + connection.getURL() + ". Failed with " + connection.getResponseCode() + "\n" + getErrorFromConnection(connection);
+    } catch (IOException e) {
+      Logger.warning("get error failed ", e);
+      return e.getMessage();
+    }
   }
 
   @Override public void close() {

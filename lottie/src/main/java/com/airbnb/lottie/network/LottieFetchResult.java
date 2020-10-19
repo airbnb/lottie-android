@@ -4,10 +4,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * The result of the operation of obtaining a lotty animation
+ * The result of the operation of obtaining a Lottie animation
  */
 public interface LottieFetchResult extends Closeable {
   /**
@@ -17,15 +18,9 @@ public interface LottieFetchResult extends Closeable {
 
   /**
    *
-   * @return Operation result code
-   */
-  int resultCode() throws IOException;
-
-  /**
-   *
    * @return Received content stream
    */
-  @Nullable
+  @NonNull
   InputStream bodyByteStream() throws IOException;
 
   /**
@@ -40,5 +35,5 @@ public interface LottieFetchResult extends Closeable {
    * @return Operation error
    */
   @Nullable
-  String error() throws IOException;
+  String error();
 }
