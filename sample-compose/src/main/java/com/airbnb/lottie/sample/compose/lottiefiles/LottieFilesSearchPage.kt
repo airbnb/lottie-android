@@ -27,6 +27,7 @@ import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
+import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.MavericksState
@@ -118,7 +119,10 @@ fun LottieFilesSearchPage() {
         state,
         viewModel::setQuery,
         viewModel::fetchNextPage,
-        { navController.navigate(R.id.player, it.asMavericksArgs()) }
+        onAnimationClicked =  { data ->
+            val args = PlayerFragment.Args.Url(data.file)
+            navController.navigate(R.id.player, args.asMavericksArgs())
+        }
     )
 }
 

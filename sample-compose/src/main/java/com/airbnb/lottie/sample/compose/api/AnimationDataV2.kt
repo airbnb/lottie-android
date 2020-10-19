@@ -6,14 +6,13 @@ import com.squareup.moshi.Json
 import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
-@Parcelize
 data class AnimationDataV2(
     val id: Int,
     private val bg_color: String?,
     val preview_url: String?,
     val title: String,
     val file: String
-) : Parcelable {
+) {
 
     constructor(data: AnimationDataV1) : this(
         data.id,

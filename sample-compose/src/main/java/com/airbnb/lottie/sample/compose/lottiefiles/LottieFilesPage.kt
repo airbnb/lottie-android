@@ -1,6 +1,7 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.animate
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.savedinstancestate.savedInstanceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.onGloballyPositioned
 import androidx.compose.ui.platform.DensityAmbient
@@ -78,6 +80,8 @@ fun LottieFilesTabBarTab(
 ) {
     val textWidth = remember { mutableStateOf(0) }
     val pxRatio = with(DensityAmbient.current) { 1.dp.toPx() }
+    val tabWidth = animate(target = if (isSelected) (textWidth.value / pxRatio).dp else 0.dp)
+    val tabAlpha = animate(target = if (isSelected) 1f else 0f)
     Column(
         modifier = Modifier
             .clickable(onClick = onClick)
@@ -90,13 +94,12 @@ fun LottieFilesTabBarTab(
                 .onGloballyPositioned { textWidth.value = it.size.width }
                 .wrapContentWidth()
         )
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .preferredHeight(3.dp)
-                    .background(MaterialTheme.colors.primary)
-                    .preferredWidth((textWidth.value / pxRatio).dp)
-            )
-        }
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .preferredHeight(3.dp)
+                .background(MaterialTheme.colors.primary.copy(alpha = tabAlpha))
+                .preferredWidth(tabWidth)
+        )
     }
 }

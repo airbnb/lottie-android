@@ -14,4 +14,9 @@
     <fragment
         android:id="@+id/lottie_files"
         android:name="com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesFragment" />
+
+    <fragment
+        android:id="@+id/preview"
+        android:name="com.airbnb.lottie.sample.compose.preview.PreviewFragment" />
+
 </navigation>

@@ -46,6 +46,7 @@ abstract class ComposeFragment : Fragment() {
                                             findNavController().navigate(R.id.lottie_files)
                                         }
                                         BottomBarButton(R.drawable.ic_device) {
+                                            findNavController().navigate(R.id.preview)
                                         }
                                         BottomBarButton(R.drawable.ic_learn) {
                                         }

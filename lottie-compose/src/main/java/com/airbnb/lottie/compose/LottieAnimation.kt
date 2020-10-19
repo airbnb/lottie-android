@@ -1,6 +1,5 @@
 package com.airbnb.lottie.compose
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
@@ -18,6 +17,8 @@ import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
 import com.airbnb.lottie.*
 import com.airbnb.lottie.utils.Logger
+import java.io.FileInputStream
+import java.util.zip.ZipInputStream
 
 @Composable
 fun LottieAnimation(
@@ -32,6 +33,14 @@ fun LottieAnimation(
         val task = when(spec) {
             is LottieAnimationSpec.RawRes -> LottieCompositionFactory.fromRawRes(context, spec.resId)
             is LottieAnimationSpec.Url -> LottieCompositionFactory.fromUrl(context, spec.url)
+            is LottieAnimationSpec.File -> {
+                val fis = FileInputStream(spec.fileName)
+                when {
+                    spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(ZipInputStream(fis), spec.fileName)
+                    else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName)
+                }
+            }
+            is LottieAnimationSpec.Asset -> LottieCompositionFactory.fromAsset(context, spec.assetName)
         }
         task.addListener { c ->
             if (!isDisposed) composition = c

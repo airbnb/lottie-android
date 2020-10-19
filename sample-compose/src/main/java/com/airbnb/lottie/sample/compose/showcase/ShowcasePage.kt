@@ -15,6 +15,7 @@ import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
 import com.airbnb.lottie.sample.compose.composables.Marquee
+import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
@@ -49,7 +50,8 @@ fun ShowcasePage() {
                     previewUrl = data.preview_url ?: "",
                     previewBackgroundColor = data.bgColor,
                 ) {
-                    navController.navigate(R.id.player, data.asMavericksArgs())
+                    val args = PlayerFragment.Args.Url(data.file)
+                    navController.navigate(R.id.player, args.asMavericksArgs())
                 }
                 Divider(color = Color.LightGray)
             }

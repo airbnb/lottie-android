@@ -36,9 +36,9 @@ fun AnimationRow(
             CoilImage(
                 data = previewUrl,
                 modifier = Modifier
+                    .padding(end = 16.dp)
                     .preferredSize(40.dp)
                     .background(color = previewBackgroundColor)
-                    .padding(end = 16.dp)
             )
             Text(
                 title,

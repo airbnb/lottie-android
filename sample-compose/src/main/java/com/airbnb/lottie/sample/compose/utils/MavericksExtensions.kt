@@ -1,6 +1,7 @@
 package com.airbnb.lottie.sample.compose.utils
 
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -13,6 +14,7 @@ inline fun <reified VM : MavericksViewModel<S>, reified S : MavericksState> mave
     val viewModelClass = VM::class
     val activity = ContextAmbient.current as? FragmentActivity ?: error("Composable is not hosted in a FragmentActivity")
     val keyFactory = { viewModelClass.java.name }
+    @SuppressLint("RestrictedApi")
     val viewModel = MavericksViewModelProvider.get(
         viewModelClass = viewModelClass.java,
         stateClass = S::class.java,
