@@ -1,5 +1,6 @@
 package com.airbnb.lottie.compose
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
@@ -15,17 +16,18 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.util.lerp
 import com.airbnb.lottie.*
 import com.airbnb.lottie.utils.Logger
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.max
+
 
 @Composable
-fun LottieAnimation(
-    spec: LottieAnimationSpec,
-    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true) },
-    modifier: Modifier = Modifier
-) {
+fun rememberLottieComposition(spec: LottieAnimationSpec): LottieComposition? {
     val context = ContextAmbient.current
     var composition: LottieComposition? by remember { mutableStateOf(null) }
     onCommit(spec) {
@@ -51,6 +53,16 @@ fun LottieAnimation(
             isDisposed = true
         }
     }
+    return composition
+}
+
+@Composable
+fun LottieAnimation(
+    spec: LottieAnimationSpec,
+    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true) },
+    modifier: Modifier = Modifier
+) {
+    val composition = rememberLottieComposition(spec)
 
     LottieAnimation(composition, animationState, modifier)
 }
@@ -58,12 +70,12 @@ fun LottieAnimation(
 @Composable
 fun LottieAnimation(
     composition: LottieComposition?,
-    animationState: LottieAnimationState,
+    state: LottieAnimationState,
     modifier: Modifier = Modifier
 ) {
     val drawable = remember { LottieDrawable() }
     val isStarted by isStarted()
-    val isPlaying = animationState.isPlaying && isStarted
+    val isPlaying = state.isPlaying && isStarted
     var progress by remember { mutableStateOf(0f) }
 
 
@@ -71,14 +83,22 @@ fun LottieAnimation(
         drawable.composition = composition
     }
 
-    LaunchedTask(animationState.updateProgressChannel) {
-        for (p in animationState.updateProgressChannel) {
+    // TODO: handle min/max frame setting
+
+    onCommit(state.speed) {
+        drawable.speed = state.speed
+    }
+
+    LaunchedTask(state.updateProgressChannel) {
+        for (p in state.updateProgressChannel) {
             progress = p
-            animationState.updateProgress(progress)
+            val frame = floor(lerp(0f, composition?.durationFrames ?: 0f, progress)).toInt()
+            Log.d("Gabe", "updateProcess $p $frame ${drawable.minFrame} ${drawable.maxFrame}")
+            state.updateProgress(progress, frame)
         }
     }
 
-    LaunchedTask(composition, isPlaying, animationState.repeatCount) {
+    LaunchedTask(composition, isPlaying, state.repeatCount) {
         if (!isPlaying || composition == null) return@LaunchedTask
         var repeatCount = 0
         if (isPlaying && progress == 1f) progress = 0f
@@ -92,12 +112,13 @@ fun LottieAnimation(
                 progress = (progress + dProgress) % 1f
                 if (previousProgress > progress) {
                     repeatCount++
-                    if (repeatCount != 0 && repeatCount > animationState.repeatCount) {
+                    if (repeatCount != 0 && repeatCount > state.repeatCount) {
                         progress = 1f
-                        animationState.isPlaying = false
+                        state.isPlaying = false
                     }
                 }
-                animationState.updateProgress(progress)
+                val frame = floor(lerp(drawable.minFrame, drawable.maxFrame, progress)).toInt()
+                state.updateProgress(progress, frame)
             }
         }
     }
