@@ -2,21 +2,20 @@ package com.airbnb.lottie.sample.compose.lottiefiles
 
 import android.util.Log
 import androidx.compose.foundation.Icon
-import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Surface
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.onActive
+import androidx.compose.runtime.onCommit
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
@@ -35,42 +34,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-data class LottieFilesSearchState(
-    val query: String = "Loading",
+enum class LottieFilesMode {
+    Recent,
+    Popular,
+}
+
+data class LottieFilesRecentAndPopularState(
+    val mode: LottieFilesMode = LottieFilesMode.Recent,
     val results: List<AnimationDataV2> = emptyList(),
     val currentPage: Int = 1,
     val lastPage: Int = 0,
     val fetchException: Boolean = false,
 ) : MavericksState
 
-class LottieFilesSearchViewModel @AssistedInject constructor(
-    @Assisted initialState: LottieFilesSearchState,
+class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
+    @Assisted initialState: LottieFilesRecentAndPopularState,
     private val api: LottieFilesApi,
-) : MavericksViewModel<LottieFilesSearchState>(initialState) {
+) : MavericksViewModel<LottieFilesRecentAndPopularState>(initialState) {
     private var fetchJob: Job? = null
 
     init {
-        onEach(LottieFilesSearchState::query) { query ->
-            fetchJob?.cancel()
-            if (query.isBlank()) {
-                setState { copy(results = emptyList(), currentPage = 1, lastPage = 1, fetchException = false) }
-            } else {
-                fetchJob = viewModelScope.launch(Dispatchers.IO) {
-                    val results = try {
-                        api.search(query, 1)
-                    } catch (e: Exception) {
-                        setState { copy(fetchException = true) }
-                        return@launch
-                    }
-                    setState {
-                        copy(
-                            results = results.data.map(::AnimationDataV2),
-                            currentPage = results.current_page,
-                            lastPage = results.last_page,
-                            fetchException = false
-                        )
-                    }
-                }
+        onEach(LottieFilesRecentAndPopularState::mode) {
+            setState { copy(results = emptyList(), currentPage = 0, lastPage = 1, fetchException = false) }
+            withState {
+                fetchNextPage()
             }
         }
     }
@@ -81,7 +68,10 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             val response = try {
                 Log.d("Gabe", "Fetching page ${state.currentPage + 1}")
-                api.search(state.query, state.currentPage + 1)
+                when (state.mode) {
+                    LottieFilesMode.Recent -> api.getRecent(state.currentPage + 1)
+                    LottieFilesMode.Popular -> api.getPopular(state.currentPage + 1)
+                }
             } catch (e: Exception) {
                 setState { copy(fetchException = true) }
                 return@launch
@@ -90,31 +80,35 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
                 copy(
                     results = results + response.data.map(::AnimationDataV2),
                     currentPage = response.current_page,
+                    lastPage = response.last_page,
                     fetchException = false
                 )
             }
         }
     }
 
-    fun setQuery(query: String) = setState { copy(query = query, currentPage = 1, results = emptyList()) }
+    fun setMode(mode: LottieFilesMode) = setState { copy(mode = mode) }
 
     @AssistedInject.Factory
-    interface Factory : AssistedViewModelFactory<LottieFilesSearchViewModel, LottieFilesSearchState> {
-        override fun create(initialState: LottieFilesSearchState): LottieFilesSearchViewModel
+    interface Factory : AssistedViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState> {
+        override fun create(initialState: LottieFilesRecentAndPopularState): LottieFilesRecentAndPopularViewModel
     }
 
-    companion object : DaggerMvRxViewModelFactory<LottieFilesSearchViewModel, LottieFilesSearchState>(LottieFilesSearchViewModel::class.java)
+    companion object : DaggerMvRxViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>(LottieFilesRecentAndPopularViewModel::class.java)
 }
 
 @Composable
-fun LottieFilesSearchPage() {
-    val (viewModel, state) = mavericksViewModelAndState<LottieFilesSearchViewModel, LottieFilesSearchState>()
+fun LottieFilesRecentAndPopularPage(mode: LottieFilesMode) {
+    val (viewModel, state) = mavericksViewModelAndState<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>()
     val navController = findNavController()
-    LottieFilesSearchPage(
+    onCommit(mode) {
+        viewModel.setMode(mode)
+    }
+    LottieFilesRecentAndPopularPage(
         state,
-        viewModel::setQuery,
         viewModel::fetchNextPage,
         onAnimationClicked = { data ->
+            Log.d("Gabe", data.file)
             val args = PlayerFragment.Args.Url(data.file, backgroundColorStr = data.bg_color)
             navController.navigate(R.id.player, args.asMavericksArgs())
         }
@@ -122,9 +116,8 @@ fun LottieFilesSearchPage() {
 }
 
 @Composable
-fun LottieFilesSearchPage(
-    state: LottieFilesSearchState,
-    setQuery: (String) -> Unit,
+fun LottieFilesRecentAndPopularPage(
+    state: LottieFilesRecentAndPopularState,
     fetchNextPage: () -> Unit,
     onAnimationClicked: (AnimationDataV2) -> Unit,
     modifier: Modifier = Modifier,
@@ -133,12 +126,6 @@ fun LottieFilesSearchPage(
         Column(
             modifier = Modifier.then(modifier)
         ) {
-            TextField(
-                value = state.query,
-                onValueChange = { query -> setQuery(query) },
-                label = { Text("Query") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
-            )
             LazyColumnForIndexed(
                 state.results,
                 modifier = Modifier.weight(1f)
@@ -167,23 +154,5 @@ fun LottieFilesSearchPage(
                     .padding(bottom = 24.dp)
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun previewSearchPage() {
-    val data = AnimationDataV2(0, null, "https://assets9.lottiefiles.com/render/k1821vf5.png", "Loading", "")
-    val state = LottieFilesSearchState(
-        results = listOf(data, data, data),
-        fetchException = true
-    )
-    Surface(color = Color.White) {
-        LottieFilesSearchPage(
-            state = state,
-            setQuery = {},
-            fetchNextPage = {},
-            onAnimationClicked = {}
-        )
     }
 }

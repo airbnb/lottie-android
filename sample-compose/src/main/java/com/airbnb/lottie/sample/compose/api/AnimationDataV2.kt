@@ -8,7 +8,7 @@ import kotlinx.android.parcel.Parcelize
 
 data class AnimationDataV2(
     val id: Int,
-    private val bg_color: String?,
+    val bg_color: String?,
     val preview_url: String?,
     val title: String,
     val file: String

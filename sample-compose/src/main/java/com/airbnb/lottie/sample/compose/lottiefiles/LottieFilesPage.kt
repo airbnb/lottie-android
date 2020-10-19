@@ -44,8 +44,8 @@ fun LottieFilesPage() {
             onTabSelected = { tab = it },
         )
         when (tab) {
-            LottieFilesTab.Recent -> Text("Recent")
-            LottieFilesTab.Popular -> Text("Popular")
+            LottieFilesTab.Recent -> LottieFilesRecentAndPopularPage(LottieFilesMode.Recent)
+            LottieFilesTab.Popular -> LottieFilesRecentAndPopularPage(LottieFilesMode.Popular)
             LottieFilesTab.Search -> LottieFilesSearchPage()
         }
     }

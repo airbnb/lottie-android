@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">LottieCompose</string>
 
+    <string name="bottom_tab_showcase">Showcase</string>
+    <string name="bottom_tab_preview">Preview</string>
+    <string name="bottom_tab_lottie_files">LottieFiles</string>
+    <string name="bottom_tab_learn">Learn</string>
+
     <string name="tab_recent">Recent</string>
     <string name="tab_popular">Popular</string>
     <string name="tab_search">Search</string>

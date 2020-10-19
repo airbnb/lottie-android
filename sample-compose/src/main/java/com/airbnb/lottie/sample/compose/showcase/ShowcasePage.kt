@@ -50,7 +50,7 @@ fun ShowcasePage() {
                     previewUrl = data.preview_url ?: "",
                     previewBackgroundColor = data.bgColor,
                 ) {
-                    val args = PlayerFragment.Args.Url(data.file)
+                    val args = PlayerFragment.Args.Url(data.file, backgroundColorStr = data.bg_color)
                     navController.navigate(R.id.player, args.asMavericksArgs())
                 }
                 Divider(color = Color.LightGray)

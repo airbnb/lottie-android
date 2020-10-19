@@ -1,5 +1,6 @@
 package com.airbnb.lottie.sample.compose.dagger
 
+import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesRecentAndPopularViewModel
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesSearchViewModel
 import com.airbnb.lottie.sample.compose.showcase.ShowcaseViewModel
 import com.squareup.inject.assisted.dagger2.AssistedModule
@@ -20,4 +21,10 @@ interface AppModule {
     @IntoMap
     @ViewModelKey(LottieFilesSearchViewModel::class)
     fun lottieFilesSearchViewModelFactory(factory: LottieFilesSearchViewModel.Factory): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LottieFilesRecentAndPopularViewModel::class)
+    fun lottieFilesRecentAndPopularViewModelFactory(factory: LottieFilesRecentAndPopularViewModel.Factory): AssistedViewModelFactory<*, *>
+
 }

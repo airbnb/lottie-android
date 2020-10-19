@@ -3,6 +3,7 @@ package com.airbnb.lottie.sample.compose.player
 import android.os.Parcelable
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Icon
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -19,33 +20,44 @@ import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
 import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.composables.SeekBar
+import com.airbnb.lottie.sample.compose.ui.toColorSafe
 import com.airbnb.mvrx.args
 import kotlinx.android.parcel.Parcelize
 
 class PlayerFragment : ComposeFragment() {
     private val args: Args by args()
-    private val spec by lazy {
-        when (val a = args) {
+
+    @Composable
+    override fun root() {
+        val spec = when (val a = args) {
             is Args.Url -> LottieAnimationSpec.Url(a.url)
             is Args.File -> LottieAnimationSpec.File(a.fileName)
             is Args.Asset -> LottieAnimationSpec.Asset(a.assetName)
         }
-    }
+        val backgroundColor = when (val a = args) {
+            is Args.Url -> a.backgroundColorStr?.toColorSafe()
+            else -> null
+        }
 
-    @Composable
-    override fun root() {
-        PlayerPage(spec)
+        PlayerPage(spec, backgroundColor)
     }
 
     sealed class Args : Parcelable {
-        @Parcelize class Url(val url: String) : Args()
-        @Parcelize class File(val fileName: String) : Args()
-        @Parcelize class Asset(val assetName: String) : Args()
+        /** colorStr is the value from the LottieFiles API. */
+        @Parcelize
+        class Url(val url: String, val backgroundColorStr: String? = null) : Args()
+        @Parcelize
+        class File(val fileName: String) : Args()
+        @Parcelize
+        class Asset(val assetName: String) : Args()
     }
 }
 
 @Composable
-fun PlayerPage(spec: LottieAnimationSpec) {
+fun PlayerPage(
+    spec: LottieAnimationSpec,
+    backgroundColor: Color? = null,
+) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     Column(
@@ -67,11 +79,19 @@ fun PlayerPage(spec: LottieAnimationSpec) {
                 Icon(Icons.Filled.RemoveRedEye)
             }
         }
-        LottieAnimation(
-            spec,
-            animationState,
-            modifier = Modifier.fillMaxSize()
-        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .maybeBackground(backgroundColor)
+        ) {
+            LottieAnimation(
+                spec,
+                animationState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center)
+            )
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -86,7 +106,7 @@ fun PlayerPage(spec: LottieAnimationSpec) {
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                val repeatCount = if (animationState.repeatCount== Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
+                val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
                 animationState.repeatCount = repeatCount
             }) {
                 Icon(
@@ -97,6 +117,7 @@ fun PlayerPage(spec: LottieAnimationSpec) {
         }
     }
 }
+
 @Preview(name = "Player")
 @Composable
 fun PlayerPagePreview() {
@@ -104,5 +125,13 @@ fun PlayerPagePreview() {
         BackPressedDispatcherAmbient provides OnBackPressedDispatcher()
     ) {
         PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
+    }
+}
+
+private fun Modifier.maybeBackground(color: Color?): Modifier {
+    return if (color == null) {
+        this
+    } else {
+        this.then(background(color))
     }
 }
