@@ -1,7 +1,6 @@
 package com.airbnb.lottie.sample.compose.player
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.clickable
@@ -16,6 +15,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,11 +26,11 @@ import com.airbnb.lottie.sample.compose.ui.teal
 
 @Composable
 fun ToolbarChip(
-    @DrawableRes iconRes: Int,
-    @StringRes labelRes: Int,
+    @DrawableRes iconRes: Int = 0,
+    label: String,
     isActivated: Boolean,
     onClick: (isActivated: Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val unActivatedColor = remember { Color(0xFF444444) }
     Surface(
@@ -46,15 +46,17 @@ fun ToolbarChip(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            Icon(
-                vectorResource(iconRes),
-                tint = if (isActivated) Color.White else unActivatedColor,
-                modifier = Modifier
-                    .preferredSize(12.dp)
-            )
-            Spacer(modifier = Modifier.preferredWidth(6.dp))
+            if (iconRes != 0) {
+                Icon(
+                    vectorResource(iconRes),
+                    tint = if (isActivated) Color.White else unActivatedColor,
+                    modifier = Modifier
+                        .preferredSize(12.dp)
+                )
+                Spacer(modifier = Modifier.preferredWidth(6.dp))
+            }
             Text(
-                stringResource(labelRes),
+                label,
                 color = if (isActivated) Color.White else unActivatedColor,
                 style = TextStyle(fontSize = 12.sp)
             )
@@ -67,7 +69,7 @@ fun ToolbarChip(
 fun PreviewToolbarChip() {
     ToolbarChip(
         iconRes = R.drawable.ic_border,
-        labelRes = R.string.toolbar_item_border,
+        label = stringResource(R.string.toolbar_item_border),
         isActivated = false,
         onClick = {}
     )

@@ -26,6 +26,9 @@ import kotlin.math.floor
 import kotlin.math.max
 
 
+/**
+ * TODO: add error handling
+ */
 @Composable
 fun rememberLottieComposition(spec: LottieAnimationSpec): LottieComposition? {
     val context = ContextAmbient.current
@@ -85,10 +88,6 @@ fun LottieAnimation(
 
     // TODO: handle min/max frame setting
 
-    onCommit(state.speed) {
-        drawable.speed = state.speed
-    }
-
     LaunchedTask(state.updateProgressChannel) {
         for (p in state.updateProgressChannel) {
             progress = p
@@ -98,6 +97,8 @@ fun LottieAnimation(
         }
     }
 
+    // TODO: should progress continue when repeatCount changes?
+    // Also ensure pause/resume don't reset repeatCount.
     LaunchedTask(composition, isPlaying, state.repeatCount) {
         if (!isPlaying || composition == null) return@LaunchedTask
         var repeatCount = 0
@@ -107,7 +108,7 @@ fun LottieAnimation(
             withFrameNanos { frameTime ->
                 val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
                 lastFrameTime = frameTime
-                val dProgress = dTime / composition.duration
+                val dProgress = (dTime * state.speed) / composition.duration
                 val previousProgress = progress
                 progress = (progress + dProgress) % 1f
                 if (previousProgress > progress) {

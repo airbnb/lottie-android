@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.*
+import com.airbnb.lottie.RenderMode
 import kotlinx.coroutines.channels.Channel
 
 @Composable
@@ -25,7 +26,7 @@ class LottieAnimationState(isPlaying: Boolean, repeatCount: Int = 0, initialProg
     var repeatCount by mutableStateOf(repeatCount)
 
     var speed by mutableStateOf(1f)
-
+    
     internal val updateProgressChannel = Channel<Float>(Channel.CONFLATED)
 
     fun setProgress(progress: Float) {

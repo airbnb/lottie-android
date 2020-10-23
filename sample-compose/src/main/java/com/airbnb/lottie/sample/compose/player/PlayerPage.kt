@@ -15,6 +15,7 @@ import androidx.compose.ui.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -70,9 +71,10 @@ fun PlayerPage(
     backgroundColor: Color? = null,
 ) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
-    val composition = rememberLottieComposition(spec)
+    val composition: LottieComposition? = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
-    var border by remember { mutableStateOf(false) }
+    val border = remember { mutableStateOf(false) }
+    val speed = remember { mutableStateOf(false) }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -104,13 +106,19 @@ fun PlayerPage(
                 modifier = Modifier
                     .fillMaxSize()
                     .align(Alignment.Center)
-                    .maybeDrawBorder(border)
+                    .maybeDrawBorder(border.value)
+            )
+        }
+        if (speed.value) {
+            SpeedToolbar(
+                speed = animationState.speed,
+                onSpeedChanged = { animationState.speed = it }
             )
         }
         PlayerControlsRow(animationState, composition)
         Toolbar(
             border = border,
-            onBorderToggled = { border = it }
+            speed = speed,
         )
     }
 }
@@ -167,26 +175,75 @@ fun PlayerControlsRow(
 }
 
 @Composable
+fun SpeedToolbar(
+    speed: Float,
+    onSpeedChanged: (Float) -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier
+            .drawTopBorder()
+            .fillMaxWidth()
+    ) {
+        ToolbarChip(
+            label = "0.5x",
+            isActivated = speed == 0.5f,
+            onClick = { onSpeedChanged(0.5f) },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            label = "1x",
+            isActivated = speed == 1f,
+            onClick = { onSpeedChanged(1f) },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            label = "1.5x",
+            isActivated = speed == 1.5f,
+            onClick = { onSpeedChanged(1.5f) },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            label = "2x",
+            isActivated = speed == 2f,
+            onClick = { onSpeedChanged(2f) },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+    }
+}
+
+@Composable
 fun Toolbar(
-    border: Boolean,
-    onBorderToggled: (showBorder: Boolean) -> Unit
+    border: MutableState<Boolean>,
+    speed: MutableState<Boolean>,
 ) {
     ScrollableRow(
         contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
         modifier = Modifier
             .drawTopBorder()
+            .fillMaxWidth()
     ) {
-        repeat(7) {
-            ToolbarChip(
-                iconRes = R.drawable.ic_border,
-                labelRes = R.string.toolbar_item_border,
-                isActivated = border,
-                onClick = onBorderToggled,
-                modifier = Modifier
-                    .padding(end = 8.dp)
-            )
-        }
+        ToolbarChip(
+            iconRes = R.drawable.ic_border,
+            label = stringResource(R.string.toolbar_item_border),
+            isActivated = border.value,
+            onClick = { border.value = it },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            iconRes = R.drawable.ic_speed,
+            label = stringResource(R.string.toolbar_item_speed),
+            isActivated = speed.value,
+            onClick = { speed.value = it},
+            modifier = Modifier.padding(end = 8.dp)
+        )
     }
+}
+
+@Preview
+@Composable
+fun SpeedToolbarPreview() {
+    SpeedToolbar(speed = 1f, onSpeedChanged = {})
 }
 
 @Preview(name = "Player")

@@ -14,6 +14,7 @@ class LottieComposeApplication : MultiDexApplication() {
         Mavericks.initialize(this)
         component = DaggerApplicationComponent.create()
         L.DBG = true
+        @Suppress("RestrictedApi")
         L.setTraceEnabled(true)
     }
 }

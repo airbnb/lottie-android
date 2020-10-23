@@ -16,4 +16,5 @@
     <string name="load_from_assets">Load from assets</string>
 
     <string name="toolbar_item_border">Border</string>
+    <string name="toolbar_item_speed">Speed</string>
 </resources>
