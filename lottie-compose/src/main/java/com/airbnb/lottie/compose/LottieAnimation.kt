@@ -21,9 +21,7 @@ import com.airbnb.lottie.*
 import com.airbnb.lottie.utils.Logger
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
-import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
 
 
 /**
@@ -79,8 +77,6 @@ fun LottieAnimation(
     val drawable = remember { LottieDrawable() }
     val isStarted by isStarted()
     val isPlaying = state.isPlaying && isStarted
-    var progress by remember { mutableStateOf(0f) }
-
 
     onCommit(composition) {
         drawable.composition = composition
@@ -88,44 +84,35 @@ fun LottieAnimation(
 
     // TODO: handle min/max frame setting
 
-    LaunchedTask(state.updateProgressChannel) {
-        for (p in state.updateProgressChannel) {
-            progress = p
-            val frame = floor(lerp(0f, composition?.durationFrames ?: 0f, progress)).toInt()
-            Log.d("Gabe", "updateProcess $p $frame ${drawable.minFrame} ${drawable.maxFrame}")
-            state.updateProgress(progress, frame)
-        }
-    }
-
     // TODO: should progress continue when repeatCount changes?
     // Also ensure pause/resume don't reset repeatCount.
     LaunchedTask(composition, isPlaying, state.repeatCount) {
         if (!isPlaying || composition == null) return@LaunchedTask
         var repeatCount = 0
-        if (isPlaying && progress == 1f) progress = 0f
+        if (isPlaying && state.progress == 1f) state.progress = 0f
         var lastFrameTime = withFrameNanos { it }
         while (true) {
             withFrameNanos { frameTime ->
                 val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
                 lastFrameTime = frameTime
                 val dProgress = (dTime * state.speed) / composition.duration
-                val previousProgress = progress
-                progress = (progress + dProgress) % 1f
-                if (previousProgress > progress) {
+                val previousProgress = state.progress
+                state.progress = (state.progress + dProgress) % 1f
+                if (previousProgress > state.progress) {
                     repeatCount++
                     if (repeatCount != 0 && repeatCount > state.repeatCount) {
-                        progress = 1f
+                        state.progress = 1f
                         state.isPlaying = false
                     }
                 }
-                val frame = floor(lerp(drawable.minFrame, drawable.maxFrame, progress)).toInt()
-                state.updateProgress(progress, frame)
+                val frame = floor(lerp(drawable.minFrame, drawable.maxFrame, state.progress)).toInt()
+                state.updateFrame(frame)
             }
         }
     }
 
     if (composition == null || composition.duration == 0f) return
-    drawable.progress = progress
+    drawable.progress = state.progress
 
     Canvas(
         modifier = Modifier

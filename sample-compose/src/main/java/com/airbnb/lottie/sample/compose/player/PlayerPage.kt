@@ -158,7 +158,7 @@ fun PlayerControlsRow(
         SeekBar(
             progress = animationState.progress,
             onProgressChanged = {
-                animationState.setProgress(it)
+                animationState.progress = it
             },
             modifier = Modifier.weight(1f)
         )
