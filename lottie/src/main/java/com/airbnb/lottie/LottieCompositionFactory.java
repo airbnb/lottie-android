@@ -86,7 +86,11 @@ public class LottieCompositionFactory {
     return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
       @Override
       public LottieResult<LottieComposition> call() {
-        return L.networkFetcher(context).fetchSync(url, cacheKey);
+        LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
+        if (cacheKey != null && result.getValue() != null) {
+          LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
+        }
+        return result;
       }
     });
   }
@@ -109,7 +113,11 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromUrlSync(Context context, String url, @Nullable String cacheKey) {
-    return L.networkFetcher(context).fetchSync(url, cacheKey);
+    LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
+    if (cacheKey != null && result.getValue() != null) {
+      LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
+    }
+    return result;
   }
 
   /**
