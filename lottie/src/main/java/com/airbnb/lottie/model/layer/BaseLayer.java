@@ -2,6 +2,7 @@ package com.airbnb.lottie.model.layer;
 
 import android.graphics.*;
 import android.os.Build;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;

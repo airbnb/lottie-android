@@ -16,13 +16,6 @@ import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntDef;
-import androidx.annotation.IntRange;
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.KeyPath;
@@ -44,6 +37,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
