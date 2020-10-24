@@ -62,8 +62,8 @@ fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResul
 @Composable
 fun LottieAnimation(
     spec: LottieAnimationSpec,
-    animationState: LottieAnimationState = remember { LottieAnimationState(isPlaying = true) },
-    modifier: Modifier = Modifier
+    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
+    modifier: Modifier = Modifier,
 ) {
     val composition = rememberLottieComposition(spec)
 
@@ -86,9 +86,7 @@ fun LottieAnimation(
 
     // TODO: handle min/max frame setting
 
-    // TODO: should progress continue when repeatCount changes?
-    // Also ensure pause/resume don't reset repeatCount.
-    LaunchedTask(composition, isPlaying, state.repeatCount) {
+    LaunchedTask(composition, isPlaying) {
         if (!isPlaying || composition == null) return@LaunchedTask
         var repeatCount = 0
         if (isPlaying && state.progress == 1f) state.progress = 0f

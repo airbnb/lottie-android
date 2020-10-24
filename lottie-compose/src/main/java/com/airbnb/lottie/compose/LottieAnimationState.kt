@@ -10,14 +10,21 @@ import androidx.compose.runtime.setValue
 fun rememberLottieAnimationState(
     autoPlay: Boolean = true,
     repeatCount: Int = 0,
-    initialProgress: Float = 0f
+    initialProgress: Float = 0f,
 ): LottieAnimationState {
     return remember(repeatCount, autoPlay) {
         LottieAnimationState(isPlaying = autoPlay, repeatCount, initialProgress)
     }
 }
 
-class LottieAnimationState(isPlaying: Boolean, repeatCount: Int = 0, initialProgress: Float = 0f) {
+/**
+ * @see rememberLottieAnimationState()
+ */
+class LottieAnimationState(
+    isPlaying: Boolean,
+    repeatCount: Int = 0,
+    initialProgress: Float = 0f,
+) {
     var progress by mutableStateOf(initialProgress)
 
     private var _frame = mutableStateOf(0)
