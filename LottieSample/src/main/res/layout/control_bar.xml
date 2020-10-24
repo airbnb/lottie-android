@@ -21,6 +21,11 @@
             app:src="@drawable/ic_chart"
             app:text="@string/control_bar_render_graph" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView
+            android:id="@+id/masksAndMattesToggle"
+            style="@style/ControlBarItem"
+            app:src="@drawable/ic_show_masks_and_mattes"
+            app:text="@string/control_bar_masks_and_mattes" />
+        <com.airbnb.lottie.samples.views.ControlBarItemToggleView
             android:id="@+id/warningsButton"
             style="@style/ControlBarItem" />
         <com.airbnb.lottie.samples.views.ControlBarItemToggleView

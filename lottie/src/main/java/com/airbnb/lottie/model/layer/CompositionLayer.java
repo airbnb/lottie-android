@@ -88,6 +88,13 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
+  @Override public void setOutlineMasksAndMattes(boolean outline) {
+    super.setOutlineMasksAndMattes(outline);
+    for (BaseLayer layer : layers) {
+      layer.setOutlineMasksAndMattes(outline);
+    }
+  }
+
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("CompositionLayer#draw");
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());

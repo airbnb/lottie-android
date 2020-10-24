@@ -18,6 +18,7 @@ data class PlayerState(
         val controlsVisible: Boolean = true,
         val controlBarVisible: Boolean = true,
         val renderGraphVisible: Boolean = false,
+        val outlineMasksAndMattes: Boolean = false,
         val borderVisible: Boolean = false,
         val backgroundColorVisible: Boolean = false,
         val scaleVisible: Boolean = false,
@@ -63,6 +64,8 @@ class PlayerViewModel(
     }
 
     fun toggleRenderGraphVisible() = setState { copy(renderGraphVisible = !renderGraphVisible) }
+
+    fun toggleOutlineMasksAndMattes() = setState { copy(outlineMasksAndMattes = !outlineMasksAndMattes) }
 
     fun toggleBorderVisible() = setState { copy(borderVisible = !borderVisible) }
 

@@ -94,6 +94,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private CompositionLayer compositionLayer;
   private int alpha = 255;
   private boolean performanceTrackingEnabled;
+  private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
   private boolean isExtraScaleEnabled = true;
   /**
@@ -249,6 +250,19 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
+  /**
+   * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
+   * be proportional to the surface area of all of the masks/mattes combined.
+   *
+   * DO NOT leave this enabled in production.
+   */
+  void setOutlineMasksAndMattes(boolean outline) {
+    outlineMasksAndMattes = outline;
+    if (compositionLayer != null) {
+      compositionLayer.setOutlineMasksAndMattes(outline);
+    }
+  }
+
   @Nullable
   public PerformanceTracker getPerformanceTracker() {
     if (composition != null) {
@@ -296,6 +310,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private void buildCompositionLayer() {
     compositionLayer = new CompositionLayer(
         this, LayerParser.parse(composition), composition.getLayers(), composition);
+    if (outlineMasksAndMattes) {
+      compositionLayer.setOutlineMasksAndMattes(true);
+    }
   }
 
   public void clearComposition() {

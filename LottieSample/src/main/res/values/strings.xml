@@ -46,6 +46,7 @@
     <string name="control_bar_hardware_acceleration">Hardware Acceleration</string>
     <string name="control_bar_render_graph">Render Graph</string>
     <string name="control_bar_scale">Scale</string>
+    <string name="control_bar_masks_and_mattes">Outline Masks</string>
     <string name="control_bar_trim">Trim</string>
     <string name="control_bar_speed">Speed</string>
     <string name="control_bar_key_paths">Show KeyPaths</string>

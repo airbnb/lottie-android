@@ -179,6 +179,12 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             binding.controlBarPlayerControls.lottieVersionView.animateVisible(!it)
         }
 
+        binding.controlBar.masksAndMattesToggle.setOnClickListener { viewModel.toggleOutlineMasksAndMattes() }
+        viewModel.selectSubscribe(PlayerState::outlineMasksAndMattes) {
+            binding.controlBar.masksAndMattesToggle.isActivated = it
+            binding.animationView.setOutlineMasksAndMattes(it)
+        }
+
         binding.controlBar.backgroundColorToggle.setOnClickListener { viewModel.toggleBackgroundColorVisible() }
         binding.controlBarBackgroundColor.closeBackgroundColorButton.setOnClickListener { viewModel.setBackgroundColorVisible(false) }
         viewModel.selectSubscribe(PlayerState::backgroundColorVisible) {

@@ -370,6 +370,16 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
+   * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
+   * be proportional to the surface area of all of the masks/mattes combined.
+   *
+   * DO NOT leave this enabled in production.
+   */
+  public void setOutlineMasksAndMattes(boolean outline) {
+    lottieDrawable.setOutlineMasksAndMattes(outline);
+  }
+
+  /**
    * Sets the animation from a file in the raw directory.
    * This will load and deserialize the file asynchronously.
    */
