@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
@@ -27,7 +28,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
 
 import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
@@ -51,12 +51,13 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
  * 2) Programmatically:
  *      {@link #setAnimation(String)}
- *      {@link #setAnimation(JsonReader, String)}
+ *      {@link #setAnimation(int)}
+ *      {@link #setAnimation(InputStream, String)}
  *      {@link #setAnimationFromJson(String, String)}
  *      {@link #setAnimationFromUrl(String)}
  *      {@link #setComposition(LottieComposition)}
  * <p>
- * You can set a default cache strategy with {@link R.attr#lottie_cacheStrategy}.
+ * You can set a default cache strategy with {@link R.attr#lottie_cacheComposition}.
  * <p>
  * You can manually set the progress of the animation with {@link #setProgress(float)} or
  * {@link R.attr#lottie_progress}
@@ -108,7 +109,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private boolean autoPlay = false;
   private boolean cacheComposition = true;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
-  private Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
+  private final Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
   /**
    * Prevents a StackOverflowException on 4.4 in which getDrawingCache() calls buildDrawingCache().
    * This isn't a great solution but it works and has very little performance overhead.
@@ -382,7 +383,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() throws Exception {
+        @Override public LottieResult<LottieComposition> call() {
           return cacheComposition
               ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null);
         }
@@ -402,7 +403,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
       return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() throws Exception {
+        @Override public LottieResult<LottieComposition> call() {
           return cacheComposition ?
               LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null);
         }
@@ -448,6 +449,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
    * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
    * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
+   *
+   * You can replace the default network stack or cache handling with a global {@link LottieConfig}
+   *
+   * @see LottieConfig.Builder
+   * @see Lottie#initialize(LottieConfig)
    */
   public void setAnimationFromUrl(String url) {
     LottieTask<LottieComposition> task = cacheComposition ?
@@ -462,6 +468,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
    * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
    * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
+   *
+   * You can replace the default network stack or cache handling with a global {@link LottieConfig}
+   *
+   * @see LottieConfig.Builder
+   * @see Lottie#initialize(LottieConfig)
    */
   public void setAnimationFromUrl(String url, @Nullable String cacheKey) {
     LottieTask<LottieComposition> task = LottieCompositionFactory.fromUrl(getContext(), url, cacheKey);
@@ -516,7 +527,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Sets a composition.
    * You can set a default cache strategy if this view was inflated with xml by
-   * using {@link R.attr#lottie_cacheStrategy}.
+   * using {@link R.attr#lottie_cacheComposition}.
    */
   public void setComposition(@NonNull LottieComposition composition) {
     if (L.DBG) {
@@ -845,8 +856,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Use this to manually set fonts.
    */
-  public void setFontAssetDelegate(
-      @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
+  public void setFontAssetDelegate(FontAssetDelegate assetDelegate) {
     lottieDrawable.setFontAssetDelegate(assetDelegate);
   }
 
@@ -1064,8 +1074,6 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    *
    * <b>Attention:</b> Disable the extra scale mode can downgrade the performance and may lead to larger memory footprint. Please only disable this
    * mode when using animation with a reasonable dimension (smaller than screen size).
-   *
-   * @see LottieDrawable#drawWithNewAspectRatio(Canvas)
    */
   public void disableExtraScaleModeInFitXY() {
     lottieDrawable.disableExtraScaleModeInFitXY();
