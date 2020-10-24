@@ -1,3 +1,8 @@
+# 3.5.0
+### Features and Improvements
+* Added a new global configuration to add a custom network stack, custom network cache, enable systrace markers, and more ([#1629](https://github.com/airbnb/lottie-android/pull/1629))
+* Initial implementation of Lottie Compose (not yet released)
+
 # 3.4.4
 ### Bugs Fixed
 * Properly clamp gradient values ([#1636](https://github.com/airbnb/lottie-android/pull/1636))

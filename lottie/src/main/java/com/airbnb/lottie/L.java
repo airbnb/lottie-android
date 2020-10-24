@@ -33,6 +33,9 @@ public class L {
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
 
+  private L() {
+  }
+
   public static void setTraceEnabled(boolean enabled) {
     if (traceEnabled == enabled) {
       return;
