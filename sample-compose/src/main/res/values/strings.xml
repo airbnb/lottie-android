@@ -21,6 +21,7 @@
     </plurals>
     <string name="toolbar_item_border">Border</string>
     <string name="toolbar_item_speed">Speed</string>
+    <string name="toolbar_item_color">Background</string>
 
     <string name="failed_to_load">Failed to load composition</string>
     <string name="ok">OK</string>

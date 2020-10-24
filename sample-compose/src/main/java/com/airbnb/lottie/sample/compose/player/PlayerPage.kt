@@ -6,7 +6,11 @@ import androidx.compose.foundation.Icon
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,7 +18,9 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -74,15 +80,19 @@ class PlayerFragment : ComposeFragment() {
 @Composable
 private fun PlayerPage(
     spec: LottieAnimationSpec,
-    backgroundColor: Color? = null,
+    animationBackgroundColor: Color? = null,
 ) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
     val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     val scaffoldState = rememberScaffoldState()
     var focusMode by remember { mutableStateOf(false) }
-    val border = remember { mutableStateOf(false) }
-    val speed = remember { mutableStateOf(false) }
+    var backgroundColor by remember { mutableStateOf(animationBackgroundColor) }
+
+    val borderToolbar = remember { mutableStateOf(false) }
+    val speedToolbar = remember { mutableStateOf(false) }
+    val backgroundColorToolbar = remember { mutableStateOf(false) }
+
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
@@ -139,7 +149,7 @@ private fun PlayerPage(
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.Center)
-                        .maybeDrawBorder(border.value)
+                        .maybeDrawBorder(borderToolbar.value)
                 )
                 if (compositionResult is LottieCompositionResult.Loading) {
                     DebouncedCircularProgressIndicator(
@@ -149,17 +159,24 @@ private fun PlayerPage(
                     )
                 }
             }
-            if (speed.value && !focusMode) {
+            if (speedToolbar.value && !focusMode) {
                 SpeedToolbar(
                     speed = animationState.speed,
                     onSpeedChanged = { animationState.speed = it }
                 )
             }
+            if (backgroundColorToolbar.value && !focusMode) {
+                BackgroundColorToolbar(
+                    animationBackgroundColor = animationBackgroundColor,
+                    onColorChanged = { backgroundColor = it }
+                )
+            }
             if (!focusMode) {
                 PlayerControlsRow(animationState, compositionResult())
                 Toolbar(
-                    border = border,
-                    speed = speed,
+                    border = borderToolbar,
+                    speed = speedToolbar,
+                    backgroundColor = backgroundColorToolbar,
                     warnings = compositionResult()?.warnings ?: emptyList()
                 )
             }
@@ -258,9 +275,57 @@ private fun SpeedToolbar(
 }
 
 @Composable
+private fun BackgroundColorToolbar(
+    animationBackgroundColor: Color?,
+    onColorChanged: (Color) -> Unit,
+) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .drawTopBorder()
+            .padding(vertical = 12.dp, horizontal = 16.dp)
+            .fillMaxWidth()
+    ) {
+        listOfNotNull(
+            colorResource(R.color.background_color1),
+            colorResource(R.color.background_color2),
+            colorResource(R.color.background_color3),
+            colorResource(R.color.background_color4),
+            colorResource(R.color.background_color5),
+            colorResource(R.color.background_color6),
+            animationBackgroundColor.takeIf { it != Color.White },
+        ).forEachIndexed { i, color ->
+            val strokeColor = if (i == 0) colorResource(R.color.background_color1_stroke) else color
+            BackgroundToolbarItem(
+                color = color,
+                strokeColor = strokeColor,
+                onClick = { onColorChanged(color) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun BackgroundToolbarItem(
+    color: Color,
+    strokeColor: Color = color,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(color)
+            .clickable(onClick = onClick)
+            .preferredSize(24.dp)
+            .border(1.dp, strokeColor, shape = CircleShape)
+    )
+}
+
+@Composable
 private fun Toolbar(
     border: MutableState<Boolean>,
     speed: MutableState<Boolean>,
+    backgroundColor: MutableState<Boolean>,
     warnings: List<String>,
 ) {
     var showWarningsDialog by remember { mutableStateOf(false) }
@@ -296,6 +361,13 @@ private fun Toolbar(
             label = stringResource(R.string.toolbar_item_speed),
             isActivated = speed.value,
             onClick = { speed.value = it },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            iconRes = R.drawable.ic_color,
+            label = stringResource(R.string.toolbar_item_color),
+            isActivated = backgroundColor.value,
+            onClick = { backgroundColor.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
     }
