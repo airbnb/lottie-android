@@ -40,4 +40,8 @@ class FilmStripView @JvmOverloads constructor(
     fun setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled: Boolean) {
         animationViews.forEach { it.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled) }
     }
+
+    fun setOutlineMasksAndMattes(outline: Boolean) {
+        animationViews.forEach { it.setOutlineMasksAndMattes(outline) }
+    }
 }

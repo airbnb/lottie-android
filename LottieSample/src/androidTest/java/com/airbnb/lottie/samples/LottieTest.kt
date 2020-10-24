@@ -108,6 +108,7 @@ class LottieTest {
             snapshotProdAnimations()
             testNightMode()
             testApplyOpacityToLayer()
+            testOutlineMasksAndMattes()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -978,6 +979,23 @@ class LottieTest {
                 "Tests/OverlapShapeWithOpacity.json",
                 "Apply Opacity To Layer",
                 "Disabled"
+        ) { filmStripView ->
+            filmStripView.setApplyingOpacityToLayersEnabled(false)
+        }
+    }
+
+    private suspend fun testOutlineMasksAndMattes() {
+        withFilmStripView(
+            "Tests/Masks.json",
+            "Outline Masks and Mattes",
+            "Enabled"
+        ) { filmStripView ->
+            filmStripView.setOutlineMasksAndMattes(true)
+        }
+        withFilmStripView(
+            "Tests/OverlapShapeWithOpacity.json",
+            "Apply Opacity To Layer",
+            "Disabled"
         ) { filmStripView ->
             filmStripView.setApplyingOpacityToLayersEnabled(false)
         }
