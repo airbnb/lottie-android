@@ -2,33 +2,39 @@ package com.airbnb.lottie.sample.compose.player
 
 import android.os.Parcelable
 import androidx.activity.OnBackPressedDispatcher
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Icon
+import androidx.compose.foundation.ScrollableColumn
+import androidx.compose.foundation.ScrollableRow
+import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material.IconButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
 import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
+import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
 import com.airbnb.lottie.sample.compose.composables.SeekBar
+import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
+import com.airbnb.lottie.sample.compose.utils.drawTopBorder
+import com.airbnb.lottie.sample.compose.utils.maybeBackground
+import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
+import com.airbnb.lottie.sample.compose.utils.quantityStringResource
 import com.airbnb.mvrx.args
 import kotlinx.android.parcel.Parcelize
 import kotlin.math.ceil
@@ -66,65 +72,103 @@ class PlayerFragment : ComposeFragment() {
 }
 
 @Composable
-fun PlayerPage(
+private fun PlayerPage(
     spec: LottieAnimationSpec,
     backgroundColor: Color? = null,
 ) {
     val backPressedDispatcher = BackPressedDispatcherAmbient.current
-    val composition: LottieComposition? = rememberLottieComposition(spec)
+    val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
+    val scaffoldState = rememberScaffoldState()
+    var focusMode by remember { mutableStateOf(false) }
     val border = remember { mutableStateOf(false) }
     val speed = remember { mutableStateOf(false) }
+    val failedMessage = stringResource(R.string.failed_to_load)
+    val okMessage = stringResource(R.string.ok)
 
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxHeight()
+    LaunchedTask(compositionResult) {
+        if (compositionResult is LottieCompositionResult.Fail) {
+            scaffoldState.snackbarHostState.showSnackbar(
+                message = failedMessage,
+                actionLabel = okMessage,
+            )
+        }
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = {},
+                backgroundColor = Color.Transparent,
+                elevation = 0.dp,
+                navigationIcon = {
+                    IconButton(
+                        onClick = { backPressedDispatcher.onBackPressed() },
+                    ) {
+                        Icon(Icons.Default.Close)
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { focusMode = !focusMode },
+                    ) {
+                        Icon(
+                            Icons.Filled.RemoveRedEye,
+                            tint = if (focusMode) Teal else Color.Black,
+                        )
+                    }
+                }
+            )
+        },
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxHeight()
         ) {
-            IconButton(
-                onClick = { backPressedDispatcher.onBackPressed() },
-            ) {
-                Icon(Icons.Filled.Close)
-            }
-            IconButton(
-                onClick = { backPressedDispatcher.onBackPressed() },
-            ) {
-                Icon(Icons.Filled.RemoveRedEye)
-            }
-        }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .maybeBackground(backgroundColor)
-        ) {
-            LottieAnimation(
-                composition,
-                animationState,
+            Box(
+                alignment = Alignment.Center,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-                    .maybeDrawBorder(border.value)
-            )
+                    .weight(1f)
+                    .maybeBackground(backgroundColor)
+                    .fillMaxWidth()
+            ) {
+                LottieAnimation(
+                    compositionResult(),
+                    animationState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .maybeDrawBorder(border.value)
+                )
+                if (compositionResult is LottieCompositionResult.Loading) {
+                    DebouncedCircularProgressIndicator(
+                        color = Teal,
+                        modifier = Modifier
+                            .preferredSize(48.dp)
+                    )
+                }
+            }
+            if (speed.value && !focusMode) {
+                SpeedToolbar(
+                    speed = animationState.speed,
+                    onSpeedChanged = { animationState.speed = it }
+                )
+            }
+            if (!focusMode) {
+                PlayerControlsRow(animationState, compositionResult())
+                Toolbar(
+                    border = border,
+                    speed = speed,
+                    warnings = compositionResult()?.warnings ?: emptyList()
+                )
+            }
         }
-        if (speed.value) {
-            SpeedToolbar(
-                speed = animationState.speed,
-                onSpeedChanged = { animationState.speed = it }
-            )
-        }
-        PlayerControlsRow(animationState, composition)
-        Toolbar(
-            border = border,
-            speed = speed,
-        )
     }
 }
 
 @Composable
-fun PlayerControlsRow(
+private fun PlayerControlsRow(
     animationState: LottieAnimationState,
     composition: LottieComposition?,
 ) {
@@ -168,21 +212,22 @@ fun PlayerControlsRow(
         }) {
             Icon(
                 Icons.Filled.Repeat,
-                tint = if (animationState.repeatCount > 0) Color.Green else Color.Black,
+                tint = if (animationState.repeatCount > 0) Teal else Color.Black,
             )
         }
     }
 }
 
 @Composable
-fun SpeedToolbar(
+private fun SpeedToolbar(
     speed: Float,
     onSpeedChanged: (Float) -> Unit,
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .drawTopBorder()
+            .padding(vertical = 12.dp, horizontal = 16.dp)
             .fillMaxWidth()
     ) {
         ToolbarChip(
@@ -213,16 +258,32 @@ fun SpeedToolbar(
 }
 
 @Composable
-fun Toolbar(
+private fun Toolbar(
     border: MutableState<Boolean>,
     speed: MutableState<Boolean>,
+    warnings: List<String>,
 ) {
+    var showWarningsDialog by remember { mutableStateOf(false) }
+
+    if (showWarningsDialog) {
+        WarningDialog(warnings = warnings, onDismiss = { showWarningsDialog = false })
+    }
+
     ScrollableRow(
         contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
         modifier = Modifier
             .drawTopBorder()
             .fillMaxWidth()
     ) {
+        if (warnings.isNotEmpty()) {
+            ToolbarChip(
+                iconRes = R.drawable.ic_warning,
+                label = quantityStringResource(R.plurals.toolbar_item_warning, warnings.size, warnings.size),
+                isActivated = true,
+                onClick = { showWarningsDialog = true },
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
         ToolbarChip(
             iconRes = R.drawable.ic_border,
             label = stringResource(R.string.toolbar_item_border),
@@ -234,9 +295,43 @@ fun Toolbar(
             iconRes = R.drawable.ic_speed,
             label = stringResource(R.string.toolbar_item_speed),
             isActivated = speed.value,
-            onClick = { speed.value = it},
+            onClick = { speed.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
+    }
+}
+
+@Composable
+fun WarningDialog(
+    warnings: List<String>,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(4.dp),
+            modifier = Modifier
+                .preferredWidth(400.dp)
+                .heightIn(min = 32.dp, max = 500.dp)
+        ) {
+            Box(
+                alignment = Alignment.TopCenter,
+                modifier = Modifier
+            ) {
+                ScrollableColumn {
+                    warnings.forEachIndexed { i, warning ->
+                        Text(
+                            warning,
+                            fontSize = 8.sp,
+                            textAlign = TextAlign.Left,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .run { if (i != 0) drawTopBorder() else this }
+                                .padding(vertical = 12.dp, horizontal = 16.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -253,25 +348,5 @@ fun PlayerPagePreview() {
         BackPressedDispatcherAmbient provides OnBackPressedDispatcher()
     ) {
         PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
-    }
-}
-
-private fun Modifier.maybeBackground(color: Color?): Modifier {
-    return if (color == null) {
-        this
-    } else {
-        this.then(background(color))
-    }
-}
-
-private fun Modifier.drawTopBorder(color: Color = Color.DarkGray) = this.then(drawBehind {
-    drawRect(color, Offset.Zero, size = Size(size.width, 1f))
-})
-
-private fun Modifier.maybeDrawBorder(draw: Boolean, color: Color = Color.Black, width: Dp = 1.dp): Modifier {
-    return if (draw) {
-        this.then(border(width, color))
-    } else {
-        this
     }
 }

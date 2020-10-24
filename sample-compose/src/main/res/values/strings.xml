@@ -15,6 +15,13 @@
     <string name="enter_url">Enter a URL to a json or zip file</string>
     <string name="load_from_assets">Load from assets</string>
 
+    <plurals name="toolbar_item_warning">
+        <item quantity="one">%1$d warning</item>
+        <item quantity="other">%1$d warnings</item>
+    </plurals>
     <string name="toolbar_item_border">Border</string>
     <string name="toolbar_item_speed">Speed</string>
+
+    <string name="failed_to_load">Failed to load composition</string>
+    <string name="ok">OK</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.airbnb.lottie.compose
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
@@ -28,9 +27,9 @@ import kotlin.math.floor
  * TODO: add error handling
  */
 @Composable
-fun rememberLottieComposition(spec: LottieAnimationSpec): LottieComposition? {
+fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResult {
     val context = ContextAmbient.current
-    var composition: LottieComposition? by remember { mutableStateOf(null) }
+    var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
     onCommit(spec) {
         var isDisposed = false
         val task = when(spec) {
@@ -46,15 +45,18 @@ fun rememberLottieComposition(spec: LottieAnimationSpec): LottieComposition? {
             is LottieAnimationSpec.Asset -> LottieCompositionFactory.fromAsset(context, spec.assetName)
         }
         task.addListener { c ->
-            if (!isDisposed) composition = c
+            if (!isDisposed) result = LottieCompositionResult.Success(c)
         }.addFailureListener { e ->
-            if (!isDisposed) Logger.error("Failed to parse composition.", e)
+            if (!isDisposed) {
+                Logger.error("Failed to parse composition.", e)
+                result = LottieCompositionResult.Fail(e)
+            }
         }
         onDispose {
             isDisposed = true
         }
     }
-    return composition
+    return result
 }
 
 @Composable
@@ -65,7 +67,7 @@ fun LottieAnimation(
 ) {
     val composition = rememberLottieComposition(spec)
 
-    LottieAnimation(composition, animationState, modifier)
+    LottieAnimation(composition(), animationState, modifier)
 }
 
 @Composable

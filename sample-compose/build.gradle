@@ -30,7 +30,12 @@ android {
   }
   kotlinOptions {
     jvmTarget = '1.8'
-    freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check", "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+    freeCompilerArgs += [
+        "-Xallow-jvm-ir-dependencies",
+        "-Xskip-prerelease-check",
+        "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi"
+    ]
   }
   buildFeatures {
     compose true

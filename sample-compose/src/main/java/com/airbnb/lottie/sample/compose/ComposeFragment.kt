@@ -30,8 +30,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
-import com.airbnb.lottie.sample.compose.ui.purple200
-import com.airbnb.lottie.sample.compose.ui.purple700
+import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.utils.NavControllerAmbient
 import com.airbnb.mvrx.asMavericksArgs
 
@@ -49,7 +48,7 @@ abstract class ComposeFragment : Fragment() {
                                 BottomAppBar(
                                     backgroundColor = Color(0xFFF7F7F7),
                                     elevation = 8.dp,
-                                    contentColor = purple200,
+                                    contentColor = Teal,
                                 ) {
                                     Row(
                                         horizontalArrangement = Arrangement.SpaceAround,

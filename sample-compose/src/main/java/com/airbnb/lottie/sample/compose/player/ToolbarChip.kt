@@ -15,13 +15,12 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
-import com.airbnb.lottie.sample.compose.ui.teal
+import com.airbnb.lottie.sample.compose.ui.Teal
 
 
 @Composable
@@ -35,7 +34,7 @@ fun ToolbarChip(
     val unActivatedColor = remember { Color(0xFF444444) }
     Surface(
         shape = RoundedCornerShape(3.dp),
-        color = if (isActivated) teal else Color(0xFFEAEAEA),
+        color = if (isActivated) Teal else Color(0xFFEAEAEA),
         modifier = Modifier
             .then(modifier)
             .clickable(onClick = { onClick(!isActivated) })
