@@ -97,6 +97,9 @@ public abstract class BaseLayer
   final TransformKeyframeAnimation transform;
   private boolean visible = true;
 
+  private boolean outlineMasksAndMattes;
+  @Nullable private Paint outlineMasksAndMattesPaint;
+
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
@@ -123,6 +126,19 @@ public abstract class BaseLayer
       }
     }
     setupInOutAnimations();
+  }
+
+  /**
+   * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
+   * be proportional to the surface area of all of the masks/mattes combined.
+   *
+   * DO NOT leave this enabled in production.
+   */
+  void setOutlineMasksAndMattes(boolean outline) {
+    if (outline && outlineMasksAndMattesPaint == null) {
+      outlineMasksAndMattesPaint = new LPaint();
+    }
+    outlineMasksAndMattes = outline;
   }
 
   @Override
@@ -229,13 +245,6 @@ public abstract class BaseLayer
     L.beginSection("Layer#computeBounds");
     getBounds(rect, matrix, false);
 
-    // Uncomment this to draw matte outlines.
-    /* Paint paint = new LPaint();
-    paint.setColor(Color.RED);
-    paint.setStyle(Paint.Style.STROKE);
-    paint.setStrokeWidth(3);
-    canvas.drawRect(rect, paint); */
-
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
@@ -280,6 +289,16 @@ public abstract class BaseLayer
       L.beginSection("Layer#restoreLayer");
       canvas.restore();
       L.endSection("Layer#restoreLayer");
+    }
+
+    if (outlineMasksAndMattes && outlineMasksAndMattesPaint != null) {
+      outlineMasksAndMattesPaint.setStyle(Paint.Style.STROKE);
+      outlineMasksAndMattesPaint.setColor(0xFFFC2803);
+      outlineMasksAndMattesPaint.setStrokeWidth(4);
+      canvas.drawRect(rect, outlineMasksAndMattesPaint);
+      outlineMasksAndMattesPaint.setStyle(Paint.Style.FILL);
+      outlineMasksAndMattesPaint.setColor(0x50EBEBEB);
+      canvas.drawRect(rect, outlineMasksAndMattesPaint);
     }
 
     recordRenderTime(L.endSection(drawTraceName));
