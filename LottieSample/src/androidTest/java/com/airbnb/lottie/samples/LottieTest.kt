@@ -992,13 +992,6 @@ class LottieTest {
         ) { filmStripView ->
             filmStripView.setOutlineMasksAndMattes(true)
         }
-        withFilmStripView(
-            "Tests/OverlapShapeWithOpacity.json",
-            "Apply Opacity To Layer",
-            "Disabled"
-        ) { filmStripView ->
-            filmStripView.setApplyingOpacityToLayersEnabled(false)
-        }
     }
 
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
