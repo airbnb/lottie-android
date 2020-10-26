@@ -49,6 +49,13 @@ public class LottieCompositionFactory {
    */
   private static final Map<String, LottieTask<LottieComposition>> taskCache = new HashMap<>();
 
+  /**
+   * reference magic bytes for zip compressed files.
+   * useful to determine if an InputStream is a zip file or not
+   */
+  private static final int[] MAGIC = new int[] { 0x50, 0x4b, 0x03, 0x04 };
+
+
   private LottieCompositionFactory() {
   }
 
@@ -181,7 +188,13 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
     try {
-      if (fileName.endsWith(".zip")) {
+      if(fileName.endsWith(".lottie")) {
+        // in case the .lottie is just a renamed .json
+        boolean isZip = isZipCompressed(context.getAssets().open(fileName));
+        if(isZip) {
+          return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
+        }
+      } else if (fileName.endsWith(".zip")) {
         return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
@@ -253,6 +266,13 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
+      // performance note: raw res opened twice isn't exactly idea,
+      // but it's the only way we can tell if the res is a .zip or not
+      boolean isZip = isZipCompressed(context.getResources().openRawResource(rawRes));
+      if(isZip) {
+        return fromZipStreamSync(new ZipInputStream(context.getResources().openRawResource(rawRes)), cacheKey);
+      }
+
       return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
@@ -423,6 +443,8 @@ public class LottieCompositionFactory {
         final String entryName = entry.getName();
         if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
+        } else if (entry.getName().equalsIgnoreCase("manifest.json")) { //ignore .lottie manifest
+          inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
           com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
@@ -463,6 +485,23 @@ public class LottieCompositionFactory {
       LottieCompositionCache.getInstance().put(cacheKey, composition);
     }
     return new LottieResult<>(composition);
+  }
+
+  /**
+   * Check if a given InputStream points to a .zip compressed file
+   */
+  private static Boolean isZipCompressed(InputStream inputStream) {
+    try {
+      for (int value : MAGIC) {
+        if (inputStream.read() != value) {
+          return false;
+        }
+      }
+      inputStream.close();
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
   }
 
   @Nullable
