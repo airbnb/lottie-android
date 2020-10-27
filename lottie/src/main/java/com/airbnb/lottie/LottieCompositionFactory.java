@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
-
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONObject;
@@ -27,8 +27,10 @@ import java.util.zip.ZipInputStream;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.WorkerThread;
+import okio.BufferedSource;
+import okio.Okio;
 
-import static com.airbnb.lottie.parser.moshi.JsonReader.*;
+import static com.airbnb.lottie.parser.moshi.JsonReader.of;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
@@ -48,6 +50,13 @@ public class LottieCompositionFactory {
    * parse tasks prior to the cache getting populated.
    */
   private static final Map<String, LottieTask<LottieComposition>> taskCache = new HashMap<>();
+
+  /**
+   * reference magic bytes for zip compressed files.
+   * useful to determine if an InputStream is a zip file or not
+   */
+  private static final byte[] MAGIC = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
+
 
   private LottieCompositionFactory() {
   }
@@ -181,7 +190,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
     try {
-      if (fileName.endsWith(".zip")) {
+      if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
         return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
@@ -253,7 +262,11 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
-      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), cacheKey);
+      BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
+      if (isZipCompressed(source)) {
+        return fromZipStreamSync(new ZipInputStream(source.inputStream()), cacheKey);
+      }
+      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
@@ -423,6 +436,8 @@ public class LottieCompositionFactory {
         final String entryName = entry.getName();
         if (entryName.contains("__MACOSX")) {
           inputStream.closeEntry();
+        } else if (entry.getName().equalsIgnoreCase("manifest.json")) { //ignore .lottie manifest
+          inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
           com.airbnb.lottie.parser.moshi.JsonReader reader = of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
@@ -463,6 +478,26 @@ public class LottieCompositionFactory {
       LottieCompositionCache.getInstance().put(cacheKey, composition);
     }
     return new LottieResult<>(composition);
+  }
+
+  /**
+   * Check if a given InputStream points to a .zip compressed file
+   */
+  private static Boolean isZipCompressed(BufferedSource inputSource) {
+
+    try {
+      BufferedSource peek = inputSource.peek();
+      for (byte b: MAGIC) {
+        if(peek.readByte() != b)
+          return false;
+      }
+      peek.close();
+      return true;
+    } catch (Exception e) {
+      Logger.error("Failed to check zip file header", e);
+      return false;
+    }
+
   }
 
   @Nullable
