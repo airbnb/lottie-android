@@ -262,7 +262,7 @@ public class LottieCompositionFactory {
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
       BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
-      if(isZipCompressed(source)) {
+      if (isZipCompressed(source)) {
         return fromZipStreamSync(new ZipInputStream(source.inputStream()), cacheKey);
       }
       return fromJsonInputStreamSync(source.inputStream(), cacheKey);
