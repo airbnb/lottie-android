@@ -493,7 +493,7 @@ public class LottieCompositionFactory {
       peek.close();
       return true;
     } catch (Exception e) {
-      e.printStackTrace();
+      L.error(e, "Failed to check zip file header")
       return false;
     }
 
