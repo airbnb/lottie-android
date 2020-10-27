@@ -486,7 +486,7 @@ public class LottieCompositionFactory {
 
     try {
       BufferedSource peek = inputSource.peek();
-      for(byte b: MAGIC) {
+      for (byte b: MAGIC) {
         if(peek.readByte()!=b)
           return false;
       }
