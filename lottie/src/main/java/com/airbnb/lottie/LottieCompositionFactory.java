@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
-
 import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONObject;
@@ -27,8 +26,10 @@ import java.util.zip.ZipInputStream;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.WorkerThread;
+import okio.BufferedSource;
+import okio.Okio;
 
-import static com.airbnb.lottie.parser.moshi.JsonReader.*;
+import static com.airbnb.lottie.parser.moshi.JsonReader.of;
 import static com.airbnb.lottie.utils.Utils.closeQuietly;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
@@ -53,7 +54,7 @@ public class LottieCompositionFactory {
    * reference magic bytes for zip compressed files.
    * useful to determine if an InputStream is a zip file or not
    */
-  private static final int[] MAGIC = new int[] { 0x50, 0x4b, 0x03, 0x04 };
+  private static final byte[] MAGIC = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
 
 
   private LottieCompositionFactory() {
@@ -260,14 +261,11 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
-      // performance note: raw res opened twice isn't exactly ideal,
-      // but it's the only way we can tell if the res is a .zip or not
-      boolean isZip = isZipCompressed(context.getResources().openRawResource(rawRes));
-      if(isZip) {
-        return fromZipStreamSync(new ZipInputStream(context.getResources().openRawResource(rawRes)), cacheKey);
+      BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
+      if(isZipCompressed(source)) {
+        return fromZipStreamSync(new ZipInputStream(source.inputStream()), cacheKey);
       }
-
-      return fromJsonInputStreamSync(context.getResources().openRawResource(rawRes), cacheKey);
+      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
@@ -484,18 +482,21 @@ public class LottieCompositionFactory {
   /**
    * Check if a given InputStream points to a .zip compressed file
    */
-  private static Boolean isZipCompressed(InputStream inputStream) {
+  private static Boolean isZipCompressed(BufferedSource inputSource) {
+
     try {
-      for (int value : MAGIC) {
-        if (inputStream.read() != value) {
+      BufferedSource peek = inputSource.peek();
+      for(byte b: MAGIC) {
+        if(peek.readByte()!=b)
           return false;
-        }
       }
-      inputStream.close();
+      peek.close();
       return true;
-    } catch (IOException e) {
+    } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
+
   }
 
   @Nullable
