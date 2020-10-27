@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 
 import org.json.JSONObject;
@@ -493,7 +494,7 @@ public class LottieCompositionFactory {
       peek.close();
       return true;
     } catch (Exception e) {
-      L.error(e, "Failed to check zip file header")
+      Logger.error("Failed to check zip file header", e);
       return false;
     }
 
