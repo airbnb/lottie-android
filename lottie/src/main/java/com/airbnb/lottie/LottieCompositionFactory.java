@@ -188,13 +188,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
     try {
-      if(fileName.endsWith(".lottie")) {
-        // in case the .lottie is just a renamed .json
-        boolean isZip = isZipCompressed(context.getAssets().open(fileName));
-        if(isZip) {
-          return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
-        }
-      } else if (fileName.endsWith(".zip")) {
+      if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
         return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
@@ -266,7 +260,7 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
     try {
-      // performance note: raw res opened twice isn't exactly idea,
+      // performance note: raw res opened twice isn't exactly ideal,
       // but it's the only way we can tell if the res is a .zip or not
       boolean isZip = isZipCompressed(context.getResources().openRawResource(rawRes));
       if(isZip) {
