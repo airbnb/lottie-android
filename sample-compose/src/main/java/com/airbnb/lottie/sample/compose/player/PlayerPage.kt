@@ -144,7 +144,7 @@ private fun PlayerPage(
                     .fillMaxWidth()
             ) {
                 LottieAnimation(
-                    compositionResult(),
+                    compositionResult,
                     animationState,
                     modifier = Modifier
                         .fillMaxSize()

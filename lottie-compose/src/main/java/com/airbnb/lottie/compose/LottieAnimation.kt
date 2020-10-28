@@ -66,8 +66,16 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
 ) {
     val composition = rememberLottieComposition(spec)
+    LottieAnimation(composition, animationState, modifier)
+}
 
-    LottieAnimation(composition(), animationState, modifier)
+@Composable
+fun LottieAnimation(
+    compositionResult: LottieCompositionResult,
+    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
+    modifier: Modifier = Modifier,
+) {
+    LottieAnimation(compositionResult(), animationState, modifier)
 }
 
 @Composable
