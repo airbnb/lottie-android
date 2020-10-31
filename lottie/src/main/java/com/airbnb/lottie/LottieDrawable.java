@@ -44,6 +44,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -740,6 +741,22 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public void removeAllAnimatorListeners() {
     animator.removeAllListeners();
+  }
+
+  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      animator.addPauseListener(listener);
+    } else {
+      Logger.warning("Add AnimatorPauseListeners are not supported pre-Kit Kat.");
+    }
+  }
+
+  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      animator.removePauseListener(listener);
+    } else {
+      Logger.warning("Remove AnimatorPauseListeners are not supported pre-Kit Kat.");
+    }
   }
 
   /**
