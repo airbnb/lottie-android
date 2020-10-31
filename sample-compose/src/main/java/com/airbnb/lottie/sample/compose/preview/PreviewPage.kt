@@ -2,15 +2,24 @@ package com.airbnb.lottie.sample.compose.preview
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,20 +29,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.ui.tooling.preview.Preview
-import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
+import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.Marquee
-import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.mvrx.asMavericksArgs
-
-class PreviewFragment : ComposeFragment() {
-    @Composable
-    override fun root() {
-        PreviewPage()
-    }
-}
+import androidx.navigation.compose.navigate
 
 @Composable
 fun PreviewPage() {
@@ -60,8 +61,7 @@ fun PreviewPage() {
         showingAssetsDialog,
         onDismiss = { showingAssetsDialog = false },
         onAssetSelected = { assetName ->
-            val args = PlayerFragment.Args.Asset(assetName)
-            navController.navigate(R.id.player, args.asMavericksArgs())
+            navController.navigate(Route.Player.forAsset(assetName))
         }
     )
 }
@@ -108,9 +108,13 @@ fun AssetsDialog(isShowing: Boolean, onDismiss: () -> Unit, onAssetSelected: (as
         ?: emptyList()
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(4.dp)
+            shape = RoundedCornerShape(4.dp),
+
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+            ) {
                 assets.forEach { asset ->
                     AssetRow(asset, onClick = {
                         onDismiss()

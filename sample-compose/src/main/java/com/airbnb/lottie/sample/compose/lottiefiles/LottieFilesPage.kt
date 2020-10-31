@@ -15,17 +15,8 @@ import androidx.compose.ui.onGloballyPositioned
 import androidx.compose.ui.platform.DensityAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.Marquee
-
-class LottieFilesFragment : ComposeFragment() {
-
-    @Composable
-    override fun root() {
-        LottieFilesPage()
-    }
-}
 
 enum class LottieFilesTab(@StringRes val stringRes: Int) {
     Recent(R.string.tab_recent),

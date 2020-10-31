@@ -1,21 +1,46 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.os.Parcelable
 import androidx.activity.OnBackPressedDispatcher
-import androidx.compose.foundation.Icon
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.preferredSize
+import androidx.compose.foundation.layout.preferredWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedTask
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Providers
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,56 +54,26 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.compose.*
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieAnimationSpec
+import com.airbnb.lottie.compose.LottieAnimationState
+import com.airbnb.lottie.compose.LottieCompositionResult
+import com.airbnb.lottie.compose.rememberLottieAnimationState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
-import com.airbnb.lottie.sample.compose.ComposeFragment
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
 import com.airbnb.lottie.sample.compose.composables.SeekBar
 import com.airbnb.lottie.sample.compose.ui.Teal
-import com.airbnb.lottie.sample.compose.ui.toColorSafe
 import com.airbnb.lottie.sample.compose.utils.drawTopBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import com.airbnb.lottie.sample.compose.utils.quantityStringResource
-import com.airbnb.mvrx.args
-import kotlinx.android.parcel.Parcelize
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-class PlayerFragment : ComposeFragment() {
-    private val args: Args by args()
-
-    @Composable
-    override fun root() {
-        val spec = when (val a = args) {
-            is Args.Url -> LottieAnimationSpec.Url(a.url)
-            is Args.File -> LottieAnimationSpec.File(a.fileName)
-            is Args.Asset -> LottieAnimationSpec.Asset(a.assetName)
-        }
-        val backgroundColor = when (val a = args) {
-            is Args.Url -> a.backgroundColorStr?.toColorSafe()
-            else -> null
-        }
-
-        PlayerPage(spec, backgroundColor)
-    }
-
-    sealed class Args : Parcelable {
-        /** colorStr is the value from the LottieFiles API. */
-        @Parcelize
-        class Url(val url: String, val backgroundColorStr: String? = null) : Args()
-
-        @Parcelize
-        class File(val fileName: String) : Args()
-
-        @Parcelize
-        class Asset(val assetName: String) : Args()
-    }
-}
-
 @Composable
-private fun PlayerPage(
+fun PlayerPage(
     spec: LottieAnimationSpec,
     animationBackgroundColor: Color? = null,
 ) {

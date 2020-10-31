@@ -9,27 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.navigate
 import androidx.ui.tooling.preview.Preview
-import com.airbnb.lottie.sample.compose.ComposeFragment
-import com.airbnb.lottie.sample.compose.R
+import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
 import com.airbnb.lottie.sample.compose.composables.Marquee
-import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Uninitialized
-import com.airbnb.mvrx.asMavericksArgs
-
-class ShowcaseFragment : ComposeFragment() {
-    @Composable
-    override fun root() {
-        ShowcasePage()
-    }
-}
-
 
 @Composable
 fun ShowcasePage() {
@@ -50,8 +40,7 @@ fun ShowcasePage() {
                     previewUrl = data.preview_url ?: "",
                     previewBackgroundColor = data.bgColor,
                 ) {
-                    val args = PlayerFragment.Args.Url(data.file, backgroundColorStr = data.bg_color)
-                    navController.navigate(R.id.player, args.asMavericksArgs())
+                    navController.navigate(Route.Player.forUrl(data.file, backgroundColor = data.bg_color))
                 }
                 Divider(color = Color.LightGray)
             }
