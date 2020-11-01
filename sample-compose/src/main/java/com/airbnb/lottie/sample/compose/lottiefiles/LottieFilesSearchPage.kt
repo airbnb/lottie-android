@@ -1,34 +1,36 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import android.util.Log
-import androidx.compose.foundation.Icon
 import androidx.compose.foundation.Text
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumnFor
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.onActive
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.navigate
 import androidx.ui.tooling.preview.Preview
-import com.airbnb.lottie.sample.compose.R
+import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
-import com.airbnb.lottie.sample.compose.player.PlayerFragment
 import com.airbnb.lottie.sample.compose.utils.findNavController
 import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.asMavericksArgs
 import com.squareup.inject.assisted.Assisted
 import com.squareup.inject.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -115,8 +117,7 @@ fun LottieFilesSearchPage() {
         viewModel::setQuery,
         viewModel::fetchNextPage,
         onAnimationClicked = { data ->
-            val args = PlayerFragment.Args.Url(data.file, backgroundColorStr = data.bg_color)
-            navController.navigate(R.id.player, args.asMavericksArgs())
+            navController.navigate(Route.Player.forUrl(data.file, backgroundColor = data.bg_color))
         }
     )
 }

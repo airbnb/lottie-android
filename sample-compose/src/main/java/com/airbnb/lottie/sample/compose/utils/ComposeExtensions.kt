@@ -41,4 +41,3 @@ fun Modifier.maybeDrawBorder(draw: Boolean, color: Color = Color.Black, width: D
         this
     }
 }
-

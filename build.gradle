@@ -2,7 +2,7 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0-alpha05'
+    composeVersion = '1.0.0-alpha06'
     kotlinVersion = '1.4.10'
     daggerVersion = '2.29.1'
   }
@@ -16,7 +16,7 @@ buildscript {
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:4.2.0-alpha14'
+    classpath 'com.android.tools.build:gradle:4.2.0-alpha15'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'

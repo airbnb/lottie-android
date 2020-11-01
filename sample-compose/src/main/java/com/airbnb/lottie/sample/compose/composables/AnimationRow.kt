@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.sample.compose.utils.drawTopBorder
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
@@ -25,7 +26,8 @@ fun AnimationRow(
     onClick: () -> Unit
 ) {
     Surface(
-        modifier = Modifier.clickable(onClick = onClick)
+        modifier = Modifier
+            .clickable(onClick = onClick)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
