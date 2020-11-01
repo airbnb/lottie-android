@@ -743,21 +743,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     animator.removeAllListeners();
   }
 
-  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      animator.addPauseListener(listener);
-    } else {
-      Logger.warning("Add AnimatorPauseListeners are not supported pre-Kit Kat.");
-    }
-  }
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) { animator.addPauseListener(listener); }
 
-  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      animator.removePauseListener(listener);
-    } else {
-      Logger.warning("Remove AnimatorPauseListeners are not supported pre-Kit Kat.");
-    }
-  }
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) { animator.removePauseListener(listener); }
 
   /**
    * Sets the progress to the specified frame.
