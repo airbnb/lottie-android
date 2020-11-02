@@ -24,6 +24,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
 
@@ -757,6 +758,16 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   public void removeAllAnimatorListeners() {
     lottieDrawable.removeAllAnimatorListeners();
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    lottieDrawable.addAnimatorPauseListener(listener);
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    lottieDrawable.removeAnimatorPauseListener(listener);
   }
 
   /**
