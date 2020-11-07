@@ -10,8 +10,6 @@ val purple200 = Color(0xFFBB86FC)
 val TealDark = Color(0xFF484848)
 val Teal = Color(0xFF009587)
 
-val bottomBarBackground = Color(0xFFF7F7F7)
-
 @ColorInt
 fun String?.toColorSafe(): Color {
     var bgColor = this ?: "#ffffff"

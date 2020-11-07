@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.preferredHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +29,9 @@ import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.compose.navArgument
 import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
@@ -39,6 +43,7 @@ import androidx.navigation.compose.navigate
 @Composable
 fun PreviewPage() {
     var showingAssetsDialog by remember { mutableStateOf(false) }
+    var showingUrlDialog by remember { mutableStateOf(false) }
     val navController = findNavController()
 
     Column {
@@ -50,7 +55,7 @@ fun PreviewPage() {
 
         }
         PreviewRow(R.drawable.ic_network, R.string.enter_url) {
-
+            showingUrlDialog = true
         }
         PreviewRow(R.drawable.ic_storage, R.string.load_from_assets) {
             showingAssetsDialog = true
@@ -64,13 +69,20 @@ fun PreviewPage() {
             navController.navigate(Route.Player.forAsset(assetName))
         }
     )
+    UrlDialog(
+        showingUrlDialog,
+        onDismiss = { showingUrlDialog = false },
+        onUrlSelected = { url ->
+            navController.navigate(Route.Player.forUrl(url))
+        }
+    )
 }
 
 @Composable
 private fun PreviewRow(
     @DrawableRes iconRes: Int,
     @StringRes textRes: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier.clickable(onClick = onClick)
@@ -109,7 +121,6 @@ fun AssetsDialog(isShowing: Boolean, onDismiss: () -> Unit, onAssetSelected: (as
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(4.dp),
-
         ) {
             Column(
                 modifier = Modifier
@@ -120,6 +131,40 @@ fun AssetsDialog(isShowing: Boolean, onDismiss: () -> Unit, onAssetSelected: (as
                         onDismiss()
                         onAssetSelected(asset)
                     })
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UrlDialog(isShowing: Boolean, onDismiss: () -> Unit, onUrlSelected: (url: String) -> Unit) {
+    if (!isShowing) return
+    var url by remember { mutableStateOf("") }
+    Dialog(onDismissRequest = {
+        url = ""
+        onDismiss()
+    }) {
+        Surface(
+            shape = RoundedCornerShape(4.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    stringResource(R.string.enter_url),
+                    fontSize = 18.sp,
+                )
+                OutlinedTextField(
+                    value = url,
+                    onValueChange = { url = it },
+                    label = { Text(stringResource(R.string.url)) },
+                )
+                TextButton(
+                    onClick = { onUrlSelected(url) },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(stringResource(R.string.ok))
                 }
             }
         }

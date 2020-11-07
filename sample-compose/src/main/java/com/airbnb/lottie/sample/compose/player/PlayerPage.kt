@@ -1,5 +1,6 @@
 package com.airbnb.lottie.sample.compose.player
 
+import android.os.Build
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.ScrollableRow
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedTask
@@ -39,6 +41,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.onCommit
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +64,7 @@ import com.airbnb.lottie.compose.LottieCompositionResult
 import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
+import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
 import com.airbnb.lottie.sample.compose.composables.SeekBar
@@ -68,7 +72,6 @@ import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.utils.drawTopBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
-import com.airbnb.lottie.sample.compose.utils.quantityStringResource
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -81,8 +84,11 @@ fun PlayerPage(
     val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     val scaffoldState = rememberScaffoldState()
+    val outlineMasksAndMattes = remember { mutableStateOf(false) }
+    val applyOpacityToLayers = remember { mutableStateOf(false) }
     var focusMode by remember { mutableStateOf(false) }
     var backgroundColor by remember { mutableStateOf(animationBackgroundColor) }
+    var showWarningsDialog by remember { mutableStateOf(false) }
 
     val borderToolbar = remember { mutableStateOf(false) }
     val speedToolbar = remember { mutableStateOf(false) }
@@ -100,6 +106,13 @@ fun PlayerPage(
         }
     }
 
+    onCommit(outlineMasksAndMattes.value) {
+        animationState.outlineMasksAndMattes = outlineMasksAndMattes.value
+    }
+    onCommit(applyOpacityToLayers.value) {
+        animationState.applyOpacityToLayers = applyOpacityToLayers.value
+    }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -115,6 +128,16 @@ fun PlayerPage(
                     }
                 },
                 actions = {
+                    if (compositionResult()?.warnings?.isNotEmpty() == true) {
+                        IconButton(
+                            onClick = { showWarningsDialog = true }
+                        ) {
+                            Icon(
+                                Icons.Filled.Warning,
+                                tint = Color.Black,
+                            )
+                        }
+                    }
                     IconButton(
                         onClick = { focusMode = !focusMode },
                     ) {
@@ -172,10 +195,15 @@ fun PlayerPage(
                     border = borderToolbar,
                     speed = speedToolbar,
                     backgroundColor = backgroundColorToolbar,
-                    warnings = compositionResult()?.warnings ?: emptyList()
+                    outlineMasksAndMattes = outlineMasksAndMattes,
+                    applyOpacityToLayers = applyOpacityToLayers,
                 )
             }
         }
+    }
+
+    if (showWarningsDialog) {
+        WarningDialog(warnings = compositionResult()?.warnings ?: emptyList(), onDismiss = { showWarningsDialog = false })
     }
 }
 
@@ -190,43 +218,56 @@ private fun PlayerControlsRow(
     val progress = (totalTime / 100.0) * ((animationState.progress * 100.0).roundToInt())
     val progressFormatted = ("%.1f").format(progress)
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = Modifier
-            .drawTopBorder()
+            .fillMaxWidth()
     ) {
-        Box(
-            alignment = Alignment.Center
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .drawTopBorder()
         ) {
-            IconButton(
-                onClick = { animationState.toggleIsPlaying() },
+            Box(
+                alignment = Alignment.Center
             ) {
-                Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
+                IconButton(
+                    onClick = { animationState.toggleIsPlaying() },
+                ) {
+                    Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
+                }
+                Text(
+                    "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
+                    style = TextStyle(fontSize = 8.sp),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = 48.dp, bottom = 8.dp)
+                )
             }
-            Text(
-                "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
-                style = TextStyle(fontSize = 8.sp),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(top = 48.dp, bottom = 8.dp)
+            SeekBar(
+                progress = animationState.progress,
+                onProgressChanged = {
+                    animationState.progress = it
+                },
+                modifier = Modifier.weight(1f)
             )
+            IconButton(onClick = {
+                val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
+                animationState.repeatCount = repeatCount
+            }) {
+                Icon(
+                    Icons.Filled.Repeat,
+                    tint = if (animationState.repeatCount > 0) Teal else Color.Black,
+                )
+            }
         }
-        SeekBar(
-            progress = animationState.progress,
-            onProgressChanged = {
-                animationState.progress = it
-            },
-            modifier = Modifier.weight(1f)
+        Text(
+            BuildConfig.VERSION_NAME,
+            fontSize = 6.sp,
+            color = Color.Gray,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 12.dp)
         )
-        IconButton(onClick = {
-            val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
-            animationState.repeatCount = repeatCount
-        }) {
-            Icon(
-                Icons.Filled.Repeat,
-                tint = if (animationState.repeatCount > 0) Teal else Color.Black,
-            )
-        }
     }
 }
 
@@ -321,34 +362,34 @@ private fun Toolbar(
     border: MutableState<Boolean>,
     speed: MutableState<Boolean>,
     backgroundColor: MutableState<Boolean>,
-    warnings: List<String>,
+    outlineMasksAndMattes: MutableState<Boolean>,
+    applyOpacityToLayers: MutableState<Boolean>,
 ) {
-    var showWarningsDialog by remember { mutableStateOf(false) }
-
-    if (showWarningsDialog) {
-        WarningDialog(warnings = warnings, onDismiss = { showWarningsDialog = false })
-    }
-
     ScrollableRow(
         contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
         modifier = Modifier
             .drawTopBorder()
             .fillMaxWidth()
     ) {
-        if (warnings.isNotEmpty()) {
-            ToolbarChip(
-                iconRes = R.drawable.ic_warning,
-                label = quantityStringResource(R.plurals.toolbar_item_warning, warnings.size, warnings.size),
-                isActivated = true,
-                onClick = { showWarningsDialog = true },
-                modifier = Modifier.padding(end = 8.dp)
-            )
-        }
         ToolbarChip(
-            iconRes = R.drawable.ic_border,
-            label = stringResource(R.string.toolbar_item_border),
-            isActivated = border.value,
-            onClick = { border.value = it },
+            iconRes = R.drawable.ic_masks_and_mattes,
+            label = stringResource(R.string.toolbar_item_masks),
+            isActivated = outlineMasksAndMattes.value,
+            onClick = { outlineMasksAndMattes.value = it },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            iconRes = R.drawable.ic_layers,
+            label = stringResource(R.string.toolbar_item_opacity_layers),
+            isActivated = applyOpacityToLayers.value,
+            onClick = { applyOpacityToLayers.value = it },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            iconRes = R.drawable.ic_color,
+            label = stringResource(R.string.toolbar_item_color),
+            isActivated = backgroundColor.value,
+            onClick = { backgroundColor.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
@@ -359,10 +400,10 @@ private fun Toolbar(
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
-            iconRes = R.drawable.ic_color,
-            label = stringResource(R.string.toolbar_item_color),
-            isActivated = backgroundColor.value,
-            onClick = { backgroundColor.value = it },
+            iconRes = R.drawable.ic_border,
+            label = stringResource(R.string.toolbar_item_border),
+            isActivated = border.value,
+            onClick = { border.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
     }

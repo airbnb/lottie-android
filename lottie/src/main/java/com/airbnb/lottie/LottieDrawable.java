@@ -257,7 +257,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    *
    * DO NOT leave this enabled in production.
    */
-  void setOutlineMasksAndMattes(boolean outline) {
+  public void setOutlineMasksAndMattes(boolean outline) {
+    if (outlineMasksAndMattes == outline) {
+      return;
+    }
     outlineMasksAndMattes = outline;
     if (compositionLayer != null) {
       compositionLayer.setOutlineMasksAndMattes(outline);

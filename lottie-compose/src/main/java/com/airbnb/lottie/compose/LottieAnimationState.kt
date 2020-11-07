@@ -35,6 +35,27 @@ class LottieAnimationState(
 
     var speed by mutableStateOf(1f)
 
+    /**
+     * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
+     * be proportional to the surface area of all of the masks/mattes combined.
+     * <p>
+     * DO NOT leave this enabled in production.
+     */
+    var outlineMasksAndMattes by mutableStateOf(false)
+
+
+    /**
+     * Sets whether to apply opacity to the each layer instead of shape.
+     * <p>
+     * Opacity is normally applied directly to a shape. In cases where translucent shapes overlap, applying opacity to a layer will be more accurate
+     * at the expense of performance.
+     * <p>
+     * The default value is false.
+     * <p>
+     * Note: This process is very expensive and will incur additional performance overhead.
+     */
+    var applyOpacityToLayers by mutableStateOf(false)
+
     internal fun updateFrame(frame: Int) {
         _frame.value = frame
     }
