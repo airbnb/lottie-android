@@ -1,3 +1,5 @@
-include ':LottieSample', ':lottie', ':issue-repro'
-include ':sample-compose'
+include ':lottie'
 include ':lottie-compose'
+include ':sample'
+include ':sample-compose'
+include ':issue-repro'
