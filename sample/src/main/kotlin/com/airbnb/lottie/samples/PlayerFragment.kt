@@ -429,6 +429,11 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
     private fun onCompositionLoaded(composition: LottieComposition?) {
         composition ?: return
 
+        // If the composition is missing any images, return the original image or null.
+        if (composition.images.any { (_, asset) -> !asset.hasBitmap() }) {
+            binding.animationView.setImageAssetDelegate { it.bitmap }
+        }
+
         binding.animationView.setComposition(composition)
         binding.controlBar.hardwareAccelerationToggle.isActivated = binding.animationView.layerType == View.LAYER_TYPE_HARDWARE
         binding.animationView.setPerformanceTrackingEnabled(true)
