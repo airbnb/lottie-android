@@ -2,6 +2,7 @@ plugins {
   id 'com.android.library'
   id 'kotlin-android'
 }
+apply from: 'gradle-maven-push.gradle'
 
 android {
   compileSdkVersion 30

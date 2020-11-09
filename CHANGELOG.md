@@ -1,7 +1,12 @@
 # 3.5.0
 ### Features and Improvements
 * Added a new global configuration to add a custom network stack, custom network cache, enable systrace markers, and more ([#1629](https://github.com/airbnb/lottie-android/pull/1629))
-* Initial implementation of Lottie Compose (not yet released)
+
+  * To use it, checkout the docs for `Lottie.initialize` and `LottieConfig.Builder`.
+* Add support for parsing dotLottie files ([#1660](https://github.com/airbnb/lottie-android/pull/1660))
+* Added support for pause listeners on `LottieDrawable` and `LottieAnimationView` ([#1662](https://github.com/airbnb/lottie-android/pull/1662))
+### Bugs Fixed
+* Properly cache animations loaded via url in memory ([#1657](https://github.com/airbnb/lottie-android/pull/1657))
 
 # 3.4.4
 ### Bugs Fixed
