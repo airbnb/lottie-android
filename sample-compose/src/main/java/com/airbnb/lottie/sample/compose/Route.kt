@@ -37,14 +37,14 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
     ) {
         val fullRoute = "$route?url={url}&file={file}&asset={asset}&backgroundColor={backgroundColor}"
 
-        fun forUrl(url: String, backgroundColor: String?) = when (backgroundColor) {
+        fun forUrl(url: String, backgroundColor: String? = null) = when (backgroundColor) {
             null -> "${route}?url=${url.toBase64()}"
             else -> "${route}?url=${url.toBase64()}&backgroundColor=${backgroundColor.toBase64()}"
         }
 
-        fun forFile(file: String) = "${route}?file=$file"
+        fun forFile(file: String) = "${route}?file=${file.toBase64()}"
 
-        fun forAsset(asset: String) = "${route}?asset=$asset"
+        fun forAsset(asset: String) = "${route}?asset=${asset.toBase64()}"
     }
 }
 

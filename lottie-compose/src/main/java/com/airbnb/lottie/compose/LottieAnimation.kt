@@ -84,7 +84,11 @@ fun LottieAnimation(
     state: LottieAnimationState,
     modifier: Modifier = Modifier
 ) {
-    val drawable = remember { LottieDrawable() }
+    val drawable = remember {
+        LottieDrawable().apply {
+            enableMergePathsForKitKatAndAbove(true)
+        }
+    }
     val isStarted by isStarted()
     val isPlaying = state.isPlaying && isStarted
 
@@ -121,6 +125,8 @@ fun LottieAnimation(
 
     if (composition == null || composition.duration == 0f) return
     drawable.progress = state.progress
+    drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
+    drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
 
     Canvas(
         modifier = Modifier

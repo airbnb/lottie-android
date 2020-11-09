@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
@@ -18,9 +19,11 @@ import androidx.compose.runtime.onActive
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.navigate
 import androidx.ui.tooling.preview.Preview
+import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
@@ -38,7 +41,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 data class LottieFilesSearchState(
-    val query: String = "Loading",
+    val query: String = "",
     val results: List<AnimationDataV2> = emptyList(),
     val currentPage: Int = 1,
     val lastPage: Int = 0,
@@ -125,7 +128,7 @@ fun LottieFilesSearchPage() {
 @Composable
 fun LottieFilesSearchPage(
     state: LottieFilesSearchState,
-    setQuery: (String) -> Unit,
+    onQueryChanged: (String) -> Unit,
     fetchNextPage: () -> Unit,
     onAnimationClicked: (AnimationDataV2) -> Unit,
     modifier: Modifier = Modifier,
@@ -134,11 +137,11 @@ fun LottieFilesSearchPage(
         Column(
             modifier = Modifier.then(modifier)
         ) {
-            TextField(
+            OutlinedTextField(
                 value = state.query,
-                onValueChange = { query -> setQuery(query) },
-                label = { Text("Query") },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                onValueChange = onQueryChanged,
+                label = { Text(stringResource(R.string.query)) },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
             LazyColumnForIndexed(
                 state.results,
@@ -182,7 +185,7 @@ fun previewSearchPage() {
     Surface(color = Color.White) {
         LottieFilesSearchPage(
             state = state,
-            setQuery = {},
+            onQueryChanged = {},
             fetchNextPage = {},
             onAnimationClicked = {}
         )

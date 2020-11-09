@@ -37,6 +37,7 @@ import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
 import com.airbnb.lottie.sample.compose.utils.NavControllerAmbient
+import com.airbnb.lottie.sample.compose.utils.drawTopBorder
 import com.airbnb.lottie.sample.compose.utils.getBase64String
 
 class ComposeActivity : AppCompatActivity() {
@@ -96,12 +97,12 @@ class ComposeActivity : AppCompatActivity() {
                             ) { entry ->
                                 val arguments = entry.arguments ?: error("No arguments provided to ${Route.Player}")
                                 val spec = when {
-                                    arguments.containsKey("url") -> LottieAnimationSpec.Url(arguments.getBase64String("url") ?: error("url must be a string"))
-                                    arguments.containsKey("file") -> LottieAnimationSpec.File(arguments.getBase64String("file") ?: error("file must be a string"))
-                                    arguments.containsKey("asset") -> LottieAnimationSpec.Asset(arguments.getBase64String("asset") ?: error("asset must be a string"))
+                                    arguments.getString("url") != null -> LottieAnimationSpec.Url(arguments.getBase64String("url"))
+                                    arguments.getString("file") != null -> LottieAnimationSpec.File(arguments.getBase64String("file"))
+                                    arguments.getString("asset") != null -> LottieAnimationSpec.Asset(arguments.getBase64String("asset"))
                                     else -> error("You must specify a url, file, or asset")
                                 }
-                                val backgroundColor = when (arguments.containsKey("backgroundColor")) {
+                                val backgroundColor = when (arguments.getString("backgroundColor") != null) {
                                     true -> arguments.getBase64String("backgroundColor").toColorSafe()
                                     else -> null
                                 }
