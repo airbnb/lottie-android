@@ -69,6 +69,8 @@ public class TextLayer extends BaseLayer {
   private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
   @Nullable
   private BaseKeyframeAnimation<Float, Float> textSizeCallbackAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<String, String> textStyleCallbackAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -174,6 +176,13 @@ public class TextLayer extends BaseLayer {
     } else {
       textSize = documentData.size;
     }
+    String textStyle = null;
+    if (textStyleCallbackAnimation != null) {
+      textStyle = textStyleCallbackAnimation.getValue();
+    }
+    if (textStyle != null && !textStyle.isEmpty()) {
+      font.setStyle(textStyle);
+    }
     float fontScale = textSize / 100f;
     float parentScale = Utils.getScale(parentMatrix);
 
@@ -256,6 +265,14 @@ public class TextLayer extends BaseLayer {
     fillPaint.setTextSize(textSize * Utils.dpScale());
     strokePaint.setTypeface(fillPaint.getTypeface());
     strokePaint.setTextSize(fillPaint.getTextSize());
+
+    String textStyle = null;
+    if (textStyleCallbackAnimation != null) {
+      textStyle = textStyleCallbackAnimation.getValue();
+    }
+    if (textStyle != null && !textStyle.isEmpty()) {
+      font.setStyle(textStyle);
+    }
 
     // Line height
     float lineHeight = documentData.lineHeight * Utils.dpScale();
@@ -514,6 +531,18 @@ public class TextLayer extends BaseLayer {
         textSizeCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
         textSizeCallbackAnimation.addUpdateListener(this);
         addAnimation(textSizeCallbackAnimation);
+      }
+    } else if (property == LottieProperty.TEXT_STYLE) {
+      if (textStyleCallbackAnimation != null) {
+        removeAnimation(textStyleCallbackAnimation);
+      }
+
+      if (callback == null) {
+        textStyleCallbackAnimation = null;
+      } else {
+        textStyleCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<String>) callback);
+        textStyleCallbackAnimation.addUpdateListener(this);
+        addAnimation(textStyleCallbackAnimation);
       }
     }
   }
