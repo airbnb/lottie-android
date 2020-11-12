@@ -126,6 +126,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public static final int INFINITE = ValueAnimator.INFINITE;
 
+  public static final String ITALIC = "Italic";
+  public static final String BOLD = "Bold";
+  public static final String ITALIC_BOLD = "Italic Bold";
+
+  private String textStyle;
+
   public LottieDrawable() {
     animator.addUpdateListener(progressUpdateListener);
   }
@@ -1093,6 +1099,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Nullable
   public Typeface getTypeface(String fontFamily, String style) {
+    if (textStyle != null && !textStyle.isEmpty()) {
+      style = textStyle;
+    }
     FontAssetManager assetManager = getFontAssetManager();
     if (assetManager != null) {
       return assetManager.getTypeface(fontFamily, style);
@@ -1257,6 +1266,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (saveCount > 0) {
       canvas.restoreToCount(saveCount);
     }
+  }
+
+  public void setTextStyle(String style) {
+    textStyle = style;
   }
 
   private static class ColorFilterData {

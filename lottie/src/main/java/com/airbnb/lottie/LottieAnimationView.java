@@ -1128,6 +1128,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     }
   }
 
+  public void setTextStyle(String style) {
+    lottieDrawable.setTextStyle(style);
+  }
+
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
     LottieComposition composition = this.composition;
     if (composition != null) {
