@@ -4,7 +4,7 @@
     <string name="bottom_tab_showcase">Showcase</string>
     <string name="bottom_tab_preview">Preview</string>
     <string name="bottom_tab_lottie_files">LottieFiles</string>
-    <string name="bottom_tab_learn">Learn</string>
+    <string name="bottom_tab_docs">Docs</string>
 
     <string name="tab_recent">Recent</string>
     <string name="tab_popular">Popular</string>
@@ -17,15 +17,10 @@
     <string name="enter_url">Enter a URL to a json or zip file</string>
     <string name="load_from_assets">Load from assets</string>
 
-    <plurals name="toolbar_item_warning">
-        <item quantity="one">%1$d warning</item>
-        <item quantity="other">%1$d warnings</item>
-    </plurals>
     <string name="toolbar_item_border">Border</string>
     <string name="toolbar_item_masks">Outline Masks</string>
     <string name="toolbar_item_speed">Speed</string>
     <string name="toolbar_item_color">Background</string>
-    <string name="toolbar_item_outline_masks">Outline Masks</string>
     <string name="toolbar_item_opacity_layers">Apply Opacity To Layers</string>
 
     <string name="failed_to_load">Failed to load composition</string>

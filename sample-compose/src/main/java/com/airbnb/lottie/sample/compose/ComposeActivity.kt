@@ -5,13 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.getValue
@@ -37,7 +37,6 @@ import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
 import com.airbnb.lottie.sample.compose.utils.NavControllerAmbient
-import com.airbnb.lottie.sample.compose.utils.drawTopBorder
 import com.airbnb.lottie.sample.compose.utils.getBase64String
 
 class ComposeActivity : AppCompatActivity() {
@@ -120,6 +119,6 @@ class ComposeActivity : AppCompatActivity() {
         Showcase(Route.Showcase, R.drawable.ic_showcase, R.string.bottom_tab_showcase),
         Preview(Route.Preview, R.drawable.ic_device, R.string.bottom_tab_preview),
         LottieFiles(Route.LottieFiles, R.drawable.ic_lottie_files, R.string.bottom_tab_lottie_files),
-        Learn(Route.Learn, R.drawable.ic_learn, R.string.bottom_tab_lottie_files),
+        Docs(Route.Learn, R.drawable.ic_docs, R.string.bottom_tab_docs),
     }
 }

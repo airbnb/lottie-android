@@ -1,10 +1,8 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.os.Build
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.ScrollableRow
-import androidx.compose.foundation.Text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +24,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -36,7 +35,7 @@ import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedTask
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.getValue
@@ -97,7 +96,7 @@ fun PlayerPage(
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
-    LaunchedTask(compositionResult) {
+    LaunchedEffect(compositionResult) {
         if (compositionResult is LottieCompositionResult.Fail) {
             scaffoldState.snackbarHostState.showSnackbar(
                 message = failedMessage,
