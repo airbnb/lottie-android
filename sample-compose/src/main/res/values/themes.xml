@@ -18,8 +18,4 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
-    <style name="Theme.Lottieandroid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Lottieandroid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

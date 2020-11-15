@@ -13,7 +13,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.dragGestureFilter
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.onGloballyPositioned
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.ui.tooling.preview.Preview

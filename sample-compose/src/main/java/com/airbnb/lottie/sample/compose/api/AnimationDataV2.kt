@@ -1,10 +1,6 @@
 package com.airbnb.lottie.sample.compose.api
 
-import android.os.Parcelable
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
-import com.squareup.moshi.Json
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
 
 data class AnimationDataV2(
     val id: Int,

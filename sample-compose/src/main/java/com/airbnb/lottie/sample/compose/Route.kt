@@ -3,7 +3,6 @@ package com.airbnb.lottie.sample.compose
 import android.util.Base64
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
-import java.net.URLEncoder
 
 sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyList()) {
     object Showcase : Route("showcase")

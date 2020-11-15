@@ -2,7 +2,7 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0-alpha06'
+    composeVersion = '1.0.0-alpha07'
     kotlinVersion = '1.4.10'
     daggerVersion = '2.29.1'
   }
