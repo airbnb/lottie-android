@@ -1,8 +1,8 @@
 import net.ltgt.gradle.errorprone.CheckSeverity
 
-apply from: 'gradle-maven-push.gradle'
 apply plugin: 'com.android.library'
 apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'com.vanniktech.maven.publish'
 
 android {
   compileSdkVersion 29
@@ -30,14 +30,16 @@ android {
 
 dependencies {
   implementation "androidx.appcompat:appcompat:1.0.0"
-  testImplementation "org.mockito:mockito-core:2.15.0"
-  testImplementation 'junit:junit:4.12'
-  testImplementation "org.robolectric:robolectric:4.3.1"
-  // Do not ugprade to 2.0 because it will bring in Kotlin as a transitive dependency.
+  // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
   implementation("com.squareup.okio:okio:1.17.4")
+
   annotationProcessor "com.uber.nullaway:nullaway:0.7.5"
   errorprone "com.google.errorprone:error_prone_core:2.3.2"
   errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+
+  testImplementation "org.mockito:mockito-core:2.15.0"
+  testImplementation 'junit:junit:4.12'
+  testImplementation "org.robolectric:robolectric:4.3.1"
 }
 
 task sourcesJar(type: Jar) {

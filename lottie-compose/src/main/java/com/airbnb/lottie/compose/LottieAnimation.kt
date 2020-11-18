@@ -15,9 +15,9 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.TimeUnit
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.util.lerp
 import com.airbnb.lottie.*
 import com.airbnb.lottie.utils.Logger
+import com.airbnb.lottie.utils.MiscUtils.lerp
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
 import kotlin.math.floor

@@ -1,8 +1,8 @@
 plugins {
   id 'com.android.library'
   id 'kotlin-android'
+  id 'com.vanniktech.maven.publish'
 }
-apply from: 'gradle-maven-push.gradle'
 
 android {
   compileSdkVersion 30
@@ -39,8 +39,7 @@ android {
 
 dependencies {
   api project(':lottie')
+  implementation "androidx.compose.foundation:foundation:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
-  implementation "androidx.compose.material:material:$composeVersion"
-  implementation "androidx.compose.material:material-icons-extended:$composeVersion"
   implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.0-beta01'
 }
