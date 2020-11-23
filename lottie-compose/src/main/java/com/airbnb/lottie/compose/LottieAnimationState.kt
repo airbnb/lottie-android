@@ -12,6 +12,7 @@ fun rememberLottieAnimationState(
     repeatCount: Int = 0,
     initialProgress: Float = 0f,
 ): LottieAnimationState {
+    // Use rememberSavedInstanceState so you can pause/resume animations
     return remember(repeatCount, autoPlay) {
         LottieAnimationState(isPlaying = autoPlay, repeatCount, initialProgress)
     }
@@ -27,6 +28,7 @@ class LottieAnimationState(
 ) {
     var progress by mutableStateOf(initialProgress)
 
+    // TODO: make this public
     private var _frame = mutableStateOf(0)
     val frame: Int by _frame
 

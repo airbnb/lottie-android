@@ -2,23 +2,28 @@ package com.airbnb.lottie.compose
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.dispatch.withFrameNanos
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.ContextAmbient
-import androidx.compose.ui.platform.LifecycleOwnerAmbient
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import java.util.concurrent.TimeUnit
-import androidx.compose.runtime.getValue
-import com.airbnb.lottie.*
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.utils.Logger
 import com.airbnb.lottie.utils.MiscUtils.lerp
 import java.io.FileInputStream
+import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 import kotlin.math.floor
 
@@ -32,7 +37,7 @@ fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResul
     var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
     onCommit(spec) {
         var isDisposed = false
-        val task = when(spec) {
+        val task = when (spec) {
             is LottieAnimationSpec.RawRes -> LottieCompositionFactory.fromRawRes(context, spec.resId)
             is LottieAnimationSpec.Url -> LottieCompositionFactory.fromUrl(context, spec.url)
             is LottieAnimationSpec.File -> {
@@ -82,26 +87,24 @@ fun LottieAnimation(
 fun LottieAnimation(
     composition: LottieComposition?,
     state: LottieAnimationState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val drawable = remember {
         LottieDrawable().apply {
             enableMergePathsForKitKatAndAbove(true)
         }
     }
-    val isStarted by isStarted()
-    val isPlaying = state.isPlaying && isStarted
 
-    onCommit(composition) {
+    SideEffect {
         drawable.composition = composition
     }
 
     // TODO: handle min/max frame setting
 
-    LaunchedTask(composition, isPlaying) {
-        if (!isPlaying || composition == null) return@LaunchedTask
+    LaunchedEffect(composition, state.isPlaying) {
+        if (!state.isPlaying || composition == null) return@LaunchedEffect
         var repeatCount = 0
-        if (isPlaying && state.progress == 1f) state.progress = 0f
+        if (state.isPlaying && state.progress == 1f) state.progress = 0f
         var lastFrameTime = withFrameNanos { it }
         while (true) {
             withFrameNanos { frameTime ->
@@ -124,9 +127,7 @@ fun LottieAnimation(
     }
 
     if (composition == null || composition.duration == 0f) return
-    drawable.progress = state.progress
-    drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
-    drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
+    SideEffect {}
 
     Canvas(
         modifier = Modifier
@@ -134,6 +135,9 @@ fun LottieAnimation(
             .then(modifier)
     ) {
         drawIntoCanvas { canvas ->
+            drawable.progress = state.progress
+            drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
+            drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {
@@ -141,24 +145,6 @@ fun LottieAnimation(
             }
         }
     }
-}
-
-@Composable
-private fun isStarted(): State<Boolean> {
-    val state = remember { mutableStateOf(false) }
-    val lifecycleOwner = LifecycleOwnerAmbient.current
-    onCommit(lifecycleOwner) {
-        lifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onStart(owner: LifecycleOwner) {
-                state.value = true
-            }
-
-            override fun onStop(owner: LifecycleOwner) {
-                state.value = false
-            }
-        })
-    }
-    return state
 }
 
 @Composable
