@@ -11,6 +11,9 @@ public class TextKeyframeAnimation extends KeyframeAnimation<DocumentData> {
   }
 
   @Override DocumentData getValue(Keyframe<DocumentData> keyframe, float keyframeProgress) {
-    return keyframe.startValue;
+    if (keyframeProgress != 1.0f || keyframe.endValue == null)
+      return keyframe.startValue;
+    else
+      return keyframe.endValue;
   }
 }
