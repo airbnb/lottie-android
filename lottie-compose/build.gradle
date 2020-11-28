@@ -37,6 +37,15 @@ android {
   }
 }
 
+mavenPublish {
+  targets {
+    uploadArchives {
+      repositoryUsername = SONATYPE_USERNAME
+      repositoryPassword = SONATYPE_PASSWORD
+    }
+  }
+}
+
 dependencies {
   api project(':lottie')
   implementation "androidx.compose.foundation:foundation:$composeVersion"

@@ -28,6 +28,15 @@ android {
   }
 }
 
+mavenPublish {
+  targets {
+    uploadArchives {
+      repositoryUsername = SONATYPE_USERNAME
+      repositoryPassword = SONATYPE_PASSWORD
+    }
+  }
+}
+
 dependencies {
   implementation "androidx.appcompat:appcompat:1.0.0"
   // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
