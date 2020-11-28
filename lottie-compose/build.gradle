@@ -40,8 +40,8 @@ android {
 mavenPublish {
   targets {
     uploadArchives {
-      repositoryUsername = hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : ""
-      repositoryPassword = hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : ""
+      repositoryUsername = project.hasProperty('SONATYPE_USERNAME') ? SONATYPE_USERNAME : ""
+      repositoryPassword = project.hasProperty('SONATYPE_PASSWORD') ? SONATYPE_PASSWORD : ""
     }
   }
 }
