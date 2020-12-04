@@ -16,7 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
@@ -33,7 +33,7 @@ import kotlin.math.floor
  */
 @Composable
 fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResult {
-    val context = ContextAmbient.current
+    val context = AmbientContext.current
     var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
     onCommit(spec) {
         var isDisposed = false
@@ -67,18 +67,18 @@ fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResul
 @Composable
 fun LottieAnimation(
     spec: LottieAnimationSpec,
-    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
     modifier: Modifier = Modifier,
+    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
 ) {
     val composition = rememberLottieComposition(spec)
-    LottieAnimation(composition, animationState, modifier)
+    LottieAnimation(composition, modifier, animationState)
 }
 
 @Composable
 fun LottieAnimation(
     compositionResult: LottieCompositionResult,
-    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
     modifier: Modifier = Modifier,
+    animationState: LottieAnimationState = rememberLottieAnimationState(autoPlay = true),
 ) {
     LottieAnimation(compositionResult(), animationState, modifier)
 }
@@ -147,7 +147,6 @@ fun LottieAnimation(
     }
 }
 
-@Composable
 private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modifier {
     composition ?: return this
     return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))

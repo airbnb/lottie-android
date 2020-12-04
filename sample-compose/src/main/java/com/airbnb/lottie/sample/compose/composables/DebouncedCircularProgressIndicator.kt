@@ -4,6 +4,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorConstants
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.LaunchedTask
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -16,13 +17,13 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DebouncedCircularProgressIndicator(
+    modifier: Modifier = Modifier,
     delayMs: Long = 1_500L,
     color: Color = MaterialTheme.colors.primary,
     strokeWidth: Dp = ProgressIndicatorConstants.DefaultStrokeWidth,
-    modifier: Modifier = Modifier,
 ) {
     var readyToShow by remember { mutableStateOf(false) }
-    LaunchedTask {
+    LaunchedEffect(readyToShow) {
         delay(delayMs)
         readyToShow = true
     }

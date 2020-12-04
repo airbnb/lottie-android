@@ -16,20 +16,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.ui.Teal
 
 
 @Composable
 fun ToolbarChip(
-    @DrawableRes iconRes: Int = 0,
     label: String,
     isActivated: Boolean,
     onClick: (isActivated: Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int = 0,
 ) {
     val unActivatedColor = remember { Color(0xFF444444) }
     Surface(

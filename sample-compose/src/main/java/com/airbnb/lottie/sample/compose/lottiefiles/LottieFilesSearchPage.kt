@@ -19,9 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.navigate
-import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
@@ -162,7 +162,7 @@ fun LottieFilesSearchPage(
         if (state.fetchException) {
             FloatingActionButton(
                 onClick = fetchNextPage,
-                icon = {
+                content = {
                     Icon(Icons.Filled.Repeat, tint = Color.White)
                 },
                 modifier = Modifier

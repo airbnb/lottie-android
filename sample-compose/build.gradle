@@ -34,7 +34,8 @@ android {
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
         "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi"
+        "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-Xopt-in=com.airbnb.mvrx.InternalMavericksApi"
     ]
   }
   buildFeatures {
@@ -63,16 +64,16 @@ dependencies {
   implementation "androidx.compose.ui:ui:$composeVersion"
   implementation "androidx.compose.material:material:$composeVersion"
   implementation "androidx.compose.material:material-icons-extended:$composeVersion"
-  implementation "androidx.ui:ui-tooling:$composeVersion"
-  implementation "androidx.navigation:navigation-compose:1.0.0-alpha02"
+  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+  implementation "androidx.navigation:navigation-compose:1.0.0-alpha03"
   implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-beta01'
   implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-beta01'
 
-  implementation "androidx.navigation:navigation-fragment-ktx:2.3.1"
-  implementation "androidx.navigation:navigation-ui-ktx:2.3.1"
+  implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
+  implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
 
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
 
   implementation "com.google.dagger:dagger:$daggerVersion"
   kapt "com.google.dagger:dagger-compiler:$daggerVersion"
@@ -82,8 +83,8 @@ dependencies {
 
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
-  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.3.3.1"
-  implementation 'com.airbnb.android:mvrx:2.0.0-beta2'
+  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.4.0"
+  implementation 'com.airbnb.android:mvrx:2.0.0-beta3'
 
   testImplementation 'junit:junit:4.13.1'
   androidTestImplementation 'androidx.test.ext:junit:1.1.2'

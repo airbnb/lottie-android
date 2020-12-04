@@ -1,8 +1,10 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumnForIndexed
 import androidx.compose.material.FloatingActionButton
@@ -66,12 +68,13 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
         if (state.currentPage >= state.lastPage) return@withState
         fetchJob = viewModelScope.launch(Dispatchers.IO) {
             val response = try {
-                Log.d("Gabe", "Fetching page ${state.currentPage + 1}")
+                Log.d(TAG, "Fetching page ${state.currentPage + 1}")
                 when (state.mode) {
                     LottieFilesMode.Recent -> api.getRecent(state.currentPage + 1)
                     LottieFilesMode.Popular -> api.getPopular(state.currentPage + 1)
                 }
             } catch (e: Exception) {
+                Log.w(TAG, "Failed to fetch from Lottie Files.", e)
                 setState { copy(fetchException = true) }
                 return@launch
             }
@@ -93,7 +96,9 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
         override fun create(initialState: LottieFilesRecentAndPopularState): LottieFilesRecentAndPopularViewModel
     }
 
-    companion object : DaggerMvRxViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>(LottieFilesRecentAndPopularViewModel::class.java)
+    companion object : DaggerMvRxViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>(LottieFilesRecentAndPopularViewModel::class.java) {
+        private const val TAG = "LottieFilesVM"
+    }
 }
 
 @Composable
@@ -119,7 +124,10 @@ fun LottieFilesRecentAndPopularPage(
     onAnimationClicked: (AnimationDataV2) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
         Column(
             modifier = Modifier.then(modifier)
         ) {
@@ -143,7 +151,7 @@ fun LottieFilesRecentAndPopularPage(
         if (state.fetchException) {
             FloatingActionButton(
                 onClick = fetchNextPage,
-                icon = {
+                content = {
                     Icon(Icons.Filled.Repeat, tint = Color.White)
                 },
                 modifier = Modifier
