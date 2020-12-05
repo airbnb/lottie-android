@@ -25,13 +25,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.Marquee
@@ -111,7 +111,7 @@ private fun PreviewRow(
 @Composable
 fun AssetsDialog(isShowing: Boolean, onDismiss: () -> Unit, onAssetSelected: (assetName: String) -> Unit) {
     if (!isShowing) return
-    val context = ContextAmbient.current
+    val context = AmbientContext.current
     val assets = context.assets.list("")
         ?.asSequence()
         ?.filter { it.endsWith(".json") || it.endsWith(".zip") }

@@ -2,9 +2,9 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0-alpha07'
-    kotlinVersion = '1.4.10'
-    daggerVersion = '2.29.1'
+    composeVersion = '1.0.0-alpha08'
+    kotlinVersion = '1.4.20'
+    daggerVersion = '2.30.1'
   }
 
   repositories {

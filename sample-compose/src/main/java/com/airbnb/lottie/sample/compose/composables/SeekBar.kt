@@ -14,19 +14,19 @@ import androidx.compose.ui.gesture.DragObserver
 import androidx.compose.ui.gesture.dragGestureFilter
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.ui.tooling.preview.Preview
 
 @Composable
 fun SeekBar(
     progress: Float,
     onProgressChanged: (Float) -> Unit,
+    modifier: Modifier = Modifier,
     trackHeight: Dp = 2.dp,
     thumbRadius: Dp = 4.dp,
     unfilledTrackColor: Color = Color.LightGray,
     filledTrackColor: Color = Color.Red,
-    modifier: Modifier = Modifier
 ) {
     var width = 0
     var dragStartProgress = 0f

@@ -17,7 +17,7 @@ import androidx.compose.runtime.Providers
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ContextAmbient
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -36,7 +36,7 @@ import com.airbnb.lottie.sample.compose.showcase.ShowcasePage
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
-import com.airbnb.lottie.sample.compose.utils.NavControllerAmbient
+import com.airbnb.lottie.sample.compose.utils.AmbientNavController
 import com.airbnb.lottie.sample.compose.utils.getBase64String
 
 class ComposeActivity : AppCompatActivity() {
@@ -53,8 +53,8 @@ class ComposeActivity : AppCompatActivity() {
         val navController = rememberNavController()
 
         Providers(
-            NavControllerAmbient provides navController,
-            BackPressedDispatcherAmbient provides (ContextAmbient.current as ComponentActivity).onBackPressedDispatcher
+            AmbientNavController provides navController,
+            AmbientBackPressedDispatcher provides (AmbientContext.current as ComponentActivity).onBackPressedDispatcher
         ) {
             LottieTheme {
                 Scaffold(

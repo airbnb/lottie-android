@@ -12,7 +12,7 @@ import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.DensityAmbient
+import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.sample.compose.R
@@ -70,7 +70,7 @@ fun LottieFilesTabBarTab(
     onClick: () -> Unit
 ) {
     val textWidth = remember { mutableStateOf(0) }
-    val pxRatio = with(DensityAmbient.current) { 1.dp.toPx() }
+    val pxRatio = with(AmbientDensity.current) { 1.dp.toPx() }
     val tabWidth = animate(target = if (isSelected) (textWidth.value / pxRatio).dp else 0.dp)
     val tabAlpha = animate(target = if (isSelected) 1f else 0f)
     Column(

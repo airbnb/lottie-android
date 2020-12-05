@@ -51,10 +51,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.ui.tooling.preview.Preview
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieAnimationSpec
@@ -62,7 +62,7 @@ import com.airbnb.lottie.compose.LottieAnimationState
 import com.airbnb.lottie.compose.LottieCompositionResult
 import com.airbnb.lottie.compose.rememberLottieAnimationState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.lottie.sample.compose.BackPressedDispatcherAmbient
+import com.airbnb.lottie.sample.compose.AmbientBackPressedDispatcher
 import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
@@ -79,7 +79,7 @@ fun PlayerPage(
     spec: LottieAnimationSpec,
     animationBackgroundColor: Color? = null,
 ) {
-    val backPressedDispatcher = BackPressedDispatcherAmbient.current
+    val backPressedDispatcher = AmbientBackPressedDispatcher.current
     val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     val scaffoldState = rememberScaffoldState()
@@ -154,7 +154,7 @@ fun PlayerPage(
             modifier = Modifier.fillMaxHeight()
         ) {
             Box(
-                alignment = Alignment.Center,
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .weight(1f)
                     .maybeBackground(backgroundColor)
@@ -162,7 +162,7 @@ fun PlayerPage(
             ) {
                 LottieAnimation(
                     compositionResult,
-                    animationState,
+                    animationState = animationState,
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.Center)
@@ -227,7 +227,7 @@ private fun PlayerControlsRow(
                 .drawTopBorder()
         ) {
             Box(
-                alignment = Alignment.Center
+                contentAlignment = Alignment.Center
             ) {
                 IconButton(
                     onClick = { animationState.toggleIsPlaying() },
@@ -421,7 +421,7 @@ fun WarningDialog(
                 .heightIn(min = 32.dp, max = 500.dp)
         ) {
             Box(
-                alignment = Alignment.TopCenter,
+                contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
             ) {
                 ScrollableColumn {
@@ -452,7 +452,7 @@ fun SpeedToolbarPreview() {
 @Composable
 fun PlayerPagePreview() {
     Providers(
-        BackPressedDispatcherAmbient provides OnBackPressedDispatcher()
+        AmbientBackPressedDispatcher provides OnBackPressedDispatcher()
     ) {
         PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
     }
