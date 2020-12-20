@@ -1,12 +1,11 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -131,21 +130,22 @@ fun LottieFilesRecentAndPopularPage(
         Column(
             modifier = Modifier.then(modifier)
         ) {
-            LazyColumnForIndexed(
-                state.results,
+            LazyColumn(
                 modifier = Modifier.weight(1f)
-            ) { index, result ->
-                if (index == state.results.size - 1) {
-                    onActive {
-                        fetchNextPage()
+            ) {
+                itemsIndexed(state.results) { index, result ->
+                    if (index == state.results.size - 1) {
+                        onActive {
+                            fetchNextPage()
+                        }
                     }
+                    AnimationRow(
+                        title = result.title,
+                        previewUrl = result.preview_url ?: "",
+                        previewBackgroundColor = result.bgColor,
+                        onClick = { onAnimationClicked(result) }
+                    )
                 }
-                AnimationRow(
-                    title = result.title,
-                    previewUrl = result.preview_url ?: "",
-                    previewBackgroundColor = result.bgColor,
-                    onClick = { onAnimationClicked(result) }
-                )
             }
         }
         if (state.fetchException) {

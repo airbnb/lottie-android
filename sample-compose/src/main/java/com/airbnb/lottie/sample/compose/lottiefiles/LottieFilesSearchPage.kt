@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -142,21 +142,22 @@ fun LottieFilesSearchPage(
                 label = { Text(stringResource(R.string.query)) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
             )
-            LazyColumnForIndexed(
-                state.results,
+            LazyColumn(
                 modifier = Modifier.weight(1f)
-            ) { index, result ->
-                if (index == state.results.size - 1) {
-                    onActive {
-                        fetchNextPage()
+            ) {
+                itemsIndexed(state.results) { index, result ->
+                    if (index == state.results.size - 1) {
+                        onActive {
+                            fetchNextPage()
+                        }
                     }
+                    AnimationRow(
+                        title = result.title,
+                        previewUrl = result.preview_url ?: "",
+                        previewBackgroundColor = result.bgColor,
+                        onClick = { onAnimationClicked(result) }
+                    )
                 }
-                AnimationRow(
-                    title = result.title,
-                    previewUrl = result.preview_url ?: "",
-                    previewBackgroundColor = result.bgColor,
-                    onClick = { onAnimationClicked(result) }
-                )
             }
         }
         if (state.fetchException) {
@@ -175,7 +176,7 @@ fun LottieFilesSearchPage(
 
 @Preview
 @Composable
-fun previewSearchPage() {
+fun PreviewSearchPage() {
     val data = AnimationDataV2(0, null, "https://assets9.lottiefiles.com/render/k1821vf5.png", "Loading", "")
     val state = LottieFilesSearchState(
         results = listOf(data, data, data),

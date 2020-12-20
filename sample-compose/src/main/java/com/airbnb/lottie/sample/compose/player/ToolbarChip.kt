@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.ui.Teal
 
-
 @Composable
 fun ToolbarChip(
     label: String,
