@@ -46,9 +46,9 @@ dependencies {
   errorprone "com.google.errorprone:error_prone_core:2.3.2"
   errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 
-  testImplementation "org.mockito:mockito-core:2.15.0"
-  testImplementation 'junit:junit:4.12'
-  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation "org.mockito:mockito-core:3.5.13"
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation "org.robolectric:robolectric:4.4"
 }
 
 task sourcesJar(type: Jar) {

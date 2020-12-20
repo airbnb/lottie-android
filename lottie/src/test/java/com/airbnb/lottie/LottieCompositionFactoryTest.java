@@ -3,11 +3,11 @@ package com.airbnb.lottie;
 import com.airbnb.lottie.model.LottieCompositionCache;
 
 import com.airbnb.lottie.parser.moshi.JsonReader;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +54,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testLoadJsonReader() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(new ByteArrayInputStream(JSON.getBytes()))));
         LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
         assertNull(result.getException());
         assertNotNull(result.getValue());
@@ -62,7 +62,7 @@ public class LottieCompositionFactoryTest extends BaseTest {
 
     @Test
     public void testLoadInvalidJsonReader() {
-        JsonReader reader = JsonReader.of(buffer(source(new StringInputStream(NOT_JSON))));
+        JsonReader reader = JsonReader.of(buffer(source(new ByteArrayInputStream(NOT_JSON.getBytes()))));
         LottieResult<LottieComposition> result = LottieCompositionFactory.fromJsonReaderSync(reader, "json");
         assertNotNull(result.getException());
         assertNull(result.getValue());
