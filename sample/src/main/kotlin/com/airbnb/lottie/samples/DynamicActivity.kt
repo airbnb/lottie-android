@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.FloatRange
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.databinding.DynamicActivityBinding
 import com.airbnb.lottie.samples.utils.viewBinding
-import com.airbnb.lottie.utils.MiscUtils
 
 private val COLORS = arrayOf(
     0xff5a5f,
@@ -81,7 +81,7 @@ class DynamicActivity : AppCompatActivity() {
             } else if (endY > startY) {
                 endY += EXTRA_JUMP[extraJumpIndex]
             }
-            point.set(startX, MiscUtils.lerp(startY, endY, frameInfo.interpolatedKeyframeProgress))
+            point.set(startX, lerp(startY, endY, frameInfo.interpolatedKeyframeProgress))
             point
         }
     }
@@ -91,6 +91,8 @@ class DynamicActivity : AppCompatActivity() {
         binding.speedButton.text = "Wave: ${speed}x Speed"
         binding.jumpHeight.text = "Extra jump height ${EXTRA_JUMP[extraJumpIndex]}"
     }
+
+    fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) =  a + percentage * (b - a)
 
     companion object {
         val TAG = DynamicActivity::class.simpleName

@@ -1,5 +1,6 @@
 package com.airbnb.lottie.compose
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
@@ -20,8 +21,6 @@ import androidx.compose.ui.platform.AmbientContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
-import com.airbnb.lottie.utils.Logger
-import com.airbnb.lottie.utils.MiscUtils.lerp
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
@@ -53,7 +52,6 @@ fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResul
             if (!isDisposed) result = LottieCompositionResult.Success(c)
         }.addFailureListener { e ->
             if (!isDisposed) {
-                Logger.error("Failed to parse composition.", e)
                 result = LottieCompositionResult.Fail(e)
             }
         }
@@ -151,3 +149,5 @@ private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modif
     composition ?: return this
     return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
 }
+
+private fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) =  a + percentage * (b - a)

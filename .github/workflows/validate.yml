@@ -15,6 +15,11 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.9'
+          java-package: jdk
       - name: Run Lint
         run: ./gradlew lintDebug
       - name: Lint Results
@@ -27,6 +32,11 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.9'
+          java-package: jdk
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
       - name: Lint Results
@@ -41,6 +51,11 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.9'
+          java-package: jdk
       - name: "Deploy Snapshot"
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}

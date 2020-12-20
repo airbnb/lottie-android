@@ -1,7 +1,7 @@
 package com.airbnb.lottie.samples.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 // This is a lint bug
 @SuppressWarnings("ParcelCreator")

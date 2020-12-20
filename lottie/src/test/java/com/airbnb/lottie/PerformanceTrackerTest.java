@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertTrue;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 public class PerformanceTrackerTest {
 

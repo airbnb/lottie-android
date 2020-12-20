@@ -49,3 +49,7 @@ The latest Lottie version is:
 ![lottieVersion](https://maven-badges.herokuapp.com/maven-central/com.airbnb.android/lottie/badge.svg)
 
 Lottie 2.8.0 and above only supports projects that have been migrated to [androidx](https://developer.android.com/jetpack/androidx/). For more information, read Google's [migration guide](https://developer.android.com/jetpack/androidx/migrate).
+
+# Contributing
+
+Because development has started for Lottie Compose, Gradle, and the Android Gradle Plugin will be kept up to date with the latest canaries. This also requires  you to use Android Studio Canary builds. [Preview builds](https://developer.android.com/studio/preview) can be installed side by side with stable versions.
