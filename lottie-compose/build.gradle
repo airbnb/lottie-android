@@ -50,5 +50,4 @@ dependencies {
   api project(':lottie')
   implementation "androidx.compose.foundation:foundation:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
-  implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.0-beta01'
 }
