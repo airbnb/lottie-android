@@ -3,8 +3,8 @@ package com.airbnb.lottie.samples.model
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Parcelable
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
 @SuppressLint("ParcelCreator")
 @Parcelize

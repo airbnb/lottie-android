@@ -2,7 +2,7 @@ package com.airbnb.lottie.samples.model
 
 import android.os.Parcelable
 import com.airbnb.lottie.samples.utils.toColorIntSafe
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AnimationDataV2(
