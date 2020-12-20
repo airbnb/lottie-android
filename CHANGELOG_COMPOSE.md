@@ -1,3 +1,9 @@
+# 1.0.0-alpha05
+* Jetpack Compose Alpha 9
+
+# 1.0.0-alpha04
+* Jetpack Compose Alpha 8
+
 # 1.0.0-alpha01
 * Initial release of Lottie Compose
 * Compatible with Jetpack Compose alpha 6
