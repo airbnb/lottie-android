@@ -553,6 +553,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
       return;
+    } else if (!isNewComposition) {
+      // The current drawable isn't lottieDrawable but the drawable already has the right composition.
+      setImageDrawable(null);
+      setImageDrawable(lottieDrawable);
     }
 
     // This is needed to makes sure that the animation is properly played/paused for the current visibility state.
