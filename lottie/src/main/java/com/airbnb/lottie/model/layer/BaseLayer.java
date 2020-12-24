@@ -256,7 +256,10 @@ public abstract class BaseLayer
 
     L.endSection("Layer#computeBounds");
 
-    if (!rect.isEmpty()) {
+    // Ensure that what we are drawing is >=1px of width and height.
+    // On older devices, drawing to an offscreen buffer of <1px would draw back as a black bar.
+    // https://github.com/airbnb/lottie-android/issues/1625
+    if (rect.width() >= 1f && rect.height() >= 1f) {
       L.beginSection("Layer#saveLayer");
       contentPaint.setAlpha(255);
       Utils.saveLayerCompat(canvas, rect, contentPaint);
