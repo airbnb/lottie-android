@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.updateLayoutParams
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -101,18 +102,18 @@ class LottieTest {
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
             testColorStateListColorFilter()
-            testFailure()
-            snapshotFrameBoundaries()
-            snapshotScaleTypes()
-            testDynamicProperties()
-            testMarkers()
-            testAssets()
-            testText()
-            testPartialFrameProgress()
-            testProdAnimations()
-            testNightMode()
-            testApplyOpacityToLayer()
-            testOutlineMasksAndMattes()
+//            testFailure()
+//            snapshotFrameBoundaries()
+//            snapshotScaleTypes()
+//            testDynamicProperties()
+//            testMarkers()
+//            testAssets()
+//            testText()
+//            testPartialFrameProgress()
+//            testProdAnimations()
+//            testNightMode()
+//            testApplyOpacityToLayer()
+//            testOutlineMasksAndMattes()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -999,7 +1000,8 @@ class LottieTest {
 
     private suspend fun testColorStateListColorFilter() {
         log("Testing color filter")
-        val binding = TestColorFilterBinding.inflate(LayoutInflater.from(application))
+        val context = ContextThemeWrapper(application, R.style.AppTheme)
+        val binding = TestColorFilterBinding.inflate(LayoutInflater.from(context))
         val composition = LottieCompositionFactory.fromRawResSync(application, R.raw.solid).value!!
 
         val bitmap = bitmapPool.acquire(1000, 1000)
