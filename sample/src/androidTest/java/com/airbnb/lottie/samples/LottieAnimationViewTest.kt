@@ -16,6 +16,7 @@ import androidx.test.filters.LargeTest
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,6 +45,21 @@ class LottieAnimationViewTest {
             assertTrue(view.drawable is ColorDrawable)
             view.setComposition(composition)
             assertTrue(view.drawable is LottieDrawable)
+        }
+    }
+
+    @Test
+    fun testStopsPlayingWhenDrawableSwitched() {
+        class TestFragment : Fragment(R.layout.lottie_activity_main)
+        val scenario = launchFragmentInContainer<TestFragment>()
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.onFragment { fragment ->
+            val composition = LottieCompositionFactory.fromRawResSync(fragment.requireContext(), R.raw.hamburger_arrow).value!!
+            val view = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
+            view.setComposition(composition)
+            view.playAnimation()
+            view.setImageDrawable(ColorDrawable(Color.GREEN))
+            assertFalse(view.isAnimating)
         }
     }
 }

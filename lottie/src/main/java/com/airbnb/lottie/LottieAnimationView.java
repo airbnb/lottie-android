@@ -238,6 +238,15 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     super.setImageBitmap(bm);
   }
 
+  @Override public void unscheduleDrawable(Drawable who) {
+    if (who == lottieDrawable && lottieDrawable.isAnimating()) {
+      cancelAnimation();
+    } else if (who instanceof LottieDrawable && ((LottieDrawable) who).isAnimating()) {
+      ((LottieDrawable) who).cancelAnimation();
+    }
+    super.unscheduleDrawable(who);
+  }
+
   @Override public void invalidateDrawable(@NonNull Drawable dr) {
     if (getDrawable() == lottieDrawable) {
       // We always want to invalidate the root drawable so it redraws the whole drawable.
