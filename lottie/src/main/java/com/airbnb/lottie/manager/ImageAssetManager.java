@@ -62,6 +62,10 @@ public class ImageAssetManager {
     return prevBitmap;
   }
 
+  @Nullable public LottieImageAsset getImageAssetById(String id) {
+    return imageAssets.get(id);
+  }
+
   @Nullable public Bitmap bitmapForId(String id) {
     LottieImageAsset asset = imageAssets.get(id);
     if (asset == null) {
