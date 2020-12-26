@@ -102,18 +102,18 @@ class LottieTest {
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
             testColorStateListColorFilter()
-//            testFailure()
-//            snapshotFrameBoundaries()
-//            snapshotScaleTypes()
-//            testDynamicProperties()
-//            testMarkers()
-//            testAssets()
-//            testText()
-//            testPartialFrameProgress()
-//            testProdAnimations()
-//            testNightMode()
-//            testApplyOpacityToLayer()
-//            testOutlineMasksAndMattes()
+            testFailure()
+            snapshotFrameBoundaries()
+            snapshotScaleTypes()
+            testDynamicProperties()
+            testMarkers()
+            testAssets()
+            testText()
+            testPartialFrameProgress()
+            testProdAnimations()
+            testNightMode()
+            testApplyOpacityToLayer()
+            testOutlineMasksAndMattes()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -1002,14 +1002,17 @@ class LottieTest {
         log("Testing color filter")
         val context = ContextThemeWrapper(application, R.style.AppTheme)
         val binding = TestColorFilterBinding.inflate(LayoutInflater.from(context))
-        val composition = LottieCompositionFactory.fromRawResSync(application, R.raw.solid).value!!
+        withTimeout(10_000) {
+            while (binding.animationView.composition == null) {
+                delay(50)
+            }
+        }
 
         val bitmap = bitmapPool.acquire(1000, 1000)
         val canvas = Canvas(bitmap)
         val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
         binding.root.measure(spec, spec)
         binding.root.layout(0, 0, 1000, 1000)
-        binding.animationView.setComposition(composition)
         canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
         withContext(Dispatchers.Main) {
             binding.root.draw(canvas)
