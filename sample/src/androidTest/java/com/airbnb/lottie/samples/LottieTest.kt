@@ -7,20 +7,22 @@ import android.content.res.Resources
 import android.graphics.*
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.updateLayoutParams
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import com.airbnb.lottie.*
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
+import com.airbnb.lottie.samples.databinding.TestColorFilterBinding
 import com.airbnb.lottie.samples.testing.NoCacheLottieAnimationView
 import com.airbnb.lottie.samples.views.FilmStripView
 import com.airbnb.lottie.value.*
@@ -37,6 +39,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileInputStream
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
 
@@ -51,7 +54,7 @@ class LottieTest {
     private val application get() = ApplicationProvider.getApplicationContext<Context>()
 
     @get:Rule
-    val permissionRule = GrantPermissionRule.grant(
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
     )
@@ -82,6 +85,7 @@ class LottieTest {
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     @Before
     fun setup() {
         L.DBG = false
@@ -97,15 +101,16 @@ class LottieTest {
     @Test
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-            snapshotFailure()
+            testColorStateListColorFilter()
+            testFailure()
             snapshotFrameBoundaries()
             snapshotScaleTypes()
             testDynamicProperties()
             testMarkers()
-            snapshotAssets()
+            testAssets()
             testText()
             testPartialFrameProgress()
-            snapshotProdAnimations()
+            testProdAnimations()
             testNightMode()
             testApplyOpacityToLayer()
             testOutlineMasksAndMattes()
@@ -113,7 +118,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun snapshotProdAnimations() = coroutineScope {
+    private suspend fun testProdAnimations() = coroutineScope {
         val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
         val allObjects = s3Client.fetchAllObjects("lottie-prod-animations")
 
@@ -122,7 +127,7 @@ class LottieTest {
         repeat(4) { snapshotCompositions(compositionsChannel) }
     }
 
-    private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce<File>(
+    private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce(
             context = Dispatchers.IO,
             capacity = 10
     ) {
@@ -134,7 +139,8 @@ class LottieTest {
         }
     }
 
-    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce<Pair<String, LottieComposition>>(
+    @Suppress("BlockingMethodInNonBlockingContext")
+    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
             context = Dispatchers.Default,
             capacity = 1
     ) {
@@ -183,8 +189,7 @@ class LottieTest {
         bitmapPool.release(bitmap)
     }
 
-    @ObsoleteCoroutinesApi
-    private suspend fun snapshotAssets() = coroutineScope {
+    private suspend fun testAssets() = coroutineScope {
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(assetsChannel)
         repeat(4) { snapshotCompositions(compositionsChannel) }
@@ -203,9 +208,8 @@ class LottieTest {
         return assets
     }
 
-    @ObsoleteCoroutinesApi
-    private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce<Pair<String, LottieComposition>>(
-            context = newSingleThreadContext("Parsing"),
+    private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce(
+            context = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
             capacity = 10
     ) {
         for (asset in assets) {
@@ -216,7 +220,7 @@ class LottieTest {
         }
     }
 
-    private suspend fun snapshotFailure() {
+    private suspend fun testFailure() {
         val animationView = animationViewPool.acquire()
         val semaphore = SuspendingSemaphore(0)
         animationView.setFailureListener { semaphore.release() }
@@ -662,13 +666,13 @@ class LottieTest {
                 "Color Filter",
                 KeyPath("**"),
                 LottieProperty.COLOR_FILTER,
-                LottieValueCallback<ColorFilter>(SimpleColorFilter(Color.GREEN)))
+                LottieValueCallback(SimpleColorFilter(Color.GREEN)))
 
         testDynamicProperty(
                 "Null Color Filter",
                 KeyPath("**"),
                 LottieProperty.COLOR_FILTER,
-                LottieValueCallback<ColorFilter>(null))
+                LottieValueCallback(null))
 
         testDynamicProperty(
                 "Opacity interpolation (0)",
@@ -693,7 +697,7 @@ class LottieTest {
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {
                     return arrayOf(Color.YELLOW, Color.GREEN)
                 }
             }
@@ -702,7 +706,7 @@ class LottieTest {
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Fill") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {
                     return arrayOf(Color.YELLOW, Color.GREEN)
                 }
             }
@@ -711,7 +715,7 @@ class LottieTest {
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Stroke") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {
                     return arrayOf(Color.YELLOW, Color.GREEN)
                 }
             }
@@ -720,7 +724,7 @@ class LottieTest {
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Radial Gradient Stroke") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int>? {
+                override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {
                     return arrayOf(Color.YELLOW, Color.GREEN)
                 }
             }
@@ -992,6 +996,33 @@ class LottieTest {
         ) { filmStripView ->
             filmStripView.setOutlineMasksAndMattes(true)
         }
+    }
+
+    private suspend fun testColorStateListColorFilter() {
+        log("Testing color filter")
+        val context = ContextThemeWrapper(application, R.style.AppTheme)
+        val binding = TestColorFilterBinding.inflate(LayoutInflater.from(context))
+        withTimeout(10_000) {
+            while (binding.animationView.composition == null) {
+                delay(50)
+            }
+        }
+
+        val bitmap = bitmapPool.acquire(1000, 1000)
+        val canvas = Canvas(bitmap)
+        val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+        binding.root.measure(spec, spec)
+        binding.root.layout(0, 0, 1000, 1000)
+        canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
+        withContext(Dispatchers.Main) {
+            binding.root.draw(canvas)
+        }
+        LottieCompositionCache.getInstance().clear()
+        snapshotter.record(bitmap, "ColorFilter", "ColorStateList")
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot("ColorFilter", "ColorStateList")
+        }
+        bitmapPool.release(bitmap)
     }
 
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {

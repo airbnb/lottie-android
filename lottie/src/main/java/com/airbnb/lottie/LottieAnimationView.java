@@ -3,10 +3,10 @@ package com.airbnb.lottie;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.view.ViewCompat;
 
@@ -194,8 +195,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
-      SimpleColorFilter filter = new SimpleColorFilter(
-          ta.getColor(R.styleable.LottieAnimationView_lottie_colorFilter, Color.TRANSPARENT));
+      int colorRes = ta.getResourceId(R.styleable.LottieAnimationView_lottie_colorFilter, -1);
+      ColorStateList csl = AppCompatResources.getColorStateList(getContext(), colorRes);
+      SimpleColorFilter filter = new SimpleColorFilter(csl.getDefaultColor());
       KeyPath keyPath = new KeyPath("**");
       LottieValueCallback<ColorFilter> callback = new LottieValueCallback<ColorFilter>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
