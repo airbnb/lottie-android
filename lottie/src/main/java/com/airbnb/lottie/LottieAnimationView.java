@@ -566,8 +566,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       return;
     } else if (!isNewComposition) {
       // The current drawable isn't lottieDrawable but the drawable already has the right composition.
-      setImageDrawable(null);
-      setImageDrawable(lottieDrawable);
+      setLottieDrawable();
     }
 
     // This is needed to makes sure that the animation is properly played/paused for the current visibility state.
@@ -958,8 +957,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   public void setScale(float scale) {
     lottieDrawable.setScale(scale);
     if (getDrawable() == lottieDrawable) {
-      setImageDrawable(null);
-      setImageDrawable(lottieDrawable);
+      setLottieDrawable();
     }
   }
 
@@ -1160,6 +1158,18 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   public void removeAllLottieOnCompositionLoadedListener() {
     lottieOnCompositionLoadedListeners.clear();
+  }
+
+  private void setLottieDrawable() {
+    boolean wasAnimating = isAnimating();
+    // Set the drawable to null first because the underlying LottieDrawable's intrinsic bounds can change
+    // if the composition changes.
+    setImageDrawable(null);
+    setImageDrawable(lottieDrawable);
+    if (wasAnimating) {
+      // This is necessary because lottieDrawable will get unscheduled and canceled when the drawable is set to null.
+      lottieDrawable.resumeAnimation();
+    }
   }
 
   private static class SavedState extends BaseSavedState {
