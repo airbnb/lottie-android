@@ -14,25 +14,7 @@ public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
   }
 
   @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
-    if (keyframe.startValue == null || keyframe.endValue == null) {
-      throw new IllegalStateException("Missing values for keyframe.");
-    }
-
-    PointF startPoint = keyframe.startValue;
-    PointF endPoint = keyframe.endValue;
-
-    if (valueCallback != null) {
-      //noinspection ConstantConditions
-      PointF value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startPoint,
-          endPoint, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
-      if (value != null) {
-        return value;
-      }
-    }
-
-    point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
-        startPoint.y + keyframeProgress * (endPoint.y - startPoint.y));
-    return point;
+    return getValue(keyframe, keyframeProgress, keyframeProgress, keyframeProgress);
   }
 
   @Override protected PointF getValue(Keyframe<PointF> keyframe, float linearKeyframeProgress, float xKeyframeProgress, float yKeyframeProgress) {

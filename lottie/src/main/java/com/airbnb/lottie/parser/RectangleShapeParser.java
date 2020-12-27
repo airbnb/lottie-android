@@ -4,7 +4,6 @@ import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.model.content.RectangleShape;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -42,7 +41,7 @@ class RectangleShapeParser {
               AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case 2:
-          size = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
+          size = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case 3:
           roundedness = AnimatableValueParser.parseFloat(reader, composition);

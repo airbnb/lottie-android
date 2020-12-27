@@ -1,6 +1,5 @@
 package com.airbnb.lottie.parser;
 
-import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
@@ -38,10 +37,9 @@ public class AnimatableValueParser {
     return new AnimatableIntegerValue(parse(reader, composition, IntegerParser.INSTANCE));
   }
 
-  static AnimatablePointValue parseMultiDimensionalPoint(
+  static AnimatablePointValue parsePoint(
       JsonReader reader, LottieComposition composition) throws IOException {
-    return new AnimatablePointValue(
-        parseMultiDimensionalPoint(reader, Utils.dpScale(), composition));
+    return new AnimatablePointValue(KeyframesParser.parse(reader, composition, Utils.dpScale(), PointFParser.INSTANCE, true));
   }
 
   static AnimatableScaleValue parseScale(
@@ -82,15 +80,8 @@ public class AnimatableValueParser {
   /**
    * Will return null if the animation can't be played such as if it has expressions.
    */
-  private static <T> List<Keyframe<T>> parse(JsonReader reader, float scale,
-      LottieComposition composition, ValueParser<T> valueParser) throws IOException {
+  private static <T> List<Keyframe<T>> parse(
+      JsonReader reader, float scale, LottieComposition composition, ValueParser<T> valueParser) throws IOException {
     return KeyframesParser.parse(reader, composition, scale, valueParser, false);
-  }
-
-  /**
-   * Will return null if the animation can't be played such as if it has expressions.
-   */
-  private static List<Keyframe<PointF>> parseMultiDimensionalPoint(JsonReader reader, float scale, LottieComposition composition) throws IOException {
-    return KeyframesParser.parse(reader, composition, scale, PointFParser.INSTANCE, true);
   }
 }

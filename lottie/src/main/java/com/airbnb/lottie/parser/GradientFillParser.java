@@ -2,7 +2,6 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Path;
 
-import android.webkit.JsResult;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
@@ -74,10 +73,10 @@ class GradientFillParser {
           gradientType = reader.nextInt() == 1 ? GradientType.LINEAR : GradientType.RADIAL;
           break;
         case 4:
-          startPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
+          startPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case 5:
-          endPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
+          endPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case 6:
           fillType = reader.nextInt() == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;

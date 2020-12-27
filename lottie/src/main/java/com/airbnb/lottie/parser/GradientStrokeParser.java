@@ -91,10 +91,10 @@ class GradientStrokeParser {
           gradientType = reader.nextInt() == 1 ? GradientType.LINEAR : GradientType.RADIAL;
           break;
         case 4:
-          startPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
+          startPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case 5:
-          endPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
+          endPoint = AnimatableValueParser.parsePoint(reader, composition);
           break;
         case 6:
           width = AnimatableValueParser.parseFloat(reader, composition);

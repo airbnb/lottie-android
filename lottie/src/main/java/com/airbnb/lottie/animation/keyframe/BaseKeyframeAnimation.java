@@ -127,8 +127,8 @@ public abstract class BaseKeyframeAnimation<K, A> {
   public A getValue() {
     A value;
 
-    float linearCurrentKeyframeProgress = getLinearCurrentKeyframeProgress();
-    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(linearCurrentKeyframeProgress)) {
+    float linearProgress = getLinearCurrentKeyframeProgress();
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(linearProgress)) {
       return cachedGetValue;
     }
     final Keyframe<K> keyframe = getCurrentKeyframe();
@@ -139,11 +139,11 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
       if (!keyframe.isStatic()) {
         //noinspection ConstantConditions
-        xProgress = keyframe.xInterpolator.getInterpolation(linearCurrentKeyframeProgress);
+        xProgress = keyframe.xInterpolator.getInterpolation(linearProgress);
         //noinspection ConstantConditions
-        yProgress = keyframe.yInterpolator.getInterpolation(linearCurrentKeyframeProgress);
+        yProgress = keyframe.yInterpolator.getInterpolation(linearProgress);
       }
-      value = getValue(keyframe, linearCurrentKeyframeProgress, xProgress, yProgress);
+      value = getValue(keyframe, linearProgress, xProgress, yProgress);
     } else {
       float progress = getInterpolatedCurrentKeyframeProgress();
       value = getValue(keyframe, progress);
