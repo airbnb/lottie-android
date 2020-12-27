@@ -746,6 +746,11 @@ class LottieTest {
                     { ScaleXY(-1.0f, 1.0f) })
         }
 
+        withDrawable("Tests/TrackMattes.json", "Matte", "Matte property") { drawable ->
+            val keyPath = KeyPath("Shape Layer 1", "Rectangle 1", "Rectangle Path 1")
+            drawable.addValueCallback(keyPath, LottieProperty.RECTANGLE_SIZE, LottieValueCallback(PointF(50f, 50f)))
+        }
+
         withDrawable("Tests/Text.json", "Text", "Text Fill (Blue -> Green)") { drawable ->
             val value = object : LottieValueCallback<Int>() {
                 override fun getValue(frameInfo: LottieFrameInfo<Int>?) = Color.GREEN

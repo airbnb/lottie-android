@@ -592,6 +592,18 @@ public abstract class BaseLayer
   @Override
   public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+    if (matteLayer != null) {
+      KeyPath matteCurrentPartialKeyPath = currentPartialKeyPath.addKey(matteLayer.getName());
+      if (keyPath.fullyResolvesTo(matteLayer.getName(), depth)) {
+        accumulator.add(matteCurrentPartialKeyPath.resolve(matteLayer));
+      }
+
+      if (keyPath.propagateToChildren(getName(), depth)) {
+        int newDepth = depth + keyPath.incrementDepthBy(matteLayer.getName(), depth);
+        matteLayer.resolveChildKeyPath(keyPath, newDepth, accumulator, matteCurrentPartialKeyPath);
+      }
+    }
+
     if (!keyPath.matches(getName(), depth)) {
       return;
     }
