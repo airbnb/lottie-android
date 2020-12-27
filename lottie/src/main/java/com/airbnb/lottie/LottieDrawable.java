@@ -226,7 +226,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     Iterator<LazyCompositionTask> it = new ArrayList<>(lazyCompositionTasks).iterator();
     while (it.hasNext()) {
       LazyCompositionTask t = it.next();
-      t.run(composition);
+      // The task should never be null but it appears to happen in rare cases. Maybe it's an oem-specific or ART bug.
+      // https://github.com/airbnb/lottie-android/issues/1702
+      if (t != null) {
+        t.run(composition);
+      }
       it.remove();
     }
     lazyCompositionTasks.clear();
