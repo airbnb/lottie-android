@@ -68,6 +68,9 @@ class KeyframeParser {
     }
   }
 
+  /**
+   * @param multiDimensional When true, the keyframe interpolators can be independent for the X and Y axis.
+   */
   static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
                                float scale, ValueParser<T> valueParser, boolean animated, boolean multiDimensional) throws IOException {
 

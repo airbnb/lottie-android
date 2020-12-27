@@ -134,15 +134,8 @@ public abstract class BaseKeyframeAnimation<K, A> {
     final Keyframe<K> keyframe = getCurrentKeyframe();
 
     if (keyframe.xInterpolator != null && keyframe.yInterpolator != null) {
-      float xProgress = 0f;
-      float yProgress = 0f;
-
-      if (!keyframe.isStatic()) {
-        //noinspection ConstantConditions
-        xProgress = keyframe.xInterpolator.getInterpolation(linearProgress);
-        //noinspection ConstantConditions
-        yProgress = keyframe.yInterpolator.getInterpolation(linearProgress);
-      }
+      float xProgress = keyframe.xInterpolator.getInterpolation(linearProgress);
+      float yProgress = keyframe.yInterpolator.getInterpolation(linearProgress);
       value = getValue(keyframe, linearProgress, xProgress, yProgress);
     } else {
       float progress = getInterpolatedCurrentKeyframeProgress();
