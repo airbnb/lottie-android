@@ -112,10 +112,10 @@ class KeyframeParser {
           endValue = valueParser.parse(reader, scale);
           break;
         case 3: // o
-          cp1 = JsonUtils.jsonToPoint(reader, scale);
+          cp1 = JsonUtils.jsonToPoint(reader, 1f);
           break;
         case 4: // i
-          cp2 = JsonUtils.jsonToPoint(reader, scale);
+          cp2 = JsonUtils.jsonToPoint(reader, 1f);
           break;
         case 5: // h
           hold = reader.nextInt() == 1;
@@ -137,7 +137,7 @@ class KeyframeParser {
       // TODO: create a HoldInterpolator so progress changes don't invalidate.
       interpolator = LINEAR_INTERPOLATOR;
     } else if (cp1 != null && cp2 != null) {
-      interpolator = interpolatorFor(cp1, cp2, scale);
+      interpolator = interpolatorFor(cp1, cp2);
     } else {
       interpolator = LINEAR_INTERPOLATOR;
     }
@@ -287,10 +287,10 @@ class KeyframeParser {
       // TODO: create a HoldInterpolator so progress changes don't invalidate.
       interpolator = LINEAR_INTERPOLATOR;
     } else if (cp1 != null && cp2 != null) {
-      interpolator = interpolatorFor(cp1, cp2, scale);
+      interpolator = interpolatorFor(cp1, cp2);
     } else if (xCp1 != null && yCp1 != null && xCp2 != null && yCp2 != null) {
-      xInterpolator = interpolatorFor(xCp1, xCp2, scale);
-      yInterpolator = interpolatorFor(yCp1, yCp2, scale);
+      xInterpolator = interpolatorFor(xCp1, xCp2);
+      yInterpolator = interpolatorFor(yCp1, yCp2);
     } else {
       interpolator = LINEAR_INTERPOLATOR;
     }
@@ -307,11 +307,11 @@ class KeyframeParser {
     return keyframe;
   }
 
-  private static Interpolator interpolatorFor(PointF cp1, PointF cp2, float scale) {
+  private static Interpolator interpolatorFor(PointF cp1, PointF cp2) {
     Interpolator interpolator = null;
-    cp1.x = MiscUtils.clamp(cp1.x, -scale, scale);
+    cp1.x = MiscUtils.clamp(cp1.x, -1f, 1f);
     cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-    cp2.x = MiscUtils.clamp(cp2.x, -scale, scale);
+    cp2.x = MiscUtils.clamp(cp2.x, -1f, 1f);
     cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
     int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
     WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
@@ -319,10 +319,6 @@ class KeyframeParser {
       interpolator = interpolatorRef.get();
     }
     if (interpolatorRef == null || interpolator == null) {
-      cp1.x /= scale;
-      cp1.y /= scale;
-      cp2.x /= scale;
-      cp2.y /= scale;
       try {
         interpolator = PathInterpolatorCompat.create(cp1.x, cp1.y, cp2.x, cp2.y);
       } catch (IllegalArgumentException e) {
