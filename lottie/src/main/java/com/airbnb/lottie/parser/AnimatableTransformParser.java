@@ -21,19 +21,19 @@ public class AnimatableTransformParser {
   }
 
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
-      "a",
-      "p",
-      "s",
-      "rz",
-      "r",
-      "o",
-      "so",
-      "eo",
-      "sk",
-      "sa"
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
+      "a",  // 1
+      "p",  // 2
+      "s",  // 3
+      "rz", // 4
+      "r",  // 5
+      "o",  // 6
+      "so", // 7
+      "eo", // 8
+      "sk", // 9
+      "sa"  // 10
   );
-  private static JsonReader.Options ANIMATABLE_NAMES = JsonReader.Options.of("k");
+  private static final JsonReader.Options ANIMATABLE_NAMES = JsonReader.Options.of("k");
 
   public static AnimatableTransform parse(
       JsonReader reader, LottieComposition composition) throws IOException {
@@ -53,7 +53,7 @@ public class AnimatableTransformParser {
     }
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
-        case 0:
+        case 0: // a
           reader.beginObject();
           while (reader.hasNext()) {
             switch (reader.selectName(ANIMATABLE_NAMES)) {
@@ -67,17 +67,17 @@ public class AnimatableTransformParser {
           }
           reader.endObject();
           break;
-        case 1:
+        case 1: // p
           position =
               AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
-        case 2:
+        case 2: // s
           scale = AnimatableValueParser.parseScale(reader, composition);
           break;
-        case 3:
+        case 3: // rz
           composition.addWarning("Lottie doesn't support 3D layers.");
-        case 4:
-          /**
+        case 4: // r
+          /*
            * Sometimes split path rotation gets exported like:
            *         "rz": {
            *           "a": 1,
@@ -89,24 +89,24 @@ public class AnimatableTransformParser {
            */
           rotation = AnimatableValueParser.parseFloat(reader, composition, false);
           if (rotation.getKeyframes().isEmpty()) {
-            rotation.getKeyframes().add(new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+            rotation.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
           } else if (rotation.getKeyframes().get(0).startValue == null) {
-            rotation.getKeyframes().set(0, new Keyframe(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+            rotation.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
           }
           break;
-        case 5:
+        case 5: // o
           opacity = AnimatableValueParser.parseInteger(reader, composition);
           break;
-        case 6:
+        case 6: // so
           startOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case 7:
+        case 7: // eo
           endOpacity = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case 8:
+        case 8: // sk
           skew = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
-        case 9:
+        case 9: // sa
           skewAngle = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
         default:

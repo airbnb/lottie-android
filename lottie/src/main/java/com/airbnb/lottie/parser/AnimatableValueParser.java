@@ -1,10 +1,7 @@
 package com.airbnb.lottie.parser;
 
-import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.parser.moshi.JsonReader;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
@@ -13,7 +10,9 @@ import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,8 +39,7 @@ public class AnimatableValueParser {
 
   static AnimatablePointValue parsePoint(
       JsonReader reader, LottieComposition composition) throws IOException {
-    return new AnimatablePointValue(
-        parse(reader, Utils.dpScale(), composition, PointFParser.INSTANCE));
+    return new AnimatablePointValue(KeyframesParser.parse(reader, composition, Utils.dpScale(), PointFParser.INSTANCE, true));
   }
 
   static AnimatableScaleValue parseScale(
@@ -74,16 +72,16 @@ public class AnimatableValueParser {
   /**
    * Will return null if the animation can't be played such as if it has expressions.
    */
-  @Nullable private static <T> List<Keyframe<T>> parse(JsonReader reader,
+  private static <T> List<Keyframe<T>> parse(JsonReader reader,
       LottieComposition composition, ValueParser<T> valueParser) throws IOException {
-    return KeyframesParser.parse(reader, composition, 1, valueParser);
+    return KeyframesParser.parse(reader, composition, 1, valueParser, false);
   }
 
   /**
    * Will return null if the animation can't be played such as if it has expressions.
    */
-  @Nullable private static <T> List<Keyframe<T>> parse(JsonReader reader, float scale,
-      LottieComposition composition, ValueParser<T> valueParser) throws IOException {
-    return KeyframesParser.parse(reader, composition, scale, valueParser);
+  private static <T> List<Keyframe<T>> parse(
+      JsonReader reader, float scale, LottieComposition composition, ValueParser<T> valueParser) throws IOException {
+    return KeyframesParser.parse(reader, composition, scale, valueParser, false);
   }
 }

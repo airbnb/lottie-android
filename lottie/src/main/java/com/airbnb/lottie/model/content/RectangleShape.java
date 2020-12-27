@@ -13,12 +13,12 @@ import com.airbnb.lottie.model.layer.BaseLayer;
 public class RectangleShape implements ContentModel {
   private final String name;
   private final AnimatableValue<PointF, PointF> position;
-  private final AnimatablePointValue size;
+  private final AnimatableValue<PointF, PointF> size;
   private final AnimatableFloatValue cornerRadius;
   private final boolean hidden;
 
   public RectangleShape(String name, AnimatableValue<PointF, PointF> position,
-                        AnimatablePointValue size, AnimatableFloatValue cornerRadius, boolean hidden) {
+      AnimatableValue<PointF, PointF> size, AnimatableFloatValue cornerRadius, boolean hidden) {
     this.name = name;
     this.position = position;
     this.size = size;
@@ -34,7 +34,7 @@ public class RectangleShape implements ContentModel {
     return cornerRadius;
   }
 
-  public AnimatablePointValue getSize() {
+  public AnimatableValue<PointF, PointF> getSize() {
     return size;
   }
 

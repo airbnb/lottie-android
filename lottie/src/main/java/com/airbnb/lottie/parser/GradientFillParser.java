@@ -2,7 +2,6 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Path;
 
-import android.webkit.JsResult;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;

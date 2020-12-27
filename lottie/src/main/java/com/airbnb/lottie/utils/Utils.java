@@ -14,8 +14,6 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 
-import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.TrimPathContent;
@@ -30,6 +28,8 @@ import java.net.UnknownServiceException;
 import java.nio.channels.ClosedChannelException;
 
 import javax.net.ssl.SSLException;
+
+import androidx.annotation.Nullable;
 
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;

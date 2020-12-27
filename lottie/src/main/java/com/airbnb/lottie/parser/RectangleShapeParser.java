@@ -4,7 +4,6 @@ import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
-import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.model.content.RectangleShape;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -28,7 +27,7 @@ class RectangleShapeParser {
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableValue<PointF, PointF> position = null;
-    AnimatablePointValue size = null;
+    AnimatableValue<PointF, PointF> size = null;
     AnimatableFloatValue roundedness = null;
     boolean hidden = false;
 
