@@ -11,8 +11,8 @@ import java.util.List;
 public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
   private final PointF point = new PointF();
   private final float[] pos = new float[2];
+  private final PathMeasure pathMeasure = new PathMeasure();
   private PathKeyframe pathMeasureKeyframe;
-  private PathMeasure pathMeasure = new PathMeasure();
 
   public PathKeyframeAnimation(List<? extends Keyframe<PointF>> keyframes) {
     super(keyframes);

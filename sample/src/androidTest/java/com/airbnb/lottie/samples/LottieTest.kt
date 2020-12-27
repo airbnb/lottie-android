@@ -148,8 +148,7 @@ class LottieTest {
             log("Parsing ${file.nameWithoutExtension}")
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
-            val composition = result.value
-                    ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}")
+            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
             send("prod-${file.nameWithoutExtension}" to composition)
         }
     }
@@ -214,8 +213,8 @@ class LottieTest {
     ) {
         for (asset in assets) {
             log("Parsing $asset")
-            val composition = LottieCompositionFactory.fromAssetSync(application, asset).value
-                    ?: throw java.lang.IllegalArgumentException("Unable to parse $asset.")
+            val result = LottieCompositionFactory.fromAssetSync(application, asset)
+            val composition = result.value ?: throw IllegalArgumentException("Unable to parse $asset.", result.exception)
             send(asset to composition)
         }
     }
@@ -1027,8 +1026,7 @@ class LottieTest {
 
     private suspend fun withDrawable(assetName: String, snapshotName: String, snapshotVariant: String, callback: (LottieDrawable) -> Unit) {
         val result = LottieCompositionFactory.fromAssetSync(application, assetName)
-        val composition = result.value
-                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         val drawable = LottieDrawable()
         drawable.composition = composition
         callback(drawable)
@@ -1051,8 +1049,7 @@ class LottieTest {
             callback: (LottieAnimationView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(application, assetName)
-        val composition = result.value
-                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         val animationView = animationViewPool.acquire()
         animationView.setComposition(composition)
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -1086,8 +1083,7 @@ class LottieTest {
             callback: (FilmStripView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(application, assetName)
-        val composition = result.value
-                ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
+        val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
         snapshotComposition(snapshotName, snapshotVariant, composition, callback)
     }
 

@@ -24,7 +24,7 @@ public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
     if (valueCallback != null) {
       //noinspection ConstantConditions
       PointF value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startPoint,
-              endPoint, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+          endPoint, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
       if (value != null) {
         return value;
       }
@@ -32,6 +32,28 @@ public class PointKeyframeAnimation extends KeyframeAnimation<PointF> {
 
     point.set(startPoint.x + keyframeProgress * (endPoint.x - startPoint.x),
         startPoint.y + keyframeProgress * (endPoint.y - startPoint.y));
+    return point;
+  }
+
+  @Override protected PointF getValue(Keyframe<PointF> keyframe, float linearKeyframeProgress, float xKeyframeProgress, float yKeyframeProgress) {
+    if (keyframe.startValue == null || keyframe.endValue == null) {
+      throw new IllegalStateException("Missing values for keyframe.");
+    }
+
+    PointF startPoint = keyframe.startValue;
+    PointF endPoint = keyframe.endValue;
+
+    if (valueCallback != null) {
+      //noinspection ConstantConditions
+      PointF value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startPoint,
+          endPoint, linearKeyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      if (value != null) {
+        return value;
+      }
+    }
+
+    point.set(startPoint.x + xKeyframeProgress * (endPoint.x - startPoint.x),
+        startPoint.y + yKeyframeProgress * (endPoint.y - startPoint.y));
     return point;
   }
 }

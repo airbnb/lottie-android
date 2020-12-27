@@ -16,9 +16,8 @@ class KeyframesParser {
   private KeyframesParser() {
   }
 
-  static <T> List<Keyframe<T>> parse(JsonReader reader,
-                                     LottieComposition composition, float scale, ValueParser<T> valueParser)
-      throws IOException {
+  static <T> List<Keyframe<T>> parse(JsonReader reader, LottieComposition composition,
+      float scale, ValueParser<T> valueParser, boolean multiDimensional) throws IOException {
     List<Keyframe<T>> keyframes = new ArrayList<>();
 
     if (reader.peek() == JsonReader.Token.STRING) {
@@ -35,15 +34,16 @@ class KeyframesParser {
 
             if (reader.peek() == JsonReader.Token.NUMBER) {
               // For properties in which the static value is an array of numbers.
-              keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false));
+              Keyframe<T> keyframe;
+              keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false, multiDimensional));
             } else {
               while (reader.hasNext()) {
-                keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, true));
+                keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, true, multiDimensional));
               }
             }
             reader.endArray();
           } else {
-            keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false));
+            keyframes.add(KeyframeParser.parse(reader, composition, scale, valueParser, false, multiDimensional));
           }
           break;
         default:
@@ -78,7 +78,6 @@ class KeyframesParser {
     if ((lastKeyframe.startValue == null || lastKeyframe.endValue == null) && keyframes.size() > 1) {
       // The only purpose the last keyframe has is to provide the end frame of the previous
       // keyframe.
-      //noinspection SuspiciousMethodCalls
       keyframes.remove(lastKeyframe);
     }
   }

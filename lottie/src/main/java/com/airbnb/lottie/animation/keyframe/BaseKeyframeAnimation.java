@@ -1,15 +1,15 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import androidx.annotation.FloatRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * @param <K> Keyframe type
@@ -125,15 +125,31 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public A getValue() {
-    float progress = getInterpolatedCurrentKeyframeProgress();
-    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(progress)) {
+    A value;
+
+    float linearCurrentKeyframeProgress = getLinearCurrentKeyframeProgress();
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(linearCurrentKeyframeProgress)) {
       return cachedGetValue;
     }
-
     final Keyframe<K> keyframe = getCurrentKeyframe();
-    A value = getValue(keyframe, progress);
-    cachedGetValue = value;
 
+    if (keyframe.xInterpolator != null && keyframe.yInterpolator != null) {
+      float xProgress = 0f;
+      float yProgress = 0f;
+
+      if (!keyframe.isStatic()) {
+        //noinspection ConstantConditions
+        xProgress = keyframe.xInterpolator.getInterpolation(linearCurrentKeyframeProgress);
+        //noinspection ConstantConditions
+        yProgress = keyframe.yInterpolator.getInterpolation(linearCurrentKeyframeProgress);
+      }
+      value = getValue(keyframe, linearCurrentKeyframeProgress, xProgress, yProgress);
+    } else {
+      float progress = getInterpolatedCurrentKeyframeProgress();
+      value = getValue(keyframe, progress);
+    }
+
+    cachedGetValue = value;
     return value;
   }
 
@@ -156,6 +172,13 @@ public abstract class BaseKeyframeAnimation<K, A> {
    * should be able to handle values outside of that range.
    */
   abstract A getValue(Keyframe<K> keyframe, float keyframeProgress);
+
+  /**
+   * Similar to {@link #getValue(Keyframe, float)} but used when an animation has separate interpolators for the X and Y axis.
+   */
+  protected A getValue(Keyframe<K> keyframe, float linearKeyframeProgress, float xKeyframeProgress, float yKeyframeProgress) {
+    throw new UnsupportedOperationException("This animation does not support split dimensions!");
+  }
 
   private static <T> KeyframesWrapper<T> wrap(List<? extends Keyframe<T>> keyframes) {
     if (keyframes.isEmpty()) {
@@ -180,7 +203,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     @FloatRange(from = 0f, to = 1f)
     float getEndProgress();
 
-    boolean isCachedValueEnabled(float interpolatedProgress);
+    boolean isCachedValueEnabled(float progress);
   }
 
   private static final class EmptyKeyframeWrapper<T> implements KeyframesWrapper<T> {
@@ -210,7 +233,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     @Override
-    public boolean isCachedValueEnabled(float interpolatedProgress) {
+    public boolean isCachedValueEnabled(float progress) {
       throw new IllegalStateException("not implemented");
     }
   }
@@ -250,11 +273,11 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     @Override
-    public boolean isCachedValueEnabled(float interpolatedProgress) {
-      if (cachedInterpolatedProgress == interpolatedProgress) {
+    public boolean isCachedValueEnabled(float progress) {
+      if (cachedInterpolatedProgress == progress) {
         return true;
       }
-      cachedInterpolatedProgress = interpolatedProgress;
+      cachedInterpolatedProgress = progress;
       return false;
     }
   }
@@ -319,13 +342,13 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     @Override
-    public boolean isCachedValueEnabled(float interpolatedProgress) {
+    public boolean isCachedValueEnabled(float progress) {
       if (cachedCurrentKeyframe == currentKeyframe
-              && cachedInterpolatedProgress == interpolatedProgress) {
+              && cachedInterpolatedProgress == progress) {
         return true;
       }
       cachedCurrentKeyframe = currentKeyframe;
-      cachedInterpolatedProgress = interpolatedProgress;
+      cachedInterpolatedProgress = progress;
       return false;
     }
   }

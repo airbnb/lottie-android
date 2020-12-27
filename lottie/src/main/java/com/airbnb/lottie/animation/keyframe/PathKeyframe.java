@@ -14,7 +14,7 @@ public class PathKeyframe extends Keyframe<PointF> {
   private final Keyframe<PointF> pointKeyFrame;
 
   public PathKeyframe(LottieComposition composition, Keyframe<PointF> keyframe) {
-    super(composition, keyframe.startValue, keyframe.endValue, keyframe.interpolator,
+    super(composition, keyframe.startValue, keyframe.endValue, keyframe.interpolator, keyframe.xInterpolator, keyframe.yInterpolator,
         keyframe.startFrame, keyframe.endFrame);
     this.pointKeyFrame = keyframe;
     createPath();
@@ -25,8 +25,7 @@ public class PathKeyframe extends Keyframe<PointF> {
     // until KitKat...
     boolean equals = endValue != null && startValue != null &&
         startValue.equals(endValue.x, endValue.y);
-    //noinspection ConstantConditions
-    if (endValue != null && !equals) {
+    if (startValue != null && endValue != null && !equals) {
       path = Utils.createPath(startValue, endValue, pointKeyFrame.pathCp1, pointKeyFrame.pathCp2);
     }
   }

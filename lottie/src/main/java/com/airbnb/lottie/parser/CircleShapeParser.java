@@ -39,7 +39,7 @@ class CircleShapeParser {
           position = AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case 2:
-          size = AnimatableValueParser.parsePoint(reader, composition);
+          size = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
           break;
         case 3:
           hidden = reader.nextBoolean();

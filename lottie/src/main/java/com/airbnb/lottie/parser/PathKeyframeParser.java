@@ -19,7 +19,7 @@ class PathKeyframeParser {
       JsonReader reader, LottieComposition composition) throws IOException {
     boolean animated = reader.peek() == JsonReader.Token.BEGIN_OBJECT;
     Keyframe<PointF> keyframe = KeyframeParser.parse(
-        reader, composition, Utils.dpScale(), PathParser.INSTANCE, animated);
+        reader, composition, Utils.dpScale(), PathParser.INSTANCE, animated, false);
 
     return new PathKeyframe(composition, keyframe);
   }

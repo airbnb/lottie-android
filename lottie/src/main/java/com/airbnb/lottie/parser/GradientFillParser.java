@@ -74,10 +74,10 @@ class GradientFillParser {
           gradientType = reader.nextInt() == 1 ? GradientType.LINEAR : GradientType.RADIAL;
           break;
         case 4:
-          startPoint = AnimatableValueParser.parsePoint(reader, composition);
+          startPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
           break;
         case 5:
-          endPoint = AnimatableValueParser.parsePoint(reader, composition);
+          endPoint = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
           break;
         case 6:
           fillType = reader.nextInt() == 1 ? Path.FillType.WINDING : Path.FillType.EVEN_ODD;

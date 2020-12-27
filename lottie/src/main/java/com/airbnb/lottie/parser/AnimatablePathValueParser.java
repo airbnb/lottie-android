@@ -1,7 +1,6 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class AnimatablePathValueParser {
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "k",
       "x",
       "y"

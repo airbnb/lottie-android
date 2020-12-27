@@ -15,6 +15,8 @@ public class Keyframe<T> {
   @Nullable public final T startValue;
   @Nullable public T endValue;
   @Nullable public final Interpolator interpolator;
+  @Nullable public final Interpolator xInterpolator;
+  @Nullable public final Interpolator yInterpolator;
   public final float startFrame;
   @Nullable public Float endFrame;
 
@@ -40,6 +42,35 @@ public class Keyframe<T> {
     this.startValue = startValue;
     this.endValue = endValue;
     this.interpolator = interpolator;
+    xInterpolator = null;
+    yInterpolator = null;
+    this.startFrame = startFrame;
+    this.endFrame = endFrame;
+  }
+
+  public Keyframe(@SuppressWarnings("NullableProblems") LottieComposition composition,
+      @Nullable T startValue, @Nullable T endValue,
+      @Nullable Interpolator xInterpolator, @Nullable Interpolator yInterpolator, float startFrame, @Nullable Float endFrame) {
+    this.composition = composition;
+    this.startValue = startValue;
+    this.endValue = endValue;
+    interpolator = null;
+    this.xInterpolator = xInterpolator;
+    this.yInterpolator = yInterpolator;
+    this.startFrame = startFrame;
+    this.endFrame = endFrame;
+  }
+
+  protected Keyframe(@SuppressWarnings("NullableProblems") LottieComposition composition,
+      @Nullable T startValue, @Nullable T endValue,
+      @Nullable Interpolator interpolator, @Nullable Interpolator xInterpolator, @Nullable Interpolator yInterpolator,
+      float startFrame, @Nullable Float endFrame) {
+    this.composition = composition;
+    this.startValue = startValue;
+    this.endValue = endValue;
+    this.interpolator = interpolator;
+    this.xInterpolator = xInterpolator;
+    this.yInterpolator = yInterpolator;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
   }
@@ -52,6 +83,8 @@ public class Keyframe<T> {
     startValue = value;
     endValue = value;
     interpolator = null;
+    xInterpolator = null;
+    yInterpolator = null;
     startFrame = Float.MIN_VALUE;
     endFrame = Float.MAX_VALUE;
   }
@@ -84,7 +117,7 @@ public class Keyframe<T> {
   }
 
   public boolean isStatic() {
-    return interpolator == null;
+    return interpolator == null && xInterpolator == null && yInterpolator == null;
   }
 
   public boolean containsProgress(@FloatRange(from = 0f, to = 1f) float progress) {

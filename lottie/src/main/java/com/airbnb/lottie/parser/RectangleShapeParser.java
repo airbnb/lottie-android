@@ -28,7 +28,7 @@ class RectangleShapeParser {
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     AnimatableValue<PointF, PointF> position = null;
-    AnimatablePointValue size = null;
+    AnimatableValue<PointF, PointF> size = null;
     AnimatableFloatValue roundedness = null;
     boolean hidden = false;
 
@@ -42,7 +42,7 @@ class RectangleShapeParser {
               AnimatablePathValueParser.parseSplitPath(reader, composition);
           break;
         case 2:
-          size = AnimatableValueParser.parsePoint(reader, composition);
+          size = AnimatableValueParser.parseMultiDimensionalPoint(reader, composition);
           break;
         case 3:
           roundedness = AnimatableValueParser.parseFloat(reader, composition);
