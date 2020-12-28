@@ -1,3 +1,17 @@
+# 3.6.0
+### Features and Improvements
+* `LottieProperty.TRANSFORM_POSITION_X` and `LottieProperty.TRANSFORM_POSITION_Y` has been added to enable dynamic properties on transform positions that have split dimensions enabled ([#1714](https://github.com/airbnb/lottie-android/pull/1714))
+* Allow targeting matte layers with dynamic properties/`KeyPath` ([#1710](https://github.com/airbnb/lottie-android/pull/1710))
+* Properly render points that have different interpolators on the x andy axis ([#1709](https://github.com/airbnb/lottie-android/pull/1709))
+* Support `ColorStateLists` in `LottieAnimationView` `lottie_colorFilter` xml attribute ([#1708](https://github.com/airbnb/lottie-android/pull/1708))
+### Bugs Fixed
+* Don't set `LottieDrawable` bounds internally. It will not respect the bounds set on it ([#1713](https://github.com/airbnb/lottie-android/pull/1713))
+* Fix a rare NPE running lazy composition tasks ([#1711](https://github.com/airbnb/lottie-android/pull/1711))
+* Don't render masks with <1px of width or height ([#1704](https://github.com/airbnb/lottie-android/pull/1704))
+* After replacing a composition on `LottieAnimationView` with another drawable then setting it back would cause the animation to not render ([#1703](https://github.com/airbnb/lottie-android/pull/1703))
+* Properly display text at the end of an animation ([#1689](https://github.com/airbnb/lottie-android/pull/1689))
+* Always cancel animations when a LottieDrawable is unscheduled from LottieAnimationView ([adb331](https://github.com/airbnb/lottie-android/commit/adb331))
+
 # 3.5.0
 ### Features and Improvements
 * Added a new global configuration to add a custom network stack, custom network cache, enable systrace markers, and more ([#1629](https://github.com/airbnb/lottie-android/pull/1629))
