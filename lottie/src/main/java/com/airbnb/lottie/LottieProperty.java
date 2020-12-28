@@ -69,6 +69,10 @@ public interface LottieProperty {
   PointF TRANSFORM_ANCHOR_POINT = new PointF();
   /** In Px */
   PointF TRANSFORM_POSITION = new PointF();
+  /** When split dimensions is enabled. In Px */
+  Float TRANSFORM_POSITION_X = 15f;
+  /** When split dimensions is enabled. In Px */
+  Float TRANSFORM_POSITION_Y = 16f;
   /** In Px */
   PointF ELLIPSE_SIZE = new PointF();
   /** In Px */

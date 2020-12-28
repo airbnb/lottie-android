@@ -497,6 +497,27 @@ class LottieTest {
                 LottieProperty.TRANSFORM_POSITION,
                 LottieRelativePointValueCallback(PointF(20f, 20f)))
 
+
+        testDynamicProperty(
+            "Transform position X",
+            KeyPath("Shape Layer 1"),
+            LottieProperty.TRANSFORM_POSITION_X,
+            object : LottieValueCallback<Float>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Float>) =  frameInfo.startValue
+            },
+            progress = 1f,
+            assetName = "Tests/SplitPathTransform.json")
+
+        testDynamicProperty(
+            "Transform position Y",
+            KeyPath("Shape Layer 1"),
+            LottieProperty.TRANSFORM_POSITION_Y,
+            object : LottieValueCallback<Float>() {
+                override fun getValue(frameInfo: LottieFrameInfo<Float>) =  frameInfo.startValue
+            },
+            progress = 1f,
+            assetName = "Tests/SplitPathTransform.json")
+
         testDynamicProperty(
                 "Transform position (relative)",
                 KeyPath("Shape Layer 1", "Rectangle"),
@@ -544,8 +565,6 @@ class LottieTest {
                 KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
                 LottieProperty.POSITION,
                 LottieRelativePointValueCallback(PointF(20f, 20f)))
-
-
 
         testDynamicProperty(
                 "Ellipse size",
@@ -786,8 +805,15 @@ class LottieTest {
         }
     }
 
-    private suspend fun <T> testDynamicProperty(name: String, keyPath: KeyPath, property: T, callback: LottieValueCallback<T>, progress: Float = 0f) {
-        withDrawable("Tests/Shapes.json", "Dynamic Properties", name) { drawable ->
+    private suspend fun <T> testDynamicProperty(
+        name: String,
+        keyPath: KeyPath,
+        property: T,
+        callback: LottieValueCallback<T>,
+        progress: Float = 0f,
+        assetName: String = "Tests/Shapes.json",
+    ) {
+        withDrawable(assetName, "Dynamic Properties", name) { drawable ->
             drawable.addValueCallback(keyPath, property, callback)
             drawable.progress = progress
         }
