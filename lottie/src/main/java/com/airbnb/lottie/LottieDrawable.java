@@ -392,7 +392,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   private boolean boundsMatchesCompositionAspectRatio() {
     LottieComposition composition = this.composition;
-    if (composition == null) {
+    if (composition == null || getBounds().isEmpty()) {
       return true;
     }
     return aspectRatio(getBounds()) == aspectRatio(composition.getBounds());

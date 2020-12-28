@@ -51,6 +51,8 @@ class HappoSnapshotter(
     private val gitBranch = URLEncoder.encode((if (BC.BITRISE_GIT_BRANCH == "null") BC.GIT_BRANCH else BC.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
     private val reportNamePrefixes = listOf(BC.GIT_SHA, gitBranch, BC.VERSION_NAME).filter { it.isNotBlank() }
+    // Use this when running snapshots locally.
+    // private val reportNamePrefixes = listOf(System.currentTimeMillis().toString()).filter { it.isNotBlank() }
     private val reportNames = reportNamePrefixes.map { "$it-$androidVersion" }
 
     private val okhttp = OkHttpClient()
