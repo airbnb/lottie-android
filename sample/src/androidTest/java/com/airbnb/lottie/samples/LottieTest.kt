@@ -738,12 +738,13 @@ class LottieTest {
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
 
-        withDrawable("Tests/MatteTimeStretchScan.json", "Mirror animation", "Mirror animation") {
-            drawable ->
-            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT,
-                    { PointF(drawable.bounds.width().toFloat(), 0f) })
-            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE,
-                    { ScaleXY(-1.0f, 1.0f) })
+        withDrawable("Tests/MatteTimeStretchScan.json", "Mirror animation", "Mirror animation") { drawable ->
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT) {
+                PointF(drawable.composition.bounds.width().toFloat(), 0f)
+            }
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE) {
+                ScaleXY(-1.0f, 1.0f)
+            }
         }
 
         withDrawable("Tests/TrackMattes.json", "Matte", "Matte property") { drawable ->
