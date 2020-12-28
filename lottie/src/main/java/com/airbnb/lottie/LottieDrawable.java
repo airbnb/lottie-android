@@ -430,7 +430,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Plays the animation from the beginning. If speed is < 0, it will start at the end
+   * Plays the animation from the beginning. If speed is {@literal <} 0, it will start at the end
    * and play towards the beginning
    */
   @MainThread
@@ -461,7 +461,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Continues playing the animation from its current position. If speed < 0, it will play backwards
+   * Continues playing the animation from its current position. If speed {@literal <} 0, it will play backwards
    * from the current position.
    */
   @MainThread
@@ -715,14 +715,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Sets the playback speed. If speed < 0, the animation will play backwards.
+   * Sets the playback speed. If speed {@literal <} 0, the animation will play backwards.
    */
   public void setSpeed(float speed) {
     animator.setSpeed(speed);
   }
 
   /**
-   * Returns the current playback speed. This will be < 0 if the animation is playing backwards.
+   * Returns the current playback speed. This will be {@literal <} 0 if the animation is playing backwards.
    */
   public float getSpeed() {
     return animator.getSpeed();
