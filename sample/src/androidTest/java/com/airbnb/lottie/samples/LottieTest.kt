@@ -101,6 +101,7 @@ class LottieTest {
     @Test
     fun testAll() = runBlocking {
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
+            testCustomBounds()
             testColorStateListColorFilter()
             testFailure()
             snapshotFrameBoundaries()
@@ -756,12 +757,13 @@ class LottieTest {
             drawable.addValueCallback(KeyPath("Linear", "Rectangle", "Gradient Fill"), LottieProperty.OPACITY, value)
         }
 
-        withDrawable("Tests/MatteTimeStretchScan.json", "Mirror animation", "Mirror animation") {
-            drawable ->
-            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT,
-                    { PointF(drawable.bounds.width().toFloat(), 0f) })
-            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE,
-                    { ScaleXY(-1.0f, 1.0f) })
+        withDrawable("Tests/MatteTimeStretchScan.json", "Mirror animation", "Mirror animation") { drawable ->
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_ANCHOR_POINT) {
+                PointF(drawable.composition.bounds.width().toFloat(), 0f)
+            }
+            drawable.addValueCallback(KeyPath.COMPOSITION, LottieProperty.TRANSFORM_SCALE) {
+                ScaleXY(-1.0f, 1.0f)
+            }
         }
 
         withDrawable("Tests/TrackMattes.json", "Matte", "Matte property") { drawable ->
@@ -1026,6 +1028,25 @@ class LottieTest {
         ) { filmStripView ->
             filmStripView.setOutlineMasksAndMattes(true)
         }
+    }
+
+    private suspend fun testCustomBounds() {
+        val composition = LottieCompositionFactory.fromRawResSync(application, R.raw.heart).value!!
+        val bitmap = bitmapPool.acquire(50, 100)
+        val canvas = Canvas(bitmap)
+        val drawable = LottieDrawable()
+        drawable.composition = composition
+        drawable.repeatCount = Integer.MAX_VALUE
+        drawable.setBounds(0, 0, 25, 100)
+        withContext(Dispatchers.Main) {
+            drawable.draw(canvas)
+        }
+        LottieCompositionCache.getInstance().clear()
+        snapshotter.record(bitmap, "CustomBounds", "Heart-25x100")
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.recordSnapshot("CustomBounds", "Heart-25x100")
+        }
+        bitmapPool.release(bitmap)
     }
 
     private suspend fun testColorStateListColorFilter() {

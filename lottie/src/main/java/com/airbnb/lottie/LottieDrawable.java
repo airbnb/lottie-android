@@ -33,10 +33,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntDef;
@@ -51,10 +49,8 @@ import androidx.annotation.RequiresApi;
  *
  * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess"})
 public class LottieDrawable extends Drawable implements Drawable.Callback, Animatable {
-  private static final String TAG = LottieDrawable.class.getSimpleName();
-
   private interface LazyCompositionTask {
     void run(LottieComposition composition);
   }
@@ -66,7 +62,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean systemAnimationsEnabled = true;
   private boolean safeMode = false;
 
-  private final Set<ColorFilterData> colorFilterData = new HashSet<>();
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   private final ValueAnimator.AnimatorUpdateListener  progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
     @Override
@@ -76,8 +71,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
   };
-  @Nullable
-  private ImageView.ScaleType scaleType;
   @Nullable
   private ImageAssetManager imageAssetManager;
   @Nullable
@@ -183,10 +176,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * `setImageAssetsFolder("airbnb_loader/");`.
    * <p>
    * <p>
-   * If you use LottieDrawable directly, you MUST call {@link #recycleBitmaps()} when you
-   * are done. Calling {@link #recycleBitmaps()} doesn't have to be final and {@link LottieDrawable}
-   * will recreate the bitmaps if needed but they will leak if you don't recycle them.
-   * <p>
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
@@ -219,7 +208,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     animator.setComposition(composition);
     setProgress(animator.getAnimatedFraction());
     setScale(scale);
-    updateBounds();
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
     // then there won't be two iterators iterating and removing at the same time.
@@ -399,11 +387,23 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private void drawInternal(@NonNull Canvas canvas) {
-    if (ImageView.ScaleType.FIT_XY == scaleType) {
+    if (!boundsMatchesCompositionAspectRatio()) {
       drawWithNewAspectRatio(canvas);
     } else {
       drawWithOriginalAspectRatio(canvas);
     }
+  }
+
+  private boolean boundsMatchesCompositionAspectRatio() {
+    LottieComposition composition = this.composition;
+    if (composition == null || getBounds().isEmpty()) {
+      return true;
+    }
+    return aspectRatio(getBounds()) == aspectRatio(composition.getBounds());
+  }
+
+  private float aspectRatio(Rect rect) {
+    return rect.width() / (float) rect.height();
   }
 
 // <editor-fold desc="animator">
@@ -655,8 +655,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
     int startFrame = (int) startMarker.startFrame;
 
-    Marker endMarker = composition.getMarker(endMarkerName);
-    if (endMarkerName == null) {
+    final Marker endMarker = composition.getMarker(endMarkerName);
+    if (endMarker == null) {
       throw new IllegalArgumentException("Cannot find marker with name " + endMarkerName + ".");
     }
     int endFrame = (int) (endMarker.startFrame + (playEndMarkerStartFrame ? 1f : 0f));
@@ -859,6 +859,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public boolean isAnimating() {
     // On some versions of Android, this is called from the LottieAnimationView constructor, before animator was created.
     // https://github.com/airbnb/lottie-android/issues/1430
+    //noinspection ConstantConditions
     if (animator == null) {
       return false;
     }
@@ -885,7 +886,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setScale(float scale) {
     this.scale = scale;
-    updateBounds();
   }
 
   /**
@@ -899,8 +899,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * the documentation at http://airbnb.io/lottie for more information about importing shapes from
    * Sketch or Illustrator to avoid this.
    */
-  public void setImageAssetDelegate(
-      @SuppressWarnings("NullableProblems") ImageAssetDelegate assetDelegate) {
+  public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
     this.imageAssetDelegate = assetDelegate;
     if (imageAssetManager != null) {
       imageAssetManager.setDelegate(assetDelegate);
@@ -910,8 +909,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Use this to manually set fonts.
    */
-  public void setFontAssetDelegate(
-      @SuppressWarnings("NullableProblems") FontAssetDelegate assetDelegate) {
+  public void setFontAssetDelegate(FontAssetDelegate assetDelegate) {
     this.fontAssetDelegate = assetDelegate;
     if (fontAssetManager != null) {
       fontAssetManager.setDelegate(assetDelegate);
@@ -937,15 +935,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public LottieComposition getComposition() {
     return composition;
-  }
-
-  private void updateBounds() {
-    if (composition == null) {
-      return;
-    }
-    float scale = getScale();
-    setBounds(0, 0, (int) (composition.getBounds().width() * scale),
-        (int) (composition.getBounds().height() * scale));
   }
 
   public void cancelAnimation() {
@@ -993,7 +982,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Add an property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
-   * to multiple contents. In that case, the callbacks's value will apply to all of them.
+   * to multiple contents. In that case, the callback's value will apply to all of them.
    * <p>
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
@@ -1164,10 +1153,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     callback.unscheduleDrawable(this, what);
   }
 
-  void setScaleType(ImageView.ScaleType scaleType) {
-    this.scaleType = scaleType;
-  }
-
   /**
    * If the composition is larger than the canvas, we have to use a different method to scale it up.
    * See the comments in {@link #draw(Canvas)} for more info.
@@ -1263,51 +1248,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     if (saveCount > 0) {
       canvas.restoreToCount(saveCount);
-    }
-  }
-
-  private static class ColorFilterData {
-
-    final String layerName;
-    @Nullable
-    final String contentName;
-    @Nullable
-    final ColorFilter colorFilter;
-
-    ColorFilterData(@Nullable String layerName, @Nullable String contentName,
-                    @Nullable ColorFilter colorFilter) {
-      this.layerName = layerName;
-      this.contentName = contentName;
-      this.colorFilter = colorFilter;
-    }
-
-    @Override
-    public int hashCode() {
-      int hashCode = 17;
-      if (layerName != null) {
-        hashCode = hashCode * 31 * layerName.hashCode();
-      }
-
-      if (contentName != null) {
-        hashCode = hashCode * 31 * contentName.hashCode();
-      }
-      return hashCode;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-
-      if (!(obj instanceof ColorFilterData)) {
-        return false;
-      }
-
-      final ColorFilterData other = (ColorFilterData) obj;
-
-      return hashCode() == other.hashCode() && colorFilter == other.colorFilter;
-
     }
   }
 }
