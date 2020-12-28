@@ -62,8 +62,7 @@ import okio.ByteString;
  * skip the value's nested tokens, which may otherwise conflict.
  *
  * <p>If a value may be null, you should first check using {@link #peek()}.
- * Null literals can be consumed using either {@link #nextNull()} or {@link
- * #skipValue()}.
+ * Null literals can be consumed using {@link #skipValue()}.
  *
  * <h3>Example</h3>
  * Suppose we'd like to parse a stream of messages such as the following: <pre> {@code
@@ -364,7 +363,7 @@ public abstract class JsonReader implements Closeable {
   }
 
   /**
-   * A set of strings to be chosen with {@link #selectName} or {@link #selectString}. This prepares
+   * A set of strings to be chosen with {@link #selectName}. This prepares
    * the encoded values of the strings so they can be read directly from the input source.
    */
   public static final class Options {

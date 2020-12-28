@@ -66,7 +66,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
  *
  * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
-@SuppressWarnings({"unused", "WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
+@SuppressWarnings({"WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
 
   private static final String TAG = LottieAnimationView.class.getSimpleName();
   private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = new LottieListener<Throwable>() {
@@ -374,7 +374,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    *
    * {@link R.attr#lottie_cacheComposition}
    */
-  public void  setCacheComposition(boolean cacheComposition) {
+  public void setCacheComposition(boolean cacheComposition) {
     this.cacheComposition = cacheComposition;
   }
 
@@ -598,7 +598,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Plays the animation from the beginning. If speed is < 0, it will start at the end
+   * Plays the animation from the beginning. If speed is {@literal <} 0, it will start at the end
    * and play towards the beginning
    */
   @MainThread
@@ -612,7 +612,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Continues playing the animation from its current position. If speed < 0, it will play backwards
+   * Continues playing the animation from its current position. If speed {@literal <} 0, it will play backwards
    * from the current position.
    */
   @MainThread
@@ -737,14 +737,14 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Sets the playback speed. If speed < 0, the animation will play backwards.
+   * Sets the playback speed. If speed {@literal <} 0, the animation will play backwards.
    */
   public void setSpeed(float speed) {
     lottieDrawable.setSpeed(speed);
   }
 
   /**
-   * Returns the current playback speed. This will be < 0 if the animation is playing backwards.
+   * Returns the current playback speed. This will be {@literal <} 0 if the animation is playing backwards.
    */
   public float getSpeed() {
     return lottieDrawable.getSpeed();
