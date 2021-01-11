@@ -46,7 +46,7 @@ dependencies {
 }
 ```
 The latest Lottie version is:
-![lottieVersion](https://maven-badges.herokuapp.com/maven-central/com.airbnb.android/lottie/badge.svg)
+![lottieVersion](https://maven-badges.herokuapp.com/maven-central/com.airbnb.android/lottie/badge.svg) [![Meercode CI Score](https://meercode.io/badge/airbnb/lottie-android?type=ci-score&branch=master)](https://meercode.io/airbnb/lottie-android)
 
 Lottie 2.8.0 and above only supports projects that have been migrated to [androidx](https://developer.android.com/jetpack/androidx/). For more information, read Google's [migration guide](https://developer.android.com/jetpack/androidx/migrate).
 
