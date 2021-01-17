@@ -7,7 +7,7 @@ plugins {
 
 android {
   compileSdkVersion 30
-  buildToolsVersion "30.0.2"
+  buildToolsVersion "30.0.3"
 
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
@@ -65,9 +65,9 @@ dependencies {
   implementation "androidx.compose.material:material:$composeVersion"
   implementation "androidx.compose.material:material-icons-extended:$composeVersion"
   implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-  implementation "androidx.navigation:navigation-compose:1.0.0-alpha04"
-  implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-beta01'
-  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-beta01'
+  implementation "androidx.navigation:navigation-compose:1.0.0-alpha05"
+  implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-rc01'
+  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0-rc01'
 
   implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
   implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
@@ -83,7 +83,7 @@ dependencies {
 
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
-  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.4.0"
+  implementation "dev.chrisbanes.accompanist:accompanist-coil:0.4.2"
   implementation 'com.airbnb.android:mvrx:2.0.0-beta3'
 
   testImplementation 'junit:junit:4.13.1'
