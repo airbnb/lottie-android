@@ -113,7 +113,12 @@ public class ImageAssetManager {
       Logger.warning("Unable to open asset.", e);
       return null;
     }
-    bitmap = BitmapFactory.decodeStream(is, null, opts);
+    try {
+      bitmap = BitmapFactory.decodeStream(is, null, opts);
+    } catch (IllegalArgumentException e) {
+      Logger.warning("Unable to decode image.", e);
+      return null;
+    }
     bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
     return putBitmap(id, bitmap);
   }
