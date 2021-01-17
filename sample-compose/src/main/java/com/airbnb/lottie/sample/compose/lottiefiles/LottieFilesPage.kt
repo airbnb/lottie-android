@@ -1,12 +1,15 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.animate
+import androidx.compose.animation.core.animateAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.*
 import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.compose.ui.Alignment
@@ -71,8 +74,8 @@ fun LottieFilesTabBarTab(
 ) {
     val textWidth = remember { mutableStateOf(0) }
     val pxRatio = with(AmbientDensity.current) { 1.dp.toPx() }
-    val tabWidth = animate(target = if (isSelected) (textWidth.value / pxRatio).dp else 0.dp)
-    val tabAlpha = animate(target = if (isSelected) 1f else 0f)
+    val tabWidth by animateAsState(if (isSelected) (textWidth.value / pxRatio).dp else 0.dp, spring(), null)
+    val tabAlpha by animateAsState(if (isSelected) 1f else 0f)
     Column(
         modifier = Modifier
             .clickable(onClick = onClick)
