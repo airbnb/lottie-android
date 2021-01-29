@@ -49,7 +49,8 @@ fun ToolbarChip(
                     vectorResource(iconRes),
                     tint = if (isActivated) Color.White else unActivatedColor,
                     modifier = Modifier
-                        .preferredSize(12.dp)
+                        .preferredSize(12.dp),
+                    contentDescription = null
                 )
                 Spacer(modifier = Modifier.preferredWidth(6.dp))
             }

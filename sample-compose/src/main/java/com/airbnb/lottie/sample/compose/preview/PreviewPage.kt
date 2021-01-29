@@ -95,7 +95,8 @@ private fun PreviewRow(
                     vectorResource(iconRes),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    contentDescription = null
                 )
                 Text(
                     stringResource(textRes),

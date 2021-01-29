@@ -69,7 +69,12 @@ class ComposeActivity : AppCompatActivity() {
 
                             BottomNavItemData.values().forEach { item ->
                                 BottomNavigationItem(
-                                    icon = { Icon(vectorResource(item.iconRes)) },
+                                    icon = {
+                                        Icon(
+                                            imageVector = vectorResource(item.iconRes),
+                                            contentDescription = null
+                                        )
+                                    },
                                     label = { Text(stringResource(item.labelRes)) },
                                     selected = currentRoute == item.route.route,
                                     onClick = {
