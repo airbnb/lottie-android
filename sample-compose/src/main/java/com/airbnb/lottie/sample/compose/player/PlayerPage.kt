@@ -1,11 +1,11 @@
 package com.airbnb.lottie.sample.compose.player
 
 import androidx.activity.OnBackPressedDispatcher
-import androidx.compose.foundation.ScrollableColumn
-import androidx.compose.foundation.ScrollableRow
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredSize
 import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -74,6 +76,7 @@ import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayerPage(
     spec: LottieAnimationSpec,
@@ -105,12 +108,8 @@ fun PlayerPage(
         }
     }
 
-    onCommit(outlineMasksAndMattes.value) {
-        animationState.outlineMasksAndMattes = outlineMasksAndMattes.value
-    }
-    onCommit(applyOpacityToLayers.value) {
-        animationState.applyOpacityToLayers = applyOpacityToLayers.value
-    }
+    animationState.outlineMasksAndMattes = outlineMasksAndMattes.value
+    animationState.applyOpacityToLayers = applyOpacityToLayers.value
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -123,7 +122,10 @@ fun PlayerPage(
                     IconButton(
                         onClick = { backPressedDispatcher.onBackPressed() },
                     ) {
-                        Icon(Icons.Default.Close)
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = null
+                        )
                     }
                 },
                 actions = {
@@ -134,6 +136,7 @@ fun PlayerPage(
                             Icon(
                                 Icons.Filled.Warning,
                                 tint = Color.Black,
+                                contentDescription = null
                             )
                         }
                     }
@@ -143,6 +146,7 @@ fun PlayerPage(
                         Icon(
                             Icons.Filled.RemoveRedEye,
                             tint = if (focusMode) Teal else Color.Black,
+                            contentDescription = null
                         )
                     }
                 }
@@ -188,7 +192,11 @@ fun PlayerPage(
                     onColorChanged = { backgroundColor = it }
                 )
             }
-            if (!focusMode) {
+            AnimatedVisibility(
+                visible = !focusMode,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
                 PlayerControlsRow(animationState, compositionResult())
                 Toolbar(
                     border = borderToolbar,
@@ -232,7 +240,11 @@ private fun PlayerControlsRow(
                 IconButton(
                     onClick = { animationState.toggleIsPlaying() },
                 ) {
-                    Icon(if (animationState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow)
+                    Icon(
+                        if (animationState.isPlaying) Icons.Filled.Pause
+                        else Icons.Filled.PlayArrow,
+                        contentDescription = null
+                    )
                 }
                 Text(
                     "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
@@ -256,6 +268,7 @@ private fun PlayerControlsRow(
                 Icon(
                     Icons.Filled.Repeat,
                     tint = if (animationState.repeatCount > 0) Teal else Color.Black,
+                    contentDescription = null
                 )
             }
         }
@@ -364,12 +377,7 @@ private fun Toolbar(
     outlineMasksAndMattes: MutableState<Boolean>,
     applyOpacityToLayers: MutableState<Boolean>,
 ) {
-    ScrollableRow(
-        contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 12.dp),
-        modifier = Modifier
-            .drawTopBorder()
-            .fillMaxWidth()
-    ) {
+    Row(Modifier.horizontalScroll(rememberScrollState())) {
         ToolbarChip(
             iconRes = R.drawable.ic_masks_and_mattes,
             label = stringResource(R.string.toolbar_item_masks),
@@ -424,8 +432,8 @@ fun WarningDialog(
                 contentAlignment = Alignment.TopCenter,
                 modifier = Modifier
             ) {
-                ScrollableColumn {
-                    warnings.forEachIndexed { i, warning ->
+                LazyColumn {
+                    itemsIndexed(warnings) { i, warning ->
                         Text(
                             warning,
                             fontSize = 8.sp,

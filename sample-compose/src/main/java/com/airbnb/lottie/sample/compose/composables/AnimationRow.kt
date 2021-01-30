@@ -39,7 +39,8 @@ fun AnimationRow(
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .preferredSize(40.dp)
-                    .background(color = previewBackgroundColor)
+                    .background(color = previewBackgroundColor),
+                contentDescription = null
             )
             Text(
                 title,

@@ -1,7 +1,8 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.animateAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,8 +75,8 @@ fun LottieFilesTabBarTab(
 ) {
     val textWidth = remember { mutableStateOf(0) }
     val pxRatio = with(AmbientDensity.current) { 1.dp.toPx() }
-    val tabWidth by animateAsState(if (isSelected) (textWidth.value / pxRatio).dp else 0.dp, spring(), null)
-    val tabAlpha by animateAsState(if (isSelected) 1f else 0f)
+    val tabWidth by animateDpAsState(if (isSelected) (textWidth.value / pxRatio).dp else 0.dp)
+    val tabAlpha by animateFloatAsState(if (isSelected) 1f else 0f)
     Column(
         modifier = Modifier
             .clickable(onClick = onClick)

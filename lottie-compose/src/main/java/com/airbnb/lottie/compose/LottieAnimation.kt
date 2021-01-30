@@ -9,7 +9,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.dispatch.withFrameNanos
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -34,7 +34,7 @@ import kotlin.math.floor
 fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResult {
     val context = AmbientContext.current
     var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
-    onCommit(spec) {
+    DisposableEffect(spec) {
         var isDisposed = false
         val task = when (spec) {
             is LottieAnimationSpec.RawRes -> LottieCompositionFactory.fromRawRes(context, spec.resId)

@@ -1,9 +1,9 @@
 package com.airbnb.lottie.sample.compose.showcase
 
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,16 +25,15 @@ import com.airbnb.mvrx.Uninitialized
 fun ShowcasePage() {
     val (_, showcaseState) = mavericksViewModelAndState<ShowcaseViewModel, ShowcaseState>()
     val featuredAnimations = showcaseState.animations
-    val scrollState = rememberScrollState()
     val navController = findNavController()
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        ScrollableColumn(
-            scrollState = scrollState
-        ) {
-            Marquee("Showcase")
-            featuredAnimations()?.data?.forEach { data ->
+        LazyColumn {
+            item {
+                Marquee("Showcase")
+            }
+            items(featuredAnimations()?.data.orEmpty()) { data ->
                 AnimationRow(
                     title = data.title,
                     previewUrl = data.preview_url ?: "",

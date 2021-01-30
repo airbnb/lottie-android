@@ -6,18 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onActive
-import androidx.compose.runtime.onCommit
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.navigate
+import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
@@ -104,7 +106,7 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
 fun LottieFilesRecentAndPopularPage(mode: LottieFilesMode) {
     val (viewModel, state) = mavericksViewModelAndState<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>()
     val navController = findNavController()
-    onCommit(mode) {
+    SideEffect {
         viewModel.setMode(mode)
     }
     LottieFilesRecentAndPopularPage(
@@ -135,9 +137,7 @@ fun LottieFilesRecentAndPopularPage(
             ) {
                 itemsIndexed(state.results) { index, result ->
                     if (index == state.results.size - 1) {
-                        onActive {
-                            fetchNextPage()
-                        }
+                        SideEffect(fetchNextPage)
                     }
                     AnimationRow(
                         title = result.title,
@@ -152,7 +152,11 @@ fun LottieFilesRecentAndPopularPage(
             FloatingActionButton(
                 onClick = fetchNextPage,
                 content = {
-                    Icon(Icons.Filled.Repeat, tint = Color.White)
+                    Icon(
+                        imageVector = Icons.Filled.Repeat,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

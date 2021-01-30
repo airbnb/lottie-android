@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
@@ -14,7 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.onActive
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -147,9 +148,7 @@ fun LottieFilesSearchPage(
             ) {
                 itemsIndexed(state.results) { index, result ->
                     if (index == state.results.size - 1) {
-                        onActive {
-                            fetchNextPage()
-                        }
+                        SideEffect(fetchNextPage)
                     }
                     AnimationRow(
                         title = result.title,
@@ -164,7 +163,11 @@ fun LottieFilesSearchPage(
             FloatingActionButton(
                 onClick = fetchNextPage,
                 content = {
-                    Icon(Icons.Filled.Repeat, tint = Color.White)
+                    Icon(
+                        imageVector = Icons.Filled.Repeat,
+                        tint = Color.White,
+                        contentDescription = null
+                    )
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
