@@ -107,6 +107,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private boolean playAnimationWhenShown = false;
   private boolean wasAnimatingWhenNotShown = false;
   private boolean wasAnimatingWhenDetached = false;
+  /**
+   * When we set a new composition, we set LottieDrawable to null then back again so that ImageView re-checks its bounds.
+   * However, this causes the drawable to get unscheduled briefly. Normally, we would pause the animation but in this case, we don't want to.
+   */
+  private boolean ignoreUnschedule = false;
 
   private boolean autoPlay = false;
   private boolean cacheComposition = true;
@@ -238,10 +243,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   @Override public void unscheduleDrawable(Drawable who) {
-    if (who == lottieDrawable && lottieDrawable.isAnimating()) {
-      cancelAnimation();
-    } else if (who instanceof LottieDrawable && ((LottieDrawable) who).isAnimating()) {
-      ((LottieDrawable) who).cancelAnimation();
+    if (!ignoreUnschedule && who == lottieDrawable && lottieDrawable.isAnimating()) {
+      pauseAnimation();
+    } else if (!ignoreUnschedule && who instanceof LottieDrawable && ((LottieDrawable) who).isAnimating()) {
+      ((LottieDrawable) who).pauseAnimation();
     }
     super.unscheduleDrawable(who);
   }
@@ -327,7 +332,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (!isInEditMode() &&( autoPlay || wasAnimatingWhenDetached)) {
+    if (!isInEditMode() && (autoPlay || wasAnimatingWhenDetached)) {
       playAnimation();
       // Autoplay from xml should only apply once.
       autoPlay = false;
@@ -555,7 +560,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     lottieDrawable.setCallback(this);
 
     this.composition = composition;
+    ignoreUnschedule = true;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
+    ignoreUnschedule = false;
     enableOrDisableHardwareLayer();
     if (getDrawable() == lottieDrawable && !isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
