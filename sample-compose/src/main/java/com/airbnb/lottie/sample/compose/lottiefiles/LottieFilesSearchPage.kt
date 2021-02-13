@@ -48,8 +48,8 @@ data class LottieFilesSearchState(
 ) : MavericksState
 
 class LottieFilesSearchViewModel @AssistedInject constructor(
-        @Assisted initialState: LottieFilesSearchState,
-        private val api: LottieFilesApi,
+    @Assisted initialState: LottieFilesSearchState,
+    private val api: LottieFilesApi,
 ) : MavericksViewModel<LottieFilesSearchState>(initialState) {
     private var fetchJob: Job? = null
 

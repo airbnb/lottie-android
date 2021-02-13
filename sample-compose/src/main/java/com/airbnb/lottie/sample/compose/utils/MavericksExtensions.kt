@@ -42,6 +42,7 @@ inline fun <reified VM : MavericksViewModel<S>, reified S : MavericksState> mave
     val activity = context as? FragmentActivity ?: error("Composable is not hosted in a FragmentActivity")
     return remember(viewModelClass, activity) {
         val keyFactory = { viewModelClass.java.name }
+        @Suppress("RestrictedApi")
         MavericksViewModelProvider.get(
             viewModelClass = viewModelClass.java,
             stateClass = S::class.java,

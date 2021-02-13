@@ -89,6 +89,7 @@ class FilmStripSnapshotActivity : AppCompatActivity() {
                     binding.filmStripView.draw(canvas)
 
                     val outputFileName = file.name.replace(".json", ".png")
+                    @Suppress("DEPRECATION")
                     val outputFilePath = "${Environment.getExternalStorageDirectory()}/lottie/snapshots/$outputFileName"
                     FileOutputStream(outputFilePath).use {
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
