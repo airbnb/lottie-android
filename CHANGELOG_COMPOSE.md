@@ -1,8 +1,8 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
-# 1.0.0-alpha06-SNAPSHOT
-* Compatible with Jetpack Compose Alpha 11
+# 1.0.0-alpha06
+* Compatible with Jetpack Compose Alpha 12
 
 # 1.0.0-alpha05
 * Jetpack Compose Alpha 9

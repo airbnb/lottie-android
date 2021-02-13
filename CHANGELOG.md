@@ -1,3 +1,7 @@
+# 3.6.1
+### Bugs Fixed
+* Fixe a bug that would cause animations to stop animating if the same LottieAnimationView was used with multiple animations ([#1727](https://github.com/airbnb/lottie-android/pull/1737))
+
 # 3.6.0
 ### Features and Improvements
 * `LottieProperty.TRANSFORM_POSITION_X` and `LottieProperty.TRANSFORM_POSITION_Y` has been added to enable dynamic properties on transform positions that have split dimensions enabled ([#1714](https://github.com/airbnb/lottie-android/pull/1714))
