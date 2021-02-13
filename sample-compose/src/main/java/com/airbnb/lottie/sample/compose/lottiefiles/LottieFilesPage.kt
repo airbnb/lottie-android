@@ -12,11 +12,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.AmbientDensity
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.sample.compose.R
@@ -30,7 +32,7 @@ enum class LottieFilesTab(@StringRes val stringRes: Int) {
 
 @Composable
 fun LottieFilesPage() {
-    var tab by savedInstanceState { LottieFilesTab.Recent }
+    var tab by rememberSaveable { mutableStateOf(LottieFilesTab.Recent) }
 
     Column {
         Marquee("LottieFiles")
@@ -74,7 +76,7 @@ fun LottieFilesTabBarTab(
     onClick: () -> Unit
 ) {
     val textWidth = remember { mutableStateOf(0) }
-    val pxRatio = with(AmbientDensity.current) { 1.dp.toPx() }
+    val pxRatio = with(LocalDensity.current) { 1.dp.toPx() }
     val tabWidth by animateDpAsState(if (isSelected) (textWidth.value / pxRatio).dp else 0.dp)
     val tabAlpha by animateFloatAsState(if (isSelected) 1f else 0f)
     Column(
