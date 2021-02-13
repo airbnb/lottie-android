@@ -13,7 +13,6 @@ import com.airbnb.lottie.samples.views.loadingView
 import com.airbnb.lottie.samples.views.marquee
 import com.airbnb.lottie.samples.views.showcaseCarousel
 import com.airbnb.mvrx.*
-import kotlinx.coroutines.Dispatchers
 
 data class ShowcaseState(val response: Async<AnimationResponseV2> = Uninitialized) : MvRxState
 
@@ -21,11 +20,11 @@ class ShowcaseViewModel(initialState: ShowcaseState, api: LottiefilesApi) : MvRx
     init {
         suspend {
             api.getCollection()
-        }.execute(Dispatchers.IO) { copy(response = it) }
+        }.execute { copy(response = it) }
     }
 
     companion object : MvRxViewModelFactory<ShowcaseViewModel, ShowcaseState> {
-        override fun create(viewModelContext: ViewModelContext, state: ShowcaseState): ShowcaseViewModel? {
+        override fun create(viewModelContext: ViewModelContext, state: ShowcaseState): ShowcaseViewModel {
             val service = viewModelContext.app<LottieApplication>().lottiefilesService
             return ShowcaseViewModel(state, service)
         }

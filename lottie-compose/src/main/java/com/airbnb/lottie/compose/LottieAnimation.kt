@@ -3,21 +3,14 @@ package com.airbnb.lottie.compose
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.dispatch.withFrameNanos
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
@@ -32,7 +25,7 @@ import kotlin.math.floor
  */
 @Composable
 fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResult {
-    val context = AmbientContext.current
+    val context = LocalContext.current
     var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
     DisposableEffect(spec) {
         var isDisposed = false

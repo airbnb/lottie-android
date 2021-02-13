@@ -16,15 +16,17 @@ import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
 import com.airbnb.lottie.sample.compose.composables.Marquee
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
+import com.airbnb.lottie.sample.compose.utils.collectState
 import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
+import com.airbnb.lottie.sample.compose.utils.mavericksViewModel
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Uninitialized
 
 @Composable
 fun ShowcasePage() {
-    val (_, showcaseState) = mavericksViewModelAndState<ShowcaseViewModel, ShowcaseState>()
-    val featuredAnimations = showcaseState.animations
+    val viewModel: ShowcaseViewModel = mavericksViewModel()
+    val state = viewModel.collectState()
+    val featuredAnimations = state.animations
     val navController = findNavController()
     Box(
         modifier = Modifier.fillMaxSize()

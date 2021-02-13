@@ -1,50 +1,20 @@
 package com.airbnb.lottie.sample.compose.player
 
 import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredSize
-import androidx.compose.foundation.layout.preferredWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.RemoveRedEye
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Providers
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.onCommit
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,31 +28,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieAnimationSpec
-import com.airbnb.lottie.compose.LottieAnimationState
-import com.airbnb.lottie.compose.LottieCompositionResult
-import com.airbnb.lottie.compose.rememberLottieAnimationState
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.lottie.sample.compose.AmbientBackPressedDispatcher
+import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
-import com.airbnb.lottie.sample.compose.composables.SeekBar
 import com.airbnb.lottie.sample.compose.ui.Teal
-import com.airbnb.lottie.sample.compose.utils.drawTopBorder
+import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PlayerPage(
     spec: LottieAnimationSpec,
     animationBackgroundColor: Color? = null,
 ) {
-    val backPressedDispatcher = AmbientBackPressedDispatcher.current
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current.onBackPressedDispatcher
     val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     val scaffoldState = rememberScaffoldState()
@@ -180,24 +142,22 @@ fun PlayerPage(
                     )
                 }
             }
-            if (speedToolbar.value && !focusMode) {
+            ExpandVisibility(speedToolbar.value && !focusMode) {
                 SpeedToolbar(
                     speed = animationState.speed,
                     onSpeedChanged = { animationState.speed = it }
                 )
             }
-            if (backgroundColorToolbar.value && !focusMode) {
+            ExpandVisibility(!focusMode && backgroundColorToolbar.value) {
                 BackgroundColorToolbar(
                     animationBackgroundColor = animationBackgroundColor,
                     onColorChanged = { backgroundColor = it }
                 )
             }
-            AnimatedVisibility(
-                visible = !focusMode,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
+            ExpandVisibility(!focusMode) {
                 PlayerControlsRow(animationState, compositionResult())
+            }
+            ExpandVisibility(!focusMode) {
                 Toolbar(
                     border = borderToolbar,
                     speed = speedToolbar,
@@ -211,6 +171,17 @@ fun PlayerPage(
 
     if (showWarningsDialog) {
         WarningDialog(warnings = compositionResult()?.warnings ?: emptyList(), onDismiss = { showWarningsDialog = false })
+    }
+}
+
+@Composable
+private fun ColumnScope.ExpandVisibility(visible: Boolean, content: @Composable () -> Unit) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = expandVertically(),
+        exit = shrinkVertically()
+    ) {
+        content()
     }
 }
 
@@ -231,8 +202,6 @@ private fun PlayerControlsRow(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .drawTopBorder()
         ) {
             Box(
                 contentAlignment = Alignment.Center
@@ -254,11 +223,10 @@ private fun PlayerControlsRow(
                         .padding(top = 48.dp, bottom = 8.dp)
                 )
             }
-            SeekBar(
-                progress = animationState.progress,
-                onProgressChanged = {
-                    animationState.progress = it
-                },
+            Slider(
+                value = animationState.progress,
+                onValueChange = { animationState.progress = it },
+
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
@@ -291,7 +259,7 @@ private fun SpeedToolbar(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .drawTopBorder()
+            .drawBottomBorder()
             .padding(vertical = 12.dp, horizontal = 16.dp)
             .fillMaxWidth()
     ) {
@@ -330,7 +298,7 @@ private fun BackgroundColorToolbar(
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .drawTopBorder()
+            .drawBottomBorder()
             .padding(vertical = 12.dp, horizontal = 16.dp)
             .fillMaxWidth()
     ) {
@@ -377,7 +345,12 @@ private fun Toolbar(
     outlineMasksAndMattes: MutableState<Boolean>,
     applyOpacityToLayers: MutableState<Boolean>,
 ) {
-    Row(Modifier.horizontalScroll(rememberScrollState())) {
+    Row(
+        modifier = Modifier
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 8.dp)
+            .padding(bottom = 8.dp)
+    ) {
         ToolbarChip(
             iconRes = R.drawable.ic_masks_and_mattes,
             label = stringResource(R.string.toolbar_item_masks),
@@ -440,7 +413,7 @@ fun WarningDialog(
                             textAlign = TextAlign.Left,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .run { if (i != 0) drawTopBorder() else this }
+                                .run { if (i != 0) drawBottomBorder() else this }
                                 .padding(vertical = 12.dp, horizontal = 16.dp)
                         )
                     }
@@ -459,9 +432,5 @@ fun SpeedToolbarPreview() {
 @Preview(name = "Player")
 @Composable
 fun PlayerPagePreview() {
-    Providers(
-        AmbientBackPressedDispatcher provides OnBackPressedDispatcher()
-    ) {
-        PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
-    }
+    PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
 }

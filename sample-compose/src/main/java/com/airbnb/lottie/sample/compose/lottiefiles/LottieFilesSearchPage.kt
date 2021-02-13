@@ -7,11 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
@@ -29,13 +25,16 @@ import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
-import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
+import com.airbnb.lottie.sample.compose.dagger.daggerMavericksViewModelFactory
+import com.airbnb.lottie.sample.compose.utils.collectState
 import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
+import com.airbnb.lottie.sample.compose.utils.mavericksViewModel
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
+import com.airbnb.mvrx.MavericksViewModelFactory
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -60,7 +59,7 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
             if (query.isBlank()) {
                 setState { copy(results = emptyList(), currentPage = 1, lastPage = 1, fetchException = false) }
             } else {
-                fetchJob = viewModelScope.launch(Dispatchers.IO) {
+                fetchJob = viewModelScope.launch {
                     val results = try {
                         api.search(query, 1)
                     } catch (e: Exception) {
@@ -83,7 +82,7 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
     fun fetchNextPage() = withState { state ->
         fetchJob?.cancel()
         if (state.currentPage >= state.lastPage) return@withState
-        fetchJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchJob = viewModelScope.launch {
             val response = try {
                 Log.d("Gabe", "Fetching page ${state.currentPage + 1}")
                 api.search(state.query, state.currentPage + 1)
@@ -103,17 +102,18 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
 
     fun setQuery(query: String) = setState { copy(query = query, currentPage = 1, results = emptyList()) }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedViewModelFactory<LottieFilesSearchViewModel, LottieFilesSearchState> {
         override fun create(initialState: LottieFilesSearchState): LottieFilesSearchViewModel
     }
 
-    companion object : DaggerMvRxViewModelFactory<LottieFilesSearchViewModel, LottieFilesSearchState>(LottieFilesSearchViewModel::class.java)
+    companion object : MavericksViewModelFactory<LottieFilesSearchViewModel, LottieFilesSearchState> by daggerMavericksViewModelFactory()
 }
 
 @Composable
 fun LottieFilesSearchPage() {
-    val (viewModel, state) = mavericksViewModelAndState<LottieFilesSearchViewModel, LottieFilesSearchState>()
+    val viewModel: LottieFilesSearchViewModel = mavericksViewModel()
+    val state = viewModel.collectState()
     val navController = findNavController()
     LottieFilesSearchPage(
         state,

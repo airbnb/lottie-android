@@ -34,6 +34,7 @@ class PreviewFragment : BaseEpoxyFragment() {
                 if (requireContext().hasPermission(Manifest.permission.CAMERA)) {
                     startActivity(QRScanActivity.intent(requireContext()))
                 } else {
+                    @Suppress("DEPRECATION")
                     requestPermissions(arrayOf(Manifest.permission.CAMERA), RC_CAMERA_PERMISSION)
                 }
             }
@@ -49,6 +50,7 @@ class PreviewFragment : BaseEpoxyFragment() {
                         type = "*/*"
                         addCategory(Intent.CATEGORY_OPENABLE)
                     }
+                    @Suppress("DEPRECATION")
                     startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), RC_FILE)
                 } catch (ex: ActivityNotFoundException) {
                     // Potentially direct the user to the Market with a Dialog
