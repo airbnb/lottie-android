@@ -1,33 +1,22 @@
 package com.airbnb.lottie.sample.compose
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Providers
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.KEY_ROUTE
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.navigate
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.airbnb.lottie.compose.LottieAnimationSpec
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesPage
 import com.airbnb.lottie.sample.compose.player.PlayerPage
@@ -36,7 +25,7 @@ import com.airbnb.lottie.sample.compose.showcase.ShowcasePage
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
-import com.airbnb.lottie.sample.compose.utils.AmbientNavController
+import com.airbnb.lottie.sample.compose.utils.LocalNavController
 import com.airbnb.lottie.sample.compose.utils.getBase64String
 
 class ComposeActivity : AppCompatActivity() {
@@ -53,8 +42,7 @@ class ComposeActivity : AppCompatActivity() {
         val navController = rememberNavController()
 
         Providers(
-            AmbientNavController provides navController,
-            AmbientBackPressedDispatcher provides (AmbientContext.current as ComponentActivity).onBackPressedDispatcher
+            LocalNavController provides navController,
         ) {
             LottieTheme {
                 Scaffold(
@@ -71,7 +59,7 @@ class ComposeActivity : AppCompatActivity() {
                                 BottomNavigationItem(
                                     icon = {
                                         Icon(
-                                            imageVector = vectorResource(item.iconRes),
+                                            painter = painterResource(item.iconRes),
                                             contentDescription = null
                                         )
                                     },

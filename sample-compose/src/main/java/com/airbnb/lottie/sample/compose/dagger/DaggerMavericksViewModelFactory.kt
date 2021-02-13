@@ -4,7 +4,10 @@ import androidx.fragment.app.FragmentActivity
 import com.airbnb.lottie.sample.compose.LottieComposeApplication
 import com.airbnb.mvrx.*
 
-abstract class DaggerMvRxViewModelFactory<VM : MavericksViewModel<S>, S : MavericksState>(
+inline fun <reified VM : MavericksViewModel<S>, S : MavericksState> daggerMavericksViewModelFactory() = DaggerMavericksViewModelFactory<VM, S>(VM::class.java)
+
+
+class DaggerMavericksViewModelFactory<VM : MavericksViewModel<S>, S : MavericksState>(
         private val viewModelClass: Class<out MavericksViewModel<S>>
 ) : MavericksViewModelFactory<VM, S> {
 

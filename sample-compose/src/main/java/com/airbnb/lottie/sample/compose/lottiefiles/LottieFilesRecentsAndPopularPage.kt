@@ -16,23 +16,23 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.navigate
-import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
-import com.airbnb.lottie.sample.compose.dagger.DaggerMvRxViewModelFactory
+import com.airbnb.lottie.sample.compose.dagger.daggerMavericksViewModelFactory
+import com.airbnb.lottie.sample.compose.utils.collectState
 import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.lottie.sample.compose.utils.mavericksViewModelAndState
+import com.airbnb.lottie.sample.compose.utils.mavericksViewModel
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
+import com.airbnb.mvrx.MavericksViewModelFactory
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -67,7 +67,7 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
     fun fetchNextPage() = withState { state ->
         fetchJob?.cancel()
         if (state.currentPage >= state.lastPage) return@withState
-        fetchJob = viewModelScope.launch(Dispatchers.IO) {
+        fetchJob = viewModelScope.launch {
             val response = try {
                 Log.d(TAG, "Fetching page ${state.currentPage + 1}")
                 when (state.mode) {
@@ -92,19 +92,21 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
 
     fun setMode(mode: LottieFilesMode) = setState { copy(mode = mode) }
 
-    @AssistedInject.Factory
+    @AssistedFactory
     interface Factory : AssistedViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState> {
         override fun create(initialState: LottieFilesRecentAndPopularState): LottieFilesRecentAndPopularViewModel
     }
 
-    companion object : DaggerMvRxViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>(LottieFilesRecentAndPopularViewModel::class.java) {
+    companion object :
+        MavericksViewModelFactory<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState> by daggerMavericksViewModelFactory() {
         private const val TAG = "LottieFilesVM"
     }
 }
 
 @Composable
 fun LottieFilesRecentAndPopularPage(mode: LottieFilesMode) {
-    val (viewModel, state) = mavericksViewModelAndState<LottieFilesRecentAndPopularViewModel, LottieFilesRecentAndPopularState>()
+    val viewModel: LottieFilesRecentAndPopularViewModel = mavericksViewModel()
+    val state = viewModel.collectState()
     val navController = findNavController()
     SideEffect {
         viewModel.setMode(mode)

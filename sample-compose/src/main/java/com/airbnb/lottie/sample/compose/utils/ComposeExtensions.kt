@@ -23,6 +23,10 @@ fun Modifier.drawTopBorder(color: Color = Color.DarkGray) = this.then(drawBehind
     drawRect(color, Offset.Zero, size = Size(size.width, 1f))
 })
 
+fun Modifier.drawBottomBorder(color: Color = Color.DarkGray) = this.then(drawBehind {
+    drawRect(color, Offset(0f, size.height - 1f), size = Size(size.width, 1f))
+})
+
 
 fun Modifier.maybeDrawBorder(draw: Boolean, color: Color = Color.Black, width: Dp = 1.dp): Modifier {
     return if (draw) {

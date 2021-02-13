@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
@@ -24,7 +25,7 @@ import kotlin.math.floor
  */
 @Composable
 fun rememberLottieComposition(spec: LottieAnimationSpec): LottieCompositionResult {
-    val context = AmbientContext.current
+    val context = LocalContext.current
     var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
     DisposableEffect(spec) {
         var isDisposed = false

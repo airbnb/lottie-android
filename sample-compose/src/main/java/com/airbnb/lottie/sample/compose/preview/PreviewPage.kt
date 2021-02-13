@@ -4,40 +4,26 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.preferredHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.compose.navigate
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.Marquee
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.utils.findNavController
-import androidx.navigation.compose.navigate
 
 @Composable
 fun PreviewPage() {
@@ -92,7 +78,7 @@ private fun PreviewRow(
                     .preferredHeight(48.dp)
             ) {
                 Icon(
-                    vectorResource(iconRes),
+                    painterResource(iconRes),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(16.dp),
@@ -112,7 +98,7 @@ private fun PreviewRow(
 @Composable
 fun AssetsDialog(isShowing: Boolean, onDismiss: () -> Unit, onAssetSelected: (assetName: String) -> Unit) {
     if (!isShowing) return
-    val context = AmbientContext.current
+    val context = LocalContext.current
     val assets = context.assets.list("")
         ?.asSequence()
         ?.filter { it.endsWith(".json") || it.endsWith(".zip") }
