@@ -141,7 +141,8 @@ fun LottieFilesSearchPage(
                 value = state.query,
                 onValueChange = onQueryChanged,
                 label = { Text(stringResource(R.string.query)) },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                singleLine = true
             )
             LazyColumn(
                 modifier = Modifier.weight(1f)
