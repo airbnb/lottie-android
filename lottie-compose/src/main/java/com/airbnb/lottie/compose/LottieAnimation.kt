@@ -82,7 +82,7 @@ fun LottieAnimation(
 ) {
     val drawable = remember {
         LottieDrawable().apply {
-            enableMergePathsForKitKatAndAbove(true)
+            enableMergePathsForKitKatAndAbove(state.enableMergePaths)
         }
     }
 
@@ -118,7 +118,6 @@ fun LottieAnimation(
     }
 
     if (composition == null || composition.duration == 0f) return
-    SideEffect {}
 
     Canvas(
         modifier = Modifier

@@ -6,25 +6,49 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
+/**
+ * Create a [LottieAnimationState] and remember it
+ *
+ * @param autoPlay Whether the animation will auto play
+ * @param repeatCount How many times the animation will be played. Use [Int.MAX_VALUE] for
+ * infinite repetitions.
+ * @param initialProgress The progress the animation starts with
+ * @param enableMergePaths Whether merge paths are enabled
+ */
 @Composable
 fun rememberLottieAnimationState(
     autoPlay: Boolean = true,
     repeatCount: Int = 0,
     initialProgress: Float = 0f,
+    enableMergePaths: Boolean = true
 ): LottieAnimationState {
     // Use rememberSavedInstanceState so you can pause/resume animations
     return remember(repeatCount, autoPlay) {
-        LottieAnimationState(isPlaying = autoPlay, repeatCount, initialProgress)
+        LottieAnimationState(
+            isPlaying = autoPlay,
+            repeatCount = repeatCount,
+            initialProgress = initialProgress,
+            enableMergePaths = enableMergePaths
+        )
     }
 }
 
 /**
+ * State of the [LottieAnimation] composable
+ *
+ * @param autoPlay Whether the animation will auto play
+ * @param repeatCount How many times the animation will be played. Use [Int.MAX_VALUE] for
+ * infinite repetitions.
+ * @param initialProgress The progress the animation starts with
+ * @param enableMergePaths Whether merge paths are enabled
+ *
  * @see rememberLottieAnimationState()
  */
 class LottieAnimationState(
     isPlaying: Boolean,
     repeatCount: Int = 0,
     initialProgress: Float = 0f,
+    enableMergePaths: Boolean = true
 ) {
     var progress by mutableStateOf(initialProgress)
 
@@ -57,6 +81,18 @@ class LottieAnimationState(
      * Note: This process is very expensive and will incur additional performance overhead.
      */
     var applyOpacityToLayers by mutableStateOf(false)
+
+    /**
+     * Enable this to get merge path support.
+     * <p>
+     * Merge paths currently don't work if the the operand shape is entirely contained within the
+     * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
+     * instead of using merge paths.
+     * <p>
+     * If your animation contains merge paths and you are encountering rendering issues, disabling
+     * merge paths might help.
+     */
+    var enableMergePaths by mutableStateOf(enableMergePaths)
 
     internal fun updateFrame(frame: Int) {
         _frame.value = frame
