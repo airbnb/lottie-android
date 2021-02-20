@@ -1,11 +1,27 @@
 package com.airbnb.lottie.issues
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.annotation.FloatRange
 import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.lottie.compose.LottieAnimationSpec
+import com.airbnb.lottie.compose.LottieAnimationState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.renderer.ComposeLottieAnimation
 
-class IssueReproActivity : AppCompatActivity(R.layout.issue_repro_activity) {
+
+class IssueReproActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Reproduce any issues here.
+        setContent {
+            val compositionResult = rememberLottieComposition(LottieAnimationSpec.RawRes(R.raw.anim))
+            ComposeLottieAnimation(
+                compositionResult,
+                LottieAnimationState(
+                    isPlaying = true,
+                ),
+            )
+        }
     }
 }
+

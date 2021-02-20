@@ -58,7 +58,7 @@ class LottieAnimationState(
      */
     var applyOpacityToLayers by mutableStateOf(false)
 
-    internal fun updateFrame(frame: Int) {
+    fun updateFrame(frame: Int) {
         _frame.value = frame
     }
 

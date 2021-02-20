@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 abstract class BaseAnimatableValue<V, O> implements AnimatableValue<V, O> {
-  final List<Keyframe<V>> keyframes;
+  public final List<Keyframe<V>> keyframes;
 
   /**
    * Create a default static animatable path.

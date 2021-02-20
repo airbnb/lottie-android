@@ -118,7 +118,6 @@ fun LottieAnimation(
     }
 
     if (composition == null || composition.duration == 0f) return
-    SideEffect {}
 
     Canvas(
         modifier = Modifier

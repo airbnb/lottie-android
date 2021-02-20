@@ -31,7 +31,8 @@ public class PathKeyframe extends Keyframe<PointF> {
   }
 
   /** This will be null if the startValue and endValue are the same. */
-  @Nullable Path getPath() {
+  @Nullable
+  public Path getPath() {
     return path;
   }
 }

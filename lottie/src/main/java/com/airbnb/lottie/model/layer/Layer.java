@@ -141,7 +141,7 @@ public class Layer {
     return parentId;
   }
 
-  List<ContentModel> getShapes() {
+  public List<ContentModel> getShapes() {
     return shapes;
   }
 
