@@ -125,7 +125,7 @@ public class Layer {
     return preCompHeight;
   }
 
-  List<Mask> getMasks() {
+  public List<Mask> getMasks() {
     return masks;
   }
 

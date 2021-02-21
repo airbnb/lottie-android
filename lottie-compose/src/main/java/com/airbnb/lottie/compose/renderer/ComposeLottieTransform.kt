@@ -10,18 +10,6 @@ import com.airbnb.lottie.model.layer.Layer
 import com.airbnb.lottie.value.Keyframe
 import kotlin.properties.Delegates
 
-fun Modifier.withTransform(transform: ComposeLottieTransform): Modifier {
-    if (transform.isIdentity) return this
-
-    // TODO: maybe use composed {}
-    return this.then(
-        Modifier.graphicsLayer(
-            translationX = transform.position.x,
-            translationY = transform.position.y,
-        )
-    )
-}
-
 @Composable
 fun rememberTransform(layer: Layer): ComposeLottieTransform {
     val animatableTransform = remember(layer) { layer.transform }

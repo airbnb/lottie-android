@@ -2,6 +2,7 @@ package com.airbnb.lottie.compose.renderer
 
 import android.graphics.PointF
 import androidx.annotation.FloatRange
+import com.airbnb.lottie.model.content.ShapeData
 import kotlin.math.roundToInt
 
 fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float): Float = a + percentage * (b - a)
