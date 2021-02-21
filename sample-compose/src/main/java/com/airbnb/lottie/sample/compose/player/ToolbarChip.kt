@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -28,7 +29,7 @@ fun ToolbarChip(
     isActivated: Boolean,
     onClick: (isActivated: Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    @DrawableRes iconRes: Int = 0,
+    iconPainter: Painter? = null,
 ) {
     val unActivatedColor = remember { Color(0xFF444444) }
     Surface(
@@ -44,9 +45,9 @@ fun ToolbarChip(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            if (iconRes != 0) {
+            if (iconPainter != null) {
                 Icon(
-                    painterResource(iconRes),
+                    iconPainter,
                     tint = if (isActivated) Color.White else unActivatedColor,
                     modifier = Modifier
                         .preferredSize(12.dp),
@@ -67,7 +68,7 @@ fun ToolbarChip(
 @Composable
 fun PreviewToolbarChip() {
     ToolbarChip(
-        iconRes = R.drawable.ic_border,
+        iconPainter = painterResource(R.drawable.ic_border),
         label = stringResource(R.string.toolbar_item_border),
         isActivated = false,
         onClick = {}

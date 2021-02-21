@@ -19,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +52,7 @@ fun PlayerPage(
     val scaffoldState = rememberScaffoldState()
     val outlineMasksAndMattes = remember { mutableStateOf(false) }
     val applyOpacityToLayers = remember { mutableStateOf(false) }
+    val enableMergePaths = remember { mutableStateOf(animationState.enableMergePaths) }
     var focusMode by remember { mutableStateOf(false) }
     var backgroundColor by remember { mutableStateOf(animationBackgroundColor) }
     var showWarningsDialog by remember { mutableStateOf(false) }
@@ -72,6 +75,7 @@ fun PlayerPage(
 
     animationState.outlineMasksAndMattes = outlineMasksAndMattes.value
     animationState.applyOpacityToLayers = applyOpacityToLayers.value
+    animationState.enableMergePaths = enableMergePaths.value
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -164,6 +168,7 @@ fun PlayerPage(
                     backgroundColor = backgroundColorToolbar,
                     outlineMasksAndMattes = outlineMasksAndMattes,
                     applyOpacityToLayers = applyOpacityToLayers,
+                    enableMergePaths = enableMergePaths
                 )
             }
         }
@@ -344,6 +349,7 @@ private fun Toolbar(
     backgroundColor: MutableState<Boolean>,
     outlineMasksAndMattes: MutableState<Boolean>,
     applyOpacityToLayers: MutableState<Boolean>,
+    enableMergePaths: MutableState<Boolean>,
 ) {
     Row(
         modifier = Modifier
@@ -352,38 +358,45 @@ private fun Toolbar(
             .padding(bottom = 8.dp)
     ) {
         ToolbarChip(
-            iconRes = R.drawable.ic_masks_and_mattes,
+            iconPainter = painterResource(R.drawable.ic_masks_and_mattes),
             label = stringResource(R.string.toolbar_item_masks),
             isActivated = outlineMasksAndMattes.value,
             onClick = { outlineMasksAndMattes.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
-            iconRes = R.drawable.ic_layers,
+            iconPainter = painterResource(R.drawable.ic_layers),
             label = stringResource(R.string.toolbar_item_opacity_layers),
             isActivated = applyOpacityToLayers.value,
             onClick = { applyOpacityToLayers.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
-            iconRes = R.drawable.ic_color,
+            iconPainter = painterResource(R.drawable.ic_color),
             label = stringResource(R.string.toolbar_item_color),
             isActivated = backgroundColor.value,
             onClick = { backgroundColor.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
-            iconRes = R.drawable.ic_speed,
+            iconPainter = painterResource(R.drawable.ic_speed),
             label = stringResource(R.string.toolbar_item_speed),
             isActivated = speed.value,
             onClick = { speed.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
-            iconRes = R.drawable.ic_border,
+            iconPainter = painterResource(R.drawable.ic_border),
             label = stringResource(R.string.toolbar_item_border),
             isActivated = border.value,
             onClick = { border.value = it },
+            modifier = Modifier.padding(end = 8.dp)
+        )
+        ToolbarChip(
+            iconPainter = rememberVectorPainter(Icons.Default.MergeType),
+            label = stringResource(R.string.toolbar_item_merge_paths),
+            isActivated = enableMergePaths.value,
+            onClick = { enableMergePaths.value = it },
             modifier = Modifier.padding(end = 8.dp)
         )
     }
