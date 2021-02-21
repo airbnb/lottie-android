@@ -36,11 +36,10 @@ fun rememberLottieAnimationState(
 /**
  * State of the [LottieAnimation] composable
  *
- * @param autoPlay Whether the animation will auto play
- * @param repeatCount How many times the animation will be played. Use [Int.MAX_VALUE] for
- * infinite repetitions.
- * @param initialProgress The progress the animation starts with
- * @param enableMergePaths Whether merge paths are enabled
+ * @param isPlaying Initial value for [isPlaying]
+ * @param repeatCount Initial value for [repeatCount]
+ * @param initialProgress Initial value for [progress]
+ * @param enableMergePaths Initial value for [enableMergePaths]
  *
  * @see rememberLottieAnimationState()
  */
@@ -56,7 +55,15 @@ class LottieAnimationState(
     private var _frame = mutableStateOf(0)
     val frame: Int by _frame
 
+    /**
+     * Whether the animation is currently playing
+     */
     var isPlaying by mutableStateOf(isPlaying)
+
+    /**
+     * How many times the animation will be played. Use [Int.MAX_VALUE] for
+     * infinite repetitions.
+     */
     var repeatCount by mutableStateOf(repeatCount)
 
     var speed by mutableStateOf(1f)
