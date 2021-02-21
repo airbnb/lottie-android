@@ -9,7 +9,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
@@ -80,11 +79,7 @@ fun LottieAnimation(
     state: LottieAnimationState,
     modifier: Modifier = Modifier,
 ) {
-    val drawable = remember {
-        LottieDrawable().apply {
-            enableMergePathsForKitKatAndAbove(state.enableMergePaths)
-        }
-    }
+    val drawable = remember { LottieDrawable() }
 
     SideEffect {
         drawable.composition = composition
@@ -125,9 +120,12 @@ fun LottieAnimation(
             .then(modifier)
     ) {
         drawIntoCanvas { canvas ->
-            drawable.progress = state.progress
-            drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
-            drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
+            drawable.apply {
+                progress = state.progress
+                setOutlineMasksAndMattes(state.outlineMasksAndMattes)
+                isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
+                enableMergePathsForKitKatAndAbove(state.enableMergePaths)
+            }
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {
