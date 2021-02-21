@@ -133,6 +133,10 @@ public class Layer {
     return layerType;
   }
 
+  public String getLayerName() {
+    return layerName;
+  }
+
   MatteType getMatteType() {
     return matteType;
   }

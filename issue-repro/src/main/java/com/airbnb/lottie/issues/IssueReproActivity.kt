@@ -15,11 +15,13 @@ class IssueReproActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val compositionResult = rememberLottieComposition(LottieAnimationSpec.RawRes(R.raw.anim))
+            val state = LottieAnimationState(
+                isPlaying = true,
+                repeatCount = Integer.MAX_VALUE,
+            )
             ComposeLottieAnimation(
                 compositionResult,
-                LottieAnimationState(
-                    isPlaying = true,
-                ),
+                state,
             )
         }
     }
