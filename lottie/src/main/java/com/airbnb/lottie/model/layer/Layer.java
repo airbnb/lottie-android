@@ -149,7 +149,7 @@ public class Layer {
     return shapes;
   }
 
-  AnimatableTransform getTransform() {
+  public AnimatableTransform getTransform() {
     return transform;
   }
 

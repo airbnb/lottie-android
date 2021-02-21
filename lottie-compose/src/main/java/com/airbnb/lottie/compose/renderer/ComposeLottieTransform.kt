@@ -3,14 +3,14 @@ package com.airbnb.lottie.compose.renderer
 import android.graphics.PointF
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import com.airbnb.lottie.model.animatable.AnimatableTransform
+import com.airbnb.lottie.model.content.ShapeGroup
 import com.airbnb.lottie.model.layer.Layer
 import com.airbnb.lottie.value.Keyframe
 import kotlin.properties.Delegates
 
-fun Modifier.withTransform(transform: LayerTransform): Modifier {
+fun Modifier.withTransform(transform: ComposeLottieTransform): Modifier {
     if (transform.isIdentity) return this
 
     // TODO: maybe use composed {}
@@ -22,7 +22,26 @@ fun Modifier.withTransform(transform: LayerTransform): Modifier {
     )
 }
 
-class LayerTransform(private val transform: AnimatableTransform?) {
+@Composable
+fun rememberTransform(layer: Layer): ComposeLottieTransform {
+    val animatableTransform = remember(layer) { layer.transform }
+    return rememberTransform(animatableTransform)
+}
+
+@Composable
+fun rememberTransform(shapeGroup: ShapeGroup): ComposeLottieTransform {
+    val animatableTransform = remember(shapeGroup) { shapeGroup.items.lastOrNull() as? AnimatableTransform }
+    return rememberTransform(animatableTransform)
+}
+
+@Composable
+fun rememberTransform(transform: AnimatableTransform?): ComposeLottieTransform {
+    val composeTransform = remember(transform) { ComposeLottieTransform(transform) }
+    composeTransform.progress = LocalLottieProgress.current
+    return composeTransform
+}
+
+class ComposeLottieTransform(private val transform: AnimatableTransform?) {
     var progress by Delegates.observable(0f) { _, oldValue, newValue ->
         if (oldValue == newValue) return@observable
         updatePosition(newValue)
@@ -30,7 +49,7 @@ class LayerTransform(private val transform: AnimatableTransform?) {
 
     private var positionProgress = 0f
     private var positionKeyframeIndex = 0
-    private var _position = mutableStateOf(POINT_F)
+    private var _position = mutableStateOf(PointF())
     val position: PointF by _position
 
     val isIdentity get() = transform == null || position.equals(0f, 0f)
@@ -49,10 +68,6 @@ class LayerTransform(private val transform: AnimatableTransform?) {
             lerp(keyframe.startValue?.x ?: 0f, keyframe.endValue?.x ?: 0f, interpolatedProgress),
             lerp(keyframe.startValue?.y ?: 0f, keyframe.endValue?.y ?: 0f, interpolatedProgress),
         )
-    }
-
-    companion object {
-        private val POINT_F = PointF()
     }
 }
 

@@ -3,7 +3,6 @@ package com.airbnb.lottie.compose.renderer
 import android.graphics.PointF
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimationState
 import com.airbnb.lottie.compose.LottieCompositionResult
-import com.airbnb.lottie.model.animatable.AnimatableTransform
 import com.airbnb.lottie.model.content.RectangleShape
 import com.airbnb.lottie.model.content.ShapeFill
 import com.airbnb.lottie.model.content.ShapeGroup
@@ -24,7 +22,11 @@ import kotlin.math.floor
 val LocalLottieProgress = compositionLocalOf { 0f }
 
 @Composable
-fun ComposeLottieAnimation(compositionResult: LottieCompositionResult, state: LottieAnimationState) {
+fun ComposeLottieAnimation(
+    compositionResult: LottieCompositionResult,
+    state: LottieAnimationState,
+    modifier: Modifier = Modifier,
+) {
     if (compositionResult !is LottieCompositionResult.Success) return
     val composition = compositionResult.composition
 
@@ -62,8 +64,7 @@ fun ComposeLottieAnimation(compositionResult: LottieCompositionResult, state: Lo
                 Layer.LayerType.SHAPE -> Image(
                     shapeLayerPainter(composition, layer),
                     contentDescription = null,
-                    // TODO: use a different size
-                    modifier = Modifier.size(256.dp)
+                    modifier = modifier,
                 )
                 else -> Unit
             }
@@ -73,23 +74,20 @@ fun ComposeLottieAnimation(compositionResult: LottieCompositionResult, state: Lo
 
 @Composable
 fun shapeLayerPainter(composition: LottieComposition, layer: Layer): VectorPainter {
-    val progress = LocalLottieProgress.current
-    val animatableTransform = remember(layer) { layer.shapes.firstOrNull { it is AnimatableTransform } as? AnimatableTransform }
-    val transform = LayerTransform(animatableTransform)
-    LaunchedEffect(progress) {
-        transform.progress = progress
-    }
-
+    val transform = rememberTransform(layer)
     return rememberVectorPainter(
-        defaultWidth = 256.dp,
-        defaultHeight = 256.dp,
+        defaultWidth = composition.bounds.width().dp,
+        defaultHeight = composition.bounds.height().dp,
+        viewportWidth = composition.bounds.width().toFloat(),
+        viewportHeight = composition.bounds.height().toFloat(),
     ) { viewportWidth, viewportHeight ->
+        Log.d("Gabe", "shapeLayerPainter ${transform.position}")
         Group(
             name = layer.layerName,
             translationX = transform.position.x,
             translationY = transform.position.y,
-            scaleX = viewportWidth / composition.bounds.width(),
-            scaleY = viewportHeight / composition.bounds.height(),
+            scaleX = composition.bounds.width() / viewportWidth,
+            scaleY = composition.bounds.height() / viewportHeight,
         ) {
             PathData {
                 layer.shapes.forEach { shapeModel ->
@@ -106,18 +104,25 @@ fun shapeLayerPainter(composition: LottieComposition, layer: Layer): VectorPaint
 @Composable
 fun ComposeShapeGroup(shapeGroup: ShapeGroup) {
     if (shapeGroup.isHidden || shapeGroup.items.isEmpty()) return
-    val transform = remember(shapeGroup) { LayerTransform(shapeGroup.items.lastOrNull() as? AnimatableTransform) }
+    val transform = rememberTransform(shapeGroup)
     val pathData = remember { mutableListOf<PathNode>() }
-    val progress = LocalLottieProgress.current
-    LaunchedEffect(progress) {
-        transform.progress = progress
-    }
-    pathData.clear()
+
+    Log.d("Gabe", "ComposeShapeGroup ${transform.position}")
     Group(
         name = shapeGroup.name,
         translationX = transform.position.x,
         translationY = transform.position.y,
     ) {
+        // Reuse the list and clear it so that the backing array doesn't need to be recreated.
+        pathData.clear()
+        pathData += PathData {
+            moveTo(380f, 0f)
+            lineTo(400f, 0f)
+            lineTo(400f, 20f)
+            lineTo(380f, 20f)
+            lineTo(380f, 0f)
+            close()
+        }
         for (model in shapeGroup.items) {
             when (model) {
                 is RectangleShape -> {
@@ -127,7 +132,6 @@ fun ComposeShapeGroup(shapeGroup: ShapeGroup) {
                     ComposeShapeFill(model, pathData)
                 }
             }
-            Log.d("Gabe", "Drawing ${model::class.simpleName} $model")
         }
     }
 }
@@ -148,19 +152,23 @@ fun rectanglePathData(shape: RectangleShape): List<PathNode> {
         lerp(sizeKeyframe.startValue?.y ?: 0f, sizeKeyframe.endValue?.y ?: 0f, interpolatedProgress),
     )
 
+    val halfWidth = size.x / 2f
+    val halfHeight = size.y / 2f
+
     return PathData {
-        moveTo(0f, 0f)
-        lineTo(size.x, 0f)
-        lineTo(size.x, size.y)
-        lineTo(0f, size.y)
-        lineTo(0f, 0f)
+        moveTo(-halfWidth, -halfHeight)
+        lineTo(halfWidth, -halfHeight)
+        lineTo(halfWidth, halfHeight)
+        lineTo(-halfWidth, halfHeight)
+        lineTo(-halfWidth, -halfHeight)
         close()
     }
 }
 
 @Composable
 fun ComposeShapeFill(fill: ShapeFill, pathData: List<PathNode>) {
-    Log.d("Gabe", "Drawing fill with ${pathData.size} nodes")
+    val colorAnimation = fill.color?.keyframes ?: return
+
     Path(
         pathData,
         // TODO: use the real color

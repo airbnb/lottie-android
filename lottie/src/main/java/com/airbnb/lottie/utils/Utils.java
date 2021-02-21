@@ -252,6 +252,7 @@ public final class Utils {
   }
 
   public static float dpScale() {
+    if (true) return 1;
     if (dpScale == -1) {
       dpScale = Resources.getSystem().getDisplayMetrics().density;
     }
