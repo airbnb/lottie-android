@@ -9,11 +9,10 @@ import androidx.compose.runtime.setValue
 /**
  * Create a [LottieAnimationState] and remember it
  *
- * @param autoPlay Whether the animation will auto play
- * @param repeatCount How many times the animation will be played. Use [Int.MAX_VALUE] for
- * infinite repetitions.
- * @param initialProgress The progress the animation starts with
- * @param enableMergePaths Whether merge paths are enabled
+ * @param autoPlay Initial value for [LottieAnimationState.isPlaying]
+ * @param repeatCount Initial value for [LottieAnimationState.repeatCount]
+ * @param initialProgress Initial value for [LottieAnimationState.progress]
+ * @param enableMergePaths Initial value for [LottieAnimationState.enableMergePaths]
  */
 @Composable
 fun rememberLottieAnimationState(
@@ -41,7 +40,7 @@ fun rememberLottieAnimationState(
  * @param initialProgress Initial value for [progress]
  * @param enableMergePaths Initial value for [enableMergePaths]
  *
- * @see rememberLottieAnimationState()
+ * @see rememberLottieAnimationState
  */
 class LottieAnimationState(
     isPlaying: Boolean,
@@ -56,7 +55,7 @@ class LottieAnimationState(
     val frame: Int by _frame
 
     /**
-     * Whether the animation is currently playing
+     * Whether the animation is currently playing.
      */
     var isPlaying by mutableStateOf(isPlaying)
 

@@ -120,12 +120,10 @@ fun LottieAnimation(
             .then(modifier)
     ) {
         drawIntoCanvas { canvas ->
-            drawable.apply {
-                progress = state.progress
-                setOutlineMasksAndMattes(state.outlineMasksAndMattes)
-                isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
-                enableMergePathsForKitKatAndAbove(state.enableMergePaths)
-            }
+            drawable.progress = state.progress
+            drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
+            drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
+            drawable.enableMergePathsForKitKatAndAbove(state.enableMergePaths)
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {
@@ -140,4 +138,4 @@ private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modif
     return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
 }
 
-private fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) =  a + percentage * (b - a)
+private fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) = a + percentage * (b - a)
