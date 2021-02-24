@@ -51,7 +51,9 @@ fun LottieFilesTabBar(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         horizontalArrangement = Arrangement.Start
     ) {
         for (tab in LottieFilesTab.values()) {
@@ -89,9 +91,9 @@ fun LottieFilesTabBarTab(
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .preferredHeight(3.dp)
+                .height(3.dp)
                 .background(MaterialTheme.colors.primary.copy(alpha = tabAlpha))
-                .preferredWidth(tabWidth)
+                .width(tabWidth)
         )
     }
 }

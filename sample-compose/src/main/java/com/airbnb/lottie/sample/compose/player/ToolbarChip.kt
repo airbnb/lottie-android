@@ -50,10 +50,10 @@ fun ToolbarChip(
                     iconPainter,
                     tint = if (isActivated) Color.White else unActivatedColor,
                     modifier = Modifier
-                        .preferredSize(12.dp),
+                        .size(12.dp),
                     contentDescription = null
                 )
-                Spacer(modifier = Modifier.preferredWidth(6.dp))
+                Spacer(modifier = Modifier.width(6.dp))
             }
             Text(
                 label,

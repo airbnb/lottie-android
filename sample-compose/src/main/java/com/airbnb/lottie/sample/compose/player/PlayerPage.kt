@@ -142,7 +142,7 @@ fun PlayerPage(
                     DebouncedCircularProgressIndicator(
                         color = Teal,
                         modifier = Modifier
-                            .preferredSize(48.dp)
+                            .size(48.dp)
                     )
                 }
             }
@@ -337,7 +337,7 @@ private fun BackgroundToolbarItem(
             .clip(CircleShape)
             .background(color)
             .clickable(onClick = onClick)
-            .preferredSize(24.dp)
+            .size(24.dp)
             .border(1.dp, strokeColor, shape = CircleShape)
     )
 }
@@ -411,7 +411,7 @@ fun WarningDialog(
         Surface(
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
-                .preferredWidth(400.dp)
+                .width(400.dp)
                 .heightIn(min = 32.dp, max = 500.dp)
         ) {
             Box(

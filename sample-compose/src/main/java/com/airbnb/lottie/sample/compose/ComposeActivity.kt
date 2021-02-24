@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +41,7 @@ class ComposeActivity : AppCompatActivity() {
     private fun LottieScaffold() {
         val navController = rememberNavController()
 
-        Providers(
+        CompositionLocalProvider(
             LocalNavController provides navController,
         ) {
             LottieTheme {
