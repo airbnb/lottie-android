@@ -9,7 +9,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
@@ -80,11 +79,7 @@ fun LottieAnimation(
     state: LottieAnimationState,
     modifier: Modifier = Modifier,
 ) {
-    val drawable = remember {
-        LottieDrawable().apply {
-            enableMergePathsForKitKatAndAbove(true)
-        }
-    }
+    val drawable = remember { LottieDrawable() }
 
     SideEffect {
         drawable.composition = composition
@@ -118,7 +113,6 @@ fun LottieAnimation(
     }
 
     if (composition == null || composition.duration == 0f) return
-    SideEffect {}
 
     Canvas(
         modifier = Modifier
@@ -129,6 +123,7 @@ fun LottieAnimation(
             drawable.progress = state.progress
             drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
+            drawable.enableMergePathsForKitKatAndAbove(state.enableMergePaths)
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {
@@ -143,4 +138,4 @@ private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modif
     return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
 }
 
-private fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) =  a + percentage * (b - a)
+private fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) = a + percentage * (b - a)

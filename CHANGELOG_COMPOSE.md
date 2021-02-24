@@ -1,6 +1,9 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
+# 1.0.0-alpha07-SNAPSHOT
+* Add flag for merge paths to LottieAnimationState
+
 # 1.0.0-alpha06
 * Compatible with Jetpack Compose Alpha 12
 

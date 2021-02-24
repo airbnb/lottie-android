@@ -22,6 +22,7 @@
     <string name="toolbar_item_speed">Speed</string>
     <string name="toolbar_item_color">Background</string>
     <string name="toolbar_item_opacity_layers">Apply Opacity To Layers</string>
+    <string name="toolbar_item_merge_paths">Enable Merge Paths</string>
 
     <string name="failed_to_load">Failed to load composition</string>
     <string name="ok">OK</string>
