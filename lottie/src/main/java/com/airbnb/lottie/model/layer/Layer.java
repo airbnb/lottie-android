@@ -137,7 +137,7 @@ public class Layer {
     return layerName;
   }
 
-  MatteType getMatteType() {
+  public MatteType getMatteType() {
     return matteType;
   }
 

@@ -146,6 +146,11 @@ public abstract class BaseLayer
     invalidateSelf();
   }
 
+  @Nullable
+  public BaseLayer getMatteLayer() {
+    return matteLayer;
+  }
+
   Layer getLayerModel() {
     return layerModel;
   }

@@ -11,21 +11,22 @@ import com.airbnb.lottie.value.Keyframe
 import kotlin.properties.Delegates
 
 @Composable
-fun rememberTransform(layer: Layer): ComposeLottieTransform {
+fun rememberTransform(layer: Layer, progress: Float): ComposeLottieTransform {
     val animatableTransform = remember(layer) { layer.transform }
-    return rememberTransform(animatableTransform)
+    return rememberTransform(animatableTransform, progress)
 }
 
 @Composable
-fun rememberTransform(shapeGroup: ShapeGroup): ComposeLottieTransform {
+fun rememberTransform(shapeGroup: ShapeGroup, progress: Float): ComposeLottieTransform {
     val animatableTransform = remember(shapeGroup) { shapeGroup.items.lastOrNull() as? AnimatableTransform }
-    return rememberTransform(animatableTransform)
+    return rememberTransform(animatableTransform, progress)
 }
 
 @Composable
-fun rememberTransform(transform: AnimatableTransform?): ComposeLottieTransform {
+fun rememberTransform(transform: AnimatableTransform?, progress: Float): ComposeLottieTransform {
+    // TODO: look into optimizations here.
     val composeTransform = remember(transform) { ComposeLottieTransform(transform) }
-    composeTransform.progress = LocalLottieProgress.current
+    composeTransform.progress = progress
     return composeTransform
 }
 

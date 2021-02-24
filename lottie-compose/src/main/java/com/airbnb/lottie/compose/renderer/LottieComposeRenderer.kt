@@ -2,16 +2,15 @@ package com.airbnb.lottie.compose.renderer
 
 import android.graphics.PointF
 import android.util.Log
-import androidx.compose.animation.animate
-import androidx.compose.animation.core.DurationBasedAnimationSpec
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
@@ -21,9 +20,8 @@ import com.airbnb.lottie.model.content.*
 import com.airbnb.lottie.model.layer.Layer
 import com.airbnb.lottie.value.Keyframe
 import java.util.concurrent.TimeUnit
+import kotlin.math.ceil
 import kotlin.math.floor
-
-val LocalLottieProgress = compositionLocalOf { 0f }
 
 @Composable
 fun ComposeLottieAnimation(
@@ -60,33 +58,65 @@ fun ComposeLottieAnimation(
         }
     }
 
-    Providers(
-        LocalLottieProgress provides state.progress
-    ) {
+    Box(modifier = Modifier.then(modifier)) {
+        var matteLayer: Layer? = null
         composition.layers.forEach { layer ->
             when (layer.layerType) {
-                Layer.LayerType.SHAPE -> Image(
-                    shapeLayerPainter(composition, layer),
-                    contentDescription = null,
-                    modifier = modifier,
-                )
+                Layer.LayerType.SHAPE -> {
+                    if (layer.matteType != Layer.MatteType.NONE) {
+                        matteLayer = layer
+                    } else {
+                        ShapeLayer(composition, layer, matteLayer, state.progress)
+                    }
+                }
                 else -> Unit
+            }
+            matteLayer = null
+        }
+    }
+}
+
+@Composable
+fun ShapeLayer(composition: LottieComposition, layer: Layer, matteLayer: Layer?, progress: Float) {
+    val layerPainter = shapeLayerPainter(composition, layer, progress)
+    val matteLayerPainter = if (matteLayer == null) null else shapeLayerPainter(composition, layer, progress)
+    Canvas(
+        modifier = Modifier
+    ) {
+        with(layerPainter) {
+            // TODO: cache this Size class.
+            draw(Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat()))
+        }
+        if (matteLayerPainter != null) {
+            drawIntoCanvas { canvas ->
+                // TODO: only save the right bounds.
+                val mattePaint = Paint()
+                mattePaint.blendMode = BlendMode.DstOut
+                canvas.withSaveLayer(
+                    Rect(0f, 0f, composition.bounds.width().toFloat(), composition.bounds.height().toFloat()),
+                    mattePaint,
+                ) {
+                    with(matteLayerPainter) {
+                        // TODO: cache this Size class.
+                        draw(Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat()))
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun shapeLayerPainter(composition: LottieComposition, layer: Layer): VectorPainter {
-    val transform = rememberTransform(layer)
+fun shapeLayerPainter(composition: LottieComposition, layer: Layer, progress: Float): VectorPainter {
+    val transform = rememberTransform(layer, progress)
     return rememberVectorPainter(
         defaultWidth = composition.bounds.width().dp,
         defaultHeight = composition.bounds.height().dp,
         viewportWidth = composition.bounds.width().toFloat(),
         viewportHeight = composition.bounds.height().toFloat(),
     ) { viewportWidth, viewportHeight ->
-        val clipPathData = getMaskPathData(layer.masks)
-        Log.d("Gabe", "clipPathData hash ${clipPathData.hashCode()} identity ${System.identityHashCode(clipPathData)}")
+        val clipPathData = getMaskPathData(layer.masks, progress)
+
         Group(
             name = layer.layerName,
             translationX = transform.position.x,
@@ -97,8 +127,7 @@ fun shapeLayerPainter(composition: LottieComposition, layer: Layer): VectorPaint
         ) {
             layer.shapes.forEach { shapeModel ->
                 when (shapeModel) {
-                    is ShapeGroup -> ComposeShapeGroup(shapeModel)
-                    else -> Log.d("Gabe", "Don't know how to draw ${shapeModel::class.simpleName}")
+                    is ShapeGroup -> ComposeShapeGroup(shapeModel, progress)
                 }
             }
         }
@@ -106,10 +135,10 @@ fun shapeLayerPainter(composition: LottieComposition, layer: Layer): VectorPaint
 }
 
 @Composable
-fun ComposeShapeGroup(shapeGroup: ShapeGroup) {
+fun ComposeShapeGroup(shapeGroup: ShapeGroup, progress: Float) {
     if (shapeGroup.isHidden || shapeGroup.items.isEmpty()) return
-    val transform = rememberTransform(shapeGroup)
-    val pathData = remember { mutableListOf<PathNode>() }
+    val transform = rememberTransform(shapeGroup, progress)
+    val pathData = remember { mutableStateListOf<PathNode>() }
     Group(
         name = shapeGroup.name,
         translationX = transform.position.x,
@@ -117,18 +146,10 @@ fun ComposeShapeGroup(shapeGroup: ShapeGroup) {
     ) {
         // Reuse the list and clear it so that the backing array doesn't need to be recreated.
         pathData.clear()
-        pathData += PathData {
-            moveTo(380f, 0f)
-            lineTo(400f, 0f)
-            lineTo(400f, 20f)
-            lineTo(380f, 20f)
-            lineTo(380f, 0f)
-            close()
-        }
         for (model in shapeGroup.items) {
             when (model) {
                 is RectangleShape -> {
-                    pathData += rectanglePathData(model)
+                    pathData += rectanglePathData(model, progress)
                 }
                 is ShapeFill -> {
                     ComposeShapeFill(model, pathData)
@@ -139,9 +160,9 @@ fun ComposeShapeGroup(shapeGroup: ShapeGroup) {
 }
 
 @Composable
-fun rectanglePathData(shape: RectangleShape): List<PathNode> {
+fun rectanglePathData(shape: RectangleShape, progress: Float): List<PathNode> {
     val size = remember { PointF() }
-    val (sizeKeyframe, interpolatedProgress) = shape.size.keyframes.rememberKeyframeProgress()
+    val (sizeKeyframe, interpolatedProgress) = shape.size.keyframes.rememberKeyframeProgress(progress)
     size.set(
         lerp(sizeKeyframe?.startValue?.x ?: 0f, sizeKeyframe?.endValue?.x ?: 0f, interpolatedProgress),
         lerp(sizeKeyframe?.startValue?.y ?: 0f, sizeKeyframe?.endValue?.y ?: 0f, interpolatedProgress),
@@ -172,7 +193,7 @@ fun ComposeShapeFill(fill: ShapeFill, pathData: List<PathNode>) {
 }
 
 @Composable
-fun getMaskPathData(masks: List<Mask>): List<PathNode> {
+fun getMaskPathData(masks: List<Mask>, progress: Float): List<PathNode> {
     // TODO: figure out how to reuse the mutable list.
     // https://issuetracker.google.com/issues/180774141
     val pathNodes = mutableListOf<PathNode>()
@@ -180,12 +201,12 @@ fun getMaskPathData(masks: List<Mask>): List<PathNode> {
     pathNodes.clear()
     for (i in masks.indices) {
         val mask = masks[i]
-        val (keyframe, progress) = mask.maskPath.keyframes.rememberKeyframeProgress()
+        val (keyframe, keyframeProgress) = mask.maskPath.keyframes.rememberKeyframeProgress(progress)
         val shapeData = allShapeData[i]
         val startData = keyframe?.startValue
         val endData = keyframe?.endValue
         if (startData != null && endData != null) {
-            shapeData.interpolateBetween(startData, endData, progress)
+            shapeData.interpolateBetween(startData, endData, keyframeProgress)
             pathNodes += PathData {
                 moveTo(shapeData.initialPoint.x, shapeData.initialPoint.y)
                 for (curveData in shapeData.curves) {
@@ -207,8 +228,7 @@ fun getMaskPathData(masks: List<Mask>): List<PathNode> {
 data class KeyframeProgress<T>(var keyframe: Keyframe<T>? = null, var progress: Float = 0f)
 
 @Composable
-fun <T> List<Keyframe<T>>.rememberKeyframeProgress(): KeyframeProgress<T> {
-    val progress = LocalLottieProgress.current
+fun <T> List<Keyframe<T>>.rememberKeyframeProgress(progress: Float): KeyframeProgress<T> {
     val value = remember { KeyframeProgress<T>() }
 
     val keyframe = firstOrNull { it.containsProgress(progress) } ?: return value

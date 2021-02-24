@@ -84,7 +84,6 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
         if (state.currentPage >= state.lastPage) return@withState
         fetchJob = viewModelScope.launch {
             val response = try {
-                Log.d("Gabe", "Fetching page ${state.currentPage + 1}")
                 api.search(state.query, state.currentPage + 1)
             } catch (e: Exception) {
                 setState { copy(fetchException = true) }
