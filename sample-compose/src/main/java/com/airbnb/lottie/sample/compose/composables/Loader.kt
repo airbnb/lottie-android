@@ -1,6 +1,6 @@
 package com.airbnb.lottie.sample.compose.composables
 
-import androidx.compose.foundation.layout.preferredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,7 +17,7 @@ fun Loader(
     LottieAnimation(
         animationSpec,
         modifier = Modifier
-            .preferredSize(100.dp)
+            .size(100.dp)
             .then(modifier)
     )
 }

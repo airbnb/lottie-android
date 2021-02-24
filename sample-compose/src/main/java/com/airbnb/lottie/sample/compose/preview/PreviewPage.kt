@@ -75,7 +75,7 @@ private fun PreviewRow(
         Column {
             Row(
                 modifier = Modifier
-                    .preferredHeight(48.dp)
+                    .height(48.dp)
             ) {
                 Icon(
                     painterResource(iconRes),
