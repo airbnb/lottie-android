@@ -219,9 +219,11 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       setRenderMode(RenderMode.values()[renderModeOrdinal]);
     }
 
+    boolean forceAnimationEnabled = ta.getBoolean(R.styleable.LottieAnimationView_lottie_forceAnimationsEnabled, false);
+
     ta.recycle();
 
-    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
+    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f || forceAnimationEnabled);
 
     enableOrDisableHardwareLayer();
     isInitialized = true;

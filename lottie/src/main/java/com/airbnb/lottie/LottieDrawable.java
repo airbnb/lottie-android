@@ -866,7 +866,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return animator.isRunning();
   }
 
-  void setSystemAnimationsAreEnabled(Boolean areEnabled) {
+  public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
   }
 
