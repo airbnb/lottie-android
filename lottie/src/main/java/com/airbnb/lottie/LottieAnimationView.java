@@ -219,11 +219,16 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       setRenderMode(RenderMode.values()[renderModeOrdinal]);
     }
 
-    boolean forceAnimationEnabled = ta.getBoolean(R.styleable.LottieAnimationView_lottie_forceAnimationsEnabled, false);
+    setIgnoreDisabledSystemAnimations(
+        ta.getBoolean(
+            R.styleable.LottieAnimationView_lottie_ignoreDisabledSystemAnimations,
+            false
+        )
+    );
 
     ta.recycle();
 
-    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f || forceAnimationEnabled);
+    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
 
     enableOrDisableHardwareLayer();
     isInitialized = true;
@@ -353,6 +358,17 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
       wasAnimatingWhenDetached = true;
     }
     super.onDetachedFromWindow();
+  }
+
+  /**
+   * Allows to ignore system animations settings therefore allowing animations to run even if they are disabled.
+   *
+   * Defaults to false.
+   *
+   * @param ignore if true animations will run even when they are disabled in the system settings.
+   */
+  public void setIgnoreDisabledSystemAnimations(boolean ignore) {
+    lottieDrawable.setIgnoreDisabledSystemAnimations(ignore);
   }
 
   /**
