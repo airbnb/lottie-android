@@ -59,9 +59,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
-  private boolean animationsEnabled = true;
+
+  //Call animationsEnabled() instead of using these fields directly
   private boolean systemAnimationsEnabled = true;
   private boolean ignoreSystemAnimationsDisabled = false;
+
   private boolean safeMode = false;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
@@ -447,10 +449,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
-    if (animationsEnabled || getRepeatCount() == 0) {
+    if (animationsEnabled() || getRepeatCount() == 0) {
       animator.playAnimation();
     }
-    if (!animationsEnabled) {
+    if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
     }
@@ -478,10 +480,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
-    if (animationsEnabled || getRepeatCount() == 0) {
+    if (animationsEnabled() || getRepeatCount() == 0) {
       animator.resumeAnimation();
     }
-    if (!animationsEnabled) {
+    if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
     }
@@ -868,9 +870,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return animator.isRunning();
   }
 
+  private boolean animationsEnabled() {
+    return systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
+  }
+
   void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
-    animationsEnabled = systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
   }
 
 // </editor-fold>
@@ -884,7 +889,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setIgnoreDisabledSystemAnimations(boolean ignore) {
     ignoreSystemAnimationsDisabled = ignore;
-    animationsEnabled = systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
   }
 
   /**
