@@ -361,7 +361,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Allows to ignore system animations settings therefore allowing animations to run even if they are disabled.
+   * Allows ignoring system animations settings, therefore allowing animations to run even if they are disabled.
    *
    * Defaults to false.
    *
