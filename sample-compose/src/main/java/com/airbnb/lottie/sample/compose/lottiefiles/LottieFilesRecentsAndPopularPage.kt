@@ -13,10 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.api.AnimationDataV2
@@ -24,12 +26,11 @@ import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.daggerMavericksViewModelFactory
-import com.airbnb.lottie.sample.compose.utils.collectState
-import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.lottie.sample.compose.utils.mavericksViewModel
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -104,10 +105,9 @@ class LottieFilesRecentAndPopularViewModel @AssistedInject constructor(
 }
 
 @Composable
-fun LottieFilesRecentAndPopularPage(mode: LottieFilesMode) {
+fun LottieFilesRecentAndPopularPage(navController: NavController, mode: LottieFilesMode) {
     val viewModel: LottieFilesRecentAndPopularViewModel = mavericksViewModel()
-    val state = viewModel.collectState()
-    val navController = findNavController()
+    val state by viewModel.collectAsState()
     SideEffect {
         viewModel.setMode(mode)
     }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +24,6 @@ import com.airbnb.lottie.sample.compose.showcase.ShowcasePage
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
 import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.ui.toColorSafe
-import com.airbnb.lottie.sample.compose.utils.LocalNavController
 import com.airbnb.lottie.sample.compose.utils.getBase64String
 
 class ComposeActivity : AppCompatActivity() {
@@ -41,65 +39,61 @@ class ComposeActivity : AppCompatActivity() {
     private fun LottieScaffold() {
         val navController = rememberNavController()
 
-        CompositionLocalProvider(
-            LocalNavController provides navController,
-        ) {
-            LottieTheme {
-                Scaffold(
-                    bottomBar = {
-                        BottomNavigation(
-                            backgroundColor = Color(0xFFF7F7F7),
-                            elevation = 8.dp,
-                            contentColor = Teal,
-                        ) {
-                            val navBackStackEntry by navController.currentBackStackEntryAsState()
-                            val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+        LottieTheme {
+            Scaffold(
+                bottomBar = {
+                    BottomNavigation(
+                        backgroundColor = Color(0xFFF7F7F7),
+                        elevation = 8.dp,
+                        contentColor = Teal,
+                    ) {
+                        val navBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
 
-                            BottomNavItemData.values().forEach { item ->
-                                BottomNavigationItem(
-                                    icon = {
-                                        Icon(
-                                            painter = painterResource(item.iconRes),
-                                            contentDescription = null
-                                        )
-                                    },
-                                    label = { Text(stringResource(item.labelRes)) },
-                                    selected = currentRoute == item.route.route,
-                                    onClick = {
-                                        if (currentRoute != item.route.route) {
-                                            navController.navigate(item.route.route)
-                                        }
-                                    },
-                                )
-                            }
+                        BottomNavItemData.values().forEach { item ->
+                            BottomNavigationItem(
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(item.iconRes),
+                                        contentDescription = null
+                                    )
+                                },
+                                label = { Text(stringResource(item.labelRes)) },
+                                selected = currentRoute == item.route.route,
+                                onClick = {
+                                    if (currentRoute != item.route.route) {
+                                        navController.navigate(item.route.route)
+                                    }
+                                },
+                            )
                         }
                     }
-                ) { innerPadding ->
-                    Box(
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        NavHost(navController, startDestination = Route.Showcase.route) {
-                            composable(Route.Showcase.route, arguments = Route.Showcase.args) { ShowcasePage() }
-                            composable(Route.Preview.route, arguments = Route.Preview.args) { PreviewPage() }
-                            composable(Route.LottieFiles.route, arguments = Route.LottieFiles.args) { LottieFilesPage() }
-                            composable(Route.Learn.route, arguments = Route.Learn.args) { ShowcasePage() }
-                            composable(
-                                Route.Player.fullRoute,
-                                arguments = Route.Player.args
-                            ) { entry ->
-                                val arguments = entry.arguments ?: error("No arguments provided to ${Route.Player}")
-                                val spec = when {
-                                    arguments.getString("url") != null -> LottieAnimationSpec.Url(arguments.getBase64String("url"))
-                                    arguments.getString("file") != null -> LottieAnimationSpec.File(arguments.getBase64String("file"))
-                                    arguments.getString("asset") != null -> LottieAnimationSpec.Asset(arguments.getBase64String("asset"))
-                                    else -> error("You must specify a url, file, or asset")
-                                }
-                                val backgroundColor = when (arguments.getString("backgroundColor") != null) {
-                                    true -> arguments.getBase64String("backgroundColor").toColorSafe()
-                                    else -> null
-                                }
-                                PlayerPage(spec, backgroundColor)
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    NavHost(navController, startDestination = Route.Showcase.route) {
+                        composable(Route.Showcase.route, arguments = Route.Showcase.args) { ShowcasePage(navController) }
+                        composable(Route.Preview.route, arguments = Route.Preview.args) { PreviewPage(navController) }
+                        composable(Route.LottieFiles.route, arguments = Route.LottieFiles.args) { LottieFilesPage(navController) }
+                        composable(Route.Learn.route, arguments = Route.Learn.args) { ShowcasePage(navController) }
+                        composable(
+                            Route.Player.fullRoute,
+                            arguments = Route.Player.args
+                        ) { entry ->
+                            val arguments = entry.arguments ?: error("No arguments provided to ${Route.Player}")
+                            val spec = when {
+                                arguments.getString("url") != null -> LottieAnimationSpec.Url(arguments.getBase64String("url"))
+                                arguments.getString("file") != null -> LottieAnimationSpec.File(arguments.getBase64String("file"))
+                                arguments.getString("asset") != null -> LottieAnimationSpec.Asset(arguments.getBase64String("asset"))
+                                else -> error("You must specify a url, file, or asset")
                             }
+                            val backgroundColor = when (arguments.getString("backgroundColor") != null) {
+                                true -> arguments.getBase64String("backgroundColor").toColorSafe()
+                                else -> null
+                            }
+                            PlayerPage(spec, backgroundColor)
                         }
                     }
                 }
