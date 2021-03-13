@@ -21,6 +21,7 @@
         <attr name="lottie_scale" format="float" />
         <attr name="lottie_speed" format="float" />
         <attr name="lottie_cacheComposition" format="boolean" />
+        <attr name="lottie_ignoreDisabledSystemAnimations" format="boolean" />
         <!-- These values must be kept in sync with the RenderMode enum -->
         <attr name="lottie_renderMode" format="enum">
             <enum name="automatic" value="0" />
