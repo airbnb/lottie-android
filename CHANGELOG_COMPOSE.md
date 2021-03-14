@@ -3,6 +3,7 @@ version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/m
 
 # 1.0.0-alpha07-SNAPSHOT
 * Add flag for merge paths to LottieAnimationState
+* Compatible with Jetpack Compose Beta 02
 
 # 1.0.0-alpha06
 * Compatible with Jetpack Compose Alpha 12
