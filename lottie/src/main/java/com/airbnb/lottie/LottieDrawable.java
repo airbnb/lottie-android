@@ -1079,11 +1079,42 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return ret;
   }
 
+  /**
+   * @deprecated use {@link #getBitmapForId(String)}.
+   */
   @Nullable
+  @Deprecated
   public Bitmap getImageAsset(String id) {
     ImageAssetManager bm = getImageAssetManager();
     if (bm != null) {
       return bm.bitmapForId(id);
+    }
+    return null;
+  }
+
+  /**
+   * Returns the bitmap that will be rendered for the given id in the Lottie animation file.
+   * The returned bitmap could be from:
+   * * Embedded in the animation file as a base64 string.
+   * * In the same directory as the animation file.
+   * * In the same zip file as the animation file.
+   * * Returned from an {@link ImageAssetDelegate}.
+   * or null if the image doesn't exist from any of those places.
+   */
+  @Nullable
+  public Bitmap getBitmapForId(String id) {
+    ImageAssetManager assetManager = getImageAssetManager();
+    if (assetManager != null) {
+      return assetManager.bitmapForId(id);
+    }
+    return null;
+  }
+
+  @Nullable
+  public LottieImageAsset getLottieImageAssetForId(String id) {
+    ImageAssetManager assetManager = getImageAssetManager();
+    if (assetManager != null) {
+      return assetManager.getImageAssetById(id);
     }
     return null;
   }
