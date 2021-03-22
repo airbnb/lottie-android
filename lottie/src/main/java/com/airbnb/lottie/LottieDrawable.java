@@ -23,6 +23,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RestrictTo;
 
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
@@ -75,6 +76,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
   };
+
+  /**
+   * ImageAssetManager created externally. By Compose, for example.
+   */
+  @Nullable
+  private ImageAssetManager imageAssetManagerOverride;
+  /**
+   * ImageAssetManager created automatically by Lottie for views.
+   */
   @Nullable
   private ImageAssetManager imageAssetManager;
   @Nullable
@@ -1095,7 +1105,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return null;
   }
 
+  /**
+   * Use by Lottie internally when outside of a normal View tree such as for Jetpack Compose.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  void setImageAssetManager(@Nullable ImageAssetManager imageAssetManager) {
+    this.imageAssetManagerOverride = imageAssetManager;
+  }
+
   private ImageAssetManager getImageAssetManager() {
+    if (imageAssetManagerOverride != null) {
+      return imageAssetManagerOverride;
+    }
     if (getCallback() == null) {
       // We can't get a bitmap since we can't get a Context from the callback.
       return null;
