@@ -87,6 +87,7 @@ fun LottieAnimation(
     if (composition?.hasImages() == true) {
         val context = LocalContext.current
         LaunchedEffect(context, composition, state.imageAssetsFolder, state.imageAssetDelegate) {
+            @Suppress("RestrictedApi")
             imageAssetManager = ImageAssetManager(context, state.imageAssetsFolder, state.imageAssetDelegate, composition.images)
         }
     } else {
