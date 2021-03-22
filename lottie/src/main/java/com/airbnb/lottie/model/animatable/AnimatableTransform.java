@@ -1,7 +1,9 @@
 package com.airbnb.lottie.model.animatable;
 
 import android.graphics.PointF;
+
 import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ModifierContent;

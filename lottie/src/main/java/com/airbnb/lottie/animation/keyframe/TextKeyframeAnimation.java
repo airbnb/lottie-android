@@ -1,7 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.DocumentData;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
 
@@ -11,9 +11,10 @@ public class TextKeyframeAnimation extends KeyframeAnimation<DocumentData> {
   }
 
   @Override DocumentData getValue(Keyframe<DocumentData> keyframe, float keyframeProgress) {
-    if (keyframeProgress != 1.0f || keyframe.endValue == null)
+    if (keyframeProgress != 1.0f || keyframe.endValue == null) {
       return keyframe.startValue;
-    else
+    } else {
       return keyframe.endValue;
+    }
   }
 }

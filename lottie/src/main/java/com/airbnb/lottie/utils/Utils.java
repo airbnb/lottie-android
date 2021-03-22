@@ -14,6 +14,8 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.TrimPathContent;
@@ -28,8 +30,6 @@ import java.net.UnknownServiceException;
 import java.nio.channels.ClosedChannelException;
 
 import javax.net.ssl.SSLException;
-
-import androidx.annotation.Nullable;
 
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;
@@ -261,11 +261,11 @@ public final class Utils {
   public static float getAnimationScale(Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return Settings.Global.getFloat(context.getContentResolver(),
-              Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
+          Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);
     } else {
       //noinspection deprecation
       return Settings.System.getFloat(context.getContentResolver(),
-              Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
+          Settings.System.ANIMATOR_DURATION_SCALE, 1.0f);
     }
   }
 

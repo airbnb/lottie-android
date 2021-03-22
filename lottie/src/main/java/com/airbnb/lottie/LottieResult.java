@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 /**
  * Contains class to hold the resulting value of an async task or an exception if it failed.
- *
+ * <p>
  * Either value or exception will be non-null.
  */
 public final class LottieResult<V> {

@@ -6,6 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -21,8 +23,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {

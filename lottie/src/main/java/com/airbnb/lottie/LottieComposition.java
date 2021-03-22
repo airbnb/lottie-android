@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.RestrictTo;
@@ -29,9 +30,9 @@ import java.util.Map;
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
  * animation will be created.
- *
+ * <p>
  * To create one, use {@link LottieCompositionFactory}.
- *
+ * <p>
  * It can be used with a {@link com.airbnb.lottie.LottieAnimationView} or
  * {@link com.airbnb.lottie.LottieDrawable}.
  */
@@ -41,7 +42,9 @@ public class LottieComposition {
   private final HashSet<String> warnings = new HashSet<>();
   private Map<String, List<Layer>> precomps;
   private Map<String, LottieImageAsset> images;
-  /** Map of font names to fonts */
+  /**
+   * Map of font names to fonts
+   */
   private Map<String, Font> fonts;
   private List<Marker> markers;
   private SparseArrayCompat<FontCharacter> characters;
@@ -234,10 +237,10 @@ public class LottieComposition {
      */
     @SuppressWarnings("deprecation")
     @Deprecated
-     public static Cancellable fromRawFile(Context context, @RawRes int resId, OnCompositionLoadedListener l) {
-       ListenerAdapter listener = new ListenerAdapter(l);
-       LottieCompositionFactory.fromRawRes(context, resId).addListener(listener);
-       return listener;
+    public static Cancellable fromRawFile(Context context, @RawRes int resId, OnCompositionLoadedListener l) {
+      ListenerAdapter listener = new ListenerAdapter(l);
+      LottieCompositionFactory.fromRawRes(context, resId).addListener(listener);
+      return listener;
     }
 
     /**

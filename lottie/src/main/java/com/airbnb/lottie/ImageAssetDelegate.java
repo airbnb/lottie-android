@@ -1,6 +1,7 @@
 package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
+
 import androidx.annotation.Nullable;
 
 /**

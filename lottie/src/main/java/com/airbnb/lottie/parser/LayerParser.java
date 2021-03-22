@@ -4,8 +4,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.parser.moshi.JsonReader;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
@@ -13,7 +11,9 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.layer.Layer;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +22,8 @@ import java.util.List;
 
 public class LayerParser {
 
-  private LayerParser() {}
+  private LayerParser() {
+  }
 
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm", // 0

@@ -27,8 +27,8 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
 
     if (valueCallback != null) {
       PointF value = valueCallback.getValueInternal(pathKeyframe.startFrame, pathKeyframe.endFrame,
-              pathKeyframe.startValue, pathKeyframe.endValue, getLinearCurrentKeyframeProgress(),
-              keyframeProgress, getProgress());
+          pathKeyframe.startValue, pathKeyframe.endValue, getLinearCurrentKeyframeProgress(),
+          keyframeProgress, getProgress());
       if (value != null) {
         return value;
       }

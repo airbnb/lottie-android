@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface AnimatableValue<K, A> {
   List<Keyframe<K>> getKeyframes();
+
   boolean isStatic();
+
   BaseKeyframeAnimation<K, A> createAnimation();
 }

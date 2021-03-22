@@ -1,19 +1,18 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+
 import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
-import android.util.JsonToken;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.parser.moshi.JsonReader;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -72,7 +71,7 @@ class KeyframeParser {
    * @param multiDimensional When true, the keyframe interpolators can be independent for the X and Y axis.
    */
   static <T> Keyframe<T> parse(JsonReader reader, LottieComposition composition,
-                               float scale, ValueParser<T> valueParser, boolean animated, boolean multiDimensional) throws IOException {
+      float scale, ValueParser<T> valueParser, boolean animated, boolean multiDimensional) throws IOException {
 
     if (animated && multiDimensional) {
       return parseMultiDimensionalKeyframe(composition, reader, scale, valueParser);

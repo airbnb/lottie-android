@@ -11,7 +11,8 @@ import java.io.IOException;
 
 class MaskParser {
 
-  private MaskParser() {}
+  private MaskParser() {
+  }
 
   static Mask parse(
       JsonReader reader, LottieComposition composition) throws IOException {

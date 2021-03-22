@@ -15,10 +15,10 @@ import java.util.List;
 public class ShapeDataParser implements ValueParser<ShapeData> {
   public static final ShapeDataParser INSTANCE = new ShapeDataParser();
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
-    "c",
-    "v",
-    "i",
-    "o"
+      "c",
+      "v",
+      "i",
+      "o"
   );
 
   private ShapeDataParser() {

@@ -7,8 +7,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -461,7 +463,7 @@ public class TextLayer extends BaseLayer {
       }
 
       if (callback == null) {
-          colorCallbackAnimation = null;
+        colorCallbackAnimation = null;
       } else {
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback);
         colorCallbackAnimation.addUpdateListener(this);

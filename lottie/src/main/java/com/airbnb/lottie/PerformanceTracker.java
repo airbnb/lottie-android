@@ -1,8 +1,9 @@
 package com.airbnb.lottie;
 
+import android.util.Log;
+
 import androidx.collection.ArraySet;
 import androidx.core.util.Pair;
-import android.util.Log;
 
 import com.airbnb.lottie.utils.MeanCalculator;
 
@@ -25,17 +26,17 @@ public class PerformanceTracker {
   private final Map<String, MeanCalculator> layerRenderTimes = new HashMap<>();
   private final Comparator<Pair<String, Float>> floatComparator =
       new Comparator<Pair<String, Float>>() {
-    @Override public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {
-      float r1 = o1.second;
-      float r2 = o2.second;
-      if (r2 > r1) {
-        return 1;
-      } else if (r1 > r2) {
-        return -1;
-      }
-      return 0;
-    }
-  };
+        @Override public int compare(Pair<String, Float> o1, Pair<String, Float> o2) {
+          float r1 = o1.second;
+          float r2 = o2.second;
+          if (r2 > r1) {
+            return 1;
+          } else if (r1 > r2) {
+            return -1;
+          }
+          return 0;
+        }
+      };
 
   void setEnabled(boolean enabled) {
     this.enabled = enabled;

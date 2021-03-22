@@ -2,17 +2,17 @@ package com.airbnb.lottie;
 
 import android.content.Context;
 
-import com.airbnb.lottie.network.LottieNetworkCacheProvider;
+import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.core.os.TraceCompat;
+
 import com.airbnb.lottie.network.DefaultLottieNetworkFetcher;
+import com.airbnb.lottie.network.LottieNetworkCacheProvider;
 import com.airbnb.lottie.network.LottieNetworkFetcher;
 import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.network.NetworkFetcher;
 
 import java.io.File;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.core.os.TraceCompat;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {

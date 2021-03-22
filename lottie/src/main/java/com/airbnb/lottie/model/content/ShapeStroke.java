@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.graphics.Paint;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -62,9 +63,9 @@ public class ShapeStroke implements ContentModel {
   private final boolean hidden;
 
   public ShapeStroke(String name, @Nullable AnimatableFloatValue offset,
-                     List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
-                     AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
-                     LineJoinType joinType, float miterLimit, boolean hidden) {
+      List<AnimatableFloatValue> lineDashPattern, AnimatableColorValue color,
+      AnimatableIntegerValue opacity, AnimatableFloatValue width, LineCapType capType,
+      LineJoinType joinType, float miterLimit, boolean hidden) {
     this.name = name;
     this.offset = offset;
     this.lineDashPattern = lineDashPattern;

@@ -32,7 +32,7 @@ public class ShapeTrimPath implements ContentModel {
   private final boolean hidden;
 
   public ShapeTrimPath(String name, Type type, AnimatableFloatValue start,
-                       AnimatableFloatValue end, AnimatableFloatValue offset, boolean hidden) {
+      AnimatableFloatValue end, AnimatableFloatValue offset, boolean hidden) {
     this.name = name;
     this.type = type;
     this.start = start;

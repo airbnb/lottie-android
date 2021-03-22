@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.FutureTask;
  * Helper to run asynchronous tasks with a result.
  * Results can be obtained with {@link #addListener(LottieListener)}.
  * Failures can be obtained with {@link #addFailureListener(LottieListener)}.
- *
+ * <p>
  * A task will produce a single result or a single failure.
  */
 public class LottieTask<T> {
@@ -29,7 +30,7 @@ public class LottieTask<T> {
   /**
    * Set this to change the executor that LottieTasks are run on. This will be the executor that composition parsing and url
    * fetching happens on.
-   *
+   * <p>
    * You may change this to run deserialization synchronously for testing.
    */
   @SuppressWarnings("WeakerAccess")
@@ -50,8 +51,7 @@ public class LottieTask<T> {
   /**
    * runNow is only used for testing.
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
-  LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY) LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
     if (runNow) {
       try {
         setResult(runnable.call());
@@ -73,6 +73,7 @@ public class LottieTask<T> {
 
   /**
    * Add a task listener. If the task has completed, the listener will be called synchronously.
+   *
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> addListener(LottieListener<T> listener) {
@@ -87,6 +88,7 @@ public class LottieTask<T> {
   /**
    * Remove a given task listener. The task will continue to execute so you can re-add
    * a listener if neccesary.
+   *
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> removeListener(LottieListener<T> listener) {
@@ -97,6 +99,7 @@ public class LottieTask<T> {
   /**
    * Add a task failure listener. This will only be called in the even that an exception
    * occurs. If an exception has already occurred, the listener will be called immediately.
+   *
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> addFailureListener(LottieListener<Throwable> listener) {
@@ -111,6 +114,7 @@ public class LottieTask<T> {
   /**
    * Remove a given task failure listener. The task will continue to execute so you can re-add
    * a listener if neccesary.
+   *
    * @return the task for call chaining.
    */
   public synchronized LottieTask<T> removeFailureListener(LottieListener<Throwable> listener) {

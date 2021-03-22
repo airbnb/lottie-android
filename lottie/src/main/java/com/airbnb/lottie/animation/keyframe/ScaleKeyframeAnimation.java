@@ -1,8 +1,8 @@
 package com.airbnb.lottie.animation.keyframe;
 
+import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.ScaleXY;
-import com.airbnb.lottie.utils.MiscUtils;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ public class ScaleKeyframeAnimation extends KeyframeAnimation<ScaleXY> {
     if (valueCallback != null) {
       //noinspection ConstantConditions
       ScaleXY value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
-              startTransform, endTransform,
-              keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+          startTransform, endTransform,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
       if (value != null) {
         return value;
       }

@@ -20,7 +20,8 @@ class CircleShapeParser {
       "d"
   );
 
-  private CircleShapeParser() {}
+  private CircleShapeParser() {
+  }
 
   static CircleShape parse(
       JsonReader reader, LottieComposition composition, int d) throws IOException {

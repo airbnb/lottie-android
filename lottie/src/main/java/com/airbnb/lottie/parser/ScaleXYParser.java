@@ -1,7 +1,5 @@
 package com.airbnb.lottie.parser;
 
-import android.util.JsonToken;
-
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.ScaleXY;
 

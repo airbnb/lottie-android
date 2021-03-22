@@ -2,12 +2,12 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.PointF;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.Collections;
-
-import androidx.annotation.Nullable;
 
 public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<PointF, PointF> {
   private final PointF point = new PointF();
@@ -70,10 +70,11 @@ public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<P
     if (xValueCallback != null) {
       Keyframe<Float> xKeyframe = xAnimation.getCurrentKeyframe();
       if (xKeyframe != null) {
-          float progress = xAnimation.getInterpolatedCurrentKeyframeProgress();
-          Float endFrame = xKeyframe.endFrame;
-          xCallbackValue = xValueCallback.getValueInternal(xKeyframe.startFrame, endFrame == null ? xKeyframe.startFrame : endFrame, xKeyframe.startValue,
-              xKeyframe.endValue, keyframeProgress, keyframeProgress, progress);
+        float progress = xAnimation.getInterpolatedCurrentKeyframeProgress();
+        Float endFrame = xKeyframe.endFrame;
+        xCallbackValue =
+            xValueCallback.getValueInternal(xKeyframe.startFrame, endFrame == null ? xKeyframe.startFrame : endFrame, xKeyframe.startValue,
+                xKeyframe.endValue, keyframeProgress, keyframeProgress, progress);
       }
     }
     if (yValueCallback != null) {
@@ -81,8 +82,9 @@ public class SplitDimensionPathKeyframeAnimation extends BaseKeyframeAnimation<P
       if (yKeyframe != null) {
         float progress = yAnimation.getInterpolatedCurrentKeyframeProgress();
         Float endFrame = yKeyframe.endFrame;
-        yCallbackValue = yValueCallback.getValueInternal(yKeyframe.startFrame, endFrame == null ? yKeyframe.startFrame : endFrame, yKeyframe.startValue,
-            yKeyframe.endValue, keyframeProgress, keyframeProgress, progress);
+        yCallbackValue =
+            yValueCallback.getValueInternal(yKeyframe.startFrame, endFrame == null ? yKeyframe.startFrame : endFrame, yKeyframe.startValue,
+                yKeyframe.endValue, keyframeProgress, keyframeProgress, progress);
       }
     }
 

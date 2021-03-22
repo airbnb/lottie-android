@@ -1,7 +1,7 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonToken;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
@@ -60,9 +60,9 @@ public class AnimatableTransformParser {
               case 0:
                 anchorPoint = AnimatablePathValueParser.parse(reader, composition);
                 break;
-                default:
-                  reader.skipName();
-                  reader.skipValue();
+              default:
+                reader.skipName();
+                reader.skipValue();
             }
           }
           reader.endObject();

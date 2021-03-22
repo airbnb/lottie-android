@@ -30,7 +30,7 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     if (valueCallback != null) {
       //noinspection ConstantConditions
       Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startColor,
-              endColor, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+          endColor, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
       if (value != null) {
         return value;
       }

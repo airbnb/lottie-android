@@ -1,9 +1,10 @@
 package com.airbnb.lottie.model;
 
-import android.graphics.PointF;
-import androidx.annotation.RestrictTo;
-
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
+
+import android.graphics.PointF;
+
+import androidx.annotation.RestrictTo;
 
 @RestrictTo(LIBRARY)
 public class CubicCurveData {

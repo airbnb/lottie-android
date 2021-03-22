@@ -42,10 +42,10 @@ public class PolystarShape implements ContentModel {
   private final boolean hidden;
 
   public PolystarShape(String name, Type type, AnimatableFloatValue points,
-                       AnimatableValue<PointF, PointF> position,
-                       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
-                       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
-                       AnimatableFloatValue outerRoundedness, boolean hidden) {
+      AnimatableValue<PointF, PointF> position,
+      AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
+      AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
+      AnimatableFloatValue outerRoundedness, boolean hidden) {
     this.name = name;
     this.type = type;
     this.points = points;

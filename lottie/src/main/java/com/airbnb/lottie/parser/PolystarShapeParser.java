@@ -12,19 +12,20 @@ import java.io.IOException;
 
 class PolystarShapeParser {
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
-    "nm",
-    "sy",
-    "pt",
-    "p",
-    "r",
-    "or",
-    "os",
-    "ir",
-    "is",
-    "hd"
+      "nm",
+      "sy",
+      "pt",
+      "p",
+      "r",
+      "or",
+      "os",
+      "ir",
+      "is",
+      "hd"
   );
 
-  private PolystarShapeParser() {}
+  private PolystarShapeParser() {
+  }
 
   static PolystarShape parse(
       JsonReader reader, LottieComposition composition) throws IOException {

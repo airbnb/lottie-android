@@ -17,7 +17,7 @@ public class Repeater implements ContentModel {
   private final boolean hidden;
 
   public Repeater(String name, AnimatableFloatValue copies, AnimatableFloatValue offset,
-                  AnimatableTransform transform, boolean hidden) {
+      AnimatableTransform transform, boolean hidden) {
     this.name = name;
     this.copies = copies;
     this.offset = offset;

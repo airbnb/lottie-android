@@ -1,5 +1,8 @@
 package com.airbnb.lottie.network;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.utils.Logger;
 
 import java.io.BufferedReader;
@@ -7,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class DefaultLottieFetchResult implements LottieFetchResult {
 

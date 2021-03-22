@@ -6,7 +6,6 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.SplitDimensionPathKeyframeAnimation;
 import com.airbnb.lottie.value.Keyframe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatableSplitDimensionPathValue implements AnimatableValue<PointF, PointF> {

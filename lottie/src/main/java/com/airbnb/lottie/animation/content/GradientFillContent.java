@@ -1,5 +1,7 @@
 package com.airbnb.lottie.animation.content;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
@@ -10,6 +12,7 @@ import android.graphics.PointF;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
@@ -30,8 +33,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public class GradientFillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -239,29 +240,29 @@ public class GradientFillContent
         layer.removeAnimation(colorFilterAnimation);
       }
 
-       if (callback == null) {
-         colorFilterAnimation = null;
-       } else {
-         colorFilterAnimation =
-             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
-         colorFilterAnimation.addUpdateListener(this);
-         layer.addAnimation(colorFilterAnimation);
-       }
-     } else if (property == LottieProperty.GRADIENT_COLOR) {
+      if (callback == null) {
+        colorFilterAnimation = null;
+      } else {
+        colorFilterAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+        colorFilterAnimation.addUpdateListener(this);
+        layer.addAnimation(colorFilterAnimation);
+      }
+    } else if (property == LottieProperty.GRADIENT_COLOR) {
       if (colorCallbackAnimation != null) {
         layer.removeAnimation(colorCallbackAnimation);
       }
 
-       if (callback == null) {
-         colorCallbackAnimation = null;
-       } else {
-         //noinspection rawtypes
-         linearGradientCache.clear();
-         radialGradientCache.clear();
-         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
-         colorCallbackAnimation.addUpdateListener(this);
-         layer.addAnimation(colorCallbackAnimation);
-       }
+      if (callback == null) {
+        colorCallbackAnimation = null;
+      } else {
+        //noinspection rawtypes
+        linearGradientCache.clear();
+        radialGradientCache.clear();
+        colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
+        colorCallbackAnimation.addUpdateListener(this);
+        layer.addAnimation(colorCallbackAnimation);
+      }
     }
   }
 }

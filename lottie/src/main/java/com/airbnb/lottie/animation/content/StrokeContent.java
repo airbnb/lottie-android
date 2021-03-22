@@ -1,8 +1,11 @@
 package com.airbnb.lottie.animation.content;
 
+import static com.airbnb.lottie.LottieProperty.STROKE_COLOR;
+
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -13,8 +16,6 @@ import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
-
-import static com.airbnb.lottie.LottieProperty.STROKE_COLOR;
 
 public class StrokeContent extends BaseStrokeContent {
 

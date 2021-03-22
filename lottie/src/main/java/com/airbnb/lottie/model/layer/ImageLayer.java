@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -44,7 +45,7 @@ public class ImageLayer extends BaseLayer {
     canvas.concat(parentMatrix);
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
     dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
-    canvas.drawBitmap(bitmap, src, dst , paint);
+    canvas.drawBitmap(bitmap, src, dst, paint);
     canvas.restore();
   }
 
@@ -67,14 +68,14 @@ public class ImageLayer extends BaseLayer {
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
-     if (property == LottieProperty.COLOR_FILTER) {
-       if (callback == null) {
-         colorFilterAnimation = null;
-       } else {
-         //noinspection unchecked
-         colorFilterAnimation =
-             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
-       }
+    if (property == LottieProperty.COLOR_FILTER) {
+      if (callback == null) {
+        colorFilterAnimation = null;
+      } else {
+        //noinspection unchecked
+        colorFilterAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+      }
     }
   }
 }

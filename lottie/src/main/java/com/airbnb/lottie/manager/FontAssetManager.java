@@ -3,12 +3,11 @@ package com.airbnb.lottie.manager;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.FontAssetDelegate;
-import com.airbnb.lottie.L;
 import com.airbnb.lottie.model.MutablePair;
 import com.airbnb.lottie.utils.Logger;
 
@@ -18,9 +17,13 @@ import java.util.Map;
 public class FontAssetManager {
   private final MutablePair<String> tempPair = new MutablePair<>();
 
-  /** Pair is (fontName, fontStyle) */
+  /**
+   * Pair is (fontName, fontStyle)
+   */
   private final Map<MutablePair<String>, Typeface> fontMap = new HashMap<>();
-  /** Map of font families to their fonts. Necessary to create a font with a different style */
+  /**
+   * Map of font families to their fonts. Necessary to create a font with a different style
+   */
   private final Map<String, Typeface> fontFamilies = new HashMap<>();
   private final AssetManager assetManager;
   @Nullable private FontAssetDelegate delegate;
@@ -43,9 +46,9 @@ public class FontAssetManager {
 
   /**
    * Sets the default file extension (include the `.`).
-   *
+   * <p>
    * e.g. `.ttf` `.otf`
-   *
+   * <p>
    * Defaults to `.ttf`
    */
   @SuppressWarnings("unused") public void setDefaultFontFileExtension(String defaultFontFileExtension) {

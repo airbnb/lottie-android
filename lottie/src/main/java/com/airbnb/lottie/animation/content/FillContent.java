@@ -1,11 +1,14 @@
 package com.airbnb.lottie.animation.content;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -23,8 +26,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -44,7 +45,7 @@ public class FillContent
     name = fill.getName();
     hidden = fill.isHidden();
     this.lottieDrawable = lottieDrawable;
-    if (fill.getColor() == null || fill.getOpacity() == null ) {
+    if (fill.getColor() == null || fill.getOpacity() == null) {
       colorAnimation = null;
       opacityAnimation = null;
       return;
