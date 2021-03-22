@@ -441,7 +441,7 @@ public class LottieCompositionFactory {
         } else if (entry.getName().contains(".json")) {
           com.airbnb.lottie.parser.moshi.JsonReader reader = JsonReader.of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
-        } else if (entryName.contains(".png") || entryName.contains(".webp")) {
+        } else if (entryName.contains(".png") || entryName.contains(".webp") || entryName.contains(".jpg") || entryName.contains(".jpeg")) {
           String[] splitName = entryName.split("/");
           String name = splitName[splitName.length - 1];
           images.put(name, BitmapFactory.decodeStream(inputStream));
