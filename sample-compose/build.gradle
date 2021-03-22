@@ -1,7 +1,6 @@
 plugins {
   id 'com.android.application'
   id 'kotlin-android'
-  id 'kotlin-android-extensions'
   id 'kotlin-kapt'
 }
 
@@ -37,7 +36,6 @@ android {
         "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
         "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
         "-Xopt-in=kotlin.RequiresOptIn",
-        "-Xopt-in=com.airbnb.mvrx.InternalMavericksApi"
     ]
   }
   buildFeatures {
@@ -51,10 +49,6 @@ android {
 
 kapt {
   correctErrorTypes = true
-}
-
-androidExtensions {
-  features = ["parcelize"]
 }
 
 dependencies {
@@ -73,7 +67,7 @@ dependencies {
   implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
   implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
 
-  implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
+  implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
@@ -84,9 +78,10 @@ dependencies {
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
   implementation "dev.chrisbanes.accompanist:accompanist-coil:0.6.0"
-  implementation 'com.airbnb.android:mavericks:2.0.0'
+  implementation 'com.airbnb.android:mavericks:2.1.0'
+  implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha01'
 
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'androidx.test.ext:junit:1.1.2'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

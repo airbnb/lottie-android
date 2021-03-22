@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.Marquee
 
@@ -26,7 +27,7 @@ enum class LottieFilesTab(@StringRes val stringRes: Int) {
 }
 
 @Composable
-fun LottieFilesPage() {
+fun LottieFilesPage(navController: NavController) {
     var tab by rememberSaveable { mutableStateOf(LottieFilesTab.Recent) }
 
     Column {
@@ -36,9 +37,9 @@ fun LottieFilesPage() {
             onTabSelected = { tab = it },
         )
         when (tab) {
-            LottieFilesTab.Recent -> LottieFilesRecentAndPopularPage(LottieFilesMode.Recent)
-            LottieFilesTab.Popular -> LottieFilesRecentAndPopularPage(LottieFilesMode.Popular)
-            LottieFilesTab.Search -> LottieFilesSearchPage()
+            LottieFilesTab.Recent -> LottieFilesRecentAndPopularPage(navController, LottieFilesMode.Recent)
+            LottieFilesTab.Popular -> LottieFilesRecentAndPopularPage(navController, LottieFilesMode.Popular)
+            LottieFilesTab.Search -> LottieFilesSearchPage(navController)
         }
     }
 

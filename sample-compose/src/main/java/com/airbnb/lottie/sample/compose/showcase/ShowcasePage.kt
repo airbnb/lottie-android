@@ -6,28 +6,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.AnimationRow
 import com.airbnb.lottie.sample.compose.composables.Loader
 import com.airbnb.lottie.sample.compose.composables.Marquee
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
-import com.airbnb.lottie.sample.compose.utils.collectState
-import com.airbnb.lottie.sample.compose.utils.findNavController
-import com.airbnb.lottie.sample.compose.utils.mavericksViewModel
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Uninitialized
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 
 @Composable
-fun ShowcasePage() {
+fun ShowcasePage(navController: NavController) {
     val viewModel: ShowcaseViewModel = mavericksViewModel()
-    val state = viewModel.collectState()
-    val featuredAnimations = state.animations
-    val navController = findNavController()
+    val featuredAnimations by viewModel.collectAsState(ShowcaseState::animations)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -55,7 +55,8 @@ fun ShowcasePage() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val navController = rememberNavController()
     LottieTheme {
-        ShowcasePage()
+        ShowcasePage(navController)
     }
 }

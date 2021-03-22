@@ -18,18 +18,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.Marquee
 import com.airbnb.lottie.sample.compose.ui.LottieTheme
-import com.airbnb.lottie.sample.compose.utils.findNavController
 
 @Composable
-fun PreviewPage() {
+fun PreviewPage(navController: NavController) {
     var showingAssetsDialog by remember { mutableStateOf(false) }
     var showingUrlDialog by remember { mutableStateOf(false) }
-    val navController = findNavController()
 
     Column {
         Marquee(stringResource(R.string.tab_preview))
@@ -172,9 +172,10 @@ private fun AssetRow(name: String, onClick: () -> Unit) {
 @Preview
 @Composable
 fun PreviewPagePreview() {
+    val navController = rememberNavController()
     LottieTheme {
         Box(modifier = Modifier.background(Color.White)) {
-            PreviewPage()
+            PreviewPage(navController)
         }
     }
 }
