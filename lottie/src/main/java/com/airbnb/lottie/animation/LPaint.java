@@ -13,26 +13,26 @@ import androidx.annotation.NonNull;
  * setComposition.
  */
 public class LPaint extends Paint {
-    public LPaint() {
-        super();
-    }
+  public LPaint() {
+    super();
+  }
 
-    public LPaint(int flags) {
-        super(flags);
-    }
+  public LPaint(int flags) {
+    super(flags);
+  }
 
-    public LPaint(PorterDuff.Mode porterDuffMode) {
-        super();
-        setXfermode(new PorterDuffXfermode(porterDuffMode));
-    }
+  public LPaint(PorterDuff.Mode porterDuffMode) {
+    super();
+    setXfermode(new PorterDuffXfermode(porterDuffMode));
+  }
 
-    public LPaint(int flags, PorterDuff.Mode porterDuffMode) {
-        super(flags);
-        setXfermode(new PorterDuffXfermode(porterDuffMode));
-    }
+  public LPaint(int flags, PorterDuff.Mode porterDuffMode) {
+    super(flags);
+    setXfermode(new PorterDuffXfermode(porterDuffMode));
+  }
 
-    @Override
-    public void setTextLocales(@NonNull LocaleList locales) {
-        // Do nothing.
-    }
+  @Override
+  public void setTextLocales(@NonNull LocaleList locales) {
+    // Do nothing.
+  }
 }

@@ -37,7 +37,7 @@ import java.util.Set;
  * LinkedHashMap classes.
  */
 final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Serializable {
-  @SuppressWarnings({ "unchecked", "rawtypes" }) // to avoid Comparable<Comparable<Comparable<...>>>
+  @SuppressWarnings({"unchecked", "rawtypes"}) // to avoid Comparable<Comparable<Comparable<...>>>
   private static final Comparator<Comparable> NATURAL_ORDER = new Comparator<Comparable>() {
     public int compare(Comparable a, Comparable b) {
       return a.compareTo(b);
@@ -64,12 +64,11 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
    * be null if {@code comparator} permits.
    *
    * @param comparator the comparator to order elements with, or {@code null} to
-   *     use the natural ordering.
+   *                   use the natural ordering.
    */
   @SuppressWarnings({
       "unchecked", "rawtypes" // Unsafe! if comparator is null, this assumes K is comparable.
-  })
-  LinkedHashTreeMap(Comparator<? super K> comparator) {
+  }) LinkedHashTreeMap(Comparator<? super K> comparator) {
     this.comparator = comparator != null
         ? comparator
         : (Comparator) NATURAL_ORDER;
@@ -126,7 +125,7 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
    * Returns the node at or adjacent to the given key, creating it if requested.
    *
    * @throws ClassCastException if {@code key} and the tree's keys aren't
-   *     mutually comparable.
+   *                            mutually comparable.
    */
   Node<K, V> find(K key, boolean create) {
     Comparator<? super K> comparator = this.comparator;
@@ -333,7 +332,7 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
    * newly-unbalanced node and the tree's root.
    *
    * @param insert true if the node was unbalanced by an insert; false if it
-   *     was by a removal.
+   *               was by a removal.
    */
   private void rebalance(Node<K, V> unbalanced, boolean insert) {
     for (Node<K, V> node = unbalanced; node != null; node = node.parent) {
@@ -475,14 +474,18 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
     V value;
     int height;
 
-    /** Create the header entry. */
+    /**
+     * Create the header entry.
+     */
     Node() {
       key = null;
       hash = -1;
       next = prev = this;
     }
 
-    /** Create a regular entry. */
+    /**
+     * Create a regular entry.
+     */
     Node(Node<K, V> parent, K key, int hash, Node<K, V> next, Node<K, V> prev) {
       this.parent = parent;
       this.key = key;
@@ -567,7 +570,7 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
     // TODO: don't do anything if we're already at MAX_CAPACITY
     int oldCapacity = oldTable.length;
     @SuppressWarnings("unchecked") // Arrays and generics don't get along.
-        Node<K, V>[] newTable = new Node[oldCapacity * 2];
+    Node<K, V>[] newTable = new Node[oldCapacity * 2];
     AvlIterator<K, V> iterator = new AvlIterator<>();
     AvlBuilder<K, V> leftBuilder = new AvlBuilder<>();
     AvlBuilder<K, V> rightBuilder = new AvlBuilder<>();
@@ -620,7 +623,9 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
    * iteration of a tree.
    */
   static class AvlIterator<K, V> {
-    /** This stack is a singly linked list, linked by the 'parent' field. */
+    /**
+     * This stack is a singly linked list, linked by the 'parent' field.
+     */
     private Node<K, V> stackTop;
 
     void reset(Node<K, V> root) {
@@ -668,7 +673,9 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
    * {@code O(S)}.
    */
   static final class AvlBuilder<K, V> {
-    /** This stack is a singly linked list, linked by the 'parent' field. */
+    /**
+     * This stack is a singly linked list, linked by the 'parent' field.
+     */
     private Node<K, V> stack;
     private int leavesToSkip;
     private int leavesSkipped;

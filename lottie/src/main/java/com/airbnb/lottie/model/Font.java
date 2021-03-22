@@ -1,8 +1,8 @@
 package com.airbnb.lottie.model;
 
-import androidx.annotation.RestrictTo;
-
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
+
+import androidx.annotation.RestrictTo;
 
 @RestrictTo(LIBRARY)
 public class Font {

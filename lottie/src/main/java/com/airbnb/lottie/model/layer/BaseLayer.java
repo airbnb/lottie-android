@@ -1,11 +1,19 @@
 package com.airbnb.lottie.model.layer;
 
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.Build;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
@@ -131,7 +139,7 @@ public abstract class BaseLayer
   /**
    * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
    * be proportional to the surface area of all of the masks/mattes combined.
-   *
+   * <p>
    * DO NOT leave this enabled in production.
    */
   void setOutlineMasksAndMattes(boolean outline) {

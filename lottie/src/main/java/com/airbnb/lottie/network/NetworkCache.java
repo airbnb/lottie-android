@@ -44,7 +44,7 @@ public class NetworkCache {
 
   /**
    * If the animation doesn't exist in the cache, null will be returned.
-   *
+   * <p>
    * Once the animation is successfully parsed, {@link #renameTempFile(FileExtension)} must be
    * called to move the file from a temporary location to its permanent cache location so it can
    * be used in the future.
@@ -154,6 +154,6 @@ public class NetworkCache {
   }
 
   private static String filenameForUrl(String url, FileExtension extension, boolean isTemp) {
-    return "lottie_cache_" + url.replaceAll("\\W+", "") + (isTemp ? extension.tempExtension(): extension.extension);
+    return "lottie_cache_" + url.replaceAll("\\W+", "") + (isTemp ? extension.tempExtension() : extension.extension);
   }
 }

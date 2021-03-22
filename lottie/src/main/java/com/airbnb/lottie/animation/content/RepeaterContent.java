@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -73,7 +74,8 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     }
     // Fast forward the iterator until after this content.
     //noinspection StatementWithEmptyBody
-    while (contentsIter.hasPrevious() && contentsIter.previous() != this) {}
+    while (contentsIter.hasPrevious() && contentsIter.previous() != this) {
+    }
     List<Content> contents = new ArrayList<>();
     while (contentsIter.hasPrevious()) {
       contents.add(contentsIter.previous());

@@ -13,7 +13,8 @@ class FontParser {
       "ascent"
   );
 
-  private FontParser() {}
+  private FontParser() {
+  }
 
   static Font parse(JsonReader reader) throws IOException {
     String family = null;

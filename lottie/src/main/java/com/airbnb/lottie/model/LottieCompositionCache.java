@@ -18,8 +18,7 @@ public class LottieCompositionCache {
 
   private final LruCache<String, LottieComposition> cache = new LruCache<>(20);
 
-  @VisibleForTesting
-  LottieCompositionCache() {
+  @VisibleForTesting LottieCompositionCache() {
   }
 
   @Nullable

@@ -1,19 +1,19 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.PointF;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.parser.moshi.JsonReader;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.animation.keyframe.PathKeyframe;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 
 class PathKeyframeParser {
 
-  private PathKeyframeParser() {}
+  private PathKeyframeParser() {
+  }
 
   static PathKeyframe parse(
       JsonReader reader, LottieComposition composition) throws IOException {

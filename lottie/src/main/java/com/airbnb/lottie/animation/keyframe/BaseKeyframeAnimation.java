@@ -1,15 +1,15 @@
 package com.airbnb.lottie.animation.keyframe;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.FloatRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * @param <K> Keyframe type
@@ -110,18 +110,18 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
   @FloatRange(from = 0f, to = 1f)
   private float getStartDelayProgress() {
-      if (cachedStartDelayProgress == -1f) {
-        cachedStartDelayProgress = keyframesWrapper.getStartDelayProgress();
-      }
-      return cachedStartDelayProgress;
+    if (cachedStartDelayProgress == -1f) {
+      cachedStartDelayProgress = keyframesWrapper.getStartDelayProgress();
+    }
+    return cachedStartDelayProgress;
   }
 
   @FloatRange(from = 0f, to = 1f)
   float getEndProgress() {
-      if (cachedEndProgress == -1f) {
-        cachedEndProgress = keyframesWrapper.getEndProgress();
-      }
-      return cachedEndProgress;
+    if (cachedEndProgress == -1f) {
+      cachedEndProgress = keyframesWrapper.getEndProgress();
+    }
+    return cachedEndProgress;
   }
 
   public A getValue() {
@@ -337,7 +337,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     @Override
     public boolean isCachedValueEnabled(float progress) {
       if (cachedCurrentKeyframe == currentKeyframe
-              && cachedInterpolatedProgress == progress) {
+          && cachedInterpolatedProgress == progress) {
         return true;
       }
       cachedCurrentKeyframe = currentKeyframe;

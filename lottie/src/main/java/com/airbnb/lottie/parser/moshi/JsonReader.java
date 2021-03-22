@@ -17,12 +17,8 @@ package com.airbnb.lottie.parser.moshi;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import androidx.annotation.Nullable;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
@@ -188,6 +184,7 @@ public abstract class JsonReader implements Closeable {
    * error. http://code.google.com/p/google-gson/issues/detail?id=341
    */
   private static final String[] REPLACEMENT_CHARS;
+
   static {
     REPLACEMENT_CHARS = new String[128];
     for (int i = 0; i <= 0x1f; i++) {
@@ -210,14 +207,20 @@ public abstract class JsonReader implements Closeable {
   String[] pathNames;
   int[] pathIndices;
 
-  /** True to accept non-spec compliant JSON. */
+  /**
+   * True to accept non-spec compliant JSON.
+   */
   boolean lenient;
 
-  /** True to throw a {@link JsonDataException} on any attempt to call {@link #skipValue()}. */
+  /**
+   * True to throw a {@link JsonDataException} on any attempt to call {@link #skipValue()}.
+   */
   boolean failOnUnknown;
 
-  /** Returns a new instance that reads UTF-8 encoded JSON from {@code source}. */
-   public static JsonReader of(BufferedSource source) {
+  /**
+   * Returns a new instance that reads UTF-8 encoded JSON from {@code source}.
+   */
+  public static JsonReader of(BufferedSource source) {
     return new JsonUtf8Reader(source);
   }
 
@@ -249,9 +252,6 @@ public abstract class JsonReader implements Closeable {
   }
 
 
-
-
-
   /**
    * Consumes the next token from the JSON stream and asserts that it is the beginning of a new
    * array.
@@ -279,25 +279,25 @@ public abstract class JsonReader implements Closeable {
   /**
    * Returns true if the current array or object has another element.
    */
-   public abstract boolean hasNext() throws IOException;
+  public abstract boolean hasNext() throws IOException;
 
   /**
    * Returns the type of the next token without consuming it.
    */
-   public abstract Token peek() throws IOException;
+  public abstract Token peek() throws IOException;
 
   /**
    * Returns the next token, a {@linkplain Token#NAME property name}, and consumes it.
    *
    * @throws JsonDataException if the next token in the stream is not a property name.
    */
-   public abstract String nextName() throws IOException;
+  public abstract String nextName() throws IOException;
 
   /**
    * If the next token is a {@linkplain Token#NAME property name} that's in {@code options}, this
    * consumes it and returns its index. Otherwise this returns -1 and no name is consumed.
    */
-   public abstract int selectName(Options options) throws IOException;
+  public abstract int selectName(Options options) throws IOException;
 
   /**
    * Skips the next token, consuming it. This method is intended for use when the JSON token stream
@@ -329,7 +329,7 @@ public abstract class JsonReader implements Closeable {
    * Double#parseDouble(String)}.
    *
    * @throws JsonDataException if the next token is not a literal value, or if the next literal
-   *     value cannot be parsed as a double, or is non-finite.
+   *                           value cannot be parsed as a double, or is non-finite.
    */
   public abstract double nextDouble() throws IOException;
 
@@ -339,7 +339,7 @@ public abstract class JsonReader implements Closeable {
    * value cannot be exactly represented by a Java {@code int}, this method throws.
    *
    * @throws JsonDataException if the next token is not a literal value, if the next literal value
-   *     cannot be parsed as a number, or exactly represented as an int.
+   *                           cannot be parsed as a number, or exactly represented as an int.
    */
   public abstract int nextInt() throws IOException;
 
@@ -358,7 +358,7 @@ public abstract class JsonReader implements Closeable {
    * Returns a <a href="http://goessner.net/articles/JsonPath/">JsonPath</a> to
    * the current location in the JSON value.
    */
-   public final String getPath() {
+  public final String getPath() {
     return JsonScope.getPath(stackSize, scopes, pathNames, pathIndices);
   }
 
@@ -375,7 +375,7 @@ public abstract class JsonReader implements Closeable {
       this.doubleQuoteSuffix = doubleQuoteSuffix;
     }
 
-     public static Options of(String... strings) {
+    public static Options of(String... strings) {
       try {
         ByteString[] result = new ByteString[strings.length];
         Buffer buffer = new Buffer();

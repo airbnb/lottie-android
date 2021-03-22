@@ -2,11 +2,12 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 public class PathKeyframe extends Keyframe<PointF> {
   @Nullable private Path path;
@@ -30,7 +31,9 @@ public class PathKeyframe extends Keyframe<PointF> {
     }
   }
 
-  /** This will be null if the startValue and endValue are the same. */
+  /**
+   * This will be null if the startValue and endValue are the same.
+   */
   @Nullable Path getPath() {
     return path;
   }

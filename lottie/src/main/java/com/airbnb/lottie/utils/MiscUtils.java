@@ -2,6 +2,7 @@ package com.airbnb.lottie.utils;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import androidx.annotation.FloatRange;
 
 import com.airbnb.lottie.animation.content.KeyPathElementContent;
@@ -97,7 +98,7 @@ public class MiscUtils {
    * Helper method for any {@link KeyPathElementContent} that will check if the content
    * fully matches the keypath then will add itself as the final key, resolve it, and add
    * it to the accumulator list.
-   *
+   * <p>
    * Any {@link KeyPathElementContent} should call through to this as its implementation of
    * {@link KeyPathElementContent#resolveKeyPath(KeyPath, int, List, KeyPath)}.
    */

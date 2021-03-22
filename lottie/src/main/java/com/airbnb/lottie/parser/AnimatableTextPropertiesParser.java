@@ -18,7 +18,8 @@ public class AnimatableTextPropertiesParser {
       "t"
   );
 
-  private AnimatableTextPropertiesParser() {}
+  private AnimatableTextPropertiesParser() {
+  }
 
   public static AnimatableTextProperties parse(
       JsonReader reader, LottieComposition composition) throws IOException {

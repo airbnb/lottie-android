@@ -16,6 +16,14 @@ import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.KeyPath;
@@ -35,14 +43,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import androidx.annotation.FloatRange;
-import androidx.annotation.IntDef;
-import androidx.annotation.IntRange;
-import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -67,7 +67,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean safeMode = false;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
-  private final ValueAnimator.AnimatorUpdateListener  progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
+  private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
     @Override
     public void onAnimationUpdate(ValueAnimator animation) {
       if (compositionLayer != null) {
@@ -250,7 +250,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
    * be proportional to the surface area of all of the masks/mattes combined.
-   *
+   * <p>
    * DO NOT leave this enabled in production.
    */
   public void setOutlineMasksAndMattes(boolean outline) {
@@ -330,7 +330,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * If you are experiencing a device specific crash that happens during drawing, you can set this to true
    * for those devices. If set to true, draw will be wrapped with a try/catch which will cause Lottie to
    * render an empty frame rather than crash your app.
-   *
+   * <p>
    * Ideally, you will never need this and the vast majority of apps and animations won't. However, you may use
    * this for very specific cases if absolutely necessary.
    */
@@ -530,7 +530,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Sets the maximum frame that the animation will end at when playing or looping.
-   *
+   * <p>
    * The value will be clamped to the composition bounds. For example, setting Integer.MAX_VALUE would result in the same
    * thing as composition.endFrame.
    */
@@ -572,6 +572,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Sets the minimum frame to the start time of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMinFrame(final String markerName) {
@@ -593,6 +594,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Sets the maximum frame to the start time + duration of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMaxFrame(final String markerName) {
@@ -615,6 +617,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Sets the minimum and maximum frame to the start time and start time + duration
    * of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMinAndMaxFrame(final String markerName) {
@@ -758,10 +761,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) { animator.addPauseListener(listener); }
+  public void addAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    animator.addPauseListener(listener);
+  }
 
   @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) { animator.removePauseListener(listener); }
+  public void removeAnimatorPauseListener(Animator.AnimatorPauseListener listener) {
+    animator.removePauseListener(listener);
+  }
 
   /**
    * Sets the progress to the specified frame.
@@ -882,7 +889,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Allows ignoring system animations settings, therefore allowing animations to run even if they are disabled.
-   *
+   * <p>
    * Defaults to false.
    *
    * @param ignore if true animations will run even when they are disabled in the system settings.
@@ -1050,7 +1057,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * drawable.addValueCallback(yourKeyPath, LottieProperty.COLOR) { yourColor }
    */
   public <T> void addValueCallback(KeyPath keyPath, T property,
-                                   final SimpleLottieValueCallback<T> callback) {
+      final SimpleLottieValueCallback<T> callback) {
     addValueCallback(keyPath, property, new LottieValueCallback<T>() {
       @Override
       public T getValue(LottieFrameInfo<T> frameInfo) {

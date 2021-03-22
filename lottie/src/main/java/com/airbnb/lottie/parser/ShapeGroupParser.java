@@ -12,12 +12,15 @@ import java.util.List;
 
 class ShapeGroupParser {
 
-  private ShapeGroupParser() {}
+  private ShapeGroupParser() {
+  }
+
   private static JsonReader.Options NAMES = JsonReader.Options.of(
       "nm",
       "hd",
       "it"
   );
+
   static ShapeGroup parse(
       JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;

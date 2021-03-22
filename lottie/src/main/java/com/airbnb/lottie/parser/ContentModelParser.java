@@ -1,6 +1,7 @@
 package com.airbnb.lottie.parser;
 
 import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.parser.moshi.JsonReader;

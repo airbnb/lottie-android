@@ -12,7 +12,8 @@ class MergePathsParser {
       "hd"
   );
 
-  private MergePathsParser() {}
+  private MergePathsParser() {
+  }
 
   static MergePaths parse(JsonReader reader) throws IOException {
     String name = null;
@@ -25,7 +26,7 @@ class MergePathsParser {
           name = reader.nextString();
           break;
         case 1:
-          mode =  MergePaths.MergePathsMode.forId(reader.nextInt());
+          mode = MergePaths.MergePathsMode.forId(reader.nextInt());
           break;
         case 2:
           hidden = reader.nextBoolean();

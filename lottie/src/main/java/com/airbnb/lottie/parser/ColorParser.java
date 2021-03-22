@@ -1,7 +1,6 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.parser.moshi.JsonReader;
 
@@ -10,7 +9,8 @@ import java.io.IOException;
 public class ColorParser implements ValueParser<Integer> {
   public static final ColorParser INSTANCE = new ColorParser();
 
-  private ColorParser() {}
+  private ColorParser() {
+  }
 
   @Override public Integer parse(JsonReader reader, float scale) throws IOException {
     boolean isArray = reader.peek() == JsonReader.Token.BEGIN_ARRAY;
@@ -37,7 +37,9 @@ public class ColorParser implements ValueParser<Integer> {
       // It appears as if sometimes, Telegram Lottie stickers are exported with rgb [0,1] and a [0,255].
       // This shouldn't happen but we can gracefully handle it when it does.
       // https://github.com/airbnb/lottie-android/issues/1478
-      if (a <= 1) a *= 255;
+      if (a <= 1) {
+        a *= 255;
+      }
     }
 
     return Color.argb((int) a, (int) r, (int) g, (int) b);

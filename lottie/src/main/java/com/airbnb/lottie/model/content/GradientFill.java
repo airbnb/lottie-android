@@ -1,6 +1,7 @@
 package com.airbnb.lottie.model.content;
 
 import android.graphics.Path;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -26,10 +27,10 @@ public class GradientFill implements ContentModel {
   private final boolean hidden;
 
   public GradientFill(String name, GradientType gradientType, Path.FillType fillType,
-                      AnimatableGradientColorValue gradientColor,
-                      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
-                      AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
-                      AnimatableFloatValue highlightAngle, boolean hidden) {
+      AnimatableGradientColorValue gradientColor,
+      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
+      AnimatablePointValue endPoint, AnimatableFloatValue highlightLength,
+      AnimatableFloatValue highlightAngle, boolean hidden) {
     this.gradientType = gradientType;
     this.fillType = fillType;
     this.gradientColor = gradientColor;

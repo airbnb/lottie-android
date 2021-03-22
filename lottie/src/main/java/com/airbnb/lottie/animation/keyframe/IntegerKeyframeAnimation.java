@@ -1,7 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
 
@@ -27,8 +27,8 @@ public class IntegerKeyframeAnimation extends KeyframeAnimation<Integer> {
     if (valueCallback != null) {
       //noinspection ConstantConditions
       Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
-              keyframe.startValue, keyframe.endValue,
-              keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+          keyframe.startValue, keyframe.endValue,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
       if (value != null) {
         return value;
       }

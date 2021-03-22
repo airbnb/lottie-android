@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+
 import androidx.annotation.ColorInt;
 
 /**

@@ -1,9 +1,10 @@
 package com.airbnb.lottie.value;
 
 import android.graphics.PointF;
+import android.view.animation.Interpolator;
+
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
-import android.view.animation.Interpolator;
 
 import com.airbnb.lottie.LottieComposition;
 
@@ -94,7 +95,7 @@ public class Keyframe<T> {
       return 0f;
     }
     if (startProgress == Float.MIN_VALUE) {
-      startProgress = (startFrame  - composition.getStartFrame()) / composition.getDurationFrames();
+      startProgress = (startFrame - composition.getStartFrame()) / composition.getDurationFrames();
     }
     return startProgress;
   }

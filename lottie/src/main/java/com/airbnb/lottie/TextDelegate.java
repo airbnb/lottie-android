@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Extend this class to replace animation text with custom text. This can be useful to handle
  * translations.
- *
+ * <p>
  * The only method you should have to override is {@link #getText(String)}.
  */
 public class TextDelegate {
@@ -22,8 +22,7 @@ public class TextDelegate {
   /**
    * This normally needs to be able to invalidate the view/drawable but not for the test.
    */
-  @VisibleForTesting
-  TextDelegate() {
+  @VisibleForTesting TextDelegate() {
     animationView = null;
     drawable = null;
   }

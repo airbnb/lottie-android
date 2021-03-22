@@ -17,7 +17,7 @@ public class CircleShape implements ContentModel {
   private final boolean hidden;
 
   public CircleShape(String name, AnimatableValue<PointF, PointF> position,
-                     AnimatablePointValue size, boolean isReversed, boolean hidden) {
+      AnimatablePointValue size, boolean isReversed, boolean hidden) {
     this.name = name;
     this.position = position;
     this.size = size;

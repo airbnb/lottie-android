@@ -2,7 +2,9 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Rect;
 
-import com.airbnb.lottie.L;
+import androidx.collection.LongSparseArray;
+import androidx.collection.SparseArrayCompat;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.model.Font;
@@ -18,9 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.collection.LongSparseArray;
-import androidx.collection.SparseArrayCompat;
 
 
 public class LottieCompositionMoshiParser {
@@ -114,7 +113,7 @@ public class LottieCompositionMoshiParser {
   }
 
   private static void parseLayers(JsonReader reader, LottieComposition composition,
-                                  List<Layer> layers, LongSparseArray<Layer> layerMap) throws IOException {
+      List<Layer> layers, LongSparseArray<Layer> layerMap) throws IOException {
     int imageCount = 0;
     reader.beginArray();
     while (reader.hasNext()) {
@@ -241,7 +240,7 @@ public class LottieCompositionMoshiParser {
   );
 
   private static void parseMarkers(
-      JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException{
+      JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException {
     reader.beginArray();
     while (reader.hasNext()) {
       String comment = null;

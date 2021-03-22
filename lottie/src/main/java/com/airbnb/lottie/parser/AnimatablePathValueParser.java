@@ -3,13 +3,13 @@ package com.airbnb.lottie.parser;
 import android.graphics.PointF;
 
 import com.airbnb.lottie.LottieComposition;
-import com.airbnb.lottie.parser.moshi.JsonReader;
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatablePathValue;
 import com.airbnb.lottie.model.animatable.AnimatableSplitDimensionPathValue;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
+import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,8 @@ public class AnimatablePathValueParser {
       "y"
   );
 
-  private AnimatablePathValueParser() {}
+  private AnimatablePathValueParser() {
+  }
 
   public static AnimatablePathValue parse(
       JsonReader reader, LottieComposition composition) throws IOException {

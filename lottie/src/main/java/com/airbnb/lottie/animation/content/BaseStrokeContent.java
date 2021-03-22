@@ -1,5 +1,7 @@
 package com.airbnb.lottie.animation.content;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
@@ -8,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
@@ -30,8 +33,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public abstract class BaseStrokeContent
     implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, DrawingContent {

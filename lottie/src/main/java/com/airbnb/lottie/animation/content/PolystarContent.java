@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import android.graphics.Path;
 import android.graphics.PointF;
+
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieDrawable;
@@ -231,7 +232,7 @@ public class PolystarContent
           }
         }
 
-        path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
+        path.cubicTo(previousX - cp1x, previousY - cp1y, x + cp2x, y + cp2y, x, y);
       }
 
       currentAngle += dTheta;
@@ -285,7 +286,7 @@ public class PolystarContent
         float cp1y = radius * roundedness * POLYGON_MAGIC_NUMBER * cp1Dy;
         float cp2x = radius * roundedness * POLYGON_MAGIC_NUMBER * cp2Dx;
         float cp2y = radius * roundedness * POLYGON_MAGIC_NUMBER * cp2Dy;
-        path.cubicTo(previousX - cp1x,previousY - cp1y, x + cp2x, y + cp2y, x, y);
+        path.cubicTo(previousX - cp1x, previousY - cp1y, x + cp2x, y + cp2y, x, y);
       } else {
         path.lineTo(x, y);
       }

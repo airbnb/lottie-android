@@ -30,12 +30,12 @@ public class GradientStroke implements ContentModel {
   private final boolean hidden;
 
   public GradientStroke(String name, GradientType gradientType,
-                        AnimatableGradientColorValue gradientColor,
-                        AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
-                        AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
-                        ShapeStroke.LineJoinType joinType, float miterLimit,
-                        List<AnimatableFloatValue> lineDashPattern,
-                        @Nullable AnimatableFloatValue dashOffset, boolean hidden) {
+      AnimatableGradientColorValue gradientColor,
+      AnimatableIntegerValue opacity, AnimatablePointValue startPoint,
+      AnimatablePointValue endPoint, AnimatableFloatValue width, ShapeStroke.LineCapType capType,
+      ShapeStroke.LineJoinType joinType, float miterLimit,
+      List<AnimatableFloatValue> lineDashPattern,
+      @Nullable AnimatableFloatValue dashOffset, boolean hidden) {
     this.name = name;
     this.gradientType = gradientType;
     this.gradientColor = gradientColor;

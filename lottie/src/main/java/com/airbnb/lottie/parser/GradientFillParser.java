@@ -30,7 +30,8 @@ class GradientFillParser {
       "k"
   );
 
-  private GradientFillParser() {}
+  private GradientFillParser() {
+  }
 
   static GradientFill parse(
       JsonReader reader, LottieComposition composition) throws IOException {

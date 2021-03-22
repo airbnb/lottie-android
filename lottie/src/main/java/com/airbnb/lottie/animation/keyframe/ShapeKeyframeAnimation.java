@@ -2,9 +2,9 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Path;
 
-import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
 

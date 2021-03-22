@@ -19,6 +19,7 @@ public abstract class BaseLottieAnimator extends ValueAnimator {
   @Override public void setStartDelay(long startDelay) {
     throw new UnsupportedOperationException("LottieAnimator does not support setStartDelay.");
   }
+
   @Override public ValueAnimator setDuration(long duration) {
     throw new UnsupportedOperationException("LottieAnimator does not support setDuration.");
   }

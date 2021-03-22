@@ -1,6 +1,7 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Path;
+
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;

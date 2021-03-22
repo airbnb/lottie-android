@@ -68,6 +68,6 @@ public class MergePaths implements ContentModel {
 
   @Override
   public String toString() {
-    return "MergePaths{" + "mode=" +  mode + '}';
+    return "MergePaths{" + "mode=" + mode + '}';
   }
 }

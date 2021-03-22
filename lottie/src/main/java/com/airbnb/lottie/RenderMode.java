@@ -7,7 +7,7 @@ package com.airbnb.lottie;
  * @see LottieAnimationView#setRenderMode(RenderMode) for more information.
  */
 public enum RenderMode {
-    AUTOMATIC,
-    HARDWARE,
-    SOFTWARE
+  AUTOMATIC,
+  HARDWARE,
+  SOFTWARE
 }

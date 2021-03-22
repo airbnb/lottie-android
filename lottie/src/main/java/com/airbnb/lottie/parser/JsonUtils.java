@@ -2,8 +2,8 @@ package com.airbnb.lottie.parser;
 
 import android.graphics.Color;
 import android.graphics.PointF;
+
 import androidx.annotation.ColorInt;
-import android.util.JsonToken;
 
 import com.airbnb.lottie.parser.moshi.JsonReader;
 
@@ -45,10 +45,14 @@ class JsonUtils {
 
   static PointF jsonToPoint(JsonReader reader, float scale) throws IOException {
     switch (reader.peek()) {
-      case NUMBER: return jsonNumbersToPoint(reader, scale);
-      case BEGIN_ARRAY: return jsonArrayToPoint(reader, scale);
-      case BEGIN_OBJECT: return jsonObjectToPoint(reader, scale);
-      default: throw new IllegalArgumentException("Unknown point starts with " + reader.peek());
+      case NUMBER:
+        return jsonNumbersToPoint(reader, scale);
+      case BEGIN_ARRAY:
+        return jsonArrayToPoint(reader, scale);
+      case BEGIN_OBJECT:
+        return jsonObjectToPoint(reader, scale);
+      default:
+        throw new IllegalArgumentException("Unknown point starts with " + reader.peek());
     }
   }
 

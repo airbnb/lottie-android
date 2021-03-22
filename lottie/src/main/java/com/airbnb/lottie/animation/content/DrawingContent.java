@@ -6,5 +6,6 @@ import android.graphics.RectF;
 
 public interface DrawingContent extends Content {
   void draw(Canvas canvas, Matrix parentMatrix, int alpha);
+
   void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents);
 }

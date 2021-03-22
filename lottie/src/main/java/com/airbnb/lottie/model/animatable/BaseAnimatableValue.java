@@ -1,7 +1,5 @@
 package com.airbnb.lottie.model.animatable;
 
-import android.graphics.PointF;
-
 import com.airbnb.lottie.value.Keyframe;
 
 import java.util.Arrays;

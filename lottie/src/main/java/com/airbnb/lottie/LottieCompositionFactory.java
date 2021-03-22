@@ -1,10 +1,18 @@
 package com.airbnb.lottie;
 
+import static com.airbnb.lottie.utils.Utils.closeQuietly;
+import static okio.Okio.buffer;
+import static okio.Okio.source;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
+import androidx.annotation.WorkerThread;
 
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
@@ -24,15 +32,8 @@ import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RawRes;
-import androidx.annotation.WorkerThread;
 import okio.BufferedSource;
 import okio.Okio;
-
-import static com.airbnb.lottie.utils.Utils.closeQuietly;
-import static okio.Okio.buffer;
-import static okio.Okio.source;
 
 /**
  * Helpers to create or cache a LottieComposition.
@@ -54,7 +55,7 @@ public class LottieCompositionFactory {
    * reference magic bytes for zip compressed files.
    * useful to determine if an InputStream is a zip file or not
    */
-  private static final byte[] MAGIC = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
+  private static final byte[] MAGIC = new byte[]{0x50, 0x4b, 0x03, 0x04};
 
 
   private LottieCompositionFactory() {
@@ -486,9 +487,10 @@ public class LottieCompositionFactory {
 
     try {
       BufferedSource peek = inputSource.peek();
-      for (byte b: MAGIC) {
-        if(peek.readByte() != b)
+      for (byte b : MAGIC) {
+        if (peek.readByte() != b) {
           return false;
+        }
       }
       peek.close();
       return true;

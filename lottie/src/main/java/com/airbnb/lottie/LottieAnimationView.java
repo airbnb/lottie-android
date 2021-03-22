@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import static com.airbnb.lottie.RenderMode.HARDWARE;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -43,8 +45,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import static com.airbnb.lottie.RenderMode.HARDWARE;
-
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
  * bodymovin (https://github.com/bodymovin/bodymovin).
@@ -52,12 +52,12 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
  * 2) Programmatically:
- *      {@link #setAnimation(String)}
- *      {@link #setAnimation(int)}
- *      {@link #setAnimation(InputStream, String)}
- *      {@link #setAnimationFromJson(String, String)}
- *      {@link #setAnimationFromUrl(String)}
- *      {@link #setComposition(LottieComposition)}
+ * {@link #setAnimation(String)}
+ * {@link #setAnimation(int)}
+ * {@link #setAnimation(InputStream, String)}
+ * {@link #setAnimationFromJson(String, String)}
+ * {@link #setAnimationFromUrl(String)}
+ * {@link #setComposition(LottieComposition)}
  * <p>
  * You can set a default cache strategy with {@link R.attr#lottie_cacheComposition}.
  * <p>
@@ -127,7 +127,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   private int buildDrawingCacheDepth = 0;
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
-  /** Can be null because it is created async */
+  /**
+   * Can be null because it is created async
+   */
   @Nullable private LottieComposition composition;
 
   public LottieAnimationView(Context context) {
@@ -362,7 +364,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Allows ignoring system animations settings, therefore allowing animations to run even if they are disabled.
-   *
+   * <p>
    * Defaults to false.
    *
    * @param ignore if true animations will run even when they are disabled in the system settings.
@@ -373,7 +375,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Enable this to get merge path support for devices running KitKat (19) and above.
-   *
+   * <p>
    * Merge paths currently don't work if the the operand shape is entirely contained within the
    * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
    * instead of using merge paths.
@@ -392,9 +394,9 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * If set to true, all future compositions that are set will be cached so that they don't need to be parsed
    * next time they are loaded. This won't apply to compositions that have already been loaded.
-   *
+   * <p>
    * Defaults to true.
-   *
+   * <p>
    * {@link R.attr#lottie_cacheComposition}
    */
   public void setCacheComposition(boolean cacheComposition) {
@@ -404,7 +406,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Enable this to debug slow animations by outlining masks and mattes. The performance overhead of the masks and mattes will
    * be proportional to the surface area of all of the masks/mattes combined.
-   *
+   * <p>
    * DO NOT leave this enabled in production.
    */
   public void setOutlineMasksAndMattes(boolean outline) {
@@ -485,13 +487,14 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and lottie
+   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and
+   * lottie
    * will unzip and link the images automatically.
-   *
+   * <p>
    * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
    * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
    * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
-   *
+   * <p>
    * You can replace the default network stack or cache handling with a global {@link LottieConfig}
    *
    * @see LottieConfig.Builder
@@ -504,13 +507,14 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   }
 
   /**
-   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and lottie
+   * Load a lottie animation from a url. The url can be a json file or a zip file. Use a zip file if you have images. Simply zip them together and
+   * lottie
    * will unzip and link the images automatically.
-   *
+   * <p>
    * Under the hood, Lottie uses Java HttpURLConnection because it doesn't require any transitive networking dependencies. It will download the file
    * to the application cache under a temporary name. If the file successfully parses to a composition, it will rename the temporary file to one that
    * can be accessed immediately for subsequent requests. If the file does not parse to a composition, the temporary file will be deleted.
-   *
+   * <p>
    * You can replace the default network stack or cache handling with a global {@link LottieConfig}
    *
    * @see LottieConfig.Builder
@@ -524,15 +528,15 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Set a default failure listener that will be called if any of the setAnimation APIs fail for any reason.
    * This can be used to replace the default behavior.
-   *
+   * <p>
    * The default behavior will log any network errors and rethrow all other exceptions.
-   *
+   * <p>
    * If you are loading an animation from the network, errors may occur if your user has no internet.
    * You can use this listener to retry the download or you can have it default to an error drawable
    * with {@link #setFallbackResource(int)}.
-   *
+   * <p>
    * Unless you are using {@link #setAnimationFromUrl(String)}, errors are unexpected.
-   *
+   * <p>
    * Set the listener to null to revert to the default behavior.
    */
   public void setFailureListener(@Nullable LottieListener<Throwable> failureListener) {
@@ -543,7 +547,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * Set a drawable that will be rendered if the LottieComposition fails to load for any reason.
    * Unless you are using {@link #setAnimationFromUrl(String)}, this is an unexpected error and
    * you should handle it with {@link #setFailureListener(LottieListener)}.
-   *
+   * <p>
    * If this is a network animation, you may use this to show an error to the user or
    * you can use a failure listener to retry the download.
    */
@@ -555,8 +559,8 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     clearComposition();
     cancelLoaderTask();
     this.compositionTask = compositionTask
-            .addListener(loadedListener)
-            .addFailureListener(wrappedFailureListener);
+        .addListener(loadedListener)
+        .addFailureListener(wrappedFailureListener);
   }
 
   private void cancelLoaderTask() {
@@ -599,7 +603,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
     requestLayout();
 
     for (LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener : lottieOnCompositionLoadedListeners) {
-        lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
+      lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
     }
 
   }
@@ -674,7 +678,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Sets the maximum frame that the animation will end at when playing or looping.
-   *
+   * <p>
    * The value will be clamped to the composition bounds. For example, setting Integer.MAX_VALUE would result in the same
    * thing as composition.endFrame.
    */
@@ -698,6 +702,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Sets the minimum frame to the start time of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMinFrame(String markerName) {
@@ -706,6 +711,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Sets the maximum frame to the start time + duration of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMaxFrame(String markerName) {
@@ -715,6 +721,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Sets the minimum and maximum frame to the start time and start time + duration
    * of the specified marker.
+   *
    * @throws IllegalArgumentException if the marker is not found.
    */
   public void setMinAndMaxFrame(String markerName) {
@@ -753,6 +760,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
 
   /**
    * Reverses the current animation speed. This does NOT play the animation.
+   *
    * @see #setSpeed(float)
    * @see #playAnimation()
    * @see #resumeAnimation()
@@ -868,10 +876,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * If you use image assets, you must explicitly specify the folder in assets/ in which they are
    * located because bodymovin uses the name filenames across all compositions (img_#).
    * Do NOT rename the images themselves.
-   *
+   * <p>
    * If your images are located in src/main/assets/airbnb_loader/ then call
    * `setImageAssetsFolder("airbnb_loader/");`.
-   *
+   * <p>
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
@@ -902,7 +910,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * Use this if you can't bundle images with your app. This may be useful if you download the
    * animations from the network or have the images saved to an SD Card. In that case, Lottie
    * will defer the loading of the bitmap to this delegate.
-   *
+   * <p>
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
@@ -930,7 +938,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Takes a {@link KeyPath}, potentially with wildcards or globstars and resolve it to a list of
    * zero or more actual {@link KeyPath Keypaths} that exist in the current animation.
-   *
+   * <p>
    * If you want to set value callbacks for any of these values, it is recommended to use the
    * returned {@link KeyPath} objects because they will be internally resolved to their content
    * and won't trigger a tree walk of the animation contents when applied.
@@ -942,7 +950,7 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Add a property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
    * to multiple contents. In that case, the callback's value will apply to all of them.
-   *
+   * <p>
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
    */
@@ -967,12 +975,12 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
   /**
    * Set the scale on the current composition. The only cost of this function is re-rendering the
    * current frame so you may call it frequent to scale something up or down.
-   *
+   * <p>
    * The smaller the animation is, the better the performance will be. You may find that scaling an
    * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
    * with a scaleType such as centerInside will yield better performance with little perceivable
    * quality loss.
-   *
+   * <p>
    * You can also use a fixed view width/height in conjunction with the normal ImageView
    * scaleTypes centerCrop and centerInside.
    */
@@ -1052,10 +1060,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * If you are experiencing a device specific crash that happens during drawing, you can set this to true
    * for those devices. If set to true, draw will be wrapped with a try/catch which will cause Lottie to
    * render an empty frame rather than crash your app.
-   *
+   * <p>
    * Ideally, you will never need this and the vast majority of apps and animations won't. However, you may use
    * this for very specific cases if absolutely necessary.
-   *
+   * <p>
    * There is no XML attr for this because it should be set programmatically and only for specific devices that
    * are known to be problematic.
    */
@@ -1088,10 +1096,10 @@ import static com.airbnb.lottie.RenderMode.HARDWARE;
    * Lottie defaults to Automatic which will use hardware acceleration unless:
    * 1) There are dash paths and the device is pre-Pie.
    * 2) There are more than 4 masks and mattes and the device is pre-Pie.
-   *    Hardware acceleration is generally faster for those devices unless
-   *    there are many large mattes and masks in which case there is a ton
-   *    of GPU uploadTexture thrashing which makes it much slower.
-   *
+   * Hardware acceleration is generally faster for those devices unless
+   * there are many large mattes and masks in which case there is a ton
+   * of GPU uploadTexture thrashing which makes it much slower.
+   * <p>
    * In most cases, hardware rendering will be faster, even if you have mattes and masks.
    * However, if you have multiple mattes and masks (especially large ones) then you
    * should test both render modes. You should also test on pre-Pie and Pie+ devices

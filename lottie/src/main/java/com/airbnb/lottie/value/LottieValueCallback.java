@@ -29,7 +29,7 @@ public class LottieValueCallback<T> {
 
   /**
    * Override this if you haven't set a static value in the constructor or with setValue.
-   *
+   * <p>
    * Return null to resort to the default value.
    */
   @Nullable

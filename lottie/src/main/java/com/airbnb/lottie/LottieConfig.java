@@ -1,16 +1,16 @@
 package com.airbnb.lottie;
 
-import com.airbnb.lottie.network.LottieNetworkFetcher;
-import com.airbnb.lottie.network.LottieNetworkCacheProvider;
-
-import java.io.File;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.network.LottieNetworkCacheProvider;
+import com.airbnb.lottie.network.LottieNetworkFetcher;
+
+import java.io.File;
+
 /**
  * Class for custom library configuration.
- *
+ * <p>
  * This should be constructed with {@link LottieConfig.Builder}
  */
 public class LottieConfig {

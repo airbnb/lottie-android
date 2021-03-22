@@ -1,11 +1,12 @@
 package com.airbnb.lottie.utils;
 
 import android.animation.ValueAnimator;
+import android.view.Choreographer;
+
 import androidx.annotation.FloatRange;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import android.view.Choreographer;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -138,8 +139,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
     if (keepMinAndMaxFrames) {
       setMinAndMaxFrames(
-              (int) Math.max(this.minFrame, composition.getStartFrame()),
-              (int) Math.min(this.maxFrame, composition.getEndFrame())
+          (int) Math.max(this.minFrame, composition.getStartFrame()),
+          (int) Math.min(this.maxFrame, composition.getEndFrame())
       );
     } else {
       setMinAndMaxFrames((int) composition.getStartFrame(), (int) composition.getEndFrame());
