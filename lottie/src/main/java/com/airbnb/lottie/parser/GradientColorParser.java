@@ -72,8 +72,13 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       double value = array.get(i);
       switch (i % 4) {
         case 0:
-          // position
-          positions[colorIndex] = (float) value;
+          // Positions should monotonically increase. If they don't, it can cause rendering problems on some phones.
+          // https://github.com/airbnb/lottie-android/issues/1675
+          if (colorIndex > 0 && positions[colorIndex - 1] >= (float) value) {
+            positions[colorIndex] = (float) value + 0.01f;
+          } else {
+            positions[colorIndex] = (float) value;
+          }
           break;
         case 1:
           r = (int) (value * 255);
