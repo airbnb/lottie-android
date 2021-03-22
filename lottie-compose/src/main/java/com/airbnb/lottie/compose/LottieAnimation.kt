@@ -13,6 +13,8 @@ import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.manager.ImageAssetManager
+import com.airbnb.lottie.setImageAssetManager
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipInputStream
@@ -80,6 +82,17 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
 ) {
     val drawable = remember { LottieDrawable() }
+    var imageAssetManager: ImageAssetManager? by remember { mutableStateOf(null) }
+
+    if (composition?.hasImages() == true) {
+        val context = LocalContext.current
+        LaunchedEffect(context, composition, state.imageAssetsFolder, state.imageAssetDelegate) {
+            @Suppress("RestrictedApi")
+            imageAssetManager = ImageAssetManager(context, state.imageAssetsFolder, state.imageAssetDelegate, composition.images)
+        }
+    } else {
+        imageAssetManager = null
+    }
 
     SideEffect {
         drawable.composition = composition
@@ -119,10 +132,8 @@ fun LottieAnimation(
             .maintainAspectRatio(composition)
     ) {
         drawIntoCanvas { canvas ->
-            drawable.progress = state.progress
-            drawable.setOutlineMasksAndMattes(state.outlineMasksAndMattes)
-            drawable.isApplyingOpacityToLayersEnabled = state.applyOpacityToLayers
-            drawable.enableMergePathsForKitKatAndAbove(state.enableMergePaths)
+            state.applyTo(drawable)
+            drawable.setImageAssetManager(imageAssetManager)
             withTransform({
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {

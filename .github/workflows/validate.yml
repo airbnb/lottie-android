@@ -22,11 +22,15 @@ jobs:
           java-package: jdk
       - name: Run Lint
         run: ./gradlew lintDebug
-      - name: Lint Results
+      - name: Zip reports
+        if: always()
+        run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
+      - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v1
         with:
-          name: Lint Results
-          path: lottie/build/reports
+          name: lint_reports
+          path: reports.zip
   unit-test:
     runs-on: ubuntu-latest
     steps:
@@ -39,11 +43,15 @@ jobs:
           java-package: jdk
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
-      - name: Lint Results
+      - name: Zip reports
+        if: always()
+        run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
+      - name: Upload reports
+        if: always()
         uses: actions/upload-artifact@v1
         with:
-          name: Lint Results
-          path: lottie/build/reports
+          name: unit_test_reports
+          path: reports.zip
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest

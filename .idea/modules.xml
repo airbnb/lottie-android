@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/lottie-android.iml" filepath="$PROJECT_DIR$/.idea/lottie-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/issue-repro/lottie-android.issue-repro.iml" filepath="$PROJECT_DIR$/.idea/modules/issue-repro/lottie-android.issue-repro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/issue-repro-compose/lottie-android.issue-repro-compose.iml" filepath="$PROJECT_DIR$/.idea/modules/issue-repro-compose/lottie-android.issue-repro-compose.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lottie/lottie-android.lottie.iml" filepath="$PROJECT_DIR$/.idea/modules/lottie/lottie-android.lottie.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lottie-compose/lottie-android.lottie-compose.iml" filepath="$PROJECT_DIR$/.idea/modules/lottie-compose/lottie-android.lottie-compose.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/lottie-android.sample.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/lottie-android.sample.iml" />
