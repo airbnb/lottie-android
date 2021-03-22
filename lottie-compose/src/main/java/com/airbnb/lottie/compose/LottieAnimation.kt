@@ -115,9 +115,8 @@ fun LottieAnimation(
     if (composition == null || composition.duration == 0f) return
 
     Canvas(
-        modifier = Modifier
+        modifier = modifier
             .maintainAspectRatio(composition)
-            .then(modifier)
     ) {
         drawIntoCanvas { canvas ->
             drawable.progress = state.progress
