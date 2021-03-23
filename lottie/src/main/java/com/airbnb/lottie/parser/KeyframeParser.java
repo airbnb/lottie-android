@@ -201,7 +201,11 @@ class KeyframeParser {
                   } else {
                     reader.beginArray();
                     xCp1x = (float) reader.nextDouble();
-                    yCp1x = (float) reader.nextDouble();
+                    if (reader.peek() == JsonReader.Token.NUMBER) {
+                      yCp1x = (float) reader.nextDouble();
+                    } else {
+                      yCp1x = xCp1x;
+                    }
                     reader.endArray();
                   }
                   break;
@@ -212,7 +216,11 @@ class KeyframeParser {
                   } else {
                     reader.beginArray();
                     xCp1y = (float) reader.nextDouble();
-                    yCp1y = (float) reader.nextDouble();
+                    if (reader.peek() == JsonReader.Token.NUMBER) {
+                      yCp1y = (float) reader.nextDouble();
+                    } else {
+                      yCp1y = xCp1y;
+                    }
                     reader.endArray();
                   }
                   break;
@@ -243,7 +251,11 @@ class KeyframeParser {
                   } else {
                     reader.beginArray();
                     xCp2x = (float) reader.nextDouble();
-                    yCp2x = (float) reader.nextDouble();
+                    if (reader.peek() == JsonReader.Token.NUMBER) {
+                      yCp2x = (float) reader.nextDouble();
+                    } else {
+                      yCp2x = xCp2x;
+                    }
                     reader.endArray();
                   }
                   break;
@@ -254,7 +266,11 @@ class KeyframeParser {
                   } else {
                     reader.beginArray();
                     xCp2y = (float) reader.nextDouble();
-                    yCp2y = (float) reader.nextDouble();
+                    if (reader.peek() == JsonReader.Token.NUMBER) {
+                      yCp2y = (float) reader.nextDouble();
+                    } else {
+                      yCp2y = xCp2y;
+                    }
                     reader.endArray();
                   }
                   break;
