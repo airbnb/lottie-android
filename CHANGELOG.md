@@ -1,6 +1,14 @@
+# 3.7.0
+### Features and Improvements
+* Added an API to ignore disabled system animations (setIgnoreDisabledSystemAnimations(boolean)) ([#1747](https://github.com/airbnb/lottie-android/pull/1747))
+* Added support for jpgs as image assets ([#1769](https://github.com/airbnb/lottie-android/pull/1769))
+### Bugs Fixed
+* Prevented duplicate positions in gradients which caused hardware accelerated rendering bugs on some phones ([#1768](https://github.com/airbnb/lottie-android/pull/1768))
+* Fixed some parsing errors that occurred in some animations exported with Flow ([#1771](https://github.com/airbnb/lottie-android/pull/1771))
+
 # 3.6.1
 ### Bugs Fixed
-* Fixe a bug that would cause animations to stop animating if the same LottieAnimationView was used with multiple animations ([#1727](https://github.com/airbnb/lottie-android/pull/1737))
+* Fixed a bug that would cause animations to stop animating if the same LottieAnimationView was used with multiple animations ([#1727](https://github.com/airbnb/lottie-android/pull/1737))
 
 # 3.6.0
 ### Features and Improvements
