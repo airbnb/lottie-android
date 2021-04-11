@@ -2,13 +2,12 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0-beta03'
-    kotlinVersion = '1.4.31'
-    daggerVersion = '2.32'
+    composeVersion = '1.0.0-beta04'
+    kotlinVersion = '1.4.32'
+    daggerVersion = '2.34'
   }
 
   repositories {
-    jcenter()
     google()
     maven {
       url "https://plugins.gradle.org/m2/"
@@ -16,11 +15,10 @@ buildscript {
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:7.0.0-alpha12'
+    classpath 'com.android.tools.build:gradle:7.0.0-alpha14'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.6"
+    classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.1"
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.13.0'
     classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.10.2'
   }
@@ -29,15 +27,12 @@ buildscript {
 allprojects {
   repositories {
     google()
-    jcenter()
+    mavenCentral()
     maven {
       url "https://jitpack.io"
     }
     maven {
       url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-    flatDir {
-      dirs 'libs'
     }
   }
 }

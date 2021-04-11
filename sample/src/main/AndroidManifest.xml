@@ -36,9 +36,6 @@
             android:name=".BullseyeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".AppIntroActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".QRScanActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".DynamicActivity" />

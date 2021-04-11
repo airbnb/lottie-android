@@ -34,9 +34,6 @@ class ShowcaseViewModel(initialState: ShowcaseState, api: LottiefilesApi) : MvRx
 class ShowcaseFragment : BaseEpoxyFragment() {
 
     private val showcaseItems = listOf(
-            ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_app_intro) {
-                startActivity(Intent(requireContext(), AppIntroActivity::class.java))
-            },
             ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_dynamic_properties) {
                 startActivity(Intent(requireContext(), DynamicActivity::class.java))
             },
