@@ -53,7 +53,7 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
     fun setQuery(query: String) = setState { copy(query = query) }
 
     companion object : MvRxViewModelFactory<LottiefilesViewModel, LottiefilesState> {
-        override fun create(viewModelContext: ViewModelContext, state: LottiefilesState): LottiefilesViewModel? {
+        override fun create(viewModelContext: ViewModelContext, state: LottiefilesState): LottiefilesViewModel {
             val service = viewModelContext.app<LottieApplication>().lottiefilesService
             return LottiefilesViewModel(state, service)
         }
@@ -89,6 +89,10 @@ class LottiefilesDataSource(
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, AnimationData>): Int? {
+        return state.closestItemToPosition(state.anchorPosition ?: return null)?.id as Int?
     }
 }
 
