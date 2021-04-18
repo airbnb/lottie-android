@@ -41,5 +41,10 @@
       <option name="name" value="MavenRepo" />
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="https://kotlin.bintray.com/kotlinx" />
+    </remote-repository>
   </component>
 </project>

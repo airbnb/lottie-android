@@ -46,7 +46,7 @@ fun PlayerPage(
     spec: LottieAnimationSpec,
     animationBackgroundColor: Color? = null,
 ) {
-    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current.onBackPressedDispatcher
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val compositionResult = rememberLottieComposition(spec)
     val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
     val scaffoldState = rememberScaffoldState()
@@ -86,7 +86,7 @@ fun PlayerPage(
                 elevation = 0.dp,
                 navigationIcon = {
                     IconButton(
-                        onClick = { backPressedDispatcher.onBackPressed() },
+                        onClick = { backPressedDispatcher?.onBackPressed() },
                     ) {
                         Icon(
                             Icons.Default.Close,
