@@ -860,6 +860,18 @@ class LottieTest {
             textDelegate.setText("NAME", "Hello World")
         }
 
+        withAnimationView("Tests/DynamicText.json", "Dynamic Text", "Hello World with getText") { animationView ->
+            val textDelegate = object : TextDelegate(animationView) {
+                override fun getText(input: String): String {
+                    return when (input) {
+                        "NAME" -> "Hello World"
+                        else -> input
+                    }
+                }
+            }
+            animationView.setTextDelegate(textDelegate)
+        }
+
         withAnimationView("Tests/DynamicText.json", "Dynamic Text", "Emoji") { animationView ->
             val textDelegate = TextDelegate(animationView)
             animationView.setTextDelegate(textDelegate)

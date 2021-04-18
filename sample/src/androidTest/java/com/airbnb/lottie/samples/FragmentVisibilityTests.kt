@@ -168,7 +168,7 @@ class FragmentVisibilityTests {
     @Test
     fun testRecyclerViewCanAutoPlayInOnBind() {
         class TestFragment : Fragment() {
-            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
                 return RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -300,7 +300,7 @@ class FragmentVisibilityTests {
         class TestFragment : Fragment() {
             var animationView: LottieAnimationView? = null
 
-            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
                 return RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -361,7 +361,7 @@ class FragmentVisibilityTests {
 
         class TestFragment : Fragment() {
             var animationView: LottieAnimationView? = null
-            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
                 return RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -451,7 +451,7 @@ class FragmentVisibilityTests {
         onView(withId(R.id.animation_view)).check(matches(isAnimating()))
     }
 
-    private fun FragmentScenario<*>.waitForState(desiredState: Lifecycle.State) {
+    private fun <T : Fragment> FragmentScenario<T>.waitForState(desiredState: Lifecycle.State) {
         var isState = false
         while (!isState) {
             onFragment { fragment ->
