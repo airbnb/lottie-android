@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.BuildConfig
@@ -38,6 +40,7 @@ import com.airbnb.lottie.sample.compose.ui.Teal
 import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
+import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -48,7 +51,13 @@ fun PlayerPage(
 ) {
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val compositionResult = rememberLottieComposition(spec)
-    val animationState = rememberLottieAnimationState(autoPlay = true, repeatCount = Integer.MAX_VALUE)
+    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    val imageAssetDelegate = remember(compositionResult) { ImageAssetDelegate { it.bitmap ?: it.toDummyBitmap(dummyBitmapStrokeWidth) }}
+    val animationState = rememberLottieAnimationState(
+        autoPlay = true,
+        repeatCount = Integer.MAX_VALUE,
+        imageAssetDelegate = imageAssetDelegate
+    )
     val scaffoldState = rememberScaffoldState()
     val outlineMasksAndMattes = remember { mutableStateOf(false) }
     val applyOpacityToLayers = remember { mutableStateOf(false) }
