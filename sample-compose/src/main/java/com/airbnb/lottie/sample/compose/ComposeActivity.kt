@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
-import com.airbnb.lottie.compose.LottieAnimationSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesPage
 import com.airbnb.lottie.sample.compose.player.PlayerPage
 import com.airbnb.lottie.sample.compose.preview.PreviewPage
@@ -84,9 +84,9 @@ class ComposeActivity : AppCompatActivity() {
                         ) { entry ->
                             val arguments = entry.arguments ?: error("No arguments provided to ${Route.Player}")
                             val spec = when {
-                                arguments.getString("url") != null -> LottieAnimationSpec.Url(arguments.getBase64String("url"))
-                                arguments.getString("file") != null -> LottieAnimationSpec.File(arguments.getBase64String("file"))
-                                arguments.getString("asset") != null -> LottieAnimationSpec.Asset(arguments.getBase64String("asset"))
+                                arguments.getString("url") != null -> LottieCompositionSpec.Url(arguments.getBase64String("url"))
+                                arguments.getString("file") != null -> LottieCompositionSpec.File(arguments.getBase64String("file"))
+                                arguments.getString("asset") != null -> LottieCompositionSpec.Asset(arguments.getBase64String("asset"))
                                 else -> error("You must specify a url, file, or asset")
                             }
                             val backgroundColor = when (arguments.getString("backgroundColor") != null) {
@@ -102,7 +102,7 @@ class ComposeActivity : AppCompatActivity() {
     }
 
 
-    private enum class BottomNavItemData(val route: Route, @StringRes val iconRes: Int, @DrawableRes val labelRes: Int) {
+    private enum class BottomNavItemData(val route: Route, @DrawableRes val iconRes: Int, @StringRes val labelRes: Int) {
         Showcase(Route.Showcase, R.drawable.ic_showcase, R.string.bottom_tab_showcase),
         Preview(Route.Preview, R.drawable.ic_device, R.string.bottom_tab_preview),
         LottieFiles(Route.LottieFiles, R.drawable.ic_lottie_files, R.string.bottom_tab_lottie_files),

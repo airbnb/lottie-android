@@ -17,6 +17,7 @@ import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Logger;
+import com.airbnb.lottie.utils.MiscUtils;
 
 import org.json.JSONObject;
 
@@ -148,6 +149,10 @@ public class LottieComposition {
 
   public float getEndFrame() {
     return endFrame;
+  }
+
+  public float getFrameForProgress(float progress) {
+    return MiscUtils.lerp(startFrame, endFrame, progress);
   }
 
   public float getFrameRate() {

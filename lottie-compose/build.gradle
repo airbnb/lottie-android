@@ -49,4 +49,6 @@ dependencies {
   api project(':lottie')
   implementation "androidx.compose.foundation:foundation:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
+  testImplementation 'androidx.collection:collection-ktx:1.1.0'
+  testImplementation 'junit:junit:4.12'
 }

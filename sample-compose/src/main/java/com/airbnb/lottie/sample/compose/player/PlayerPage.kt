@@ -1,6 +1,5 @@
 package com.airbnb.lottie.sample.compose.player
 
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -46,22 +45,18 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PlayerPage(
-    spec: LottieAnimationSpec,
+    spec: LottieCompositionSpec,
     animationBackgroundColor: Color? = null,
 ) {
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    val compositionResult = rememberLottieComposition(spec)
-    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val imageAssetDelegate = remember(compositionResult) { ImageAssetDelegate { it.bitmap ?: it.toDummyBitmap(dummyBitmapStrokeWidth) }}
-    val animationState = rememberLottieAnimationState(
-        autoPlay = true,
-        repeatCount = Integer.MAX_VALUE,
-        imageAssetDelegate = imageAssetDelegate
-    )
     val scaffoldState = rememberScaffoldState()
+    val isPlaying = remember { mutableStateOf(true) }
+    val repeatCount = remember { mutableStateOf(Integer.MAX_VALUE) }
+    val speed = remember { mutableStateOf(1f) }
     val outlineMasksAndMattes = remember { mutableStateOf(false) }
     val applyOpacityToLayers = remember { mutableStateOf(false) }
-    val enableMergePaths = remember { mutableStateOf(animationState.enableMergePaths) }
+    val enableMergePaths = remember { mutableStateOf(false) }
+
     var focusMode by remember { mutableStateOf(false) }
     var backgroundColor by remember { mutableStateOf(animationBackgroundColor) }
     var showWarningsDialog by remember { mutableStateOf(false) }
@@ -73,6 +68,17 @@ fun PlayerPage(
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
+    val compositionResult = rememberLottieCompositionResult(spec)
+    val composition by derivedStateOf { compositionResult() }
+    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    val progress = animateLottieComposition(
+        compositionResult(),
+        isPlaying.value,
+        restartOnPlay = false,
+        repeatCount = repeatCount.value,
+        speed = speed.value,
+    ) { isPlaying.value = false }
+
     LaunchedEffect(compositionResult) {
         if (compositionResult is LottieCompositionResult.Fail) {
             scaffoldState.snackbarHostState.showSnackbar(
@@ -81,10 +87,6 @@ fun PlayerPage(
             )
         }
     }
-
-    animationState.outlineMasksAndMattes = outlineMasksAndMattes.value
-    animationState.applyOpacityToLayers = applyOpacityToLayers.value
-    animationState.enableMergePaths = enableMergePaths.value
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -140,8 +142,9 @@ fun PlayerPage(
                     .fillMaxWidth()
             ) {
                 LottieAnimation(
-                    compositionResult,
-                    animationState = animationState,
+                    compositionResult(),
+                    progress.value,
+                    imageAssetDelegate = remember { ImageAssetDelegate { it.bitmap ?: it.toDummyBitmap(dummyBitmapStrokeWidth) }},
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.Center)
@@ -156,10 +159,7 @@ fun PlayerPage(
                 }
             }
             ExpandVisibility(speedToolbar.value && !focusMode) {
-                SpeedToolbar(
-                    speed = animationState.speed,
-                    onSpeedChanged = { animationState.speed = it }
-                )
+                SpeedToolbar(speed)
             }
             ExpandVisibility(!focusMode && backgroundColorToolbar.value) {
                 BackgroundColorToolbar(
@@ -168,7 +168,7 @@ fun PlayerPage(
                 )
             }
             ExpandVisibility(!focusMode) {
-                PlayerControlsRow(animationState, compositionResult())
+                PlayerControlsRow(composition, progress, isPlaying, speed, repeatCount)
             }
             ExpandVisibility(!focusMode) {
                 Toolbar(
@@ -201,15 +201,19 @@ private fun ColumnScope.ExpandVisibility(visible: Boolean, content: @Composable 
 
 @Composable
 private fun PlayerControlsRow(
-    animationState: LottieAnimationState,
     composition: LottieComposition?,
+    progress: MutableState<Float>,
+    isPlaying: MutableState<Boolean>,
+    speed: MutableState<Float>,
+    repeatCount: MutableState<Int>,
 ) {
-    val totalTime = ((composition?.duration ?: 0L / animationState.speed) / 1000.0)
+    val totalTime = ((composition?.duration ?: 0L / speed.value) / 1000.0)
     val totalTimeFormatted = ("%.1f").format(totalTime)
 
-    val progress = (totalTime / 100.0) * ((animationState.progress * 100.0).roundToInt())
-    val progressFormatted = ("%.1f").format(progress)
+    val progressFormatted = ("%.1f").format(progress.value * totalTime)
 
+    val frame = composition?.getFrameForProgress(progress.value)?.roundToInt() ?: 0
+    val durationFrames = ceil(composition?.durationFrames ?: 0f).roundToInt()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -221,16 +225,16 @@ private fun PlayerControlsRow(
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
-                    onClick = { animationState.toggleIsPlaying() },
+                    onClick = { isPlaying.value = !isPlaying.value },
                 ) {
                     Icon(
-                        if (animationState.isPlaying) Icons.Filled.Pause
+                        if (isPlaying.value) Icons.Filled.Pause
                         else Icons.Filled.PlayArrow,
                         contentDescription = null
                     )
                 }
                 Text(
-                    "${animationState.frame}/${ceil(composition?.durationFrames ?: 0f).toInt()}\n${progressFormatted}/$totalTimeFormatted",
+                    "$frame/$durationFrames\n${progressFormatted}/$totalTimeFormatted",
                     style = TextStyle(fontSize = 8.sp),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -238,18 +242,16 @@ private fun PlayerControlsRow(
                 )
             }
             Slider(
-                value = animationState.progress,
-                onValueChange = { animationState.progress = it },
-
+                value = progress.value,
+                onValueChange = { progress.value = it },
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                val repeatCount = if (animationState.repeatCount == Integer.MAX_VALUE) 0 else Integer.MAX_VALUE
-                animationState.repeatCount = repeatCount
+                repeatCount.value = if (repeatCount.value == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
             }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (animationState.repeatCount > 0) Teal else Color.Black,
+                    tint = if (repeatCount.value == Integer.MAX_VALUE) Teal else Color.Black,
                     contentDescription = null
                 )
             }
@@ -267,8 +269,7 @@ private fun PlayerControlsRow(
 
 @Composable
 private fun SpeedToolbar(
-    speed: Float,
-    onSpeedChanged: (Float) -> Unit,
+    speed: MutableState<Float>,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -279,26 +280,26 @@ private fun SpeedToolbar(
     ) {
         ToolbarChip(
             label = "0.5x",
-            isActivated = speed == 0.5f,
-            onClick = { onSpeedChanged(0.5f) },
+            isActivated = speed.value == 0.5f,
+            onClick = { speed.value = 0.5f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "1x",
-            isActivated = speed == 1f,
-            onClick = { onSpeedChanged(1f) },
+            isActivated = speed.value == 1f,
+            onClick = { speed.value = 1f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "1.5x",
-            isActivated = speed == 1.5f,
-            onClick = { onSpeedChanged(1.5f) },
+            isActivated = speed.value == 1.5f,
+            onClick = { speed.value = 1.5f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "2x",
-            isActivated = speed == 2f,
-            onClick = { onSpeedChanged(2f) },
+            isActivated = speed.value == 2f,
+            onClick = { speed.value = 2f },
             modifier = Modifier.padding(end = 8.dp)
         )
     }
@@ -448,11 +449,12 @@ fun WarningDialog(
 @Preview
 @Composable
 fun SpeedToolbarPreview() {
-    SpeedToolbar(speed = 1f, onSpeedChanged = {})
+    val speed = remember { mutableStateOf(1f) }
+    SpeedToolbar(speed)
 }
 
 @Preview(name = "Player")
 @Composable
 fun PlayerPagePreview() {
-    PlayerPage(LottieAnimationSpec.Url("https://lottiefiles.com/download/public/32922"))
+    PlayerPage(LottieCompositionSpec.Url("https://lottiefiles.com/download/public/32922"))
 }

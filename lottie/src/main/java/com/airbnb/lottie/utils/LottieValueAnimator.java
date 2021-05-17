@@ -174,9 +174,13 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
     float compositionMinFrame = composition == null ? -Float.MAX_VALUE : composition.getStartFrame();
     float compositionMaxFrame = composition == null ? Float.MAX_VALUE : composition.getEndFrame();
-    this.minFrame = MiscUtils.clamp(minFrame, compositionMinFrame, compositionMaxFrame);
-    this.maxFrame = MiscUtils.clamp(maxFrame, compositionMinFrame, compositionMaxFrame);
-    setFrame((int) MiscUtils.clamp(frame, minFrame, maxFrame));
+    float newMinFrame = MiscUtils.clamp(minFrame, compositionMinFrame, compositionMaxFrame);
+    float newMaxFrame = MiscUtils.clamp(maxFrame, compositionMinFrame, compositionMaxFrame);
+    if (newMinFrame != this.minFrame || newMaxFrame != this.maxFrame) {
+      this.minFrame = newMinFrame;
+      this.maxFrame = newMaxFrame;
+      setFrame((int) MiscUtils.clamp(frame, newMinFrame, newMaxFrame));
+    }
   }
 
   public void reverseAnimationSpeed() {
