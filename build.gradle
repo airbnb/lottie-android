@@ -2,7 +2,7 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0-beta06'
+    composeVersion = '1.0.0-beta07'
     kotlinVersion = '1.4.32'
     daggerVersion = '2.34'
   }
@@ -15,12 +15,12 @@ buildscript {
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:7.0.0-alpha15'
+    classpath 'com.android.tools.build:gradle:7.0.0-beta01'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.1"
-    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.13.0'
-    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.10.2'
+    classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
+    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
   }
 }
 

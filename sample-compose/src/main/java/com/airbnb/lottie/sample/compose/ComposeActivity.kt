@@ -48,7 +48,7 @@ class ComposeActivity : AppCompatActivity() {
                         contentColor = Teal,
                     ) {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                        val currentRoute = navBackStackEntry?.destination?.route
 
                         BottomNavItemData.values().forEach { item ->
                             BottomNavigationItem(

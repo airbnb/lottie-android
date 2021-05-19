@@ -1,5 +1,6 @@
 package com.airbnb.lottie.sample.compose.composables
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -15,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.google.accompanist.coil.rememberCoilPainter
 
 @Composable
 fun AnimationRow(
@@ -34,8 +35,8 @@ fun AnimationRow(
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
-            CoilImage(
-                data = previewUrl,
+            Image(
+                painter = rememberCoilPainter(previewUrl),
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .size(40.dp)
