@@ -1,6 +1,9 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
+# 1.0.0-beta07-1
+* Compatible with Jetpack Compose Beta 07
+
 # 1.0.0-beta03-1
 * Update versioning scheme to match the underlying Compose version
 * Compatible with Jetpack Compose Beta 03

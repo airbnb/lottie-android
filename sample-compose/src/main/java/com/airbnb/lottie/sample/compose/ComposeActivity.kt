@@ -48,7 +48,7 @@ class ComposeActivity : AppCompatActivity() {
                         contentColor = Teal,
                     ) {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
-                        val currentRoute = navBackStackEntry?.arguments?.getString(KEY_ROUTE)
+                        val currentRoute = navBackStackEntry?.destination?.route
 
                         BottomNavItemData.values().forEach { item ->
                             BottomNavigationItem(
@@ -102,7 +102,7 @@ class ComposeActivity : AppCompatActivity() {
     }
 
 
-    private enum class BottomNavItemData(val route: Route, @StringRes val iconRes: Int, @DrawableRes val labelRes: Int) {
+    private enum class BottomNavItemData(val route: Route, @DrawableRes val iconRes: Int, @StringRes val labelRes: Int) {
         Showcase(Route.Showcase, R.drawable.ic_showcase, R.string.bottom_tab_showcase),
         Preview(Route.Preview, R.drawable.ic_device, R.string.bottom_tab_preview),
         LottieFiles(Route.LottieFiles, R.drawable.ic_lottie_files, R.string.bottom_tab_lottie_files),
