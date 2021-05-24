@@ -77,7 +77,7 @@ dependencies {
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
   implementation "com.google.accompanist:accompanist-coil:0.10.0"
-  implementation 'com.airbnb.android:mavericks:2.1.0'
+  implementation 'com.airbnb.android:mavericks:2.2.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha01'
 
   testImplementation 'junit:junit:4.13.2'
