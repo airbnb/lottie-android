@@ -553,17 +553,11 @@ public abstract class BaseLayer
         mask.getMaskAnimations().get(i).setProgress(progress);
       }
     }
-    if (layerModel.getTimeStretch() != 0) {
-      progress /= layerModel.getTimeStretch();
-    }
     if (inOutAnimation != null) {
-      // Time stretch needs to be divided again for the inOutAnimation.
-      inOutAnimation.setProgress(progress / layerModel.getTimeStretch());
+      inOutAnimation.setProgress(progress);
     }
     if (matteLayer != null) {
-      // The matte layer's time stretch is pre-calculated.
-      float matteTimeStretch = matteLayer.layerModel.getTimeStretch();
-      matteLayer.setProgress(progress * matteTimeStretch);
+      matteLayer.setProgress(progress);
     }
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
