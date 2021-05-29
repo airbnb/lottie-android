@@ -147,7 +147,8 @@ public class CompositionLayer extends BaseLayer {
     if (timeRemapping == null) {
       progress -= layerModel.getStartProgress();
     }
-    if (layerModel.getTimeStretch() != 0) {
+    //Time stretch needs to be divided if is not "__container"
+    if (layerModel.getTimeStretch() != 0 && !"__container".equals(layerModel.getName())) {
       progress /= layerModel.getTimeStretch();
     }
     for (int i = layers.size() - 1; i >= 0; i--) {
