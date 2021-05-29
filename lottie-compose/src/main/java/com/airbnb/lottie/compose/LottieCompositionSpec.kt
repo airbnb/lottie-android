@@ -33,4 +33,9 @@ sealed class LottieCompositionSpec {
      * so make sure that the path to your animation is correct this will fail.
      */
     data class Asset(val assetName: String) : LottieCompositionSpec()
+
+    /**
+     * Load an animation from its json string.
+     */
+    data class JsonString(val jsonString: String, val cacheKey: String? = null) : LottieCompositionSpec()
 }

@@ -35,6 +35,7 @@ fun rememberLottieComposition(spec: LottieCompositionSpec): LottieCompositionRes
                 }
             }
             is LottieCompositionSpec.Asset -> LottieCompositionFactory.fromAsset(context, spec.assetName)
+            is LottieCompositionSpec.JsonString -> LottieCompositionFactory.fromJsonString(spec.jsonString, spec.cacheKey)
         }
         task.addListener { c ->
             if (!isDisposed) result.complete(c)
