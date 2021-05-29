@@ -15,7 +15,7 @@ buildscript {
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:7.0.0-beta01'
+    classpath 'com.android.tools.build:gradle:7.0.0-beta03'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath 'org.ajoberstar:grgit:1.9.3'
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.1"
