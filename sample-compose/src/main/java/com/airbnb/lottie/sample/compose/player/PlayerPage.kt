@@ -68,8 +68,7 @@ fun PlayerPage(
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
-    val compositionResult = rememberLottieCompositionResult(spec)
-    val composition by derivedStateOf { compositionResult() }
+    val compositionResult = rememberLottieComposition(spec)
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
     val progress = animateLottieComposition(
         compositionResult(),
@@ -168,7 +167,7 @@ fun PlayerPage(
                 )
             }
             ExpandVisibility(!focusMode) {
-                PlayerControlsRow(composition, progress, isPlaying, speed, repeatCount)
+                PlayerControlsRow(compositionResult(), progress, isPlaying, speed, repeatCount)
             }
             ExpandVisibility(!focusMode) {
                 Toolbar(

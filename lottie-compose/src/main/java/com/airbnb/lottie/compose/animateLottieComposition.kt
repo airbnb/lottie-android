@@ -8,6 +8,9 @@ import java.util.concurrent.TimeUnit
 /**
  * Returns a mutable state representing the progress of an animation.
  *
+ * There is also a suspending version of this that takes progress as a MutableState<Float>
+ * as a required second parameter.
+ *
  * @param composition The composition to render. This should be retrieved with
  *                    [rememberLottieComposition] or [rememberLottieCompositionResult].
  * @param isPlaying Whether or not the animation is currently playing. Note that the internal
@@ -24,7 +27,7 @@ import java.util.concurrent.TimeUnit
  *                    a positive number. [Integer.MAX_VALUE] can be used to repeat forever.
  * @param onRepeat A callback to be notified every time the animation repeats. Return whether or not the
  *                 animation should continue to repeat.
- * @onFinished A callback that is invoked when animation completes. Note that the isPlaying parameter you
+ * @param onFinished A callback that is invoked when animation completes. Note that the isPlaying parameter you
  *             pass in may still be true. If you want to restart the animation, increase the repeatCount
  *             or change isPlaying to false and then true again.
  */
@@ -36,10 +39,12 @@ fun animateLottieComposition(
     clipSpec: LottieAnimationClipSpec? = null,
     speed: Float = 1f,
     repeatCount: Int = 1,
-    onRepeat: (repeatCount: Int) -> Boolean = { false },
+    onRepeat: ((repeatCount: Int) -> Unit)? = null,
     onFinished: (() -> Unit)? = null,
 ): MutableState<Float> {
-    check(repeatCount > 0) { "Repeat count must be a positive number ($repeatCount)." }
+    require(repeatCount > 0) { "Repeat count must be a positive number ($repeatCount)." }
+    require(speed != 0f) { "Speed must not be 0" }
+    require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
     var currentRepeatCount by remember { mutableStateOf(0) }
 
     val progress = remember { mutableStateOf(0f) }
@@ -75,16 +80,14 @@ fun animateLottieComposition(
                 lastFrameTime = frameTime
                 val dProgress = (dTime * speed) / composition.duration
                 val rawProgress = minProgress + ((progress.value - minProgress) + dProgress)
-                val doneForRepeatCallback = if (speed > 0 && rawProgress > maxProgress) {
+                if (speed > 0 && rawProgress > maxProgress) {
                     currentRepeatCount++
-                    currentOnRepeat(repeatCount)
+                    currentOnRepeat?.invoke(repeatCount)
                 } else if (speed < 0 && rawProgress < minProgress) {
                     currentRepeatCount++
-                    currentOnRepeat(repeatCount)
-                } else {
-                    false
+                    currentOnRepeat?.invoke(repeatCount)
                 }
-                val doneForRepeatCount = if (!doneForRepeatCallback && currentRepeatCount < repeatCount && !rawProgress.isInfinite()) {
+                done = if (currentRepeatCount < repeatCount && !rawProgress.isInfinite()) {
                     progress.value = minProgress + ((rawProgress - minProgress) fmod (maxProgress - minProgress))
                     false
                 } else {
@@ -94,7 +97,6 @@ fun animateLottieComposition(
                     }
                     true
                 }
-                done = doneForRepeatCallback || doneForRepeatCount
             }
         }
         currentOnFinished?.invoke()

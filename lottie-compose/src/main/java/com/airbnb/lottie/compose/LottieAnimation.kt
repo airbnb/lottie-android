@@ -132,7 +132,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
 ) {
-    val composition = rememberLottieComposition(compositionSpec)
+    val composition by rememberLottieComposition(compositionSpec)
     LottieAnimation(
         composition,
         progress,
@@ -160,7 +160,7 @@ fun LottieAnimation(
     repeatCount: Int = 1,
     clipSpec: LottieAnimationClipSpec? = null,
     speed: Float = 1f,
-    onRepeat: (repeatCount: Int) -> Boolean = { false },
+    onRepeat: ((repeatCount: Int) -> Unit)? = null,
     onFinished: (() -> Unit)? = null,
     imageAssetsFolder: String? = null,
     imageAssetDelegate: ImageAssetDelegate? = null,
@@ -168,7 +168,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
 ) {
-    val composition = rememberLottieComposition(compositionSpec)
+    val composition by rememberLottieComposition(compositionSpec)
     LottieAnimation(
         composition,
         modifier,
@@ -202,7 +202,7 @@ fun LottieAnimation(
     clipSpec: LottieAnimationClipSpec? = null,
     speed: Float = 1f,
     repeatCount: Int = 1,
-    onRepeat: (repeatCount: Int) -> Boolean = { false },
+    onRepeat: ((repeatCount: Int) -> Unit)? = null,
     onFinished: (() -> Unit)? = null,
     imageAssetsFolder: String? = null,
     imageAssetDelegate: ImageAssetDelegate? = null,

@@ -25,9 +25,9 @@ enum class LottieCancellationBehavior {
 }
 
 /**
- * This is similar to the [animateLottieComposition] functions that return progress as a MutableState<Float>.
- * However, instead of returning state, this takes [progress] as a parameter and suspends
- * until the animation completes.
+ * This is similar to [animateLottieComposition] which returns progress as a MutableState<Float>.
+ * However, instead of returning state, this takes [progress] as a parameter which it updates
+ * internally and suspends until the animation completes.
  *
  * To repeat an animation multiple times, just wrap this invocation in a while loop.
  *
@@ -35,6 +35,8 @@ enum class LottieCancellationBehavior {
  * should happen. [LottieCancellationBehavior.AtEnd] will ignore the cancellation and continue suspending
  * until the animation completes. [LottieCancellationBehavior.Immediate] will immediately cancel the
  * animation and return early.
+ *
+ * @see lottieTransition
  */
 suspend fun animateLottieComposition(
     composition: LottieComposition?,
@@ -43,6 +45,8 @@ suspend fun animateLottieComposition(
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediate,
     speed: Float = 1f,
 ) {
+    require(speed != 0f) { "Speed must not be 0" }
+    require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
     composition ?: return
     val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
     val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f

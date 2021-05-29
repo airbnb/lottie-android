@@ -6,6 +6,42 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 
+/**
+ * [lottieTransition] allows you to define individual animations mapped to a set of states.
+ *
+ * Inside of [animate], you will probably want to use the suspending version of [animateLottieComposition].
+ *
+ * To loop an animation within a transition, just wrap [animateLottieComposition] in a loop.
+ *
+ * Example usage:
+ * ```
+ * var state by remember { mutableStateOf(0) }
+ * val compositionResult = rememberLottieCompositionResult(LottieCompositionSpec.RawRes(R.raw.your_animation))
+ * val progress by lottieTransition(state) { progress ->
+ *     val composition = compositionResult.await()
+ *     when (state) {
+ *         0 -> animateLottieComposition(
+ *              composition,
+ *              progress,
+ *              clipSpec = LottieAnimationClipSpec.MinAndMaxProgress(0f, 0.5f),
+ *              cancellationBehavior = LottieCancellationBehavior.AtEnd,
+ *          )
+ *          1 -> animateLottieComposition(
+ *              composition,
+ *              progress,
+ *              clipSpec = LottieAnimationClipSpec.MinAndMaxProgress(0.5f, 1f),
+ *              cancellationBehavior = LottieCancellationBehavior.AtEnd,
+ *          )
+ *      }
+ *  }
+ *  LottieAnimation(
+ *      compositionResult(),
+ *      progress,
+ *  )
+ * ```
+ *
+ * @see animateLottieComposition
+ */
 @Composable
 fun <T> lottieTransition(
     state: T,

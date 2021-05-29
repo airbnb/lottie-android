@@ -2,40 +2,24 @@ package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
 
 /**
- * This is the simplest way to load and parse a [LottieComposition]. It will return null
- * while loading or if failed.
- *
- * If you are loading an animation that might fail such as one from the network, you may want
- * to use [rememberLottieCompositionResult] to distinguish between loading and failure states.
- *
- * If you don't need to explicitly check for the failure case, you may want to use the LottieAnimation
- * overloads that take [LottieCompositionSpec] instead.
- */
-@Composable
-fun rememberLottieComposition(spec: LottieCompositionSpec): LottieComposition? {
-    return rememberLottieCompositionResult(spec)()
-}
-
-/**
  * Takes a [LottieCompositionSpec], attempts to load and parse the animation, and returns a [LottieCompositionResult].
- * 
- * In most cases, [rememberLottieComposition] is sufficient but if you want to explicitly track loading or failures,
- * you may use this.
  *
- * You can call [LottieCompositionResult.invoke] as an operator on the result to get a nullable composition. It will
- * be null when loading or after a failure.
+ * [LottieCompositionResult] allows you to explicitly check for loading, failures, call
+ * [LottieCompositionResult.await], or invoke it like a function to get the nullable composition.
  *
- * If you don't need to explicitly check for the failure case, you may want to use the LottieAnimation
- * overloads that take [LottieCompositionSpec] instead.
+ * [LottieCompositionResult] implements State<LottieComposition?> so if you don't need the full result class,
+ * you can use this function like:
+ * ```
+ * val composition by rememberLottieComposition(compositionSpec)
+ * ```
  */
 @Composable
-fun rememberLottieCompositionResult(spec: LottieCompositionSpec): LottieCompositionResult {
+fun rememberLottieComposition(spec: LottieCompositionSpec): LottieCompositionResult {
     val context = LocalContext.current
     val result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult()) }
     DisposableEffect(spec) {
