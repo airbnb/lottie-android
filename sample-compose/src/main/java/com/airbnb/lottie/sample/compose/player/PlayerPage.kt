@@ -68,7 +68,7 @@ fun PlayerPage(
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
-    val compositionResult = rememberLottieComposition(spec)
+    val compositionResult = lottieComposition(spec)
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
     val progress = animateLottieComposition(
         compositionResult(),
@@ -79,7 +79,7 @@ fun PlayerPage(
     ) { isPlaying.value = false }
 
     LaunchedEffect(compositionResult) {
-        if (compositionResult.isError) {
+        if (compositionResult.isFailure) {
             scaffoldState.snackbarHostState.showSnackbar(
                 message = failedMessage,
                 actionLabel = okMessage,

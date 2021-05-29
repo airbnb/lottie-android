@@ -21,9 +21,9 @@ import com.airbnb.lottie.setImageAssetManager
  * This is the base LottieAnimation composable. It takes a composition and renders it at a specific progress.
  *
  * @param composition The composition that will be rendered. To generate a [LottieComposition], you can use
- *                    [rememberLottieComposition] or use the overloaded version that takes a
+ *                    [lottieComposition] or use the overloaded version that takes a
  *                    [LottieCompositionSpec] instead of the [LottieComposition] itself. You should only need
- *                    to use [rememberLottieComposition] directly if you explicitly need to handle failure
+ *                    to use [lottieComposition] directly if you explicitly need to handle failure
  *                    states which won't occur in most cases if your animation is packaged within your app.
  * @param progress The progress (between 0 and 1) that should be rendered. If you want to render a specific
  *                 frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
@@ -117,7 +117,7 @@ fun LottieAnimation(
  * This is like [LottieAnimation] except that it takes a [LottieCompositionSpec] instead of the
  * [LottieComposition] itself. This will be more convenient for most use cases unless you
  * need to explicitly check for failure states while loading the composition, which is done
- * via [rememberLottieComposition].
+ * via [lottieComposition].
  *
  * @see LottieAnimation
  */
@@ -132,7 +132,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
 ) {
-    val composition by rememberLottieComposition(compositionSpec)
+    val composition by lottieComposition(compositionSpec)
     LottieAnimation(
         composition,
         progress,
@@ -168,7 +168,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
 ) {
-    val composition by rememberLottieComposition(compositionSpec)
+    val composition by lottieComposition(compositionSpec)
     LottieAnimation(
         composition,
         modifier,

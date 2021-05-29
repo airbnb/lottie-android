@@ -11,8 +11,7 @@ import java.util.concurrent.TimeUnit
  * There is also a suspending version of this that takes progress as a MutableState<Float>
  * as a required second parameter.
  *
- * @param composition The composition to render. This should be retrieved with
- *                    [rememberLottieComposition] or [rememberLottieCompositionResult].
+ * @param composition The composition to render. This should be retrieved with [lottieComposition].
  * @param isPlaying Whether or not the animation is currently playing. Note that the internal
  *                  animation may end due to reaching the target repeatCount. If that happens,
  *                  the animation may stop even if this is still true. You may want to use
@@ -45,10 +44,10 @@ fun animateLottieComposition(
     require(repeatCount > 0) { "Repeat count must be a positive number ($repeatCount)." }
     require(speed != 0f) { "Speed must not be 0" }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-    var currentRepeatCount by remember { mutableStateOf(0) }
 
     val progress = remember { mutableStateOf(0f) }
 
+    var currentRepeatCount by remember { mutableStateOf(0) }
     val currentOnRepeat by rememberUpdatedState(onRepeat)
     val currentOnFinished by rememberUpdatedState(onFinished)
 

@@ -16,7 +16,7 @@ sealed class LottieCompositionSpec {
      * or implement retries. To do that, call [com.airbnb.lottie.Lottie.initialize] and set
      * a [com.airbnb.lottie.network.LottieNetworkFetcher] on the [com.airbnb.lottie.LottieConfig].
      *
-     * If you are using this spec, you may want to use [rememberLottieComposition] instead of
+     * If you are using this spec, you may want to use [lottieComposition] instead of
      * passing this spec directly into [LottieAnimation] because it can fail and you want to
      * make sure that you properly handle the failure cases.
      */

@@ -15,11 +15,11 @@ import java.util.zip.ZipInputStream
  * [LottieCompositionResult] implements State<LottieComposition?> so if you don't need the full result class,
  * you can use this function like:
  * ```
- * val composition by rememberLottieComposition(compositionSpec)
+ * val composition by lottieComposition(compositionSpec)
  * ```
  */
 @Composable
-fun rememberLottieComposition(spec: LottieCompositionSpec): LottieCompositionResult {
+fun lottieComposition(spec: LottieCompositionSpec): LottieCompositionResult {
     val context = LocalContext.current
     val result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult()) }
     DisposableEffect(spec) {

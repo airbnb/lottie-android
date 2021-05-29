@@ -14,12 +14,16 @@ import kotlin.coroutines.EmptyCoroutineContext
 enum class LottieCancellationBehavior {
     /**
      * Stop animation immediately and return early.
+     *
+     * @see lottieTransition
      */
     Immediate,
     /**
      * Continue suspending until the animation completes, effectively ignoring the cancellation request.
      * This may be useful if you have a segmented animation with multiple states and you want them to
      * animate smoothly from one to the next when the state changes.
+     *
+     * @see lottieTransition
      */
     AtEnd,
 }
