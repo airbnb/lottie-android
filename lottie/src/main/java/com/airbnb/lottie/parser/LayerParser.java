@@ -248,12 +248,6 @@ public class LayerParser {
     }
     reader.endObject();
 
-    // Bodymovin pre-scales the in frame and out frame by the time stretch. However, that will
-    // cause the stretch to be double counted since the in out animation gets treated the same
-    // as all other animations and will have stretch applied to it again.
-    inFrame /= timeStretch;
-    outFrame /= timeStretch;
-
     List<Keyframe<Float>> inOutKeyframes = new ArrayList<>();
     // Before the in frame
     if (inFrame > 0) {
