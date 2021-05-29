@@ -16,27 +16,31 @@ import java.util.concurrent.TimeUnit
  *                  onFinished to set isPlaying to false but in many cases, it won't matter.
  * @param restartOnPlay If isPlaying switches from false to true, restartOnPlay determines whether
  *                      the progress and repeatCount get reset.
- * @param repeatCount The number of times the animation should repeat before stopping. It must be
- *                    a positive number. [Integer.MAX_VALUE] can be used to repeat forever.
  * @param clipSpec A [LottieAnimationClipSpec] that specifies the bound the animation playback
  *                 should be clipped to.
  * @param speed The speed the animation should play at. Numbers larger than one will speed it up.
  *              Numbers between 0 and 1 will slow it down. Numbers less than 0 will play it backwards.
+ * @param repeatCount The number of times the animation should repeat before stopping. It must be
+ *                    a positive number. [Integer.MAX_VALUE] can be used to repeat forever.
+ * @param onRepeat A callback to be notified every time the animation repeats. Return whether or not the
+ *                 animation should continue to repeat.
+ * @onFinished A callback that is invoked when animation completes. Note that the isPlaying parameter you
+ *             pass in may still be true. If you want to restart the animation, increase the repeatCount
+ *             or change isPlaying to false and then true again.
  */
 @Composable
 fun animateLottieComposition(
     composition: LottieComposition?,
     isPlaying: Boolean = true,
     restartOnPlay: Boolean = true,
-    repeatCount: Int = 1,
     clipSpec: LottieAnimationClipSpec? = null,
     speed: Float = 1f,
-    onRepeat: ((repeatCount: Int) -> Unit)? = null,
+    repeatCount: Int = 1,
+    onRepeat: (repeatCount: Int) -> Boolean = { false },
     onFinished: (() -> Unit)? = null,
 ): MutableState<Float> {
     check(repeatCount > 0) { "Repeat count must be a positive number ($repeatCount)." }
-    @Suppress("LocalVariableName")
-    var _repeatCount by remember { mutableStateOf(0) }
+    var currentRepeatCount by remember { mutableStateOf(0) }
 
     val progress = remember { mutableStateOf(0f) }
 
@@ -48,10 +52,10 @@ fun animateLottieComposition(
             null -> 0f
             else -> if (speed >= 0) clipSpec?.getMinProgress(composition) ?: 0f else clipSpec?.getMaxProgress(composition) ?: 1f
         }
-        _repeatCount = 0
+        currentRepeatCount = 0
     }
 
-    LaunchedEffect(composition, isPlaying, repeatCount, speed) {
+    LaunchedEffect(composition, isPlaying, repeatCount, clipSpec, speed) {
         if (!isPlaying || composition == null) return@LaunchedEffect
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
@@ -60,8 +64,8 @@ fun animateLottieComposition(
         } else if (speed < 0 && (progress.value == 0f || restartOnPlay)) {
             progress.value = maxProgress
         }
-        if (restartOnPlay || _repeatCount >= repeatCount) {
-            _repeatCount = 0
+        if (restartOnPlay || currentRepeatCount >= repeatCount) {
+            currentRepeatCount = 0
         }
         var lastFrameTime = withFrameNanos { it }
         while (true) {
@@ -70,20 +74,26 @@ fun animateLottieComposition(
                 lastFrameTime = frameTime
                 val dProgress = (dTime * speed) / composition.duration
                 val rawProgress = minProgress + ((progress.value - minProgress) + dProgress)
-                if (speed > 0 && rawProgress > maxProgress) {
-                    _repeatCount++
-                    currentOnRepeat?.invoke(repeatCount)
+                val doneForRepeatCallback = if (speed > 0 && rawProgress > maxProgress) {
+                    currentRepeatCount++
+                    currentOnRepeat(repeatCount)
                 } else if (speed < 0 && rawProgress < minProgress) {
-                    _repeatCount++
-                    currentOnRepeat?.invoke(repeatCount)
+                    currentRepeatCount++
+                    currentOnRepeat(repeatCount)
+                } else {
+                    false
                 }
-                if (_repeatCount < repeatCount && !rawProgress.isInfinite()) {
-                    progress.value = rawProgress fmod (maxProgress - minProgress)
+                val doneForRepeatCount = if (!doneForRepeatCallback && currentRepeatCount < repeatCount && !rawProgress.isInfinite()) {
+                    progress.value = minProgress + ((rawProgress - minProgress) fmod (maxProgress - minProgress))
                     false
                 } else {
-                    progress.value = if (speed >= 0) clipSpec?.getMaxProgress(composition) ?: 1f else clipSpec?.getMinProgress(composition) ?: 0f
+                    progress.value = when {
+                        speed >= 0 -> clipSpec?.getMaxProgress(composition) ?: 1f
+                        else -> clipSpec?.getMinProgress(composition) ?: 0f
+                    }
                     true
                 }
+                doneForRepeatCallback || doneForRepeatCount
             }
             if (done) break
         }
