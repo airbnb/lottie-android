@@ -80,7 +80,7 @@ fun PlayerPage(
     ) { isPlaying.value = false }
 
     LaunchedEffect(compositionResult) {
-        if (compositionResult is LottieCompositionResult.Fail) {
+        if (compositionResult.isError) {
             scaffoldState.snackbarHostState.showSnackbar(
                 message = failedMessage,
                 actionLabel = okMessage,
@@ -150,7 +150,7 @@ fun PlayerPage(
                         .align(Alignment.Center)
                         .maybeDrawBorder(borderToolbar.value)
                 )
-                if (compositionResult is LottieCompositionResult.Loading) {
+                if (compositionResult.isLoading) {
                     DebouncedCircularProgressIndicator(
                         color = Teal,
                         modifier = Modifier

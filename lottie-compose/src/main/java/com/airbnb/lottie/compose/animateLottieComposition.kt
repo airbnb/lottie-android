@@ -3,7 +3,10 @@ package com.airbnb.lottie.compose
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import com.airbnb.lottie.LottieComposition
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Returns a mutable state representing the progress of an animation.
@@ -100,6 +103,48 @@ fun animateLottieComposition(
         currentOnFinished?.invoke()
     }
     return progress
+}
+
+enum class LottieCancellationBehavior {
+    Immediate,
+    AtEnd,
+}
+
+suspend fun animateLottieComposition(
+    composition: LottieComposition?,
+    progress: MutableState<Float>,
+    clipSpec: LottieAnimationClipSpec? = null,
+    cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediate,
+    speed: Float = 1f,
+) {
+    composition ?: return
+    val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
+    val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
+    progress.value = when {
+        speed >= 0 -> minProgress
+        else -> maxProgress
+    }
+    var lastFrameTime = withFrameNanos { it }
+    val context = when (cancellationBehavior) {
+        LottieCancellationBehavior.Immediate -> EmptyCoroutineContext
+        LottieCancellationBehavior.AtEnd -> NonCancellable
+    }
+    withContext(context) {
+        while (true) {
+            val done = withFrameNanos { frameTime ->
+                val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
+                lastFrameTime = frameTime
+                val dProgress = (dTime * speed) / composition.duration
+                val rawProgress = minProgress + ((progress.value - minProgress) + dProgress)
+                progress.value = rawProgress.coerceIn(minProgress, maxProgress)
+                when {
+                    speed >= 0 -> rawProgress >= maxProgress
+                    else -> rawProgress <= minProgress
+                }
+            }
+            if (done) break
+        }
+    }
 }
 
 /**

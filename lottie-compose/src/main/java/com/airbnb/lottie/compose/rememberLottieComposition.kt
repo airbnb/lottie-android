@@ -37,7 +37,7 @@ fun rememberLottieComposition(spec: LottieCompositionSpec): LottieComposition? {
 @Composable
 fun rememberLottieCompositionResult(spec: LottieCompositionSpec): LottieCompositionResult {
     val context = LocalContext.current
-    var result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult.Loading) }
+    val result: LottieCompositionResult by remember { mutableStateOf(LottieCompositionResult()) }
     DisposableEffect(spec) {
         var isDisposed = false
         val task = when (spec) {
@@ -53,10 +53,10 @@ fun rememberLottieCompositionResult(spec: LottieCompositionSpec): LottieComposit
             is LottieCompositionSpec.Asset -> LottieCompositionFactory.fromAsset(context, spec.assetName)
         }
         task.addListener { c ->
-            if (!isDisposed) result = LottieCompositionResult.Success(c)
+            if (!isDisposed) result.complete(c)
         }.addFailureListener { e ->
             if (!isDisposed) {
-                result = LottieCompositionResult.Fail(e)
+                result.completeExceptionally(e)
             }
         }
         onDispose {
