@@ -7,7 +7,12 @@ import kotlinx.coroutines.CompletableDeferred
 /**
  * A [LottieCompositionResult] subclass is returned from [lottieComposition].
  *
- * This class implements State<LottieComposition> so
+ * This class implements State<LottieComposition> so you either use it like:
+ * ```
+ * val compositionResult = lottieComposition(...)
+ * // Or
+ * val composition by lottieComposition(...)
+ * ```
  *
  * @see lottieComposition
  */
@@ -29,11 +34,26 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
 
     val isSuccess by derivedStateOf { composition != null }
 
-    suspend fun await() = compositionDeferred.await()
+    /**
+     * This can throw if the [LottieComposition] fails to fetch and parse.
+     *
+     * These animations should never fail:
+     * * [LottieCompositionSpec.RawRes]
+     * * [LottieCompositionSpec.Asset]
+     * * [LottieCompositionSpec.JsonString]
+     *
+     * These animations may fail:
+     * * [LottieCompositionSpec.Url]
+     * * [LottieCompositionSpec.File]
+     */
+    suspend fun await(): LottieComposition {
+        return compositionDeferred.await()
+    }
 
     @Synchronized
     internal fun complete(composition: LottieComposition) {
         if (isComplete) return
+
         this.composition = composition
         compositionDeferred.complete(composition)
     }
@@ -41,6 +61,7 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
     @Synchronized
     internal fun completeExceptionally(error: Throwable) {
         if (isComplete) return
+
         this.error = error
         compositionDeferred.completeExceptionally(error)
     }

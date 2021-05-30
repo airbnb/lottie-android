@@ -22,7 +22,7 @@ sealed class LottieCompositionSpec {
      *
      * If you are using this spec, you may want to use [lottieComposition] instead of
      * passing this spec directly into [LottieAnimation] because it can fail and you want to
-     * make sure that you properly handle the failure cases.
+     * make sure that you properly handle the failures and/or retries.
      */
     data class Url(val url: String) : LottieCompositionSpec()
 
