@@ -1,6 +1,5 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -32,7 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.compose.*
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieComposition
+import com.airbnb.lottie.compose.lottieComposition
 import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
@@ -49,7 +51,6 @@ fun PlayerPage(
     spec: LottieCompositionSpec,
     animationBackgroundColor: Color? = null,
 ) {
-    Log.d("Gabe", "Spec $spec")
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val scaffoldState = rememberScaffoldState()
     val isPlaying = remember { mutableStateOf(true) }
