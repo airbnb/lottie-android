@@ -7,7 +7,9 @@ import kotlinx.coroutines.CompletableDeferred
 /**
  * A [LottieCompositionResult] subclass is returned from [lottieComposition].
  *
- * To access a [LottieComposition] from a [LottieCompositionResult], call [invoke] directly or as an operator.
+ * This class implements State<LottieComposition> so
+ *
+ * @see lottieComposition
  */
 class LottieCompositionResult internal constructor(): State<LottieComposition?> {
     private val compositionDeferred = CompletableDeferred<LottieComposition>()

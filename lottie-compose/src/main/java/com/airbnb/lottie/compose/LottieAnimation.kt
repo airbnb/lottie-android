@@ -20,6 +20,9 @@ import com.airbnb.lottie.setImageAssetManager
 /**
  * This is the base LottieAnimation composable. It takes a composition and renders it at a specific progress.
  *
+ * There are overloaded versions of this that allow you to pass in raw [LottieCompositionSpec] or handle
+ * basic animations. Refer to the documentation for the overloaded versions for more info.
+ *
  * @param composition The composition that will be rendered. To generate a [LottieComposition], you can use
  *                    [lottieComposition] or use the overloaded version that takes a
  *                    [LottieCompositionSpec] instead of the [LottieComposition] itself. You should only need
@@ -86,7 +89,6 @@ fun LottieAnimation(
     if (composition.hasImages()) {
         val context = LocalContext.current
         LaunchedEffect(context, composition, imageAssetsFolder, imageAssetDelegate) {
-            @Suppress("RestrictedApi")
             imageAssetManager = ImageAssetManager(context, imageAssetsFolder, imageAssetDelegate, composition.images)
         }
     } else {
@@ -147,9 +149,11 @@ fun LottieAnimation(
 
 /**
  * This is like [LottieAnimation] except that it both takes a [LottieCompositionSpec] instead of a
- * [LottieComposition] and also handles driving the animation instead of taking a raw progress parameter.
+ * [LottieComposition] and also handles driving the animation via [animateLottieComposition] instead
+ * of taking a raw progress parameter.
  *
  * @see LottieAnimation
+ * @see animateLottieComposition
  */
 @Composable
 fun LottieAnimation(
@@ -188,10 +192,11 @@ fun LottieAnimation(
 }
 
 /**
- * This is like [LottieAnimation] except that it handles driving the animation instead of taking a raw
- * progress parameter.
+ * This is like [LottieAnimation] except that it handles driving the animation via [animateLottieComposition]
+ * instead of taking a raw progress parameter.
  *
  * @see LottieAnimation
+ * @see animateLottieComposition
  */
 @Composable
 fun LottieAnimation(
