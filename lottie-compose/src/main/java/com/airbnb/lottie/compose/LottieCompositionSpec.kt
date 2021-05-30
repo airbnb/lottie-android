@@ -1,7 +1,11 @@
 package com.airbnb.lottie.compose
 
+import androidx.annotation.RawRes
+
 /**
- * Specification for a Lottie animation. Each subclass represents a different source.
+ * Specification for a [com.airbnb.lottie.LottieComposition]. Each subclass represents a different source.
+ * A [com.airbnb.lottie.LottieComposition] is the stateless parsed version of a Lottie json file and is
+ * passed into [lottieComposition] or [LottieAnimation].
  */
 sealed class LottieCompositionSpec {
     /**
