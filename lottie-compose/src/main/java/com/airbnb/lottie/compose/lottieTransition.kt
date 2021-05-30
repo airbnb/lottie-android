@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
  * Example usage:
  * ```
  * var state by remember { mutableStateOf(0) }
- * val compositionResult = rememberLottieCompositionResult(LottieCompositionSpec.RawRes(R.raw.your_animation))
+ * val compositionResult = lottieComposition(LottieCompositionSpec.RawRes(R.raw.your_animation))
  * val progress by lottieTransition(state) { progress ->
  *     val composition = compositionResult.await()
  *     when (state) {
@@ -52,6 +52,12 @@ fun <T> lottieTransition(
     states.value  = state
 
     LaunchedEffect(Unit) {
+        // We use collectLatest instead of LaunchedEffect with key = state because
+        // we want to allow `animate` to use a NonCancellable CoroutineContext
+        // in case it wants to finish its animation before the next state's animation
+        // starts.
+        // LaunchedEffect won't wait for the NonCancellable job to finish when the
+        // new state starts.
         states.collectLatest {
             coroutineScope {
                 animate(progress)

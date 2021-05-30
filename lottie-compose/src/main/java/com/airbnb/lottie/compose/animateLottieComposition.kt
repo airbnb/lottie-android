@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
  *                  onFinished to set isPlaying to false but in many cases, it won't matter.
  * @param restartOnPlay If isPlaying switches from false to true, restartOnPlay determines whether
  *                      the progress and repeatCount get reset.
- * @param clipSpec A [LottieAnimationClipSpec] that specifies the bound the animation playback
+ * @param clipSpec A [LottieClipSpec] that specifies the bound the animation playback
  *                 should be clipped to.
  * @param speed The speed the animation should play at. Numbers larger than one will speed it up.
  *              Numbers between 0 and 1 will slow it down. Numbers less than 0 will play it backwards.
@@ -35,7 +35,7 @@ fun animateLottieComposition(
     composition: LottieComposition?,
     isPlaying: Boolean = true,
     restartOnPlay: Boolean = true,
-    clipSpec: LottieAnimationClipSpec? = null,
+    clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
     repeatCount: Int = 1,
     onRepeat: ((repeatCount: Int) -> Unit)? = null,

@@ -15,7 +15,7 @@ class LottieCompositionResultTest {
 
     @Before
     fun setup() {
-        composition = LottieCompositionFactory.fromJsonStringSync(Composition.Rect, null).value!!
+        composition = LottieCompositionFactory.fromJsonStringSync(CompositionFixtures.Rect, null).value!!
     }
 
     @Test

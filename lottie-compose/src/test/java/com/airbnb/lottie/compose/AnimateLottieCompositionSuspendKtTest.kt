@@ -21,7 +21,7 @@ class AnimateLottieCompositionSuspendKtTest {
 
     @Before
     fun setup() {
-        composition = LottieCompositionFactory.fromJsonStringSync(Composition.Rect, null).value!!
+        composition = LottieCompositionFactory.fromJsonStringSync(CompositionFixtures.Rect, null).value!!
     }
 
     @Test
@@ -130,7 +130,7 @@ class AnimateLottieCompositionSuspendKtTest {
                 animateLottieComposition(
                     composition,
                     progress,
-                    clipSpec = LottieAnimationClipSpec.MinAndMaxProgress(0.25f, 0.5f)
+                    clipSpec = LottieClipSpec.MinAndMaxProgress(0.25f, 0.5f)
                 )
             }
 

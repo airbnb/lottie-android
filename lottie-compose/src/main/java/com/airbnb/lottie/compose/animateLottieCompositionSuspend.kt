@@ -18,6 +18,7 @@ enum class LottieCancellationBehavior {
      * @see lottieTransition
      */
     Immediate,
+
     /**
      * Continue suspending until the animation completes, effectively ignoring the cancellation request.
      * This may be useful if you have a segmented animation with multiple states and you want them to
@@ -45,25 +46,25 @@ enum class LottieCancellationBehavior {
 suspend fun animateLottieComposition(
     composition: LottieComposition?,
     progress: MutableState<Float>,
-    clipSpec: LottieAnimationClipSpec? = null,
+    clipSpec: LottieClipSpec? = null,
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediate,
     speed: Float = 1f,
 ) {
     require(speed != 0f) { "Speed must not be 0" }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
     composition ?: return
-    val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
-    val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
-    progress.value = when {
-        speed >= 0 -> minProgress
-        else -> maxProgress
-    }
-    var lastFrameTime = withFrameNanos { it }
     val context = when (cancellationBehavior) {
         LottieCancellationBehavior.Immediate -> EmptyCoroutineContext
         LottieCancellationBehavior.AtEnd -> NonCancellable
     }
     withContext(context) {
+        val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
+        val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
+        progress.value = when {
+            speed >= 0 -> minProgress
+            else -> maxProgress
+        }
+        var lastFrameTime = withFrameNanos { it }
         var done = false
         while (!done) {
             withFrameNanos { frameTime ->
