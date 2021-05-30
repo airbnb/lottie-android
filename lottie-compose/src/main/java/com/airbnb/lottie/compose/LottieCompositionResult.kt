@@ -50,6 +50,18 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
         return compositionDeferred.await()
     }
 
+    /**
+     * Like [await] but returns null instead of throwing an exception if the animation fails
+     * to fetch or parse.
+     */
+    suspend fun awaitOrNull(): LottieComposition? {
+        return try {
+            await()
+        } catch (e: Throwable) {
+            null
+        }
+    }
+
     @Synchronized
     internal fun complete(composition: LottieComposition) {
         if (isComplete) return

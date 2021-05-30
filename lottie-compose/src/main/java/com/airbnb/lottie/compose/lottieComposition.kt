@@ -40,20 +40,16 @@ fun lottieComposition(
     val result: LottieCompositionResult by remember(spec) { mutableStateOf(LottieCompositionResult()) }
     LaunchedEffect(spec) {
         var exception: Throwable? = null
-        try {
-            result.complete(lottieComposition(context, spec))
-        } catch (e: Throwable) {
-            exception = e
-        }
         var retryCount = 0
-        while (!result.isSuccess && onRetry(++retryCount, exception!!)) {
+        while (!result.isSuccess && (retryCount == 0 || onRetry(retryCount, exception!!))) {
             try {
                 result.complete(lottieComposition(context, spec))
             } catch (e: Throwable) {
                 exception = e
+                retryCount++
             }
         }
-        if (exception != null && !result.isComplete) {
+        if (!result.isComplete && exception != null) {
             result.completeExceptionally(exception)
         }
     }
