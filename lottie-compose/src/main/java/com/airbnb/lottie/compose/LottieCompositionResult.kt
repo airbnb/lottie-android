@@ -35,7 +35,7 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
     val isSuccess by derivedStateOf { composition != null }
 
     /**
-     * This can throw if the [LottieComposition] fails to fetch and parse.
+     * This can throw if the [LottieComposition] fails to load.
      *
      * These animations should never fail:
      * * [LottieCompositionSpec.RawRes]
@@ -52,7 +52,7 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
 
     /**
      * Like [await] but returns null instead of throwing an exception if the animation fails
-     * to fetch or parse.
+     * to load.
      */
     suspend fun awaitOrNull(): LottieComposition? {
         return try {

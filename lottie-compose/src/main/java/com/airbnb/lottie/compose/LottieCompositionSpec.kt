@@ -15,7 +15,7 @@ sealed class LottieCompositionSpec {
 
     /**
      * Load an animation from the internet. Lottie has a default network stack that will use
-     * standard Android networking APIs to attempt to fetch your animation. You may want to
+     * standard Android networking APIs to attempt to load your animation. You may want to
      * integrate your own networking stack instead for consistency, to add your own headers,
      * or implement retries. To do that, call [com.airbnb.lottie.Lottie.initialize] and set
      * a [com.airbnb.lottie.network.LottieNetworkFetcher] on the [com.airbnb.lottie.LottieConfig].

@@ -25,10 +25,10 @@ import kotlin.coroutines.resumeWithException
  * val composition: State<LottieComposition?> by lottieComposition(spec)
  * ```
  *
- * @param spec The [LottieCompositionSpec] that defines what LottieComposition should be fetched and parsed.
- * @param onRetry An optional callback that will be called if fetching and parsing the animation fails.
+ * @param spec The [LottieCompositionSpec] that defines which LottieComposition should be loaded.
+ * @param onRetry An optional callback that will be called if loading the animation fails.
  *                It is passed the retry count (1 for the first retry) and the exception from the previous
- *                attempt to fetch and parse the composition. [onRetry] is a suspending function so you can
+ *                attempt to load the composition. [onRetry] is a suspending function so you can
  *                do things like add a backoff delay or await an internet connection before retrying again.
  */
 @Composable
