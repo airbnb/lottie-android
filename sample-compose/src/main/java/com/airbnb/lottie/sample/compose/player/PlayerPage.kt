@@ -31,10 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.animateLottieComposition
-import com.airbnb.lottie.compose.lottieComposition
+import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
@@ -46,159 +43,60 @@ import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
+@Stable
+class PlayerPageState {
+    var isPlaying by mutableStateOf(true)
+    var repeatCount by mutableStateOf(Integer.MAX_VALUE)
+    var speed by mutableStateOf(1f)
+    var outlineMasksAndMattes by mutableStateOf(false)
+    var applyOpacityToLayers by mutableStateOf(false)
+    var enableMergePaths by mutableStateOf(false)
+    var focusMode by mutableStateOf(false)
+    var showWarningsDialog by mutableStateOf(false)
+
+    var borderToolbar by mutableStateOf(false)
+    var speedToolbar by mutableStateOf(false)
+    var backgroundColorToolbar by mutableStateOf(false)
+}
+
 @Composable
 fun PlayerPage(
     spec: LottieCompositionSpec,
     animationBackgroundColor: Color? = null,
 ) {
-    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val scaffoldState = rememberScaffoldState()
-    val isPlaying = remember { mutableStateOf(true) }
-    val repeatCount = remember { mutableStateOf(Integer.MAX_VALUE) }
-    val speed = remember { mutableStateOf(1f) }
-    val outlineMasksAndMattes = remember { mutableStateOf(false) }
-    val applyOpacityToLayers = remember { mutableStateOf(false) }
-    val enableMergePaths = remember { mutableStateOf(false) }
-
-    var focusMode by remember { mutableStateOf(false) }
-    var backgroundColor by remember { mutableStateOf(animationBackgroundColor) }
-    var showWarningsDialog by remember { mutableStateOf(false) }
-
-    val borderToolbar = remember { mutableStateOf(false) }
-    val speedToolbar = remember { mutableStateOf(false) }
-    val backgroundColorToolbar = remember { mutableStateOf(false) }
+    val state = remember { PlayerPageState() }
 
     val failedMessage = stringResource(R.string.failed_to_load)
     val okMessage = stringResource(R.string.ok)
 
     val compositionResult = lottieComposition(spec)
-    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val imageAssetDelegate = remember(compositionResult()) {
-        if (compositionResult()?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
-            null
-        } else {
-            ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
-        }
-    }
-    val progress = animateLottieComposition(
-        compositionResult(),
-        isPlaying.value,
-        restartOnPlay = false,
-        repeatCount = repeatCount.value,
-        speed = speed.value,
-    ) { isPlaying.value = false }
 
-    LaunchedEffect(compositionResult) {
-        if (compositionResult.isFailure) {
-            scaffoldState.snackbarHostState.showSnackbar(
-                message = failedMessage,
-                actionLabel = okMessage,
-            )
-        }
+    LaunchedEffect(compositionResult.isFailure) {
+        if (!compositionResult.isFailure) return@LaunchedEffect
+        scaffoldState.snackbarHostState.showSnackbar(
+            message = failedMessage,
+            actionLabel = okMessage,
+        )
     }
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = {
-            TopAppBar(
-                title = {},
-                backgroundColor = Color.Transparent,
-                elevation = 0.dp,
-                navigationIcon = {
-                    IconButton(
-                        onClick = { backPressedDispatcher?.onBackPressed() },
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = null
-                        )
-                    }
-                },
-                actions = {
-                    if (compositionResult()?.warnings?.isNotEmpty() == true) {
-                        IconButton(
-                            onClick = { showWarningsDialog = true }
-                        ) {
-                            Icon(
-                                Icons.Filled.Warning,
-                                tint = Color.Black,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                    IconButton(
-                        onClick = { focusMode = !focusMode },
-                    ) {
-                        Icon(
-                            Icons.Filled.RemoveRedEye,
-                            tint = if (focusMode) Teal else Color.Black,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-        },
+        topBar = { PlayerPageTopAppBar(state, compositionResult()) },
     ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxHeight()
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .maybeBackground(backgroundColor)
-                    .fillMaxWidth()
-            ) {
-                LottieAnimation(
-                    compositionResult(),
-                    progress.value,
-                    imageAssetDelegate = imageAssetDelegate,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                        .maybeDrawBorder(borderToolbar.value)
-                )
-                if (compositionResult.isLoading) {
-                    DebouncedCircularProgressIndicator(
-                        color = Teal,
-                        modifier = Modifier
-                            .size(48.dp)
-                    )
-                }
-            }
-            ExpandVisibility(speedToolbar.value && !focusMode) {
-                SpeedToolbar(speed)
-            }
-            ExpandVisibility(!focusMode && backgroundColorToolbar.value) {
-                BackgroundColorToolbar(
-                    animationBackgroundColor = animationBackgroundColor,
-                    onColorChanged = { backgroundColor = it }
-                )
-            }
-            ExpandVisibility(!focusMode) {
-                PlayerControlsRow(compositionResult(), progress, isPlaying, speed, repeatCount)
-            }
-            ExpandVisibility(!focusMode) {
-                Toolbar(
-                    border = borderToolbar,
-                    speed = speedToolbar,
-                    backgroundColor = backgroundColorToolbar,
-                    outlineMasksAndMattes = outlineMasksAndMattes,
-                    applyOpacityToLayers = applyOpacityToLayers,
-                    enableMergePaths = enableMergePaths
-                )
-            }
-        }
+        PlayerPageContent(state, compositionResult, animationBackgroundColor)
     }
 
-    if (showWarningsDialog) {
-        WarningDialog(warnings = compositionResult()?.warnings ?: emptyList(), onDismiss = { showWarningsDialog = false })
+    if (state.showWarningsDialog) {
+        WarningDialog(warnings = compositionResult()?.warnings ?: emptyList(), onDismiss = { state.showWarningsDialog = false })
     }
 }
 
 @Composable
-private fun ColumnScope.ExpandVisibility(visible: Boolean, content: @Composable () -> Unit) {
+private fun ColumnScope.ExpandVisibility(
+    visible: Boolean,
+    content: @Composable () -> Unit,
+) {
     AnimatedVisibility(
         visible = visible,
         enter = expandVertically(),
@@ -209,14 +107,127 @@ private fun ColumnScope.ExpandVisibility(visible: Boolean, content: @Composable 
 }
 
 @Composable
+private fun PlayerPageTopAppBar(
+    state: PlayerPageState,
+    composition: LottieComposition?,
+) {
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    TopAppBar(
+        title = {},
+        backgroundColor = Color.Transparent,
+        elevation = 0.dp,
+        navigationIcon = {
+            IconButton(
+                onClick = { backPressedDispatcher?.onBackPressed() },
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = null
+                )
+            }
+        },
+        actions = {
+            if (composition?.warnings?.isNotEmpty() == true) {
+                IconButton(
+                    onClick = { state.showWarningsDialog = true }
+                ) {
+                    Icon(
+                        Icons.Filled.Warning,
+                        tint = Color.Black,
+                        contentDescription = null
+                    )
+                }
+            }
+            IconButton(
+                onClick = { state.focusMode = !state.focusMode },
+            ) {
+                Icon(
+                    Icons.Filled.RemoveRedEye,
+                    tint = if (state.focusMode) Teal else Color.Black,
+                    contentDescription = null
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun PlayerPageContent(
+    state: PlayerPageState,
+    compositionResult: LottieCompositionResult,
+    animationBackgroundColor: Color?,
+) {
+    var backgroundColor by remember(animationBackgroundColor) { mutableStateOf(animationBackgroundColor) }
+    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    val imageAssetDelegate = remember(compositionResult()) {
+        if (compositionResult()?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
+            null
+        } else {
+            ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
+        }
+    }
+    val progress = animateLottieComposition(
+        compositionResult(),
+        state.isPlaying,
+        restartOnPlay = false,
+        repeatCount = state.repeatCount,
+        speed = state.speed,
+    ) { state.isPlaying = false }
+
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxHeight()
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .weight(1f)
+                .maybeBackground(backgroundColor)
+                .fillMaxWidth()
+        ) {
+            LottieAnimation(
+                compositionResult(),
+                progress.value,
+                imageAssetDelegate = imageAssetDelegate,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center)
+                    .maybeDrawBorder(state.borderToolbar)
+            )
+            if (compositionResult.isLoading) {
+                DebouncedCircularProgressIndicator(
+                    color = Teal,
+                    modifier = Modifier
+                        .size(48.dp)
+                )
+            }
+        }
+        ExpandVisibility(state.speedToolbar && !state.focusMode) {
+            SpeedToolbar(state)
+        }
+        ExpandVisibility(!state.focusMode && state.backgroundColorToolbar) {
+            BackgroundColorToolbar(
+                animationBackgroundColor = animationBackgroundColor,
+                onColorChanged = { backgroundColor = it }
+            )
+        }
+        ExpandVisibility(!state.focusMode) {
+            PlayerControlsRow(compositionResult(), progress, state)
+        }
+        ExpandVisibility(!state.focusMode) {
+            Toolbar(state)
+        }
+    }
+}
+
+@Composable
 private fun PlayerControlsRow(
     composition: LottieComposition?,
     progress: MutableState<Float>,
-    isPlaying: MutableState<Boolean>,
-    speed: MutableState<Float>,
-    repeatCount: MutableState<Int>,
+    state: PlayerPageState,
 ) {
-    val totalTime = ((composition?.duration ?: 0L / speed.value) / 1000.0)
+    val totalTime = ((composition?.duration ?: 0L / state.speed) / 1000.0)
     val totalTimeFormatted = ("%.1f").format(totalTime)
 
     val progressFormatted = ("%.1f").format(progress.value * totalTime)
@@ -234,10 +245,10 @@ private fun PlayerControlsRow(
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
-                    onClick = { isPlaying.value = !isPlaying.value },
+                    onClick = { state.isPlaying = !state.isPlaying },
                 ) {
                     Icon(
-                        if (isPlaying.value) Icons.Filled.Pause
+                        if (state.isPlaying) Icons.Filled.Pause
                         else Icons.Filled.PlayArrow,
                         contentDescription = null
                     )
@@ -256,11 +267,11 @@ private fun PlayerControlsRow(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                repeatCount.value = if (repeatCount.value == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
+                state.repeatCount = if (state.repeatCount == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
             }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (repeatCount.value == Integer.MAX_VALUE) Teal else Color.Black,
+                    tint = if (state.repeatCount == Integer.MAX_VALUE) Teal else Color.Black,
                     contentDescription = null
                 )
             }
@@ -278,7 +289,7 @@ private fun PlayerControlsRow(
 
 @Composable
 private fun SpeedToolbar(
-    speed: MutableState<Float>,
+    state: PlayerPageState,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -289,26 +300,26 @@ private fun SpeedToolbar(
     ) {
         ToolbarChip(
             label = "0.5x",
-            isActivated = speed.value == 0.5f,
-            onClick = { speed.value = 0.5f },
+            isActivated = state.speed == 0.5f,
+            onClick = { state.speed = 0.5f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "1x",
-            isActivated = speed.value == 1f,
-            onClick = { speed.value = 1f },
+            isActivated = state.speed == 1f,
+            onClick = { state.speed = 1f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "1.5x",
-            isActivated = speed.value == 1.5f,
-            onClick = { speed.value = 1.5f },
+            isActivated = state.speed == 1.5f,
+            onClick = { state.speed = 1.5f },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             label = "2x",
-            isActivated = speed.value == 2f,
-            onClick = { speed.value = 2f },
+            isActivated = state.speed == 2f,
+            onClick = { state.speed = 2f },
             modifier = Modifier.padding(end = 8.dp)
         )
     }
@@ -362,14 +373,7 @@ private fun BackgroundToolbarItem(
 }
 
 @Composable
-private fun Toolbar(
-    border: MutableState<Boolean>,
-    speed: MutableState<Boolean>,
-    backgroundColor: MutableState<Boolean>,
-    outlineMasksAndMattes: MutableState<Boolean>,
-    applyOpacityToLayers: MutableState<Boolean>,
-    enableMergePaths: MutableState<Boolean>,
-) {
+private fun Toolbar(state: PlayerPageState) {
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState())
@@ -379,43 +383,43 @@ private fun Toolbar(
         ToolbarChip(
             iconPainter = painterResource(R.drawable.ic_masks_and_mattes),
             label = stringResource(R.string.toolbar_item_masks),
-            isActivated = outlineMasksAndMattes.value,
-            onClick = { outlineMasksAndMattes.value = it },
+            isActivated = state.outlineMasksAndMattes,
+            onClick = { state.outlineMasksAndMattes = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             iconPainter = painterResource(R.drawable.ic_layers),
             label = stringResource(R.string.toolbar_item_opacity_layers),
-            isActivated = applyOpacityToLayers.value,
-            onClick = { applyOpacityToLayers.value = it },
+            isActivated = state.applyOpacityToLayers,
+            onClick = { state.applyOpacityToLayers = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             iconPainter = painterResource(R.drawable.ic_color),
             label = stringResource(R.string.toolbar_item_color),
-            isActivated = backgroundColor.value,
-            onClick = { backgroundColor.value = it },
+            isActivated = state.backgroundColorToolbar,
+            onClick = { state.backgroundColorToolbar = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             iconPainter = painterResource(R.drawable.ic_speed),
             label = stringResource(R.string.toolbar_item_speed),
-            isActivated = speed.value,
-            onClick = { speed.value = it },
+            isActivated = state.speedToolbar,
+            onClick = { state.speedToolbar = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             iconPainter = painterResource(R.drawable.ic_border),
             label = stringResource(R.string.toolbar_item_border),
-            isActivated = border.value,
-            onClick = { border.value = it },
+            isActivated = state.borderToolbar,
+            onClick = { state.borderToolbar = it },
             modifier = Modifier.padding(end = 8.dp)
         )
         ToolbarChip(
             iconPainter = rememberVectorPainter(Icons.Default.MergeType),
             label = stringResource(R.string.toolbar_item_merge_paths),
-            isActivated = enableMergePaths.value,
-            onClick = { enableMergePaths.value = it },
+            isActivated = state.enableMergePaths,
+            onClick = { state.enableMergePaths = it },
             modifier = Modifier.padding(end = 8.dp)
         )
     }
@@ -458,8 +462,9 @@ fun WarningDialog(
 @Preview
 @Composable
 fun SpeedToolbarPreview() {
-    val speed = remember { mutableStateOf(1f) }
-    SpeedToolbar(speed)
+    val state = remember { PlayerPageState() }
+    state.speed = 1f
+    SpeedToolbar(state)
 }
 
 @Preview(name = "Player")
