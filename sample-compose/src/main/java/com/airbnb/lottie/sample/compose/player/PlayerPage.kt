@@ -1,5 +1,6 @@
 package com.airbnb.lottie.sample.compose.player
 
+import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -48,6 +49,7 @@ fun PlayerPage(
     spec: LottieCompositionSpec,
     animationBackgroundColor: Color? = null,
 ) {
+    Log.d("Gabe", "Spec $spec")
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val scaffoldState = rememberScaffoldState()
     val isPlaying = remember { mutableStateOf(true) }
@@ -70,6 +72,13 @@ fun PlayerPage(
 
     val compositionResult = lottieComposition(spec)
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    val imageAssetDelegate = remember(compositionResult()) {
+        if (compositionResult()?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
+            null
+        } else {
+            ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
+        }
+    }
     val progress = animateLottieComposition(
         compositionResult(),
         isPlaying.value,
@@ -143,7 +152,7 @@ fun PlayerPage(
                 LottieAnimation(
                     compositionResult(),
                     progress.value,
-                    imageAssetDelegate = remember { ImageAssetDelegate { it.bitmap ?: it.toDummyBitmap(dummyBitmapStrokeWidth) }},
+                    imageAssetDelegate = imageAssetDelegate,
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.Center)
