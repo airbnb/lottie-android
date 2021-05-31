@@ -1,8 +1,11 @@
 package com.airbnb.lottie.sample.compose
 
 import android.util.Base64
+import androidx.navigation.NavController
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
+
+fun NavController.navigate(route: Route) = navigate(route.route)
 
 sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyList()) {
     object Showcase : Route("showcase")
@@ -11,7 +14,11 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
 
     object LottieFiles : Route("lottiefiles")
 
-    object Learn : Route("learn")
+    object Examples : Route("examples")
+
+    object BasicUsageExample : Route("basic usage example")
+
+    object TransitionsUsageExample : Route("transitions usage example")
 
     object Player : Route(
         "player",

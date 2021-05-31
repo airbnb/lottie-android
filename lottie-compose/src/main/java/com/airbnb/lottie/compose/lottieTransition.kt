@@ -50,6 +50,7 @@ fun <T> lottieTransition(
     val progress = remember { mutableStateOf(0f) }
     val states = remember { MutableStateFlow(state) }
     states.value  = state
+    val currentAnimate by rememberUpdatedState(animate)
 
     LaunchedEffect(Unit) {
         // We use collectLatest instead of LaunchedEffect with key = state because
@@ -60,7 +61,7 @@ fun <T> lottieTransition(
         // new state starts.
         states.collectLatest {
             coroutineScope {
-                animate(progress)
+                currentAnimate(progress)
             }
         }
     }

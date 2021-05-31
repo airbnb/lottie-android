@@ -17,6 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.sample.compose.examples.BasicUsageExamplePage
+import com.airbnb.lottie.sample.compose.examples.ExamplesPage
+import com.airbnb.lottie.sample.compose.examples.TransitionsExamplePage
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesPage
 import com.airbnb.lottie.sample.compose.player.PlayerPage
 import com.airbnb.lottie.sample.compose.preview.PreviewPage
@@ -74,10 +77,12 @@ class ComposeActivity : AppCompatActivity() {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     NavHost(navController, startDestination = Route.Showcase.route) {
-                        composable(Route.Showcase.route, arguments = Route.Showcase.args) { ShowcasePage(navController) }
-                        composable(Route.Preview.route, arguments = Route.Preview.args) { PreviewPage(navController) }
-                        composable(Route.LottieFiles.route, arguments = Route.LottieFiles.args) { LottieFilesPage(navController) }
-                        composable(Route.Learn.route, arguments = Route.Learn.args) { ShowcasePage(navController) }
+                        composable(Route.Showcase.route) { ShowcasePage(navController) }
+                        composable(Route.Preview.route) { PreviewPage(navController) }
+                        composable(Route.LottieFiles.route) { LottieFilesPage(navController) }
+                        composable(Route.Examples.route) { ExamplesPage(navController) }
+                        composable(Route.BasicUsageExample.route) { BasicUsageExamplePage() }
+                        composable(Route.TransitionsUsageExample.route) { TransitionsExamplePage() }
                         composable(
                             Route.Player.fullRoute,
                             arguments = Route.Player.args
@@ -106,6 +111,6 @@ class ComposeActivity : AppCompatActivity() {
         Showcase(Route.Showcase, R.drawable.ic_showcase, R.string.bottom_tab_showcase),
         Preview(Route.Preview, R.drawable.ic_device, R.string.bottom_tab_preview),
         LottieFiles(Route.LottieFiles, R.drawable.ic_lottie_files, R.string.bottom_tab_lottie_files),
-        Docs(Route.Learn, R.drawable.ic_docs, R.string.bottom_tab_docs),
+        Docs(Route.Examples, R.drawable.ic_examples, R.string.bottom_tab_examples),
     }
 }
