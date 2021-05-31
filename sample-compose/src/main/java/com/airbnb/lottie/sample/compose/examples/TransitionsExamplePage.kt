@@ -48,7 +48,12 @@ fun TransitionsExamplePage() {
             TextButton(
                 onClick = { state = (state + 1) % 3 }
             ) {
-                Text("State is $state")
+                val text = when (state) {
+                    0 -> "Playing segment 1"
+                    1 -> "Looping segment 2"
+                    else -> "Playing segment 3"
+                }
+                Text(text)
             }
         }
 
@@ -59,7 +64,9 @@ fun TransitionsExamplePage() {
 fun SingleCompositionTransition(state: Int) {
     val compositionResult = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar))
 
-    val progress by lottieTransition(state) { progress ->
+    // This version of lottieTransition is for when your transition is segments of a single animation.
+    // It just takes state and returns progress.
+    val progress = lottieTransition(state) { progress ->
         compositionResult.awaitOrNull() ?: return@lottieTransition
         when (state) {
             0 -> {
@@ -78,7 +85,7 @@ fun SingleCompositionTransition(state: Int) {
                     animateLottieComposition(
                         compositionResult(),
                         progress,
-                        clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 0.66f),
+                        clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f),
                         cancellationBehavior = LottieCancellationBehavior.AtEnd,
                     )
                 }
@@ -87,7 +94,7 @@ fun SingleCompositionTransition(state: Int) {
                 animateLottieComposition(
                     compositionResult(),
                     progress,
-                    clipSpec = LottieClipSpec.MinAndMaxProgress(0.66f, 1f),
+                    clipSpec = LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f),
                     cancellationBehavior = LottieCancellationBehavior.AtEnd,
                 )
             }
@@ -95,20 +102,28 @@ fun SingleCompositionTransition(state: Int) {
     }
     LottieAnimation(compositionResult(), progress)
 }
+
 @Composable
 fun SplitCompositionTransition(state: Int) {
     val compositionResult1 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_1))
     val compositionResult2 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_2))
     val compositionResult3 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_3))
 
-    var compositionResult by remember { mutableStateOf(compositionResult1) }
-
-    val progress by lottieTransition(state) { progress ->
-        compositionResult = when (state) {
-            0 -> compositionResult1
-            1 -> compositionResult2
-            else -> compositionResult3
-        }
+    // This version of lottieTransition is for when your transition uses different composition for different segments.
+    // It takes a second lambda to return the correct composition for the given state and then returns both the compositiojn
+    // and the progress. Make sure to use the returned composition, not the one corresponding to state.
+    // Right after a state changes, if the previous transition was using LottieCancellationBehavior.AtEnd, it may
+    // continue to animate for a short period _after_ the state changes.
+    val (compositionResult, progress) = lottieTransition(
+        state,
+        compositionForState = {
+            when (state) {
+                0 -> compositionResult1
+                1 -> compositionResult2
+                else -> compositionResult3
+            }
+        },
+    ) { compositionResult, progress ->
         compositionResult.awaitOrNull() ?: return@lottieTransition
         when (state) {
             0 -> {
@@ -127,7 +142,7 @@ fun SplitCompositionTransition(state: Int) {
                     )
                 }
             }
-            2 -> {
+            else -> {
                 animateLottieComposition(
                     compositionResult(),
                     progress,
