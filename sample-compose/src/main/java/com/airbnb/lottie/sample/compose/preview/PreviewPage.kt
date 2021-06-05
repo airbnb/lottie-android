@@ -69,7 +69,7 @@ private fun PreviewRow(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.clickable(onClick = onClick)
+        onClick = onClick,
     ) {
         Column {
             Row(
@@ -159,8 +159,8 @@ fun UrlDialog(isShowing: Boolean, onDismiss: () -> Unit, onUrlSelected: (url: St
 @Composable
 private fun AssetRow(name: String, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         modifier = Modifier
-            .clickable(onClick = onClick)
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {

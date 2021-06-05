@@ -33,11 +33,11 @@ fun ToolbarChip(
 ) {
     val unActivatedColor = remember { Color(0xFF444444) }
     Surface(
+        onClick = { onClick(!isActivated) },
         shape = RoundedCornerShape(3.dp),
         color = if (isActivated) Teal else Color(0xFFEAEAEA),
         modifier = Modifier
             .then(modifier)
-            .clickable(onClick = { onClick(!isActivated) })
             .clipToBounds()
     ) {
         Row(

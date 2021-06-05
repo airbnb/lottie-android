@@ -1,7 +1,7 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
-# 1.0.0-beta07-2
+# 1.0.0-beta08-1
 ## Breaking Changes
 LottieAnimationState has been completely removed. Instead, `LottieAnimation` now takes a progress float.
 The driving of animations has been split into a new `animateLottieComposition` function. Properties
