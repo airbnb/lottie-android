@@ -1024,7 +1024,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
    */
   public <T> void addValueCallback(
-      final KeyPath keyPath, final T property, final LottieValueCallback<T> callback) {
+      final KeyPath keyPath, final T property, @Nullable final LottieValueCallback<T> callback) {
     if (compositionLayer == null) {
       lazyCompositionTasks.add(new LazyCompositionTask() {
         @Override

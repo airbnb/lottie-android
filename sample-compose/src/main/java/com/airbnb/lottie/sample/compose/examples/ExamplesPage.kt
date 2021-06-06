@@ -14,6 +14,7 @@ import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.Route
 import com.airbnb.lottie.sample.compose.composables.Marquee
 import com.airbnb.lottie.sample.compose.navigate
+import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 
 @Composable
 fun ExamplesPage(navController: NavController) {
@@ -22,23 +23,40 @@ fun ExamplesPage(navController: NavController) {
             .verticalScroll(rememberScrollState())
     ) {
         Marquee(stringResource(R.string.examples_title))
-        ListItem(
-            text = { Text("Basic Usage") },
-            secondaryText = { Text("Various example of simple Lottie usage.") },
-            modifier = Modifier
-                .clickable { navController.navigate(Route.BasicUsageExamples) }
+        ExampleListItem(
+            navController,
+            "Basic Usage",
+            "Various example of simple Lottie usage.",
+            Route.BasicUsageExamples,
         )
-        ListItem(
-            text = { Text("Transitions") },
-            secondaryText = { Text("Sequencing segments of an animation based on state.") },
-            modifier = Modifier
-                .clickable { navController.navigate(Route.TransitionsExamples) }
+        ExampleListItem(
+            navController,
+            "Transitions",
+            "Sequencing segments of an animation based on state.",
+            Route.TransitionsExamples,
         )
-        ListItem(
-            text = { Text("Network Animations") },
-            secondaryText = { Text("Loading animations from a url") },
-            modifier = Modifier
-                .clickable { navController.navigate(Route.NetworkExamples) }
+        ExampleListItem(
+            navController,
+            "Network Animations",
+            "Loading animations from a url",
+            Route.NetworkExamples,
+        )
+        ExampleListItem(
+            navController,
+            "Dynamic Properties",
+            "Dynamic Properties",
+            Route.DynamicPropertiesExamples,
         )
     }
+}
+
+@Composable
+private fun ExampleListItem(navController: NavController, title: String, description: String, route: Route) {
+    ListItem(
+        text = { Text(title) },
+        secondaryText = { Text(description) },
+        modifier = Modifier
+            .clickable { navController.navigate(route) }
+            .drawBottomBorder()
+    )
 }

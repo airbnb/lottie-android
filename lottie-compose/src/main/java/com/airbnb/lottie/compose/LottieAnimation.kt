@@ -69,6 +69,8 @@ import com.airbnb.lottie.setImageAssetManager
  *                         features so it defaults to off. The only way to know if your animation will work
  *                         well with merge paths or not is to try it. If your animation has merge paths and
  *                         doesn't render correctly, please file an issue.
+ * @param dynamicProperties Allows you to change the properties of an animation dynamically. To use them, use
+ *                          [rememberLottieDynamicProperties]. Refer to its docs for more info.
  */
 @Composable
 fun LottieAnimation(
@@ -80,9 +82,11 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
 ) {
     val drawable = remember { LottieDrawable() }
     var imageAssetManager by remember { mutableStateOf<ImageAssetManager?>(null) }
+    var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
@@ -104,6 +108,11 @@ fun LottieAnimation(
                 scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
             }) {
                 drawable.composition = composition
+                if (dynamicProperties !== setDynamicProperties) {
+                    setDynamicProperties?.removeFrom(drawable)
+                    dynamicProperties?.addTo(drawable)
+                    setDynamicProperties = dynamicProperties
+                }
                 drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
                 drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
                 drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
@@ -133,6 +142,7 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
 ) {
     val composition by lottieComposition(compositionSpec)
     LottieAnimation(
@@ -144,6 +154,7 @@ fun LottieAnimation(
         outlineMasksAndMattes,
         applyOpacityToLayers,
         enableMergePaths,
+        dynamicProperties,
     )
 }
 
@@ -171,6 +182,7 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
 ) {
     val composition by lottieComposition(compositionSpec)
     LottieAnimation(
@@ -188,6 +200,7 @@ fun LottieAnimation(
         outlineMasksAndMattes,
         applyOpacityToLayers,
         enableMergePaths,
+        dynamicProperties,
     )
 }
 
@@ -214,6 +227,7 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
 ) {
     val progress by animateLottieComposition(
         composition,
@@ -234,6 +248,7 @@ fun LottieAnimation(
         outlineMasksAndMattes,
         applyOpacityToLayers,
         enableMergePaths,
+        dynamicProperties,
     )
 }
 
