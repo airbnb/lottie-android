@@ -5,6 +5,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
@@ -27,26 +30,27 @@ import kotlin.coroutines.resumeWithException
  *
  * @param spec The [LottieCompositionSpec] that defines which LottieComposition should be loaded.
  * @param onRetry An optional callback that will be called if loading the animation fails.
- *                It is passed the retry count (1 for the first retry) and the exception from the previous
- *                attempt to load the composition. [onRetry] is a suspending function so you can
- *                do things like add a backoff delay or await an internet connection before retrying again.
+ *                It is passed the failed count (the number of times it has failed) and the exception
+ *                from the previous attempt to load the composition. [onRetry] is a suspending function
+ *                so you can do things like add a backoff delay or await an internet connection before
+ *                retrying again.
  */
 @Composable
 fun lottieComposition(
     spec: LottieCompositionSpec,
-    onRetry: suspend (retryCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
+    onRetry: suspend (failedCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
     val context = LocalContext.current
     val result: LottieCompositionResult by remember(spec) { mutableStateOf(LottieCompositionResult()) }
     LaunchedEffect(spec) {
         var exception: Throwable? = null
-        var retryCount = 0
-        while (!result.isSuccess && (retryCount == 0 || onRetry(retryCount, exception!!))) {
+        var failedCount = 0
+        while (!result.isSuccess && (failedCount == 0 || onRetry(failedCount, exception!!))) {
             try {
                 result.complete(lottieComposition(context, spec))
             } catch (e: Throwable) {
                 exception = e
-                retryCount++
+                failedCount++
             }
         }
         if (!result.isComplete && exception != null) {

@@ -1,43 +1,22 @@
 package com.airbnb.lottie.sample.compose.examples
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.R
 import kotlinx.coroutines.isActive
 
 @Composable
-fun TransitionsExamplePage() {
-    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+fun TransitionsExamplesPage() {
     var state by remember { mutableStateOf(0) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = { backPressedDispatcher?.onBackPressed() },
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
-            )
-        }
-    ) { padding ->
+    UsageExamplePageScaffold { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)

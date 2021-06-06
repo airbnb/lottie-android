@@ -17,9 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.sample.compose.examples.BasicUsageExamplePage
+import com.airbnb.lottie.sample.compose.examples.BasicUsageExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ExamplesPage
-import com.airbnb.lottie.sample.compose.examples.TransitionsExamplePage
+import com.airbnb.lottie.sample.compose.examples.NetworkExamplesPage
+import com.airbnb.lottie.sample.compose.examples.TransitionsExamplesPage
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesPage
 import com.airbnb.lottie.sample.compose.player.PlayerPage
 import com.airbnb.lottie.sample.compose.preview.PreviewPage
@@ -81,8 +82,9 @@ class ComposeActivity : AppCompatActivity() {
                         composable(Route.Preview.route) { PreviewPage(navController) }
                         composable(Route.LottieFiles.route) { LottieFilesPage(navController) }
                         composable(Route.Examples.route) { ExamplesPage(navController) }
-                        composable(Route.BasicUsageExample.route) { BasicUsageExamplePage() }
-                        composable(Route.TransitionsUsageExample.route) { TransitionsExamplePage() }
+                        composable(Route.BasicUsageExamples.route) { BasicUsageExamplesPage() }
+                        composable(Route.TransitionsExamples.route) { TransitionsExamplesPage() }
+                        composable(Route.NetworkExamples.route) { NetworkExamplesPage() }
                         composable(
                             Route.Player.fullRoute,
                             arguments = Route.Player.args

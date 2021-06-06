@@ -26,13 +26,19 @@ fun ExamplesPage(navController: NavController) {
             text = { Text("Basic Usage") },
             secondaryText = { Text("Various example of simple Lottie usage.") },
             modifier = Modifier
-                .clickable { navController.navigate(Route.BasicUsageExample) }
+                .clickable { navController.navigate(Route.BasicUsageExamples) }
         )
         ListItem(
             text = { Text("Transitions") },
             secondaryText = { Text("Sequencing segments of an animation based on state.") },
             modifier = Modifier
-                .clickable { navController.navigate(Route.TransitionsUsageExample) }
+                .clickable { navController.navigate(Route.TransitionsExamples) }
+        )
+        ListItem(
+            text = { Text("Network Animations") },
+            secondaryText = { Text("Loading animations from a url") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.NetworkExamples) }
         )
     }
 }

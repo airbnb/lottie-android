@@ -16,9 +16,11 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
 
     object Examples : Route("examples")
 
-    object BasicUsageExample : Route("basic usage example")
+    object BasicUsageExamples : Route("basic usage examples")
 
-    object TransitionsUsageExample : Route("transitions usage example")
+    object TransitionsExamples : Route("transitions examples")
+
+    object NetworkExamples : Route("network examples")
 
     object Player : Route(
         "player",
