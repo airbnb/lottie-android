@@ -5,6 +5,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -40,13 +43,14 @@ import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 @Stable
 class PlayerPageState {
-    var isPlaying by mutableStateOf(true)
-    var repeatCount by mutableStateOf(Integer.MAX_VALUE)
+    var repeatCount by mutableStateOf(LottieConstants.RepeatForever)
     var speed by mutableStateOf(1f)
     var outlineMasksAndMattes by mutableStateOf(false)
     var applyOpacityToLayers by mutableStateOf(false)
@@ -167,13 +171,12 @@ fun PlayerPageContent(
             ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
         }
     }
-    val progress = animateLottieComposition(
+    val animationState = animateLottieComposition(
         compositionResult(),
-        state.isPlaying,
-        restartOnPlay = false,
+        initialIsPlaying = true,
         repeatCount = state.repeatCount,
         speed = state.speed,
-    ) { state.isPlaying = false }
+    )
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -188,7 +191,7 @@ fun PlayerPageContent(
         ) {
             LottieAnimation(
                 compositionResult(),
-                progress.value,
+                animationState.value,
                 imageAssetDelegate = imageAssetDelegate,
                 modifier = Modifier
                     .fillMaxSize()
@@ -213,7 +216,7 @@ fun PlayerPageContent(
             )
         }
         ExpandVisibility(!state.focusMode) {
-            PlayerControlsRow(compositionResult(), progress, state)
+            PlayerControlsRow(compositionResult(), animationState, state)
         }
         ExpandVisibility(!state.focusMode) {
             Toolbar(state)
@@ -224,15 +227,16 @@ fun PlayerPageContent(
 @Composable
 private fun PlayerControlsRow(
     composition: LottieComposition?,
-    progress: MutableState<Float>,
+    animationState: LottieAnimationState,
     state: PlayerPageState,
 ) {
+    val scope = rememberCoroutineScope()
     val totalTime = ((composition?.duration ?: 0L / state.speed) / 1000.0)
     val totalTimeFormatted = ("%.1f").format(totalTime)
 
-    val progressFormatted = ("%.1f").format(progress.value * totalTime)
+    val progressFormatted = ("%.1f").format(animationState.value * totalTime)
 
-    val frame = composition?.getFrameForProgress(progress.value)?.roundToInt() ?: 0
+    val frame = composition?.getFrameForProgress(animationState.value)?.roundToInt() ?: 0
     val durationFrames = ceil(composition?.durationFrames ?: 0f).roundToInt()
     Box(
         modifier = Modifier
@@ -245,10 +249,14 @@ private fun PlayerControlsRow(
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
-                    onClick = { state.isPlaying = !state.isPlaying },
+                    onClick = {
+                        scope.launch {
+                            animationState.toggleIsPlaying()
+                        }
+                    },
                 ) {
                     Icon(
-                        if (state.isPlaying) Icons.Filled.Pause
+                        if (animationState.isPlaying) Icons.Filled.Pause
                         else Icons.Filled.PlayArrow,
                         contentDescription = null
                     )
@@ -261,17 +269,16 @@ private fun PlayerControlsRow(
                         .padding(top = 48.dp, bottom = 8.dp)
                 )
             }
-            Slider(
-                value = progress.value,
-                onValueChange = { progress.value = it },
+            AnimationSlider(
+                animationState,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                state.repeatCount = if (state.repeatCount == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
+                state.repeatCount = if (state.repeatCount == LottieConstants.RepeatForever) 1 else LottieConstants.RepeatForever
             }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (state.repeatCount == Integer.MAX_VALUE) Teal else Color.Black,
+                    tint = if (state.repeatCount == LottieConstants.RepeatForever) Teal else Color.Black,
                     contentDescription = null
                 )
             }
@@ -285,6 +292,44 @@ private fun PlayerControlsRow(
                 .padding(bottom = 12.dp)
         )
     }
+}
+
+@Composable
+private fun AnimationSlider(
+    animationState: LottieAnimationState,
+    modifier: Modifier = Modifier,
+) {
+    val scope = rememberCoroutineScope()
+    val interactionSource = remember { MutableInteractionSource() }
+    var isInteracting by remember { mutableStateOf(false) }
+
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            isInteracting = when (interaction) {
+                is PressInteraction.Press, is DragInteraction.Start -> true
+                else -> false
+            }
+        }
+    }
+
+    LaunchedEffect(isInteracting) {
+        if (isInteracting) {
+            animationState.pause()
+        } else {
+            animationState.resume()
+        }
+    }
+
+    Slider(
+        value = animationState.value,
+        interactionSource = interactionSource,
+        onValueChange = { progress ->
+            scope.launch {
+                animationState.snapTo(progress)
+            }
+        },
+        modifier = modifier,
+    )
 }
 
 @Composable

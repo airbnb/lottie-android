@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun BasicUsageExamplesPage() {
@@ -62,7 +63,7 @@ private fun Example1() {
 private fun Example2() {
     LottieAnimation(
         LottieCompositionSpec.RawRes(R.raw.heart),
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
     )
 }
 
@@ -73,7 +74,7 @@ private fun Example2() {
 private fun Example3() {
     LottieAnimation(
         LottieCompositionSpec.RawRes(R.raw.heart),
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
         clipSpec = LottieClipSpec.MinAndMaxProgress(0.5f, 0.75f),
     )
 }
@@ -118,7 +119,7 @@ private fun Example6() {
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     val progress by animateLottieComposition(
         composition,
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
     )
     LottieAnimation(
         composition,
@@ -131,16 +132,16 @@ private fun Example6() {
  */
 @Composable
 private fun Example7() {
-    var isPlaying by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     LottieAnimation(
         LottieCompositionSpec.RawRes(R.raw.heart),
-        repeatCount = Integer.MAX_VALUE,
-        // When this is true, it it will start from 0 every time it is played again.
-        // When this is false, it will resume from the progress it was pause at.
-        restartOnPlay = false,
-        isPlaying = isPlaying,
+        repeatCount = LottieConstants.RepeatForever,
         modifier = Modifier
-            .clickable { isPlaying = !isPlaying }
+            .clickable {
+                scope.launch {
+
+                }
+            }
     )
 }
 

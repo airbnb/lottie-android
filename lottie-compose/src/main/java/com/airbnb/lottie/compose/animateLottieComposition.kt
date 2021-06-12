@@ -3,7 +3,54 @@ package com.airbnb.lottie.compose
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.*
 import com.airbnb.lottie.LottieComposition
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
+
+class LottieAnimationState internal constructor(initialIsPlaying: Boolean) : State<Float> {
+    var isPlaying: Boolean by mutableStateOf(initialIsPlaying)
+        internal set
+
+    override var value: Float by mutableStateOf(0f)
+        internal set
+
+    var currentRepeatCount: Int by mutableStateOf(1)
+        internal set
+
+    internal val actionChannel = Channel<LottieAnimationAction>()
+
+    internal val onFinished = MutableSharedFlow<Long>(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    suspend fun restart() {
+        actionChannel.send(LottieAnimationAction.Reset)
+        actionChannel.send(LottieAnimationAction.Resume)
+    }
+
+    suspend fun toggleIsPlaying() {
+        actionChannel.send(if (isPlaying) LottieAnimationAction.Pause else LottieAnimationAction.Resume)
+    }
+
+    suspend fun pause() {
+        actionChannel.send(LottieAnimationAction.Pause)
+    }
+
+    suspend fun resume() {
+        actionChannel.send(LottieAnimationAction.Resume)
+    }
+
+    suspend fun snapTo(progress: Float) {
+        actionChannel.send(LottieAnimationAction.SnapTo(progress))
+    }
+
+    /**
+     * Suspends until the animation finishes and then returns the last frame time nanos.
+     */
+    suspend fun awaitFinished(): Long {
+        return onFinished.first()
+    }
+}
 
 /**
  * Returns a mutable state representing the progress of an animation.
@@ -30,9 +77,8 @@ import java.util.concurrent.TimeUnit
  * @param speed The speed the animation should play at. Numbers larger than one will speed it up.
  *              Numbers between 0 and 1 will slow it down. Numbers less than 0 will play it backwards.
  * @param repeatCount The number of times the animation should repeat before stopping. It must be
- *                    a positive number. [Integer.MAX_VALUE] can be used to repeat forever.
- * @param onRepeat An optional callback to be notified every time the animation repeats. Return whether
- *                 or not the animation should continue to repeat.
+ *                    a positive number. [LottieConstants.repeatForever] can be used to repeat forever.
+ * @param onRepeat An optional callback to be notified every time the animation repeats.
  * @param onFinished An optional callback that is invoked when animation completes. Note that the isPlaying
  *                   parameter you pass in may still be true. If you want to restart the animation, increase the
  *                   repeatCount or change isPlaying to false and then true again.
@@ -40,43 +86,65 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun animateLottieComposition(
     composition: LottieComposition?,
-    isPlaying: Boolean = true,
-    restartOnPlay: Boolean = true,
+    initialIsPlaying: Boolean = true,
     clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
     repeatCount: Int = 1,
-    onRepeat: ((repeatCount: Int) -> Unit)? = null,
-    onFinished: (() -> Unit)? = null,
-): MutableState<Float> {
+): LottieAnimationState {
     require(repeatCount > 0) { "Repeat count must be a positive number ($repeatCount)." }
     require(speed != 0f) { "Speed must not be 0" }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-
-    val progress = remember { mutableStateOf(0f) }
-
-    var currentRepeatCount by remember { mutableStateOf(0) }
-    val currentOnRepeat by rememberUpdatedState(onRepeat)
-    val currentOnFinished by rememberUpdatedState(onFinished)
+    val state = remember { LottieAnimationState(initialIsPlaying) }
 
     LaunchedEffect(composition) {
-        progress.value = when (composition) {
+        state.value = when (composition) {
             null -> 0f
-            else -> if (speed >= 0) clipSpec?.getMinProgress(composition) ?: 0f else clipSpec?.getMaxProgress(composition) ?: 1f
+            else -> when {
+                speed >= 0 -> clipSpec?.getMinProgress(composition) ?: 0f
+                else -> clipSpec?.getMaxProgress(composition) ?: 1f
+            }
         }
-        currentRepeatCount = 0
+        state.currentRepeatCount = 0
     }
 
-    LaunchedEffect(composition, isPlaying, repeatCount, clipSpec, speed) {
-        if (!isPlaying || composition == null) return@LaunchedEffect
+    LaunchedEffect(state) {
+        for (action in state.actionChannel) {
+            when (action) {
+                LottieAnimationAction.Reset -> {
+                    state.value = when {
+                        composition == null -> 0f
+                        speed > 0 -> clipSpec?.getMinProgress(composition) ?: 0f
+                        else -> clipSpec?.getMaxProgress(composition) ?: 1f
+                    }
+                }
+                LottieAnimationAction.Pause -> {
+                    state.isPlaying = false
+                }
+                LottieAnimationAction.Resume -> {
+                    state.isPlaying = true
+                }
+                is LottieAnimationAction.SnapTo -> {
+                    state.value = when {
+                        composition == null -> 0f
+                        clipSpec == null -> action.progress
+                        else -> action.progress.coerceIn(
+                            clipSpec.getMinProgress(composition),
+                            clipSpec.getMaxProgress(composition),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(composition, state.isPlaying, repeatCount, clipSpec, speed) {
+        if (!state.isPlaying || composition == null) return@LaunchedEffect
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
-        if (speed > 0 && (progress.value == 1f || restartOnPlay)) {
-            progress.value = minProgress
-        } else if (speed < 0 && (progress.value == 0f || restartOnPlay)) {
-            progress.value = maxProgress
-        }
-        if (restartOnPlay || currentRepeatCount >= repeatCount) {
-            currentRepeatCount = 0
+        if (speed >= 0 && (state.value == 1f)) {
+            state.value = minProgress
+        } else if (speed < 0 && (state.value == 0f)) {
+            state.value = maxProgress
         }
         var lastFrameTime = withFrameNanos { it }
         var done = false
@@ -85,19 +153,17 @@ fun animateLottieComposition(
                 val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
                 lastFrameTime = frameTime
                 val dProgress = (dTime * speed) / composition.duration
-                val rawProgress = minProgress + ((progress.value - minProgress) + dProgress)
+                val rawProgress = minProgress + ((state.value - minProgress) + dProgress)
                 if (speed > 0 && rawProgress > maxProgress) {
-                    currentRepeatCount++
-                    currentOnRepeat?.invoke(repeatCount)
+                    state.currentRepeatCount++
                 } else if (speed < 0 && rawProgress < minProgress) {
-                    currentRepeatCount++
-                    currentOnRepeat?.invoke(repeatCount)
+                    state.currentRepeatCount++
                 }
-                done = if (currentRepeatCount < repeatCount && !rawProgress.isInfinite()) {
-                    progress.value = minProgress + ((rawProgress - minProgress) fmod (maxProgress - minProgress))
+                done = if (state.currentRepeatCount < repeatCount && !rawProgress.isInfinite()) {
+                    state.value = minProgress + ((rawProgress - minProgress) fmod (maxProgress - minProgress))
                     false
                 } else {
-                    progress.value = when {
+                    state.value = when {
                         speed >= 0 -> clipSpec?.getMaxProgress(composition) ?: 1f
                         else -> clipSpec?.getMinProgress(composition) ?: 0f
                     }
@@ -105,9 +171,9 @@ fun animateLottieComposition(
                 }
             }
         }
-        currentOnFinished?.invoke()
+        state.onFinished.emit(lastFrameTime)
     }
-    return progress
+    return state
 }
 
 /**
@@ -115,3 +181,10 @@ fun animateLottieComposition(
  * the max progress.
  */
 private infix fun Float.fmod(other: Float) = ((this % other) + other) % other
+
+internal sealed class LottieAnimationAction {
+    object Reset : LottieAnimationAction()
+    object Pause : LottieAnimationAction()
+    object Resume : LottieAnimationAction()
+    class SnapTo(val progress: Float) : LottieAnimationAction()
+}
