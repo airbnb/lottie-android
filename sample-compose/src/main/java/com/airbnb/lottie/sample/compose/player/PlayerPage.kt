@@ -1,6 +1,5 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -41,10 +40,7 @@ import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
 import com.airbnb.lottie.sample.compose.ui.Teal
-import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
-import com.airbnb.lottie.sample.compose.utils.maybeBackground
-import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
-import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
+import com.airbnb.lottie.sample.compose.utils.*
 import kotlinx.coroutines.flow.collect
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -167,7 +163,7 @@ fun PlayerPageContent(
     var backgroundColor by remember(animationBackgroundColor) { mutableStateOf(animationBackgroundColor) }
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
     val imageAssetDelegate = remember(compositionResult()) {
-        if (compositionResult()?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
+        if (compositionResult()?.hasEmbeddedBitmaps == true) {
             null
         } else {
             ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
@@ -272,9 +268,11 @@ private fun PlayerControlsRow(
                 state,
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = {
-                state.repeatCount = if (state.repeatCount == LottieConstants.RepeatForever) 1 else LottieConstants.RepeatForever
-            }) {
+            IconButton(
+                onClick = {
+                    state.repeatCount = if (state.repeatCount == LottieConstants.RepeatForever) 1 else LottieConstants.RepeatForever
+                },
+            ) {
                 Icon(
                     Icons.Filled.Repeat,
                     tint = if (state.repeatCount == LottieConstants.RepeatForever) Teal else Color.Black,
