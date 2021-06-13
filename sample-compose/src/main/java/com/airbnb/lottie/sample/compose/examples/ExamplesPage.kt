@@ -35,6 +35,12 @@ fun ExamplesPage(navController: NavController) {
                 .clickable { navController.navigate(Route.TransitionsExamples) }
         )
         ListItem(
+            text = { Text("View Pager") },
+            secondaryText = { Text("Syncing a Lottie animation with a view pager") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.ViewPagerExample) }
+        )
+        ListItem(
             text = { Text("Network Animations") },
             secondaryText = { Text("Loading animations from a url") },
             modifier = Modifier

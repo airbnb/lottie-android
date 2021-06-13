@@ -35,6 +35,7 @@ android {
         "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
         "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
         "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         "-Xopt-in=kotlin.RequiresOptIn",
     ]
   }
@@ -77,6 +78,8 @@ dependencies {
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
   implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
   implementation "com.google.accompanist:accompanist-coil:0.11.1"
+  implementation "com.google.accompanist:accompanist-pager:0.11.1"
+  implementation "com.google.accompanist:accompanist-pager-indicators:0.11.1"
   implementation 'com.airbnb.android:mavericks:2.3.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
 
