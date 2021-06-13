@@ -52,7 +52,7 @@ import kotlin.math.roundToInt
 @Stable
 class PlayerPageState {
     var isPlaying by mutableStateOf(true)
-    var repeatCount by mutableStateOf(Integer.MAX_VALUE)
+    var repeatCount by mutableStateOf(LottieConstants.RepeatForever)
     var speed by mutableStateOf(1f)
     var outlineMasksAndMattes by mutableStateOf(false)
     var applyOpacityToLayers by mutableStateOf(false)
@@ -273,11 +273,11 @@ private fun PlayerControlsRow(
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
-                state.repeatCount = if (state.repeatCount == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
+                state.repeatCount = if (state.repeatCount == LottieConstants.RepeatForever) 1 else LottieConstants.RepeatForever
             }) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (state.repeatCount == Integer.MAX_VALUE) Teal else Color.Black,
+                    tint = if (state.repeatCount == LottieConstants.RepeatForever) Teal else Color.Black,
                     contentDescription = null
                 )
             }

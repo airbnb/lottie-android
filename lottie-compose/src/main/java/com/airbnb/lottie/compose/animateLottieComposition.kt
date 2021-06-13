@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit
  * @param speed The speed the animation should play at. Numbers larger than one will speed it up.
  *              Numbers between 0 and 1 will slow it down. Numbers less than 0 will play it backwards.
  * @param repeatCount The number of times the animation should repeat before stopping. It must be
- *                    a positive number. [Integer.MAX_VALUE] can be used to repeat forever.
+ *                    a positive number. [LottieConstants.RepeatForever] can be used to repeat forever.
  * @param onRepeat An optional callback to be notified every time the animation repeats. Return whether
  *                 or not the animation should continue to repeat.
  * @param onFinished An optional callback that is invoked when animation completes. Note that the isPlaying

@@ -14,10 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieProperty
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.rememberLottieDynamicProperties
-import com.airbnb.lottie.compose.rememberLottieDynamicProperty
+import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.R
 
 @Composable
@@ -59,7 +56,7 @@ private fun HeartColor() {
     )
     LottieAnimation(
         LottieCompositionSpec.RawRes(R.raw.heart),
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
         dynamicProperties = dynamicProperties,
         modifier = Modifier
             .clickable(
@@ -92,7 +89,7 @@ private fun JumpHeight() {
     )
     LottieAnimation(
         LottieCompositionSpec.Asset("AndroidWave.json"),
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
         dynamicProperties = dynamicProperties,
         modifier = Modifier
             .clickable(
@@ -111,7 +108,7 @@ private fun ToggleProperty() {
     )
     LottieAnimation(
         LottieCompositionSpec.RawRes(R.raw.heart),
-        repeatCount = Integer.MAX_VALUE,
+        repeatCount = LottieConstants.RepeatForever,
         dynamicProperties = dynamicProperties.takeIf { useDynamicProperty },
         modifier = Modifier
             .clickable(
