@@ -82,13 +82,18 @@ fun PlayerPage(
 
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { PlayerPageTopAppBar(state, compositionResult()) },
+        topBar = { PlayerPageTopAppBar(state, compositionResult.value) },
     ) {
-        PlayerPageContent(state, compositionResult, animationBackgroundColor)
+        PlayerPageContent(
+            state,
+            compositionResult.value,
+            compositionResult.isLoading,
+            animationBackgroundColor
+        )
     }
 
     if (state.showWarningsDialog) {
-        WarningDialog(warnings = compositionResult()?.warnings ?: emptyList(), onDismiss = { state.showWarningsDialog = false })
+        WarningDialog(warnings = compositionResult.value?.warnings ?: emptyList(), onDismiss = { state.showWarningsDialog = false })
     }
 }
 
@@ -155,20 +160,21 @@ private fun PlayerPageTopAppBar(
 @Composable
 fun PlayerPageContent(
     state: PlayerPageState,
-    compositionResult: LottieCompositionResult,
+    composition: LottieComposition?,
+    isLoading: Boolean,
     animationBackgroundColor: Color?,
 ) {
     var backgroundColor by remember(animationBackgroundColor) { mutableStateOf(animationBackgroundColor) }
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val imageAssetDelegate = remember(compositionResult()) {
-        if (compositionResult()?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
+    val imageAssetDelegate = remember(composition) {
+        if (composition?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
             null
         } else {
             ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
         }
     }
     val progress = animateLottieComposition(
-        compositionResult(),
+        composition,
         state.isPlaying,
         restartOnPlay = false,
         repeatCount = state.repeatCount,
@@ -187,7 +193,7 @@ fun PlayerPageContent(
                 .fillMaxWidth()
         ) {
             LottieAnimation(
-                compositionResult(),
+                composition,
                 progress.value,
                 imageAssetDelegate = imageAssetDelegate,
                 modifier = Modifier
@@ -195,7 +201,7 @@ fun PlayerPageContent(
                     .align(Alignment.Center)
                     .maybeDrawBorder(state.borderToolbar)
             )
-            if (compositionResult.isLoading) {
+            if (isLoading) {
                 DebouncedCircularProgressIndicator(
                     color = Teal,
                     modifier = Modifier
@@ -213,7 +219,7 @@ fun PlayerPageContent(
             )
         }
         ExpandVisibility(!state.focusMode) {
-            PlayerControlsRow(compositionResult(), progress, state)
+            PlayerControlsRow(composition, progress, state)
         }
         ExpandVisibility(!state.focusMode) {
             Toolbar(state)
@@ -266,9 +272,11 @@ private fun PlayerControlsRow(
                 onValueChange = { progress.value = it },
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = {
-                state.repeatCount = if (state.repeatCount == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
-            }) {
+            IconButton(
+                onClick = {
+                    state.repeatCount = if (state.repeatCount == Integer.MAX_VALUE) 1 else Integer.MAX_VALUE
+                },
+            ) {
                 Icon(
                     Icons.Filled.Repeat,
                     tint = if (state.repeatCount == Integer.MAX_VALUE) Teal else Color.Black,

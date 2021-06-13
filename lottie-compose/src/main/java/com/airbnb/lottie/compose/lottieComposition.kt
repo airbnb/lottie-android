@@ -33,7 +33,7 @@ import kotlin.coroutines.resumeWithException
  *                It is passed the failed count (the number of times it has failed) and the exception
  *                from the previous attempt to load the composition. [onRetry] is a suspending function
  *                so you can do things like add a backoff delay or await an internet connection before
- *                retrying again.
+ *                retrying again. [rememberLottieRetrySignal] can be used to handle explicit retires.
  */
 @Composable
 fun lottieComposition(

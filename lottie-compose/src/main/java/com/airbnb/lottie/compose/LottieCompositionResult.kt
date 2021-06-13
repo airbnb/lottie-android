@@ -5,7 +5,8 @@ import com.airbnb.lottie.LottieComposition
 import kotlinx.coroutines.CompletableDeferred
 
 /**
- * A [LottieCompositionResult] subclass is returned from [lottieComposition].
+ * A [LottieCompositionResult] subclass is returned from [lottieComposition]. It can be completed with a result
+ * or exception only one time.
  *
  * This class implements State<LottieComposition> so you either use it like:
  * ```
@@ -16,23 +17,23 @@ import kotlinx.coroutines.CompletableDeferred
  *
  * @see lottieComposition
  */
+@Stable
 class LottieCompositionResult internal constructor(): State<LottieComposition?> {
     private val compositionDeferred = CompletableDeferred<LottieComposition>()
-    var composition by mutableStateOf<LottieComposition?>(null)
+
+    override var value: LottieComposition? by mutableStateOf(null)
         private set
+
     var error by mutableStateOf<Throwable?>(null)
         private set
 
-    override val value: LottieComposition?
-        get() = invoke()
+    val isLoading by derivedStateOf { value == null && error == null }
 
-    val isLoading by derivedStateOf { composition == null && error == null }
-
-    val isComplete by derivedStateOf { composition != null || error != null }
+    val isComplete by derivedStateOf { value != null || error != null }
 
     val isFailure by derivedStateOf { error != null }
 
-    val isSuccess by derivedStateOf { composition != null }
+    val isSuccess by derivedStateOf { value != null }
 
     /**
      * This can throw if the [LottieComposition] fails to load.
@@ -66,7 +67,7 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
     internal fun complete(composition: LottieComposition) {
         if (isComplete) return
 
-        this.composition = composition
+        this.value = composition
         compositionDeferred.complete(composition)
     }
 
@@ -76,15 +77,5 @@ class LottieCompositionResult internal constructor(): State<LottieComposition?> 
 
         this.error = error
         compositionDeferred.completeExceptionally(error)
-    }
-
-    /**
-     * This is an operator so an instance of [LottieCompositionResult] can be called like a function
-     * instead of calling [invoke] by name.
-     *
-     * @return the composition if successful or null of it is is still loading or failed to load.
-     */
-    operator fun invoke(): LottieComposition? {
-        return composition
     }
 }

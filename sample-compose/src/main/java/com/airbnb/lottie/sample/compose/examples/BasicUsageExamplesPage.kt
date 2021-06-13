@@ -91,8 +91,8 @@ private fun Example4() {
         compositionResult.isFailure -> {
             Text("Animation failed to load")
         }
-        else -> {
-            LottieAnimation(compositionResult())
+        compositionResult.isSuccess -> {
+            LottieAnimation(compositionResult.value)
         }
     }
 }

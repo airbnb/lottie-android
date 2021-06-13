@@ -52,7 +52,7 @@ fun SingleCompositionTransition(state: Int) {
                 // This version of animateLottieComposition takes a MutableState<Float> as a parameter
                 // and then suspends until one iteration through the animation is complete.
                 animateLottieComposition(
-                    compositionResult(),
+                    compositionResult.value,
                     progress,
                     clipSpec = LottieClipSpec.MinAndMaxProgress(0f, 0.301f),
                     cancellationBehavior = LottieCancellationBehavior.AtEnd,
@@ -62,7 +62,7 @@ fun SingleCompositionTransition(state: Int) {
                 // To loop a segment, just wrap this in a while loop.
                 while (isActive) {
                     animateLottieComposition(
-                        compositionResult(),
+                        compositionResult.value,
                         progress,
                         clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f),
                         cancellationBehavior = LottieCancellationBehavior.AtEnd,
@@ -71,7 +71,7 @@ fun SingleCompositionTransition(state: Int) {
             }
             2 -> {
                 animateLottieComposition(
-                    compositionResult(),
+                    compositionResult.value,
                     progress,
                     clipSpec = LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f),
                     cancellationBehavior = LottieCancellationBehavior.AtEnd,
@@ -79,7 +79,7 @@ fun SingleCompositionTransition(state: Int) {
             }
         }
     }
-    LottieAnimation(compositionResult(), progress)
+    LottieAnimation(compositionResult.value, progress)
 }
 
 @Composable
@@ -107,7 +107,7 @@ fun SplitCompositionTransition(state: Int) {
         when (state) {
             0 -> {
                 animateLottieComposition(
-                    compositionResult(),
+                    compositionResult.value,
                     progress,
                     cancellationBehavior = LottieCancellationBehavior.AtEnd,
                 )
@@ -115,7 +115,7 @@ fun SplitCompositionTransition(state: Int) {
             1 -> {
                 while (isActive) {
                     animateLottieComposition(
-                        compositionResult(),
+                        compositionResult.value,
                         progress,
                         cancellationBehavior = LottieCancellationBehavior.AtEnd,
                     )
@@ -123,12 +123,12 @@ fun SplitCompositionTransition(state: Int) {
             }
             else -> {
                 animateLottieComposition(
-                    compositionResult(),
+                    compositionResult.value,
                     progress,
                     cancellationBehavior = LottieCancellationBehavior.AtEnd,
                 )
             }
         }
     }
-    LottieAnimation(compositionResult(), progress)
+    LottieAnimation(compositionResult.value, progress)
 }
