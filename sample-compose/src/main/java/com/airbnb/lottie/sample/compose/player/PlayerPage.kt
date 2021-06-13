@@ -1,10 +1,15 @@
 package com.airbnb.lottie.sample.compose.player
 
+import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -40,6 +45,7 @@ import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
+import kotlinx.coroutines.flow.collect
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -261,9 +267,9 @@ private fun PlayerControlsRow(
                         .padding(top = 48.dp, bottom = 8.dp)
                 )
             }
-            Slider(
-                value = progress.value,
-                onValueChange = { progress.value = it },
+            AnimationSlider(
+                progress,
+                state,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = {
@@ -285,6 +291,55 @@ private fun PlayerControlsRow(
                 .padding(bottom = 12.dp)
         )
     }
+}
+
+@Composable
+private fun AnimationSlider(
+    progress: MutableState<Float>,
+    state: PlayerPageState,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isInteracting = isInteracting(interactionSource)
+    var wasPlayingOnInteractionStart by remember { mutableStateOf(true) }
+
+    LaunchedEffect(isInteracting) {
+        state.isPlaying = when (isInteracting) {
+            true -> {
+                wasPlayingOnInteractionStart = state.isPlaying
+                false
+            }
+            false -> {
+                wasPlayingOnInteractionStart
+            }
+        }
+    }
+
+    Slider(
+        value = progress.value,
+        interactionSource = interactionSource,
+        onValueChange = { progress.value = it },
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun isInteracting(interactionSource: MutableInteractionSource): Boolean {
+    val interactions = remember { mutableStateListOf<Interaction>() }
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> interactions.add(interaction)
+                is PressInteraction.Release -> interactions.remove(interaction.press)
+                is PressInteraction.Cancel -> interactions.remove(interaction.press)
+                is DragInteraction.Start -> interactions.add(interaction)
+                is DragInteraction.Stop -> interactions.remove(interaction.start)
+                is DragInteraction.Cancel -> interactions.remove(interaction.start)
+            }
+        }
+    }
+
+    return interactions.isNotEmpty()
 }
 
 @Composable
