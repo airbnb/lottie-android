@@ -41,6 +41,8 @@ enum class LottieCancellationBehavior {
  * until the animation completes. [LottieCancellationBehavior.Immediate] will immediately cancel the
  * animation and return early.
  *
+ * @return the ending frame time nanos
+ *
  * @see lottieTransition
  */
 suspend fun animateLottieComposition(
@@ -49,10 +51,14 @@ suspend fun animateLottieComposition(
     clipSpec: LottieClipSpec? = null,
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediate,
     speed: Float = 1f,
-) {
+    lastFrameTimeNanos: Long? = null,
+    startAtMinProgress: Boolean = true,
+): Long {
     require(speed != 0f) { "Speed must not be 0" }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-    composition ?: return
+    var lastFrameTime = lastFrameTimeNanos ?: withFrameNanos { it }
+    composition ?: return lastFrameTime
+
     val context = when (cancellationBehavior) {
         LottieCancellationBehavior.Immediate -> EmptyCoroutineContext
         LottieCancellationBehavior.AtEnd -> NonCancellable
@@ -61,10 +67,10 @@ suspend fun animateLottieComposition(
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
         progress.value = when {
+            !startAtMinProgress -> progress.value.coerceIn(minProgress, maxProgress)
             speed >= 0 -> minProgress
             else -> maxProgress
         }
-        var lastFrameTime = withFrameNanos { it }
         var done = false
         while (!done) {
             withFrameNanos { frameTime ->
@@ -80,4 +86,5 @@ suspend fun animateLottieComposition(
             }
         }
     }
+    return lastFrameTime
 }

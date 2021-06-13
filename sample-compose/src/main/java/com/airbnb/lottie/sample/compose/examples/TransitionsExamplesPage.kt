@@ -42,44 +42,34 @@ fun TransitionsExamplesPage() {
 @Composable
 fun SingleCompositionTransition(state: Int) {
     val compositionResult = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar))
+    val animationState = rememberLottieAnimationState()
 
     // This version of lottieTransition is for when your transition is segments of a single animation.
     // It just takes state and returns progress.
-    val progress = lottieTransition(state) { progress ->
+    lottieTransition(state) {
         compositionResult.awaitOrNull() ?: return@lottieTransition
         when (state) {
             0 -> {
-                // This version of animateLottieComposition takes a MutableState<Float> as a parameter
-                // and then suspends until one iteration through the animation is complete.
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    clipSpec = LottieClipSpec.MinAndMaxProgress(0f, 0.301f),
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                )
+                animationState.clipSpec = LottieClipSpec.MinAndMaxProgress(0f, 0.301f)
+                animationState.iterations = 1
+                animationState.animate(compositionResult.value, cancellationBehavior = LottieCancellationBehavior.AtEnd)
             }
             1 -> {
                 // To loop a segment, just wrap this in a while loop.
                 while (isActive) {
-                    animateLottieComposition(
-                        compositionResult.value,
-                        progress,
-                        clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f),
-                        cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                    )
+                    animationState.clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f)
+                    animationState.iterations = Integer.MAX_VALUE
+                    animationState.animate(compositionResult.value, cancellationBehavior = LottieCancellationBehavior.AtEnd)
                 }
             }
             2 -> {
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    clipSpec = LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f),
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                )
+                animationState.clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f)
+                animationState.iterations = 1
+                animationState.animate(compositionResult.value, cancellationBehavior = LottieCancellationBehavior.AtEnd)
             }
         }
     }
-    LottieAnimation(compositionResult.value, progress)
+    LottieAnimation(compositionResult.value, animationState.value)
 }
 
 @Composable
