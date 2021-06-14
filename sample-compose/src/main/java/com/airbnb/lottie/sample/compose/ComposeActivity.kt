@@ -80,6 +80,7 @@ class ComposeActivity : AppCompatActivity() {
                         composable(Route.LottieFiles.route) { LottieFilesPage(navController) }
                         composable(Route.Examples.route) { ExamplesPage(navController) }
                         composable(Route.BasicUsageExamples.route) { BasicUsageExamplesPage() }
+                        composable(Route.CoroutinesExamples.route) { CoroutinesExamplesPage() }
                         composable(Route.TransitionsExamples.route) { TransitionsExamplesPage() }
                         composable(Route.ViewPagerExample.route) { ViewPagerExamplePage() }
                         composable(Route.NetworkExamples.route) { NetworkExamplesPage() }

@@ -49,27 +49,31 @@ suspend fun animateLottieComposition(
     clipSpec: LottieClipSpec? = null,
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediate,
     speed: Float = 1f,
-) {
+    snapToMinProgress: Boolean = true,
+    lastFrameTimeNanos: Long? = null,
+): Long? {
     require(speed != 0f) { "Speed must not be 0" }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-    composition ?: return
+    composition ?: return null
     val context = when (cancellationBehavior) {
         LottieCancellationBehavior.Immediate -> EmptyCoroutineContext
         LottieCancellationBehavior.AtEnd -> NonCancellable
     }
-    withContext(context) {
+    return withContext(context) {
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
         progress.value = when {
+            !snapToMinProgress -> progress.value.coerceIn(minProgress, maxProgress)
             speed >= 0 -> minProgress
             else -> maxProgress
         }
-        var lastFrameTime = withFrameNanos { it }
+        @Suppress("LocalVariableName")
+        var _lastFrameTimeNanos = lastFrameTimeNanos ?: withFrameNanos { it }
         var done = false
         while (!done) {
             withFrameNanos { frameTime ->
-                val dTime = (frameTime - lastFrameTime) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
-                lastFrameTime = frameTime
+                val dTime = (frameTime - _lastFrameTimeNanos) / TimeUnit.MILLISECONDS.toNanos(1).toFloat()
+                _lastFrameTimeNanos = frameTime
                 val dProgress = (dTime * speed) / composition.duration
                 val rawProgress = minProgress + ((progress.value - minProgress) + dProgress)
                 progress.value = rawProgress.coerceIn(minProgress, maxProgress)
@@ -79,5 +83,6 @@ suspend fun animateLottieComposition(
                 }
             }
         }
+        _lastFrameTimeNanos
     }
 }

@@ -24,13 +24,19 @@ fun ExamplesPage(navController: NavController) {
         Marquee(stringResource(R.string.examples_title))
         ListItem(
             text = { Text("Basic Usage") },
-            secondaryText = { Text("Various example of simple Lottie usage.") },
+            secondaryText = { Text("Various example of simple Lottie usage") },
             modifier = Modifier
                 .clickable { navController.navigate(Route.BasicUsageExamples) }
         )
         ListItem(
+            text = { Text("Coroutines Usage") },
+            secondaryText = { Text("Animating lottie with a suspending coroutine") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.CoroutinesExamples) }
+        )
+        ListItem(
             text = { Text("Transitions") },
-            secondaryText = { Text("Sequencing segments of an animation based on state.") },
+            secondaryText = { Text("Sequencing segments of an animation based on state") },
             modifier = Modifier
                 .clickable { navController.navigate(Route.TransitionsExamples) }
         )
