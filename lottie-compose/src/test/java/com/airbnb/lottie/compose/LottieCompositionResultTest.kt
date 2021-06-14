@@ -31,8 +31,6 @@ class LottieCompositionResultTest {
         result.completeExceptionally(e)
         assertFalse(result.isSuccess)
         assertTrue(result.isFailure)
-        assertNull(result.composition)
-        assertNull(result())
         assertNull(result.value)
         assertEquals(e, result.error)
     }
@@ -43,8 +41,6 @@ class LottieCompositionResultTest {
         result.complete(composition)
         assertFalse(result.isFailure)
         assertTrue(result.isSuccess)
-        assertEquals(composition, result())
-        assertEquals(composition, result.composition)
         assertEquals(composition, result.value)
     }
 
@@ -55,8 +51,6 @@ class LottieCompositionResultTest {
         result.completeExceptionally(IllegalStateException("Fail"))
         assertFalse(result.isFailure)
         assertTrue(result.isSuccess)
-        assertEquals(composition, result())
-        assertEquals(composition, result.composition)
         assertEquals(composition, result.value)
     }
 
@@ -68,8 +62,6 @@ class LottieCompositionResultTest {
         result.complete(composition)
         assertFalse(result.isSuccess)
         assertTrue(result.isFailure)
-        assertNull(result.composition)
-        assertNull(result())
         assertNull(result.value)
         assertEquals(e, result.error)
     }
