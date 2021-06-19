@@ -92,7 +92,10 @@ private fun Example4() {
             Text("Animation failed to load")
         }
         compositionResult.isSuccess -> {
-            LottieAnimation(compositionResult.value)
+            LottieAnimation(
+                compositionResult.value,
+                iterations = LottieConstants.IterateForever,
+            )
         }
     }
 }
@@ -106,7 +109,7 @@ private fun Example5() {
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     LottieAnimation(
         composition,
-        progress = 0.85f,
+        progress = 0.65f,
     )
 }
 

@@ -164,8 +164,6 @@ fun LottieAnimation(
     iterations: Int = 1,
     clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
-    onIterationFinished: ((iteration: Int) -> Unit)? = null,
-    onFinished: (() -> Unit)? = null,
     imageAssetsFolder: String? = null,
     imageAssetDelegate: ImageAssetDelegate? = null,
     outlineMasksAndMattes: Boolean = false,
@@ -181,8 +179,6 @@ fun LottieAnimation(
         clipSpec,
         speed,
         iterations,
-        onIterationFinished,
-        onFinished,
         imageAssetsFolder,
         imageAssetDelegate,
         outlineMasksAndMattes,
@@ -207,8 +203,6 @@ fun LottieAnimation(
     clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
     iterations: Int = 1,
-    onIterationFinished: ((iteration: Int) -> Unit)? = null,
-    onFinished: (() -> Unit)? = null,
     imageAssetsFolder: String? = null,
     imageAssetDelegate: ImageAssetDelegate? = null,
     outlineMasksAndMattes: Boolean = false,
@@ -222,8 +216,6 @@ fun LottieAnimation(
         clipSpec,
         speed,
         iterations,
-        onIterationFinished,
-        onFinished,
     )
     LottieAnimation(
         composition,
@@ -239,5 +231,6 @@ fun LottieAnimation(
 
 private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modifier {
     composition ?: return this
+    // TODO: use ContentScale and a transform here
     return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
 }

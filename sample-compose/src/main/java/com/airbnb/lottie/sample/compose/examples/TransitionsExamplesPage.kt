@@ -10,11 +10,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.R
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+
+enum class TransitionState {
+    Intro,
+    LoopMiddle,
+    Outro;
+
+    fun next(): TransitionState = when (this) {
+        Intro -> LoopMiddle
+        LoopMiddle -> Outro
+        Outro -> Intro
+    }
+}
 
 @Composable
 fun TransitionsExamplesPage() {
-    var state by remember { mutableStateOf(0) }
+    val state = remember { mutableStateOf(TransitionState.Intro) }
 
     UsageExamplePageScaffold { padding ->
         Column(
@@ -25,14 +40,9 @@ fun TransitionsExamplesPage() {
             Box(modifier = Modifier.height(16.dp))
             SplitCompositionTransition(state)
             TextButton(
-                onClick = { state = (state + 1) % 3 }
+                onClick = { state.value = state.value.next() }
             ) {
-                val text = when (state) {
-                    0 -> "Playing segment 1"
-                    1 -> "Looping segment 2"
-                    else -> "Playing segment 3"
-                }
-                Text(text)
+                Text("State: ${state.value}")
             }
         }
 
@@ -40,95 +50,54 @@ fun TransitionsExamplesPage() {
 }
 
 @Composable
-fun SingleCompositionTransition(state: Int) {
-    val compositionResult = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar))
+fun SingleCompositionTransition(state: State<TransitionState>) {
+    val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar))
+    val animatable = remember { LottieAnimatable() }
 
-    // This version of lottieTransition is for when your transition is segments of a single animation.
-    // It just takes state and returns progress.
-    val progress = lottieTransition(state) { progress ->
-        compositionResult.awaitOrNull() ?: return@lottieTransition
-        when (state) {
-            0 -> {
-                // This version of animateLottieComposition takes a MutableState<Float> as a parameter
-                // and then suspends until one iteration through the animation is complete.
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    clipSpec = LottieClipSpec.MinAndMaxProgress(0f, 0.301f),
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
+    LaunchedEffect(composition, animatable) {
+        composition ?: return@LaunchedEffect
+        snapshotFlow { state.value }.collectLatest { s ->
+            val clipSpec = when (s) {
+                TransitionState.Intro -> LottieClipSpec.MinAndMaxProgress(0f, 0.301f)
+                TransitionState.LoopMiddle -> LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f)
+                TransitionState.Outro -> LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f)
+            }
+            do {
+                animatable.animate(
+                    composition,
+                    clipSpec = clipSpec,
+                    cancellationBehavior = LottieCancellationBehavior.OnFinish,
                 )
-            }
-            1 -> {
-                // To loop a segment, just wrap this in a while loop.
-                while (isActive) {
-                    animateLottieComposition(
-                        compositionResult.value,
-                        progress,
-                        clipSpec = LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f),
-                        cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                    )
-                }
-            }
-            2 -> {
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    clipSpec = LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f),
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                )
-            }
+            } while (s == TransitionState.LoopMiddle)
         }
     }
-    LottieAnimation(compositionResult.value, progress)
+    LottieAnimation(composition, animatable.progress)
 }
 
 @Composable
-fun SplitCompositionTransition(state: Int) {
-    val compositionResult1 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_1))
-    val compositionResult2 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_2))
-    val compositionResult3 = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_3))
+fun SplitCompositionTransition(state: State<TransitionState>) {
+    val introComposition = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_1))
+    val loopMiddleComposition = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_2))
+    val outroComposition = lottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_3))
+    val animatable = remember { LottieAnimatable() }
 
-    // This version of lottieTransition is for when your transition uses different composition for different segments.
-    // It takes a second lambda to return the correct composition for the given state and then returns both the compositiojn
-    // and the progress. Make sure to use the returned composition, not the one corresponding to state.
-    // Right after a state changes, if the previous transition was using LottieCancellationBehavior.AtEnd, it may
-    // continue to animate for a short period _after_ the state changes.
-    val (compositionResult, progress) = lottieTransition(
-        state,
-        compositionForState = {
-            when (state) {
-                0 -> compositionResult1
-                1 -> compositionResult2
-                else -> compositionResult3
-            }
-        },
-    ) { compositionResult, progress ->
-        compositionResult.awaitOrNull() ?: return@lottieTransition
-        when (state) {
-            0 -> {
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
+    LaunchedEffect(animatable) {
+        snapshotFlow { state.value }.collectLatest { s ->
+            val composition = when (state.value) {
+                TransitionState.Intro -> introComposition
+                TransitionState.LoopMiddle -> loopMiddleComposition
+                TransitionState.Outro -> outroComposition
+            }.await()
+            do {
+                animatable.animate(
+                    composition,
+                    initialProgress = 0f,
+                    cancellationBehavior = LottieCancellationBehavior.OnFinish,
                 )
-            }
-            1 -> {
-                while (isActive) {
-                    animateLottieComposition(
-                        compositionResult.value,
-                        progress,
-                        cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                    )
-                }
-            }
-            else -> {
-                animateLottieComposition(
-                    compositionResult.value,
-                    progress,
-                    cancellationBehavior = LottieCancellationBehavior.AtEnd,
-                )
-            }
+            } while (s == TransitionState.LoopMiddle)
         }
     }
-    LottieAnimation(compositionResult.value, progress)
+
+
+    LottieAnimation(animatable.composition, animatable.progress)
 }

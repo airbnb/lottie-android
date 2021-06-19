@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.*
 import com.airbnb.lottie.sample.compose.R
-import kotlinx.coroutines.isActive
 
 @Composable
 fun CoroutinesExamplesPage() {
@@ -40,74 +39,67 @@ fun CoroutinesExamplesPage() {
 @Composable
 private fun Example1() {
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val progress = remember { mutableStateOf(0f) }
+    val animatable = remember { LottieAnimatable() }
 
-    LaunchedEffect(composition) {
-        animateLottieComposition(composition, progress)
+    LaunchedEffect(composition, animatable) {
+        animatable.animate(
+            composition,
+            iterations = LottieConstants.IterateForever,
+        )
     }
-    LottieAnimation(composition, progress.value)
+    LottieAnimation(composition, animatable.progress)
 }
 
 @Composable
 private fun Example2() {
-    var iteration by remember { mutableStateOf(1) }
+    var nonce by remember { mutableStateOf(1) }
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val progress = remember { mutableStateOf(0f) }
+    val animatable = remember { LottieAnimatable() }
 
-    LaunchedEffect(composition, iteration) {
-        animateLottieComposition(composition, progress)
+    LaunchedEffect(composition, nonce) {
+        composition ?: return@LaunchedEffect
+        animatable.animate(
+            composition,
+            continueFromPreviousAnimate = false,
+        )
     }
     LottieAnimation(
         composition,
-        progress.value,
+        animatable.progress,
         modifier = Modifier
-            .clickable { iteration++ }
+            .clickable { nonce++ }
     )
 }
 
 @Composable
 private fun Example3() {
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val progress = remember { mutableStateOf(0f) }
+    val animatable = remember { LottieAnimatable() }
 
-    LaunchedEffect(composition) {
-        // Return early when the composition is parsing so it doesn't loop in animateLottieComposition
-        // over and over again.
+    LaunchedEffect(composition, animatable) {
         composition ?: return@LaunchedEffect
-        var lastFrameNanos: Long? = null
-        while (isActive) {
-            lastFrameNanos = animateLottieComposition(
-                composition,
-                progress,
-                lastFrameTimeNanos = lastFrameNanos,
-            )
-        }
+        animatable.animate(
+            composition,
+            iterations = LottieConstants.IterateForever,
+        )
     }
-    LottieAnimation(composition, progress.value)
+    LottieAnimation(composition, animatable.progress)
 }
 
 @Composable
 private fun Example4() {
-    var isPlaying by remember { mutableStateOf(true) }
+    var shouldPlay by remember { mutableStateOf(true) }
     val composition by lottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val progress = remember { mutableStateOf(0f) }
+    val animatable = remember { LottieAnimatable() }
 
-    LaunchedEffect(composition, isPlaying) {
-        if (composition == null || !isPlaying) return@LaunchedEffect
-        var snapToMinProgress = false
-        while (isActive) {
-            animateLottieComposition(
-                composition,
-                progress,
-                snapToMinProgress = snapToMinProgress,
-            )
-            snapToMinProgress = true
-        }
+    LaunchedEffect(composition, shouldPlay) {
+        if (composition == null || !shouldPlay) return@LaunchedEffect
+        animatable.animate(composition, iteration = LottieConstants.IterateForever)
     }
     LottieAnimation(
         composition,
-        progress.value,
+        animatable.progress,
         modifier = Modifier
-            .clickable { isPlaying = !isPlaying }
+            .clickable { shouldPlay = !shouldPlay }
     )
 }
