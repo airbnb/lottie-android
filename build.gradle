@@ -4,7 +4,7 @@ buildscript {
   ext {
     composeVersion = '1.0.0-beta09'
     kotlinVersion = '1.5.10'
-    daggerVersion = '2.36'
+    daggerVersion = '2.37'
   }
 
   repositories {

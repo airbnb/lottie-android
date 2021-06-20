@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -845,6 +846,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    *
    * @return either one of {@link #REVERSE} or {@link #RESTART}
    */
+  @SuppressLint("WrongConstant")
   @RepeatMode
   public int getRepeatMode() {
     return animator.getRepeatMode();
