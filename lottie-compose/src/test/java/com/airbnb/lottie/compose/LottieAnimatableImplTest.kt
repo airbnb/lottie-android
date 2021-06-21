@@ -168,7 +168,7 @@ class LottieAnimatableImplTest {
         assertFrame(300, progress = 0.5f, iterations = 2)
         val clipSpec = LottieClipSpec.MinProgress(0.25f)
         launch {
-            anim.animate(composition, clipSpec = clipSpec, continueFromPreviousAnimate = true, iterations = 2)
+            anim.animate(composition, clipSpec = clipSpec, initialProgress = anim.progress, continueFromPreviousAnimate = true, iterations = 2)
         }
         assertFrame(598, progress = 0.998f, clipSpec = clipSpec, iterations = 2)
         assertFrame(599, progress = 0.25f, clipSpec = clipSpec, iteration = 2, iterations = 2)
@@ -205,7 +205,7 @@ class LottieAnimatableImplTest {
         assertFrame(0, progress = 0f)
         assertFrame(300, progress = 0.5f)
         launch {
-            anim.animate(composition, continueFromPreviousAnimate = true)
+            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(300, progress = 0.5f)
         assertFrame(598, progress = 0.998f)
@@ -221,7 +221,7 @@ class LottieAnimatableImplTest {
         assertFrame(300, progress = 0.5f)
         launch {
             anim.snapTo(composition)
-            anim.animate(composition, continueFromPreviousAnimate = true)
+            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(300, progress = 0.5f)
         assertFrame(598, progress = 0.998f)
@@ -237,7 +237,7 @@ class LottieAnimatableImplTest {
         assertFrame(300, progress = 0.5f)
         launch {
             anim.snapTo(composition, progress = 0.2f)
-            anim.animate(composition, continueFromPreviousAnimate = true)
+            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(316, progress = 0.2f)
         assertFrame(449, progress = 0.422f)
@@ -254,7 +254,7 @@ class LottieAnimatableImplTest {
         assertFrame(1796, progress = 0.998f, iteration = 3, iterations = 3)
         launch {
             anim.snapTo(iteration = 1)
-            anim.animate(composition, continueFromPreviousAnimate = true)
+            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true, iterations = 3)
         }
         assertFrame(1796, progress = 0.998f, iteration = 1, iterations = 3)
         assertFrame(1797, progress = 0f, iteration = 2, iterations = 3)
@@ -270,7 +270,7 @@ class LottieAnimatableImplTest {
         assertFrame(0, progress = 0f)
         assertFrame(300, progress = 0.5f)
         launch {
-            anim.animate(composition, speed = 2f, continueFromPreviousAnimate = true)
+            anim.animate(composition, speed = 2f, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(316, progress = 0.554f, speed = 2f)
         assertFrame(449, progress = 0.998f, speed = 2f)
