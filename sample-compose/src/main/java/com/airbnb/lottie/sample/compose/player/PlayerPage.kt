@@ -317,7 +317,7 @@ private fun PlayerControlsRow(
             ) {
                 Icon(
                     Icons.Filled.Repeat,
-                    tint = if (state.animatable.iterations == LottieConstants.IterateForever) Teal else Color.Black,
+                    tint = if (state.animatable.iterations == 1) Color.Black else Teal,
                     contentDescription = null
                 )
             }

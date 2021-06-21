@@ -2,6 +2,8 @@ package com.airbnb.lottie.compose
 
 /**
  * Determines how the animation should behave if the calling CoroutineScope is cancelled.
+ *
+ * @see LottieAnimatable
  */
 enum class LottieCancellationBehavior {
     /**
