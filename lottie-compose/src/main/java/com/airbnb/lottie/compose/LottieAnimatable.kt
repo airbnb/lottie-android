@@ -94,12 +94,12 @@ interface LottieAnimatable : LottieAnimationState {
      */
     suspend fun animate(
         composition: LottieComposition?,
+        iteration: Int = 1,
+        iterations: Int = 1,
+        speed: Float = 1f,
+        clipSpec: LottieClipSpec? = null,
+        initialProgress: Float =  defaultProgress(composition, clipSpec, speed),
         continueFromPreviousAnimate: Boolean = false,
-        iteration: Int = if (continueFromPreviousAnimate) this.iteration else 1,
-        iterations: Int = if (continueFromPreviousAnimate) this.iterations else 1,
-        speed: Float = if (continueFromPreviousAnimate) this.speed else 1f,
-        clipSpec: LottieClipSpec? = if (continueFromPreviousAnimate) this.clipSpec else null,
-        initialProgress: Float = if (continueFromPreviousAnimate) progress else defaultProgress(composition, clipSpec, speed),
         cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
     )
 }
@@ -172,12 +172,12 @@ private class LottieAnimatableImpl : LottieAnimatable {
 
     override suspend fun animate(
         composition: LottieComposition?,
-        continueFromPreviousAnimate: Boolean,
         iteration: Int,
         iterations: Int,
         speed: Float,
         clipSpec: LottieClipSpec?,
         initialProgress: Float,
+        continueFromPreviousAnimate: Boolean,
         cancellationBehavior: LottieCancellationBehavior,
     ) {
         mutex.mutate {

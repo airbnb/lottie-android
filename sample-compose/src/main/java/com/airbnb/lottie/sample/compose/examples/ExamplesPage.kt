@@ -29,6 +29,13 @@ fun ExamplesPage(navController: NavController) {
                 .clickable { navController.navigate(Route.BasicUsageExamples) }
         )
         ListItem(
+            text = { Text("Animatable Usage") },
+            secondaryText = { Text("Usage of LottieAnimatable") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.AnimatableUsageExamples) }
+        )
+
+        ListItem(
             text = { Text("Coroutines Usage") },
             secondaryText = { Text("Animating lottie with a suspending coroutine") },
             modifier = Modifier
