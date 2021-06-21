@@ -40,21 +40,66 @@ fun LottieAnimatable(): LottieAnimatable = LottieAnimatableImpl()
 interface LottieAnimatable : LottieAnimationState {
     suspend fun resetToBeginning()
 
+    /**
+     * Snap to a specific point in an animation. This can be used to update the progress
+     * or iteration count of an ongoing animation. It will cancel any ongoing animations
+     * on this state class. To update and then resume an animation, call [animate] again with
+     * continueFromPreviousAnimate set to true after calling [snapTo].
+     *
+     * @param composition The [LottieComposition] that should be rendered.
+     *                    Defaults to [LottieAnimatable.composition].
+     * @param progress The progress that should be set.
+     *                 Defaults to [LottieAnimatable.progress]
+     * @param iteration Updates the current iteration count. This can be used to "rewind" or
+     *                  "fast-forward" an ongoing animation to a past/future iteration count.
+     *                   Defaults to [LottieAnimatable.iteration]
+     * @param resetLastFrameNanos [LottieAnimatable] keeps track of the frame time of the most
+     *                            recent animation. When [animate] is called with continueFromPreviousAnimate
+     *                            set to true, a delta will be calculated from the most recent [animate] call
+     *                            to ensure that the original progress is unaffected by [snapTo] calls in the
+     *                            middle.
+     *                            Defaults to false if progress is not being snapped to.
+     *                            Defaults to true if progress is being snapped to.
+     */
     suspend fun snapTo(
-        composition: LottieComposition? = null,
+        composition: LottieComposition? = this.composition,
         progress: Float = this.progress,
         iteration: Int = this.iteration,
-        resetLastFrameNanos: Boolean = true,
+        resetLastFrameNanos: Boolean = progress != this.progress,
     )
 
+    /**
+     * Animate a [LottieComposition].
+     *
+     * @param composition The [LottieComposition] that should be rendered.
+     * @param continueFromPreviousAnimate When set to true, this animation will be considered continuous from any
+     *                                    previous animate calls. When set to true 1) parameters will carry over from
+     *                                    their previous value instead of being set to their defaults 2) instead of
+     *                                    starting at the minimum progress, the initial progress will be advanced in
+     *                                    accordance to the amount of time that has passed since the last frame
+     *                                    was rendered.
+     * @param iteration The iteration to start the animation at. Defaults to 1 and starts at 1.
+     * @param iterations The number of iterations to continue running for. Set to 1 to play one time
+     *                   set to [LottieConstants.IterateForever] to iterate forever. Can be set to arbitrary
+     *                   numbers.
+     * @param speed The speed at which the composition should be animated. Can be negative. Defaults to 1.
+     * @param clipSpec An optional [LottieClipSpec] to trim the playback of the composition between two values.
+     * @param initialProgress An optional progress value that the animation should start at. Defaults to the
+     *                        starting progress as defined by the clipSpec and speed. Can be used to resume
+     *                        animations from arbitrary points.
+     * @param cancellationBehavior The behavior that this animation should have when cancelled. In most cases,
+     *                             you will want it to cancel immediately. However, if you have a state based
+     *                             transition and you want an animation to finish playing before moving on to
+     *                             the next one then you may want to set this to [LottieCancellationBehavior.OnFinish].
+     */
     suspend fun animate(
         composition: LottieComposition?,
-        iteration: Int = 1,
-        iterations: Int = 1,
-        speed: Float = 1f,
-        clipSpec: LottieClipSpec? = null,
-        initialProgress: Float = defaultProgress(composition, clipSpec, speed),
         continueFromPreviousAnimate: Boolean = false,
+        iteration: Int = if (continueFromPreviousAnimate) this.iteration else 1,
+        iterations: Int = if (continueFromPreviousAnimate) this.iterations else 1,
+        speed: Float = if (continueFromPreviousAnimate) this.speed else 1f,
+        clipSpec: LottieClipSpec? = if (continueFromPreviousAnimate) this.clipSpec else null,
+        initialProgress: Float = if (continueFromPreviousAnimate) progress else defaultProgress(composition, clipSpec, speed),
         cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
     )
 }
@@ -127,16 +172,19 @@ private class LottieAnimatableImpl : LottieAnimatable {
 
     override suspend fun animate(
         composition: LottieComposition?,
+        continueFromPreviousAnimate: Boolean,
         iteration: Int,
         iterations: Int,
         speed: Float,
         clipSpec: LottieClipSpec?,
         initialProgress: Float,
-        continueFromPreviousAnimate: Boolean,
         cancellationBehavior: LottieCancellationBehavior,
     ) {
         mutex.mutate {
             require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
+            require(!(iterations == LottieConstants.IterateForever && cancellationBehavior == LottieCancellationBehavior.OnFinish)) {
+                "You cannot use IterateForever with LottieCancellationBehavior.OnFinish because it will never finish."
+            }
             this.iteration = iteration
             this.iterations = iterations
             this.speed = speed
@@ -171,38 +219,32 @@ private class LottieAnimatableImpl : LottieAnimatable {
         val composition = composition ?: return@withFrameNanos true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
         lastFrameNanos = frameNanos
-        val dProgress = dNanos / 1_000_000 / composition.duration * speed
 
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
 
-        val coercedProgress = progress.coerceIn(minProgress, maxProgress)
-
-        val progressLeft = when {
-            speed < 0 -> coercedProgress - minProgress
-            else -> maxProgress - coercedProgress
+        val dProgress = dNanos / 1_000_000 / composition.duration * speed
+        val progressPastEndOfIteration = when {
+            speed < 0 -> minProgress - (progress + dProgress)
+            else -> progress + dProgress - maxProgress
         }
+        if (progressPastEndOfIteration < 0f) {
+            progress += dProgress
+        } else {
+            val durationProgress = maxProgress - minProgress
+            val dIterations = (progressPastEndOfIteration / durationProgress).toInt() + 1
 
-        if (dProgress > progressLeft) {
-            val progressPastEnd = dProgress - progressLeft
-            val extraIterations = progressPastEnd.toInt()
-            val progressPastEndRem = progressPastEnd % 1
-            if (iteration + 1 + extraIterations > iterations) {
-                // We reached the end.
-                progress = when {
-                    speed < 0 -> minProgress
-                    else -> maxProgress
-                }
+            if (iteration + dIterations > iterations) {
+                progress = endProgress
                 iteration = iterations
                 return@withFrameNanos false
             }
-            iteration += 1 + extraIterations
+            iteration += dIterations
+            val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
             progress = when {
                 speed < 0 -> maxProgress - progressPastEndRem
                 else -> minProgress + progressPastEndRem
             }
-        } else {
-            progress += dProgress
         }
 
         true
