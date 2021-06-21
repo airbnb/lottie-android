@@ -74,7 +74,6 @@ private fun Example2() {
                 .padding(bottom = 8.dp)
         )
     }
-
 }
 
 @Composable
