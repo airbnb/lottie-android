@@ -288,15 +288,15 @@ class LottieAnimatableImplTest {
         assertFrame(599, progress = 1f, isAtEnd = true, isPlaying = false)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun testCannotUseIterateForeverWithCancellationOnFinish() = runTest {
-        launch {
-            anim.animate(
-                composition,
-                cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
-                iterations = LottieConstants.IterateForever,
-            )
+    @Test
+    fun testCancelWithMultipleIterations() = runTest {
+        val job = launch {
+            anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnIterationFinish, iterations = 3)
         }
+        assertFrame(0, progress = 0f, iterations = 3)
+        job.cancel()
+        assertFrame(300, progress = 0.5f, iterations = 3)
+        assertFrame(599, progress = 1f, isAtEnd = false, isPlaying = false, iterations = 3)
     }
 
     private suspend fun assertFrame(

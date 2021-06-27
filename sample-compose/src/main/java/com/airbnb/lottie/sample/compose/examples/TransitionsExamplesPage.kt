@@ -21,9 +21,12 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCancellationBehavior
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.withContext
 
 enum class TransitionSection {
     Intro,
@@ -46,8 +49,17 @@ fun TransitionsExamplesPage() {
             modifier = Modifier
                 .padding(padding)
         ) {
+            Text(
+                "Single composition",
+                modifier = Modifier
+                    .padding(8.dp)
+            )
             SingleCompositionTransition(state)
-            Box(modifier = Modifier.height(16.dp))
+            Text(
+                "Multiple compositions",
+                modifier = Modifier
+                    .padding(8.dp)
+            )
             SplitCompositionTransition(state)
             TextButton(
                 onClick = { state = state.next() }
@@ -91,25 +103,22 @@ fun SplitCompositionTransition(section: TransitionSection) {
     val loopMiddleComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_2))
     val outroComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_3))
     val animatable = rememberLottieAnimatable()
-    val state by rememberUpdatedState(section)
 
-    LaunchedEffect(animatable) {
-        snapshotFlow { state }.collectLatest { s ->
-            val composition = when (s) {
+    LaunchedEffect(section) {
+        // Make parsing non-cancellable to ensure that every step plays at least one time.
+        val composition = withContext(NonCancellable) {
+            when (section) {
                 TransitionSection.Intro -> introComposition
                 TransitionSection.LoopMiddle -> loopMiddleComposition
                 TransitionSection.Outro -> outroComposition
             }.await()
-            do {
-                animatable.animate(
-                    composition,
-                    initialProgress = 0f,
-                    cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
-                )
-            } while (s == TransitionSection.LoopMiddle)
         }
+        animatable.animate(
+            composition,
+            iterations = if (section == TransitionSection.LoopMiddle) LottieConstants.IterateForever else 1,
+            cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
+        )
     }
-
 
     LottieAnimation(animatable.composition, animatable.progress)
 }

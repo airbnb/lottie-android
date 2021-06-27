@@ -14,6 +14,7 @@ import com.airbnb.lottie.LottieComposition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
@@ -210,9 +211,6 @@ private class LottieAnimatableImpl : LottieAnimatable {
     ) {
         mutex.mutate {
             require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-            require(!(iterations == LottieConstants.IterateForever && cancellationBehavior == LottieCancellationBehavior.OnIterationFinish)) {
-                "You cannot use IterateForever with LottieCancellationBehavior.OnFinish because it will never finish."
-            }
             this.iteration = iteration
             this.iterations = iterations
             this.speed = speed
@@ -231,9 +229,16 @@ private class LottieAnimatableImpl : LottieAnimatable {
                     LottieCancellationBehavior.OnIterationFinish -> NonCancellable
                     LottieCancellationBehavior.Immediately -> EmptyCoroutineContext
                 }
+                val parentJob = coroutineContext.job
                 withContext(context) {
                     while (true) {
-                        if (!doFrame()) break
+                        val actualIterations = when (cancellationBehavior) {
+                            LottieCancellationBehavior.OnIterationFinish -> {
+                                if (parentJob.isActive) iterations else iteration
+                            }
+                            else -> iterations
+                        }
+                        if (!doFrame(actualIterations)) break
                     }
                 }
                 coroutineContext.ensureActive()
@@ -243,7 +248,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
         }
     }
 
-    private suspend fun doFrame(): Boolean = withFrameNanos { frameNanos ->
+    private suspend fun doFrame(iterations: Int): Boolean = withFrameNanos { frameNanos ->
         val composition = composition ?: return@withFrameNanos true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
         lastFrameNanos = frameNanos
