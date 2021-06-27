@@ -9,7 +9,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class LottieCompositionResultTest {
+class LottieCompositionResultImplTest {
 
     private lateinit var composition: LottieComposition
 
@@ -20,13 +20,13 @@ class LottieCompositionResultTest {
 
     @Test
     fun testLoading() {
-        val result = LottieCompositionResult()
+        val result = LottieCompositionResultImpl()
         assertTrue(result.isLoading)
     }
 
     @Test
     fun testFail() {
-        val result = LottieCompositionResult()
+        val result = LottieCompositionResultImpl()
         val e = IllegalStateException("Fail")
         result.completeExceptionally(e)
         assertFalse(result.isSuccess)
@@ -37,7 +37,7 @@ class LottieCompositionResultTest {
 
     @Test
     fun testCompleted() {
-        val result = LottieCompositionResult()
+        val result = LottieCompositionResultImpl()
         result.complete(composition)
         assertFalse(result.isFailure)
         assertTrue(result.isSuccess)
@@ -46,7 +46,7 @@ class LottieCompositionResultTest {
 
     @Test
     fun testCompletedThenFail() {
-        val result = LottieCompositionResult()
+        val result = LottieCompositionResultImpl()
         result.complete(composition)
         result.completeExceptionally(IllegalStateException("Fail"))
         assertFalse(result.isFailure)
@@ -56,7 +56,7 @@ class LottieCompositionResultTest {
 
     @Test
     fun testErrorThenCompleted() {
-        val result = LottieCompositionResult()
+        val result = LottieCompositionResultImpl()
         val e = IllegalStateException("Fail")
         result.completeExceptionally(e)
         result.complete(composition)

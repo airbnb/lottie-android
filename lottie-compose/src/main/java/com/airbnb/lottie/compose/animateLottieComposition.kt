@@ -9,17 +9,9 @@ import androidx.compose.runtime.setValue
 import com.airbnb.lottie.LottieComposition
 
 /**
- * Returns a [LottieAnimatable] representing the progress of an animation.
+ * Returns a [LottieAnimationState] representing the progress of an animation.
  *
- * Because the state is mutable, you can modify its value and the internal animation
- * will continue animating from the value you set. The progress will snap to the value you
- * set without changing the repeat count.
- *
- * There is also a suspending version of this that takes progress as a MutableState<Float>
- * as a required second parameter.
- *
- * You do not have to use this to animate a Lottie composition. You may create your own animation
- * and pass its progress to [LottieComposition].
+ * This is the declarative version of [rememberLottieAnimatable].
  *
  * @param composition The composition to render. This should be retrieved with [rememberLottieComposition].
  * @param isPlaying Whether or not the animation is currently playing. Note that the internal
@@ -47,7 +39,7 @@ fun animateLottieComposition(
     require(iterations > 0) { "Iterations must be a positive number ($iterations)." }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
 
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
     var wasPlaying by remember { mutableStateOf(isPlaying) }
 
     LaunchedEffect(

@@ -6,7 +6,7 @@ import com.airbnb.lottie.LottieComposition
  * Use subclasses of [LottieClipSpec] to set min/max bounds on the animation playback.
  *
  * @see LottieAnimation
- * @see LottieAnimatable
+ * @see rememberLottieAnimatable
  * @see animateLottieComposition
  */
 sealed class LottieClipSpec {

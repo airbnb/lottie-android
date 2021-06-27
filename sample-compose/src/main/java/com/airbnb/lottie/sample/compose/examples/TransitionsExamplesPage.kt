@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimatable
+import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCancellationBehavior
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -62,7 +62,7 @@ fun TransitionsExamplesPage() {
 @Composable
 fun SingleCompositionTransition(section: TransitionSection) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
     val state by rememberUpdatedState(section)
 
     LaunchedEffect(composition, animatable) {
@@ -77,7 +77,7 @@ fun SingleCompositionTransition(section: TransitionSection) {
                 animatable.animate(
                     composition,
                     clipSpec = clipSpec,
-                    cancellationBehavior = LottieCancellationBehavior.OnFinish,
+                    cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
                 )
             } while (s == TransitionSection.LoopMiddle)
         }
@@ -90,7 +90,7 @@ fun SplitCompositionTransition(section: TransitionSection) {
     val introComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_1))
     val loopMiddleComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_2))
     val outroComposition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.bar_3))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
     val state by rememberUpdatedState(section)
 
     LaunchedEffect(animatable) {
@@ -104,7 +104,7 @@ fun SplitCompositionTransition(section: TransitionSection) {
                 animatable.animate(
                     composition,
                     initialProgress = 0f,
-                    cancellationBehavior = LottieCancellationBehavior.OnFinish,
+                    cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
                 )
             } while (s == TransitionSection.LoopMiddle)
         }

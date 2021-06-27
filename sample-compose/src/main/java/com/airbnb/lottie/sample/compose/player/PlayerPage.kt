@@ -1,6 +1,5 @@
 package com.airbnb.lottie.sample.compose.player
 
-import android.util.Log
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -53,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -71,6 +69,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.resetToBeginning
 import com.airbnb.lottie.sample.compose.BuildConfig
 import com.airbnb.lottie.sample.compose.R
 import com.airbnb.lottie.sample.compose.composables.DebouncedCircularProgressIndicator
@@ -245,7 +244,6 @@ fun PlayerPageContent(
                 .weight(1f)
                 .maybeBackground(state.backgroundColor)
                 .fillMaxWidth()
-                .onSizeChanged { Log.d("Gabe", "onSizeChanged $it") }
         ) {
             PlayerPageLottieAnimation(
                 composition,

@@ -2,10 +2,12 @@ package com.airbnb.lottie.compose
 
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.MutatorMutex
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import com.airbnb.lottie.LottieComposition
@@ -17,13 +19,41 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 
 /**
+ * Use this to create a [LottieAnimatable] in a composable.
+ *
+ * @see LottieAnimatable
+ */
+@Composable
+fun rememberLottieAnimatable(): LottieAnimatable = remember { LottieAnimatable() }
+
+/**
+ * Use this to create a [LottieAnimatable] outside of a composable such as a hoisted state class.
+ *
+ * @see rememberLottieAnimatable
  * @see LottieAnimatable
  */
 fun LottieAnimatable(): LottieAnimatable = LottieAnimatableImpl()
 
 /**
- * [LottieAnimatable] is an extension of [LottieAnimationState] that contains imperative
+ * Reset the animation back to the minimum progress and first iteration.
+ */
+suspend fun LottieAnimatable.resetToBeginning() {
+    snapTo(
+        progress = defaultProgress(composition, clipSpec, speed),
+        iteration = 1,
+    )
+}
+
+/**
+ * [rememberLottieAnimatable] is an extension of [LottieAnimationState] that contains imperative
  * suspend functions to initiate animations.
+ *
+ * To create one, call:
+ * ```
+ * val animatable = remember { LottieAnimatable() }
+ * ```
+ *
+ * This is the imperative version of [animateLottieComposition].
  *
  * [LottieAnimationState] ensures *mutual exclusiveness* on its animations. To
  * achieve this, when a new animation is started via [animate] or [snapTo], any ongoing
@@ -40,11 +70,10 @@ fun LottieAnimatable(): LottieAnimatable = LottieAnimatableImpl()
  *
  * @see animate
  * @see snapTo
+ * @see animateLottieComposition
  */
 @Stable
 interface LottieAnimatable : LottieAnimationState {
-    suspend fun resetToBeginning()
-
     /**
      * Snap to a specific point in an animation. This can be used to update the progress
      * or iteration count of an ongoing animation. It will cancel any ongoing animations
@@ -58,7 +87,7 @@ interface LottieAnimatable : LottieAnimationState {
      * @param iteration Updates the current iteration count. This can be used to "rewind" or
      *                  "fast-forward" an ongoing animation to a past/future iteration count.
      *                   Defaults to [LottieAnimatable.iteration]
-     * @param resetLastFrameNanos [LottieAnimatable] keeps track of the frame time of the most
+     * @param resetLastFrameNanos [rememberLottieAnimatable] keeps track of the frame time of the most
      *                            recent animation. When [animate] is called with continueFromPreviousAnimate
      *                            set to true, a delta will be calculated from the most recent [animate] call
      *                            to ensure that the original progress is unaffected by [snapTo] calls in the
@@ -78,17 +107,18 @@ interface LottieAnimatable : LottieAnimationState {
      *
      * @param composition The [LottieComposition] that should be rendered.
      * @param continueFromPreviousAnimate When set to true, this animation will be considered continuous from any
-     *                                    previous animate calls. When set to true 1) parameters will carry over from
-     *                                    their previous value instead of being set to their defaults 2) instead of
+     *                                    previous animate calls. When set to true, instead of
      *                                    starting at the minimum progress, the initial progress will be advanced in
      *                                    accordance to the amount of time that has passed since the last frame
      *                                    was rendered.
-     * @param iteration The iteration to start the animation at. Defaults to 1 and starts at 1.
+     * @param iteration The iteration to start the animation at. Defaults to 1 and carries over from previous animates.
      * @param iterations The number of iterations to continue running for. Set to 1 to play one time
      *                   set to [LottieConstants.IterateForever] to iterate forever. Can be set to arbitrary
-     *                   numbers.
-     * @param speed The speed at which the composition should be animated. Can be negative. Defaults to 1.
+     *                   numbers. Defaults to 1 and carries over from previous animates.
+     * @param speed The speed at which the composition should be animated. Can be negative. Defaults to 1 and
+     *              carries over from previous animates.
      * @param clipSpec An optional [LottieClipSpec] to trim the playback of the composition between two values.
+     *                 Defaults to null and carries over from previous animates.
      * @param initialProgress An optional progress value that the animation should start at. Defaults to the
      *                        starting progress as defined by the clipSpec and speed. Can be used to resume
      *                        animations from arbitrary points.
@@ -99,10 +129,10 @@ interface LottieAnimatable : LottieAnimationState {
      */
     suspend fun animate(
         composition: LottieComposition?,
-        iteration: Int = 1,
-        iterations: Int = 1,
-        speed: Float = 1f,
-        clipSpec: LottieClipSpec? = null,
+        iteration: Int = this.iteration,
+        iterations: Int = this.iterations,
+        speed: Float = this.speed,
+        clipSpec: LottieClipSpec? = this.clipSpec,
         initialProgress: Float =  defaultProgress(composition, clipSpec, speed),
         continueFromPreviousAnimate: Boolean = false,
         cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
@@ -151,13 +181,6 @@ private class LottieAnimatableImpl : LottieAnimatable {
 
     private val mutex = MutatorMutex()
 
-    override suspend fun resetToBeginning() {
-        snapTo(
-            progress = defaultProgress(composition, clipSpec, speed),
-            iteration = 1,
-        )
-    }
-
     override suspend fun snapTo(
         composition: LottieComposition?,
         progress: Float,
@@ -187,7 +210,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
     ) {
         mutex.mutate {
             require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
-            require(!(iterations == LottieConstants.IterateForever && cancellationBehavior == LottieCancellationBehavior.OnFinish)) {
+            require(!(iterations == LottieConstants.IterateForever && cancellationBehavior == LottieCancellationBehavior.OnIterationFinish)) {
                 "You cannot use IterateForever with LottieCancellationBehavior.OnFinish because it will never finish."
             }
             this.iteration = iteration
@@ -205,7 +228,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             isPlaying = true
             try {
                 val context = when (cancellationBehavior) {
-                    LottieCancellationBehavior.OnFinish -> NonCancellable
+                    LottieCancellationBehavior.OnIterationFinish -> NonCancellable
                     LottieCancellationBehavior.Immediately -> EmptyCoroutineContext
                 }
                 withContext(context) {

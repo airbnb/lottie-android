@@ -168,7 +168,7 @@ class LottieAnimatableImplTest {
         assertFrame(300, progress = 0.5f, iterations = 2)
         val clipSpec = LottieClipSpec.MinProgress(0.25f)
         launch {
-            anim.animate(composition, clipSpec = clipSpec, initialProgress = anim.progress, continueFromPreviousAnimate = true, iterations = 2)
+            anim.animate(composition, clipSpec = clipSpec, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(598, progress = 0.998f, clipSpec = clipSpec, iterations = 2)
         assertFrame(599, progress = 0.25f, clipSpec = clipSpec, iteration = 2, iterations = 2)
@@ -254,7 +254,7 @@ class LottieAnimatableImplTest {
         assertFrame(1796, progress = 0.998f, iteration = 3, iterations = 3)
         launch {
             anim.snapTo(iteration = 1)
-            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true, iterations = 3)
+            anim.animate(composition, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
         assertFrame(1796, progress = 0.998f, iteration = 1, iterations = 3)
         assertFrame(1797, progress = 0f, iteration = 2, iterations = 3)
@@ -280,7 +280,7 @@ class LottieAnimatableImplTest {
     @Test
     fun testNonCancellable() = runTest {
         val job = launch {
-            anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnFinish)
+            anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnIterationFinish)
         }
         assertFrame(0, progress = 0f)
         job.cancel()
@@ -293,7 +293,7 @@ class LottieAnimatableImplTest {
         launch {
             anim.animate(
                 composition,
-                cancellationBehavior = LottieCancellationBehavior.OnFinish,
+                cancellationBehavior = LottieCancellationBehavior.OnIterationFinish,
                 iterations = LottieConstants.IterateForever,
             )
         }

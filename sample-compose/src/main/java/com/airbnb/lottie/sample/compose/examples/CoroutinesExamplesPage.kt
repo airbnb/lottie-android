@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimatable
+import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -51,7 +51,7 @@ fun CoroutinesExamplesPage() {
 @Composable
 private fun Example1() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
 
     LaunchedEffect(composition, animatable) {
         animatable.animate(
@@ -66,7 +66,7 @@ private fun Example1() {
 private fun Example2() {
     var nonce by remember { mutableStateOf(1) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
 
     LaunchedEffect(composition, nonce) {
         composition ?: return@LaunchedEffect
@@ -86,7 +86,7 @@ private fun Example2() {
 @Composable
 private fun Example3() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
 
     LaunchedEffect(composition, animatable) {
         composition ?: return@LaunchedEffect
@@ -102,7 +102,7 @@ private fun Example3() {
 private fun Example4() {
     var shouldPlay by remember { mutableStateOf(true) }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val animatable = remember { LottieAnimatable() }
+    val animatable = rememberLottieAnimatable()
 
     LaunchedEffect(composition, shouldPlay) {
         if (composition == null || !shouldPlay) return@LaunchedEffect

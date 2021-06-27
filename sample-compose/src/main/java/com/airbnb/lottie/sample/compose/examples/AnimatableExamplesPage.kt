@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.airbnb.lottie.compose.LottieAnimatable
+import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -49,7 +49,7 @@ fun AnimatableExamplesPage() {
 
 @Composable
 private fun Example1() {
-    val anim = remember { LottieAnimatable() }
+    val anim = rememberLottieAnimatable()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     LaunchedEffect(composition) {
         anim.animate(
@@ -62,7 +62,7 @@ private fun Example1() {
 
 @Composable
 private fun Example2() {
-    val anim = remember { LottieAnimatable() }
+    val anim = rememberLottieAnimatable()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     var sliderGestureProgress: Float? by remember { mutableStateOf(null) }
     LaunchedEffect(composition, sliderGestureProgress) {
@@ -91,7 +91,7 @@ private fun Example2() {
 
 @Composable
 private fun Example3() {
-    val anim = remember { LottieAnimatable() }
+    val anim = rememberLottieAnimatable()
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     var speed by remember { mutableStateOf(1f) }
     LaunchedEffect(composition, speed) {
