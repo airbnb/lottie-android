@@ -1,13 +1,14 @@
 package com.airbnb.lottie.compose
 
 import android.content.Context
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
@@ -36,12 +37,12 @@ import kotlin.coroutines.resumeWithException
  *                retrying again. [rememberLottieRetrySignal] can be used to handle explicit retires.
  */
 @Composable
-fun lottieComposition(
+fun rememberLottieComposition(
     spec: LottieCompositionSpec,
     onRetry: suspend (failedCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
     val context = LocalContext.current
-    val result: LottieCompositionResult by remember(spec) { mutableStateOf(LottieCompositionResult()) }
+    val result by remember(spec) { mutableStateOf(LottieCompositionResultImpl()) }
     LaunchedEffect(spec) {
         var exception: Throwable? = null
         var failedCount = 0

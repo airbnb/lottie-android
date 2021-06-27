@@ -14,8 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
-import com.google.accompanist.pager.*
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.accompanist.pager.PagerDefaults
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 
 @Composable
 fun ViewPagerExamplePage() {
@@ -51,9 +56,10 @@ fun ViewPagerExamplePage() {
 
 @Composable
 private fun WalkthroughAnimation(pagerState: PagerState) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.walkthrough))
     val progress by derivedStateOf { (pagerState.currentPage + pagerState.currentPageOffset) / (pagerState.pageCount - 1f) }
     LottieAnimation(
-        LottieCompositionSpec.RawRes(R.raw.walkthrough),
+        composition,
         progress,
         modifier = Modifier
             .fillMaxSize()

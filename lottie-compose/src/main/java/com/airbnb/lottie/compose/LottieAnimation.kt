@@ -4,7 +4,12 @@ import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -113,78 +118,6 @@ fun LottieAnimation(
             }
         }
     }
-}
-
-/**
- * This is like [LottieAnimation] except that it takes a [LottieCompositionSpec] instead of the
- * [LottieComposition] itself. This will be more convenient for most use cases unless you
- * need to explicitly check for failure states while loading the composition, which is done
- * via [lottieComposition].
- *
- * @see LottieAnimation
- */
-@Composable
-fun LottieAnimation(
-    compositionSpec: LottieCompositionSpec,
-    progress: Float,
-    modifier: Modifier = Modifier,
-    imageAssetsFolder: String? = null,
-    imageAssetDelegate: ImageAssetDelegate? = null,
-    outlineMasksAndMattes: Boolean = false,
-    applyOpacityToLayers: Boolean = false,
-    enableMergePaths: Boolean = false,
-) {
-    val composition by lottieComposition(compositionSpec)
-    LottieAnimation(
-        composition,
-        progress,
-        modifier,
-        imageAssetsFolder,
-        imageAssetDelegate,
-        outlineMasksAndMattes,
-        applyOpacityToLayers,
-        enableMergePaths,
-    )
-}
-
-/**
- * This is like [LottieAnimation] except that it both takes a [LottieCompositionSpec] instead of a
- * [LottieComposition] and also handles driving the animation via [animateLottieComposition] instead
- * of taking a raw progress parameter.
- *
- * @see LottieAnimation
- * @see animateLottieComposition
- */
-@Composable
-fun LottieAnimation(
-    compositionSpec: LottieCompositionSpec,
-    modifier: Modifier = Modifier,
-    isPlaying: Boolean = true,
-    restartOnPlay: Boolean = true,
-    iterations: Int = 1,
-    clipSpec: LottieClipSpec? = null,
-    speed: Float = 1f,
-    imageAssetsFolder: String? = null,
-    imageAssetDelegate: ImageAssetDelegate? = null,
-    outlineMasksAndMattes: Boolean = false,
-    applyOpacityToLayers: Boolean = false,
-    enableMergePaths: Boolean = false,
-) {
-    val composition by lottieComposition(compositionSpec)
-    LottieAnimation(
-        composition,
-        modifier,
-        isPlaying,
-        restartOnPlay,
-        clipSpec,
-        speed,
-        iterations,
-        imageAssetsFolder,
-        imageAssetDelegate,
-        outlineMasksAndMattes,
-        applyOpacityToLayers,
-        enableMergePaths,
-    )
 }
 
 /**

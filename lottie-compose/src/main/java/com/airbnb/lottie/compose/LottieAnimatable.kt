@@ -2,7 +2,12 @@ package com.airbnb.lottie.compose
 
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.foundation.MutatorMutex
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import com.airbnb.lottie.LottieComposition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable

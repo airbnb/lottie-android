@@ -1,6 +1,11 @@
 package com.airbnb.lottie.compose
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.airbnb.lottie.LottieComposition
 
 /**
@@ -16,7 +21,7 @@ import com.airbnb.lottie.LottieComposition
  * You do not have to use this to animate a Lottie composition. You may create your own animation
  * and pass its progress to [LottieComposition].
  *
- * @param composition The composition to render. This should be retrieved with [lottieComposition].
+ * @param composition The composition to render. This should be retrieved with [rememberLottieComposition].
  * @param isPlaying Whether or not the animation is currently playing. Note that the internal
  *                  animation may end due to reaching the target iterations count. If that happens,
  *                  the animation may stop even if this is still true. You may want to use

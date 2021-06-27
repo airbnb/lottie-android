@@ -1,11 +1,9 @@
 package com.airbnb.lottie.compose
 
-import androidx.annotation.RawRes
-
 /**
  * Specification for a [com.airbnb.lottie.LottieComposition]. Each subclass represents a different source.
  * A [com.airbnb.lottie.LottieComposition] is the stateless parsed version of a Lottie json file and is
- * passed into [lottieComposition] or [LottieAnimation].
+ * passed into [rememberLottieComposition] or [LottieAnimation].
  */
 sealed class LottieCompositionSpec {
     /**
@@ -20,7 +18,7 @@ sealed class LottieCompositionSpec {
      * or implement retries. To do that, call [com.airbnb.lottie.Lottie.initialize] and set
      * a [com.airbnb.lottie.network.LottieNetworkFetcher] on the [com.airbnb.lottie.LottieConfig].
      *
-     * If you are using this spec, you may want to use [lottieComposition] instead of
+     * If you are using this spec, you may want to use [rememberLottieComposition] instead of
      * passing this spec directly into [LottieAnimation] because it can fail and you want to
      * make sure that you properly handle the failures and/or retries.
      */

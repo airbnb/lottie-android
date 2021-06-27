@@ -6,6 +6,7 @@
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
     </JavaCodeStyleSettings>
     <JetCodeStyleSettings>
+      <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="2147483647" />
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
     <XML>

@@ -8,7 +8,7 @@ import kotlinx.coroutines.channels.sendBlocking
 
 /**
  * @see LottieRetrySignal
- * @see lottieComposition
+ * @see rememberLottieComposition
  */
 @Composable
 fun rememberLottieRetrySignal(): LottieRetrySignal {
@@ -20,9 +20,9 @@ fun rememberLottieRetrySignal(): LottieRetrySignal {
  *
  * Call [retry] from an action that should trigger a retry such as a snackbar or retry button.
  *
- * Call [awaitRetry] from the onRetry lambda to [lottieComposition] then return true.
+ * Call [awaitRetry] from the onRetry lambda to [rememberLottieComposition] then return true.
  *
- * @see lottieComposition
+ * @see rememberLottieComposition
  */
 class LottieRetrySignal internal constructor() {
     private val channel = Channel<Unit>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
