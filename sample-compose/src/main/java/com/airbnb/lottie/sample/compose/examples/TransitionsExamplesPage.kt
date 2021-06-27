@@ -1,8 +1,6 @@
 package com.airbnb.lottie.sample.compose.examples
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -81,9 +79,9 @@ fun SingleCompositionTransition(section: TransitionSection) {
         composition ?: return@LaunchedEffect
         snapshotFlow { state }.collectLatest { s ->
             val clipSpec = when (s) {
-                TransitionSection.Intro -> LottieClipSpec.MinAndMaxProgress(0f, 0.301f)
-                TransitionSection.LoopMiddle -> LottieClipSpec.MinAndMaxProgress(0.301f, 2f / 3f)
-                TransitionSection.Outro -> LottieClipSpec.MinAndMaxProgress(2f / 3f, 1f)
+                TransitionSection.Intro -> LottieClipSpec.Progress(0f, 0.301f)
+                TransitionSection.LoopMiddle -> LottieClipSpec.Progress(0.301f, 2f / 3f)
+                TransitionSection.Outro -> LottieClipSpec.Progress(2f / 3f, 1f)
             }
             do {
                 animatable.animate(

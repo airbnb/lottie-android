@@ -89,7 +89,7 @@ private fun Example3() {
     LottieAnimation(
         composition,
         iterations = LottieConstants.IterateForever,
-        clipSpec = LottieClipSpec.MinAndMaxProgress(0.5f, 0.75f),
+        clipSpec = LottieClipSpec.Progress(0.5f, 0.75f),
     )
 }
 

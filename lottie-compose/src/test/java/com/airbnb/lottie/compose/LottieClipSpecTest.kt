@@ -12,7 +12,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinFrame() {
-        val spec = LottieClipSpec.MinFrame(20)
+        val spec = LottieClipSpec.Frame(min = 20)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(1f, spec.getMaxProgress(composition))
@@ -20,7 +20,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMaxFrame() {
-        val spec = LottieClipSpec.MaxFrame(20)
+        val spec = LottieClipSpec.Frame(max = 20)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0f, spec.getMinProgress(composition))
         assertEquals(0.5f, spec.getMaxProgress(composition))
@@ -28,7 +28,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMaxFrameNotInclusive() {
-        val spec = LottieClipSpec.MaxFrame(20, inclusive = false)
+        val spec = LottieClipSpec.Frame(max = 20, maxInclusive = false)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0f, spec.getMinProgress(composition))
         assertEquals(0.475f, spec.getMaxProgress(composition))
@@ -36,7 +36,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinAndMaxFrame() {
-        val spec = LottieClipSpec.MinAndMaxFrame(20, 30)
+        val spec = LottieClipSpec.Frame(min = 20, max = 30)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(0.75f, spec.getMaxProgress(composition))
@@ -44,7 +44,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinAndMaxFrameNotExclusive() {
-        val spec = LottieClipSpec.MinAndMaxFrame(20, 30, maxFrameInclusive = false)
+        val spec = LottieClipSpec.Frame(min = 20, max = 30, maxInclusive = false)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(0.725f, spec.getMaxProgress(composition))
@@ -52,7 +52,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinProgress() {
-        val spec = LottieClipSpec.MinProgress(0.5f)
+        val spec = LottieClipSpec.Progress(min = 0.5f)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(1f, spec.getMaxProgress(composition))
@@ -60,7 +60,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMaxProgress() {
-        val spec = LottieClipSpec.MaxProgress(0.5f)
+        val spec = LottieClipSpec.Progress(max = 0.5f)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0f, spec.getMinProgress(composition))
         assertEquals(0.5f, spec.getMaxProgress(composition))
@@ -68,7 +68,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinAndMaxProgress() {
-        val spec = LottieClipSpec.MinAndMaxProgress(0.5f, 0.75f)
+        val spec = LottieClipSpec.Progress(min = 0.5f, max = 0.75f)
         val composition = createComposition(endFrame = 40f)
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(0.75f, spec.getMaxProgress(composition))
@@ -76,7 +76,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinMarker() {
-        val spec = LottieClipSpec.MinMarker("start")
+        val spec = LottieClipSpec.Markers(min = "start")
         val composition = createComposition(endFrame = 40f, listOf(Marker("start", 20f, 10f)))
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(1f, spec.getMaxProgress(composition))
@@ -84,7 +84,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMaxMarker() {
-        val spec = LottieClipSpec.MaxMarker("end")
+        val spec = LottieClipSpec.Markers(max = "end")
         val composition = createComposition(endFrame = 40f, listOf(Marker("end", 20f, 10f)))
         assertEquals(0f, spec.getMinProgress(composition))
         assertEquals(0.5f, spec.getMaxProgress(composition))
@@ -93,7 +93,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMaxMarkerExclusive() {
-        val spec = LottieClipSpec.MaxMarker("end", playMarkerFrame = false)
+        val spec = LottieClipSpec.Markers(max = "end", maxInclusive = false)
         val composition = createComposition(endFrame = 40f, listOf(Marker("end", 20f, 10f)))
         assertEquals(0f, spec.getMinProgress(composition))
         assertEquals(0.475f, spec.getMaxProgress(composition))
@@ -102,7 +102,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinAndMaxMarker() {
-        val spec = LottieClipSpec.MinAndMaxMarker("start", "end")
+        val spec = LottieClipSpec.Markers(min = "start", max = "end")
         val composition = createComposition(endFrame = 40f, listOf(Marker("start", 20f, 10f), Marker("end", 30f, 10f)))
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(0.75f, spec.getMaxProgress(composition))
@@ -110,7 +110,7 @@ class LottieClipSpecTest {
 
     @Test
     fun testMinAndMaxMarkerExclusive() {
-        val spec = LottieClipSpec.MinAndMaxMarker("start", "end", playMaxMarkerStartFrame = false)
+        val spec = LottieClipSpec.Markers(min = "start", max = "end", maxInclusive = false)
         val composition = createComposition(endFrame = 40f, listOf(Marker("start", 20f, 10f), Marker("end", 30f, 10f)))
         assertEquals(0.5f, spec.getMinProgress(composition))
         assertEquals(0.725f, spec.getMaxProgress(composition))

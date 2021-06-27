@@ -16,131 +16,77 @@ sealed class LottieClipSpec {
     internal abstract fun getMaxProgress(composition: LottieComposition): Float
 
     /**
-     * Play the animation starting from this frame.
+     * Play the animation between these two frames. [maxInclusive] determines whether the animation
+     * should play the max frame or stop one frame before it.
      */
-    data class MinFrame(val minFrame: Int) : LottieClipSpec() {
+    data class Frame(
+        val min: Int? = null,
+        val max: Int? = null,
+        val maxInclusive: Boolean = true,
+    ) : LottieClipSpec() {
+
+        private val actualMaxFrame = when {
+            max == null -> null
+            maxInclusive -> max
+            else -> max - 1
+        }
+
         override fun getMinProgress(composition: LottieComposition): Float {
-            return (minFrame / composition.endFrame).coerceIn(0f, 1f)
+            return when (min) {
+                null -> 0f
+                else -> (min / composition.endFrame).coerceIn(0f, 1f)
+            }
         }
 
         override fun getMaxProgress(composition: LottieComposition): Float {
-            return 1f
+            return when (actualMaxFrame) {
+                null -> 1f
+                else -> (actualMaxFrame / composition.endFrame).coerceIn(0f, 1f)
+            }
         }
     }
 
     /**
-     * Play the animation until this frame.
+     * Play the animation between these two progress values.
      */
-    data class MaxFrame(val maxFrame: Int, val inclusive: Boolean = true) : LottieClipSpec() {
-
-        private val actualMaxFrame = if (inclusive) maxFrame else maxFrame - 1
-
+    data class Progress(
+        val min: Float = 0f,
+        val max: Float = 1f,
+    ) : LottieClipSpec() {
         override fun getMinProgress(composition: LottieComposition): Float {
-            return 0f
+            return min
         }
 
         override fun getMaxProgress(composition: LottieComposition): Float {
-            return (actualMaxFrame / composition.endFrame).coerceIn(0f, 1f)
-        }
-    }
-
-    /**
-     * Play the animation between these two frames.
-     */
-    data class MinAndMaxFrame(val minFrame: Int, val maxFrame: Int, val maxFrameInclusive: Boolean = true) : LottieClipSpec() {
-
-        private val actualMaxFrame = if (maxFrameInclusive) maxFrame else maxFrame - 1
-
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return (minFrame / composition.endFrame).coerceIn(0f, 1f)
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            return (actualMaxFrame / composition.endFrame).coerceIn(0f, 1f)
-        }
-    }
-
-    /**
-     * Play the animation from this progress.
-     */
-    data class MinProgress(val minProgress: Float) : LottieClipSpec() {
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return minProgress
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            return 1f
-        }
-    }
-
-    /**
-     * Play the animation until this progress.
-     */
-    data class MaxProgress(val maxProgress: Float) : LottieClipSpec() {
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return 0f
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            return maxProgress
-        }
-    }
-
-    /**
-     * Play the animation between these two progresses.
-     */
-    data class MinAndMaxProgress(val minProgress: Float, val maxProgress: Float) : LottieClipSpec() {
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return minProgress
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            return maxProgress
-        }
-    }
-
-    /**
-     * Play the animation starting from this marker.
-     */
-    data class MinMarker(val minMarker: String) : LottieClipSpec() {
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return ((composition.getMarker(minMarker)?.startFrame ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            return 1f
-        }
-    }
-
-    /**
-     * Play the animation until this marker. If the marker represents the end of your animation, set
-     * [playMarkerFrame] to true. If the marker represents the beginning of the next section, set
-     * it to false. In that case, the animation will stop at the frame before the marker.
-     */
-    data class MaxMarker(val maxMarker: String, val playMarkerFrame: Boolean = true) : LottieClipSpec() {
-        override fun getMinProgress(composition: LottieComposition): Float {
-            return 0f
-        }
-
-        override fun getMaxProgress(composition: LottieComposition): Float {
-            val offset = if (playMarkerFrame) 0 else -1
-            return ((composition.getMarker(maxMarker)?.startFrame?.plus(offset) ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
+            return max
         }
     }
 
     /**
      * Play the animation from minMarker until maxMarker. If maxMarker represents the end of your animation,
-     * set [playMaxMarkerStartFrame] to true. If the marker represents the beginning of the next section, set
-     * it to false. In that case, the animation will stop at the frame before maxMarker.
+     * set [maxInclusive] to true. If the marker represents the beginning of the next section, set
+     * it to false to stop the animation at the frame before maxMarker.
      */
-    data class MinAndMaxMarker(val minMarker: String, val maxMarker: String, val playMaxMarkerStartFrame: Boolean = true) : LottieClipSpec() {
+    data class Markers(
+        val min: String? = null,
+        val max: String? = null,
+        val maxInclusive: Boolean = true
+    ) : LottieClipSpec() {
         override fun getMinProgress(composition: LottieComposition): Float {
-            return ((composition.getMarker(minMarker)?.startFrame ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
+            return when (min) {
+                null -> 0f
+                else -> ((composition.getMarker(min)?.startFrame ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
+            }
         }
 
         override fun getMaxProgress(composition: LottieComposition): Float {
-            val offset = if (playMaxMarkerStartFrame) 0 else -1
-            return ((composition.getMarker(maxMarker)?.startFrame?.plus(offset) ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
+            return when (max) {
+                null -> 1f
+                else -> {
+                    val offset = if (maxInclusive) 0 else -1
+                    return ((composition.getMarker(max)?.startFrame?.plus(offset) ?: 0f) / composition.endFrame).coerceIn(0f, 1f)
+                }
+            }
         }
     }
 

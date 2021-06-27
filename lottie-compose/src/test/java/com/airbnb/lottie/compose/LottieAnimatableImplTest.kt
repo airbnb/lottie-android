@@ -11,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.lang.IllegalArgumentException
 
 @RunWith(RobolectricTestRunner::class)
 class LottieAnimatableImplTest {
@@ -111,7 +110,7 @@ class LottieAnimatableImplTest {
 
     @Test
     fun testClipSpec() = runTest {
-        val clipSpec = LottieClipSpec.MinAndMaxProgress(0.25f, 0.75f)
+        val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec)
         }
@@ -122,7 +121,7 @@ class LottieAnimatableImplTest {
 
     @Test
     fun testClipSpecWithTwoIterations() = runTest {
-        val clipSpec = LottieClipSpec.MinAndMaxProgress(0.25f, 0.75f)
+        val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, iterations = 2)
         }
@@ -134,7 +133,7 @@ class LottieAnimatableImplTest {
 
     @Test
     fun testNegativeSpeedWithClipSpec() = runTest {
-        val clipSpec = LottieClipSpec.MinAndMaxProgress(0.25f, 0.75f)
+        val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, speed = -1f)
         }
@@ -150,7 +149,7 @@ class LottieAnimatableImplTest {
         }
         assertFrame(0, progress = 0f)
         assertFrame(300, progress = 0.5f)
-        val clipSpec = LottieClipSpec.MaxProgress(0.75f)
+        val clipSpec = LottieClipSpec.Progress(max = 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, continueFromPreviousAnimate = false)
         }
@@ -166,7 +165,7 @@ class LottieAnimatableImplTest {
         }
         assertFrame(0, progress = 0f, iterations = 2)
         assertFrame(300, progress = 0.5f, iterations = 2)
-        val clipSpec = LottieClipSpec.MinProgress(0.25f)
+        val clipSpec = LottieClipSpec.Progress(min = 0.25f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, initialProgress = anim.progress, continueFromPreviousAnimate = true)
         }
@@ -183,7 +182,7 @@ class LottieAnimatableImplTest {
         }
         assertFrame(0, progress = 0f)
         assertFrame(300, progress = 0.5f)
-        val clipSpec = LottieClipSpec.MaxProgress(0.75f)
+        val clipSpec = LottieClipSpec.Progress(max = 0.75f)
         launch {
             anim.animate(
                 composition,
