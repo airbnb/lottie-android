@@ -20,7 +20,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieComposition
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
 
@@ -134,7 +134,7 @@ private fun Example5() {
 @Composable
 private fun Example6() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
-    val progress by animateLottieComposition(
+    val progress by animateLottieCompositionAsState(
         composition,
         iterations = LottieConstants.IterateForever,
     )

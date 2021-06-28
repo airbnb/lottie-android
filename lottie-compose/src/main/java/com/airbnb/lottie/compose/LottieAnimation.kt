@@ -25,14 +25,10 @@ import com.airbnb.lottie.setImageAssetManager
 /**
  * This is the base LottieAnimation composable. It takes a composition and renders it at a specific progress.
  *
- * There are overloaded versions of this that allow you to pass in raw [LottieCompositionSpec] or handle
- * basic animations. Refer to the documentation for the overloaded versions for more info.
+ * The overloaded version of [LottieAnimation] that handles playback and is sufficient for most use cases.
  *
  * @param composition The composition that will be rendered. To generate a [LottieComposition], you can use
- *                    [lottieComposition] or use the overloaded version that takes a
- *                    [LottieCompositionSpec] instead of the [LottieComposition] itself. You should only need
- *                    to use [lottieComposition] directly if you explicitly need to handle failure
- *                    states which won't occur in most cases if your animation is packaged within your app.
+ *                    [rememberLottieComposition].
  * @param progress The progress (between 0 and 1) that should be rendered. If you want to render a specific
  *                 frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
  *                 to use one of th overloaded LottieAnimation composables that drives the animation for you.
@@ -121,11 +117,11 @@ fun LottieAnimation(
 }
 
 /**
- * This is like [LottieAnimation] except that it handles driving the animation via [animateLottieComposition]
+ * This is like [LottieAnimation] except that it handles driving the animation via [animateLottieCompositionAsState]
  * instead of taking a raw progress parameter.
  *
  * @see LottieAnimation
- * @see animateLottieComposition
+ * @see animateLottieCompositionAsState
  */
 @Composable
 fun LottieAnimation(
@@ -142,7 +138,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
 ) {
-    val progress by animateLottieComposition(
+    val progress by animateLottieCompositionAsState(
         composition,
         isPlaying,
         restartOnPlay,

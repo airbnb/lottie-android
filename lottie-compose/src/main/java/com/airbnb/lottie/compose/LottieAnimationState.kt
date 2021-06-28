@@ -13,7 +13,7 @@ import com.airbnb.lottie.LottieComposition
  *
  * @see progress
  * @see composition
- * @see animateLottieComposition
+ * @see animateLottieCompositionAsState
  */
 @Stable
 interface LottieAnimationState : State<Float> {

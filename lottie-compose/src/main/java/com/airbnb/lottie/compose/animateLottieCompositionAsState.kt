@@ -11,13 +11,14 @@ import com.airbnb.lottie.LottieComposition
 /**
  * Returns a [LottieAnimationState] representing the progress of an animation.
  *
- * This is the declarative version of [rememberLottieAnimatable].
+ * This is the declarative version of [rememberLottieAnimatable] and [LottieAnimation].
  *
  * @param composition The composition to render. This should be retrieved with [rememberLottieComposition].
  * @param isPlaying Whether or not the animation is currently playing. Note that the internal
  *                  animation may end due to reaching the target iterations count. If that happens,
- *                  the animation may stop even if this is still true. You may want to use
- *                  onFinished to set isPlaying to false but in many cases, it won't matter.
+ *                  the animation may stop even if this is still true. You can observe the returned
+ *                  [LottieAnimationState.isPlaying] to determine whether the underlying animation
+ *                  is still playing.
  * @param restartOnPlay If isPlaying switches from false to true, restartOnPlay determines whether
  *                      the progress and iteration gets reset.
  * @param clipSpec A [LottieClipSpec] that specifies the bound the animation playback
@@ -28,7 +29,7 @@ import com.airbnb.lottie.LottieComposition
  *                    a positive number. [LottieConstants.IterateForever] can be used to repeat forever.
  */
 @Composable
-fun animateLottieComposition(
+fun animateLottieCompositionAsState(
     composition: LottieComposition?,
     isPlaying: Boolean = true,
     restartOnPlay: Boolean = true,

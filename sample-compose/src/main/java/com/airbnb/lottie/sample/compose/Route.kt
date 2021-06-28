@@ -20,8 +20,6 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
 
     object AnimatableUsageExamples : Route("LottieAnimatable examples")
 
-    object CoroutinesExamples : Route("coroutines examples")
-
     object TransitionsExamples : Route("transitions examples")
 
     object ViewPagerExample : Route("view pager example")

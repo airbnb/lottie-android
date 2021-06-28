@@ -155,6 +155,12 @@ public class LottieComposition {
     return MiscUtils.lerp(startFrame, endFrame, progress);
   }
 
+  public float getProgressForFrame(float frame) {
+    float framesSinceStart = frame - startFrame;
+    float frameRange = endFrame - startFrame;
+    return framesSinceStart / frameRange;
+  }
+
   public float getFrameRate() {
     return frameRate;
   }

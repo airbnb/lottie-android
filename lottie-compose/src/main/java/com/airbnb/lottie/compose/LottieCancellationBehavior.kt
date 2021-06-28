@@ -15,10 +15,6 @@ enum class LottieCancellationBehavior {
      * Delay cancellations until the current iteration has fully completed.
      * This can be useful in state based transitions where you want one animation to finish its
      * animation before continuing to the next.
-     *
-     *
-     * This CANNOT be used with [LottieConstants.IterateForever] because that would prevent the animation
-     * from ever completing.
      */
     OnIterationFinish,
 }

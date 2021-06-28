@@ -26,7 +26,6 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.sample.compose.examples.AnimatableExamplesPage
 import com.airbnb.lottie.sample.compose.examples.BasicUsageExamplesPage
-import com.airbnb.lottie.sample.compose.examples.CoroutinesExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ExamplesPage
 import com.airbnb.lottie.sample.compose.examples.NetworkExamplesPage
 import com.airbnb.lottie.sample.compose.examples.TransitionsExamplesPage
@@ -94,7 +93,6 @@ class ComposeActivity : AppCompatActivity() {
                         composable(Route.Examples.route) { ExamplesPage(navController) }
                         composable(Route.BasicUsageExamples.route) { BasicUsageExamplesPage() }
                         composable(Route.AnimatableUsageExamples.route) { AnimatableExamplesPage() }
-                        composable(Route.CoroutinesExamples.route) { CoroutinesExamplesPage() }
                         composable(Route.TransitionsExamples.route) { TransitionsExamplesPage() }
                         composable(Route.ViewPagerExample.route) { ViewPagerExamplePage() }
                         composable(Route.NetworkExamples.route) { NetworkExamplesPage() }

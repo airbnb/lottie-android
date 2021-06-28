@@ -1,6 +1,7 @@
 package com.airbnb.lottie.sample.compose.examples
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +44,12 @@ fun AnimatableExamplesPage() {
             ExampleCard("Example 3", "Draggable Speed Slider") {
                 Example3()
             }
+            ExampleCard("Example 4", "Repeat once. Click to repeat again") {
+                Example4()
+            }
+            ExampleCard("Example 5", "Click to toggle playback") {
+                Example5()
+            }
         }
     }
 }
@@ -57,7 +64,7 @@ private fun Example1() {
             iterations = LottieConstants.IterateForever,
         )
     }
-    LottieAnimation(composition, anim.progress)
+    LottieAnimation(anim.composition, anim.progress)
 }
 
 @Composable
@@ -77,7 +84,7 @@ private fun Example2() {
         }
     }
     Box {
-        LottieAnimation(composition, anim.progress)
+        LottieAnimation(anim.composition, anim.progress)
         Slider(
             value = sliderGestureProgress ?: anim.progress,
             onValueChange = { sliderGestureProgress = it },
@@ -120,4 +127,43 @@ private fun Example3() {
                 .background(Color.Black)
         )
     }
+}
+
+@Composable
+private fun Example4() {
+    var nonce by remember { mutableStateOf(1) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
+    val animatable = rememberLottieAnimatable()
+
+    LaunchedEffect(composition, nonce) {
+        composition ?: return@LaunchedEffect
+        animatable.animate(
+            composition,
+            continueFromPreviousAnimate = false,
+        )
+    }
+    LottieAnimation(
+        composition,
+        animatable.progress,
+        modifier = Modifier
+            .clickable { nonce++ }
+    )
+}
+
+@Composable
+private fun Example5() {
+    var shouldPlay by remember { mutableStateOf(true) }
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
+    val animatable = rememberLottieAnimatable()
+
+    LaunchedEffect(composition, shouldPlay) {
+        if (composition == null || !shouldPlay) return@LaunchedEffect
+        animatable.animate(composition, iteration = LottieConstants.IterateForever)
+    }
+    LottieAnimation(
+        composition,
+        animatable.progress,
+        modifier = Modifier
+            .clickable { shouldPlay = !shouldPlay }
+    )
 }

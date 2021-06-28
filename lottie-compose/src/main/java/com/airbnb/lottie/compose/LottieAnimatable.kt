@@ -46,15 +46,15 @@ suspend fun LottieAnimatable.resetToBeginning() {
 }
 
 /**
- * [rememberLottieAnimatable] is an extension of [LottieAnimationState] that contains imperative
- * suspend functions to initiate animations.
+ * [LottieAnimatable] is an extension of [LottieAnimationState] that contains imperative
+ * suspend functions to control animation playback.
  *
  * To create one, call:
  * ```
- * val animatable = remember { LottieAnimatable() }
+ * val animatable = rememberLottieAnimatable()
  * ```
  *
- * This is the imperative version of [animateLottieComposition].
+ * This is the imperative version of [animateLottieCompositionAsState].
  *
  * [LottieAnimationState] ensures *mutual exclusiveness* on its animations. To
  * achieve this, when a new animation is started via [animate] or [snapTo], any ongoing
@@ -66,12 +66,12 @@ suspend fun LottieAnimatable.resetToBeginning() {
  *
  * This class is comparable to [androidx.compose.animation.core.Animatable]. It is a relatively
  * low-level API that gives maximum control over animations. In most cases, you can use
- * [animateLottieComposition] which provides declarative APIs to create, update, and animate
+ * [animateLottieCompositionAsState] which provides declarative APIs to create, update, and animate
  * a [LottieComposition].
  *
  * @see animate
  * @see snapTo
- * @see animateLottieComposition
+ * @see animateLottieCompositionAsState
  */
 @Stable
 interface LottieAnimatable : LottieAnimationState {
@@ -107,11 +107,6 @@ interface LottieAnimatable : LottieAnimationState {
      * Animate a [LottieComposition].
      *
      * @param composition The [LottieComposition] that should be rendered.
-     * @param continueFromPreviousAnimate When set to true, this animation will be considered continuous from any
-     *                                    previous animate calls. When set to true, instead of
-     *                                    starting at the minimum progress, the initial progress will be advanced in
-     *                                    accordance to the amount of time that has passed since the last frame
-     *                                    was rendered.
      * @param iteration The iteration to start the animation at. Defaults to 1 and carries over from previous animates.
      * @param iterations The number of iterations to continue running for. Set to 1 to play one time
      *                   set to [LottieConstants.IterateForever] to iterate forever. Can be set to arbitrary
@@ -121,12 +116,16 @@ interface LottieAnimatable : LottieAnimationState {
      * @param clipSpec An optional [LottieClipSpec] to trim the playback of the composition between two values.
      *                 Defaults to null and carries over from previous animates.
      * @param initialProgress An optional progress value that the animation should start at. Defaults to the
-     *                        starting progress as defined by the clipSpec and speed. Can be used to resume
-     *                        animations from arbitrary points.
+     *                        starting progress as defined by the clipSpec and speed. Because the default value
+     *                        isn't the existing progress value, if you are resuming an animation, you
+     *                        probably want to set this to [progress].
+     * @param continueFromPreviousAnimate When set to true, instead of starting at the minimum progress,
+     *                                    the initial progress will be advanced in accordance to the amount
+     *                                    of time that has passed since the last frame was rendered.
      * @param cancellationBehavior The behavior that this animation should have when cancelled. In most cases,
      *                             you will want it to cancel immediately. However, if you have a state based
      *                             transition and you want an animation to finish playing before moving on to
-     *                             the next one then you may want to set this to [LottieCancellationBehavior.OnFinish].
+     *                             the next one then you may want to set this to [LottieCancellationBehavior.OnIterationFinish].
      */
     suspend fun animate(
         composition: LottieComposition?,

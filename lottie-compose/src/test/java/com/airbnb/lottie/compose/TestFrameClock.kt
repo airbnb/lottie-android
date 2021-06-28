@@ -11,7 +11,7 @@ class TestFrameClock : MonotonicFrameClock {
     // Make the send non-blocking
     private val frameChannel = Channel<Long>(Channel.UNLIMITED)
 
-    suspend fun frame(frameTimeNanos: Long) {
+    private suspend fun frame(frameTimeNanos: Long) {
         frameChannel.send(frameTimeNanos)
     }
 

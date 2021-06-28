@@ -7,7 +7,7 @@ import com.airbnb.lottie.LottieComposition
  *
  * @see LottieAnimation
  * @see rememberLottieAnimatable
- * @see animateLottieComposition
+ * @see animateLottieCompositionAsState
  */
 sealed class LottieClipSpec {
 

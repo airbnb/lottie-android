@@ -3,19 +3,19 @@ version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/m
 
 # 1.0.0-beta09-1
 ## Breaking Changes
-LottieAnimationState has been completely removed. Instead, `LottieAnimation` now takes a progress float.
-The driving of animations has been split into a new `animateLottieComposition` function. Properties
-that pertain to the animation such as speed, repeat count, and the new clip spec are part of
+`LottieAnimation` now takes a progress float instead of driving the animation internally.
+The driving of animations has been split into a new `LottieAnimatable` class and
+`animateLottieCompositionAsState` function. These are analogous to Jetpack's `Animatable` and
+`animate*AsState` functions.
+Properties that pertain to the animation such as speed, repeat count, and the new clip spec are part of
 `animateLottieComposition` whereas properties that are related to rendering such as enabling merge paths
 and setting an image asset delegate are on the `LottieAnimation` composable.
 
-There are overloaded version of `LottieAnimation` that merge the properties for convenience. Please
-refer to the docs for `LottieAnimation`, `animateLottieComposition` and `lottieComposition` for more
-information. Those three functions are the entrypoints for most things you need to do with Lottie.
+`lottieComposition` has also been renamed `rememberLottieComposition`.
 
-The new `LottieAnimatable` class can be used directly for imperative and more granular control
-over animations. This is very similar to the [Jetpack Compose Animatable](https://developer.android.com/jetpack/compose/animation#animatable)
-APIs.
+There are overloaded version of `LottieAnimation` that merge the properties for convenience. Please
+refer to the docs for `LottieAnimation`, `LottieAnimatable`, `animateLottieCompositionAsState`
+and `rememberLottieComposition` for more information.
 
 # 1.0.0-beta07-1
 * Compatible with Jetpack Compose Beta 07

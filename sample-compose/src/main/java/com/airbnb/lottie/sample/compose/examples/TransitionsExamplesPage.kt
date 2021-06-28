@@ -103,14 +103,11 @@ fun SplitCompositionTransition(section: TransitionSection) {
     val animatable = rememberLottieAnimatable()
 
     LaunchedEffect(section) {
-        // Make parsing non-cancellable to ensure that every step plays at least one time.
-        val composition = withContext(NonCancellable) {
-            when (section) {
-                TransitionSection.Intro -> introComposition
-                TransitionSection.LoopMiddle -> loopMiddleComposition
-                TransitionSection.Outro -> outroComposition
-            }.await()
-        }
+        val composition = when (section) {
+            TransitionSection.Intro -> introComposition
+            TransitionSection.LoopMiddle -> loopMiddleComposition
+            TransitionSection.Outro -> outroComposition
+        }.await()
         animatable.animate(
             composition,
             iterations = if (section == TransitionSection.LoopMiddle) LottieConstants.IterateForever else 1,
