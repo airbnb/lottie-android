@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
+import com.airbnb.lottie.compose.LottieAnimation
 
 class ComposeIssueReproActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,5 +16,6 @@ class ComposeIssueReproActivity : AppCompatActivity() {
 
     @Composable
     fun Content() {
+        LottieAnimation(null)
     }
 }

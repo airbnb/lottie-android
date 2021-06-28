@@ -4,7 +4,11 @@ import com.airbnb.lottie.sample.compose.api.AnimationsResponseV2
 import com.airbnb.lottie.sample.compose.api.LottieFilesApi
 import com.airbnb.lottie.sample.compose.dagger.AssistedViewModelFactory
 import com.airbnb.lottie.sample.compose.dagger.daggerMavericksViewModelFactory
-import com.airbnb.mvrx.*
+import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.MavericksViewModel
+import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Uninitialized
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

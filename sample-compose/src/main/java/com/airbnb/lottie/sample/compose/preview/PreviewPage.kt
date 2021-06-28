@@ -3,11 +3,24 @@ package com.airbnb.lottie.sample.compose.preview
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,7 +82,7 @@ private fun PreviewRow(
     onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.clickable(onClick = onClick)
+        onClick = onClick,
     ) {
         Column {
             Row(
@@ -159,8 +172,8 @@ fun UrlDialog(isShowing: Boolean, onDismiss: () -> Unit, onUrlSelected: (url: St
 @Composable
 private fun AssetRow(name: String, onClick: () -> Unit) {
     Surface(
+        onClick = onClick,
         modifier = Modifier
-            .clickable(onClick = onClick)
             .fillMaxWidth()
             .padding(vertical = 12.dp)
     ) {

@@ -1,13 +1,16 @@
 package com.airbnb.lottie.sample.compose.lottiefiles
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
@@ -83,7 +86,6 @@ class LottieFilesSearchViewModel @AssistedInject constructor(
         if (state.currentPage >= state.lastPage) return@withState
         fetchJob = viewModelScope.launch {
             val response = try {
-                Log.d("Gabe", "Fetching page ${state.currentPage + 1}")
                 api.search(state.query, state.currentPage + 1)
             } catch (e: Exception) {
                 setState { copy(fetchException = true) }

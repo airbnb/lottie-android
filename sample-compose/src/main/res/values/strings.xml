@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">LottieCompose</string>
+    <string name="back">Back</string>
 
     <string name="bottom_tab_showcase">Showcase</string>
     <string name="bottom_tab_preview">Preview</string>
     <string name="bottom_tab_lottie_files">LottieFiles</string>
-    <string name="bottom_tab_docs">Docs</string>
+    <string name="bottom_tab_examples">Examples</string>
 
     <string name="tab_recent">Recent</string>
     <string name="tab_popular">Popular</string>
@@ -23,6 +24,8 @@
     <string name="toolbar_item_color">Background</string>
     <string name="toolbar_item_opacity_layers">Apply Opacity To Layers</string>
     <string name="toolbar_item_merge_paths">Enable Merge Paths</string>
+
+    <string name="examples_title">Examples</string>
 
     <string name="failed_to_load">Failed to load composition</string>
     <string name="ok">OK</string>

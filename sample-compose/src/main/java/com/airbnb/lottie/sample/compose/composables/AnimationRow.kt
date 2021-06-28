@@ -2,7 +2,6 @@ package com.airbnb.lottie.sample.compose.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,8 +25,7 @@ fun AnimationRow(
     onClick: () -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .clickable(onClick = onClick)
+        onClick = onClick,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
