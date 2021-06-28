@@ -105,6 +105,7 @@ public class L {
 
   @NonNull
   public static NetworkCache networkCache(@NonNull final Context context) {
+    final Context appContext = context.getApplicationContext();
     NetworkCache local = networkCache;
     if (local == null) {
       synchronized (NetworkCache.class) {
@@ -112,7 +113,7 @@ public class L {
         if (local == null) {
           networkCache = local = new NetworkCache(cacheProvider != null ? cacheProvider : new LottieNetworkCacheProvider() {
             @Override @NonNull public File getCacheDir() {
-              return new File(context.getCacheDir(), "lottie_network_cache");
+              return new File(appContext.getCacheDir(), "lottie_network_cache");
             }
           });
         }
