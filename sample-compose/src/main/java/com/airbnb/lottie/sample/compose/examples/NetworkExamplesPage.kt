@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -56,7 +57,7 @@ private fun Example2() {
         LottieCompositionSpec.Url("not a url"),
         onRetry = { fc, _ ->
             failedCount = fc
-            // Await the retry signal from the retries channel.
+            // Await the retry signal.
             retrySignal.awaitRetry()
             true
         }
@@ -68,7 +69,8 @@ private fun Example2() {
     ) {
         LottieAnimation(composition)
         Text(
-            "Failed $failedCount times",
+            "Failed $failedCount times.\nAwaiting retry: ${retrySignal.isAwaitingRetry}",
+            color = Color.LightGray,
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.BottomStart)
