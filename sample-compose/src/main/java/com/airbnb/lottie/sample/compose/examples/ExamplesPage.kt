@@ -52,5 +52,11 @@ fun ExamplesPage(navController: NavController) {
             modifier = Modifier
                 .clickable { navController.navigate(Route.NetworkExamples) }
         )
+        ListItem(
+            text = { Text("Dynamic Properties") },
+            secondaryText = { Text("Setting dynamic properties") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.DynamicProperties) }
+        )
     }
 }
