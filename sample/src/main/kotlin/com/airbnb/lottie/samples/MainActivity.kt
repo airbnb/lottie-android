@@ -1,7 +1,6 @@
 package com.airbnb.lottie.samples
 
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
@@ -9,28 +8,26 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.airbnb.lottie.samples.databinding.MainActivityBinding
 import com.airbnb.lottie.samples.utils.viewBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
     private val binding: MainActivityBinding by viewBinding()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
-        binding.bottomNavigation.setOnNavigationItemSelectedListener(this)
-
-        savedInstanceState ?: showFragment(ShowcaseFragment())
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.showcase -> showFragment(ShowcaseFragment())
-            R.id.preview -> showFragment(PreviewFragment())
-            R.id.lottiefiles -> showFragment(LottiefilesFragment())
-            R.id.learn -> showShowcase()
-            else -> return false
+        binding.bottomNavigation.setOnItemSelectedListener listener@{ item ->
+            when (item.itemId) {
+                R.id.showcase -> showFragment(ShowcaseFragment())
+                R.id.preview -> showFragment(PreviewFragment())
+                R.id.lottiefiles -> showFragment(LottiefilesFragment())
+                R.id.learn -> showShowcase()
+            }
+            true
         }
-        return true
+
+        if (savedInstanceState == null) {
+            showFragment(ShowcaseFragment())
+        }
     }
 
     private fun showShowcase() {
@@ -40,7 +37,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-                .replace(R.id.content, fragment)
-                .commit()
+            .replace(R.id.content, fragment)
+            .commit()
     }
 }
