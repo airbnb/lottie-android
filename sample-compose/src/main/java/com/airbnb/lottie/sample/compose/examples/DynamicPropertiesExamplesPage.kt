@@ -38,7 +38,7 @@ fun DynamicPropertiesExamplesPage() {
             ExampleCard("Heart Color", "Click to change color") {
                 HeartColor()
             }
-            ExampleCard("Jump Height", "Click to jump heiht") {
+            ExampleCard("Jump Height", "Click to jump height") {
                 JumpHeight()
             }
             ExampleCard("Change Properties", "Click to toggle whether the dynamic property is used") {
