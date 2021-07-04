@@ -16,6 +16,8 @@ and setting an image asset delegate are on the `LottieAnimation` composable.
 There are overloaded version of `LottieAnimation` that merge the properties for convenience. Please
 refer to the docs for `LottieAnimation`, `LottieAnimatable`, `animateLottieCompositionAsState`
 and `rememberLottieComposition` for more information.
+* Added the ability to clip the progress bounds of an animation.
+* Added the ability to set and control dynamic properties.
 
 # 1.0.0-beta07-1
 * Compatible with Jetpack Compose Beta 07
