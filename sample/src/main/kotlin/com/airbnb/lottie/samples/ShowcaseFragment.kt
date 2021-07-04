@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples
 import android.content.Intent
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.lottie.samples.api.LottiefilesApi
+import com.airbnb.lottie.samples.model.AnimationDataV2
 import com.airbnb.lottie.samples.model.AnimationResponseV2
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.model.ShowcaseItem

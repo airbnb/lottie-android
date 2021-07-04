@@ -56,5 +56,5 @@ dependencies {
   testImplementation 'org.robolectric:robolectric:4.4'
   testImplementation 'androidx.collection:collection-ktx:1.1.0'
   testImplementation 'junit:junit:4.13.2'
-  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0'
 }
