@@ -22,22 +22,8 @@ import com.airbnb.lottie.value.ScaleXY
 fun rememberLottieDynamicProperties(
     vararg properties: LottieDynamicProperty<*>,
 ): LottieDynamicProperties {
-    @Suppress("UNCHECKED_CAST")
     return remember(properties) {
-        val intProperties = properties.filter { it.property is Int } as List<LottieDynamicProperty<Int>>
-        val pointFProperties = properties.filter { it.property is PointF } as List<LottieDynamicProperty<PointF>>
-        val floatProperties = properties.filter { it.property is Float } as List<LottieDynamicProperty<Float>>
-        val scaleProperties = properties.filter { it.property is ScaleXY } as List<LottieDynamicProperty<ScaleXY>>
-        val colorFilterProperties = properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>
-        val intArrayProperties = properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>
-        LottieDynamicProperties(
-            intProperties,
-            pointFProperties,
-            floatProperties,
-            scaleProperties,
-            colorFilterProperties,
-            intArrayProperties,
-        )
+        LottieDynamicProperties(properties.toList())
     }
 }
 
@@ -56,18 +42,8 @@ fun <T> rememberLottieDynamicProperty(
     vararg keyPath: String,
 ): LottieDynamicProperty<T> {
     val keyPathObj = remember(keyPath) { KeyPath(*keyPath) }
-    val callback: (LottieFrameInfo<T>) -> T = remember(value) { { value } }
-    val currentCallback by rememberUpdatedState(callback)
-    return remember(keyPathObj, property) {
-        LottieDynamicProperty(
-            keyPathObj,
-            property,
-            object : LottieValueCallback<T>() {
-                override fun getValue(frameInfo: LottieFrameInfo<T>): T {
-                    return currentCallback(frameInfo)
-                }
-            },
-        )
+    return remember(keyPathObj, property, value) {
+        LottieDynamicProperty(property, keyPathObj, value)
     }
 }
 
@@ -86,20 +62,15 @@ fun <T> rememberLottieDynamicProperty(
 fun <T> rememberLottieDynamicProperty(
     property: T,
     vararg keyPath: String,
-    callback: (frameInfo: LottieFrameInfo<T>) -> T
+    callback: (frameInfo: LottieFrameInfo<T>) -> T,
 ): LottieDynamicProperty<T> {
     val keyPathObj = remember(keyPath) { KeyPath(*keyPath) }
-    val currentCallback by rememberUpdatedState(callback)
+    val callbackState by rememberUpdatedState(callback)
     return remember(keyPathObj, property) {
         LottieDynamicProperty(
-            keyPathObj,
             property,
-            object : LottieValueCallback<T>() {
-                override fun getValue(frameInfo: LottieFrameInfo<T>): T {
-                    return currentCallback(frameInfo)
-                }
-            },
-        )
+            keyPathObj,
+        ) { callbackState(it) }
     }
 }
 
@@ -107,10 +78,12 @@ fun <T> rememberLottieDynamicProperty(
  * @see rememberLottieDynamicProperty
  */
 class LottieDynamicProperty<T> internal constructor(
-    internal val keyPath: KeyPath,
     internal val property: T,
-    internal val valueCallback: LottieValueCallback<T>,
-)
+    internal val keyPath: KeyPath,
+    internal val callback: (frameInfo: LottieFrameInfo<T>) -> T,
+) {
+    constructor(property: T, keyPath: KeyPath, value: T) : this(property, keyPath, { value })
+}
 
 /**
  * @see rememberLottieDynamicProperties
@@ -123,24 +96,34 @@ class LottieDynamicProperties internal constructor(
     private val colorFilterProperties: List<LottieDynamicProperty<ColorFilter>>,
     private val intArrayProperties: List<LottieDynamicProperty<IntArray>>,
 ) {
+    @Suppress("UNCHECKED_CAST")
+    constructor(properties: List<LottieDynamicProperty<*>>) : this(
+        properties.filter { it.property is Int } as List<LottieDynamicProperty<Int>>,
+        properties.filter { it.property is PointF } as List<LottieDynamicProperty<PointF>>,
+        properties.filter { it.property is Float } as List<LottieDynamicProperty<Float>>,
+        properties.filter { it.property is ScaleXY } as List<LottieDynamicProperty<ScaleXY>>,
+        properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>,
+        properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>,
+    )
+
     internal fun addTo(drawable: LottieDrawable) {
         intProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         pointFProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         floatProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         scaleProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         colorFilterProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         intArrayProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, p.valueCallback)
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
     }
 
@@ -163,5 +146,11 @@ class LottieDynamicProperties internal constructor(
         intArrayProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<IntArray>?)
         }
+    }
+}
+
+private fun <T> ((frameInfo: LottieFrameInfo<T>) -> T).toValueCallback() = object : LottieValueCallback<T>() {
+    override fun getValue(frameInfo: LottieFrameInfo<T>): T {
+        return invoke(frameInfo)
     }
 }
