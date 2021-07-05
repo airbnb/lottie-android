@@ -39,7 +39,7 @@ import kotlin.coroutines.resumeWithException
 @Composable
 fun rememberLottieComposition(
     spec: LottieCompositionSpec,
-    cacheComposition: Boolean,
+    cacheComposition: Boolean = true,
     onRetry: suspend (failCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
     val context = LocalContext.current

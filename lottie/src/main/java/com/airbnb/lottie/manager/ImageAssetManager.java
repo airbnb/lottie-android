@@ -87,7 +87,7 @@ public class ImageAssetManager {
       return null;
     }
     Bitmap bitmap = asset.getBitmap();
-    if (bitmap != null && !alwaysCallDelegate) {
+    if (!alwaysCallDelegate && bitmap != null) {
       return bitmap;
     }
 
@@ -97,6 +97,10 @@ public class ImageAssetManager {
 
     maybeDecodeBase64Image(asset, opts);
     maybeDecodeImageFromAssets(asset, opts);
+
+    if (asset.getBitmap() == null && delegate == null) {
+      throw new IllegalStateException("You must set an images folder or an image asset delegate for images to work.");
+    }
 
     if (delegate != null) {
       bitmap = delegate.fetchBitmap(asset);
@@ -131,10 +135,6 @@ public class ImageAssetManager {
     String filename = asset.getFileName();
     InputStream is;
     try {
-      if (delegate == null && TextUtils.isEmpty(imagesFolder)) {
-        throw new IllegalStateException("You must set an images folder or an image asset delegate before loading an image." +
-            " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
-      }
       is = context.getAssets().open(imagesFolder + filename);
     } catch (IOException e) {
       Logger.warning("Unable to open asset.", e);

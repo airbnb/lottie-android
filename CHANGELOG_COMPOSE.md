@@ -18,6 +18,10 @@ refer to the docs for `LottieAnimation`, `LottieAnimatable`, `animateLottieCompo
 and `rememberLottieComposition` for more information.
 * Added the ability to clip the progress bounds of an animation.
 * Added the ability to set and control dynamic properties.
+* Replaced the existing imageAssetDelegate parameter with a new imageAssetCallback parameter.
+  The new callback will be called on every frame and consumers should reuse or set the bitmap on the
+  asset rather than returning it. This allows the callback to be run on every frame instead of once
+  and then cached forever which made it impossible to update an already-set bitmap.
 
 # 1.0.0-beta07-1
 * Compatible with Jetpack Compose Beta 07
