@@ -39,6 +39,7 @@ import kotlin.coroutines.resumeWithException
 @Composable
 fun rememberLottieComposition(
     spec: LottieCompositionSpec,
+    cacheComposition: Boolean,
     onRetry: suspend (failCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
     val context = LocalContext.current
@@ -48,7 +49,7 @@ fun rememberLottieComposition(
         var failedCount = 0
         while (!result.isSuccess && (failedCount == 0 || onRetry(failedCount, exception!!))) {
             try {
-                result.complete(lottieComposition(context, spec))
+                result.complete(lottieComposition(context, spec, cacheComposition))
             } catch (e: Throwable) {
                 exception = e
                 failedCount++
@@ -63,20 +64,41 @@ fun rememberLottieComposition(
 
 private suspend fun lottieComposition(
     context: Context,
-    spec: LottieCompositionSpec
+    spec: LottieCompositionSpec,
+    cacheComposition: Boolean,
 ): LottieComposition = suspendCancellableCoroutine { cont ->
     val task = when (spec) {
-        is LottieCompositionSpec.RawRes -> LottieCompositionFactory.fromRawRes(context, spec.resId)
-        is LottieCompositionSpec.Url -> LottieCompositionFactory.fromUrl(context, spec.url, null)
+        is LottieCompositionSpec.RawRes -> {
+            if (cacheComposition) {
+                LottieCompositionFactory.fromRawRes(context, spec.resId)
+            } else {
+                LottieCompositionFactory.fromRawRes(context, spec.resId, null)
+            }
+        }
+        is LottieCompositionSpec.Url -> {
+            if (cacheComposition) {
+                LottieCompositionFactory.fromUrl(context, spec.url)
+            } else {
+                LottieCompositionFactory.fromUrl(context, spec.url, null)
+            }
+        }
         is LottieCompositionSpec.File -> {
             val fis = FileInputStream(spec.fileName)
             when {
-                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(ZipInputStream(fis), spec.fileName)
-                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName)
+                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(ZipInputStream(fis), spec.fileName.takeIf { cacheComposition })
+                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheComposition })
             }
         }
-        is LottieCompositionSpec.Asset -> LottieCompositionFactory.fromAsset(context, spec.assetName)
-        is LottieCompositionSpec.JsonString -> LottieCompositionFactory.fromJsonString(spec.jsonString, spec.cacheKey)
+        is LottieCompositionSpec.Asset -> {
+            if (cacheComposition) {
+                LottieCompositionFactory.fromAsset(context, spec.assetName)
+            } else {
+                LottieCompositionFactory.fromAsset(context, spec.assetName, null)
+            }
+        }
+        is LottieCompositionSpec.JsonString -> {
+            LottieCompositionFactory.fromJsonString(spec.jsonString, spec.cacheKey.takeIf { cacheComposition })
+        }
     }
     task.addListener { c ->
         if (!cont.isCompleted) cont.resume(c)

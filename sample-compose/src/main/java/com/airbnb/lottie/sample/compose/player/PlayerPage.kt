@@ -287,17 +287,14 @@ private fun PlayerPageLottieAnimation(
     modifier: Modifier = Modifier,
 ) {
     val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val imageAssetDelegate = remember(composition) {
-        if (composition?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
-            null
-        } else {
-            ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
-        }
-    }
     LottieAnimation(
         composition,
         progress,
-        imageAssetDelegate = imageAssetDelegate,
+        imageAssetCallback = { asset ->
+            if (asset.bitmap == null) {
+                asset.bitmap = asset.toDummyBitmap(dummyBitmapStrokeWidth)
+            }
+        },
         modifier = modifier,
     )
 }
