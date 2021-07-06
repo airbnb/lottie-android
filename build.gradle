@@ -20,7 +20,7 @@ buildscript {
     classpath 'org.ajoberstar:grgit:1.9.3'
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.1"
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
-    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.30'
+    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.32'
   }
 }
 
@@ -33,6 +33,9 @@ allprojects {
     }
     maven {
       url "https://kotlin.bintray.com/kotlinx"
+    }
+    maven {
+      url "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/"
     }
     maven {
       url "https://oss.sonatype.org/content/repositories/snapshots/"
