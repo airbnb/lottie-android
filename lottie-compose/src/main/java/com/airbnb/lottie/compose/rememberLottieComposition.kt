@@ -38,7 +38,13 @@ import kotlin.coroutines.resumeWithException
  * val composition: State<LottieComposition?> by lottieComposition(spec)
  * ```
  *
+ * The loaded composition will automatically load and set images that are embedded in the json as a base64 string
+ * or will load them from assets if an imageAssetsFolder is supplied.
+ *
  * @param spec The [LottieCompositionSpec] that defines which LottieComposition should be loaded.
+ * @param imageAssetsFolder A subfolder in `src/main/assets` that contains the exported images
+ *                          that this composition uses. DO NOT rename any images from your design tool. The
+ *                          filenames must match the values that are in your json file.
  * @param onRetry An optional callback that will be called if loading the animation fails.
  *                It is passed the failed count (the number of times it has failed) and the exception
  *                from the previous attempt to load the composition. [onRetry] is a suspending function
@@ -59,7 +65,13 @@ fun rememberLottieComposition(
         var failedCount = 0
         while (!result.isSuccess && (failedCount == 0 || onRetry(failedCount, exception!!))) {
             try {
-                result.complete(lottieComposition(context, spec, imageAssetsFolder.ensureTrailingSlash(), cacheComposition))
+                val composition = lottieComposition(
+                    context,
+                    spec,
+                    imageAssetsFolder.ensureTrailingSlash(),
+                    cacheComposition,
+                )
+                result.complete(composition)
             } catch (e: Throwable) {
                 exception = e
                 failedCount++

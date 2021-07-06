@@ -23,6 +23,7 @@ public class ImageAssetManager {
   private String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
   private final Map<String, LottieImageAsset> imageAssets;
+
   public ImageAssetManager(Drawable.Callback callback, String imagesFolder,
       ImageAssetDelegate delegate, Map<String, LottieImageAsset> imageAssets) {
     this.imagesFolder = imagesFolder;
@@ -36,13 +37,16 @@ public class ImageAssetManager {
       context = null;
       return;
     }
+
     context = ((View) callback).getContext();
     this.imageAssets = imageAssets;
     setDelegate(delegate);
   }
+
   public void setDelegate(@Nullable ImageAssetDelegate assetDelegate) {
     this.delegate = assetDelegate;
   }
+
   /**
    * Returns the previously set bitmap or null.
    */
@@ -57,15 +61,18 @@ public class ImageAssetManager {
     putBitmap(id, bitmap);
     return prevBitmap;
   }
+
   @Nullable public Bitmap bitmapForId(String id) {
     LottieImageAsset asset = imageAssets.get(id);
     if (asset == null) {
       return null;
     }
+
     Bitmap bitmap = asset.getBitmap();
     if (bitmap != null) {
       return bitmap;
     }
+
     if (delegate != null) {
       bitmap = delegate.fetchBitmap(asset);
       if (bitmap != null) {
@@ -73,6 +80,7 @@ public class ImageAssetManager {
       }
       return bitmap;
     }
+
     String filename = asset.getFileName();
     BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inScaled = true;
@@ -89,6 +97,7 @@ public class ImageAssetManager {
       bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
       return putBitmap(id, bitmap);
     }
+
     InputStream is;
     try {
       if (TextUtils.isEmpty(imagesFolder)) {
@@ -100,6 +109,7 @@ public class ImageAssetManager {
       Logger.warning("Unable to open asset.", e);
       return null;
     }
+
     try {
       bitmap = BitmapFactory.decodeStream(is, null, opts);
     } catch (IllegalArgumentException e) {
@@ -109,9 +119,11 @@ public class ImageAssetManager {
     bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
     return putBitmap(id, bitmap);
   }
+
   public boolean hasSameContext(Context context) {
     return context == null && this.context == null || this.context.equals(context);
   }
+
   private Bitmap putBitmap(String key, @Nullable Bitmap bitmap) {
     synchronized (bitmapHashLock) {
       imageAssets.get(key).setBitmap(bitmap);
