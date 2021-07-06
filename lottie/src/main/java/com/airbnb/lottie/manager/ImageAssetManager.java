@@ -20,16 +20,16 @@ import java.util.Map;
 public class ImageAssetManager {
   private static final Object bitmapHashLock = new Object();
   private final Context context;
-  private String imagesFolder;
+  private final String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
   private final Map<String, LottieImageAsset> imageAssets;
 
   public ImageAssetManager(Drawable.Callback callback, String imagesFolder,
       ImageAssetDelegate delegate, Map<String, LottieImageAsset> imageAssets) {
-    this.imagesFolder = imagesFolder;
-    if (!TextUtils.isEmpty(imagesFolder) &&
-        this.imagesFolder.charAt(this.imagesFolder.length() - 1) != '/') {
-      this.imagesFolder += '/';
+    if (!TextUtils.isEmpty(imagesFolder) && imagesFolder.charAt(imagesFolder.length() - 1) != '/') {
+      this.imagesFolder = imagesFolder + '/';
+    } else {
+      this.imagesFolder = imagesFolder;
     }
     if (!(callback instanceof View)) {
       Logger.warning("LottieDrawable must be inside of a view for images to work.");
@@ -85,6 +85,7 @@ public class ImageAssetManager {
     BitmapFactory.Options opts = new BitmapFactory.Options();
     opts.inScaled = true;
     opts.inDensity = 160;
+
     if (filename.startsWith("data:") && filename.indexOf("base64,") > 0) {
       // Contents look like a base64 data URI, with the format data:image/png;base64,<data>.
       byte[] data;

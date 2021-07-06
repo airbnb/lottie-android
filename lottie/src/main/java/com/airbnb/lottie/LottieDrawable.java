@@ -1100,7 +1100,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return bm.bitmapForId(id);
     }
     LottieImageAsset imageAsset = composition == null ? null : composition.getImages().get(id);
-    if (imageAsset != null && imageAsset.getBitmap() != null) {
+    if (imageAsset != null) {
       return imageAsset.getBitmap();
     }
     return null;

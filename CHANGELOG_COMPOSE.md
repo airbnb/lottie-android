@@ -1,7 +1,7 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
-# 1.0.0-beta09-1
+# 1.0.0-rc01-1
 ## Breaking Changes
 `LottieAnimation` now takes a progress float instead of driving the animation internally.
 The driving of animations has been split into a new `LottieAnimatable` class and

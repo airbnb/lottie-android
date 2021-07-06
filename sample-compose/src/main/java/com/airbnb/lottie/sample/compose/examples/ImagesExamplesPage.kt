@@ -79,9 +79,8 @@ fun ImageAssetCallback() {
     val imageAsset by derivedStateOf { composition?.images?.get("image_0") }
     val context = LocalContext.current
     LaunchedEffect(imageAsset) {
-        val ia = imageAsset ?: return@LaunchedEffect
         withContext(Dispatchers.IO) {
-            ia.bitmap = loadBitmapFromAssets(context, ia)
+            imageAsset?.bitmap = loadBitmapFromAssets(context, imageAsset)
         }
     }
     LottieAnimation(
@@ -90,7 +89,8 @@ fun ImageAssetCallback() {
     )
 }
 
-private fun loadBitmapFromAssets(context: Context, asset: LottieImageAsset): Bitmap? {
+private fun loadBitmapFromAssets(context: Context, asset: LottieImageAsset?): Bitmap? {
+    asset ?: return null
     return try {
         val inputSteam = context.assets.open("Images/WeAccept/${asset.fileName}")
         val opts = BitmapFactory.Options()
