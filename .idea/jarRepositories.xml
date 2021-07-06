@@ -34,7 +34,7 @@
     <remote-repository>
       <option name="id" value="MavenLocal" />
       <option name="name" value="MavenLocal" />
-      <option name="url" value="file:$USER_HOME$/.m2/repository/" />
+      <option name="url" value="file:$MAVEN_REPOSITORY$/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="MavenRepo" />
@@ -45,6 +45,11 @@
       <option name="id" value="maven2" />
       <option name="name" value="maven2" />
       <option name="url" value="https://kotlin.bintray.com/kotlinx" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/" />
     </remote-repository>
   </component>
 </project>
