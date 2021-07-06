@@ -1,6 +1,8 @@
 package com.airbnb.lottie.compose
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,8 +11,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieImageAsset
+import com.airbnb.lottie.LottieTask
+import com.airbnb.lottie.utils.Logger
+import com.airbnb.lottie.utils.Utils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.FileInputStream
+import java.io.IOException
 import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -39,6 +48,7 @@ import kotlin.coroutines.resumeWithException
 @Composable
 fun rememberLottieComposition(
     spec: LottieCompositionSpec,
+    imageAssetsFolder: String? = null,
     cacheComposition: Boolean = true,
     onRetry: suspend (failCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
@@ -49,7 +59,7 @@ fun rememberLottieComposition(
         var failedCount = 0
         while (!result.isSuccess && (failedCount == 0 || onRetry(failedCount, exception!!))) {
             try {
-                result.complete(lottieComposition(context, spec, cacheComposition))
+                result.complete(lottieComposition(context, spec, imageAssetsFolder.ensureTrailingSlash(), cacheComposition))
             } catch (e: Throwable) {
                 exception = e
                 failedCount++
@@ -65,8 +75,9 @@ fun rememberLottieComposition(
 private suspend fun lottieComposition(
     context: Context,
     spec: LottieCompositionSpec,
+    imageAssetsFolder: String?,
     cacheComposition: Boolean,
-): LottieComposition = suspendCancellableCoroutine { cont ->
+): LottieComposition {
     val task = when (spec) {
         is LottieCompositionSpec.RawRes -> {
             if (cacheComposition) {
@@ -83,7 +94,10 @@ private suspend fun lottieComposition(
             }
         }
         is LottieCompositionSpec.File -> {
-            val fis = FileInputStream(spec.fileName)
+            val fis = withContext(Dispatchers.IO) {
+                @Suppress("BlockingMethodInNonBlockingContext")
+                FileInputStream(spec.fileName)
+            }
             when {
                 spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(ZipInputStream(fis), spec.fileName.takeIf { cacheComposition })
                 else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheComposition })
@@ -100,9 +114,80 @@ private suspend fun lottieComposition(
             LottieCompositionFactory.fromJsonString(spec.jsonString, spec.cacheKey.takeIf { cacheComposition })
         }
     }
-    task.addListener { c ->
+
+    val composition = task.await()
+    loadImagesFromAssets(context, composition, imageAssetsFolder)
+    return composition
+}
+
+private suspend fun <T> LottieTask<T>.await(): T = suspendCancellableCoroutine { cont ->
+    addListener { c ->
         if (!cont.isCompleted) cont.resume(c)
     }.addFailureListener { e ->
         if (!cont.isCompleted) cont.resumeWithException(e)
     }
+}
+
+private suspend fun loadImagesFromAssets(
+    context: Context,
+    composition: LottieComposition,
+    imageAssetsFolder: String?,
+) {
+    if (!composition.hasImages()) {
+        return
+    }
+    withContext(Dispatchers.IO) {
+        for (asset in composition.images.values) {
+            maybeDecodeBase64Image(asset)
+            maybeLoadImageFromAsset(context, asset, imageAssetsFolder)
+        }
+    }
+}
+
+private fun maybeLoadImageFromAsset(
+    context: Context,
+    asset: LottieImageAsset,
+    imageAssetsFolder: String?,
+) {
+    if (asset.bitmap != null || imageAssetsFolder == null) return
+    val filename = asset.fileName
+    val inputStream = try {
+        context.assets.open(imageAssetsFolder + filename)
+    } catch (e: IOException) {
+        Logger.warning("Unable to open asset.", e)
+        return
+    }
+    try {
+        val opts = BitmapFactory.Options()
+        opts.inScaled = true
+        opts.inDensity = 160
+        var bitmap = BitmapFactory.decodeStream(inputStream, null, opts)
+        bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.width, asset.height)
+        asset.bitmap = bitmap
+    } catch (e: IllegalArgumentException) {
+        Logger.warning("Unable to decode image.", e)
+    }
+}
+
+private fun maybeDecodeBase64Image(asset: LottieImageAsset) {
+    if (asset.bitmap != null) return
+    val filename = asset.fileName
+    if (filename.startsWith("data:") && filename.indexOf("base64,") > 0) {
+        // Contents look like a base64 data URI, with the format data:image/png;base64,<data>.
+        try {
+            val data = Base64.decode(filename.substring(filename.indexOf(',') + 1), Base64.DEFAULT)
+            val opts = BitmapFactory.Options()
+            opts.inScaled = true
+            opts.inDensity = 160
+            asset.bitmap = BitmapFactory.decodeByteArray(data, 0, data.size, opts)
+        } catch (e: IllegalArgumentException) {
+            Logger.warning("data URL did not have correct base64 format.", e)
+        }
+    }
+}
+
+private fun String?.ensureTrailingSlash(): String? = when {
+    this == null -> null
+    endsWith('/') -> this
+    else -> "$this/"
 }

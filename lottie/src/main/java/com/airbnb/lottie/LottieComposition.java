@@ -203,7 +203,7 @@ public class LottieComposition {
     return !images.isEmpty();
   }
 
-  @SuppressWarnings("WeakerAccess") public Map<String, LottieImageAsset> getImages() {
+  public Map<String, LottieImageAsset> getImages() {
     return images;
   }
 

@@ -18,10 +18,13 @@ refer to the docs for `LottieAnimation`, `LottieAnimatable`, `animateLottieCompo
 and `rememberLottieComposition` for more information.
 * Added the ability to clip the progress bounds of an animation.
 * Added the ability to set and control dynamic properties.
-* Replaced the existing imageAssetDelegate parameter with a new imageAssetCallback parameter.
-  The new callback will be called on every frame and consumers should reuse or set the bitmap on the
-  asset rather than returning it. This allows the callback to be run on every frame instead of once
-  and then cached forever which made it impossible to update an already-set bitmap.
+* Removed the existing imageAssetDelegate parameter and moved imageAssetsFolder to rememberLottieComposition.
+  Images are now loaded from assets or decoded from the base64 string embedded in the json file during parsing
+  and on the IO thread pool rather than upon first render on the main thread during animations. If you want to
+  supply your own animations, call `composition.images["your_image_id"].bitmap = yourBitmap`. This lets you control
+  exactly how and when the bitmaps get created and set. The previous implementation of calling a callback on every
+  frame encouraged the incorrect behavior of doing IO tasks during the animation hot path. Check out ImagesExamplesPage.kt
+  for usage.
 
 # 1.0.0-beta07-1
 * Compatible with Jetpack Compose Beta 07

@@ -62,7 +62,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
@@ -78,6 +77,8 @@ import com.airbnb.lottie.sample.compose.utils.drawBottomBorder
 import com.airbnb.lottie.sample.compose.utils.maybeBackground
 import com.airbnb.lottie.sample.compose.utils.maybeDrawBorder
 import com.airbnb.lottie.sample.compose.utils.toDummyBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
@@ -121,6 +122,18 @@ fun PlayerPage(
             message = failedMessage,
             actionLabel = okMessage,
         )
+    }
+
+    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    LaunchedEffect(compositionResult.value) {
+        val composition = compositionResult.value ?: return@LaunchedEffect
+        for (asset in composition.images.values) {
+            if (asset.bitmap == null) {
+                withContext(Dispatchers.IO) {
+                    asset.bitmap = asset.toDummyBitmap(dummyBitmapStrokeWidth)
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -286,15 +299,9 @@ private fun PlayerPageLottieAnimation(
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
-    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
     LottieAnimation(
         composition,
         progress,
-        imageAssetCallback = { asset ->
-            if (asset.bitmap == null) {
-                asset.bitmap = asset.toDummyBitmap(dummyBitmapStrokeWidth)
-            }
-        },
         modifier = modifier,
     )
 }

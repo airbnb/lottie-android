@@ -79,11 +79,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   };
 
   /**
-   * ImageAssetManager created externally. By Compose, for example.
-   */
-  @Nullable
-  private ImageAssetManager imageAssetManagerOverride;
-  /**
    * ImageAssetManager created automatically by Lottie for views.
    */
   @Nullable
@@ -1104,21 +1099,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (bm != null) {
       return bm.bitmapForId(id);
     }
+    LottieImageAsset imageAsset = composition == null ? null : composition.getImages().get(id);
+    if (imageAsset != null && imageAsset.getBitmap() != null) {
+      return imageAsset.getBitmap();
+    }
     return null;
   }
 
-  /**
-   * Use by Lottie internally when outside of a normal View tree such as for Jetpack Compose.
-   */
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  void setImageAssetManager(@Nullable ImageAssetManager imageAssetManager) {
-    this.imageAssetManagerOverride = imageAssetManager;
-  }
-
   private ImageAssetManager getImageAssetManager() {
-    if (imageAssetManagerOverride != null) {
-      return imageAssetManagerOverride;
-    }
     if (getCallback() == null) {
       // We can't get a bitmap since we can't get a Context from the callback.
       return null;

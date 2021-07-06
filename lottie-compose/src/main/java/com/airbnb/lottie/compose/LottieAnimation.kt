@@ -5,24 +5,17 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.LocalContext
-import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
-import com.airbnb.lottie.LottieImageAsset
-import com.airbnb.lottie.manager.ImageAssetManager
-import com.airbnb.lottie.setImageAssetManager
 
 /**
  * This is the base LottieAnimation composable. It takes a composition and renders it at a specific progress.
@@ -37,33 +30,6 @@ import com.airbnb.lottie.setImageAssetManager
  *                 The overloads that have isPlaying as a parameter instead of progress will drive the
  *                 animation automatically. You may want to use this version if you want to drive the animation
  *                 from your own Animatable or via events such as download progress or a gesture.
- * @param imageAssetsFolder If you use image assets, you must explicitly specify the folder in assets/ in which
- *                          they are located because bodymovin uses the name filenames across all
- *                          compositions (img_#). Do NOT rename the images themselves.
- *                          If your images are located in src/main/assets/airbnb_loader/ then imageAssetsFolder
- *                          should be set to "airbnb_loader"
- *                          Be wary if you are using many images, however. Lottie is designed to work with
- *                          vector shapes from After Effects. If your images look like they could be
- *                          represented with vector shapes, see if it is possible to convert them to shape
- *                          layers and re-export your animation. Check the documentation at
- *                          http://airbnb.io/lottie for more information about importing shapes from Sketch
- *                          or Illustrator to avoid this.
- * @param imageAssetCallback Use this if you want to return custom images for your animation's image layers.
- *                           This callback will be called on each frame and includes a [LottieImageAsset]
- *                           that has the metadata necessary to know which image is currently being fetched.
- *                           Instead of returning a bitmap from the callback, set the bitmap directly on the
- *                           image asset's bitmap property. Once you do this, the same bitmap will be included
- *                           in subsequent frames and you can choose to reuse it by doing nothing in your callback
- *                           in subsequent frames.
- *                           By default, Lottie also caches [LottieComposition]s and associated bitmaps. If you
- *                           are not reusing this animation, consider setting cacheComposition in [rememberLottieComposition]
- *                           to false.
- *                           Be wary if you are using many images, however. Lottie is designed to work with
- *                           vector shapes from After Effects. If your images look like they could be
- *                           represented with vector shapes, see if it is possible to convert them to shape
- *                           layers and re-export your animation. Check the documentation at
- *                           http://airbnb.io/lottie for more information about importing shapes from Sketch
- *                           or Illustrator to avoid this.
  * @param outlineMasksAndMattes Enable this to debug slow animations by outlining masks and mattes.
  *                              The performance overhead of the masks and mattes will be proportional to the
  *                              surface area of all of the masks/mattes combined.
@@ -87,32 +53,15 @@ fun LottieAnimation(
     composition: LottieComposition?,
     @FloatRange(from = 0.0, to = 1.0) progress: Float,
     modifier: Modifier = Modifier,
-    imageAssetsFolder: String? = null,
-    imageAssetCallback: ((LottieImageAsset) -> Unit)? = null,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
     dynamicProperties: LottieDynamicProperties? = null,
 ) {
     val drawable = remember { LottieDrawable() }
-    var imageAssetManager by remember { mutableStateOf<ImageAssetManager?>(null) }
     var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
-    val imageAssetCallbackState by rememberUpdatedState(imageAssetCallback)
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
-
-    if (composition.hasImages()) {
-        val context = LocalContext.current
-        LaunchedEffect(context, composition, imageAssetsFolder, imageAssetCallback) {
-            val delegate = ImageAssetDelegate { asset ->
-                imageAssetCallbackState?.invoke(asset)
-                asset.bitmap
-            }
-            imageAssetManager = ImageAssetManager(context, imageAssetsFolder, delegate, composition.images, true)
-        }
-    } else {
-        imageAssetManager = null
-    }
 
     Canvas(
         modifier = modifier
@@ -131,7 +80,6 @@ fun LottieAnimation(
                 drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
                 drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
                 drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
-                drawable.setImageAssetManager(imageAssetManager)
                 drawable.progress = progress
                 drawable.draw(canvas.nativeCanvas)
             }
@@ -155,8 +103,6 @@ fun LottieAnimation(
     clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
     iterations: Int = 1,
-    imageAssetsFolder: String? = null,
-    imageAssetCallback: ((LottieImageAsset) -> Unit)? = null,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
@@ -174,8 +120,6 @@ fun LottieAnimation(
         composition,
         progress,
         modifier,
-        imageAssetsFolder,
-        imageAssetCallback,
         outlineMasksAndMattes,
         applyOpacityToLayers,
         enableMergePaths,
