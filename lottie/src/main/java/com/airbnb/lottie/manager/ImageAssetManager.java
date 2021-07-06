@@ -1,20 +1,17 @@
 package com.airbnb.lottie.manager;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
-
-import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.ImageAssetDelegate;
 import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -22,7 +19,6 @@ import java.util.Map;
 
 public class ImageAssetManager {
   private static final Object bitmapHashLock = new Object();
-
   private final Context context;
   private final String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
@@ -35,7 +31,6 @@ public class ImageAssetManager {
     } else {
       this.imagesFolder = imagesFolder;
     }
-
     if (!(callback instanceof View)) {
       Logger.warning("LottieDrawable must be inside of a view for images to work.");
       this.imageAssets = new HashMap<>();
@@ -44,17 +39,6 @@ public class ImageAssetManager {
     }
 
     context = ((View) callback).getContext();
-    this.imageAssets = imageAssets;
-    setDelegate(delegate);
-  }
-
-  public ImageAssetManager(Context context, String imagesFolder, ImageAssetDelegate delegate, Map<String, LottieImageAsset> imageAssets) {
-    this.context = context;
-    if (!TextUtils.isEmpty(imagesFolder) && imagesFolder.charAt(imagesFolder.length() - 1) != '/') {
-      this.imagesFolder = imagesFolder + '/';
-    } else {
-      this.imagesFolder = imagesFolder;
-    }
     this.imageAssets = imageAssets;
     setDelegate(delegate);
   }
@@ -83,6 +67,7 @@ public class ImageAssetManager {
     if (asset == null) {
       return null;
     }
+
     Bitmap bitmap = asset.getBitmap();
     if (bitmap != null) {
       return bitmap;
@@ -125,6 +110,7 @@ public class ImageAssetManager {
       Logger.warning("Unable to open asset.", e);
       return null;
     }
+
     try {
       bitmap = BitmapFactory.decodeStream(is, null, opts);
     } catch (IllegalArgumentException e) {

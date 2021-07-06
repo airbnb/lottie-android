@@ -1,7 +1,7 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
-# 1.0.0-beta09-1
+# 1.0.0-rc01-1
 ## Breaking Changes
 `LottieAnimation` now takes a progress float instead of driving the animation internally.
 The driving of animations has been split into a new `LottieAnimatable` class and
@@ -18,6 +18,13 @@ refer to the docs for `LottieAnimation`, `LottieAnimatable`, `animateLottieCompo
 and `rememberLottieComposition` for more information.
 * Added the ability to clip the progress bounds of an animation.
 * Added the ability to set and control dynamic properties.
+* Removed the existing imageAssetDelegate parameter and moved imageAssetsFolder to rememberLottieComposition.
+  Images are now loaded from assets or decoded from the base64 string embedded in the json file during parsing
+  and on the IO thread pool rather than upon first render on the main thread during animations. If you want to
+  supply your own animations, call `composition.images["your_image_id"].bitmap = yourBitmap`. This lets you control
+  exactly how and when the bitmaps get created and set. The previous implementation of calling a callback on every
+  frame encouraged the incorrect behavior of doing IO tasks during the animation hot path. Check out ImagesExamplesPage.kt
+  for usage.
 
 # 1.0.0-beta07-1
 * Compatible with Jetpack Compose Beta 07

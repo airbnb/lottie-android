@@ -62,7 +62,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.airbnb.lottie.ImageAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
@@ -121,6 +120,15 @@ fun PlayerPage(
             message = failedMessage,
             actionLabel = okMessage,
         )
+    }
+
+    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
+    LaunchedEffect(compositionResult.value) {
+        val composition = compositionResult.value ?: return@LaunchedEffect
+        for (asset in composition.images.values) {
+            if (asset.bitmap != null) continue
+            asset.bitmap = asset.toDummyBitmap(dummyBitmapStrokeWidth)
+        }
     }
 
     Scaffold(
@@ -286,18 +294,9 @@ private fun PlayerPageLottieAnimation(
     progress: Float,
     modifier: Modifier = Modifier,
 ) {
-    val dummyBitmapStrokeWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val imageAssetDelegate = remember(composition) {
-        if (composition?.images?.any { (_, asset) -> asset.hasBitmap() } == true) {
-            null
-        } else {
-            ImageAssetDelegate { if (it.hasBitmap()) null else it.toDummyBitmap(dummyBitmapStrokeWidth) }
-        }
-    }
     LottieAnimation(
         composition,
         progress,
-        imageAssetDelegate = imageAssetDelegate,
         modifier = modifier,
     )
 }

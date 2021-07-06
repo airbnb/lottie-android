@@ -203,7 +203,12 @@ public class LottieComposition {
     return !images.isEmpty();
   }
 
-  @SuppressWarnings("WeakerAccess") public Map<String, LottieImageAsset> getImages() {
+  /**
+   * Returns a map of image asset id to {@link LottieImageAsset}. These assets contain image metadata exported
+   * from After Effects or other design tool. The resulting Bitmaps can be set directly on the image asset so
+   * they can be loaded once and reused across compositions.
+   */
+  public Map<String, LottieImageAsset> getImages() {
     return images;
   }
 

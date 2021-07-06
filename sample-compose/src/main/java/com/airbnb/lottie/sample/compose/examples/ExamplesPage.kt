@@ -56,7 +56,13 @@ fun ExamplesPage(navController: NavController) {
             text = { Text("Dynamic Properties") },
             secondaryText = { Text("Setting dynamic properties") },
             modifier = Modifier
-                .clickable { navController.navigate(Route.DynamicProperties) }
+                .clickable { navController.navigate(Route.DynamicPropertiesExamples) }
+        )
+        ListItem(
+            text = { Text("Images") },
+            secondaryText = { Text("Using animations with images") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.ImagesExamples) }
         )
     }
 }
