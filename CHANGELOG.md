@@ -1,3 +1,9 @@
+# 3.7.1
+### Bugs Fixed
+* Made TextDelegate.getText public ([#1792](https://github.com/airbnb/lottie-android/pull/1792))
+* Fixed an incorrect time stretch calculation ([#1818](https://github.com/airbnb/lottie-android/pull/1818))
+* Use the application context in NetworkFetcher to prevent memory leaks ([#1832](https://github.com/airbnb/lottie-android/pull/1832))
+
 # 3.7.0
 ### Features and Improvements
 * Added an API to ignore disabled system animations (setIgnoreDisabledSystemAnimations(boolean)) ([#1747](https://github.com/airbnb/lottie-android/pull/1747))
