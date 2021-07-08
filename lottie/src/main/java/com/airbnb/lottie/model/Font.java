@@ -9,7 +9,7 @@ public class Font {
 
   private final String family;
   private final String name;
-  private final String style;
+  private String style;
   private final float ascent;
 
   public Font(String family, String name, String style, float ascent) {
@@ -29,6 +29,10 @@ public class Font {
 
   public String getStyle() {
     return style;
+  }
+
+  public void setStyle(String style) {
+    this.style = style;
   }
 
   @SuppressWarnings("unused") float getAscent() {

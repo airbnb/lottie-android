@@ -160,6 +160,8 @@ public interface LottieProperty {
    * In Dp
    */
   Float TEXT_SIZE = 14f;
+  /** "Italic", "Bold", "Italic Bold" */
+  String TEXT_STYLE = null;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
 
