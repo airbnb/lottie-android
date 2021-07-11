@@ -47,7 +47,7 @@ public class TextLayer extends BaseLayer {
     setStyle(Style.STROKE);
   }};
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
-  private final LongSparseArray<String> codePointCache = new LongSparseArray<String>();
+  private final LongSparseArray<String> codePointCache = new LongSparseArray<>();
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
@@ -71,6 +71,8 @@ public class TextLayer extends BaseLayer {
   private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
   @Nullable
   private BaseKeyframeAnimation<Float, Float> textSizeCallbackAnimation;
+  @Nullable
+  private BaseKeyframeAnimation<Typeface, Typeface> typefaceCallbackAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -236,8 +238,7 @@ public class TextLayer extends BaseLayer {
 
   private void drawTextWithFont(
       DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
-    float parentScale = Utils.getScale(parentMatrix);
-    Typeface typeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
+    Typeface typeface = getTypeface(font);
     if (typeface == null) {
       return;
     }
@@ -296,6 +297,21 @@ public class TextLayer extends BaseLayer {
       // Reset canvas
       canvas.restore();
     }
+  }
+
+  @Nullable
+  private Typeface getTypeface(Font font) {
+    if (typefaceCallbackAnimation != null) {
+      Typeface callbackTypeface = typefaceCallbackAnimation.getValue();
+      if (callbackTypeface != null) {
+        return callbackTypeface;
+      }
+    }
+    Typeface drawableTypeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
+    if (drawableTypeface != null) {
+      return drawableTypeface;
+    }
+    return font.getTypeface();
   }
 
   private List<String> getTextLines(String text) {
@@ -516,6 +532,18 @@ public class TextLayer extends BaseLayer {
         textSizeCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
         textSizeCallbackAnimation.addUpdateListener(this);
         addAnimation(textSizeCallbackAnimation);
+      }
+    } else if (property == LottieProperty.TYPEFACE) {
+      if (typefaceCallbackAnimation != null) {
+        removeAnimation(typefaceCallbackAnimation);
+      }
+
+      if (callback == null) {
+        typefaceCallbackAnimation = null;
+      } else {
+        typefaceCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Typeface>) callback);
+        typefaceCallbackAnimation.addUpdateListener(this);
+        addAnimation(typefaceCallbackAnimation);
       }
     }
   }

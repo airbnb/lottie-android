@@ -28,6 +28,8 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
 
     object ImagesExamples : Route("image examples")
 
+    object TextExamples : Route("text examples")
+
     object DynamicPropertiesExamples : Route("dynamic properties examples")
 
     object Player : Route(
