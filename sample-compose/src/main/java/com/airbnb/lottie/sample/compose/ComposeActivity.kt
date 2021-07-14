@@ -30,6 +30,7 @@ import com.airbnb.lottie.sample.compose.examples.DynamicPropertiesExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ImagesExamplesPage
 import com.airbnb.lottie.sample.compose.examples.NetworkExamplesPage
+import com.airbnb.lottie.sample.compose.examples.TextExamplesPage
 import com.airbnb.lottie.sample.compose.examples.TransitionsExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ViewPagerExamplePage
 import com.airbnb.lottie.sample.compose.lottiefiles.LottieFilesPage
@@ -100,6 +101,7 @@ class ComposeActivity : AppCompatActivity() {
                         composable(Route.NetworkExamples.route) { NetworkExamplesPage() }
                         composable(Route.DynamicPropertiesExamples.route) { DynamicPropertiesExamplesPage() }
                         composable(Route.ImagesExamples.route) { ImagesExamplesPage() }
+                        composable(Route.TextExamples.route) { TextExamplesPage() }
                         composable(
                             Route.Player.fullRoute,
                             arguments = Route.Player.args

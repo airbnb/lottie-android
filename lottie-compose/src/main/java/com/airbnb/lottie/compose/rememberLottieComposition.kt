@@ -2,6 +2,7 @@ package com.airbnb.lottie.compose
 
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.graphics.Typeface
 import android.util.Base64
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,6 +14,7 @@ import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieImageAsset
 import com.airbnb.lottie.LottieTask
+import com.airbnb.lottie.model.Font
 import com.airbnb.lottie.utils.Logger
 import com.airbnb.lottie.utils.Utils
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +47,18 @@ import kotlin.coroutines.resumeWithException
  * @param imageAssetsFolder A subfolder in `src/main/assets` that contains the exported images
  *                          that this composition uses. DO NOT rename any images from your design tool. The
  *                          filenames must match the values that are in your json file.
+ * @param fontAssetsFolder The default folder Lottie will look in to find font files. Fonts will be matched
+ *                         based on the family name specified in the Lottie json file.
+ *                         Defaults to "fonts/" so if "Helvetica" was in the Json file, Lottie will auto-match
+ *                         fonts located at "src/main/assets/fonts/Helvetica.ttf". Missing fonts will be skipped
+ *                         and should be set via fontRemapping or via dynamic properties.
+ * @param fontFileExtension The default file extension for font files specified in the fontAssetsFolder or fontRemapping.
+ *                          Defaults to ttf.
+ * @param fontRemapping Remaps family names as specified in the Lottie json file to font files stored in the fontAssetsFolder.
+ *                      This will automatically add the fontFileExtension so you should not include the font file extension
+ *                      in your remapping.
+ * @param cacheComposition Whether or not to cache the composition. If set to true, the next time an composition with this
+ *                         spec is fetched, it will return the existing one instead of parsing it again.
  * @param onRetry An optional callback that will be called if loading the animation fails.
  *                It is passed the failed count (the number of times it has failed) and the exception
  *                from the previous attempt to load the composition. [onRetry] is a suspending function
@@ -55,6 +69,9 @@ import kotlin.coroutines.resumeWithException
 fun rememberLottieComposition(
     spec: LottieCompositionSpec,
     imageAssetsFolder: String? = null,
+    fontAssetsFolder: String = "fonts/",
+    fontFileExtension: String = ".ttf",
+    fontRemapping: Map<String, String> = emptyMap(),
     cacheComposition: Boolean = true,
     onRetry: suspend (failCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
@@ -69,6 +86,9 @@ fun rememberLottieComposition(
                     context,
                     spec,
                     imageAssetsFolder.ensureTrailingSlash(),
+                    fontAssetsFolder.ensureTrailingSlash(),
+                    fontFileExtension.ensureLeadingPeriod(),
+                    fontRemapping,
                     cacheComposition,
                 )
                 result.complete(composition)
@@ -88,6 +108,9 @@ private suspend fun lottieComposition(
     context: Context,
     spec: LottieCompositionSpec,
     imageAssetsFolder: String?,
+    fontAssetsFolder: String?,
+    fontFileExtension: String,
+    fontRemapping: Map<String, String>,
     cacheComposition: Boolean,
 ): LottieComposition {
     val task = when (spec) {
@@ -111,7 +134,10 @@ private suspend fun lottieComposition(
                 FileInputStream(spec.fileName)
             }
             when {
-                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(ZipInputStream(fis), spec.fileName.takeIf { cacheComposition })
+                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
+                    ZipInputStream(fis),
+                    spec.fileName.takeIf { cacheComposition },
+                )
                 else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheComposition })
             }
         }
@@ -129,6 +155,7 @@ private suspend fun lottieComposition(
 
     val composition = task.await()
     loadImagesFromAssets(context, composition, imageAssetsFolder)
+    loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension, fontRemapping)
     return composition
 }
 
@@ -198,8 +225,63 @@ private fun maybeDecodeBase64Image(asset: LottieImageAsset) {
     }
 }
 
+private suspend fun loadFontsFromAssets(
+    context: Context,
+    composition: LottieComposition,
+    fontAssetsFolder: String?,
+    fontFileExtension: String,
+    fontRemapping: Map<String, String>,
+) {
+    if (composition.fonts.isEmpty()) return
+    withContext(Dispatchers.IO) {
+        for (font in composition.fonts.values) {
+            maybeLoadTypefaceFromAssets(context, font, fontAssetsFolder, fontFileExtension, fontRemapping[font.family])
+        }
+    }
+}
+
+private fun maybeLoadTypefaceFromAssets(
+    context: Context,
+    font: Font,
+    fontAssetsFolder: String?,
+    fontFileExtension: String,
+    remappedFontPath: String?,
+) {
+    val path = remappedFontPath ?: "$fontAssetsFolder${font.family}${fontFileExtension}"
+    val typefaceWithDefaultStyle = try {
+        Typeface.createFromAsset(context.assets, path)
+    } catch (e: Exception) {
+        Logger.error("Failed to find typeface in assets with path $path.", e)
+        return
+    }
+    try {
+        val typefaceWithStyle = typefaceForStyle(typefaceWithDefaultStyle, font.style)
+        font.typeface = typefaceWithStyle
+    } catch (e: Exception) {
+        Logger.error("Failed to create ${font.family} typeface with style=${font.style}!", e)
+    }
+}
+
+private fun typefaceForStyle(typeface: Typeface, style: String): Typeface? {
+    val containsItalic = style.contains("Italic")
+    val containsBold = style.contains("Bold")
+    val styleInt = when {
+        containsItalic && containsBold -> Typeface.BOLD_ITALIC
+        containsItalic -> Typeface.ITALIC
+        containsBold -> Typeface.BOLD
+        else -> Typeface.NORMAL
+    }
+    return if (typeface.style == styleInt) typeface else Typeface.create(typeface, styleInt)
+}
+
 private fun String?.ensureTrailingSlash(): String? = when {
-    this == null -> null
+    isNullOrBlank() -> null
     endsWith('/') -> this
     else -> "$this/"
+}
+
+private fun String.ensureLeadingPeriod(): String = when {
+    isBlank() -> this
+    startsWith(".") -> this
+    else -> ".$this"
 }
