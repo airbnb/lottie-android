@@ -1,21 +1,26 @@
 package com.airbnb.lottie.compose
 
+import android.graphics.Matrix
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ScaleFactor
+import androidx.compose.ui.unit.IntSize
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
+import kotlin.math.roundToInt
 
 /**
  * This is the base LottieAnimation composable. It takes a composition and renders it at a specific progress.
@@ -47,6 +52,9 @@ import com.airbnb.lottie.LottieDrawable
  *                         doesn't render correctly, please file an issue.
  * @param dynamicProperties Allows you to change the properties of an animation dynamically. To use them, use
  *                          [rememberLottieDynamicProperties]. Refer to its docs for more info.
+ * @param alignment Define where the animation should be placed within this composable if it has a different
+ *                  size than this composable.
+ * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
  */
 @Composable
 fun LottieAnimation(
@@ -57,32 +65,41 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
     dynamicProperties: LottieDynamicProperties? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
 ) {
     val drawable = remember { LottieDrawable() }
+    val matrix = remember { Matrix() }
     var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
     Canvas(
         modifier = modifier
-            .maintainAspectRatio(composition)
+            .fillMaxSize()
     ) {
         drawIntoCanvas { canvas ->
-            withTransform({
-                scale(size.width / composition.bounds.width().toFloat(), size.height / composition.bounds.height().toFloat(), Offset.Zero)
-            }) {
-                drawable.composition = composition
-                if (dynamicProperties !== setDynamicProperties) {
-                    setDynamicProperties?.removeFrom(drawable)
-                    dynamicProperties?.addTo(drawable)
-                    setDynamicProperties = dynamicProperties
-                }
-                drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
-                drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
-                drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
-                drawable.progress = progress
-                drawable.draw(canvas.nativeCanvas)
+            val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
+            val intSize = IntSize(size.width.roundToInt(), size.height.roundToInt())
+
+            val scale = contentScale.computeScaleFactor(compositionSize, size)
+            val translation = alignment.align(compositionSize * scale, intSize, layoutDirection)
+            matrix.reset()
+            matrix.preTranslate(translation.x.toFloat(), translation.y.toFloat())
+            matrix.preScale(scale.scaleX, scale.scaleY)
+
+
+            drawable.composition = composition
+            if (dynamicProperties !== setDynamicProperties) {
+                setDynamicProperties?.removeFrom(drawable)
+                dynamicProperties?.addTo(drawable)
+                setDynamicProperties = dynamicProperties
             }
+            drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
+            drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
+            drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
+            drawable.progress = progress
+            drawable.draw(canvas.nativeCanvas, matrix)
         }
     }
 }
@@ -107,6 +124,8 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
     dynamicProperties: LottieDynamicProperties? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
 ) {
     val progress by animateLottieCompositionAsState(
         composition,
@@ -124,11 +143,11 @@ fun LottieAnimation(
         applyOpacityToLayers,
         enableMergePaths,
         dynamicProperties,
+        alignment,
+        contentScale,
     )
 }
 
-private fun Modifier.maintainAspectRatio(composition: LottieComposition?): Modifier {
-    composition ?: return this
-    // TODO: use ContentScale and a transform here
-    return this.then(aspectRatio(composition.bounds.width() / composition.bounds.height().toFloat()))
+private operator fun Size.times(scale: ScaleFactor): IntSize {
+    return IntSize((width * scale.scaleX).toInt(), (height * scale.scaleY).toInt())
 }
