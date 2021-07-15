@@ -70,5 +70,11 @@ fun ExamplesPage(navController: NavController) {
             modifier = Modifier
                 .clickable { navController.navigate(Route.TextExamples) }
         )
+        ListItem(
+            text = { Text("ContentScale and Alignment") },
+            secondaryText = { Text("Changing an animation's ContentScale and Alignment") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.ContentScaleExamples) }
+        )
     }
 }

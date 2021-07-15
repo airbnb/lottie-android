@@ -1200,6 +1200,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return Math.min(maxScaleX, maxScaleY);
   }
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public void draw(Canvas canvas, Matrix matrix) {
+    if (compositionLayer == null) {
+      return;
+    }
+    compositionLayer.draw(canvas, matrix, alpha);
+  }
+
   private void drawWithNewAspectRatio(Canvas canvas) {
     if (compositionLayer == null) {
       return;
