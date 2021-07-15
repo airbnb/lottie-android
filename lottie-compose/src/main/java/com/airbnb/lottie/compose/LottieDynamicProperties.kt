@@ -2,6 +2,7 @@ package com.airbnb.lottie.compose
 
 import android.graphics.ColorFilter
 import android.graphics.PointF
+import android.graphics.Typeface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -95,6 +96,7 @@ class LottieDynamicProperties internal constructor(
     private val scaleProperties: List<LottieDynamicProperty<ScaleXY>>,
     private val colorFilterProperties: List<LottieDynamicProperty<ColorFilter>>,
     private val intArrayProperties: List<LottieDynamicProperty<IntArray>>,
+    private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
 ) {
     @Suppress("UNCHECKED_CAST")
     constructor(properties: List<LottieDynamicProperty<*>>) : this(
@@ -104,6 +106,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is ScaleXY } as List<LottieDynamicProperty<ScaleXY>>,
         properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>,
         properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>,
+        properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
     )
 
     internal fun addTo(drawable: LottieDrawable) {
@@ -123,6 +126,9 @@ class LottieDynamicProperties internal constructor(
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         intArrayProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
+        }
+        typefaceProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
     }
@@ -145,6 +151,9 @@ class LottieDynamicProperties internal constructor(
         }
         intArrayProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<IntArray>?)
+        }
+        typefaceProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Typeface>?)
         }
     }
 }

@@ -64,5 +64,11 @@ fun ExamplesPage(navController: NavController) {
             modifier = Modifier
                 .clickable { navController.navigate(Route.ImagesExamples) }
         )
+        ListItem(
+            text = { Text("Text") },
+            secondaryText = { Text("Using animations with text") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.TextExamples) }
+        )
     }
 }

@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
+import android.graphics.Typeface;
 
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.ScaleXY;
@@ -164,4 +165,6 @@ public interface LottieProperty {
   ColorFilter COLOR_FILTER = new ColorFilter();
 
   Integer[] GRADIENT_COLOR = new Integer[0];
+
+  Typeface TYPEFACE = Typeface.DEFAULT;
 }
