@@ -11,13 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.airbnb.lottie.LottieImageAsset
+import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 import com.airbnb.lottie.sample.compose.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,8 +41,11 @@ fun ImagesExamplesPage() {
             ExampleCard("Assets Image", "Image stored in assets") {
                 ImageAssets()
             }
-            ExampleCard("Assets Image Callback", "Load an image manually") {
-                ImageAssetCallback()
+            ExampleCard("Dynamic Properties", "Replace an image with dynamic properties") {
+                DynamicProperties()
+            }
+            ExampleCard("Store on LottieImageAsset", "Store the bitmap within LottieImageAsset") {
+                StoredOnImageAsset()
             }
         }
     }
@@ -72,17 +80,40 @@ fun ImageAssets() {
 }
 
 @Composable
-fun ImageAssetCallback() {
+fun DynamicProperties() {
+    // Don't cache the composition so the bitmaps can get released once the animation is no longer being used.
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.we_accept),
+        cacheKey = null,
+    )
+    val bitmap = rememberBitmapFromAssets("Images/android.png")
+
+    val dynamicProperties = rememberLottieDynamicProperties(
+        rememberLottieDynamicProperty(LottieProperty.IMAGE, bitmap, "weaccept.jpg")
+    )
+
+    LottieAnimation(
+        composition,
+        iterations = LottieConstants.IterateForever,
+        dynamicProperties = dynamicProperties,
+    )
+}
+
+@Composable
+fun StoredOnImageAsset() {
     // Don't cache the composition so the bitmaps can get released once the animation is no longer being used.
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.we_accept),
         cacheKey = null,
     )
     val imageAsset by derivedStateOf { composition?.images?.get("image_0") }
-    val context = LocalContext.current
-    LaunchedEffect(imageAsset) {
-        withContext(Dispatchers.IO) {
-            imageAsset?.bitmap = loadBitmapFromAssets(context, imageAsset)
+    val bitmap = rememberBitmapFromAssets("Images/android.png")
+    LaunchedEffect(imageAsset, bitmap) {
+        if (imageAsset != null && bitmap != null) {
+            // this stores the bitmap on the original composition's image asset which means that it
+            // will affect *all* LottieAnimation composables that are rendering this LottieComposition.
+            // Use with caution.
+            imageAsset?.bitmap = bitmap
         }
     }
     LottieAnimation(
@@ -91,25 +122,27 @@ fun ImageAssetCallback() {
     )
 }
 
-private fun loadBitmapFromAssets(context: Context, asset: LottieImageAsset?): Bitmap? {
+@Composable
+private fun rememberBitmapFromAssets(asset: String): Bitmap? {
+    var bitmap: Bitmap? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    LaunchedEffect(asset) {
+        withContext(Dispatchers.IO) {
+            bitmap = loadBitmapFromAssets(context, asset)
+        }
+    }
+    return bitmap
+}
+
+private fun loadBitmapFromAssets(context: Context, asset: String?): Bitmap? {
     asset ?: return null
     return try {
-        val inputSteam = context.assets.open("Images/WeAccept/${asset.fileName}")
+        val inputSteam = context.assets.open(asset)
         val opts = BitmapFactory.Options()
         opts.inScaled = true
         opts.inDensity = 1606
-        val bitmap = BitmapFactory.decodeStream(inputSteam, null, opts)
-        bitmap?.resizeTo(asset.width, asset.height)
+        BitmapFactory.decodeStream(inputSteam, null, opts)
     } catch (e: Exception) {
         null
     }
-}
-
-private fun Bitmap.resizeTo(width: Int, height: Int): Bitmap? {
-    if (width == width && height == height) {
-        return this
-    }
-    val resizedBitmap = Bitmap.createScaledBitmap(this, width, height, true)
-    recycle()
-    return resizedBitmap
 }

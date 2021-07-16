@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.Typeface;
@@ -163,8 +165,17 @@ public interface LottieProperty {
   Float TEXT_SIZE = 14f;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
-
+  /**
+   * Array of ARGB colors that map to position stops in the original gradient.
+   * For example, a gradient from red to blue could be remapped with [0xFF00FF00, 0xFFFF00FF] (green to purple).
+   */
   Integer[] GRADIENT_COLOR = new Integer[0];
-
+  /**
+   * Set on text layers.
+   */
   Typeface TYPEFACE = Typeface.DEFAULT;
+  /**
+   * Set on image layers.
+   */
+  Bitmap IMAGE = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
 }
