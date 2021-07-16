@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * After Effects/Bodymovin composition model. This is the serialized model from which the
- * animation will be created.
+ * animation will be created. It is designed to be stateless, cacheable, and shareable.
  * <p>
  * To create one, use {@link LottieCompositionFactory}.
  * <p>
