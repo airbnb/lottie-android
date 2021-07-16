@@ -34,11 +34,8 @@ fun TextExamplesPage() {
             ExampleCard("Default", "Loading fonts using default asset paths") {
                 Example1()
             }
-            ExampleCard("Font Remapping", "Replace fonts using font remapping") {
-                Example2()
-            }
             ExampleCard("Dynamic Properties", "Replace fonts with custom typefaces") {
-                Example3()
+                Example2()
             }
         }
     }
@@ -60,21 +57,6 @@ private fun Example1() {
 
 @Composable
 private fun Example2() {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.name),
-        // Comic Neue is the font family set in the Lottie json file.
-        fontRemapping = mapOf("Comic Neue" to "fonts/Roboto.ttf"),
-        // Don't cache the composition because it has a custom font remapping.
-        cacheComposition = false,
-    )
-    LottieAnimation(
-        composition,
-        progress = 0f,
-    )
-}
-
-@Composable
-private fun Example3() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.name))
     val typeface = rememberTypeface("fonts/Roboto.ttf")
     val dynamicProperties = rememberLottieDynamicProperties(

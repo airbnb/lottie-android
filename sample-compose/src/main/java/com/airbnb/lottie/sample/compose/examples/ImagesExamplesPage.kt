@@ -19,7 +19,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
-import com.airbnb.lottie.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -49,7 +48,7 @@ fun InlineImage() {
     // Don't cache the composition so the bitmaps can get released once the animation is no longer being used.
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.we_accept_inline_image),
-        cacheComposition = false,
+        cacheKey = null,
     )
     LottieAnimation(
         composition,
@@ -62,7 +61,7 @@ fun ImageAssets() {
     // Don't cache the composition so the bitmaps can get released once the animation is no longer being used.
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.we_accept),
-        cacheComposition = false,
+        cacheKey = null,
         imageAssetsFolder = "Images/WeAccept",
     )
     LottieAnimation(
@@ -75,7 +74,10 @@ fun ImageAssets() {
 @Composable
 fun ImageAssetCallback() {
     // Don't cache the composition so the bitmaps can get released once the animation is no longer being used.
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.we_accept), cacheComposition = false)
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.we_accept),
+        cacheKey = null,
+    )
     val imageAsset by derivedStateOf { composition?.images?.get("image_0") }
     val context = LocalContext.current
     LaunchedEffect(imageAsset) {

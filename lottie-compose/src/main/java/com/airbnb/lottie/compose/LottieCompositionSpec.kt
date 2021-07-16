@@ -6,6 +6,7 @@ package com.airbnb.lottie.compose
  * passed into [rememberLottieComposition] or [LottieAnimation].
  */
 sealed class LottieCompositionSpec {
+
     /**
      * Load an animation from res/raw.
      */
@@ -39,5 +40,5 @@ sealed class LottieCompositionSpec {
     /**
      * Load an animation from its json string.
      */
-    data class JsonString(val jsonString: String, val cacheKey: String? = null) : LottieCompositionSpec()
+    data class JsonString(val jsonString: String) : LottieCompositionSpec()
 }
