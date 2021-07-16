@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.sample.compose.examples.AnimatableExamplesPage
 import com.airbnb.lottie.sample.compose.examples.BasicUsageExamplesPage
+import com.airbnb.lottie.sample.compose.examples.CachingExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ContentScaleExamplesPage
 import com.airbnb.lottie.sample.compose.examples.DynamicPropertiesExamplesPage
 import com.airbnb.lottie.sample.compose.examples.ExamplesPage
@@ -104,6 +105,7 @@ class ComposeActivity : AppCompatActivity() {
                         composable(Route.ImagesExamples.route) { ImagesExamplesPage() }
                         composable(Route.TextExamples.route) { TextExamplesPage() }
                         composable(Route.ContentScaleExamples.route) { ContentScaleExamplesPage() }
+                        composable(Route.CachingExamples.route) { CachingExamplesPage() }
                         composable(
                             Route.Player.fullRoute,
                             arguments = Route.Player.args
