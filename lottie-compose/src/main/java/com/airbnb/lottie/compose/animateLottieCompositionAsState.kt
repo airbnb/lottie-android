@@ -27,6 +27,10 @@ import com.airbnb.lottie.LottieComposition
  *              Numbers between 0 and 1 will slow it down. Numbers less than 0 will play it backwards.
  * @param iterations The number of times the animation should repeat before stopping. It must be
  *                    a positive number. [LottieConstants.IterateForever] can be used to repeat forever.
+ * @param cancellationBehavior The behavior that this animation should have when cancelled. In most cases,
+ *                             you will want it to cancel immediately. However, if you have a state based
+ *                             transition and you want an animation to finish playing before moving on to
+ *                             the next one then you may want to set this to [LottieCancellationBehavior.OnIterationFinish].
  */
 @Composable
 fun animateLottieCompositionAsState(
@@ -36,6 +40,7 @@ fun animateLottieCompositionAsState(
     clipSpec: LottieClipSpec? = null,
     speed: Float = 1f,
     iterations: Int = 1,
+    cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
 ): LottieAnimationState {
     require(iterations > 0) { "Iterations must be a positive number ($iterations)." }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
@@ -63,6 +68,7 @@ fun animateLottieCompositionAsState(
             clipSpec = clipSpec,
             initialProgress = animatable.progress,
             continueFromPreviousAnimate = false,
+            cancellationBehavior = cancellationBehavior,
         )
     }
 
