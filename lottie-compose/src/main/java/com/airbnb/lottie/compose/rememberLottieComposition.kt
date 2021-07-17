@@ -27,6 +27,12 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
+ * Use this with [rememberLottieComposition#cacheKey]'s cacheKey parameter to generate a default
+ * cache key for the composition.
+ */
+private const val DefaultCacheKey = "__LottieInternalDefaultCacheKey__"
+
+/**
  * Takes a [LottieCompositionSpec], attempts to load and parse the animation, and returns a [LottieCompositionResult].
  *
  * [LottieCompositionResult] allows you to explicitly check for loading, failures, call
@@ -54,11 +60,10 @@ import kotlin.coroutines.resumeWithException
  *                         and should be set via fontRemapping or via dynamic properties.
  * @param fontFileExtension The default file extension for font files specified in the fontAssetsFolder or fontRemapping.
  *                          Defaults to ttf.
- * @param fontRemapping Remaps family names as specified in the Lottie json file to font files stored in the fontAssetsFolder.
- *                      This will automatically add the fontFileExtension so you should not include the font file extension
- *                      in your remapping.
- * @param cacheComposition Whether or not to cache the composition. If set to true, the next time an composition with this
- *                         spec is fetched, it will return the existing one instead of parsing it again.
+ * @param cacheKey Set a cache key for this composition. When set, subsequent calls to fetch this composition will
+ *                 return directly from the cache instead of having to reload and parse the animation. Set this to
+ *                 null to skip the cache. By default, this will automatically generate a cache key derived
+ *                 from your [LottieCompositionSpec].
  * @param onRetry An optional callback that will be called if loading the animation fails.
  *                It is passed the failed count (the number of times it has failed) and the exception
  *                from the previous attempt to load the composition. [onRetry] is a suspending function
@@ -71,8 +76,7 @@ fun rememberLottieComposition(
     imageAssetsFolder: String? = null,
     fontAssetsFolder: String = "fonts/",
     fontFileExtension: String = ".ttf",
-    fontRemapping: Map<String, String> = emptyMap(),
-    cacheComposition: Boolean = true,
+    cacheKey: String? = DefaultCacheKey,
     onRetry: suspend (failCount: Int, previousException: Throwable) -> Boolean = { _, _ -> false },
 ): LottieCompositionResult {
     val context = LocalContext.current
@@ -88,8 +92,7 @@ fun rememberLottieComposition(
                     imageAssetsFolder.ensureTrailingSlash(),
                     fontAssetsFolder.ensureTrailingSlash(),
                     fontFileExtension.ensureLeadingPeriod(),
-                    fontRemapping,
-                    cacheComposition,
+                    cacheKey,
                 )
                 result.complete(composition)
             } catch (e: Throwable) {
@@ -110,22 +113,21 @@ private suspend fun lottieComposition(
     imageAssetsFolder: String?,
     fontAssetsFolder: String?,
     fontFileExtension: String,
-    fontRemapping: Map<String, String>,
-    cacheComposition: Boolean,
+    cacheKey: String?,
 ): LottieComposition {
     val task = when (spec) {
         is LottieCompositionSpec.RawRes -> {
-            if (cacheComposition) {
+            if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromRawRes(context, spec.resId)
             } else {
-                LottieCompositionFactory.fromRawRes(context, spec.resId, null)
+                LottieCompositionFactory.fromRawRes(context, spec.resId, cacheKey)
             }
         }
         is LottieCompositionSpec.Url -> {
-            if (cacheComposition) {
+            if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromUrl(context, spec.url)
             } else {
-                LottieCompositionFactory.fromUrl(context, spec.url, null)
+                LottieCompositionFactory.fromUrl(context, spec.url, cacheKey)
             }
         }
         is LottieCompositionSpec.File -> {
@@ -136,26 +138,27 @@ private suspend fun lottieComposition(
             when {
                 spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
                     ZipInputStream(fis),
-                    spec.fileName.takeIf { cacheComposition },
+                    spec.fileName.takeIf { cacheKey != null },
                 )
-                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheComposition })
+                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheKey != null })
             }
         }
         is LottieCompositionSpec.Asset -> {
-            if (cacheComposition) {
+            if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromAsset(context, spec.assetName)
             } else {
                 LottieCompositionFactory.fromAsset(context, spec.assetName, null)
             }
         }
         is LottieCompositionSpec.JsonString -> {
-            LottieCompositionFactory.fromJsonString(spec.jsonString, spec.cacheKey.takeIf { cacheComposition })
+            val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
+            LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
         }
     }
 
     val composition = task.await()
     loadImagesFromAssets(context, composition, imageAssetsFolder)
-    loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension, fontRemapping)
+    loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension)
     return composition
 }
 
@@ -230,12 +233,11 @@ private suspend fun loadFontsFromAssets(
     composition: LottieComposition,
     fontAssetsFolder: String?,
     fontFileExtension: String,
-    fontRemapping: Map<String, String>,
 ) {
     if (composition.fonts.isEmpty()) return
     withContext(Dispatchers.IO) {
         for (font in composition.fonts.values) {
-            maybeLoadTypefaceFromAssets(context, font, fontAssetsFolder, fontFileExtension, fontRemapping[font.family])
+            maybeLoadTypefaceFromAssets(context, font, fontAssetsFolder, fontFileExtension)
         }
     }
 }
@@ -245,9 +247,8 @@ private fun maybeLoadTypefaceFromAssets(
     font: Font,
     fontAssetsFolder: String?,
     fontFileExtension: String,
-    remappedFontPath: String?,
 ) {
-    val path = remappedFontPath ?: "$fontAssetsFolder${font.family}${fontFileExtension}"
+    val path = "$fontAssetsFolder${font.family}${fontFileExtension}"
     val typefaceWithDefaultStyle = try {
         Typeface.createFromAsset(context.assets, path)
     } catch (e: Exception) {

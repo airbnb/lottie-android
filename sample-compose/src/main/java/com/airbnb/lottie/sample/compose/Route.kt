@@ -34,6 +34,8 @@ sealed class Route(val route: String, val args: List<NamedNavArgument> = emptyLi
 
     object ContentScaleExamples : Route("ContentScale examples")
 
+    object CachingExamples : Route("Caching examples")
+
     object Player : Route(
         "player",
         listOf(

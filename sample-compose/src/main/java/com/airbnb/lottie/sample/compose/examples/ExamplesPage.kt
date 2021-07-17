@@ -76,5 +76,11 @@ fun ExamplesPage(navController: NavController) {
             modifier = Modifier
                 .clickable { navController.navigate(Route.ContentScaleExamples) }
         )
+        ListItem(
+            text = { Text("Caching") },
+            secondaryText = { Text("Interacting with Lottie's composition cache") },
+            modifier = Modifier
+                .clickable { navController.navigate(Route.CachingExamples) }
+        )
     }
 }

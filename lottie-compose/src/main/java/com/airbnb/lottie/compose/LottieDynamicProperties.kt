@@ -1,5 +1,6 @@
 package com.airbnb.lottie.compose
 
+import android.graphics.Bitmap
 import android.graphics.ColorFilter
 import android.graphics.PointF
 import android.graphics.Typeface
@@ -97,6 +98,7 @@ class LottieDynamicProperties internal constructor(
     private val colorFilterProperties: List<LottieDynamicProperty<ColorFilter>>,
     private val intArrayProperties: List<LottieDynamicProperty<IntArray>>,
     private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
+    private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
 ) {
     @Suppress("UNCHECKED_CAST")
     constructor(properties: List<LottieDynamicProperty<*>>) : this(
@@ -107,6 +109,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>,
         properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>,
         properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
+        properties.filter { it.property is Bitmap } as List<LottieDynamicProperty<Bitmap>>,
     )
 
     internal fun addTo(drawable: LottieDrawable) {
@@ -131,6 +134,10 @@ class LottieDynamicProperties internal constructor(
         typefaceProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
+        bitmapProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
+        }
+
     }
 
     internal fun removeFrom(drawable: LottieDrawable) {
@@ -154,6 +161,9 @@ class LottieDynamicProperties internal constructor(
         }
         typefaceProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Typeface>?)
+        }
+        bitmapProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Bitmap>?)
         }
     }
 }

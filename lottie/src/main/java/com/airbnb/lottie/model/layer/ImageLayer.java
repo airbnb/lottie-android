@@ -25,6 +25,7 @@ public class ImageLayer extends BaseLayer {
   private final Rect src = new Rect();
   private final Rect dst = new Rect();
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
+  @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
 
   ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -60,6 +61,11 @@ public class ImageLayer extends BaseLayer {
 
   @Nullable
   private Bitmap getBitmap() {
+    if (imageAnimation != null) {
+      Bitmap callbackBitmap = imageAnimation.getValue();
+      if (callbackBitmap != null)
+        return callbackBitmap;
+    }
     String refId = layerModel.getRefId();
     return lottieDrawable.getImageAsset(refId);
   }
@@ -75,6 +81,14 @@ public class ImageLayer extends BaseLayer {
         //noinspection unchecked
         colorFilterAnimation =
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
+      }
+    } else if (property == LottieProperty.IMAGE) {
+      if (callback == null) {
+        imageAnimation = null;
+      } else {
+        //noinspection unchecked
+        imageAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Bitmap>) callback);
       }
     }
   }

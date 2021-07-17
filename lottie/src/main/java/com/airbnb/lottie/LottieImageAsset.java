@@ -56,7 +56,12 @@ public class LottieImageAsset {
   }
 
   /**
-   * TODO
+   * Permanently sets the bitmap on this LottieImageAsset. This will:
+   * 1) Overwrite any existing Bitmaps.
+   * 2) Apply to *all* animations that use this LottieComposition.
+   *
+   * If you only want to replace the bitmap for this animation, use dynamic properties
+   * with {@link LottieProperty#IMAGE}.
    */
   public void setBitmap(@Nullable Bitmap bitmap) {
     this.bitmap = bitmap;
