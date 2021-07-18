@@ -1,8 +1,10 @@
 package com.airbnb.lottie.compose
 
+import androidx.compose.animation.core.AnimationConstants
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.withContext
@@ -296,6 +298,23 @@ class LottieAnimatableImplTest {
         job.cancel()
         assertFrame(300, progress = 0.5f, iterations = 3)
         assertFrame(599, progress = 1f, isAtEnd = false, isPlaying = false, iterations = 3)
+    }
+
+    @Test
+    fun testCompositionCreated() = runTest {
+        val clipSpec = LottieClipSpec.Frame(20, 25)
+        val job1 = launch {
+            anim.animate(null, clipSpec = clipSpec)
+        }
+        assertFrame(0, progress = 0f, clipSpec = clipSpec, isAtEnd = true, isPlaying = false, lastFrameNanos = AnimationConstants.UnspecifiedTime)
+
+        job1.cancelAndJoin()
+        val job2 = launch {
+            anim.animate(composition, clipSpec = clipSpec, initialProgress = anim.progress)
+        }
+
+        assertFrame(0, progress = 0.556f, clipSpec = clipSpec)
+        job2.cancelAndJoin()
     }
 
     private suspend fun assertFrame(

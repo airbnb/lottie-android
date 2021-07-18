@@ -261,7 +261,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             else -> progress + dProgress - maxProgress
         }
         if (progressPastEndOfIteration < 0f) {
-            progress += dProgress
+            progress = progress.coerceIn(minProgress, maxProgress) + dProgress
         } else {
             val durationProgress = maxProgress - minProgress
             val dIterations = (progressPastEndOfIteration / durationProgress).toInt() + 1
