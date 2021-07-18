@@ -1,4 +1,7 @@
 # 3.7.1
+* Support for lottie-compose 1.0.0-rc02-1
+
+# 3.7.1
 ### Bugs Fixed
 * Made TextDelegate.getText public ([#1792](https://github.com/airbnb/lottie-android/pull/1792))
 * Fixed an incorrect time stretch calculation ([#1818](https://github.com/airbnb/lottie-android/pull/1818))
