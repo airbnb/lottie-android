@@ -17,6 +17,7 @@ fun Loader(
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
     LottieAnimation(
         composition,
+        iterations = LottieConstants.IterateForever,
         modifier = modifier
             .size(100.dp)
     )
