@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
 
@@ -17,6 +18,7 @@ fun Loader(
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
     LottieAnimation(
         composition,
+        iterations = LottieConstants.IterateForever,
         modifier = modifier
             .size(100.dp)
     )
