@@ -1,6 +1,10 @@
 #### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
 version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
 
+# 4.0.0
+* Upgrade to Compose 1.0
+* Made LottieCompositionSpec an inline class([#1855](https://github.com/airbnb/lottie-android/pull/1855))
+
 # 1.0.0-rc02-1
 * Upgrade to Compose rc02
 * Add support for ContentScale and Alignment just like the Image composable ([#1844](https://github.com/airbnb/lottie-android/pull/1844))

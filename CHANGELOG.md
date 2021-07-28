@@ -1,3 +1,6 @@
+# 4.0.0
+* Support for lottie-compose 4.0.0
+
 # 3.7.1
 * Support for lottie-compose 1.0.0-rc02-1
 
