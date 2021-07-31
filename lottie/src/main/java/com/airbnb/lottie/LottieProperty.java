@@ -93,6 +93,10 @@ public interface LottieProperty {
   /**
    * In Px
    */
+  Float BLUR_RADIUS = 17f;
+  /**
+   * In Px
+   */
   PointF ELLIPSE_SIZE = new PointF();
   /**
    * In Px

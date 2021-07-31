@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.DashPathEffect;
@@ -47,11 +48,14 @@ public abstract class BaseStrokeContent
   private final float[] dashPatternValues;
   final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
 
+
   private final BaseKeyframeAnimation<?, Float> widthAnimation;
   private final BaseKeyframeAnimation<?, Integer> opacityAnimation;
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
   @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
+  @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
+  float blurMaskFilterRadius = 0f;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
@@ -96,6 +100,14 @@ public abstract class BaseStrokeContent
     }
     if (dashPatternOffsetAnimation != null) {
       dashPatternOffsetAnimation.addUpdateListener(this);
+    }
+
+    if (layer.getBlurEffect() == null) {
+      blurAnimation = null;
+    } else {
+      blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
+      blurAnimation.addUpdateListener(this);
+      layer.addAnimation(blurAnimation);
     }
   }
 
@@ -156,6 +168,17 @@ public abstract class BaseStrokeContent
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
+    }
+
+    if (blurAnimation != null) {
+      float blurRadius = blurAnimation.getValue();
+      if (blurRadius == 0f) {
+        paint.setMaskFilter(null);
+      } else if (blurRadius != blurMaskFilterRadius){
+        BlurMaskFilter blur = layer.getBlurMaskFilter(blurRadius);
+        paint.setMaskFilter(blur);
+      }
+      blurMaskFilterRadius = blurRadius;
     }
 
     for (int i = 0; i < pathGroups.size(); i++) {
@@ -326,6 +349,19 @@ public abstract class BaseStrokeContent
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
         colorFilterAnimation.addUpdateListener(this);
         layer.addAnimation(colorFilterAnimation);
+      }
+    } else if (property == LottieProperty.BLUR_RADIUS) {
+      if (blurAnimation != null) {
+        layer.removeAnimation(blurAnimation);
+      }
+
+      if (callback == null) {
+        blurAnimation = null;
+      } else {
+        blurAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        blurAnimation.addUpdateListener(this);
+        layer.addAnimation(blurAnimation);
       }
     }
   }

@@ -61,11 +61,21 @@ private fun HeartColor() {
     }
     var colorIndex by remember { mutableStateOf(0) }
     val color by derivedStateOf { colors[colorIndex] }
+    val blurRadius = with(LocalDensity.current) { 12.dp.toPx() }
 
     val dynamicProperties = rememberLottieDynamicProperties(
         rememberLottieDynamicProperty(
             property = LottieProperty.COLOR,
             value = color.toArgb(),
+            keyPath = arrayOf(
+                "H2",
+                "Shape 1",
+                "Fill 1",
+            )
+        ),
+        rememberLottieDynamicProperty(
+            property = LottieProperty.BLUR_RADIUS,
+            value = blurRadius,
             keyPath = arrayOf(
                 "H2",
                 "Shape 1",

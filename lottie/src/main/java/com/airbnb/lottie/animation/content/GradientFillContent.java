@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.LinearGradient;
@@ -22,6 +23,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.GradientColor;
@@ -58,6 +60,8 @@ public class GradientFillContent
   @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
+  @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
+  float blurMaskFilterRadius = 0f;
 
   public GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     this.layer = layer;
@@ -83,6 +87,14 @@ public class GradientFillContent
     endPointAnimation = fill.getEndPoint().createAnimation();
     endPointAnimation.addUpdateListener(this);
     layer.addAnimation(endPointAnimation);
+
+    if (layer.getBlurEffect() == null) {
+      blurAnimation = null;
+    } else {
+      blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
+      blurAnimation.addUpdateListener(this);
+      layer.addAnimation(blurAnimation);
+    }
   }
 
   @Override public void onValueChanged() {
@@ -121,6 +133,17 @@ public class GradientFillContent
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
+    }
+
+    if (blurAnimation != null) {
+      float blurRadius = blurAnimation.getValue();
+      if (blurRadius == 0f) {
+        paint.setMaskFilter(null);
+      } else if (blurRadius != blurMaskFilterRadius){
+        BlurMaskFilter blur = new BlurMaskFilter(blurRadius, BlurMaskFilter.Blur.NORMAL);
+        paint.setMaskFilter(blur);
+      }
+      blurMaskFilterRadius = blurRadius;
     }
 
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
@@ -262,6 +285,19 @@ public class GradientFillContent
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
         colorCallbackAnimation.addUpdateListener(this);
         layer.addAnimation(colorCallbackAnimation);
+      }
+    } else if (property == LottieProperty.BLUR_RADIUS) {
+      if (blurAnimation != null) {
+        layer.removeAnimation(blurAnimation);
+      }
+
+      if (callback == null) {
+        blurAnimation = null;
+      } else {
+        blurAnimation =
+            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
+        blurAnimation.addUpdateListener(this);
+        layer.addAnimation(blurAnimation);
       }
     }
   }

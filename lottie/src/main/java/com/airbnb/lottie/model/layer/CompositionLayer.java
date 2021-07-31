@@ -53,7 +53,7 @@ public class CompositionLayer extends BaseLayer {
     BaseLayer mattedLayer = null;
     for (int i = layerModels.size() - 1; i >= 0; i--) {
       Layer lm = layerModels.get(i);
-      BaseLayer layer = BaseLayer.forModel(lm, lottieDrawable, composition);
+      BaseLayer layer = BaseLayer.forModel(this, lm, lottieDrawable, composition);
       if (layer == null) {
         continue;
       }
