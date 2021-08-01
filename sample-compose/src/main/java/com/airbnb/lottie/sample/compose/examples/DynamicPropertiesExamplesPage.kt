@@ -35,14 +35,14 @@ fun DynamicPropertiesExamplesPage() {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            ExampleCard("Heart Color", "Click to change color") {
+            ExampleCard("Heart Color + Blur", "Click to change color") {
                 HeartColor()
-            }
-            ExampleCard("Jump Height", "Click to jump height") {
-                JumpHeight()
             }
             ExampleCard("Change Properties", "Click to toggle whether the dynamic property is used") {
                 ToggleProperty()
+            }
+            ExampleCard("Jump Height", "Click to jump height") {
+                JumpHeight()
             }
         }
     }
@@ -77,9 +77,8 @@ private fun HeartColor() {
             property = LottieProperty.BLUR_RADIUS,
             value = blurRadius,
             keyPath = arrayOf(
-                "H2",
-                "Shape 1",
-                "Fill 1",
+                "**",
+                "Stroke 1",
             )
         ),
     )

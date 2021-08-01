@@ -288,11 +288,7 @@ public class GradientFillContent
       }
     } else if (property == LottieProperty.BLUR_RADIUS) {
       if (blurAnimation != null) {
-        layer.removeAnimation(blurAnimation);
-      }
-
-      if (callback == null) {
-        blurAnimation = null;
+        blurAnimation.setValueCallback((LottieValueCallback<Float>) callback);
       } else {
         blurAnimation =
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
