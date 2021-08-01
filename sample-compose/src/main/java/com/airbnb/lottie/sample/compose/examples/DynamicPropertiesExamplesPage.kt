@@ -35,14 +35,14 @@ fun DynamicPropertiesExamplesPage() {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            ExampleCard("Heart Color", "Click to change color") {
+            ExampleCard("Heart Color + Blur", "Click to change color") {
                 HeartColor()
-            }
-            ExampleCard("Jump Height", "Click to jump height") {
-                JumpHeight()
             }
             ExampleCard("Change Properties", "Click to toggle whether the dynamic property is used") {
                 ToggleProperty()
+            }
+            ExampleCard("Jump Height", "Click to jump height") {
+                JumpHeight()
             }
         }
     }
@@ -61,6 +61,7 @@ private fun HeartColor() {
     }
     var colorIndex by remember { mutableStateOf(0) }
     val color by derivedStateOf { colors[colorIndex] }
+    val blurRadius = with(LocalDensity.current) { 12.dp.toPx() }
 
     val dynamicProperties = rememberLottieDynamicProperties(
         rememberLottieDynamicProperty(
@@ -70,6 +71,14 @@ private fun HeartColor() {
                 "H2",
                 "Shape 1",
                 "Fill 1",
+            )
+        ),
+        rememberLottieDynamicProperty(
+            property = LottieProperty.BLUR_RADIUS,
+            value = blurRadius,
+            keyPath = arrayOf(
+                "**",
+                "Stroke 1",
             )
         ),
     )

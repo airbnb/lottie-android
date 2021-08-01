@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -9,6 +10,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
@@ -26,6 +28,7 @@ import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
+import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.Logger;
@@ -49,10 +52,10 @@ public abstract class BaseLayer
 
   @Nullable
   static BaseLayer forModel(
-      Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
+      CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case SHAPE:
-        return new ShapeLayer(drawable, layerModel);
+        return new ShapeLayer(drawable, layerModel, compositionLayer);
       case PRE_COMP:
         return new CompositionLayer(drawable, layerModel,
             composition.getPrecomps(layerModel.getRefId()), composition);
@@ -107,6 +110,9 @@ public abstract class BaseLayer
 
   private boolean outlineMasksAndMattes;
   @Nullable private Paint outlineMasksAndMattesPaint;
+
+  float blurMaskFilterRadius = 0f;
+  @Nullable BlurMaskFilter blurMaskFilter;
 
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
@@ -584,6 +590,20 @@ public abstract class BaseLayer
   @Override
   public String getName() {
     return layerModel.getName();
+  }
+
+  @Nullable
+  public BlurEffect getBlurEffect() {
+    return layerModel.getBlurEffect();
+  }
+
+  public BlurMaskFilter getBlurMaskFilter(float radius) {
+    if (blurMaskFilterRadius == radius) {
+      return blurMaskFilter;
+    }
+    blurMaskFilter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
+    blurMaskFilterRadius = radius;
+    return blurMaskFilter;
   }
 
   @Override

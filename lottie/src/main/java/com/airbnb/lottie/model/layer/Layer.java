@@ -7,6 +7,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
+import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.value.Keyframe;
@@ -57,6 +58,7 @@ public class Layer {
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
   private final boolean hidden;
+  @Nullable private final BlurEffect blurEffect;
 
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
@@ -64,7 +66,7 @@ public class Layer {
       float timeStretch, float startFrame, int preCompWidth, int preCompHeight,
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
       List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
-      @Nullable AnimatableFloatValue timeRemapping, boolean hidden) {
+      @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -87,6 +89,7 @@ public class Layer {
     this.matteType = matteType;
     this.timeRemapping = timeRemapping;
     this.hidden = hidden;
+    this.blurEffect = blurEffect;
   }
 
   LottieComposition getComposition() {
@@ -179,6 +182,10 @@ public class Layer {
 
   public boolean isHidden() {
     return hidden;
+  }
+
+  @Nullable public BlurEffect getBlurEffect() {
+    return blurEffect;
   }
 
   public String toString(String prefix) {

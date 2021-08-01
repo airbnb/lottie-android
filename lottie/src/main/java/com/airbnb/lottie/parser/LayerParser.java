@@ -8,6 +8,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
+import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.layer.Layer;
@@ -58,7 +59,7 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false);
+        Layer.MatteType.NONE, null, false, null);
   }
 
   private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
@@ -66,7 +67,10 @@ public class LayerParser {
       "a"
   );
 
-  private static final JsonReader.Options EFFECTS_NAMES = JsonReader.Options.of("nm");
+  private static final JsonReader.Options EFFECTS_NAMES = JsonReader.Options.of(
+      "ty",
+      "nm"
+  );
 
   public static Layer parse(JsonReader reader, LottieComposition composition) throws IOException {
     // This should always be set by After Effects. However, if somebody wants to minify
@@ -87,6 +91,7 @@ public class LayerParser {
     float outFrame = 0f;
     String cl = null;
     boolean hidden = false;
+    BlurEffect blurEffect = null;
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
     AnimatableTransform transform = null;
@@ -199,7 +204,14 @@ public class LayerParser {
             while (reader.hasNext()) {
               switch (reader.selectName(EFFECTS_NAMES)) {
                 case 0:
-                  effectNames.add(reader.nextString());
+                  int type = reader.nextInt();
+                  if (type == 29) {
+                    blurEffect = BlurEffectParser.parse(reader, composition);
+                  }
+                  break;
+                case 1:
+                  String effectName = reader.nextString();
+                  effectNames.add(effectName);
                   break;
                 default:
                   reader.skipName();
@@ -272,6 +284,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden);
+        timeRemapping, hidden, blurEffect);
   }
 }
