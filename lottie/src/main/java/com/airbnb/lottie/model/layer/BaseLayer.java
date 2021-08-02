@@ -601,7 +601,7 @@ public abstract class BaseLayer
     if (blurMaskFilterRadius == radius) {
       return blurMaskFilter;
     }
-    blurMaskFilter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
+    blurMaskFilter = new BlurMaskFilter(radius / 2f, BlurMaskFilter.Blur.NORMAL);
     blurMaskFilterRadius = radius;
     return blurMaskFilter;
   }
