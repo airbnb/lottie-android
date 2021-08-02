@@ -10,6 +10,7 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
+import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.util.List;
@@ -59,6 +60,7 @@ public class Layer {
   private final MatteType matteType;
   private final boolean hidden;
   @Nullable private final BlurEffect blurEffect;
+  @Nullable private final DropShadowEffect dropShadowEffect;
 
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
@@ -66,7 +68,8 @@ public class Layer {
       float timeStretch, float startFrame, int preCompWidth, int preCompHeight,
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
       List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
-      @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect) {
+      @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
+      @Nullable DropShadowEffect dropShadowEffect) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -90,6 +93,7 @@ public class Layer {
     this.timeRemapping = timeRemapping;
     this.hidden = hidden;
     this.blurEffect = blurEffect;
+    this.dropShadowEffect = dropShadowEffect;
   }
 
   LottieComposition getComposition() {
@@ -186,6 +190,10 @@ public class Layer {
 
   @Nullable public BlurEffect getBlurEffect() {
     return blurEffect;
+  }
+
+  @Nullable public DropShadowEffect getDropShadowEffect() {
+    return dropShadowEffect;
   }
 
   public String toString(String prefix) {

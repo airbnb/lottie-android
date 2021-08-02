@@ -23,6 +23,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -62,6 +63,7 @@ public class GradientFillContent
   private final int cacheSteps;
   @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
+  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   public GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
     this.layer = layer;
@@ -88,12 +90,13 @@ public class GradientFillContent
     endPointAnimation.addUpdateListener(this);
     layer.addAnimation(endPointAnimation);
 
-    if (layer.getBlurEffect() == null) {
-      blurAnimation = null;
-    } else {
+    if (layer.getBlurEffect() != null) {
       blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
       blurAnimation.addUpdateListener(this);
       layer.addAnimation(blurAnimation);
+    }
+    if (layer.getDropShadowEffect() != null) {
+      dropShadowAnimation = new DropShadowKeyframeAnimation(this, layer, layer.getDropShadowEffect());
     }
   }
 
@@ -144,6 +147,9 @@ public class GradientFillContent
         paint.setMaskFilter(blur);
       }
       blurMaskFilterRadius = blurRadius;
+    }
+    if (dropShadowAnimation != null) {
+      dropShadowAnimation.applyTo(paint);
     }
 
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
@@ -295,6 +301,16 @@ public class GradientFillContent
         blurAnimation.addUpdateListener(this);
         layer.addAnimation(blurAnimation);
       }
+    } else if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
+      dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
+      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
+      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
+      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
+      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

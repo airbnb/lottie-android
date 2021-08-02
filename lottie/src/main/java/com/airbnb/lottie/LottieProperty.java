@@ -74,6 +74,7 @@ public interface LottieProperty {
    * [0,100]
    */
   Integer OPACITY = 4;
+  Integer DROP_SHADOW_COLOR = 5;
   /**
    * In Px
    */
@@ -167,6 +168,22 @@ public interface LottieProperty {
    * In Dp
    */
   Float TEXT_SIZE = 14f;
+  /**
+   * [0,100]
+   */
+  Float DROP_SHADOW_OPACITY = 15f;
+  /**
+   * Degrees from 12 o'clock.
+   */
+  Float DROP_SHADOW_DIRECTION = 16f;
+  /**
+   * In Px
+   */
+  Float DROP_SHADOW_DISTANCE = 17f;
+  /**
+   * In Px
+   */
+  Float DROP_SHADOW_RADIUS = 18f;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
   /**

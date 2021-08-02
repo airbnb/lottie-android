@@ -13,6 +13,7 @@ import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ShapeGroup;
+import com.airbnb.lottie.parser.DropShadowEffect;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,14 @@ public class ShapeLayer extends BaseLayer {
       return layerBlur;
     }
     return compositionLayer.getBlurEffect();
+  }
+
+  @Nullable @Override public DropShadowEffect getDropShadowEffect() {
+    DropShadowEffect layerDropShadow = super.getDropShadowEffect();
+    if (layerDropShadow != null) {
+      return layerDropShadow;
+    }
+    return compositionLayer.getDropShadowEffect();
   }
 
   @Override

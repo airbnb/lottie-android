@@ -714,6 +714,27 @@ class LottieTest {
                 LottieInterpolatedIntegerValue(10, 100),
                 1f)
 
+        testDynamicProperty(
+            "Drop Shadow Color",
+            KeyPath("Shape Layer 1", "**"),
+            LottieProperty.DROP_SHADOW_COLOR,
+            LottieValueCallback(Color.RED),
+            assetName = "Tests/AnimatedShadow.json")
+
+        testDynamicProperty(
+            "Drop Shadow Distance",
+            KeyPath("Shape Layer 1", "**"),
+            LottieProperty.DROP_SHADOW_DISTANCE,
+            LottieValueCallback(30f),
+            assetName = "Tests/AnimatedShadow.json")
+
+        testDynamicProperty(
+            "Drop Shadow Distance",
+            KeyPath("Shape Layer 1", "**"),
+            LottieProperty.DROP_SHADOW_DIRECTION,
+            LottieValueCallback(30f),
+            assetName = "Tests/AnimatedShadow.json")
+
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
                 override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {

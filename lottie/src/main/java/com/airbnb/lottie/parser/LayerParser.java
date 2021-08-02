@@ -59,7 +59,7 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false, null);
+        Layer.MatteType.NONE, null, false, null, null);
   }
 
   private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
@@ -92,6 +92,7 @@ public class LayerParser {
     String cl = null;
     boolean hidden = false;
     BlurEffect blurEffect = null;
+    DropShadowEffect dropShadowEffect = null;
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
     AnimatableTransform transform = null;
@@ -207,6 +208,8 @@ public class LayerParser {
                   int type = reader.nextInt();
                   if (type == 29) {
                     blurEffect = BlurEffectParser.parse(reader, composition);
+                  } else if (type == 25) {
+                    dropShadowEffect = new DropShadowEffectParser().parse(reader, composition);
                   }
                   break;
                 case 1:
@@ -284,6 +287,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden, blurEffect);
+        timeRemapping, hidden, blurEffect, dropShadowEffect);
   }
 }
