@@ -729,10 +729,24 @@ class LottieTest {
             assetName = "Tests/AnimatedShadow.json")
 
         testDynamicProperty(
-            "Drop Shadow Distance",
+            "Drop Shadow Direction",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_DIRECTION,
             LottieValueCallback(30f),
+            assetName = "Tests/AnimatedShadow.json")
+
+        testDynamicProperty(
+            "Drop Shadow Radius",
+            KeyPath("Shape Layer 1", "**"),
+            LottieProperty.DROP_SHADOW_RADIUS,
+            LottieValueCallback(40f),
+            assetName = "Tests/AnimatedShadow.json")
+
+        testDynamicProperty(
+            "Drop Shadow Opacity",
+            KeyPath("Shape Layer 1", "**"),
+            LottieProperty.DROP_SHADOW_OPACITY,
+            LottieValueCallback(0.2f),
             assetName = "Tests/AnimatedShadow.json")
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
