@@ -28,7 +28,7 @@ public class CompositionLayer extends BaseLayer {
   private final List<BaseLayer> layers = new ArrayList<>();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
-  private Paint layerPaint = new Paint();
+  private final Paint layerPaint = new Paint();
 
   @Nullable private Boolean hasMatte;
   @Nullable private Boolean hasMasks;

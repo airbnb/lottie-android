@@ -74,6 +74,7 @@ public interface LottieProperty {
    * [0,100]
    */
   Integer OPACITY = 4;
+  Integer DROP_SHADOW_COLOR = 5;
   /**
    * In Px
    */
@@ -167,6 +168,38 @@ public interface LottieProperty {
    * In Dp
    */
   Float TEXT_SIZE = 14f;
+  /**
+   * [0,100]
+   * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
+   * If a drop shadow is applied to a layer, the dynamic properties must be set on all
+   * of its child elements that draw. The easiest way to do this is to append "**" to your
+   * Keypath after the layer name.
+   */
+  Float DROP_SHADOW_OPACITY = 15f;
+  /**
+   * Degrees from 12 o'clock.
+   * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
+   * If a drop shadow is applied to a layer, the dynamic properties must be set on all
+   * of its child elements that draw. The easiest way to do this is to append "**" to your
+   * Keypath after the layer name.
+   */
+  Float DROP_SHADOW_DIRECTION = 16f;
+  /**
+   * In Px
+   * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
+   * If a drop shadow is applied to a layer, the dynamic properties must be set on all
+   * of its child elements that draw. The easiest way to do this is to append "**" to your
+   * Keypath after the layer name.
+   */
+  Float DROP_SHADOW_DISTANCE = 17f;
+  /**
+   * In Px
+   * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
+   * If a drop shadow is applied to a layer, the dynamic properties must be set on all
+   * of its child elements that draw. The easiest way to do this is to append "**" to your
+   * Keypath after the layer name.
+   */
+  Float DROP_SHADOW_RADIUS = 18f;
 
   ColorFilter COLOR_FILTER = new ColorFilter();
   /**

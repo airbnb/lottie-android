@@ -20,6 +20,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.IntegerKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
@@ -56,6 +57,8 @@ public abstract class BaseStrokeContent
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
+
+  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
@@ -102,12 +105,13 @@ public abstract class BaseStrokeContent
       dashPatternOffsetAnimation.addUpdateListener(this);
     }
 
-    if (layer.getBlurEffect() == null) {
-      blurAnimation = null;
-    } else {
+    if (layer.getBlurEffect() != null) {
       blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
       blurAnimation.addUpdateListener(this);
       layer.addAnimation(blurAnimation);
+    }
+    if (layer.getDropShadowEffect() != null) {
+      dropShadowAnimation = new DropShadowKeyframeAnimation(this, layer, layer.getDropShadowEffect());
     }
   }
 
@@ -179,6 +183,9 @@ public abstract class BaseStrokeContent
         paint.setMaskFilter(blur);
       }
       blurMaskFilterRadius = blurRadius;
+    }
+    if (dropShadowAnimation != null) {
+      dropShadowAnimation.applyTo(paint);
     }
 
     for (int i = 0; i < pathGroups.size(); i++) {
@@ -359,6 +366,16 @@ public abstract class BaseStrokeContent
         blurAnimation.addUpdateListener(this);
         layer.addAnimation(blurAnimation);
       }
+    } else if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
+      dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
+      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
+      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
+      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
+      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
   }
 

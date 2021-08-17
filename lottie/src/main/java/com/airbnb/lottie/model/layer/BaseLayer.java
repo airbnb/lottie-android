@@ -31,6 +31,7 @@ import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
+import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -604,6 +605,11 @@ public abstract class BaseLayer
     blurMaskFilter = new BlurMaskFilter(radius / 2f, BlurMaskFilter.Blur.NORMAL);
     blurMaskFilterRadius = radius;
     return blurMaskFilter;
+  }
+
+  @Nullable
+  public DropShadowEffect getDropShadowEffect() {
+    return layerModel.getDropShadowEffect();
   }
 
   @Override
