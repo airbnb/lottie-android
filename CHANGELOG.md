@@ -1,3 +1,10 @@
+# 4.1.0
+* Added support for gaussian blur effects ([#1859](https://github.com/airbnb/lottie-android/pull/1859))
+* Added support for drop shadow effects ([#1860](https://github.com/airbnb/lottie-android/pull/1860))
+
+BREAKING CHANGES
+Before this release, drop shadows and blurs were completely ignored. They will now be rendered. In most cases, they will now be rendered correctly. However, you should read the implementation details [here](https://airbnb.io/lottie/#/supported-features?id=drop-shadows-and-gaussian-blurs-on-android) if they are not.
+
 # 4.0.0
 * Support for lottie-compose 4.0.0
 
