@@ -2,25 +2,22 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   ext {
-    composeVersion = '1.0.0'
-    kotlinVersion = '1.5.10'
-    daggerVersion = '2.37'
+    composeVersion = '1.0.1'
+    kotlinVersion = '1.5.21'
+    daggerVersion = '2.38.1'
   }
 
   repositories {
     google()
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+    gradlePluginPortal()
   }
   dependencies {
-    classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath 'com.android.tools.build:gradle:7.0.0'
+    classpath 'org.ajoberstar:grgit:2.3.0'
+    classpath 'com.android.tools.build:gradle:7.0.1'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath 'org.ajoberstar:grgit:1.9.3'
-    classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.1"
+    classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.2"
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
-    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.32'
+    classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.0'
   }
 }
 
@@ -33,12 +30,6 @@ allprojects {
     }
     maven {
       url "https://kotlin.bintray.com/kotlinx"
-    }
-    maven {
-      url "https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/"
-    }
-    maven {
-      url "https://oss.sonatype.org/content/repositories/snapshots/"
     }
   }
 }
