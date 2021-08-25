@@ -1,8 +1,10 @@
 import net.ltgt.gradle.errorprone.CheckSeverity
 
-apply plugin: 'com.android.library'
-apply plugin: 'net.ltgt.errorprone'
-apply plugin: 'com.vanniktech.maven.publish'
+plugins {
+  id 'com.android.library'
+  id 'net.ltgt.errorprone'
+  id 'com.vanniktech.maven.publish'
+}
 
 apply from: "$rootDir/gradle/base.gradle"
 

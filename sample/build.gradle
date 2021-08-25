@@ -1,6 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-parcelize'
+plugins {
+  id 'com.android.application'
+  id 'kotlin-kapt'
+  id 'kotlin-parcelize'
+}
 
 apply from: "$rootDir/gradle/kotlin.gradle"
 
