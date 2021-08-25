@@ -1,0 +1,9 @@
+apply plugin: "kotlin-android"
+
+apply from: "$rootDir/gradle/base.gradle"
+
+android {
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
+  }
+}

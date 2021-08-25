@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 
-apply from: "$rootDir/gradle/base.gradle"
+apply from: "$rootDir/gradle/kotlin.gradle"
 
 android {
   defaultConfig {
@@ -40,7 +39,6 @@ android {
     baseline file("lint-baseline.xml")
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
   }
   sourceSets {

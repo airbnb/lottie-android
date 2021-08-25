@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
-apply from: "$rootDir/gradle/base.gradle"
+apply from: "$rootDir/gradle/kotlin.gradle"
 
 android {
     defaultConfig {
@@ -9,9 +8,6 @@ android {
         minSdk 21
         versionCode 1
         versionName "1.0"
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     buildFeatures {
         compose true

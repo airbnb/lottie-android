@@ -1,10 +1,9 @@
 plugins {
   id 'com.android.application'
-  id 'kotlin-android'
   id 'kotlin-kapt'
 }
 
-apply from: "$rootDir/gradle/base.gradle"
+apply from: "$rootDir/gradle/kotlin.gradle"
 
 android {
   defaultConfig {
@@ -20,7 +19,6 @@ android {
     }
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
