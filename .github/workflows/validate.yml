@@ -14,10 +14,10 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
       - name: Setup JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: '11.0.9'
-          java-package: jdk
+          distribution: 'zulu'
+          java-version: 11
       - name: Run Lint
         run: ./gradlew lintDebug
       - name: Zip reports
@@ -35,10 +35,10 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
       - name: Setup JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: '11.0.9'
-          java-package: jdk
+          distribution: 'zulu'
+          java-version: 11
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
       - name: Zip reports
@@ -58,10 +58,10 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
       - name: Setup JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: '11.0.9'
-          java-package: jdk
+          distribution: 'zulu'
+          java-version: 11
       - name: "Deploy Snapshot"
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
