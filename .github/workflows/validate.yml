@@ -25,7 +25,7 @@ jobs:
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: lint_reports
           path: reports.zip
@@ -46,7 +46,7 @@ jobs:
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: unit_test_reports
           path: reports.zip
