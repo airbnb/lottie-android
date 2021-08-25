@@ -22,9 +22,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.sample.compose.R
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.withContext
 
 enum class TransitionSection {
     Intro,

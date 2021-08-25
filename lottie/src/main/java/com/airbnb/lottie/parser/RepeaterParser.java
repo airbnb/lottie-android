@@ -11,7 +11,7 @@ import java.io.IOException;
 
 class RepeaterParser {
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm",
       "c",
       "o",

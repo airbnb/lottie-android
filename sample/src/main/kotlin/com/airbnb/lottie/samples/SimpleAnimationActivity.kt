@@ -30,7 +30,7 @@ class SimpleAnimationActivity : AppCompatActivity() {
         binding.setComposition.setOnClickListener {
             val start = System.currentTimeMillis()
             val drawable = LottieDrawable()
-            drawable.setComposition(composition)
+            drawable.composition = composition
             Toast.makeText(this@SimpleAnimationActivity, "Done ${System.currentTimeMillis() - start}", Toast.LENGTH_SHORT).show()
         }
 

@@ -188,7 +188,7 @@ public abstract class JsonReader implements Closeable {
   static {
     REPLACEMENT_CHARS = new String[128];
     for (int i = 0; i <= 0x1f; i++) {
-      REPLACEMENT_CHARS[i] = String.format("\\u%04x", (int) i);
+      REPLACEMENT_CHARS[i] = String.format("\\u%04x", i);
     }
     REPLACEMENT_CHARS['"'] = "\\\"";
     REPLACEMENT_CHARS['\\'] = "\\\\";
@@ -396,7 +396,6 @@ public abstract class JsonReader implements Closeable {
    * and escapes those characters that require it.
    */
   private static void string(BufferedSink sink, String value) throws IOException {
-    String[] replacements = REPLACEMENT_CHARS;
     sink.writeByte('"');
     int last = 0;
     int length = value.length();
@@ -404,7 +403,7 @@ public abstract class JsonReader implements Closeable {
       char c = value.charAt(i);
       String replacement;
       if (c < 128) {
-        replacement = replacements[c];
+        replacement = REPLACEMENT_CHARS[c];
         if (replacement == null) {
           continue;
         }

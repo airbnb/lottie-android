@@ -27,8 +27,8 @@ import java.util.List;
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
-  private Paint offScreenPaint = new LPaint();
-  private RectF offScreenRectF = new RectF();
+  private final Paint offScreenPaint = new LPaint();
+  private final RectF offScreenRectF = new RectF();
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
       List<ContentModel> contentModels) {

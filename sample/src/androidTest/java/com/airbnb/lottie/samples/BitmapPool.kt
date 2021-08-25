@@ -27,7 +27,7 @@ internal class BitmapPool {
             return TRANSPARENT_1X1_BITMAP
         }
 
-        var blockedStartTime = System.currentTimeMillis()
+        val blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
         val waitingTimeMs = System.currentTimeMillis() - blockedStartTime
         if (waitingTimeMs > 100) {

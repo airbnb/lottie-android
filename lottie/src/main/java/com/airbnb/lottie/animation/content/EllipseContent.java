@@ -29,7 +29,7 @@ public class EllipseContent
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final CircleShape circleShape;
 
-  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
+  private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
 
   public EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {

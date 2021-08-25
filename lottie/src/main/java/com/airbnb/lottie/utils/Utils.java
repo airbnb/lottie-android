@@ -121,10 +121,7 @@ public final class Utils {
     points[2] = 37394.729378f;
     points[3] = 39575.2343807f;
     matrix.mapPoints(points);
-    if (points[0] == points[2] || points[1] == points[3]) {
-      return true;
-    }
-    return false;
+    return points[0] == points[2] || points[1] == points[3];
   }
 
   public static void applyTrimPathIfNeeded(Path path, @Nullable TrimPathContent trimPath) {

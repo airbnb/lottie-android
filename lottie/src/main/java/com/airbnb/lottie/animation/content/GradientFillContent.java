@@ -24,7 +24,6 @@ import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.GradientColor;
@@ -285,7 +284,6 @@ public class GradientFillContent
       if (callback == null) {
         colorCallbackAnimation = null;
       } else {
-        //noinspection rawtypes
         linearGradientCache.clear();
         radialGradientCache.clear();
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);

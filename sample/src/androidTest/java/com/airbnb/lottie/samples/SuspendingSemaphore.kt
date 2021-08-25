@@ -1,6 +1,5 @@
 package com.airbnb.lottie.samples
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 

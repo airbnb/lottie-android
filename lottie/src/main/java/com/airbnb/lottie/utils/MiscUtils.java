@@ -13,7 +13,7 @@ import com.airbnb.lottie.model.content.ShapeData;
 import java.util.List;
 
 public class MiscUtils {
-  private static PointF pathFromDataCurrentPoint = new PointF();
+  private static final PointF pathFromDataCurrentPoint = new PointF();
 
   public static PointF addPoints(PointF p1, PointF p2) {
     return new PointF(p1.x + p2.x, p1.y + p2.y);

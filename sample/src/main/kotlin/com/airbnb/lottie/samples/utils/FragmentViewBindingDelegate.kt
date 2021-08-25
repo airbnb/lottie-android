@@ -21,8 +21,8 @@ import kotlin.reflect.KProperty
 inline fun <reified T : ViewBinding> Fragment.viewBinding() = FragmentViewBindingDelegate(T::class.java, this)
 
 class FragmentViewBindingDelegate<T : ViewBinding>(
-        bindingClass: Class<T>,
-        val fragment: Fragment
+    bindingClass: Class<T>,
+    val fragment: Fragment
 ) : ReadOnlyProperty<Fragment, T> {
     private val clearBindingHandler by lazy(LazyThreadSafetyMode.NONE) { Handler(Looper.getMainLooper()) }
     private var binding: T? = null

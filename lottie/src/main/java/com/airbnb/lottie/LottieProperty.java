@@ -1,7 +1,6 @@
 package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.Typeface;
