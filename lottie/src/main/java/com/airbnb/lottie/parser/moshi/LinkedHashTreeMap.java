@@ -349,11 +349,13 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
         int rightLeftHeight = rightLeft != null ? rightLeft.height : 0;
 
         int rightDelta = rightLeftHeight - rightRightHeight;
-        if (rightDelta != -1 && (rightDelta != 0 || insert)) {
+        if (rightDelta == -1 || (rightDelta == 0 && !insert)) {
+          rotateLeft(node); // AVL right right
+        } else {
           assert (rightDelta == 1);
           rotateRight(right); // AVL right left
+          rotateLeft(node);
         }
-        rotateLeft(node); // AVL right right
         if (insert) {
           break; // no further rotations will be necessary
         }
@@ -365,11 +367,13 @@ final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements Seriali
         int leftLeftHeight = leftLeft != null ? leftLeft.height : 0;
 
         int leftDelta = leftLeftHeight - leftRightHeight;
-        if (leftDelta != 1 && (leftDelta != 0 || insert)) {
+        if (leftDelta == 1 || (leftDelta == 0 && !insert)) {
+          rotateRight(node); // AVL left left
+        } else {
           assert (leftDelta == -1);
           rotateLeft(left); // AVL left right
+          rotateRight(node);
         }
-        rotateRight(node); // AVL left left
         if (insert) {
           break; // no further rotations will be necessary
         }
