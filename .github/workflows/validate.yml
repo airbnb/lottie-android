@@ -1,9 +1,7 @@
 name: Validate
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+
+on: [ push, pull_request ]
+
 jobs:
   gradle-wrapper:
     runs-on: ubuntu-latest
