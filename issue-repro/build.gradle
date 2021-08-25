@@ -1,17 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+apply from: "$rootDir/gradle/base.gradle"
+
 android {
-    compileSdkVersion 30
     defaultConfig {
         applicationId "com.airbnb.lottie.issues"
-        minSdkVersion 16
-        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildFeatures {
         viewBinding true
     }

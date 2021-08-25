@@ -4,15 +4,11 @@ plugins {
   id 'com.vanniktech.maven.publish'
 }
 
+apply from: "$rootDir/gradle/base.gradle"
+
 android {
-  compileSdkVersion 30
-  buildToolsVersion "30.0.3"
-
   defaultConfig {
-    minSdkVersion 21
-    targetSdkVersion 30
-
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    minSdk 21
   }
 
   buildTypes {
@@ -20,12 +16,8 @@ android {
       minifyEnabled false
     }
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
   kotlinOptions {
-    jvmTarget = '1.8'
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
@@ -53,8 +45,8 @@ dependencies {
   api project(':lottie')
   implementation "androidx.compose.foundation:foundation:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
+
   testImplementation 'org.robolectric:robolectric:4.6.1'
   testImplementation 'androidx.collection:collection-ktx:1.1.0'
-  testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
 }

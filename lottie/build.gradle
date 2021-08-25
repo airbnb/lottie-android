@@ -4,22 +4,15 @@ apply plugin: 'com.android.library'
 apply plugin: 'net.ltgt.errorprone'
 apply plugin: 'com.vanniktech.maven.publish'
 
+apply from: "$rootDir/gradle/base.gradle"
+
 android {
-  compileSdkVersion 29
   resourcePrefix 'lottie_'
 
-  defaultConfig {
-    minSdkVersion 16
-    targetSdkVersion 29
-  }
   lintOptions {
     abortOnError true
     textReport true
     textOutput 'stdout'
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_7
-    targetCompatibility JavaVersion.VERSION_1_7
   }
   testOptions {
     unitTests {
@@ -47,13 +40,12 @@ dependencies {
   errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 
   testImplementation "org.mockito:mockito-core:3.12.2"
-  testImplementation 'junit:junit:4.13.2'
   testImplementation "org.robolectric:robolectric:4.6.1"
 }
 
 task sourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
-  classifier = 'sources'
+  archiveClassifier.set('sources')
 }
 
 task javadoc(type: Javadoc) {

@@ -4,18 +4,14 @@ plugins {
   id 'kotlin-kapt'
 }
 
-android {
-  compileSdkVersion 30
-  buildToolsVersion "30.0.3"
+apply from: "$rootDir/gradle/base.gradle"
 
+android {
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
-    minSdkVersion 21
-    targetSdkVersion 30
+    minSdk 21
     versionCode 1
     versionName VERSION_NAME
-
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 
   buildTypes {
@@ -23,12 +19,8 @@ android {
       minifyEnabled false
     }
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
   kotlinOptions {
-    jvmTarget = '1.8'
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
@@ -80,8 +72,4 @@ dependencies {
   implementation "com.google.accompanist:accompanist-pager-indicators:0.17.0"
   implementation 'com.airbnb.android:mavericks:2.3.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
-
-  testImplementation 'junit:junit:4.13.2'
-  androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
