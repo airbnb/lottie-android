@@ -71,9 +71,6 @@ dependencies {
   kapt 'com.airbnb.android:epoxy-processor:4.6.2'
   implementation 'com.airbnb.android:mvrx:1.5.1'
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
