@@ -41,7 +41,7 @@ dependencies {
   errorprone "com.google.errorprone:error_prone_core:2.9.0"
   errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
 
-  testImplementation "org.mockito:mockito-core:3.12.2"
+  testImplementation "org.mockito:mockito-core:$mockitoVersion"
   testImplementation "org.robolectric:robolectric:4.6.1"
 }
 

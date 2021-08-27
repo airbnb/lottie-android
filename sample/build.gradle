@@ -80,9 +80,9 @@ dependencies {
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
-  implementation 'com.amazonaws:aws-android-sdk-s3:2.28.0'
-  implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.28.0@aar') { transitive = true }
-  implementation ('com.amazonaws:aws-android-sdk-auth-userpools:2.28.0@aar') { transitive = true }
+  implementation "com.amazonaws:aws-android-sdk-s3:$awsVersion"
+  implementation ("com.amazonaws:aws-android-sdk-mobile-client:$awsVersion") { transitive = true }
+  implementation ("com.amazonaws:aws-android-sdk-auth-userpools:$awsVersion") { transitive = true }
   implementation 'com.google.code.gson:gson:2.8.8'
   implementation 'com.squareup.okhttp3:okhttp:4.9.1'
   implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -97,6 +97,6 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation 'com.squareup.okhttp3:okhttp:4.9.1'
   androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.1'
-  androidTestImplementation "org.mockito:mockito-android:3.12.2"
+  androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
   androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 }

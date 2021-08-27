@@ -5,6 +5,8 @@ buildscript {
     composeVersion = '1.0.1'
     kotlinVersion = '1.5.21'
     daggerVersion = '2.38.1'
+    awsVersion = '2.29.0'
+    mockitoVersion = '3.12.4'
   }
 
   repositories {
