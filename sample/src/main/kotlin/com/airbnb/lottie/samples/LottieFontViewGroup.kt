@@ -27,7 +27,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
         isFocusableInTouchMode = true
         LottieCompositionFactory.fromAsset(context, "Mobilo/BlinkingCursor.json")
                 .addListener {
-                    cursorView.layoutParams = FrameLayout.LayoutParams(
+                    cursorView.layoutParams = LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT
                     )
@@ -173,7 +173,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
 
     private fun addComposition(composition: LottieComposition) {
         val lottieAnimationView = LottieAnimationView(context)
-        lottieAnimationView.layoutParams = FrameLayout.LayoutParams(
+        lottieAnimationView.layoutParams = LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         )
@@ -189,7 +189,7 @@ class LottieFontViewGroup @JvmOverloads constructor(
 
     private fun createSpaceView(): View {
         val spaceView = View(context)
-        spaceView.layoutParams = FrameLayout.LayoutParams(
+        spaceView.layoutParams = LayoutParams(
                 resources.getDimensionPixelSize(R.dimen.font_space_width),
                 ViewGroup.LayoutParams.WRAP_CONTENT
         )

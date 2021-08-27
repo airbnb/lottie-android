@@ -16,7 +16,7 @@ import java.util.List;
 
 class ShapeStrokeParser {
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm",
       "c",
       "w",

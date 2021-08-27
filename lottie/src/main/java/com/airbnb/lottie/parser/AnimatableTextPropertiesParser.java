@@ -10,8 +10,8 @@ import java.io.IOException;
 
 public class AnimatableTextPropertiesParser {
 
-  private static JsonReader.Options PROPERTIES_NAMES = JsonReader.Options.of("a");
-  private static JsonReader.Options ANIMATABLE_PROPERTIES_NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options PROPERTIES_NAMES = JsonReader.Options.of("a");
+  private static final JsonReader.Options ANIMATABLE_PROPERTIES_NAMES = JsonReader.Options.of(
       "fc",
       "sc",
       "sw",

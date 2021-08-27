@@ -7,12 +7,10 @@ import com.airbnb.lottie.LottieAnimationView
 class LottieIdlingResource(animationView: LottieAnimationView? = null, private val name: String = "Lottie") : IdlingResource {
 
     init {
-        if (animationView != null) {
-            animationView.addLottieOnCompositionLoadedListener {
-                isIdle = true
-                callback?.onTransitionToIdle()
-                IdlingRegistry.getInstance().unregister(this)
-            }
+        animationView?.addLottieOnCompositionLoadedListener {
+            isIdle = true
+            callback?.onTransitionToIdle()
+            IdlingRegistry.getInstance().unregister(this)
         }
     }
 

@@ -45,7 +45,7 @@ public class NetworkCache {
   /**
    * If the animation doesn't exist in the cache, null will be returned.
    * <p>
-   * Once the animation is successfully parsed, {@link #renameTempFile(FileExtension)} must be
+   * Once the animation is successfully parsed, {@link #renameTempFile(String, FileExtension)} must be
    * called to move the file from a temporary location to its permanent cache location so it can
    * be used in the future.
    */
@@ -82,7 +82,7 @@ public class NetworkCache {
 
   /**
    * Writes an InputStream from a network response to a temporary file. If the file successfully parses
-   * to an composition, {@link #renameTempFile(FileExtension)} should be called to move the file
+   * to an composition, {@link #renameTempFile(String, FileExtension)} should be called to move the file
    * to its final location for future cache hits.
    */
   File writeTempCacheFile(String url, InputStream stream, FileExtension extension) throws IOException {
@@ -110,7 +110,7 @@ public class NetworkCache {
   }
 
   /**
-   * If the file created by {@link #writeTempCacheFile(InputStream, FileExtension)} was successfully parsed,
+   * If the file created by {@link #writeTempCacheFile(String, InputStream, FileExtension)} was successfully parsed,
    * this should be called to remove the temporary part of its name which will allow it to be a cache hit in the future.
    */
   void renameTempFile(String url, FileExtension extension) {

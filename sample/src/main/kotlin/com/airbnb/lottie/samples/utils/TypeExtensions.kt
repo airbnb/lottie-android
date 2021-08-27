@@ -63,7 +63,7 @@ inline fun <reified T> flatten(vararg lists: List<T>?) = lists.flatMap { it ?: e
 
 fun Float.lerp(other: Float, amount: Float): Float = this + amount * (other - this)
 
-fun Float.sqrt() = Math.sqrt(this.toDouble()).toFloat()
+fun Float.sqrt() = kotlin.math.sqrt(this.toDouble()).toFloat()
 
 fun View.getText(@StringRes res: Int) = this.resources.getText(res)
 operator fun Boolean.inc() = !this

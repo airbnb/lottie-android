@@ -19,7 +19,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   private final BaseKeyframeAnimation<?, Path> shapeAnimation;
 
   private boolean isPathValid;
-  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
+  private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
 
   public ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
     name = shape.getName();

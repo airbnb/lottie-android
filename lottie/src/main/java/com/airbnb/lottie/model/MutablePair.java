@@ -54,6 +54,6 @@ public class MutablePair<T> {
 
   @Override
   public String toString() {
-    return "Pair{" + String.valueOf(first) + " " + String.valueOf(second) + "}";
+    return "Pair{" + first + " " + second + "}";
   }
 }

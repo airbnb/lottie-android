@@ -2,7 +2,6 @@ package com.airbnb.lottie.samples.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.LinearLayout
 import com.airbnb.epoxy.ModelProp
 import com.airbnb.epoxy.ModelView
@@ -26,7 +25,7 @@ class LottiefilesTabBar @JvmOverloads constructor(
     }
 
     @ModelProp(options = [ModelProp.Option.DoNotHash])
-    fun setPopularClickListener(listener: View.OnClickListener) {
+    fun setPopularClickListener(listener: OnClickListener) {
         binding.popularView.setOnClickListener(listener)
     }
 

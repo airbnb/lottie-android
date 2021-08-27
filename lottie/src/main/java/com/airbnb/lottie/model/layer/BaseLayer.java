@@ -10,7 +10,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
@@ -396,7 +395,6 @@ public abstract class BaseLayer
       // composition bounds.
       return;
     }
-    //noinspection ConstantConditions
     matteBoundsRect.set(0f, 0f, 0f, 0f);
     matteLayer.getBounds(matteBoundsRect, matrix, true);
     boolean intersects = rect.intersect(matteBoundsRect);
