@@ -44,7 +44,7 @@ dependencies {
   implementation "androidx.compose.foundation:foundation:$composeVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
 
-  testImplementation 'org.robolectric:robolectric:4.6.1'
+  testImplementation "org.robolectric:robolectric:$robolectricVersion"
   testImplementation 'androidx.collection:collection-ktx:1.1.0'
-  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1'
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 }
