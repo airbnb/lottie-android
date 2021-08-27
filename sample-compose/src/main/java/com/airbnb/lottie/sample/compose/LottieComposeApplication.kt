@@ -1,12 +1,12 @@
 package com.airbnb.lottie.sample.compose
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import com.airbnb.lottie.L
 import com.airbnb.lottie.sample.compose.dagger.ApplicationComponent
 import com.airbnb.lottie.sample.compose.dagger.DaggerApplicationComponent
 import com.airbnb.mvrx.Mavericks
 
-class LottieComposeApplication : MultiDexApplication() {
+class LottieComposeApplication : Application() {
     lateinit var component: ApplicationComponent
 
     override fun onCreate() {
