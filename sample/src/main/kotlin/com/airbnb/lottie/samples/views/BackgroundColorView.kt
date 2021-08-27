@@ -29,7 +29,7 @@ class BackgroundColorView @JvmOverloads constructor(
 
         val cx = canvas.width / 2f
         val cy = canvas.height / 2f
-        val r = Math.min(cx, cy)
+        val r = cx.coerceAtMost(cy)
         if (getColor() == Color.WHITE) {
             paint.strokeWidth =
                     resources.getDimensionPixelSize(R.dimen.background_color_view_stroke_width).toFloat()

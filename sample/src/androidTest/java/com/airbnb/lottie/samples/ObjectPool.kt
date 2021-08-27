@@ -14,7 +14,7 @@ internal class ObjectPool<T>(private val factory: () -> T) {
 
     @ExperimentalCoroutinesApi
     fun acquire(): T {
-        var blockedStartTime = System.currentTimeMillis()
+        val blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
         val waitingTimeMs = System.currentTimeMillis() - blockedStartTime
         if (waitingTimeMs > 100) {

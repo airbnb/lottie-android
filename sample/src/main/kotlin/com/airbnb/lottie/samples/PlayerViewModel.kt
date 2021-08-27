@@ -113,7 +113,7 @@ class PlayerViewModel(
     }
 
     companion object : MvRxViewModelFactory<PlayerViewModel, PlayerState> {
-        override fun create(viewModelContext: ViewModelContext, state: PlayerState): PlayerViewModel? {
+        override fun create(viewModelContext: ViewModelContext, state: PlayerState): PlayerViewModel {
             return PlayerViewModel(state, viewModelContext.app())
         }
     }

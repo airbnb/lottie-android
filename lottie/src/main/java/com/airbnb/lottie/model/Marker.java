@@ -1,7 +1,7 @@
 package com.airbnb.lottie.model;
 
 public class Marker {
-  private static String CARRIAGE_RETURN = "\r";
+  private static final String CARRIAGE_RETURN = "\r";
 
   private final String name;
   public final float startFrame;
@@ -20,9 +20,6 @@ public class Marker {
 
     // It is easy for a designer to accidentally include an extra newline which will cause the name to not match what they would
     // expect. This is a convenience to precent unneccesary confusion.
-    if (this.name.endsWith(CARRIAGE_RETURN) && this.name.substring(0, this.name.length() - 1).equalsIgnoreCase(name)) {
-      return true;
-    }
-    return false;
+    return this.name.endsWith(CARRIAGE_RETURN) && this.name.substring(0, this.name.length() - 1).equalsIgnoreCase(name);
   }
 }

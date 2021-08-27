@@ -15,7 +15,7 @@ class ShapeGroupParser {
   private ShapeGroupParser() {
   }
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm",
       "hd",
       "it"

@@ -32,9 +32,9 @@ fun ViewPagerExamplePage() {
     ) {
         HorizontalPager(
             pagerState,
-            flingBehavior = PagerDefaults.defaultPagerFlingConfig(
+            flingBehavior = PagerDefaults.rememberPagerFlingConfig(
                 pagerState,
-                decayAnimationSpec = exponentialDecay(frictionMultiplier = 0.05f),
+                decayAnimationSpec = exponentialDecay(frictionMultiplier = 0.05f)
             )
         ) { page ->
             Box(

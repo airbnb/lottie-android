@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompoundTrimPathContent {
-  private List<TrimPathContent> contents = new ArrayList<>();
+  private final List<TrimPathContent> contents = new ArrayList<>();
 
   void addTrimPath(TrimPathContent trimPath) {
     contents.add(trimPath);

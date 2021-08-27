@@ -22,7 +22,7 @@ class GradientStrokeParser {
   private GradientStrokeParser() {
   }
 
-  private static JsonReader.Options NAMES = JsonReader.Options.of(
+  private static final JsonReader.Options NAMES = JsonReader.Options.of(
       "nm",
       "g",
       "o",
