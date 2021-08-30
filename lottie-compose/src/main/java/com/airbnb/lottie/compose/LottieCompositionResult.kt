@@ -89,7 +89,7 @@ suspend fun LottieCompositionResult.awaitOrNull(): LottieComposition? {
 }
 
 @Stable
-internal class LottieCompositionResultImpl(): LottieCompositionResult {
+internal class LottieCompositionResultImpl : LottieCompositionResult {
     private val compositionDeferred = CompletableDeferred<LottieComposition>()
 
     override var value: LottieComposition? by mutableStateOf(null)

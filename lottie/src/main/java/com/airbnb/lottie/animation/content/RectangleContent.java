@@ -31,7 +31,7 @@ public class RectangleContent
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, Float> cornerRadiusAnimation;
 
-  private CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
+  private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
 
   public RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape) {

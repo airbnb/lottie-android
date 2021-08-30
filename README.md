@@ -15,7 +15,15 @@ Click the sponsor button above to learn more
 <img src="gifs/Sponsor.png" alt="Sponsor Button" width="100"/>
 
 ## Lead Sponsors
-<img src="gifs/Duolingo.svg" alt="Duolingo" width="200"/>
+<a href="https://www.lottiefiles.com/"><img src="images/lottiefiles.svg" alt="Lottiefiles" width="300" /></a>
+
+<a href="https://www.airbnb.com/"><img src="images/airbnb.svg" alt="Airbnb" width="300" /></a>
+
+<a href="https://www.tonal.com/"><img src="images/tonal.svg" alt="Tonal" width="300" /></a>
+
+<a href="https://getstream.io/chat/sdk/android/?utm_source=lottie&utm_medium=sponsorship&utm_content=developer"><img src="images/stream.png" alt="Stream" width="300" /></a>
+
+<a href="https://www.duolingo.com/"><img src="images/duolingo.svg" alt="Tonal" width="300" /></a>
 
 ## View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](http://airbnb.io/lottie/)
 

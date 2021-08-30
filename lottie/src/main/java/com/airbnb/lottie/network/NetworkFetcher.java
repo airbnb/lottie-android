@@ -141,6 +141,6 @@ public class NetworkFetcher {
       return LottieCompositionFactory.fromJsonInputStreamSync(inputStream, null);
     }
     File file = networkCache.writeTempCacheFile(url, inputStream, FileExtension.JSON);
-    return LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(new File(file.getAbsolutePath())), url);
+    return LottieCompositionFactory.fromJsonInputStreamSync(new FileInputStream(file.getAbsolutePath()), url);
   }
 }

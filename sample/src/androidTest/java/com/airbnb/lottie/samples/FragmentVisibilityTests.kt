@@ -108,7 +108,7 @@ class FragmentVisibilityTests {
             }
 
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                animationView = view.findViewById<LottieAnimationView>(R.id.animation_view)
+                animationView = view.findViewById(R.id.animation_view)
                 IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
                 AlertDialog.Builder(requireContext()).setTitle("This is a dialog").show()
             }
@@ -135,7 +135,7 @@ class FragmentVisibilityTests {
             }
 
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                animationView = view.findViewById<LottieAnimationView>(R.id.animation_view)
+                animationView = view.findViewById(R.id.animation_view)
                 animationView.addAnimatorListener(animationListener)
                 IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
             }

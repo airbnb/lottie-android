@@ -85,8 +85,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
 
     L.beginSection("LottieValueAnimator#doFrame");
-    long now = frameTimeNanos;
-    long timeSinceFrame = lastFrameTimeNs == 0 ? 0 : now - lastFrameTimeNs;
+    long timeSinceFrame = lastFrameTimeNs == 0 ? 0 : frameTimeNanos - lastFrameTimeNs;
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
 
@@ -94,7 +93,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     boolean ended = !MiscUtils.contains(frame, getMinFrame(), getMaxFrame());
     frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
 
-    lastFrameTimeNs = now;
+    lastFrameTimeNs = frameTimeNanos;
 
     notifyUpdate();
     if (ended) {
@@ -111,7 +110,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
         } else {
           frame = isReversed() ? getMaxFrame() : getMinFrame();
         }
-        lastFrameTimeNs = now;
+        lastFrameTimeNs = frameTimeNanos;
       }
     }
 

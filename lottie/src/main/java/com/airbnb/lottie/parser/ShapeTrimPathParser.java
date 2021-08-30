@@ -15,7 +15,7 @@ class ShapeTrimPathParser {
   private ShapeTrimPathParser() {
   }
 
-  private static Options NAMES = Options.of(
+  private static final Options NAMES = Options.of(
       "s",
       "e",
       "o",

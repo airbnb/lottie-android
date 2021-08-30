@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.compose.rememberImagePainter
 
 @Composable
 fun AnimationRow(
@@ -34,7 +34,7 @@ fun AnimationRow(
                 .fillMaxWidth()
         ) {
             Image(
-                painter = rememberCoilPainter(previewUrl),
+                painter = rememberImagePainter(previewUrl),
                 modifier = Modifier
                     .padding(end = 16.dp)
                     .size(40.dp)
