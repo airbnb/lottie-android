@@ -1,6 +1,10 @@
 name: Validate
 
-on: [ push, pull_request ]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   gradle-wrapper:
