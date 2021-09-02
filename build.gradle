@@ -10,7 +10,7 @@ buildscript {
     composeVersion = '1.0.2'
     kotlinVersion = '1.5.21'
     daggerVersion = '2.38.1'
-    awsVersion = '2.30.0'
+    awsVersion = '2.8.3'
     mockitoVersion = '3.12.4'
     robolectricVersion = '4.6.1'
     retrofitVersion = '2.9.0'
