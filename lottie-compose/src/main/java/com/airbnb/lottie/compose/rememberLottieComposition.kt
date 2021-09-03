@@ -13,18 +13,15 @@ import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieImageAsset
-import com.airbnb.lottie.LottieTask
+import com.airbnb.lottie.LottieResult
 import com.airbnb.lottie.model.Font
 import com.airbnb.lottie.utils.Logger
 import com.airbnb.lottie.utils.Utils
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.IOException
 import java.util.zip.ZipInputStream
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 /**
  * Use this with [rememberLottieComposition#cacheKey]'s cacheKey parameter to generate a default
@@ -81,6 +78,7 @@ fun rememberLottieComposition(
 ): LottieCompositionResult {
     val context = LocalContext.current
     val result by remember(spec) { mutableStateOf(LottieCompositionResultImpl()) }
+
     LaunchedEffect(spec) {
         var exception: Throwable? = null
         var failedCount = 0
@@ -115,58 +113,56 @@ private suspend fun lottieComposition(
     fontFileExtension: String,
     cacheKey: String?,
 ): LottieComposition {
-    val task = when (spec) {
-        is LottieCompositionSpec.RawRes -> {
-            if (cacheKey == DefaultCacheKey) {
-                LottieCompositionFactory.fromRawRes(context, spec.resId)
-            } else {
-                LottieCompositionFactory.fromRawRes(context, spec.resId, cacheKey)
-            }
-        }
-        is LottieCompositionSpec.Url -> {
-            if (cacheKey == DefaultCacheKey) {
-                LottieCompositionFactory.fromUrl(context, spec.url)
-            } else {
-                LottieCompositionFactory.fromUrl(context, spec.url, cacheKey)
-            }
-        }
-        is LottieCompositionSpec.File -> {
-            val fis = withContext(Dispatchers.IO) {
-                @Suppress("BlockingMethodInNonBlockingContext")
-                FileInputStream(spec.fileName)
-            }
-            when {
-                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
-                    ZipInputStream(fis),
-                    spec.fileName.takeIf { cacheKey != null },
-                )
-                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheKey != null })
-            }
-        }
-        is LottieCompositionSpec.Asset -> {
-            if (cacheKey == DefaultCacheKey) {
-                LottieCompositionFactory.fromAsset(context, spec.assetName)
-            } else {
-                LottieCompositionFactory.fromAsset(context, spec.assetName, null)
-            }
-        }
-        is LottieCompositionSpec.JsonString -> {
-            val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
-            LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
-        }
-    }
+    val result = parseCompositionSync(context, spec, cacheKey)
+    result.exception?.let { throw it }
 
-    val composition = task.await()
+    val composition = result.value!!
     loadImagesFromAssets(context, composition, imageAssetsFolder)
     loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension)
     return composition
 }
 
-private suspend fun <T> LottieTask<T>.await(): T = suspendCancellableCoroutine { cont ->
-    addListener { c ->
-        if (!cont.isCompleted) cont.resume(c)
-    }.addFailureListener { e ->
-        if (!cont.isCompleted) cont.resumeWithException(e)
+private fun parseCompositionSync(
+    context: Context,
+    spec: LottieCompositionSpec,
+    cacheKey: String?,
+): LottieResult<LottieComposition> {
+    return when (spec) {
+        is LottieCompositionSpec.RawRes -> {
+            if (cacheKey == DefaultCacheKey) {
+                LottieCompositionFactory.fromRawResSync(context, spec.resId)
+            } else {
+                LottieCompositionFactory.fromRawResSync(context, spec.resId, cacheKey)
+            }
+        }
+        is LottieCompositionSpec.Url -> {
+            if (cacheKey == DefaultCacheKey) {
+                LottieCompositionFactory.fromUrlSync(context, spec.url)
+            } else {
+                LottieCompositionFactory.fromUrlSync(context, spec.url, cacheKey)
+            }
+        }
+        is LottieCompositionSpec.File -> {
+            val fis = FileInputStream(spec.fileName)
+            when {
+                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStreamSync(
+                    ZipInputStream(fis),
+                    spec.fileName.takeIf { cacheKey != null },
+                )
+                else -> LottieCompositionFactory.fromJsonInputStreamSync(fis, spec.fileName.takeIf { cacheKey != null })
+            }
+        }
+        is LottieCompositionSpec.Asset -> {
+            if (cacheKey == DefaultCacheKey) {
+                LottieCompositionFactory.fromAssetSync(context, spec.assetName)
+            } else {
+                LottieCompositionFactory.fromAssetSync(context, spec.assetName, null)
+            }
+        }
+        is LottieCompositionSpec.JsonString -> {
+            val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
+            LottieCompositionFactory.fromJsonStringSync(spec.jsonString, jsonStringCacheKey)
+        }
     }
 }
 
