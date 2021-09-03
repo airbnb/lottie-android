@@ -1,5 +1,7 @@
 package com.airbnb.lottie.compose
 
+import com.airbnb.lottie.LottieComposition
+
 /**
  * Specification for a [com.airbnb.lottie.LottieComposition]. Each subclass represents a different source.
  * A [com.airbnb.lottie.LottieComposition] is the stateless parsed version of a Lottie json file and is
@@ -41,4 +43,9 @@ sealed interface LottieCompositionSpec {
      * Load an animation from its json string.
      */
     inline class JsonString(val jsonString: String) : LottieCompositionSpec
+
+    /**
+     * Load an animation from a custom factory. This will be called on an IO thread pool.
+     */
+    inline class Custom(val factory: () -> LottieComposition) : LottieCompositionSpec
 }

@@ -163,6 +163,13 @@ private fun parseCompositionSync(
             val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
             LottieCompositionFactory.fromJsonStringSync(spec.jsonString, jsonStringCacheKey)
         }
+        is LottieCompositionSpec.Custom -> {
+            try {
+                LottieResult(spec.factory())
+            } catch (e: Throwable) {
+                LottieResult<LottieComposition>(e)
+            }
+        }
     }
 }
 
