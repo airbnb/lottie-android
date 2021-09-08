@@ -81,7 +81,10 @@ fun rememberLottieComposition(
 ): LottieCompositionResult {
     val context = LocalContext.current
     val result by remember(spec) { mutableStateOf(LottieCompositionResultImpl()) }
-    LaunchedEffect(spec) {
+    // Warm the task cache. We can start the parsing task before the LaunchedEffect gets dispatched and run.
+    // The LaunchedEffect task will join the task created inline here via LottieCompositionFactory's task cache.
+    remember(spec, cacheKey) { lottieTask(context, spec, cacheKey, isWarmingCache = true) }
+    LaunchedEffect(spec, cacheKey) {
         var exception: Throwable? = null
         var failedCount = 0
         while (!result.isSuccess && (failedCount == 0 || onRetry(failedCount, exception!!))) {
@@ -115,7 +118,23 @@ private suspend fun lottieComposition(
     fontFileExtension: String,
     cacheKey: String?,
 ): LottieComposition {
-    val task = when (spec) {
+    val task = requireNotNull(lottieTask(context, spec, cacheKey, isWarmingCache = false)) {
+        "Unable to create parsing task for $spec."
+    }
+
+    val composition = task.await()
+    loadImagesFromAssets(context, composition, imageAssetsFolder)
+    loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension)
+    return composition
+}
+
+private fun lottieTask(
+    context: Context,
+    spec: LottieCompositionSpec,
+    cacheKey: String?,
+    isWarmingCache: Boolean,
+): LottieTask<LottieComposition>? {
+    return when (spec) {
         is LottieCompositionSpec.RawRes -> {
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromRawRes(context, spec.resId)
@@ -131,16 +150,19 @@ private suspend fun lottieComposition(
             }
         }
         is LottieCompositionSpec.File -> {
-            val fis = withContext(Dispatchers.IO) {
-                @Suppress("BlockingMethodInNonBlockingContext")
-                FileInputStream(spec.fileName)
-            }
-            when {
-                spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
-                    ZipInputStream(fis),
-                    spec.fileName.takeIf { cacheKey != null },
-                )
-                else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheKey != null })
+            if (isWarmingCache) {
+                // Warming the cache is done from the main thread so we can't
+                // create the FileInputStream needed in this path.
+                null
+            } else {
+                val fis = FileInputStream(spec.fileName)
+                when {
+                    spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
+                        ZipInputStream(fis),
+                        spec.fileName.takeIf { cacheKey != null },
+                    )
+                    else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheKey != null })
+                }
             }
         }
         is LottieCompositionSpec.Asset -> {
@@ -155,11 +177,6 @@ private suspend fun lottieComposition(
             LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
         }
     }
-
-    val composition = task.await()
-    loadImagesFromAssets(context, composition, imageAssetsFolder)
-    loadFontsFromAssets(context, composition, fontAssetsFolder, fontFileExtension)
-    return composition
 }
 
 private suspend fun <T> LottieTask<T>.await(): T = suspendCancellableCoroutine { cont ->
