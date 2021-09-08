@@ -4,7 +4,6 @@ import android.graphics.Matrix
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +75,7 @@ fun LottieAnimation(
 
     Canvas(
         modifier = modifier
-            .fillMaxSize()
+            .lottieLayout(composition)
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
