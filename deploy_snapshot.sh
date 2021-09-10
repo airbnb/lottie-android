@@ -7,4 +7,4 @@
 
 set -e
 
-./gradlew publish -DmavenCentralUsername="${SONATYPE_USERNAME}" -DmavenCentralPassword="${SONATYPE_PASSWORD}"
+./gradlew publish -PmavenCentralUsername="${SONATYPE_USERNAME}" -PmavenCentralPassword="${SONATYPE_PASSWORD}"
