@@ -67,8 +67,8 @@ dependencies {
   implementation "androidx.browser:browser:1.3.0"
   implementation "com.google.android.material:material:$materialVersion"
 
-  implementation "com.airbnb.android:epoxy:$ePoxyVersion"
-  kapt "com.airbnb.android:epoxy-processor:$ePoxyVersion"
+  implementation "com.airbnb.android:epoxy:$epoxyVersion"
+  kapt "com.airbnb.android:epoxy-processor:$epoxyVersion"
   implementation 'com.airbnb.android:mvrx:1.5.1'
 
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
