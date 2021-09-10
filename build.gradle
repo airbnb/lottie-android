@@ -16,6 +16,9 @@ buildscript {
     retrofitVersion = '2.9.0'
     materialVersion = '1.4.0'
     epoxyVersion = '4.6.3'
+    junitVersion = '4.13.2'
+    extJunitVersion = '1.1.3'
+    espressoVersion = '3.3.0'
   }
 
   repositories {
