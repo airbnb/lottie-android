@@ -15,6 +15,7 @@ buildscript {
     robolectricVersion = '4.6.1'
     retrofitVersion = '2.9.0'
     materialVersion = '1.4.0'
+    ePoxyVersion = '4.6.3'
   }
 
   repositories {
