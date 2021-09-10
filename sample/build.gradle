@@ -1,14 +1,16 @@
 plugins {
   id 'com.android.application'
+  id "kotlin-android"
   id 'kotlin-kapt'
   id 'kotlin-parcelize'
 }
 
-apply from: "$rootDir/gradle/kotlin.gradle"
-
 android {
+  compileSdk 30
   defaultConfig {
     applicationId "com.airbnb.lottie"
+    minSdk 16
+    targetSdk 30
     versionCode 69
     versionName VERSION_NAME
     multiDexEnabled true
@@ -16,6 +18,13 @@ android {
     buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")
     buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
     vectorDrawables.useSupportLibrary = true
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
   }
   buildFeatures {
     viewBinding true
@@ -75,8 +84,8 @@ dependencies {
   implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
   implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
   implementation "com.amazonaws:aws-android-sdk-s3:$awsVersion"
-  implementation ("com.amazonaws:aws-android-sdk-mobile-client:$awsVersion") { transitive = true }
-  implementation ("com.amazonaws:aws-android-sdk-auth-userpools:$awsVersion") { transitive = true }
+  implementation("com.amazonaws:aws-android-sdk-mobile-client:$awsVersion") { transitive = true }
+  implementation("com.amazonaws:aws-android-sdk-auth-userpools:$awsVersion") { transitive = true }
   implementation 'com.google.code.gson:gson:2.8.8'
   implementation 'com.squareup.okhttp3:okhttp:4.9.1'
   implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"

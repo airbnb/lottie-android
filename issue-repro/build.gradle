@@ -3,13 +3,18 @@ plugins {
     id 'kotlin-kapt'
 }
 
-apply from: "$rootDir/gradle/base.gradle"
-
 android {
+    compileSdk 30
     defaultConfig {
         applicationId "com.airbnb.lottie.issues"
+        minSdk 16
+        targetSdk 30
         versionCode 1
         versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
         viewBinding true

@@ -6,11 +6,18 @@ plugins {
   id 'com.vanniktech.maven.publish'
 }
 
-apply from: "$rootDir/gradle/base.gradle"
-
 android {
   resourcePrefix 'lottie_'
-
+  compileSdk 30
+  defaultConfig {
+    minSdk 16
+    targetSdk 30
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
   lintOptions {
     abortOnError true
     textReport true
@@ -34,6 +41,9 @@ dependencies {
 
   testImplementation "org.mockito:mockito-core:$mockitoVersion"
   testImplementation "org.robolectric:robolectric:$robolectricVersion"
+  testImplementation "junit:junit:4.13.2"
+  androidTestImplementation "androidx.test.ext:junit:1.1.3"
+  androidTestImplementation "androidx.test.espresso:espresso-core:3.3.0"
 }
 
 task sourcesJar(type: Jar) {

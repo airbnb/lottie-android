@@ -1,24 +1,29 @@
 plugins {
   id 'com.android.application'
+  id "kotlin-android"
   id 'kotlin-kapt'
 }
 
-apply from: "$rootDir/gradle/kotlin.gradle"
-
 android {
+  compileSdk 30
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
     minSdk 21
+    targetSdk 30
     versionCode 1
     versionName VERSION_NAME
   }
-
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
   buildTypes {
     release {
       minifyEnabled false
     }
   }
   kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
