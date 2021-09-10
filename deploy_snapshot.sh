@@ -7,4 +7,4 @@
 
 set -e
 
-./gradlew uploadArchives -PSONATYPE_USERNAME="${SONATYPE_USERNAME}" -PSONATYPE_PASSWORD="${SONATYPE_PASSWORD}"
+./gradlew publish -DORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USERNAME}" -DORG_GRADLE_PROJECT_mavenCentralPassword="${SONATYPE_PASSWORD}"

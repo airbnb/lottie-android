@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew clean lottie:assembleRelease lottie-compose:assembleRelease lottie:uploadArchives lottie-compose:uploadArchives --rerun-tasks --no-parallel
+./gradlew clean lottie:assembleRelease lottie-compose:assembleRelease lottie:publish lottie-compose:publish -DORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USERNAME}" -DORG_GRADLE_PROJECT_mavenCentralPassword="${SONATYPE_PASSWORD}" --rerun-tasks --no-parallel

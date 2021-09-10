@@ -4,7 +4,7 @@ import android.graphics.Matrix
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.utils.Utils
 import kotlin.math.roundToInt
 
 /**
@@ -74,9 +76,10 @@ fun LottieAnimation(
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
+
     Canvas(
         modifier = modifier
-            .fillMaxSize()
+            .size((composition.bounds.width() / Utils.dpScale()).dp, (composition.bounds.height() / Utils.dpScale()).dp)
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
