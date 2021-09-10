@@ -1,6 +1,6 @@
 plugins {
   id 'com.android.library'
-  id "kotlin-android"
+  id 'kotlin-android'
   id 'com.vanniktech.maven.publish'
 }
 
@@ -11,14 +11,14 @@ android {
     targetSdk 30
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
   buildTypes {
     release {
       minifyEnabled false
     }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_1_8.toString()

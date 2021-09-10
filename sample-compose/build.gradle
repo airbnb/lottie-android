@@ -13,14 +13,14 @@ android {
     versionCode 1
     versionName VERSION_NAME
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
   buildTypes {
     release {
       minifyEnabled false
     }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
   }
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_1_8.toString()
