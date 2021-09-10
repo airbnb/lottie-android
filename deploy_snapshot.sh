@@ -7,4 +7,4 @@
 
 set -e
 
-./gradlew publish -DORG_GRADLE_PROJECT_mavenCentralUsername="${$SONATYPE_USERNAME}" -DORG_GRADLE_PROJECT_mavenCentralPassword="${$SONATYPE_PASSWORD}"
+./gradlew publish -DORG_GRADLE_PROJECT_mavenCentralUsername="${SONATYPE_USERNAME}" -DORG_GRADLE_PROJECT_mavenCentralPassword="${SONATYPE_PASSWORD}"
