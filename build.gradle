@@ -46,7 +46,7 @@ allprojects {
 ext {
   git = Grgit.open(currentDir: project.rootDir)
   gitSha = git.head().id
-  gitBranch = git.branch.getCurrent().name
+  gitBranch = git.branch.current().name
 }
 
 task clean(type: Delete) {

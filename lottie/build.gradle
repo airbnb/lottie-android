@@ -33,6 +33,7 @@ android {
 dependencies {
   implementation "androidx.appcompat:appcompat:$appcompatVersion"
   // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
+  //noinspection GradleDependency
   implementation("com.squareup.okio:okio:1.17.4")
 
   annotationProcessor "com.uber.nullaway:nullaway:0.9.2"
