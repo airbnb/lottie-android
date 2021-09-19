@@ -44,4 +44,8 @@ class FilmStripView @JvmOverloads constructor(
     fun setOutlineMasksAndMattes(outline: Boolean) {
         animationViews.forEach { it.setOutlineMasksAndMattes(outline) }
     }
+
+    fun setClipToCompositionBounds(clip: Boolean) {
+        animationViews.forEach { it.clipToCompositionBounds = clip }
+    }
 }

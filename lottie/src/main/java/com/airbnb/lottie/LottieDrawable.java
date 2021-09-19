@@ -67,6 +67,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean ignoreSystemAnimationsDisabled = false;
 
   private boolean safeMode = false;
+  private boolean clipToCompositionBounds = true;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
@@ -342,6 +343,25 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setSafeMode(boolean safeMode) {
     this.safeMode = safeMode;
+  }
+
+  /**
+   * Set this to false to prevent Lottie from clipping the animation rendering to the root composition bounds.
+   * This only affects the root composition. Nested compositions (precomposing) will still be clipped.
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    if (clipToCompositionBounds != this.clipToCompositionBounds) {
+      this.clipToCompositionBounds = clipToCompositionBounds;
+      invalidateSelf();
+    }
+  }
+
+  /**
+   * Returns whether or not the rendering will be clipped to the root composition bounds.
+   */
+  public boolean getClipToCompositionBounds() {
+    return clipToCompositionBounds;
   }
 
   @Override

@@ -69,6 +69,7 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
+    clipToBounds: Boolean = true,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
@@ -101,6 +102,7 @@ fun LottieAnimation(
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
+            drawable.clipToCompositionBounds = clipToBounds
             drawable.progress = progress
             drawable.draw(canvas.nativeCanvas, matrix)
         }
@@ -129,7 +131,8 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-) {
+    clipToBounds: Boolean = true,
+    ) {
     val progress by animateLottieCompositionAsState(
         composition,
         isPlaying,
@@ -148,6 +151,7 @@ fun LottieAnimation(
         dynamicProperties,
         alignment,
         contentScale,
+        clipToBounds,
     )
 }
 

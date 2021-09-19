@@ -228,6 +228,13 @@ import java.util.concurrent.Callable;
         )
     );
 
+    lottieDrawable.setClipToCompositionBounds(
+        ta.getBoolean(
+            R.styleable.LottieAnimationView_lottie_clipToCompositionBounds,
+            true
+        )
+    );
+
     ta.recycle();
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
@@ -1069,6 +1076,22 @@ import java.util.concurrent.Callable;
    */
   public void setSafeMode(boolean safeMode) {
     lottieDrawable.setSafeMode(safeMode);
+  }
+
+  /**
+   * Set this to false to prevent Lottie from clipping the animation rendering to the root composition bounds.
+   * This only affects the root composition. Nested compositions (precomposing) will still be clipped.
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    lottieDrawable.setClipToCompositionBounds(clipToCompositionBounds);
+  }
+
+  /**
+   * Returns whether or not the rendering will be clipped to the root composition bounds.
+   */
+  public boolean getClipToCompositionBounds() {
+    return lottieDrawable.getClipToCompositionBounds();
   }
 
   /**

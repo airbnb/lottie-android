@@ -115,6 +115,7 @@ class LottieTest {
             testNightMode()
             testApplyOpacityToLayer()
             testOutlineMasksAndMattes()
+            testDontClipCompositionBounds()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -1074,6 +1075,16 @@ class LottieTest {
             "Enabled"
         ) { filmStripView ->
             filmStripView.setOutlineMasksAndMattes(true)
+        }
+    }
+
+    private suspend fun testDontClipCompositionBounds() {
+        withFilmStripView(
+            "Tests/ClipComposition.json",
+            "Clip Composition Bounds",
+            "False"
+        ) { filmStripView ->
+            filmStripView.setClipToCompositionBounds(true)
         }
     }
 
