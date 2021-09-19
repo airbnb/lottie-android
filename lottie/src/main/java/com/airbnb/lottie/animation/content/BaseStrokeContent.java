@@ -226,9 +226,9 @@ public abstract class BaseStrokeContent
     }
     float offsetLength = totalLength * pathGroup.trimPath.getOffset().getValue() / 360f;
     float startLength =
-        totalLength * pathGroup.trimPath.getStart().getValue() / 100f + offsetLength;
+        totalLength * (pathGroup.trimPath.getStart().getValue() / 100f) + offsetLength;
     float endLength =
-        totalLength * pathGroup.trimPath.getEnd().getValue() / 100f + offsetLength;
+        totalLength * (pathGroup.trimPath.getEnd().getValue() / 100f) + offsetLength;
 
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
