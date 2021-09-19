@@ -1,25 +1,24 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id "kotlin-android"
+}
 
 android {
-    compileSdkVersion 30
+    compileSdk 30
     defaultConfig {
         applicationId "com.airbnb.lottie.issues.compose"
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdk 21
+        targetSdk 30
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-
     buildFeatures {
         compose true
     }
@@ -30,8 +29,8 @@ android {
 
 dependencies {
     implementation project(':lottie-compose')
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.activity:activity-compose:$activityVersion"
     implementation "androidx.compose.ui:ui:$composeVersion"
     implementation "androidx.compose.material:material:$composeVersion"
     implementation "androidx.compose.material:material-icons-extended:$composeVersion"

@@ -31,10 +31,9 @@
 
 
 .DS_Store
-/build
+build
 /captures
 .externalNativeBuild
 *auto-save*
 credentials/*
 secring.gpg
-*/build

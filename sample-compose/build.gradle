@@ -1,23 +1,18 @@
 plugins {
   id 'com.android.application'
-  id 'kotlin-android'
+  id "kotlin-android"
   id 'kotlin-kapt'
 }
 
 android {
-  compileSdkVersion 30
-  buildToolsVersion "30.0.3"
-
+  compileSdk 30
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
-    minSdkVersion 21
-    targetSdkVersion 30
+    minSdk 21
+    targetSdk 30
     versionCode 1
     versionName VERSION_NAME
-
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
-
   buildTypes {
     release {
       minifyEnabled false
@@ -28,7 +23,7 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
   kotlinOptions {
-    jvmTarget = '1.8'
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
@@ -53,35 +48,28 @@ kapt {
 
 dependencies {
   implementation project(':lottie-compose')
-  implementation 'androidx.core:core-ktx:1.6.0'
-  implementation 'androidx.multidex:multidex:2.0.1'
-  implementation 'androidx.activity:activity-ktx:1.3.1'
-  implementation 'androidx.activity:activity-compose:1.3.1'
+  implementation "androidx.core:core-ktx:$coreVersion"
+  implementation "androidx.activity:activity-compose:$activityVersion"
   implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
-  implementation 'com.google.android.material:material:1.4.0'
+  implementation "com.google.android.material:material:$materialVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
   implementation "androidx.compose.material:material:$composeVersion"
   implementation "androidx.compose.material:material-icons-extended:$composeVersion"
   implementation "androidx.compose.ui:ui-tooling:$composeVersion"
   implementation "androidx.navigation:navigation-compose:2.4.0-alpha04"
-  implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
 
   implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
 
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
   implementation "com.google.dagger:dagger:$daggerVersion"
   kapt "com.google.dagger:dagger-compiler:$daggerVersion"
 
-  implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-  implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+  implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+  implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
   implementation "com.google.accompanist:accompanist-coil:0.15.0"
-  implementation "com.google.accompanist:accompanist-pager-indicators:0.17.0"
+  implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
   implementation 'com.airbnb.android:mavericks:2.3.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
-
-  testImplementation 'junit:junit:4.13.2'
-  androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-  androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
