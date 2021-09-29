@@ -71,7 +71,7 @@ dependencies {
   implementation "androidx.paging:paging-runtime-ktx:3.0.1"
   implementation "androidx.cardview:cardview:1.0.0"
   implementation "androidx.core:core-ktx:$coreVersion"
-  implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+  implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
   implementation "androidx.browser:browser:1.3.0"
   implementation "com.google.android.material:material:$materialVersion"
 

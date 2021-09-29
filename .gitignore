@@ -24,6 +24,10 @@
 .idea/**/dbnavigator.xml
 .idea/deploymentTargetDropDown.xml
 .idea/misc.xml
+.idea/jarRepositories.xml
+.idea/gradle.properties
+.idea/vcs.xml
+.idea/modules.xml
 
 # Gradle
 .idea/**/gradle.xml
