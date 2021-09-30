@@ -28,6 +28,8 @@
 .idea/gradle.properties
 .idea/vcs.xml
 .idea/modules.xml
+.idea/codeStyleSettings.xml
+.idea/compiler.xml
 
 # Gradle
 .idea/**/gradle.xml
