@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-  compileSdk 30
+  compileSdk 31
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
     minSdk 21
@@ -50,13 +50,13 @@ dependencies {
   implementation project(':lottie-compose')
   implementation "androidx.core:core-ktx:$coreVersion"
   implementation "androidx.activity:activity-compose:$activityVersion"
-  implementation 'androidx.appcompat:appcompat:1.4.0-alpha03'
+  implementation 'androidx.appcompat:appcompat:1.4.0-beta01'
   implementation "com.google.android.material:material:$materialVersion"
   implementation "androidx.compose.ui:ui:$composeVersion"
   implementation "androidx.compose.material:material:$composeVersion"
   implementation "androidx.compose.material:material-icons-extended:$composeVersion"
   implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-  implementation "androidx.navigation:navigation-compose:2.4.0-alpha04"
+  implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
   implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
 
   implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
