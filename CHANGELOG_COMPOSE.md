@@ -1,5 +1,9 @@
-#### Note: For the time being, we won't provide numbered releases for every new Jetpack Compose
-version. Check out our [snapshot builds](https://github.com/airbnb/lottie/blob/master/android-compose.md#getting-started) instead.
+# 4.2.0
+* [BREAKING CHANGE] LottieAnimation will now default to the composition size rather than `fillMaxSize()` ([#1892](https://github.com/airbnb/lottie-android/pull/1892))
+* Improved the performance of loading and parsing animations ([#1891](https://github.com/airbnb/lottie-android/pull/1891))
+
+# 4.1.0
+* No changes
 
 # 4.0.0
 * Upgrade to Compose 1.0

@@ -1,3 +1,6 @@
+# 4.2.0
+* Fixed some rounding errors with trim paths ([#1897](https://github.com/airbnb/lottie-android/pull/1897))
+
 # 4.1.0
 * Added support for gaussian blur effects ([#1859](https://github.com/airbnb/lottie-android/pull/1859))
 * Added support for drop shadow effects ([#1860](https://github.com/airbnb/lottie-android/pull/1860))
