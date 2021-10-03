@@ -1,9 +1,9 @@
 package com.airbnb.lottie.sample.compose
 
 import android.util.Base64
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
-import androidx.navigation.compose.NamedNavArgument
-import androidx.navigation.compose.navArgument
+import androidx.navigation.navArgument
 
 fun NavController.navigate(route: Route) = navigate(route.route)
 

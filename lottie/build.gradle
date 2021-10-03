@@ -8,7 +8,7 @@ plugins {
 
 android {
   resourcePrefix 'lottie_'
-  compileSdk 30
+  compileSdk 31
   defaultConfig {
     minSdk 16
     targetSdk 30
