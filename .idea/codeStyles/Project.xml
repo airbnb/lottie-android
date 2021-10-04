@@ -1,6 +1,5 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
-    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
     <JavaCodeStyleSettings>
       <option name="DO_NOT_WRAP_AFTER_SINGLE_ANNOTATION" value="true" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
@@ -9,9 +8,6 @@
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="2147483647" />
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
-    <XML>
-      <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
-    </XML>
     <codeStyleSettings language="Groovy">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />

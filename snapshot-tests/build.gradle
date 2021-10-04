@@ -1,0 +1,86 @@
+plugins {
+  id 'com.android.application'
+  id "kotlin-android"
+  id 'kotlin-kapt'
+}
+
+android {
+  compileSdk 31
+  defaultConfig {
+    applicationId "com.airbnb.lottie.snapshots"
+    minSdk 21
+    targetSdk 30
+    versionCode 1
+    versionName VERSION_NAME
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    buildConfigField("String", "BITRISE_GIT_BRANCH", "\"" + System.getenv("BITRISE_GIT_BRANCH") + "\"")
+    buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")
+    buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
+  }
+
+  buildTypes {
+    debug {
+      buildConfigField("String", "S3AccessKey", "\"" + System.getenv("LOTTIE_S3_API_KEY") + "\"")
+      buildConfigField("String", "S3SecretKey", "\"" + System.getenv("LOTTIE_S3_SECRET_KEY") + "\"")
+      buildConfigField("String", "HappoApiKey", "\"" + System.getenv("LOTTIE_HAPPO_API_KEY") + "\"")
+      buildConfigField("String", "HappoSecretKey", "\"" + System.getenv("LOTTIE_HAPPO_SECRET_KEY") + "\"")
+    }
+    release {
+      minifyEnabled false
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    freeCompilerArgs += [
+        "-Xallow-jvm-ir-dependencies",
+        "-Xskip-prerelease-check",
+        "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
+        "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
+        "-Xopt-in=kotlin.RequiresOptIn",
+    ]
+  }
+  buildFeatures {
+    compose true
+    viewBinding true
+  }
+
+  composeOptions {
+    kotlinCompilerExtensionVersion composeVersion
+  }
+}
+
+kapt {
+  correctErrorTypes = true
+}
+
+dependencies {
+  implementation project(':lottie-compose')
+  implementation "androidx.core:core-ktx:$coreVersion"
+  implementation "androidx.activity:activity-compose:$activityVersion"
+  implementation 'androidx.appcompat:appcompat:1.4.0-beta01'
+  implementation "androidx.compose.ui:ui:$composeVersion"
+  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+
+  implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+
+  androidTestImplementation "com.amazonaws:aws-android-sdk-s3:$awsVersion"
+  androidTestImplementation("com.amazonaws:aws-android-sdk-mobile-client:$awsVersion") { transitive = true }
+  androidTestImplementation("com.amazonaws:aws-android-sdk-auth-userpools:$awsVersion") { transitive = true }
+
+  androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
+  androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+  androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+  androidTestImplementation 'androidx.test:core:1.3.0'
+  androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.1'
+  androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
+  androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+}

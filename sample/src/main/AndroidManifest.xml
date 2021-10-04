@@ -65,7 +65,6 @@
             android:name=".SimpleAnimationActivity"
             android:exported="true" />
 
-        <activity android:name=".SnapshotTestActivity" />
         <activity android:name=".EmptyActivity" />
         <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
     </application>
