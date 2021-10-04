@@ -11,7 +11,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-internal class BitmapPool {
+class BitmapPool {
     private val semaphore = SuspendingSemaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()

@@ -38,7 +38,7 @@ private const val TAG = "HappotSnapshotter"
  *    2) Call finalizeAndUpload
  */
 class HappoSnapshotter(
-        private val context: Context
+        private val context: Context,
 ) {
     private val recordJob = Job()
     private val recordContext: CoroutineContext

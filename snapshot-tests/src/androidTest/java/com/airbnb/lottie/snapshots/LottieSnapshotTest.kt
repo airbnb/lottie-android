@@ -4,7 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PointF
+import android.graphics.PorterDuff
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,24 +23,46 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
-import com.airbnb.lottie.*
+import com.airbnb.lottie.FontAssetDelegate
+import com.airbnb.lottie.L
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.SimpleColorFilter
+import com.airbnb.lottie.TextDelegate
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.databinding.TestColorFilterBinding
+import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import com.airbnb.lottie.snapshots.utils.SuspendingSemaphore
 import com.airbnb.lottie.snapshots.utils.await
 import com.airbnb.lottie.snapshots.utils.fetchAllObjects
-import com.airbnb.lottie.value.*
+import com.airbnb.lottie.value.LottieFrameInfo
+import com.airbnb.lottie.value.LottieInterpolatedIntegerValue
+import com.airbnb.lottie.value.LottieRelativeFloatValueCallback
+import com.airbnb.lottie.value.LottieRelativePointValueCallback
+import com.airbnb.lottie.value.LottieValueCallback
+import com.airbnb.lottie.value.ScaleXY
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.S3ObjectSummary
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,8 +85,8 @@ class LottieSnapshotTest {
 
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
     private lateinit var prodAnimationsTransferUtility: TransferUtility
@@ -81,6 +107,7 @@ class LottieSnapshotTest {
             setLayerType(View.LAYER_TYPE_NONE, null)
         }
     }
+
     @Suppress("DEPRECATION")
     private val animationViewPool = ObjectPool<LottieAnimationView> {
         val animationViewContainer = FrameLayout(application)
@@ -95,30 +122,44 @@ class LottieSnapshotTest {
         L.DBG = false
         snapshotter = HappoSnapshotter(application)
         prodAnimationsTransferUtility = TransferUtility.builder()
-                .context(application)
-                .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
-                .defaultBucket("lottie-prod-animations")
-                .build()
+            .context(application)
+            .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
+            .defaultBucket("lottie-prod-animations")
+            .build()
         LottieCompositionCache.getInstance().resize(5)
     }
 
     @Test
     fun testAll() = runBlocking {
+        val testCaseContext: SnapshotTestCaseContext = object : SnapshotTestCaseContext {
+            override val context: Context = application
+            override val snapshotter: HappoSnapshotter = this@LottieSnapshotTest.snapshotter
+            override val bitmapPool: BitmapPool = this@LottieSnapshotTest.bitmapPool
+        }
+        val testCases = listOf<SnapshotTestCase>(
+            CustomBoundsTestCase()
+        )
+
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-            testCustomBounds()
-            testColorStateListColorFilter()
-            testFailure()
-            snapshotFrameBoundaries()
-            snapshotScaleTypes()
-            testDynamicProperties()
-            testMarkers()
-            testAssets()
-            testText()
-            testPartialFrameProgress()
-            testProdAnimations()
-            testNightMode()
-            testApplyOpacityToLayer()
-            testOutlineMasksAndMattes()
+            for (testCase in testCases) {
+                with(testCase) {
+                    testCaseContext.run()
+                }
+            }
+//            testCustomBounds()
+//            testColorStateListColorFilter()
+//            testFailure()
+//            snapshotFrameBoundaries()
+//            snapshotScaleTypes()
+//            testDynamicProperties()
+//            testMarkers()
+//            testAssets()
+//            testText()
+//            testPartialFrameProgress()
+//            testProdAnimations()
+//            testNightMode()
+//            testApplyOpacityToLayer()
+//            testOutlineMasksAndMattes()
             snapshotter.finalizeReportAndUpload()
         }
     }
@@ -133,8 +174,8 @@ class LottieSnapshotTest {
     }
 
     private fun CoroutineScope.downloadAnimations(animations: List<S3ObjectSummary>) = produce(
-            context = Dispatchers.IO,
-            capacity = 10
+        context = Dispatchers.IO,
+        capacity = 10
     ) {
         for (animation in animations) {
             val file = File(application.cacheDir, animation.key)
@@ -146,8 +187,8 @@ class LottieSnapshotTest {
 
     @Suppress("BlockingMethodInNonBlockingContext")
     private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
-            context = Dispatchers.Default,
-            capacity = 1
+        context = Dispatchers.Default,
+        capacity = 1
     ) {
         for (file in files) {
             log("Parsing ${file.nameWithoutExtension}")
@@ -165,10 +206,10 @@ class LottieSnapshotTest {
     }
 
     private suspend fun snapshotComposition(
-            name: String,
-            variant: String = "default",
-            composition: LottieComposition,
-            callback: ((FilmStripView) -> Unit)? = null
+        name: String,
+        variant: String = "default",
+        composition: LottieComposition,
+        callback: ((FilmStripView) -> Unit)? = null
     ) = withContext(Dispatchers.Default) {
         log("Snapshotting $name")
         val bitmap = bitmapPool.acquire(1000, 1000)
@@ -213,8 +254,8 @@ class LottieSnapshotTest {
     }
 
     private fun CoroutineScope.parseCompositionsFromAssets(assets: List<String>) = produce(
-            context = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
-            capacity = 10
+        context = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
+        capacity = 10
     ) {
         for (asset in assets) {
             log("Parsing $asset")
@@ -234,11 +275,15 @@ class LottieSnapshotTest {
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(
+            application.resources.displayMetrics
                 .widthPixels,
-                View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
-                .heightPixels, View.MeasureSpec.EXACTLY)
+            View.MeasureSpec.EXACTLY
+        )
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(
+            application.resources.displayMetrics
+                .heightPixels, View.MeasureSpec.EXACTLY
+        )
         val animationViewContainer = animationView.parent as ViewGroup
         animationViewContainer.measure(widthSpec, heightSpec)
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
@@ -365,8 +410,7 @@ class LottieSnapshotTest {
             animationView.scaleType = ImageView.ScaleType.FIT_XY
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 fitXY DisableExtraScale") {
-            animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 fitXY DisableExtraScale") { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -455,52 +499,60 @@ class LottieSnapshotTest {
 
     private suspend fun testDynamicProperties() {
         testDynamicProperty(
-                "Fill color (Green)",
-                KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
-                LottieProperty.COLOR,
-                LottieValueCallback(Color.GREEN))
+            "Fill color (Green)",
+            KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
+            LottieProperty.COLOR,
+            LottieValueCallback(Color.GREEN)
+        )
 
         testDynamicProperty(
-                "Fill color (Yellow)",
-                KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
-                LottieProperty.COLOR,
-                LottieValueCallback(Color.YELLOW))
+            "Fill color (Yellow)",
+            KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
+            LottieProperty.COLOR,
+            LottieValueCallback(Color.YELLOW)
+        )
 
         testDynamicProperty(
-                "Fill opacity",
-                KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
-                LottieProperty.OPACITY,
-                LottieValueCallback(50))
+            "Fill opacity",
+            KeyPath("Shape Layer 1", "Rectangle", "Fill 1"),
+            LottieProperty.OPACITY,
+            LottieValueCallback(50)
+        )
 
         testDynamicProperty(
-                "Stroke color",
-                KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
-                LottieProperty.STROKE_COLOR,
-                LottieValueCallback(Color.GREEN))
+            "Stroke color",
+            KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
+            LottieProperty.STROKE_COLOR,
+            LottieValueCallback(Color.GREEN)
+        )
 
         testDynamicProperty(
-                "Stroke width",
-                KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
-                LottieProperty.STROKE_WIDTH,
-                LottieRelativeFloatValueCallback(50f))
+            "Stroke width",
+            KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
+            LottieProperty.STROKE_WIDTH,
+            LottieRelativeFloatValueCallback(50f)
+        )
 
         testDynamicProperty(
-                "Stroke opacity",
-                KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
-                LottieProperty.OPACITY,
-                LottieValueCallback(50))
+            "Stroke opacity",
+            KeyPath("Shape Layer 1", "Rectangle", "Stroke 1"),
+            LottieProperty.OPACITY,
+            LottieValueCallback(50)
+        )
 
         testDynamicProperty(
-                "Transform anchor point",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_ANCHOR_POINT,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Transform anchor point",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_ANCHOR_POINT,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Transform position",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Transform position",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
 
         testDynamicProperty(
@@ -508,250 +560,289 @@ class LottieSnapshotTest {
             KeyPath("Shape Layer 1"),
             LottieProperty.TRANSFORM_POSITION_X,
             object : LottieValueCallback<Float>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Float>) =  frameInfo.startValue
+                override fun getValue(frameInfo: LottieFrameInfo<Float>) = frameInfo.startValue
             },
             progress = 1f,
-            assetName = "Tests/SplitPathTransform.json")
+            assetName = "Tests/SplitPathTransform.json"
+        )
 
         testDynamicProperty(
             "Transform position Y",
             KeyPath("Shape Layer 1"),
             LottieProperty.TRANSFORM_POSITION_Y,
             object : LottieValueCallback<Float>() {
-                override fun getValue(frameInfo: LottieFrameInfo<Float>) =  frameInfo.startValue
+                override fun getValue(frameInfo: LottieFrameInfo<Float>) = frameInfo.startValue
             },
             progress = 1f,
-            assetName = "Tests/SplitPathTransform.json")
+            assetName = "Tests/SplitPathTransform.json"
+        )
 
         testDynamicProperty(
-                "Transform position (relative)",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Transform position (relative)",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Transform opacity",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_OPACITY,
-                LottieValueCallback(50))
+            "Transform opacity",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_OPACITY,
+            LottieValueCallback(50)
+        )
 
         testDynamicProperty(
-                "Transform rotation",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_ROTATION,
-                LottieValueCallback(45f))
+            "Transform rotation",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_ROTATION,
+            LottieValueCallback(45f)
+        )
 
         testDynamicProperty(
-                "Transform scale",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_SCALE,
-                LottieValueCallback(ScaleXY(0.5f, 0.5f)))
+            "Transform scale",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_SCALE,
+            LottieValueCallback(ScaleXY(0.5f, 0.5f))
+        )
 
         testDynamicProperty(
-                "Rectangle corner roundedness",
-                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
-                LottieProperty.CORNER_RADIUS,
-                LottieValueCallback(7f))
+            "Rectangle corner roundedness",
+            KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
+            LottieProperty.CORNER_RADIUS,
+            LottieValueCallback(7f)
+        )
 
         testDynamicProperty(
-                "Rectangle position",
-                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
-                LottieProperty.POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Rectangle position",
+            KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
+            LottieProperty.POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Rectangle size",
-                KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
-                LottieProperty.RECTANGLE_SIZE,
-                LottieRelativePointValueCallback(PointF(30f, 40f)))
+            "Rectangle size",
+            KeyPath("Shape Layer 1", "Rectangle", "Rectangle Path 1"),
+            LottieProperty.RECTANGLE_SIZE,
+            LottieRelativePointValueCallback(PointF(30f, 40f))
+        )
 
         testDynamicProperty(
-                "Ellipse position",
-                KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
-                LottieProperty.POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Ellipse position",
+            KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+            LottieProperty.POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Ellipse size",
-                KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
-                LottieProperty.ELLIPSE_SIZE,
-                LottieRelativePointValueCallback(PointF(40f, 60f)))
+            "Ellipse size",
+            KeyPath("Shape Layer 1", "Ellipse", "Ellipse Path 1"),
+            LottieProperty.ELLIPSE_SIZE,
+            LottieRelativePointValueCallback(PointF(40f, 60f))
+        )
 
         testDynamicProperty(
-                "Star points",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_POINTS,
-                LottieValueCallback(8f))
+            "Star points",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_POINTS,
+            LottieValueCallback(8f)
+        )
 
         testDynamicProperty(
-                "Star rotation",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_ROTATION,
-                LottieValueCallback(10f))
+            "Star rotation",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_ROTATION,
+            LottieValueCallback(10f)
+        )
 
         testDynamicProperty(
-                "Star position",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Star position",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Star inner radius",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_INNER_RADIUS,
-                LottieValueCallback(10f))
+            "Star inner radius",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_INNER_RADIUS,
+            LottieValueCallback(10f)
+        )
 
         testDynamicProperty(
-                "Star inner roundedness",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_INNER_ROUNDEDNESS,
-                LottieValueCallback(100f))
+            "Star inner roundedness",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_INNER_ROUNDEDNESS,
+            LottieValueCallback(100f)
+        )
 
         testDynamicProperty(
-                "Star outer radius",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_OUTER_RADIUS,
-                LottieValueCallback(60f))
+            "Star outer radius",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_OUTER_RADIUS,
+            LottieValueCallback(60f)
+        )
 
         testDynamicProperty(
-                "Star outer roundedness",
-                KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
-                LottieValueCallback(100f))
+            "Star outer roundedness",
+            KeyPath("Shape Layer 1", "Star", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
+            LottieValueCallback(100f)
+        )
 
         testDynamicProperty(
-                "Polygon points",
-                KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_POINTS,
-                LottieValueCallback(8f))
+            "Polygon points",
+            KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_POINTS,
+            LottieValueCallback(8f)
+        )
 
         testDynamicProperty(
-                "Polygon rotation",
-                KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_ROTATION,
-                LottieValueCallback(10f))
+            "Polygon rotation",
+            KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_ROTATION,
+            LottieValueCallback(10f)
+        )
 
         testDynamicProperty(
-                "Polygon position",
-                KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
-                LottieProperty.POSITION,
-                LottieRelativePointValueCallback(PointF(20f, 20f)))
+            "Polygon position",
+            KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
+            LottieProperty.POSITION,
+            LottieRelativePointValueCallback(PointF(20f, 20f))
+        )
 
         testDynamicProperty(
-                "Polygon radius",
-                KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_OUTER_RADIUS,
-                LottieRelativeFloatValueCallback(60f))
+            "Polygon radius",
+            KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_OUTER_RADIUS,
+            LottieRelativeFloatValueCallback(60f)
+        )
 
         testDynamicProperty(
-                "Polygon roundedness",
-                KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
-                LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
-                LottieValueCallback(100f))
+            "Polygon roundedness",
+            KeyPath("Shape Layer 1", "Polygon", "Polystar Path 1"),
+            LottieProperty.POLYSTAR_OUTER_ROUNDEDNESS,
+            LottieValueCallback(100f)
+        )
 
         testDynamicProperty(
-                "Repeater transform position",
-                KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-                LottieProperty.TRANSFORM_POSITION,
-                LottieRelativePointValueCallback(PointF(100f, 100f)))
+            "Repeater transform position",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_POSITION,
+            LottieRelativePointValueCallback(PointF(100f, 100f))
+        )
 
         testDynamicProperty(
-                "Repeater transform start opacity",
-                KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-                LottieProperty.TRANSFORM_START_OPACITY,
-                LottieValueCallback(25f))
+            "Repeater transform start opacity",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_START_OPACITY,
+            LottieValueCallback(25f)
+        )
 
         testDynamicProperty(
-                "Repeater transform end opacity",
-                KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-                LottieProperty.TRANSFORM_END_OPACITY,
-                LottieValueCallback(25f))
+            "Repeater transform end opacity",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_END_OPACITY,
+            LottieValueCallback(25f)
+        )
 
         testDynamicProperty(
-                "Repeater transform rotation",
-                KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-                LottieProperty.TRANSFORM_ROTATION,
-                LottieValueCallback(45f))
+            "Repeater transform rotation",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_ROTATION,
+            LottieValueCallback(45f)
+        )
 
         testDynamicProperty(
-                "Repeater transform scale",
-                KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
-                LottieProperty.TRANSFORM_SCALE,
-                LottieValueCallback(ScaleXY(2f, 2f)))
+            "Repeater transform scale",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_SCALE,
+            LottieValueCallback(ScaleXY(2f, 2f))
+        )
 
         testDynamicProperty(
-                "Time remapping",
-                KeyPath("Circle 1"),
-                LottieProperty.TIME_REMAP,
-                LottieValueCallback(1f))
+            "Time remapping",
+            KeyPath("Circle 1"),
+            LottieProperty.TIME_REMAP,
+            LottieValueCallback(1f)
+        )
 
         testDynamicProperty(
-                "Color Filter",
-                KeyPath("**"),
-                LottieProperty.COLOR_FILTER,
-                LottieValueCallback(SimpleColorFilter(Color.GREEN)))
+            "Color Filter",
+            KeyPath("**"),
+            LottieProperty.COLOR_FILTER,
+            LottieValueCallback(SimpleColorFilter(Color.GREEN))
+        )
 
         testDynamicProperty(
-                "Null Color Filter",
-                KeyPath("**"),
-                LottieProperty.COLOR_FILTER,
-                LottieValueCallback(null))
+            "Null Color Filter",
+            KeyPath("**"),
+            LottieProperty.COLOR_FILTER,
+            LottieValueCallback(null)
+        )
 
         testDynamicProperty(
-                "Opacity interpolation (0)",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_OPACITY,
-                LottieInterpolatedIntegerValue(10, 100),
-                0f)
+            "Opacity interpolation (0)",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_OPACITY,
+            LottieInterpolatedIntegerValue(10, 100),
+            0f
+        )
 
         testDynamicProperty(
-                "Opacity interpolation (0.5)",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_OPACITY,
-                LottieInterpolatedIntegerValue(10, 100),
-                0.5f)
+            "Opacity interpolation (0.5)",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_OPACITY,
+            LottieInterpolatedIntegerValue(10, 100),
+            0.5f
+        )
 
         testDynamicProperty(
-                "Opacity interpolation (1)",
-                KeyPath("Shape Layer 1", "Rectangle"),
-                LottieProperty.TRANSFORM_OPACITY,
-                LottieInterpolatedIntegerValue(10, 100),
-                1f)
+            "Opacity interpolation (1)",
+            KeyPath("Shape Layer 1", "Rectangle"),
+            LottieProperty.TRANSFORM_OPACITY,
+            LottieInterpolatedIntegerValue(10, 100),
+            1f
+        )
 
         testDynamicProperty(
             "Drop Shadow Color",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_COLOR,
             LottieValueCallback(Color.RED),
-            assetName = "Tests/AnimatedShadow.json")
+            assetName = "Tests/AnimatedShadow.json"
+        )
 
         testDynamicProperty(
             "Drop Shadow Distance",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_DISTANCE,
             LottieValueCallback(30f),
-            assetName = "Tests/AnimatedShadow.json")
+            assetName = "Tests/AnimatedShadow.json"
+        )
 
         testDynamicProperty(
             "Drop Shadow Direction",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_DIRECTION,
             LottieValueCallback(30f),
-            assetName = "Tests/AnimatedShadow.json")
+            assetName = "Tests/AnimatedShadow.json"
+        )
 
         testDynamicProperty(
             "Drop Shadow Radius",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_RADIUS,
             LottieValueCallback(40f),
-            assetName = "Tests/AnimatedShadow.json")
+            assetName = "Tests/AnimatedShadow.json"
+        )
 
         testDynamicProperty(
             "Drop Shadow Opacity",
             KeyPath("Shape Layer 1", "**"),
             LottieProperty.DROP_SHADOW_OPACITY,
             LottieValueCallback(0.2f),
-            assetName = "Tests/AnimatedShadow.json")
+            assetName = "Tests/AnimatedShadow.json"
+        )
 
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
@@ -1016,9 +1107,9 @@ class LottieSnapshotTest {
 
     private suspend fun testNightMode() {
         var newConfig = Configuration(application.resources.configuration)
-		newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
+        newConfig.uiMode = newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()
         newConfig.uiMode = newConfig.uiMode or Configuration.UI_MODE_NIGHT_NO
-		val dayContext = application.createConfigurationContext(newConfig)
+        val dayContext = application.createConfigurationContext(newConfig)
         var result = LottieCompositionFactory.fromRawResSync(dayContext, R.raw.day_night)
         var composition = result.value!!
         var drawable = LottieDrawable()
@@ -1056,16 +1147,16 @@ class LottieSnapshotTest {
 
     private suspend fun testApplyOpacityToLayer() {
         withFilmStripView(
-                "Tests/OverlapShapeWithOpacity.json",
-                "Apply Opacity To Layer",
-                "Enabled"
+            "Tests/OverlapShapeWithOpacity.json",
+            "Apply Opacity To Layer",
+            "Enabled"
         ) { filmStripView ->
             filmStripView.setApplyingOpacityToLayersEnabled(true)
         }
         withFilmStripView(
-                "Tests/OverlapShapeWithOpacity.json",
-                "Apply Opacity To Layer",
-                "Disabled"
+            "Tests/OverlapShapeWithOpacity.json",
+            "Apply Opacity To Layer",
+            "Disabled"
         ) { filmStripView ->
             filmStripView.setApplyingOpacityToLayersEnabled(false)
         }
@@ -1146,10 +1237,10 @@ class LottieSnapshotTest {
     }
 
     private suspend fun withAnimationView(
-            assetName: String,
-            snapshotName: String = assetName,
-            snapshotVariant: String = "default",
-            callback: (LottieAnimationView) -> Unit
+        assetName: String,
+        snapshotName: String = assetName,
+        snapshotVariant: String = "default",
+        callback: (LottieAnimationView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(application, assetName)
         val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
@@ -1159,11 +1250,15 @@ class LottieSnapshotTest {
         animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
         callback(animationView)
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(
+            application.resources.displayMetrics
                 .widthPixels,
-                View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(application.resources.displayMetrics
-                .heightPixels, View.MeasureSpec.EXACTLY)
+            View.MeasureSpec.EXACTLY
+        )
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(
+            application.resources.displayMetrics
+                .heightPixels, View.MeasureSpec.EXACTLY
+        )
         val animationViewContainer = animationView.parent as ViewGroup
         animationViewContainer.measure(widthSpec, heightSpec)
         animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
@@ -1180,10 +1275,10 @@ class LottieSnapshotTest {
     }
 
     private suspend fun withFilmStripView(
-            assetName: String,
-            snapshotName: String = assetName,
-            snapshotVariant: String = "default",
-            callback: (FilmStripView) -> Unit
+        assetName: String,
+        snapshotName: String = assetName,
+        snapshotVariant: String = "default",
+        callback: (FilmStripView) -> Unit
     ) {
         val result = LottieCompositionFactory.fromAssetSync(application, assetName)
         val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)
