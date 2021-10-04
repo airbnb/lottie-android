@@ -4,7 +4,6 @@ import android.content.Context
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
-import com.airbnb.lottie.snapshots.consumeAndSnapshotCompositions
 import com.airbnb.lottie.snapshots.snapshotComposition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
