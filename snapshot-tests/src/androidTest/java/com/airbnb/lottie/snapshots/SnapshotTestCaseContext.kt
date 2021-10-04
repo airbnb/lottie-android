@@ -115,7 +115,6 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val filmStripView = filmStripViewPool.acquire()
     filmStripView.setOutlineMasksAndMattes(false)
     filmStripView.setApplyingOpacityToLayersEnabled(false)
-    filmStripView.setFontAssetDelegate(null)
     filmStripView.setImageAssetDelegate(null)
     callback?.invoke(filmStripView)
     filmStripView.measure(spec, spec)
