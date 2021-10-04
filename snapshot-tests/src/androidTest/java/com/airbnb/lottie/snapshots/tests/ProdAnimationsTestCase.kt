@@ -5,7 +5,7 @@ import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
-import com.airbnb.lottie.snapshots.consumeAndSnapshotCompositions
+import com.airbnb.lottie.snapshots.snapshotComposition
 import com.airbnb.lottie.snapshots.utils.await
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
@@ -20,7 +20,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
 
 class ProdAnimationsTestCase : SnapshotTestCase {
@@ -35,7 +34,13 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
         val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
         val compositionsChannel = parseCompositions(downloadChannel)
-        consumeAndSnapshotCompositions(3, compositionsChannel)
+        repeat(3) {
+            launch {
+                for ((name, composition) in compositionsChannel) {
+                    snapshotComposition(name, composition = composition)
+                }
+            }
+        }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
@@ -43,7 +48,6 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         context = Dispatchers.Default,
         capacity = 50,
     ) {
-        val num = AtomicInteger()
         repeat(3) {
             launch {
                 for (file in files) {
@@ -60,7 +64,6 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         context = Dispatchers.IO,
         capacity = 30,
     ) {
-        val num = AtomicInteger()
         coroutineScope {
             animations
                 .chunked(animations.size / 8)

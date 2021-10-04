@@ -18,30 +18,17 @@ import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Set of properties that are available to all [SnapshotTestCase] runs.
+ */
 interface SnapshotTestCaseContext {
     val context: Context
     val snapshotter: HappoSnapshotter
     val bitmapPool: BitmapPool
     val animationViewPool: ObjectPool<LottieAnimationView>
     val filmStripViewPool: ObjectPool<FilmStripView>
-}
-
-suspend fun SnapshotTestCaseContext.consumeAndSnapshotCompositions(
-    workers: Int,
-    channel: ReceiveChannel<Pair<String, LottieComposition>>,
-) = coroutineScope {
-    repeat(workers) {
-        launch {
-            for ((name, composition) in channel) {
-                snapshotComposition(name, composition = composition)
-            }
-        }
-    }
 }
 
 @Suppress("unused")

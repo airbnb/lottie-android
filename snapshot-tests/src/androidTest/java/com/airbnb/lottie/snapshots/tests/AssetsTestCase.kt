@@ -5,17 +5,25 @@ import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.consumeAndSnapshotCompositions
+import com.airbnb.lottie.snapshots.snapshotComposition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class AssetsTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
         val assetsChannel = listAssets()
         val compositionsChannel = parseCompositionsFromAssets(context, assetsChannel)
-        consumeAndSnapshotCompositions(3, compositionsChannel)
+        repeat(3) {
+            launch {
+                for ((name, composition) in compositionsChannel) {
+                    snapshotComposition(name, composition = composition)
+                }
+            }
+        }
     }
     private fun SnapshotTestCaseContext.listAssets(assets: MutableList<String> = mutableListOf(), pathPrefix: String = ""): List<String> {
         context.assets.list(pathPrefix)?.forEach { animation ->
