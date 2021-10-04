@@ -27,11 +27,11 @@ class FilmStripView @JvmOverloads constructor(
         }
     }
 
-    fun setImageAssetDelegate(delegate: ImageAssetDelegate) {
+    fun setImageAssetDelegate(delegate: ImageAssetDelegate?) {
         animationViews.forEach { it.setImageAssetDelegate(delegate) }
     }
 
-    fun setFontAssetDelegate(delegate: FontAssetDelegate) {
+    fun setFontAssetDelegate(delegate: FontAssetDelegate?) {
         animationViews.forEach { it.setFontAssetDelegate(delegate) }
     }
 
