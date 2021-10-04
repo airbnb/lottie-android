@@ -62,7 +62,6 @@ class BitmapPool {
     }
 
     private fun createNewBitmap(width: Int, height: Int): Bitmap {
-        Log.d("LottieTest", "Creating a new bitmap of $width x $height")
         // Make the bitmap at least as large as the screen so we don't wind up with a fragmented pool of
         // bitmap sizes. We'll crop the right size out of it before returning it in acquire().
         return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -73,7 +72,7 @@ class BitmapPool {
         // If this limit is reached a thread must wait for another bitmap to be returned.
         // Bitmaps are expensive, and if we aren't careful we can easily allocate too many bitmaps
         // since coroutines run parallelized.
-        private const val MAX_RELEASED_BITMAPS = 10
+        private const val MAX_RELEASED_BITMAPS = 40
 
         private val TRANSPARENT_1X1_BITMAP: Bitmap by lazy {
             Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8)

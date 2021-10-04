@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.*
 import kotlin.collections.HashSet
 
-internal class ObjectPool<T>(private val factory: () -> T) {
+class ObjectPool<T>(private val factory: () -> T) {
 
     private val semaphore = SuspendingSemaphore(MAX_RELEASED_OBJECTS)
     private val objects = Collections.synchronizedList(ArrayList<T>())

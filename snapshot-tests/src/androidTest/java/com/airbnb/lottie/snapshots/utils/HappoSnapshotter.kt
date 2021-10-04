@@ -18,17 +18,20 @@ import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.math.BigInteger
 import java.net.URLEncoder
 import java.nio.charset.Charset
+import java.security.MessageDigest
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-private const val TAG = "HappotSnapshotter"
+private const val TAG = "HappoSnapshotter"
 
 /**
  * Use this class to record Bitmap snapshots and upload them to happo.
@@ -39,6 +42,7 @@ private const val TAG = "HappotSnapshotter"
  */
 class HappoSnapshotter(
         private val context: Context,
+        private val onSnapshotRecorded: (snapshotName: String, snapshotVariant: String) -> Unit,
 ) {
     private val recordJob = Job()
     private val recordContext: CoroutineContext
@@ -68,10 +72,13 @@ class HappoSnapshotter(
         val md5 = bitmap.md5
         val key = "snapshots/$md5.png"
         val file = File(context.cacheDir, "$md5.png")
+        @Suppress("BlockingMethodInNonBlockingContext")
         val outputStream = FileOutputStream(file)
+        // This is the biggest bottleneck in overall performance. Compress + save can take ~75ms per snapshot.
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        recordScope.async { transferUtility.uploadDeferred(key, file) }
+        recordScope.launch { uploadDeferred(key, file) }
         snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        onSnapshotRecorded(animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {
@@ -106,11 +113,12 @@ class HappoSnapshotter(
         if (response.isSuccessful) {
             Log.d(TAG, "Uploaded $reportName to happo")
         } else {
+            @Suppress("BlockingMethodInNonBlockingContext")
             throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code}. " + response.body?.string())
         }
     }
 
-    private suspend fun TransferUtility.uploadDeferred(key: String, file: File): TransferObserver {
+    private suspend fun uploadDeferred(key: String, file: File): TransferObserver {
         return transferUtility.upload(key, file, CannedAccessControlList.PublicRead).await()
     }
 
@@ -125,4 +133,14 @@ class HappoSnapshotter(
             }
         })
     }
+
+    private val Bitmap.md5: String
+        get() {
+            val outputStream = ByteArrayOutputStream()
+            compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            val bytes = outputStream.toByteArray()
+            val digest = MessageDigest.getInstance("MD5")
+            digest.update(bytes, 0, bytes.size)
+            return BigInteger(1, digest.digest()).toString(16)
+        }
 }

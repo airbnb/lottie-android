@@ -7,7 +7,7 @@ import com.airbnb.lottie.snapshots.utils.viewBinding
 class SnapshotTestActivity : AppCompatActivity() {
     private val binding: SnapshotTestsActivityBinding by viewBinding()
 
-    fun recordSnapshot(snapshotName: String, snapshotVariant: String) {
+    fun updateUiForSnapshot(snapshotName: String, snapshotVariant: String) {
         binding.counterTextView.post {
             binding.statusTextView.text = if (snapshotVariant == "default") snapshotName else "$snapshotName - $snapshotVariant"
             val count = binding.counterTextView.text.toString().toInt()
