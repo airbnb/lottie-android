@@ -57,16 +57,12 @@
         </activity>
         <activity android:name=".DynamicTextActivity" />
         <activity android:name=".WishListActivity" />
-        <activity
-            android:name=".testing.FilmStripSnapshotActivity"
-            android:exported="true" />
 
         <activity
             android:name=".SimpleAnimationActivity"
             android:exported="true" />
 
         <activity android:name=".EmptyActivity" />
-        <service android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService" android:enabled="true" />
     </application>
 
 </manifest>
