@@ -80,12 +80,6 @@ class LottieSnapshotTest {
             }
             override val filmStripViewPool: ObjectPool<FilmStripView> = ObjectPool {
                 FilmStripView(context).apply {
-                    setImageAssetDelegate { BitmapFactory.decodeResource(context.resources, R.drawable.airbnb) }
-                    setFontAssetDelegate(object : FontAssetDelegate() {
-                        override fun getFontPath(fontFamily: String?): String {
-                            return "fonts/Roboto.ttf"
-                        }
-                    })
                     setLayerType(View.LAYER_TYPE_NONE, null)
                 }
             }

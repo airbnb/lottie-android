@@ -1,6 +1,7 @@
 package com.airbnb.lottie.snapshots
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
@@ -115,7 +117,12 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val filmStripView = filmStripViewPool.acquire()
     filmStripView.setOutlineMasksAndMattes(false)
     filmStripView.setApplyingOpacityToLayersEnabled(false)
-    filmStripView.setImageAssetDelegate(null)
+    filmStripView.setImageAssetDelegate { BitmapFactory.decodeResource(context.resources, R.drawable.airbnb) }
+    filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {
+        override fun getFontPath(fontFamily: String?): String {
+            return "fonts/Roboto.ttf"
+        }
+    })
     callback?.invoke(filmStripView)
     filmStripView.measure(spec, spec)
     filmStripView.layout(0, 0, 1000, 1000)
