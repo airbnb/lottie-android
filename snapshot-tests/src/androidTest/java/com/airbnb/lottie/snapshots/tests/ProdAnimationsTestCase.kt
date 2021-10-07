@@ -34,49 +34,33 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
         val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
         val compositionsChannel = parseCompositions(downloadChannel)
-        repeat(1) {
-            launch {
-                for ((name, composition) in compositionsChannel) {
-                    snapshotComposition(name, composition = composition)
-                }
-            }
+        for ((name, composition) in compositionsChannel) {
+            snapshotComposition(name, composition = composition)
         }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.Default,
-        capacity = 50,
+        capacity = 1,
     ) {
-        repeat(1) {
-            launch {
-                for (file in files) {
-                    val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
-                    else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
-                    val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
-                    send("prod-${file.nameWithoutExtension}" to composition)
-                }
-            }
+        for (file in files) {
+            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
+            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
+            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+            send("prod-${file.nameWithoutExtension}" to composition)
         }
     }
 
     private fun CoroutineScope.downloadAnimations(context: Context, animations: List<S3ObjectSummary>, transferUtility: TransferUtility) = produce(
         context = Dispatchers.IO,
-        capacity = 30,
+        capacity = 10,
     ) {
-        coroutineScope {
-            animations
-                .chunked(animations.size / 8)
-                .forEach { animationsChunk ->
-                    launch {
-                        for (animation in animationsChunk) {
-                            val file = File(context.cacheDir, animation.key)
-                            file.deleteOnExit()
-                            transferUtility.download(animation.key, file).await()
-                            send(file)
-                        }
-                    }
-                }
+        for (animation in animations) {
+            val file = File(context.cacheDir, animation.key)
+            file.deleteOnExit()
+            transferUtility.download(animation.key, file).await()
+            send(file)
         }
     }
 
