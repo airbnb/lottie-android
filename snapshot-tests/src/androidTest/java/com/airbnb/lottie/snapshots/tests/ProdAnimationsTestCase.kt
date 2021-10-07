@@ -1,12 +1,15 @@
 package com.airbnb.lottie.snapshots.tests
 
 import android.content.Context
+import android.util.Log
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.snapshotComposition
+import com.airbnb.lottie.snapshots.utils.TAG
 import com.airbnb.lottie.snapshots.utils.await
+import com.airbnb.lottie.snapshots.utils.retry
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
@@ -59,7 +62,9 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         for (animation in animations) {
             val file = File(context.cacheDir, animation.key)
             file.deleteOnExit()
-            transferUtility.download(animation.key, file).await()
+            retry { _, _ ->
+                transferUtility.download(animation.key, file).await()
+            }
             send(file)
         }
     }

@@ -119,7 +119,9 @@ class HappoSnapshotter(
     }
 
     private suspend fun uploadDeferred(key: String, file: File): TransferObserver {
-        return transferUtility.upload(key, file, CannedAccessControlList.PublicRead).await()
+        return retry { _, _ ->
+            transferUtility.upload(key, file, CannedAccessControlList.PublicRead).await()
+        }
     }
 
     private suspend fun OkHttpClient.executeDeferred(request: Request): Response = suspendCoroutine { continuation ->
