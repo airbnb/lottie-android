@@ -34,7 +34,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
         val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
         val compositionsChannel = parseCompositions(downloadChannel)
-        repeat(3) {
+        repeat(1) {
             launch {
                 for ((name, composition) in compositionsChannel) {
                     snapshotComposition(name, composition = composition)
@@ -48,7 +48,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         context = Dispatchers.Default,
         capacity = 50,
     ) {
-        repeat(3) {
+        repeat(1) {
             launch {
                 for (file in files) {
                     val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
