@@ -34,8 +34,12 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
         val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
         val compositionsChannel = parseCompositions(downloadChannel)
-        for ((name, composition) in compositionsChannel) {
-            snapshotComposition(name, composition = composition)
+        repeat(3) {
+            launch {
+                for ((name, composition) in compositionsChannel) {
+                    snapshotComposition(name, composition = composition)
+                }
+            }
         }
     }
 

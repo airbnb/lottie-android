@@ -1,5 +1,5 @@
 <resources>
     <style name="Theme.LottieCompose" parent="Theme.AppCompat.DayNight">
-        <item name="colorAccent">#B64044</item>
+        <item name="colorAccent">@color/purple_200</item>
     </style>
 </resources>
