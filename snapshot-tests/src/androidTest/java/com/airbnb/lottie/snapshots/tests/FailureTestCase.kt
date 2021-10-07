@@ -15,7 +15,7 @@ class FailureTestCase : SnapshotTestCase {
         val animationView = animationViewPool.acquire()
         val semaphore = SuspendingSemaphore(0)
         animationView.setFailureListener { semaphore.release() }
-        animationView.setFallbackResource(R.drawable.airbnb)
+        animationView.setFallbackResource(R.drawable.ic_close)
         animationView.setAnimationFromJson("Not Valid Json", null)
         semaphore.acquire()
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
