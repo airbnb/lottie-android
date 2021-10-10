@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
@@ -34,19 +35,23 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
         val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
         val compositionsChannel = parseCompositions(downloadChannel)
-        for ((name, composition) in compositionsChannel) {
-            snapshotComposition(name, composition = composition)
+        repeat(4) {
+            launch {
+                for ((name, composition) in compositionsChannel) {
+                    snapshotComposition(name, composition = composition)
+                }
+            }
         }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.Default,
-        capacity = 1,
+        capacity = 10,
     ) {
         for (file in files) {
-            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), file.name)
-            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), file.name)
+            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
+            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
             val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
             send("prod-${file.nameWithoutExtension}" to composition)
         }
