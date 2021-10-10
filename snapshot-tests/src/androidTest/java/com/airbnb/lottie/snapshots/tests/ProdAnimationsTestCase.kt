@@ -46,7 +46,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
-        context = Dispatchers.Default,
+        context = Dispatchers.IO,
         capacity = 10,
     ) {
         for (file in files) {

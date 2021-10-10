@@ -26,6 +26,7 @@ import java.math.BigInteger
 import java.net.URLEncoder
 import java.nio.charset.Charset
 import java.security.MessageDigest
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -69,14 +70,20 @@ class HappoSnapshotter(
     private val snapshots = mutableListOf<Snapshot>()
 
     suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
-        val md5 = bitmap.md5
-        val key = "snapshots/$md5.png"
-        val file = File(context.cacheDir, "$md5.png")
+        val tempUuid = UUID.randomUUID().toString()
+        val key = "snapshots/$tempUuid.png"
+        val file = File(context.cacheDir, "$tempUuid.png")
+        val fileOutputStream = FileOutputStream(file)
         @Suppress("BlockingMethodInNonBlockingContext")
-        val outputStream = FileOutputStream(file)
+        val byteOutputStream = ByteArrayOutputStream()
+        val outputStream = TeeOutputStream(fileOutputStream, byteOutputStream)
         // This is the biggest bottleneck in overall performance. Compress + save can take ~75ms per snapshot.
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        recordScope.launch { uploadDeferred(key, file) }
+        val md5 = byteOutputStream.toByteArray().md5
+        val md5File = File(context.cacheDir, "$md5.png")
+        file.renameTo(md5File)
+
+        recordScope.launch { uploadDeferred(key, md5File) }
         snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
         onSnapshotRecorded(animationName, variant)
     }
@@ -136,13 +143,10 @@ class HappoSnapshotter(
         })
     }
 
-    private val Bitmap.md5: String
+    private val ByteArray.md5: String
         get() {
-            val outputStream = ByteArrayOutputStream()
-            compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            val bytes = outputStream.toByteArray()
             val digest = MessageDigest.getInstance("MD5")
-            digest.update(bytes, 0, bytes.size)
+            digest.update(this, 0, this.size)
             return BigInteger(1, digest.digest()).toString(16)
         }
 }

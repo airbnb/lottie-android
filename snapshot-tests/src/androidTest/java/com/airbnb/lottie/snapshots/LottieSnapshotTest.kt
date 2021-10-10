@@ -85,19 +85,19 @@ class LottieSnapshotTest {
             }
         }
         val testCases = listOf(
-            CustomBoundsTestCase(),
-            ColorStateListColorFilterTestCase(),
-            FailureTestCase(),
-            FrameBoundariesTestCase(),
-            ScaleTypesTestCase(),
-            DynamicPropertiesTestCase(),
-            MarkersTestCase(),
-            AssetsTestCase(),
-            TextTestCase(),
-            PartialFrameProgressTestCase(),
-            NightModeTestCase(),
-            ApplyOpacityToLayerTestCase(),
-            OutlineMasksAndMattesTestCase(),
+//            CustomBoundsTestCase(),
+//            ColorStateListColorFilterTestCase(),
+//            FailureTestCase(),
+//            FrameBoundariesTestCase(),
+//            ScaleTypesTestCase(),
+//            DynamicPropertiesTestCase(),
+//            MarkersTestCase(),
+//            AssetsTestCase(),
+//            TextTestCase(),
+//            PartialFrameProgressTestCase(),
+//            NightModeTestCase(),
+//            ApplyOpacityToLayerTestCase(),
+//            OutlineMasksAndMattesTestCase(),
             ProdAnimationsTestCase(),
         )
 
@@ -105,6 +105,8 @@ class LottieSnapshotTest {
             for (testCase in testCases) {
                 Log.d("LottieTest", "Running test case ${testCase::class.java}")
                 with(testCase) {
+                    testCaseContext.bitmapPool.clear()
+                    LottieCompositionCache.getInstance().clear()
                     testCaseContext.run()
                 }
             }
