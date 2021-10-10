@@ -637,22 +637,6 @@ final class JsonUtf8Reader extends JsonReader {
     return result;
   }
 
-  /**
-   * If {@code string} is in {@code options} this consumes it and returns its index.
-   * Otherwise this returns -1 and no string is consumed.
-   */
-  private int findString(String string, Options options) {
-    for (int i = 0, size = options.strings.length; i < size; i++) {
-      if (string.equals(options.strings[i])) {
-        peeked = PEEKED_NONE;
-        pathIndices[stackSize - 1]++;
-
-        return i;
-      }
-    }
-    return -1;
-  }
-
   @Override public boolean nextBoolean() throws IOException {
     int p = peeked;
     if (p == PEEKED_NONE) {
