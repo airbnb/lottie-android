@@ -1,13 +1,11 @@
 package com.airbnb.lottie.snapshots.tests
 
 import android.content.Context
-import android.util.Log
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.snapshotComposition
-import com.airbnb.lottie.snapshots.utils.TAG
 import com.airbnb.lottie.snapshots.utils.await
 import com.airbnb.lottie.snapshots.utils.retry
 import com.amazonaws.auth.BasicAWSCredentials
@@ -20,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.util.zip.ZipInputStream
