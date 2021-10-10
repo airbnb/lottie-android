@@ -21,5 +21,8 @@
       <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="SameParameterValue" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="SwitchStatementWithTooFewBranches" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="m_limit" value="2" />
+    </inspection_tool>
   </profile>
 </component>

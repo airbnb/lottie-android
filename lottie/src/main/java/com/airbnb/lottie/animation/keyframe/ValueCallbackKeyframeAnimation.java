@@ -3,14 +3,11 @@ package com.airbnb.lottie.animation.keyframe;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.value.Keyframe;
-import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.Collections;
 
 public class ValueCallbackKeyframeAnimation<K, A> extends BaseKeyframeAnimation<K, A> {
-  private final LottieFrameInfo<A> frameInfo = new LottieFrameInfo<>();
-
   private final A valueCallbackValue;
 
   public ValueCallbackKeyframeAnimation(LottieValueCallback<A> valueCallback) {
@@ -18,7 +15,7 @@ public class ValueCallbackKeyframeAnimation<K, A> extends BaseKeyframeAnimation<
   }
 
   public ValueCallbackKeyframeAnimation(LottieValueCallback<A> valueCallback, @Nullable A valueCallbackValue) {
-    super(Collections.<Keyframe<K>>emptyList());
+    super(Collections.emptyList());
     setValueCallback(valueCallback);
     this.valueCallbackValue = valueCallbackValue;
   }
