@@ -47,7 +47,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.IO,
-        capacity = 10,
+        capacity = 50,
     ) {
         for (file in files) {
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
@@ -59,16 +59,22 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
     private fun CoroutineScope.downloadAnimations(context: Context, animations: List<S3ObjectSummary>, transferUtility: TransferUtility) = produce(
         context = Dispatchers.IO,
-        capacity = 10,
+        capacity = 50,
     ) {
-        for (animation in animations) {
-            val file = File(context.cacheDir, animation.key)
-            file.deleteOnExit()
-            retry { _, _ ->
-                transferUtility.download(animation.key, file).await()
+        animations
+            .chunked(animations.size / 50)
+            .forEach { animationsChunk ->
+                launch {
+                    for (animation in animationsChunk) {
+                        val file = File(context.cacheDir, animation.key)
+                        file.deleteOnExit()
+                        retry { _, _ ->
+                            transferUtility.download(animation.key, file).await()
+                        }
+                        send(file)
+                    }
+                }
             }
-            send(file)
-        }
     }
 
     private fun fetchAllObjects(bucket: String): List<S3ObjectSummary> {

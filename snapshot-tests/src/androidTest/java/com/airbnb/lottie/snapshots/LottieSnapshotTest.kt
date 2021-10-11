@@ -85,19 +85,19 @@ class LottieSnapshotTest {
             }
         }
         val testCases = listOf(
-//            CustomBoundsTestCase(),
-//            ColorStateListColorFilterTestCase(),
-//            FailureTestCase(),
-//            FrameBoundariesTestCase(),
-//            ScaleTypesTestCase(),
-//            DynamicPropertiesTestCase(),
-//            MarkersTestCase(),
-//            AssetsTestCase(),
-//            TextTestCase(),
-//            PartialFrameProgressTestCase(),
-//            NightModeTestCase(),
-//            ApplyOpacityToLayerTestCase(),
-//            OutlineMasksAndMattesTestCase(),
+            CustomBoundsTestCase(),
+            ColorStateListColorFilterTestCase(),
+            FailureTestCase(),
+            FrameBoundariesTestCase(),
+            ScaleTypesTestCase(),
+            DynamicPropertiesTestCase(),
+            MarkersTestCase(),
+            AssetsTestCase(),
+            TextTestCase(),
+            PartialFrameProgressTestCase(),
+            NightModeTestCase(),
+            ApplyOpacityToLayerTestCase(),
+            OutlineMasksAndMattesTestCase(),
             ProdAnimationsTestCase(),
         )
 
