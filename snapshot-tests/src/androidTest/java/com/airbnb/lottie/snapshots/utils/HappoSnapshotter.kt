@@ -71,7 +71,6 @@ class HappoSnapshotter(
 
     suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
         val tempUuid = UUID.randomUUID().toString()
-        val key = "snapshots/$tempUuid.png"
         val file = File(context.cacheDir, "$tempUuid.png")
         val fileOutputStream = FileOutputStream(file)
         @Suppress("BlockingMethodInNonBlockingContext")
@@ -80,6 +79,7 @@ class HappoSnapshotter(
         // This is the biggest bottleneck in overall performance. Compress + save can take ~75ms per snapshot.
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val md5 = byteOutputStream.toByteArray().md5
+        val key = "snapshots/$md5.png"
         val md5File = File(context.cacheDir, "$md5.png")
         file.renameTo(md5File)
 

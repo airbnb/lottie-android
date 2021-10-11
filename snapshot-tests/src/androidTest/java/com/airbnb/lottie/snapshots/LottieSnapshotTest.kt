@@ -30,6 +30,7 @@ import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.Before
@@ -100,9 +101,11 @@ class LottieSnapshotTest {
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
-            with(prodAnimations) {
-                // Kick off the downloads ahead of time so it can start while the other tests are snapshotting
-                testCaseContext.downloadAnimations()
+            launch {
+                with(prodAnimations) {
+                    // Kick off the downloads ahead of time so it can start while the other tests are snapshotting
+                    testCaseContext.downloadAnimations()
+                }
             }
             for (testCase in testCases) {
                 Log.d("LottieTest", "Running test case ${testCase::class.java}")

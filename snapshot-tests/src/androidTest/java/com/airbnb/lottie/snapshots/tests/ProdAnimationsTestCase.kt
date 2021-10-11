@@ -1,5 +1,6 @@
 package com.airbnb.lottie.snapshots.tests
 
+import android.util.Log
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
@@ -21,6 +22,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
 
 class ProdAnimationsTestCase : SnapshotTestCase {
@@ -28,9 +30,11 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
         val compositionsChannel = parseCompositions(filesChannel)
+        val num = AtomicInteger()
         repeat(4) {
             launch {
                 for ((name, composition) in compositionsChannel) {
+                    Log.d("Lottie", "Snapshot ${num.incrementAndGet()}")
                     snapshotComposition(name, composition = composition)
                 }
             }
@@ -42,10 +46,12 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         context = Dispatchers.IO,
         capacity = 50,
     ) {
+        val num = AtomicInteger()
         for (file in files) {
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
             val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+            Log.d("Lottie", "Parse ${num.incrementAndGet()}")
             send("prod-${file.nameWithoutExtension}" to composition)
         }
     }
@@ -57,6 +63,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
             .defaultBucket("lottie-prod-animations")
             .build()
 
+        val num = AtomicInteger()
         launch(Dispatchers.IO) {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
@@ -69,6 +76,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
                             retry { _, _ ->
                                 transferUtility.download(animation.key, file).await()
                             }
+                            Log.d("Lottie", "Downloaded ${num.incrementAndGet()}")
                             filesChannel.send(file)
                         }
                     }
