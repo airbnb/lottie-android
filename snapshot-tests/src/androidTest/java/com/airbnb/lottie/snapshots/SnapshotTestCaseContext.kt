@@ -111,9 +111,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     callback: ((FilmStripView) -> Unit)? = null,
 ) = withContext(Dispatchers.Default) {
     log("Snapshotting $name")
-    val bitmap = bitmapPool.acquire(1000, 1000)
-    val canvas = Canvas(bitmap)
-    val spec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY)
+    val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
     val filmStripView = filmStripViewPool.acquire()
     filmStripView.setOutlineMasksAndMattes(false)
     filmStripView.setApplyingOpacityToLayersEnabled(false)
@@ -125,7 +123,9 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     })
     callback?.invoke(filmStripView)
     filmStripView.measure(spec, spec)
-    filmStripView.layout(0, 0, 1000, 1000)
+    filmStripView.layout(0, 0, filmStripView.measuredWidth, filmStripView.measuredHeight)
+    val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
+    val canvas = Canvas(bitmap)
     filmStripView.setComposition(composition)
     canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
     withContext(Dispatchers.Main) {

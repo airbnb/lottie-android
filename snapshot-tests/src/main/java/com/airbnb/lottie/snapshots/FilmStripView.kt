@@ -23,7 +23,7 @@ class FilmStripView @JvmOverloads constructor(
     fun setComposition(composition: LottieComposition) {
         animationViews.forEachIndexed { i, view ->
             view.setComposition(composition)
-            view.progress = i / 24f
+            view.progress = i / 8f
         }
     }
 
