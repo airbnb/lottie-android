@@ -1,6 +1,5 @@
 package com.airbnb.lottie.snapshots.tests
 
-import android.content.Context
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
@@ -15,6 +14,7 @@ import com.amazonaws.services.s3.model.ListObjectsV2Request
 import com.amazonaws.services.s3.model.S3ObjectSummary
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.coroutineScope
@@ -24,17 +24,10 @@ import java.io.FileInputStream
 import java.util.zip.ZipInputStream
 
 class ProdAnimationsTestCase : SnapshotTestCase {
+    private val filesChannel = Channel<File>(capacity = 2_048)
+
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
-        val transferUtility = TransferUtility.builder()
-            .context(context)
-            .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
-            .defaultBucket("lottie-prod-animations")
-            .build()
-
-        val allObjects = fetchAllObjects("lottie-prod-animations")
-
-        val downloadChannel = downloadAnimations(context, allObjects, transferUtility)
-        val compositionsChannel = parseCompositions(downloadChannel)
+        val compositionsChannel = parseCompositions(filesChannel)
         repeat(4) {
             launch {
                 for ((name, composition) in compositionsChannel) {
@@ -57,24 +50,30 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         }
     }
 
-    private fun CoroutineScope.downloadAnimations(context: Context, animations: List<S3ObjectSummary>, transferUtility: TransferUtility) = produce(
-        context = Dispatchers.IO,
-        capacity = 50,
-    ) {
-        animations
-            .chunked(animations.size / 50)
-            .forEach { animationsChunk ->
-                launch {
-                    for (animation in animationsChunk) {
-                        val file = File(context.cacheDir, animation.key)
-                        file.deleteOnExit()
-                        retry { _, _ ->
-                            transferUtility.download(animation.key, file).await()
+    suspend fun SnapshotTestCaseContext.downloadAnimations() = coroutineScope {
+        val transferUtility = TransferUtility.builder()
+            .context(context)
+            .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
+            .defaultBucket("lottie-prod-animations")
+            .build()
+
+        launch(Dispatchers.IO) {
+            val animations = fetchAllObjects("lottie-prod-animations")
+            animations
+                .chunked(animations.size / 50)
+                .forEach { animationsChunk ->
+                    launch {
+                        for (animation in animationsChunk) {
+                            val file = File(context.cacheDir, animation.key)
+                            file.deleteOnExit()
+                            retry { _, _ ->
+                                transferUtility.download(animation.key, file).await()
+                            }
+                            filesChannel.send(file)
                         }
-                        send(file)
                     }
                 }
-            }
+        }
     }
 
     private fun fetchAllObjects(bucket: String): List<S3ObjectSummary> {

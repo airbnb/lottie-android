@@ -2,7 +2,6 @@ package com.airbnb.lottie.snapshots
 
 import android.Manifest
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -11,8 +10,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
-import com.airbnb.lottie.FontAssetDelegate
-import com.airbnb.lottie.L
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
@@ -65,7 +62,7 @@ class LottieSnapshotTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val snapshotter = HappoSnapshotter(context) { name, variant ->
             snapshotActivityRule.scenario.onActivity { activity ->
-                    activity.updateUiForSnapshot(name, variant)
+                activity.updateUiForSnapshot(name, variant)
             }
         }
         val testCaseContext: SnapshotTestCaseContext = object : SnapshotTestCaseContext {
@@ -84,6 +81,7 @@ class LottieSnapshotTest {
                 }
             }
         }
+        val prodAnimations = ProdAnimationsTestCase()
         val testCases = listOf(
             CustomBoundsTestCase(),
             ColorStateListColorFilterTestCase(),
@@ -98,10 +96,14 @@ class LottieSnapshotTest {
             NightModeTestCase(),
             ApplyOpacityToLayerTestCase(),
             OutlineMasksAndMattesTestCase(),
-            ProdAnimationsTestCase(),
+            prodAnimations,
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
+            with(prodAnimations) {
+                // Kick off the downloads ahead of time so it can start while the other tests are snapshotting
+                testCaseContext.downloadAnimations()
+            }
             for (testCase in testCases) {
                 Log.d("LottieTest", "Running test case ${testCase::class.java}")
                 with(testCase) {
