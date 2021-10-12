@@ -10,6 +10,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.snapshots.databinding.FilmStripViewBinding
 import com.airbnb.lottie.snapshots.utils.viewBinding
+import kotlin.math.round
 
 class FilmStripView @JvmOverloads constructor(
     context: Context,
@@ -23,7 +24,7 @@ class FilmStripView @JvmOverloads constructor(
     fun setComposition(composition: LottieComposition) {
         animationViews.forEachIndexed { i, view ->
             view.setComposition(composition)
-            view.progress = i / 8f
+            view.progress = (i / 8f).round(decimals = 2)
         }
     }
 
@@ -41,5 +42,11 @@ class FilmStripView @JvmOverloads constructor(
 
     fun setOutlineMasksAndMattes(outline: Boolean) {
         animationViews.forEach { it.setOutlineMasksAndMattes(outline) }
+    }
+
+    private fun Float.round(decimals: Int): Float {
+        var multiplier = 1f
+        repeat(decimals) { multiplier *= 10 }
+        return round(this * multiplier) / multiplier
     }
 }
