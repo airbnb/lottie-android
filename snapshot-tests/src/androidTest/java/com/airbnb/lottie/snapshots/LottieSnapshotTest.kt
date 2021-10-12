@@ -108,14 +108,19 @@ class LottieSnapshotTest {
                 }
             }
             for (testCase in testCases) {
-                Log.d("LottieTest", "Running test case ${testCase::class.java}")
+                Log.d(TAG, "Running test case ${testCase::class.java}")
                 with(testCase) {
                     testCaseContext.bitmapPool.clear()
                     LottieCompositionCache.getInstance().clear()
                     testCaseContext.run()
                 }
+                Log.d(TAG, "Finished running test case ${testCase::class.java}")
             }
             snapshotter.finalizeReportAndUpload()
         }
+    }
+
+    companion object {
+        private const val TAG = "LottieSnapshotTest"
     }
 }

@@ -34,7 +34,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         repeat(4) {
             launch {
                 for ((name, composition) in compositionsChannel) {
-                    Log.d("Lottie", "Snapshot ${num.incrementAndGet()}")
+                    Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
                     snapshotComposition(name, composition = composition)
                 }
             }
@@ -51,7 +51,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
             val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
-            Log.d("Lottie", "Parse ${num.incrementAndGet()}")
+            Log.d(TAG, "Parse ${num.incrementAndGet()}")
             send("prod-${file.nameWithoutExtension}" to composition)
         }
     }
@@ -64,24 +64,26 @@ class ProdAnimationsTestCase : SnapshotTestCase {
             .build()
 
         val num = AtomicInteger()
-        launch(Dispatchers.IO) {
+        coroutineScope {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
                 .chunked(animations.size / 50)
                 .forEach { animationsChunk ->
-                    launch {
+                    launch(Dispatchers.IO) {
                         for (animation in animationsChunk) {
                             val file = File(context.cacheDir, animation.key)
                             file.deleteOnExit()
                             retry { _, _ ->
                                 transferUtility.download(animation.key, file).await()
                             }
-                            Log.d("Lottie", "Downloaded ${num.incrementAndGet()}")
+                            Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
                             filesChannel.send(file)
                         }
                     }
                 }
         }
+        Log.d(TAG, "Finished downloading")
+        filesChannel.close()
     }
 
     private fun fetchAllObjects(bucket: String): List<S3ObjectSummary> {
@@ -103,5 +105,9 @@ class ProdAnimationsTestCase : SnapshotTestCase {
             startAfter = result.objectSummaries.lastOrNull()?.key
         }
         return allObjects
+    }
+
+    companion object {
+        private const val TAG = "ProdAnimationsTest"
     }
 }
