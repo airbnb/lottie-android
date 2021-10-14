@@ -1,6 +1,7 @@
 import org.ajoberstar.grgit.Grgit
 
 buildscript {
+  ext.kotlin_version = '1.6.0-RC'
   ext {
     coroutinesVersion = '1.5.2'
     coreVersion = '1.6.0'
@@ -24,6 +25,7 @@ buildscript {
   repositories {
     google()
     gradlePluginPortal()
+    mavenCentral()
   }
   dependencies {
     classpath 'org.ajoberstar:grgit:2.3.0'
@@ -32,6 +34,7 @@ buildscript {
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.2"
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
     classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.30'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
 

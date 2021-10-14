@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdk 31
@@ -23,4 +24,9 @@ android {
 dependencies {
     implementation project(':lottie')
     implementation "androidx.appcompat:appcompat:$appcompatVersion"
+  implementation "androidx.core:core-ktx:1.6.0"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+  mavenCentral()
 }
