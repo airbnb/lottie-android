@@ -44,7 +44,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.IO,
-        capacity = 50,
+        capacity = 1,
     ) {
         val num = AtomicInteger()
         for (file in files) {
@@ -67,7 +67,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         coroutineScope {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
-                .chunked(animations.size / 50)
+                .chunked(animations.size / 1)
                 .forEach { animationsChunk ->
                     launch(Dispatchers.IO) {
                         for (animation in animationsChunk) {
