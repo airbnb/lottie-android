@@ -70,6 +70,6 @@ dependencies {
   implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
   implementation "com.google.accompanist:accompanist-coil:0.15.0"
   implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
-  implementation 'com.airbnb.android:mavericks:2.3.0'
+  implementation 'com.airbnb.android:mavericks:2.4.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
 }
