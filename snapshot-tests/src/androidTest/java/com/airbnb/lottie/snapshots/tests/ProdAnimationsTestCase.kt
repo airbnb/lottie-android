@@ -31,8 +31,8 @@ class ProdAnimationsTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
         val compositionsChannel = parseCompositions(filesChannel)
         val num = AtomicInteger()
-        repeat(4) {
-            launch {
+        repeat(1) {
+            launch(Dispatchers.Main) {
                 for ((name, composition) in compositionsChannel) {
                     Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
                     snapshotComposition(name, composition = composition)
