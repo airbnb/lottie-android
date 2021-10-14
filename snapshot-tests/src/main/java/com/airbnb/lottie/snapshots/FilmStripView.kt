@@ -2,6 +2,7 @@ package com.airbnb.lottie.snapshots
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.FrameLayout
 import androidx.core.view.children
 import com.airbnb.lottie.FontAssetDelegate
@@ -21,10 +22,12 @@ class FilmStripView @JvmOverloads constructor(
 
     private val animationViews = binding.gridLayout.children.filterIsInstance<LottieAnimationView>()
 
-    fun setComposition(composition: LottieComposition) {
+    fun setComposition(composition: LottieComposition, name: String) {
         animationViews.forEachIndexed { i, view ->
             view.setComposition(composition)
-            view.progress = (i / 8f).round(decimals = 2)
+            val progress = (i / 8f).round(decimals = 2)
+            view.progress = progress
+            Log.d("FilmStripView", "$name $i $progress -> ${view.progress}")
         }
     }
 

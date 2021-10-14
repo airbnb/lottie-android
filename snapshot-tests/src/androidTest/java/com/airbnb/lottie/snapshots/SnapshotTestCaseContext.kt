@@ -126,7 +126,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     filmStripView.layout(0, 0, filmStripView.measuredWidth, filmStripView.measuredHeight)
     val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
     val canvas = Canvas(bitmap)
-    filmStripView.setComposition(composition)
+    filmStripView.setComposition(composition, name)
     canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
     withContext(Dispatchers.Main) {
         log("Drawing $name")
