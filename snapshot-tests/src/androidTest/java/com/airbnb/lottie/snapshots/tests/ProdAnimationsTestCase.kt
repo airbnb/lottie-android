@@ -34,10 +34,8 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         repeat(1) {
             launch(Dispatchers.Main) {
                 for ((name, composition) in compositionsChannel) {
-                    repeat(10_000) {
-                        Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
-                        snapshotComposition(name, composition = composition)
-                    }
+                    Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+                    snapshotComposition(name, composition = composition)
                 }
             }
         }
@@ -80,7 +78,9 @@ class ProdAnimationsTestCase : SnapshotTestCase {
                                 transferUtility.download(animation.key, file).await()
                             }
                             Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
-                            filesChannel.send(file)
+                            repeat(10_000) {
+                                filesChannel.send(file)
+                            }
                         }
                     }
                 }
