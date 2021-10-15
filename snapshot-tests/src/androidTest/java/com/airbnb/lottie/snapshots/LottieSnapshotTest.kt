@@ -70,7 +70,7 @@ class LottieSnapshotTest {
             override val context: Context = context
             override val snapshotter: HappoSnapshotter = snapshotter
             override val bitmapPool: BitmapPool = BitmapPool()
-            override val animationViewPool: ObjectPool<LottieAnimationView> = ObjectPool<LottieAnimationView> {
+            override val animationViewPool: ObjectPool<LottieAnimationView> = ObjectPool {
                 val animationViewContainer = FrameLayout(context)
                 NoCacheLottieAnimationView(context).apply {
                     animationViewContainer.addView(this)
@@ -84,19 +84,19 @@ class LottieSnapshotTest {
         }
         val prodAnimations = ProdAnimationsTestCase()
         val testCases = listOf(
-            CustomBoundsTestCase(),
-            ColorStateListColorFilterTestCase(),
-            FailureTestCase(),
-            FrameBoundariesTestCase(),
-            ScaleTypesTestCase(),
-            DynamicPropertiesTestCase(),
-            MarkersTestCase(),
-            AssetsTestCase(),
-            TextTestCase(),
-            PartialFrameProgressTestCase(),
-            NightModeTestCase(),
-            ApplyOpacityToLayerTestCase(),
-            OutlineMasksAndMattesTestCase(),
+//            CustomBoundsTestCase(),
+//            ColorStateListColorFilterTestCase(),
+//            FailureTestCase(),
+//            FrameBoundariesTestCase(),
+//            ScaleTypesTestCase(),
+//            DynamicPropertiesTestCase(),
+//            MarkersTestCase(),
+//            AssetsTestCase(),
+//            TextTestCase(),
+//            PartialFrameProgressTestCase(),
+//            NightModeTestCase(),
+//            ApplyOpacityToLayerTestCase(),
+//            OutlineMasksAndMattesTestCase(),
             prodAnimations,
         )
 

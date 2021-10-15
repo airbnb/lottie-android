@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 
 class Snapshot(
         private val bucket: String,
-        private val key: String,
+        val key: String,
         private val width: Int,
         private val height: Int,
         private val animationName: String,

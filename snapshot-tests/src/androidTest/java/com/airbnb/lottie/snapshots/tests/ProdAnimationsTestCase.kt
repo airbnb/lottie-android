@@ -34,8 +34,10 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         repeat(1) {
             launch(Dispatchers.Main) {
                 for ((name, composition) in compositionsChannel) {
-                    Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
-                    snapshotComposition(name, composition = composition)
+                    repeat(1_000) {
+                        Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+                        snapshotComposition(name, composition = composition)
+                    }
                 }
             }
         }
@@ -67,6 +69,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         coroutineScope {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
+                .take(1)
                 .chunked(animations.size / 1)
                 .forEach { animationsChunk ->
                     launch(Dispatchers.IO) {

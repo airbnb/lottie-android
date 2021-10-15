@@ -83,9 +83,11 @@ class HappoSnapshotter(
         val md5File = File(context.cacheDir, "$md5.png")
         file.renameTo(md5File)
 
-        recordScope.launch { uploadDeferred(key, md5File) }
-        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
-        onSnapshotRecorded(animationName, variant)
+        if (!snapshots.none { key == it.key }) {
+            recordScope.launch { uploadDeferred(key, md5File) }
+            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+            onSnapshotRecorded(animationName, variant)
+        }
     }
 
     suspend fun finalizeReportAndUpload() {
