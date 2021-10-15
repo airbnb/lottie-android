@@ -34,7 +34,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         repeat(1) {
             launch(Dispatchers.Main) {
                 for ((name, composition) in compositionsChannel) {
-                    repeat(1_000) {
+                    repeat(10_000) {
                         Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
                         snapshotComposition(name, composition = composition)
                     }
