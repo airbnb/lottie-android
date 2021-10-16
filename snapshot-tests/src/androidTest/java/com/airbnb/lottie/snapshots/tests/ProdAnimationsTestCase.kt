@@ -78,7 +78,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
                                 transferUtility.download(animation.key, file).await()
                             }
                             Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
-                            repeat(10_000) {
+                            repeat(50_000) {
                                 filesChannel.send(file)
                             }
                         }
