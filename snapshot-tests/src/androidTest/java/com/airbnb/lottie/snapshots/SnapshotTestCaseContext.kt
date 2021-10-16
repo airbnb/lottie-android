@@ -128,10 +128,8 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val canvas = Canvas(bitmap)
     filmStripView.setComposition(composition, name)
     canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
-    withContext(Dispatchers.Main) {
-        log("Drawing $name")
-        filmStripView.draw(canvas)
-    }
+    log("Drawing $name")
+    filmStripView.draw(canvas)
     filmStripViewPool.release(filmStripView)
     LottieCompositionCache.getInstance().clear()
     snapshotter.record(bitmap, name, variant)

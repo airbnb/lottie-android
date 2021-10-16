@@ -14,10 +14,20 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.*
-import okhttp3.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -42,8 +52,8 @@ private const val TAG = "HappoSnapshotter"
  *    2) Call finalizeAndUpload
  */
 class HappoSnapshotter(
-        private val context: Context,
-        private val onSnapshotRecorded: (snapshotName: String, snapshotVariant: String) -> Unit,
+    private val context: Context,
+    private val onSnapshotRecorded: (snapshotName: String, snapshotVariant: String) -> Unit,
 ) {
     private val recordJob = Job()
     private val recordContext: CoroutineContext
@@ -53,9 +63,15 @@ class HappoSnapshotter(
     private val bucket = "lottie-happo"
     private val happoApiKey = BuildConfig.HappoApiKey
     private val happoSecretKey = BuildConfig.HappoSecretKey
-    private val gitBranch = URLEncoder.encode((if (BuildConfig.BITRISE_GIT_BRANCH == "null") BuildConfig.GIT_BRANCH else BuildConfig.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
+    private val gitBranch = URLEncoder.encode(
+        (if (BuildConfig.BITRISE_GIT_BRANCH == "null") BuildConfig.GIT_BRANCH else BuildConfig.BITRISE_GIT_BRANCH).replace(
+            "/",
+            "_"
+        ), "UTF-8"
+    )
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
     private val reportNamePrefixes = listOf(BuildConfig.GIT_SHA, gitBranch, BuildConfig.VERSION_NAME).filter { it.isNotBlank() }
+
     // Use this when running snapshots locally.
     // private val reportNamePrefixes = listOf(System.currentTimeMillis().toString()).filter { it.isNotBlank() }
     private val reportNames = reportNamePrefixes.map { "$it-$androidVersion" }
@@ -63,16 +79,17 @@ class HappoSnapshotter(
     private val okhttp = OkHttpClient()
 
     private val transferUtility = TransferUtility.builder()
-            .context(context)
-            .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
-            .defaultBucket(bucket)
-            .build()
+        .context(context)
+        .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
+        .defaultBucket(bucket)
+        .build()
     private val snapshots = mutableListOf<Snapshot>()
 
     suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
         val tempUuid = UUID.randomUUID().toString()
         val file = File(context.cacheDir, "$tempUuid.png")
         val fileOutputStream = FileOutputStream(file)
+
         @Suppress("BlockingMethodInNonBlockingContext")
         val byteOutputStream = ByteArrayOutputStream()
         val outputStream = TeeOutputStream(fileOutputStream, byteOutputStream)
@@ -83,11 +100,9 @@ class HappoSnapshotter(
         val md5File = File(context.cacheDir, "$md5.png")
         file.renameTo(md5File)
 
-        if (snapshots.none { key == it.key }) {
-            recordScope.launch { uploadDeferred(key, md5File) }
-            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
-            onSnapshotRecorded(animationName, variant)
-        }
+        recordScope.launch { uploadDeferred(key, md5File) }
+        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, "$variant-${snapshots.count { animationName in it.animationName }}")
+        onSnapshotRecorded(animationName, variant)
     }
 
     suspend fun finalizeReportAndUpload() {
@@ -113,10 +128,10 @@ class HappoSnapshotter(
     private suspend fun upload(reportName: String, json: JsonElement) {
         val body = json.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-                .addHeader("Authorization", Credentials.basic(happoApiKey, happoSecretKey, Charset.forName("UTF-8")))
-                .url("https://happo.io/api/reports/$reportName")
-                .post(body)
-                .build()
+            .addHeader("Authorization", Credentials.basic(happoApiKey, happoSecretKey, Charset.forName("UTF-8")))
+            .url("https://happo.io/api/reports/$reportName")
+            .post(body)
+            .build()
 
         val response = okhttp.executeDeferred(request)
         if (response.isSuccessful) {

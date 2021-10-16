@@ -22,8 +22,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
+import kotlin.random.Random
 
 class ProdAnimationsTestCase : SnapshotTestCase {
     private val filesChannel = Channel<File>(capacity = 2_048)
@@ -31,12 +33,10 @@ class ProdAnimationsTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
         val compositionsChannel = parseCompositions(filesChannel)
         val num = AtomicInteger()
-        repeat(1) {
-            launch(Dispatchers.Main) {
-                for ((name, composition) in compositionsChannel) {
-                    Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
-                    snapshotComposition(name, composition = composition)
-                }
+        repeat(3) {
+            for ((name, composition) in compositionsChannel) {
+                Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+                snapshotComposition(name, composition = composition)
             }
         }
     }
@@ -44,7 +44,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.IO,
-        capacity = 1,
+        capacity = 100,
     ) {
         val num = AtomicInteger()
         for (file in files) {
@@ -67,18 +67,20 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         coroutineScope {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
-                .take(1)
-                .chunked(animations.size / 1)
+                .chunked(animations.size / 10)
                 .forEach { animationsChunk ->
                     launch(Dispatchers.IO) {
                         for (animation in animationsChunk) {
-                            val file = File(context.cacheDir, animation.key)
-                            file.deleteOnExit()
-                            retry { _, _ ->
-                                transferUtility.download(animation.key, file).await()
-                            }
-                            Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
-                            repeat(50_000) {
+                            Log.d(TAG, "Key: ${animation.key}")
+                            if (!animation.key.startsWith("com.")) continue
+
+                            repeat(10) {
+                                val file = File(context.cacheDir, animation.key + "-${UUID.randomUUID()}")
+                                file.deleteOnExit()
+                                retry { _, _ ->
+                                    transferUtility.download(animation.key, file).await()
+                                }
+                                Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
                                 filesChannel.send(file)
                             }
                         }

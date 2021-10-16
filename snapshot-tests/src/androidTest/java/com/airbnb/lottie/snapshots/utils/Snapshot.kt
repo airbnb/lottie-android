@@ -9,8 +9,8 @@ class Snapshot(
         val key: String,
         private val width: Int,
         private val height: Int,
-        private val animationName: String,
-        private val variant: String
+        val animationName: String,
+        val variant: String
 ) {
     private val url get() = "https://s3.amazonaws.com/$bucket/$key"
 
