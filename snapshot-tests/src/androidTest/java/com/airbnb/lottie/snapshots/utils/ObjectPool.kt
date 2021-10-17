@@ -13,6 +13,7 @@ class ObjectPool<T>(private val factory: () -> T) {
     private val releasedObjects = HashSet<T>()
 
     @ExperimentalCoroutinesApi
+    @Synchronized
     fun acquire(): T {
         val blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
@@ -29,6 +30,7 @@ class ObjectPool<T>(private val factory: () -> T) {
         return obj
     }
 
+    @Synchronized
     fun release(obj: T) {
         val removed = releasedObjects.remove(obj)
         if (!removed) throw IllegalArgumentException("Unable to find original obj.")

@@ -4,6 +4,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 
 import androidx.annotation.FloatRange;
+import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.animation.content.KeyPathElementContent;
 import com.airbnb.lottie.model.CubicCurveData;
@@ -13,13 +14,18 @@ import com.airbnb.lottie.model.content.ShapeData;
 import java.util.List;
 
 public class MiscUtils {
-  private static final PointF pathFromDataCurrentPoint = new PointF();
+  private static final ThreadLocal<PointF> pathFromDataCurrentPoint = new ThreadLocal<PointF>() {
+    @Override protected PointF initialValue() {
+      return new PointF();
+    }
+  };
 
   public static PointF addPoints(PointF p1, PointF p2) {
     return new PointF(p1.x + p2.x, p1.y + p2.y);
   }
 
   public static void getPathFromData(ShapeData shapeData, Path outPath) {
+    PointF pathFromDataCurrentPoint = MiscUtils.pathFromDataCurrentPoint.get();
     outPath.reset();
     PointF initialPoint = shapeData.getInitialPoint();
     outPath.moveTo(initialPoint.x, initialPoint.y);

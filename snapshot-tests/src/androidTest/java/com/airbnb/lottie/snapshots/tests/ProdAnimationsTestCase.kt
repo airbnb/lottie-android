@@ -1,13 +1,18 @@
 package com.airbnb.lottie.snapshots.tests
 
+import android.graphics.Canvas
 import android.util.Log
 import com.airbnb.lottie.LottieCompositionFactory
+import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
+import com.airbnb.lottie.snapshots.log
 import com.airbnb.lottie.snapshots.snapshotComposition
 import com.airbnb.lottie.snapshots.utils.await
 import com.airbnb.lottie.snapshots.utils.retry
+import com.airbnb.lottie.snapshots.withAnimationView
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
@@ -22,35 +27,53 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
-import kotlin.random.Random
 
 class ProdAnimationsTestCase : SnapshotTestCase {
-    private val filesChannel = Channel<File>(capacity = 2_048)
+    private val filesChannel = Channel<File>(capacity = 1)
 
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
-        val compositionsChannel = parseCompositions(filesChannel)
+//        val compositionsChannel = parseCompositions(filesChannel)
+//        val num = AtomicInteger()
+//        for ((name, composition) in compositionsChannel) {
+//            Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+//            snapshotComposition(name, composition = composition)
+//        }
+
         val num = AtomicInteger()
-        repeat(3) {
-            for ((name, composition) in compositionsChannel) {
-                Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
-                snapshotComposition(name, composition = composition)
-            }
+        for (file in filesChannel) {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
+            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
+            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+            Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+
+
+//            val drawable = LottieDrawable()
+//            drawable.composition = composition
+//            val bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
+//            val canvas = Canvas(bitmap)
+//            drawable.draw(canvas)
+//            drawable.progress= 0.5f
+//            snapshotter.record(bitmap, "prod-${file.nameWithoutExtension}", "default")
+//            LottieCompositionCache.getInstance().clear()
+//            bitmapPool.release(bitmap)
+
+            snapshotComposition("prod-${file.nameWithoutExtension}", composition = composition)
         }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
-        context = Dispatchers.IO,
-        capacity = 100,
+        context = Dispatchers.Main,
+        capacity = 1,
     ) {
         val num = AtomicInteger()
         for (file in files) {
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
-            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+            val composition = result.value ?: IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
             Log.d(TAG, "Parse ${num.incrementAndGet()}")
             send("prod-${file.nameWithoutExtension}" to composition)
         }
@@ -67,20 +90,21 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         coroutineScope {
             val animations = fetchAllObjects("lottie-prod-animations")
             animations
-                .chunked(animations.size / 10)
+//                .filterIndexed { i, _ -> i in 400..500 }
+//                .filter { "app-setup_connection_failed" in it.key || "app-setup_location_permission" in it.key || "walletnfcrel-thermo" in it.key }
+//                .dropWhile { "com.google.android.wearable" !in it.key }
+//                .take(200)
+                .chunked(animations.size / 1 /* TODO: change this back to 3 or something. */)
                 .forEach { animationsChunk ->
-                    launch(Dispatchers.IO) {
+                    launch(Dispatchers.Main) {
                         for (animation in animationsChunk) {
-                            Log.d(TAG, "Key: ${animation.key}")
-                            if (!animation.key.startsWith("com.")) continue
-
-                            repeat(10) {
-                                val file = File(context.cacheDir, animation.key + "-${UUID.randomUUID()}")
+                            repeat(1) {
+                                val file = File(context.cacheDir, animation.key)
                                 file.deleteOnExit()
                                 retry { _, _ ->
                                     transferUtility.download(animation.key, file).await()
                                 }
-                                Log.d(TAG, "Downloaded ${num.incrementAndGet()}")
+                                Log.d(TAG, "Downloaded ${num.incrementAndGet()} ${file.nameWithoutExtension}")
                                 filesChannel.send(file)
                             }
                         }

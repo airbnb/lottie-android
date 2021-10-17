@@ -26,6 +26,7 @@ class BitmapPool {
     }
 
     @ExperimentalCoroutinesApi
+    @Synchronized
     fun acquire(width: Int, height: Int): Bitmap {
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP
@@ -54,6 +55,7 @@ class BitmapPool {
         return croppedBitmap
     }
 
+    @Synchronized
     fun release(bitmap: Bitmap) {
         if (bitmap == TRANSPARENT_1X1_BITMAP) {
             return

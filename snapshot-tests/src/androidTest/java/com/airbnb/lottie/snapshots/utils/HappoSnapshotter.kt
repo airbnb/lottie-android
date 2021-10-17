@@ -70,7 +70,7 @@ class HappoSnapshotter(
         ), "UTF-8"
     )
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
-    private val reportNamePrefixes = listOf(BuildConfig.GIT_SHA, gitBranch, BuildConfig.VERSION_NAME).filter { it.isNotBlank() }
+    private val reportNamePrefixes = listOf(BuildConfig.GIT_SHA/*, gitBranch, BuildConfig.VERSION_NAME*/).filter { it.isNotBlank() }
 
     // Use this when running snapshots locally.
     // private val reportNamePrefixes = listOf(System.currentTimeMillis().toString()).filter { it.isNotBlank() }
@@ -88,20 +88,30 @@ class HappoSnapshotter(
     suspend fun record(bitmap: Bitmap, animationName: String, variant: String) = withContext(Dispatchers.IO) {
         val tempUuid = UUID.randomUUID().toString()
         val file = File(context.cacheDir, "$tempUuid.png")
+        @Suppress("BlockingMethodInNonBlockingContext")
         val fileOutputStream = FileOutputStream(file)
 
-        @Suppress("BlockingMethodInNonBlockingContext")
         val byteOutputStream = ByteArrayOutputStream()
         val outputStream = TeeOutputStream(fileOutputStream, byteOutputStream)
-        // This is the biggest bottleneck in overall performance. Compress + save can take ~75ms per snapshot.
+        // This is the biggest bottleneck in overall performance.
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         val md5 = byteOutputStream.toByteArray().md5
+        Log.d(TAG, "md5: $md5 for $animationName-$variant")
         val key = "snapshots/$md5.png"
         val md5File = File(context.cacheDir, "$md5.png")
         file.renameTo(md5File)
 
         recordScope.launch { uploadDeferred(key, md5File) }
-        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, "$variant-${snapshots.count { animationName in it.animationName }}")
+        synchronized(snapshots) {
+            snapshots += Snapshot(
+                bucket,
+                key,
+                bitmap.width,
+                bitmap.height,
+                animationName,
+                "$variant-${snapshots.count { animationName in it.animationName }}",
+            )
+        }
         onSnapshotRecorded(animationName, variant)
     }
 

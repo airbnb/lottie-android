@@ -26,6 +26,7 @@ import com.airbnb.lottie.snapshots.tests.PartialFrameProgressTestCase
 import com.airbnb.lottie.snapshots.tests.ProdAnimationsTestCase
 import com.airbnb.lottie.snapshots.tests.ScaleTypesTestCase
 import com.airbnb.lottie.snapshots.tests.TextTestCase
+import com.airbnb.lottie.snapshots.tests.WalletTestCase
 import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
@@ -98,6 +99,7 @@ class LottieSnapshotTest {
 //            ApplyOpacityToLayerTestCase(),
 //            OutlineMasksAndMattesTestCase(),
             prodAnimations,
+//            WalletTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
