@@ -127,6 +127,7 @@ class LottieClipSpecTest {
     private fun createComposition(endFrame: Float, markers: List<Marker> = emptyList()): LottieComposition {
         val composition = LottieComposition()
         composition.init(
+            0,
             Rect(),
             0f,
             endFrame,

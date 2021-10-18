@@ -35,7 +35,7 @@ class FontParser {
           style = reader.nextString();
           break;
         case 3:
-          ascent = (float) reader.nextDouble();
+          ascent = reader.nextFloat();
           break;
         default:
           reader.skipName();

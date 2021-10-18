@@ -108,7 +108,7 @@ class GradientStrokeParser {
           joinType = ShapeStroke.LineJoinType.values()[reader.nextInt() - 1];
           break;
         case 9:
-          miterLimit = (float) reader.nextDouble();
+          miterLimit = reader.nextFloat();
           break;
         case 10:
           hidden = reader.nextBoolean();

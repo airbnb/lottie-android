@@ -16,8 +16,8 @@ public class ScaleXYParser implements ValueParser<ScaleXY> {
     if (isArray) {
       reader.beginArray();
     }
-    float sx = (float) reader.nextDouble();
-    float sy = (float) reader.nextDouble();
+    float sx = reader.nextFloat();
+    float sy = reader.nextFloat();
     while (reader.hasNext()) {
       reader.skipValue();
     }

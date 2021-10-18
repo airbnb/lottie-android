@@ -51,6 +51,7 @@ public class LottieComposition {
   private SparseArrayCompat<FontCharacter> characters;
   private LongSparseArray<Layer> layerMap;
   private List<Layer> layers;
+  private int hashCode;
   // This is stored as a set to avoid duplicates.
   private Rect bounds;
   private float startFrame;
@@ -68,11 +69,12 @@ public class LottieComposition {
   private int maskAndMatteCount = 0;
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
+  public void init(int hashCode, Rect bounds, float startFrame, float endFrame, float frameRate,
       List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
       List<Layer>> precomps, Map<String, LottieImageAsset> images,
       SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts,
       List<Marker> markers) {
+    this.hashCode = hashCode;
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
@@ -84,6 +86,10 @@ public class LottieComposition {
     this.characters = characters;
     this.fonts = fonts;
     this.markers = markers;
+  }
+
+  public int getHashCode() {
+    return hashCode;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)

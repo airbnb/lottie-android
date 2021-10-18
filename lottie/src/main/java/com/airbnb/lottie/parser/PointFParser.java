@@ -23,7 +23,7 @@ public class PointFParser implements ValueParser<PointF> {
       // This is the case where the static value for a property is an array of numbers.
       // We begin the array to see if we have an array of keyframes but it's just an array
       // of static numbers instead.
-      PointF point = new PointF((float) reader.nextDouble() * scale, (float) reader.nextDouble() * scale);
+      PointF point = new PointF(reader.nextFloat() * scale, reader.nextFloat() * scale);
       while (reader.hasNext()) {
         reader.skipValue();
       }

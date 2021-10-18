@@ -230,10 +230,10 @@ public class LayerParser {
               " in your shape. Found: " + effectNames);
           break;
         case 14:
-          timeStretch = (float) reader.nextDouble();
+          timeStretch = reader.nextFloat();
           break;
         case 15:
-          startFrame = (float) reader.nextDouble();
+          startFrame = reader.nextFloat();
           break;
         case 16:
           preCompWidth = (int) (reader.nextInt() * Utils.dpScale());
@@ -242,10 +242,10 @@ public class LayerParser {
           preCompHeight = (int) (reader.nextInt() * Utils.dpScale());
           break;
         case 18:
-          inFrame = (float) reader.nextDouble();
+          inFrame = reader.nextFloat();
           break;
         case 19:
-          outFrame = (float) reader.nextDouble();
+          outFrame = reader.nextFloat();
           break;
         case 20:
           timeRemapping = AnimatableValueParser.parseFloat(reader, composition, false);

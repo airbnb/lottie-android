@@ -105,7 +105,7 @@ class KeyframeParser {
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
         case 0: // t
-          startFrame = (float) reader.nextDouble();
+          startFrame = reader.nextFloat();
           break;
         case 1: // s
           startValue = valueParser.parse(reader, scale);
@@ -177,7 +177,7 @@ class KeyframeParser {
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
         case 0: // t
-          startFrame = (float) reader.nextDouble();
+          startFrame = reader.nextFloat();
           break;
         case 1: // s
           startValue = valueParser.parse(reader, scale);
@@ -196,13 +196,13 @@ class KeyframeParser {
               switch (reader.selectName(INTERPOLATOR_NAMES)) {
                 case 0: // x
                   if (reader.peek() == JsonReader.Token.NUMBER) {
-                    xCp1x = (float) reader.nextDouble();
+                    xCp1x = reader.nextFloat();
                     yCp1x = xCp1x;
                   } else {
                     reader.beginArray();
-                    xCp1x = (float) reader.nextDouble();
+                    xCp1x = reader.nextFloat();
                     if (reader.peek() == JsonReader.Token.NUMBER) {
-                      yCp1x = (float) reader.nextDouble();
+                      yCp1x = reader.nextFloat();
                     } else {
                       yCp1x = xCp1x;
                     }
@@ -211,13 +211,13 @@ class KeyframeParser {
                   break;
                 case 1: // y
                   if (reader.peek() == JsonReader.Token.NUMBER) {
-                    xCp1y = (float) reader.nextDouble();
+                    xCp1y = reader.nextFloat();
                     yCp1y = xCp1y;
                   } else {
                     reader.beginArray();
-                    xCp1y = (float) reader.nextDouble();
+                    xCp1y = reader.nextFloat();
                     if (reader.peek() == JsonReader.Token.NUMBER) {
-                      yCp1y = (float) reader.nextDouble();
+                      yCp1y = reader.nextFloat();
                     } else {
                       yCp1y = xCp1y;
                     }
@@ -246,13 +246,13 @@ class KeyframeParser {
               switch (reader.selectName(INTERPOLATOR_NAMES)) {
                 case 0: // x
                   if (reader.peek() == JsonReader.Token.NUMBER) {
-                    xCp2x = (float) reader.nextDouble();
+                    xCp2x = reader.nextFloat();
                     yCp2x = xCp2x;
                   } else {
                     reader.beginArray();
-                    xCp2x = (float) reader.nextDouble();
+                    xCp2x = reader.nextFloat();
                     if (reader.peek() == JsonReader.Token.NUMBER) {
-                      yCp2x = (float) reader.nextDouble();
+                      yCp2x = reader.nextFloat();
                     } else {
                       yCp2x = xCp2x;
                     }
@@ -261,13 +261,13 @@ class KeyframeParser {
                   break;
                 case 1: // y
                   if (reader.peek() == JsonReader.Token.NUMBER) {
-                    xCp2y = (float) reader.nextDouble();
+                    xCp2y = reader.nextFloat();
                     yCp2y = xCp2y;
                   } else {
                     reader.beginArray();
-                    xCp2y = (float) reader.nextDouble();
+                    xCp2y = reader.nextFloat();
                     if (reader.peek() == JsonReader.Token.NUMBER) {
-                      yCp2y = (float) reader.nextDouble();
+                      yCp2y = reader.nextFloat();
                     } else {
                       yCp2y = xCp2y;
                     }

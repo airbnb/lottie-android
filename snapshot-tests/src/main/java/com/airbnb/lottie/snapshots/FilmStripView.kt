@@ -27,7 +27,7 @@ class FilmStripView @JvmOverloads constructor(
             view.setComposition(composition)
             val progress = (i / 8f).round(decimals = 2)
             view.progress = progress
-            Log.d("FilmStripView", "$name $i $progress -> ${view.progress}")
+            Log.d("FilmStripView", "$name ${composition.hashCode} $i $progress -> ${view.progress}")
         }
     }
 

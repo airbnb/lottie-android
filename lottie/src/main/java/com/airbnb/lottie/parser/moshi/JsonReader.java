@@ -207,6 +207,8 @@ public abstract class JsonReader implements Closeable {
   String[] pathNames;
   int[] pathIndices;
 
+  public int hashCode = 0;
+
   /**
    * True to accept non-spec compliant JSON.
    */
@@ -332,6 +334,8 @@ public abstract class JsonReader implements Closeable {
    *                           value cannot be parsed as a double, or is non-finite.
    */
   public abstract double nextDouble() throws IOException;
+
+  public abstract float nextFloat() throws IOException;
 
   /**
    * Returns the {@linkplain Token#NUMBER int} value of the next token, consuming it. If the next

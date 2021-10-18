@@ -53,7 +53,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       reader.beginArray();
     }
     while (reader.hasNext()) {
-      array.add((float) reader.nextDouble());
+      array.add(reader.nextFloat());
     }
     if (isArray) {
       reader.endArray();

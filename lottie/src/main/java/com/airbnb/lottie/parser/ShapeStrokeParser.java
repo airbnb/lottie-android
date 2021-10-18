@@ -70,7 +70,7 @@ class ShapeStrokeParser {
           joinType = ShapeStroke.LineJoinType.values()[reader.nextInt() - 1];
           break;
         case 6:
-          miterLimit = (float) reader.nextDouble();
+          miterLimit = reader.nextFloat();
           break;
         case 7:
           hidden = reader.nextBoolean();

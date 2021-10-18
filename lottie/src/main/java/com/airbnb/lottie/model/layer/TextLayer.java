@@ -223,7 +223,7 @@ public class TextLayer extends BaseLayer {
         continue;
       }
       drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
-      float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale;
+      float tx = character.getWidth() * fontScale * Utils.dpScale() * parentScale;
       // Add tracking
       float tracking = documentData.tracking / 10f;
       if (trackingCallbackAnimation != null) {

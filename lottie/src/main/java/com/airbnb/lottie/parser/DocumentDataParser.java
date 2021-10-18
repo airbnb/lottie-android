@@ -50,7 +50,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           fontName = reader.nextString();
           break;
         case 2:
-          size = (float) reader.nextDouble();
+          size = reader.nextFloat();
           break;
         case 3:
           int justificationInt = reader.nextInt();
@@ -64,10 +64,10 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           tracking = reader.nextInt();
           break;
         case 5:
-          lineHeight = (float) reader.nextDouble();
+          lineHeight = reader.nextFloat();
           break;
         case 6:
-          baselineShift = (float) reader.nextDouble();
+          baselineShift = reader.nextFloat();
           break;
         case 7:
           fillColor = JsonUtils.jsonToColor(reader);
@@ -76,7 +76,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           strokeColor = JsonUtils.jsonToColor(reader);
           break;
         case 9:
-          strokeWidth = (float) reader.nextDouble();
+          strokeWidth = reader.nextFloat();
           break;
         case 10:
           strokeOverFill = reader.nextBoolean();

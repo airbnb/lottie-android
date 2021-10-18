@@ -21,13 +21,13 @@ public class FontCharacter {
 
   private final List<ShapeGroup> shapes;
   private final char character;
-  private final double size;
-  private final double width;
+  private final float size;
+  private final float width;
   private final String style;
   private final String fontFamily;
 
-  public FontCharacter(List<ShapeGroup> shapes, char character, double size,
-      double width, String style, String fontFamily) {
+  public FontCharacter(List<ShapeGroup> shapes, char character, float size,
+      float width, String style, String fontFamily) {
     this.shapes = shapes;
     this.character = character;
     this.size = size;
@@ -40,11 +40,11 @@ public class FontCharacter {
     return shapes;
   }
 
-  double getSize() {
+  float getSize() {
     return size;
   }
 
-  public double getWidth() {
+  public float getWidth() {
     return width;
   }
 

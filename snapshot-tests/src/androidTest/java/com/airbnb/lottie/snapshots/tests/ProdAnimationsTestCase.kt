@@ -8,11 +8,9 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.BuildConfig
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
-import com.airbnb.lottie.snapshots.log
 import com.airbnb.lottie.snapshots.snapshotComposition
 import com.airbnb.lottie.snapshots.utils.await
 import com.airbnb.lottie.snapshots.utils.retry
-import com.airbnb.lottie.snapshots.withAnimationView
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.services.s3.AmazonS3Client
@@ -31,25 +29,30 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
 
 class ProdAnimationsTestCase : SnapshotTestCase {
-    private val filesChannel = Channel<File>(capacity = 1)
+    private val filesChannel = Channel<File>(capacity = 2048)
 
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
-//        val compositionsChannel = parseCompositions(filesChannel)
-//        val num = AtomicInteger()
-//        for ((name, composition) in compositionsChannel) {
-//            Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
-//            snapshotComposition(name, composition = composition)
-//        }
-
+        val compositionsChannel = parseCompositions(filesChannel)
         val num = AtomicInteger()
-        for (file in filesChannel) {
-            @Suppress("BlockingMethodInNonBlockingContext")
-            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
-            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
-            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
-            Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+        repeat(3) {
+            launch {
+                for ((name, composition) in compositionsChannel) {
+                    Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+                    snapshotComposition(name, composition = composition)
+                }
+            }
+        }
 
 
+//        val num = AtomicInteger()
+//        for (file in filesChannel) {
+//            @Suppress("BlockingMethodInNonBlockingContext")
+//            val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
+//            else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
+//            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+//            Log.d(TAG, "Snapshot ${num.incrementAndGet()}")
+//
+//
 //            val drawable = LottieDrawable()
 //            drawable.composition = composition
 //            val bitmap = bitmapPool.acquire(drawable.intrinsicWidth, drawable.intrinsicHeight)
@@ -59,21 +62,21 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 //            snapshotter.record(bitmap, "prod-${file.nameWithoutExtension}", "default")
 //            LottieCompositionCache.getInstance().clear()
 //            bitmapPool.release(bitmap)
-
-            snapshotComposition("prod-${file.nameWithoutExtension}", composition = composition)
-        }
+//
+//            snapshotComposition("prod-${file.nameWithoutExtension}", composition = composition)
+//        }
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
     fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
-        context = Dispatchers.Main,
-        capacity = 1,
+        context = Dispatchers.IO,
+        capacity = 100,
     ) {
         val num = AtomicInteger()
         for (file in files) {
             val result = if (file.name.endsWith("zip")) LottieCompositionFactory.fromZipStreamSync(ZipInputStream(FileInputStream(file)), null)
             else LottieCompositionFactory.fromJsonInputStreamSync(FileInputStream(file), null)
-            val composition = result.value ?: IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
+            val composition = result.value ?: throw IllegalStateException("Unable to parse ${file.nameWithoutExtension}", result.exception)
             Log.d(TAG, "Parse ${num.incrementAndGet()}")
             send("prod-${file.nameWithoutExtension}" to composition)
         }
@@ -94,7 +97,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 //                .filter { "app-setup_connection_failed" in it.key || "app-setup_location_permission" in it.key || "walletnfcrel-thermo" in it.key }
 //                .dropWhile { "com.google.android.wearable" !in it.key }
 //                .take(200)
-                .chunked(animations.size / 1 /* TODO: change this back to 3 or something. */)
+                .chunked(animations.size / 3)
                 .forEach { animationsChunk ->
                     launch(Dispatchers.Main) {
                         for (animation in animationsChunk) {

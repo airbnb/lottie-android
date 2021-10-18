@@ -1,6 +1,7 @@
 package com.airbnb.lottie.parser;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
@@ -62,13 +63,13 @@ public class LottieCompositionParser {
           height = reader.nextInt();
           break;
         case 2:
-          startFrame = (float) reader.nextDouble();
+          startFrame = reader.nextFloat();
           break;
         case 3:
-          endFrame = (float) reader.nextDouble() - 0.01f;
+          endFrame = reader.nextFloat() - 0.01f;
           break;
         case 4:
-          frameRate = (float) reader.nextDouble();
+          frameRate = reader.nextFloat();
           break;
         case 5:
           String version = reader.nextString();
@@ -92,8 +93,10 @@ public class LottieCompositionParser {
     int scaledHeight = (int) (height * scale);
     Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
-    composition.init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
+    composition.init(reader.hashCode, bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
         images, characters, fonts, markers);
+
+    Log.d("LottieCompositionParser", "JsonReader hashCode=" + reader.hashCode);
 
     return composition;
   }

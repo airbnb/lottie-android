@@ -634,6 +634,9 @@ final class JsonUtf8Reader extends JsonReader {
     }
     peeked = PEEKED_NONE;
     pathIndices[stackSize - 1]++;
+    if (result != null) {
+      hashCode = hashCode * 31 + result.hashCode();
+    }
     return result;
   }
 
@@ -661,10 +664,12 @@ final class JsonUtf8Reader extends JsonReader {
     if (p == PEEKED_TRUE) {
       peeked = PEEKED_NONE;
       pathIndices[stackSize - 1]++;
+      hashCode = hashCode * 31 + 2;
       return true;
     } else if (p == PEEKED_FALSE) {
       peeked = PEEKED_NONE;
       pathIndices[stackSize - 1]++;
+      hashCode = hashCode * 31 + 1;
       return false;
     }
     throw new JsonDataException("Expected a boolean but was " + peek() + " at path " + getPath());
@@ -709,7 +714,77 @@ final class JsonUtf8Reader extends JsonReader {
     peekedString = null;
     peeked = PEEKED_NONE;
     pathIndices[stackSize - 1]++;
+    hashCode = hashCode * 31 + Double.valueOf(result).hashCode();
     return result;
+    // double roundedResult = round(result, 2);
+    // if (Math.abs(roundedResult - (double) (float) roundedResult) < 0.00001) throw new IllegalStateException(String.format("Double did not
+    // convert to float well: %f -> %f", roundedResult, (float) roundedResult));
+    // return roundedResult;
+  }
+
+  public float nextFloat() throws IOException {
+    int p = peeked;
+    if (p == PEEKED_NONE) {
+      p = doPeek();
+    }
+
+    if (p == PEEKED_LONG) {
+      peeked = PEEKED_NONE;
+      pathIndices[stackSize - 1]++;
+      return (float) peekedLong;
+    }
+
+    if (p == PEEKED_NUMBER) {
+      peekedString = buffer.readUtf8(peekedNumberLength);
+    } else if (p == PEEKED_DOUBLE_QUOTED) {
+      peekedString = nextQuotedValue(DOUBLE_QUOTE_OR_SLASH);
+    } else if (p == PEEKED_SINGLE_QUOTED) {
+      peekedString = nextQuotedValue(SINGLE_QUOTE_OR_SLASH);
+    } else if (p == PEEKED_UNQUOTED) {
+      peekedString = nextUnquotedValue();
+    } else if (p != PEEKED_BUFFERED) {
+      throw new JsonDataException("Expected a double but was " + peek() + " at path " + getPath());
+    }
+
+    peeked = PEEKED_BUFFERED;
+    float result;
+    try {
+      result = Float.parseFloat(peekedString);
+    } catch (NumberFormatException e) {
+      throw new JsonDataException("Expected a float but was " + peekedString
+          + " at path " + getPath());
+    }
+    if (!lenient && (Double.isNaN(result) || Double.isInfinite(result))) {
+      throw new JsonEncodingException("JSON forbids NaN and infinities: " + result
+          + " at path " + getPath());
+    }
+    peekedString = null;
+    peeked = PEEKED_NONE;
+    pathIndices[stackSize - 1]++;
+    hashCode = hashCode * 31 + Float.valueOf(result).hashCode();
+    return result;
+  }
+
+  private static double round(double value, int places) {
+    if (places < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    long factor = (long) Math.pow(10, places);
+    value = value * factor;
+    long tmp = Math.round(value);
+    return (double) tmp / factor;
+  }
+
+  private static float round(float value, int places) {
+    if (places < 0) {
+      throw new IllegalArgumentException();
+    }
+
+    long factor = (long) Math.pow(10, places);
+    value = value * factor;
+    long tmp = Math.round(value);
+    return (float) tmp / factor;
   }
 
   /**
@@ -833,6 +908,7 @@ final class JsonUtf8Reader extends JsonReader {
     peekedString = null;
     peeked = PEEKED_NONE;
     pathIndices[stackSize - 1]++;
+    hashCode = hashCode * 31 + result;
     return result;
   }
 

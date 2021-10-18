@@ -57,8 +57,8 @@ class JsonUtils {
   }
 
   private static PointF jsonNumbersToPoint(JsonReader reader, float scale) throws IOException {
-    float x = (float) reader.nextDouble();
-    float y = (float) reader.nextDouble();
+    float x = reader.nextFloat();
+    float y = reader.nextFloat();
     while (reader.hasNext()) {
       reader.skipValue();
     }
@@ -69,8 +69,8 @@ class JsonUtils {
     float x;
     float y;
     reader.beginArray();
-    x = (float) reader.nextDouble();
-    y = (float) reader.nextDouble();
+    x = reader.nextFloat();
+    y = reader.nextFloat();
     while (reader.peek() != JsonReader.Token.END_ARRAY) {
       reader.skipValue();
     }
@@ -105,10 +105,10 @@ class JsonUtils {
     JsonReader.Token token = reader.peek();
     switch (token) {
       case NUMBER:
-        return (float) reader.nextDouble();
+        return reader.nextFloat();
       case BEGIN_ARRAY:
         reader.beginArray();
-        float val = (float) reader.nextDouble();
+        float val = reader.nextFloat();
         while (reader.hasNext()) {
           reader.skipValue();
         }
