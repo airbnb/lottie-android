@@ -24,19 +24,17 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
     if (keyframe.startValue == null || keyframe.endValue == null) {
       throw new IllegalStateException("Missing values for keyframe.");
     }
-    int startColor = keyframe.startValue;
-    int endColor = keyframe.endValue;
 
     if (valueCallback != null) {
       //noinspection ConstantConditions
-      Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, startColor,
-          endColor, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+      Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, keyframe.startValue,
+          keyframe.endValue, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
       if (value != null) {
         return value;
       }
     }
 
-    return GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), startColor, endColor);
+    return GammaEvaluator.evaluate(MiscUtils.clamp(keyframeProgress, 0f, 1f), keyframe.startValue, keyframe.endValue);
   }
 
   /**
