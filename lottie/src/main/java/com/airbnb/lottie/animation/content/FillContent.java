@@ -98,9 +98,9 @@ public class FillContent
       return;
     }
     L.beginSection("FillContent#draw");
-    paint.setColor(((ColorKeyframeAnimation) colorAnimation).getIntValue());
+    int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(clamp(alpha, 0, 255));
+    paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());

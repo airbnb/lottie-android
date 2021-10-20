@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
+import android.os.Build;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
@@ -161,7 +162,12 @@ public abstract class BaseStrokeContent
       return;
     }
     int alpha = (int) ((parentAlpha / 255f * ((IntegerKeyframeAnimation) opacityAnimation).getIntValue() / 100f) * 255);
-    paint.setAlpha(clamp(alpha, 0, 255));
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      int color = paint.getColor();
+      paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
+    } else {
+      paint.setAlpha(clamp(alpha, 0, 255));
+    }
     paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue() * Utils.getScale(parentMatrix));
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
