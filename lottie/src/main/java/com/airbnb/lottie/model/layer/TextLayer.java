@@ -246,7 +246,7 @@ public class TextLayer extends BaseLayer {
     String text = documentData.text;
     TextDelegate textDelegate = lottieDrawable.getTextDelegate();
     if (textDelegate != null) {
-      text = textDelegate.getTextInternal(new KeyPath(getName()), text);
+      text = textDelegate.getTextInternal(getName(), text);
     }
     fillPaint.setTypeface(typeface);
     float textSize;

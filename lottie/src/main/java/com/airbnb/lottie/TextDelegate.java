@@ -47,11 +47,11 @@ public class TextDelegate {
   /**
    * Override this to replace the animation text with something dynamic. This can be used for
    * translations or custom data.
-   * @param path the name of the layer with text
+   * @param keyPathName the name of the layer with text
    * @param input the string at the layer with text
    * @return a String to use for the specific data, by default this is the same as getText(input)
    */
-  public String getText(KeyPath path, String input) {
+  public String getText(String keyPathName, String input) {
     return getText(input);
   }
 
@@ -96,11 +96,11 @@ public class TextDelegate {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public final String getTextInternal(KeyPath path, String input) {
+  public final String getTextInternal(String keyPathName, String input) {
     if (cacheText && stringMap.containsKey(input)) {
       return stringMap.get(input);
     }
-    String text = getText(path, input);
+    String text = getText(keyPathName, input);
     if (cacheText) {
       stringMap.put(input, text);
     }
