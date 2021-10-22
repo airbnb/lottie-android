@@ -16,7 +16,42 @@ import java.util.Map;
  */
 public class TextDelegate {
 
-  private final Map<String, String> stringMap = new HashMap<>();
+  private static class Key {
+     private final String layerName;
+     private final String input;
+     private Key(String layerName, String input) {
+       this.layerName = layerName;
+       this.input = input;
+     }
+
+     private Key(String input) {
+       this(null, input);
+     }
+
+    @Override public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      Key key = (Key) o;
+
+      if (layerName != null ? !layerName.equals(key.layerName) : key.layerName != null) {
+        return false;
+      }
+      return input != null ? input.equals(key.input) : key.input == null;
+    }
+
+    @Override public int hashCode() {
+      int result = layerName != null ? layerName.hashCode() : 0;
+      result = 31 * result + (input != null ? input.hashCode() : 0);
+      return result;
+    }
+  }
+  private final Map<Key, String> stringMap = new HashMap<>();
+
   @Nullable private final LottieAnimationView animationView;
   @Nullable private final LottieDrawable drawable;
   private boolean cacheText = true;
@@ -42,6 +77,17 @@ public class TextDelegate {
   }
 
   /**
+   * Override this to replace the animation text with something dynamic. This
+   * can be used for translations or custom data
+   * @param layerName the name of the layer with text
+   * @param input the string at the layer with text
+   * @return a String to use for the specific data, by default this is the same as getText(input)
+   */
+  public String getText(String layerName, String input) {
+    return getText(input);
+  }
+
+  /**
    * Override this to replace the animation text with something dynamic. This can be used for
    * translations or custom data.
    */
@@ -53,7 +99,12 @@ public class TextDelegate {
    * Update the text that will be rendered for the given input text.
    */
   public void setText(String input, String output) {
-    stringMap.put(input, output);
+    stringMap.put(new Key(input), output);
+    invalidate();
+  }
+
+  public void setText(String layerName, String input, String output) {
+    stringMap.put(new Key(layerName, input), output);
     invalidate();
   }
 
@@ -65,11 +116,15 @@ public class TextDelegate {
     this.cacheText = cacheText;
   }
 
+  public void invalidateText(String layerName, String input) {
+    stringMap.remove(new Key(layerName, input));
+    invalidate();
+  }
   /**
    * Invalidates a cached string with the given input.
    */
   public void invalidateText(String input) {
-    stringMap.remove(input);
+    stringMap.remove(new Key(input));
     invalidate();
   }
 
@@ -82,13 +137,21 @@ public class TextDelegate {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public final String getTextInternal(String input) {
-    if (cacheText && stringMap.containsKey(input)) {
-      return stringMap.get(input);
-    }
-    String text = getText(input);
+  public final String getTextInternal(String layerName, String input) {
+    Key key = new Key(layerName, input);
     if (cacheText) {
-      stringMap.put(input, text);
+      if (stringMap.containsKey(key)) {
+        return stringMap.get(key);
+      }
+      Key inputKey = new Key(input);
+      if (stringMap.containsKey(inputKey)) {
+        return stringMap.get(inputKey);
+      }
+    }
+
+    String text = getText(layerName, input);
+    if (cacheText) {
+      stringMap.put(key, text);
     }
     return text;
   }
