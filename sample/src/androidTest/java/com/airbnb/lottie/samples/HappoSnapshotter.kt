@@ -106,7 +106,6 @@ class HappoSnapshotter(
         if (response.isSuccessful) {
             Log.d(TAG, "Uploaded $reportName to happo")
         } else {
-            println("$json")
             throw IllegalStateException("Failed to upload $reportName to Happo. Failed with code ${response.code}. " + response.body?.string())
         }
     }

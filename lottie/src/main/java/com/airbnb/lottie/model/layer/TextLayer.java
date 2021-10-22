@@ -23,6 +23,7 @@ import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
+import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
@@ -245,7 +246,7 @@ public class TextLayer extends BaseLayer {
     String text = documentData.text;
     TextDelegate textDelegate = lottieDrawable.getTextDelegate();
     if (textDelegate != null) {
-        text = textDelegate.getTextInternal(getName(), text);
+      text = textDelegate.getTextInternal(new KeyPath(getName()), text);
     }
     fillPaint.setTypeface(typeface);
     float textSize;
