@@ -4,8 +4,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
-import com.airbnb.lottie.model.KeyPath;
-
 import java.util.HashMap;
 import java.util.Map;
 
