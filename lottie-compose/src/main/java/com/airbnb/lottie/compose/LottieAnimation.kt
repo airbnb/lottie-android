@@ -33,7 +33,7 @@ import kotlin.math.roundToInt
  *                    [rememberLottieComposition].
  * @param progress The progress (between 0 and 1) that should be rendered. If you want to render a specific
  *                 frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
- *                 to use one of th overloaded LottieAnimation composables that drives the animation for you.
+ *                 to use one of the overloaded LottieAnimation composables that drives the animation for you.
  *                 The overloads that have isPlaying as a parameter instead of progress will drive the
  *                 animation automatically. You may want to use this version if you want to drive the animation
  *                 from your own Animatable or via events such as download progress or a gesture.
