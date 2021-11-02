@@ -23,7 +23,6 @@ import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
-import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.utils.Utils;
