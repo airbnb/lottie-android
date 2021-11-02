@@ -17,6 +17,7 @@ import java.util.Map;
 public class TextDelegate {
 
   private final Map<String, String> stringMap = new HashMap<>();
+
   @Nullable private final LottieAnimationView animationView;
   @Nullable private final LottieDrawable drawable;
   private boolean cacheText = true;
@@ -39,6 +40,17 @@ public class TextDelegate {
   public TextDelegate(@SuppressWarnings("NullableProblems") LottieDrawable drawable) {
     this.drawable = drawable;
     animationView = null;
+  }
+
+  /**
+   * Override this to replace the animation text with something dynamic. This can be used for
+   * translations or custom data.
+   * @param layerName the name of the layer with text
+   * @param input the string at the layer with text
+   * @return a String to use for the specific data, by default this is the same as getText(input)
+   */
+  public String getText(String layerName, String input) {
+    return getText(input);
   }
 
   /**
@@ -82,11 +94,11 @@ public class TextDelegate {
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public final String getTextInternal(String input) {
+  public final String getTextInternal(String layerName, String input) {
     if (cacheText && stringMap.containsKey(input)) {
       return stringMap.get(input);
     }
-    String text = getText(input);
+    String text = getText(layerName, input);
     if (cacheText) {
       stringMap.put(input, text);
     }
