@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/grid_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:columnCount="3">
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_1"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_2"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_3"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_4"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_5"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_6"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_7"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_8"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+
+    <com.airbnb.lottie.snapshots.NoCacheLottieAnimationView
+        android:id="@+id/animation_9"
+        android:layout_width="@dimen/film_strip_size"
+        android:layout_height="@dimen/film_strip_size" />
+</GridLayout>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- This is intentionally px -->
+    <dimen name="film_strip_size" tools:ignore="PxUsage">200px</dimen>
+</resources>
