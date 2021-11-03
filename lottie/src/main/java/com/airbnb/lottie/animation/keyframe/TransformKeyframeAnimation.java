@@ -15,7 +15,6 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
@@ -33,11 +32,11 @@ public class TransformKeyframeAnimation {
   private final Matrix skewMatrix3;
   private final float[] skewValues;
 
-  @NonNull private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
-  @NonNull private BaseKeyframeAnimation<?, PointF> position;
-  @NonNull private BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
-  @NonNull private BaseKeyframeAnimation<Float, Float> rotation;
-  @NonNull private BaseKeyframeAnimation<Integer, Integer> opacity;
+  @Nullable private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
+  @Nullable private BaseKeyframeAnimation<?, PointF> position;
+  @Nullable private BaseKeyframeAnimation<ScaleXY, ScaleXY> scale;
+  @Nullable private BaseKeyframeAnimation<Float, Float> rotation;
+  @Nullable private BaseKeyframeAnimation<Integer, Integer> opacity;
   @Nullable private FloatKeyframeAnimation skew;
   @Nullable private FloatKeyframeAnimation skewAngle;
 
@@ -167,25 +166,28 @@ public class TransformKeyframeAnimation {
 
   public Matrix getMatrix() {
     matrix.reset();
+    BaseKeyframeAnimation<?, PointF> position = this.position;
     if (position != null) {
-      PointF position = this.position.getValue();
-      if (position.x != 0 || position.y != 0) {
-        matrix.preTranslate(position.x, position.y);
+      PointF positionValue = position.getValue();
+      if (positionValue.x != 0 || positionValue.y != 0) {
+        matrix.preTranslate(positionValue.x, positionValue.y);
       }
     }
 
+    BaseKeyframeAnimation<Float, Float> rotation = this.rotation;
     if (rotation != null) {
-      float rotation;
-      if (this.rotation instanceof ValueCallbackKeyframeAnimation) {
-        rotation = this.rotation.getValue();
+      float rotationValue;
+      if (rotation instanceof ValueCallbackKeyframeAnimation) {
+        rotationValue = rotation.getValue();
       } else {
-        rotation = ((FloatKeyframeAnimation) this.rotation).getFloatValue();
+        rotationValue = ((FloatKeyframeAnimation) rotation).getFloatValue();
       }
-      if (rotation != 0f) {
-        matrix.preRotate(rotation);
+      if (rotationValue != 0f) {
+        matrix.preRotate(rotationValue);
       }
     }
 
+    FloatKeyframeAnimation skew = this.skew;
     if (skew != null) {
       float mCos = skewAngle == null ? 0f : (float) Math.cos(Math.toRadians(-skewAngle.getFloatValue() + 90));
       float mSin = skewAngle == null ? 1f : (float) Math.sin(Math.toRadians(-skewAngle.getFloatValue() + 90));
@@ -216,17 +218,19 @@ public class TransformKeyframeAnimation {
       matrix.preConcat(skewMatrix3);
     }
 
+    BaseKeyframeAnimation<ScaleXY, ScaleXY> scale = this.scale;
     if (scale != null) {
-      ScaleXY scaleTransform = this.scale.getValue();
+      ScaleXY scaleTransform = scale.getValue();
       if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
         matrix.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
       }
     }
 
+    BaseKeyframeAnimation<PointF, PointF> anchorPoint = this.anchorPoint;
     if (anchorPoint != null) {
-      PointF anchorPoint = this.anchorPoint.getValue();
-      if (anchorPoint.x != 0 || anchorPoint.y != 0) {
-        matrix.preTranslate(-anchorPoint.x, -anchorPoint.y);
+      PointF anchorPointValue = anchorPoint.getValue();
+      if (anchorPointValue.x != 0 || anchorPointValue.y != 0) {
+        matrix.preTranslate(-anchorPointValue.x, -anchorPointValue.y);
       }
     }
 
@@ -271,13 +275,13 @@ public class TransformKeyframeAnimation {
   public <T> boolean applyValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     if (property == TRANSFORM_ANCHOR_POINT) {
       if (anchorPoint == null) {
-        anchorPoint = new ValueCallbackKeyframeAnimation(callback, new PointF());
+        anchorPoint = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<PointF>) callback, new PointF());
       } else {
         anchorPoint.setValueCallback((LottieValueCallback<PointF>) callback);
       }
     } else if (property == TRANSFORM_POSITION) {
       if (position == null) {
-        position = new ValueCallbackKeyframeAnimation(callback, new PointF());
+        position = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<PointF>) callback, new PointF());
       } else {
         position.setValueCallback((LottieValueCallback<PointF>) callback);
       }
@@ -287,42 +291,42 @@ public class TransformKeyframeAnimation {
       ((SplitDimensionPathKeyframeAnimation) position).setYValueCallback((LottieValueCallback<Float>) callback);
     } else if (property == TRANSFORM_SCALE) {
       if (scale == null) {
-        scale = new ValueCallbackKeyframeAnimation(callback, new ScaleXY());
+        scale = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ScaleXY>) callback, new ScaleXY());
       } else {
         scale.setValueCallback((LottieValueCallback<ScaleXY>) callback);
       }
     } else if (property == TRANSFORM_ROTATION) {
       if (rotation == null) {
-        rotation = new ValueCallbackKeyframeAnimation(callback, 0f);
+        rotation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback, 0f);
       } else {
         rotation.setValueCallback((LottieValueCallback<Float>) callback);
       }
     } else if (property == TRANSFORM_OPACITY) {
       if (opacity == null) {
-        opacity = new ValueCallbackKeyframeAnimation(callback, 100);
+        opacity = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Integer>) callback, 100);
       } else {
         opacity.setValueCallback((LottieValueCallback<Integer>) callback);
       }
-    } else if (property == TRANSFORM_START_OPACITY && startOpacity != null) {
+    } else if (property == TRANSFORM_START_OPACITY) {
       if (startOpacity == null) {
-        startOpacity = new ValueCallbackKeyframeAnimation(callback, 100);
+        startOpacity = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback, 100f);
       } else {
         startOpacity.setValueCallback((LottieValueCallback<Float>) callback);
       }
-    } else if (property == TRANSFORM_END_OPACITY && endOpacity != null) {
+    } else if (property == TRANSFORM_END_OPACITY) {
       if (endOpacity == null) {
-        endOpacity = new ValueCallbackKeyframeAnimation(callback, 100);
+        endOpacity = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback, 100f);
       } else {
         endOpacity.setValueCallback((LottieValueCallback<Float>) callback);
       }
-    } else if (property == TRANSFORM_SKEW && skew != null) {
+    } else if (property == TRANSFORM_SKEW) {
       if (skew == null) {
-        skew = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<Float>(0f)));
+        skew = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
       }
       skew.setValueCallback((LottieValueCallback<Float>) callback);
-    } else if (property == TRANSFORM_SKEW_ANGLE && skewAngle != null) {
+    } else if (property == TRANSFORM_SKEW_ANGLE) {
       if (skewAngle == null) {
-        skewAngle = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<Float>(0f)));
+        skewAngle = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
       }
       skewAngle.setValueCallback((LottieValueCallback<Float>) callback);
     } else {

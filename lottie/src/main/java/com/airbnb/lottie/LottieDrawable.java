@@ -1194,7 +1194,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * If the composition is larger than the canvas, we have to use a different method to scale it up.
    * See the comments in {@link #draw(Canvas)} for more info.
    */
-  private float getMaxScale(@NonNull Canvas canvas) {
+  private float getMaxScale(@NonNull Canvas canvas, LottieComposition composition) {
     float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
     float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
     return Math.min(maxScaleX, maxScaleY);
@@ -1202,6 +1202,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public void draw(Canvas canvas, Matrix matrix) {
+    CompositionLayer compositionLayer = this.compositionLayer;
     if (compositionLayer == null) {
       return;
     }
@@ -1209,7 +1210,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private void drawWithNewAspectRatio(Canvas canvas) {
-    if (compositionLayer == null) {
+    CompositionLayer compositionLayer = this.compositionLayer;
+    LottieComposition composition = this.composition;
+    if (compositionLayer == null || composition == null) {
       return;
     }
 
@@ -1252,13 +1255,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private void drawWithOriginalAspectRatio(Canvas canvas) {
-    if (compositionLayer == null) {
+    CompositionLayer compositionLayer = this.compositionLayer;
+    LottieComposition composition = this.composition;
+    if (compositionLayer == null || composition == null) {
       return;
     }
 
     float scale = this.scale;
     float extraScale = 1f;
-    float maxScale = getMaxScale(canvas);
+    float maxScale = getMaxScale(canvas, composition);
     if (scale > maxScale) {
       scale = maxScale;
       extraScale = this.scale / scale;
