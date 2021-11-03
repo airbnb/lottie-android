@@ -95,7 +95,7 @@ public class LottieCompositionMoshiParser {
           parseChars(reader, composition, characters);
           break;
         case 10:
-          parseMarkers(reader, composition, markers);
+          parseMarkers(reader, markers);
           break;
         default:
           reader.skipName();
@@ -239,8 +239,7 @@ public class LottieCompositionMoshiParser {
       "dr"
   );
 
-  private static void parseMarkers(
-      JsonReader reader, LottieComposition composition, List<Marker> markers) throws IOException {
+  private static void parseMarkers(JsonReader reader, List<Marker> markers) throws IOException {
     reader.beginArray();
     while (reader.hasNext()) {
       String comment = null;

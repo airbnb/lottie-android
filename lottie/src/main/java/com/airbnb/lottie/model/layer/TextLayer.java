@@ -68,8 +68,6 @@ public class TextLayer extends BaseLayer {
   @Nullable
   private BaseKeyframeAnimation<Float, Float> trackingCallbackAnimation;
   @Nullable
-  private BaseKeyframeAnimation<Float, Float> textSizeAnimation;
-  @Nullable
   private BaseKeyframeAnimation<Float, Float> textSizeCallbackAnimation;
   @Nullable
   private BaseKeyframeAnimation<Typeface, Typeface> typefaceCallbackAnimation;
@@ -162,7 +160,7 @@ public class TextLayer extends BaseLayer {
     if (lottieDrawable.useTextGlyphs()) {
       drawTextGlyphs(documentData, parentMatrix, font, canvas);
     } else {
-      drawTextWithFont(documentData, font, parentMatrix, canvas);
+      drawTextWithFont(documentData, font, canvas);
     }
 
     canvas.restore();
@@ -173,8 +171,6 @@ public class TextLayer extends BaseLayer {
     float textSize;
     if (textSizeCallbackAnimation != null) {
       textSize = textSizeCallbackAnimation.getValue();
-    } else if (textSizeAnimation != null) {
-      textSize = textSizeAnimation.getValue();
     } else {
       textSize = documentData.size;
     }
@@ -236,8 +232,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private void drawTextWithFont(
-      DocumentData documentData, Font font, Matrix parentMatrix, Canvas canvas) {
+  private void drawTextWithFont(DocumentData documentData, Font font, Canvas canvas) {
     Typeface typeface = getTypeface(font);
     if (typeface == null) {
       return;
@@ -251,8 +246,6 @@ public class TextLayer extends BaseLayer {
     float textSize;
     if (textSizeCallbackAnimation != null) {
       textSize = textSizeCallbackAnimation.getValue();
-    } else if (textSizeAnimation != null) {
-      textSize = textSizeAnimation.getValue();
     } else {
       textSize = documentData.size;
     }

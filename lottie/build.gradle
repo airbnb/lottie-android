@@ -82,6 +82,10 @@ tasks.withType(JavaCompile) {
       check("FloatingPointLiteralPrecision", CheckSeverity.OFF)
       check("MissingCasesInEnumSwitch", CheckSeverity.OFF)
       check("OperatorPrecedence", CheckSeverity.OFF)
+      // Disabled checks
+      check("MixedMutabilityReturnType", CheckSeverity.OFF)
+      check("MissingSummary", CheckSeverity.OFF)
+      check("InlineMeSuggester", CheckSeverity.OFF)
     }
   }
 }

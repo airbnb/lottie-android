@@ -93,6 +93,7 @@ public final class Utils {
       } catch (RuntimeException rethrown) {
         throw rethrown;
       } catch (Exception ignored) {
+        // Ignore.
       }
     }
   }
