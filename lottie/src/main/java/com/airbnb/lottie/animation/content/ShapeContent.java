@@ -64,7 +64,13 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
       return path;
     }
 
-    path.set(shapeAnimation.getValue());
+    Path shapeAnimationPath = shapeAnimation.getValue();
+    if (shapeAnimationPath == null) {
+      // It is unclear why this ever returns null but it seems to in rare cases.
+      // https://github.com/airbnb/lottie-android/issues/1632
+      return path;
+    }
+    path.set(shapeAnimationPath);
     path.setFillType(Path.FillType.EVEN_ODD);
 
     trimPaths.apply(path);
