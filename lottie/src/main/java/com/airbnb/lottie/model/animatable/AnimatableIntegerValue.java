@@ -8,10 +8,6 @@ import java.util.List;
 
 public class AnimatableIntegerValue extends BaseAnimatableValue<Integer, Integer> {
 
-  public AnimatableIntegerValue() {
-    super(100);
-  }
-
   public AnimatableIntegerValue(List<Keyframe<Integer>> keyframes) {
     super(keyframes);
   }

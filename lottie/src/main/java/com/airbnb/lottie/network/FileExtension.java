@@ -23,14 +23,4 @@ public enum FileExtension {
     return extension;
   }
 
-  public static FileExtension forFile(String filename) {
-    for (FileExtension e : values()) {
-      if (filename.endsWith(e.extension)) {
-        return e;
-      }
-    }
-    // Default to Json.
-    Logger.warning("Unable to find correct extension for " + filename);
-    return JSON;
-  }
 }

@@ -40,16 +40,8 @@ public class FontCharacter {
     return shapes;
   }
 
-  double getSize() {
-    return size;
-  }
-
   public double getWidth() {
     return width;
-  }
-
-  String getStyle() {
-    return style;
   }
 
   @Override public int hashCode() {

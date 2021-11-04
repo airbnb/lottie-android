@@ -309,6 +309,7 @@ public final class Utils {
   /**
    * For testing purposes only. DO NOT USE IN PRODUCTION.
    */
+  @SuppressWarnings("unused")
   public static Bitmap renderPath(Path path) {
     RectF bounds = new RectF();
     path.computeBounds(bounds, false);

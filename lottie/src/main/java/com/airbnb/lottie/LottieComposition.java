@@ -358,23 +358,15 @@ public class LottieComposition {
     }
 
     @SuppressWarnings("deprecation")
-    private static final class ListenerAdapter implements LottieListener<LottieComposition>, Cancellable {
+    private static final class ListenerAdapter implements LottieListener<LottieComposition> {
       private final OnCompositionLoadedListener listener;
-      private boolean cancelled = false;
 
       private ListenerAdapter(OnCompositionLoadedListener listener) {
         this.listener = listener;
       }
 
       @Override public void onResult(LottieComposition composition) {
-        if (cancelled) {
-          return;
-        }
         listener.onCompositionLoaded(composition);
-      }
-
-      @Override public void cancel() {
-        cancelled = true;
       }
     }
   }

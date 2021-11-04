@@ -8,10 +8,6 @@ import java.util.List;
 
 public class AnimatableFloatValue extends BaseAnimatableValue<Float, Float> {
 
-  AnimatableFloatValue() {
-    super(0f);
-  }
-
   public AnimatableFloatValue(List<Keyframe<Float>> keyframes) {
     super(keyframes);
   }
