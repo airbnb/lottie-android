@@ -340,6 +340,12 @@ public abstract class BaseLayer
       Mask mask = this.mask.getMasks().get(i);
       BaseKeyframeAnimation<?, Path> maskAnimation = this.mask.getMaskAnimations().get(i);
       Path maskPath = maskAnimation.getValue();
+      if (maskPath == null) {
+        // This should never happen but seems to happen occasionally.
+        // There is no known repro for this but is is probably best to just skip this mask if that is the case.
+        // https://github.com/airbnb/lottie-android/issues/1879
+        continue;
+      }
       path.set(maskPath);
       path.transform(matrix);
 
