@@ -102,10 +102,14 @@ class HappoSnapshotter(
         val json = JsonObject()
         val snaps = JsonArray()
         json.add("snaps", snaps)
-        snapshots.forEach {
-            snaps.add(it.toJson())
+        snapshots.forEach { s ->
+            snaps.add(s.toJson())
         }
-        reportNames.forEach { upload(it, json) }
+        Log.d(L.TAG, "Finished creating snapshot report")
+        reportNames.forEach { reportName ->
+        Log.d(L.TAG, "Uploading $reportName")
+            upload(reportName, json)
+        }
     }
 
     private suspend fun upload(reportName: String, json: JsonElement) {
