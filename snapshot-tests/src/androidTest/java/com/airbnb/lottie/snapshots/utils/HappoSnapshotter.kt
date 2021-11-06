@@ -46,9 +46,7 @@ class HappoSnapshotter(
         private val onSnapshotRecorded: (snapshotName: String, snapshotVariant: String) -> Unit,
 ) {
     private val recordJob = Job()
-    private val recordContext: CoroutineContext
-        get() = Dispatchers.IO + recordJob
-    private val recordScope = CoroutineScope(recordContext)
+    private val recordScope = CoroutineScope(Dispatchers.IO + recordJob)
 
     private val bucket = "lottie-happo"
     private val happoApiKey = BuildConfig.HappoApiKey
