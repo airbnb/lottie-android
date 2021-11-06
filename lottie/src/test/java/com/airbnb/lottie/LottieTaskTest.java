@@ -25,11 +25,7 @@ public class LottieTaskTest extends BaseTest {
 
   @Test
   public void testListener() {
-    LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
-      @Override public LottieResult<Integer> call() {
-        return new LottieResult<>(5);
-      }
-    }, true)
+    new LottieTask<>(() -> new LottieResult<>(5), true)
         .addListener(successListener)
         .addFailureListener(failureListener);
     verify(successListener, times(1)).onResult(5);
@@ -39,10 +35,8 @@ public class LottieTaskTest extends BaseTest {
   @Test
   public void testException() {
     final IllegalStateException exception = new IllegalStateException("foo");
-    LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
-      @Override public LottieResult<Integer> call() {
-        throw exception;
-      }
+    new LottieTask<>((Callable<LottieResult<Integer>>) () -> {
+      throw exception;
     }, true)
         .addListener(successListener)
         .addFailureListener(failureListener);

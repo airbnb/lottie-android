@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.RestrictTo;
@@ -217,7 +218,9 @@ public class LottieComposition {
   }
 
 
-  @Override public String toString() {
+  @NonNull
+  @Override
+  public String toString() {
     final StringBuilder sb = new StringBuilder("LottieComposition:\n");
     for (Layer layer : layers) {
       sb.append(layer.toString("\t"));
@@ -334,6 +337,7 @@ public class LottieComposition {
     @WorkerThread
     @Deprecated
     public static LottieComposition fromJsonSync(@SuppressWarnings("unused") Resources res, JSONObject json) {
+      //noinspection deprecation
       return LottieCompositionFactory.fromJsonSync(json, null).getValue();
     }
 

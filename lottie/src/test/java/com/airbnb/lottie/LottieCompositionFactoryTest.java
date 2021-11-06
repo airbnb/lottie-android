@@ -13,14 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("ReferenceEquality")
 public class LottieCompositionFactoryTest extends BaseTest {
@@ -120,7 +118,6 @@ public class LottieCompositionFactoryTest extends BaseTest {
         JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieCompositionFactory.setMaxCacheSize(1);
         LottieResult<LottieComposition> taskFoo1 = LottieCompositionFactory.fromJsonReaderSync(reader, "foo");
-        LottieResult<LottieComposition> taskBar = LottieCompositionFactory.fromJsonReaderSync(reader, "bar");
         LottieResult<LottieComposition> taskFoo2 = LottieCompositionFactory.fromJsonReaderSync(reader, "foo");
         assertNotSame(taskFoo1, taskFoo2);
     }

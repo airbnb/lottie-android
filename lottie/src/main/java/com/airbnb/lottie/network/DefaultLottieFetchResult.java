@@ -59,8 +59,6 @@ public class DefaultLottieFetchResult implements LottieFetchResult {
       while ((line = r.readLine()) != null) {
         error.append(line).append('\n');
       }
-    } catch (Exception e) {
-      throw e;
     } finally {
       try {
         r.close();

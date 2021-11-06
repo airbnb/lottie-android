@@ -71,14 +71,6 @@ public class GradientFill implements ContentModel {
     return endPoint;
   }
 
-  @Nullable AnimatableFloatValue getHighlightLength() {
-    return highlightLength;
-  }
-
-  @Nullable AnimatableFloatValue getHighlightAngle() {
-    return highlightAngle;
-  }
-
   public boolean isHidden() {
     return hidden;
   }

@@ -9,10 +9,6 @@ import java.util.List;
 
 public class AnimatableScaleValue extends BaseAnimatableValue<ScaleXY, ScaleXY> {
 
-  AnimatableScaleValue() {
-    this(new ScaleXY(1f, 1f));
-  }
-
   public AnimatableScaleValue(ScaleXY value) {
     super(value);
   }
