@@ -83,7 +83,9 @@ class HappoSnapshotter(
 
         recordScope.launch { uploadDeferred(key, md5File) }
         Log.d(L.TAG, "Adding snapshot for $animationName-$variant")
-        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        synchronized(snapshots) {
+            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        }
         onSnapshotRecorded(animationName, variant)
     }
 
