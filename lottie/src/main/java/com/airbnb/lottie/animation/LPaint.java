@@ -1,8 +1,11 @@
 package com.airbnb.lottie.animation;
 
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
+
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.os.Build;
 import android.os.LocaleList;
 
 import androidx.annotation.NonNull;
@@ -34,5 +37,14 @@ public class LPaint extends Paint {
   @Override
   public void setTextLocales(@NonNull LocaleList locales) {
     // Do nothing.
+  }
+
+  @Override public void setAlpha(int alpha) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      int color = getColor();
+      setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
+    } else {
+      super.setAlpha(clamp(alpha, 0, 255));
+    }
   }
 }
