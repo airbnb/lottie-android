@@ -1,3 +1,11 @@
+# 4.2.1
+### Features and Improvements
+* Upgraded to Compose 1.0.3 ([#1913](https://github.com/airbnb/lottie-android/pull/1913))
+* Added an overload to TextDelegate that provides layerName ([#1931](https://github.com/airbnb/lottie-android/pull/1931))
+### Bugs Fixed
+* Removed some extra Integer allocations with dynamic colors ([#1927](https://github.com/airbnb/lottie-android/pull/1927))
+* Fixed two rare potential NPEs ([#1917](https://github.com/airbnb/lottie-android/pull/1917))
+
 # 4.2.0
 * Fixed some rounding errors with trim paths ([#1897](https://github.com/airbnb/lottie-android/pull/1897))
 
