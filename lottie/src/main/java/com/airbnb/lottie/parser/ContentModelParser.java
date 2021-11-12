@@ -92,6 +92,9 @@ class ContentModelParser {
       case "rp":
         model = RepeaterParser.parse(reader, composition);
         break;
+      case "rd":
+        model = RoundedCornersParser.parse(reader, composition);
+        break;
       default:
         Logger.warning("Unknown shape type " + type);
     }

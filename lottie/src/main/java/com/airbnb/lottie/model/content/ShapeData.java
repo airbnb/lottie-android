@@ -26,7 +26,7 @@ public class ShapeData {
     curves = new ArrayList<>();
   }
 
-  private void setInitialPoint(float x, float y) {
+  public void setInitialPoint(float x, float y) {
     if (initialPoint == null) {
       initialPoint = new PointF();
     }

@@ -2,7 +2,6 @@ package com.airbnb.lottie.model.animatable;
 
 import android.graphics.Path;
 
-import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ShapeKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.value.Keyframe;
@@ -15,7 +14,7 @@ public class AnimatableShapeValue extends BaseAnimatableValue<ShapeData, Path> {
     super(keyframes);
   }
 
-  @Override public BaseKeyframeAnimation<ShapeData, Path> createAnimation() {
+  @Override public ShapeKeyframeAnimation createAnimation() {
     return new ShapeKeyframeAnimation(keyframes);
   }
 }
