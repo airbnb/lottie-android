@@ -477,6 +477,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             }
             binding.bottomSheetRenderTimes.renderTimesContainer.addView(view)
         }
+        binding.animationView.performanceTracker?.clearRenderTimes()
     }
 
     private fun updateWarnings() = withState(viewModel) { state ->
