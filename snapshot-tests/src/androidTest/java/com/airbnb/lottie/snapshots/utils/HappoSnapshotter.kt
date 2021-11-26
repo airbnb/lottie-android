@@ -46,9 +46,7 @@ class HappoSnapshotter(
         private val onSnapshotRecorded: (snapshotName: String, snapshotVariant: String) -> Unit,
 ) {
     private val recordJob = Job()
-    private val recordContext: CoroutineContext
-        get() = Dispatchers.IO + recordJob
-    private val recordScope = CoroutineScope(recordContext)
+    private val recordScope = CoroutineScope(Dispatchers.IO + recordJob)
 
     private val bucket = "lottie-happo"
     private val happoApiKey = BuildConfig.HappoApiKey
@@ -84,7 +82,10 @@ class HappoSnapshotter(
         file.renameTo(md5File)
 
         recordScope.launch { uploadDeferred(key, md5File) }
-        snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        Log.d(L.TAG, "Adding snapshot for $animationName-$variant")
+        synchronized(snapshots) {
+            snapshots += Snapshot(bucket, key, bitmap.width, bitmap.height, animationName, variant)
+        }
         onSnapshotRecorded(animationName, variant)
     }
 
