@@ -1,3 +1,9 @@
+# 4.2.2
+### Bugs Fixed
+* Removed allocations when setting paint alpha prior to API 29 ([#1929](https://github.com/airbnb/lottie-android/pull/1929))
+* Added application/x-zip and application/x-zip-compressed as recognized zip mime types ([#1950](https://github.com/airbnb/lottie-android/pull/1950))
+* Fixed a rare NPE in TransformKeyframeAnimation ([#1955](https://github.com/airbnb/lottie-android/pull/1955))
+
 # 4.2.1
 ### Features and Improvements
 * Upgraded to Compose 1.0.3 ([#1913](https://github.com/airbnb/lottie-android/pull/1913))
