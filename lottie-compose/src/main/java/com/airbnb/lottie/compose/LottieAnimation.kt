@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import android.graphics.Matrix
+import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.utils.Utils
 import kotlin.math.roundToInt
 
@@ -66,6 +68,7 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    renderMode: RenderMode = RenderMode.AUTOMATIC,
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -73,9 +76,11 @@ fun LottieAnimation(
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
     var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
+    val useSoftwareRendering: Boolean = remember(renderMode, composition) {
+        renderMode.useSoftwareRendering(Build.VERSION.SDK_INT, composition?.hasDashPattern() ?: false, composition?.maskAndMatteCount ?: 0)
+    }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
-
 
     Canvas(
         modifier = modifier
@@ -101,6 +106,7 @@ fun LottieAnimation(
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
+            drawable.useSoftwareRendering(useSoftwareRendering)
             drawable.progress = progress
             drawable.draw(canvas.nativeCanvas, matrix)
         }
@@ -126,6 +132,7 @@ fun LottieAnimation(
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
+    renderMode: RenderMode = RenderMode.AUTOMATIC,
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -145,6 +152,7 @@ fun LottieAnimation(
         outlineMasksAndMattes,
         applyOpacityToLayers,
         enableMergePaths,
+        renderMode,
         dynamicProperties,
         alignment,
         contentScale,
