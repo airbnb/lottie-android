@@ -169,7 +169,7 @@ public class TransformKeyframeAnimation {
     BaseKeyframeAnimation<?, PointF> position = this.position;
     if (position != null) {
       PointF positionValue = position.getValue();
-      if (positionValue.x != 0 || positionValue.y != 0) {
+      if (positionValue != null && (positionValue.x != 0 || positionValue.y != 0)) {
         matrix.preTranslate(positionValue.x, positionValue.y);
       }
     }

@@ -107,7 +107,10 @@ public class NetworkFetcher {
       // in the result which is more useful than failing here.
       contentType = "application/json";
     }
-    if (contentType.contains("application/zip") || url.split("\\?")[0].endsWith(".lottie")) {
+    if (contentType.contains("application/zip") ||
+        contentType.contains("application/x-zip") ||
+        contentType.contains("application/x-zip-compressed") ||
+        url.split("\\?")[0].endsWith(".lottie")) {
       Logger.debug("Handling zip response.");
       extension = FileExtension.ZIP;
       result = fromZipStream(url, inputStream, cacheKey);
