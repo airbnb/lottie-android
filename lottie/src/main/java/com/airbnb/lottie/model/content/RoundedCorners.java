@@ -26,6 +26,6 @@ public class RoundedCorners implements ContentModel {
   }
 
   @Nullable @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
-    return new RoundedCornersContent(this);
+    return new RoundedCornersContent(drawable, layer, this);
   }
 }

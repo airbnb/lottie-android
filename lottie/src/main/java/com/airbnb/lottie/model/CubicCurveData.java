@@ -2,8 +2,10 @@ package com.airbnb.lottie.model;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
+import android.annotation.SuppressLint;
 import android.graphics.PointF;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
 /**
@@ -78,5 +80,12 @@ public class CubicCurveData {
 
   public PointF getVertex() {
     return vertex;
+  }
+
+  @SuppressLint("DefaultLocale")
+  @NonNull
+  @Override public String toString() {
+    return String.format("v=%.2f,%.2f cp1=%.2f,%.2f cp2=%.2f,%.2f",
+        vertex.x, vertex.y, controlPoint1.x, controlPoint1.y, controlPoint2.x, controlPoint2.y);
   }
 }

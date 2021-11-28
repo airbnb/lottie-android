@@ -5,34 +5,42 @@ import android.graphics.PointF;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.airbnb.lottie.L;
+import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.content.RoundedCorners;
 import com.airbnb.lottie.model.content.ShapeData;
-import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.model.layer.BaseLayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoundedCornersContent implements ShapeModifierContent {
+public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframeAnimation.AnimationListener {
   /**
    * Copied fromL:
    * https://github.com/airbnb/lottie-web/blob/bb71072a26e03f1ca993da60915860f39aae890b/player/js/utils/common.js#L47
    */
   private static final float ROUNDED_CORNER_MAGIC_NUMBER = 0.5519f;
 
+  private final LottieDrawable lottieDrawable;
   private final String name;
   private final BaseKeyframeAnimation<Float, Float> roundedCorners;
   @Nullable private ShapeData shapeData;
 
-  public RoundedCornersContent(RoundedCorners roundedCorners) {
+  public RoundedCornersContent(LottieDrawable lottieDrawable, BaseLayer layer, RoundedCorners roundedCorners) {
+    this.lottieDrawable = lottieDrawable;
     this.name = roundedCorners.getName();
     this.roundedCorners = roundedCorners.getCornerRadius().createAnimation();
+    layer.addAnimation(this.roundedCorners);
+    this.roundedCorners.addUpdateListener(this);
   }
 
   @Override public String getName() {
     return name;
+  }
+
+  @Override public void onValueChanged() {
+    lottieDrawable.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
@@ -40,7 +48,6 @@ public class RoundedCornersContent implements ShapeModifierContent {
   }
 
   public BaseKeyframeAnimation<Float, Float> getRoundedCorners() {
-    // TODO: this won't be needed once migrated to ShapeModifierContent
     return roundedCorners;
   }
 
@@ -69,11 +76,15 @@ public class RoundedCornersContent implements ShapeModifierContent {
     if (startingCurves.size() <= 2) {
       return startingShapeData;
     }
+    float roundedness = roundedCorners.getValue();
+    if (roundedness == 0f) {
+      return startingShapeData;
+    }
+
     ShapeData modifiedShapeData = getShapeData(startingShapeData);
     List<CubicCurveData> modifiedCurves = modifiedShapeData.getCurves();
     int modifiedCurvesIndex = 0;
 
-    float roundedness = roundedCorners.getValue();
 
     for (int i = 0; i < startingCurves.size(); i++) {
       CubicCurveData startingCurve = startingCurves.get(i);
@@ -171,7 +182,7 @@ public class RoundedCornersContent implements ShapeModifierContent {
       for (int i = 0; i < vertices; i++) {
         newCurves.add(new CubicCurveData());
       }
-      shapeData = new ShapeData(new PointF(0f, 0f), false, newCurves);
+      shapeData = new ShapeData(new PointF(0f, 0f), startingShapeData.isClosed(), newCurves);
     }
     return shapeData;
   }
