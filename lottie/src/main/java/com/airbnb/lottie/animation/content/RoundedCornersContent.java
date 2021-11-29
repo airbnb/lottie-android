@@ -152,7 +152,11 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
         modifiedCurvesIndex++;
       } else {
         // This vertex is not a point. Don't modify it.
-        modifiedCurves.get(modifiedCurvesIndex).setFrom(startingCurve);
+        CubicCurveData previousCurveData = modifiedCurves.get(floorMod(modifiedCurvesIndex - 1, modifiedCurves.size()));
+        CubicCurveData currentCurveData = modifiedCurves.get(modifiedCurvesIndex);
+        previousCurveData.setControlPoint2(previousCurve.getVertex().x, previousCurve.getVertex().y);
+        previousCurveData.setVertex(previousCurve.getVertex().x, previousCurve.getVertex().y);
+        currentCurveData.setControlPoint1(startingCurve.getVertex().x, startingCurve.getVertex().y);
         modifiedCurvesIndex++;
       }
     }
