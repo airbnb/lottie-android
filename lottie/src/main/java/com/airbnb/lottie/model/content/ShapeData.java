@@ -37,6 +37,10 @@ public class ShapeData {
     return initialPoint;
   }
 
+  public void setClosed(boolean closed) {
+    this.closed = closed;
+  }
+
   public boolean isClosed() {
     return closed;
   }

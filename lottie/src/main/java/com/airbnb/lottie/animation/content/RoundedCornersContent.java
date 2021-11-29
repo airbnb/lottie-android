@@ -138,6 +138,9 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
         CubicCurveData currentCurveData = modifiedCurves.get(modifiedCurvesIndex);
         previousCurveData.setControlPoint2(newVertex1InPointX, newVertex1InPointY);
         previousCurveData.setVertex(newVertex1X, newVertex1Y);
+        if (i == 0) {
+          modifiedShapeData.setInitialPoint(newVertex1X, newVertex1Y);
+        }
         currentCurveData.setControlPoint1(newVertex1OutPointX, newVertex1OutPointY);
         modifiedCurvesIndex++;
 
@@ -186,6 +189,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
       }
       shapeData = new ShapeData(new PointF(0f, 0f), false, newCurves);
     }
+    shapeData.setClosed(isClosed);
     return shapeData;
   }
 
