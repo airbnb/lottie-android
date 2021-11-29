@@ -56,18 +56,18 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
    * Iterate through each vertex.
    * If a vertex is a sharp corner, it rounds it.
    * If a vertex has control points, it is already rounded, so it does nothing.
-   *
+   * <p>
    * To round a vertex:
    * Split the vertex into two.
    * Move vertex 1 directly towards the previous vertex.
    * Set vertex 1's in control point to itself so it is not rounded on that side.
    * Extend vertex 1's out control point towards the original vertex.
-   *
+   * <p>
    * Repeat for vertex 2:
    * Move vertex 2 directly towards the next vertex.
    * Set vertex 2's out point to itself so it is not rounded on that side.
    * Extend vertex 2's in control point towards the original vertex.
-   *
+   * <p>
    * The distance that the vertices and control points are moved are relative to the
    * shape's vertex distances and the roundedness set in the animation.
    */
@@ -82,21 +82,23 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
     }
 
     ShapeData modifiedShapeData = getShapeData(startingShapeData);
+    modifiedShapeData.setInitialPoint(startingShapeData.getInitialPoint().x, startingShapeData.getInitialPoint().y);
     List<CubicCurveData> modifiedCurves = modifiedShapeData.getCurves();
     int modifiedCurvesIndex = 0;
-
+    boolean isClosed = startingShapeData.isClosed();
 
     for (int i = 0; i < startingCurves.size(); i++) {
       CubicCurveData startingCurve = startingCurves.get(i);
       CubicCurveData previousCurve = startingCurves.get(floorMod(i - 1, startingCurves.size()));
       CubicCurveData previousPreviousCurve = startingCurves.get(floorMod(i - 2, startingCurves.size()));
-      PointF inPoint = previousCurve.getControlPoint2();
+      PointF vertex = (i == 0 && !isClosed) ? startingShapeData.getInitialPoint() : previousCurve.getVertex();
+      PointF inPoint = (i == 0 && !isClosed) ? vertex : previousCurve.getControlPoint2();
       PointF outPoint = startingCurve.getControlPoint1();
-      PointF vertex = previousCurve.getVertex();
       PointF previousVertex = previousPreviousCurve.getVertex();
       PointF nextVertex = startingCurve.getVertex();
 
-      if (inPoint.equals(vertex) && outPoint.equals(vertex)) {
+      boolean isEndOfCurve = !startingShapeData.isClosed() && (i == 0 && i == startingCurves.size() - 1);
+      if (inPoint.equals(vertex) && outPoint.equals(vertex) && !isEndOfCurve) {
         // This vertex is a point. Round its corners
         float dxToPreviousVertex = vertex.x - previousVertex.x;
         float dyToPreviousVertex = vertex.y - previousVertex.y;
@@ -134,25 +136,23 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
         // Refer to the docs for CubicCurveData for more info on the difference.
         CubicCurveData previousCurveData = modifiedCurves.get(floorMod(modifiedCurvesIndex - 1, modifiedCurves.size()));
         CubicCurveData currentCurveData = modifiedCurves.get(modifiedCurvesIndex);
-        modifiedCurvesIndex++;
         previousCurveData.setControlPoint2(newVertex1InPointX, newVertex1InPointY);
         previousCurveData.setVertex(newVertex1X, newVertex1Y);
         currentCurveData.setControlPoint1(newVertex1OutPointX, newVertex1OutPointY);
+        modifiedCurvesIndex++;
 
         previousCurveData = currentCurveData;
         currentCurveData = modifiedCurves.get(modifiedCurvesIndex);
-        modifiedCurvesIndex++;
         previousCurveData.setControlPoint2(newVertex2InPointX, newVertex2InPointY);
         previousCurveData.setVertex(newVertex2X, newVertex2Y);
         currentCurveData.setControlPoint1(newVertex2OutPointX, newVertex2OutPointY);
+        modifiedCurvesIndex++;
       } else {
         // This vertex is not a point. Don't modify it.
         modifiedCurves.get(modifiedCurvesIndex).setFrom(startingCurve);
         modifiedCurvesIndex++;
       }
     }
-    CubicCurveData lastCurve = modifiedCurves.get(modifiedCurves.size() - 1);
-    modifiedShapeData.setInitialPoint(lastCurve.getVertex().x, lastCurve.getVertex().y);
     return modifiedShapeData;
   }
 
@@ -162,19 +162,21 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
    */
   @NonNull
   private ShapeData getShapeData(ShapeData startingShapeData) {
-    List<CubicCurveData> curves = startingShapeData.getCurves();
+    List<CubicCurveData> startingCurves = startingShapeData.getCurves();
+    boolean isClosed = startingShapeData.isClosed();
     int vertices = 0;
-    for (int i = curves.size() - 1; i >= 0; i--) {
-      CubicCurveData curveData = curves.get(i);
-      CubicCurveData previousCurveData = curves.get(i == 0 ? curves.size() - 1 : i - 1);
-      PointF inPoint = previousCurveData.getControlPoint2();
-      PointF outPoint = curveData.getControlPoint1();
-      PointF vertex = curveData.getVertex();
+    for (int i = startingCurves.size() - 1; i >= 0; i--) {
+      CubicCurveData startingCurve = startingCurves.get(i);
+      CubicCurveData previousCurve = startingCurves.get(floorMod(i - 1, startingCurves.size()));
+      PointF vertex = (i == 0 && !isClosed) ? startingShapeData.getInitialPoint() : previousCurve.getVertex();
+      PointF inPoint = (i == 0 && !isClosed) ? vertex : previousCurve.getControlPoint2();
+      PointF outPoint = startingCurve.getControlPoint1();
 
-      if (inPoint == vertex && outPoint == vertex) {
-        vertices += 1;
-      } else {
+      boolean isEndOfCurve = !startingShapeData.isClosed() && (i == 0 && i == startingCurves.size() - 1);
+      if (inPoint.equals(vertex) && outPoint.equals(vertex) && !isEndOfCurve) {
         vertices += 2;
+      } else {
+        vertices += 1;
       }
     }
     if (shapeData == null || shapeData.getCurves().size() != vertices) {
@@ -182,7 +184,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
       for (int i = 0; i < vertices; i++) {
         newCurves.add(new CubicCurveData());
       }
-      shapeData = new ShapeData(new PointF(0f, 0f), startingShapeData.isClosed(), newCurves);
+      shapeData = new ShapeData(new PointF(0f, 0f), false, newCurves);
     }
     return shapeData;
   }

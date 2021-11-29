@@ -28,7 +28,6 @@ public class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Pat
     tempShapeData.interpolateBetween(startShapeData, endShapeData, keyframeProgress);
     ShapeData modifiedShapeData = tempShapeData;
     if (shapeModifiers != null) {
-      // TODO: see if this is the correct iteration order.
       for (int i = shapeModifiers.size() - 1; i >= 0; i--) {
         modifiedShapeData = shapeModifiers.get(i).modifyShape(modifiedShapeData);
       }
