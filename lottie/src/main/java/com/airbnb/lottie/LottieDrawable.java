@@ -1211,7 +1211,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       } else {
         softwareRenderingCanvas.drawRect(0f, 0f, intrinsicWidth, intrinsicHeight, softwareRenderingClearPaint);
       }
-      softwareRenderingBitmap.eraseColor(0);
       compositionLayer.draw(softwareRenderingCanvas, matrix, alpha);
       softwareRenderingBoundsRect.set(0, 0, intrinsicWidth, intrinsicHeight);
     }
