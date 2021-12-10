@@ -1,14 +1,11 @@
 package com.airbnb.lottie;
 
-import static com.airbnb.lottie.RenderMode.HARDWARE;
-
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -116,6 +113,7 @@ import java.util.concurrent.Callable;
   private boolean autoPlay = false;
   private boolean cacheComposition = true;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
+  private boolean useSoftwareRendering = false;
   private final Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
   /**
    * Prevents a StackOverflowException on 4.4 in which getDrawingCache() calls buildDrawingCache().
@@ -232,7 +230,7 @@ import java.util.concurrent.Callable;
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
 
-    enableOrDisableHardwareLayer();
+    computeRenderMode();
     isInitialized = true;
   }
 
@@ -585,7 +583,7 @@ import java.util.concurrent.Callable;
     ignoreUnschedule = true;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
     ignoreUnschedule = false;
-    enableOrDisableHardwareLayer();
+    computeRenderMode();
     if (getDrawable() == lottieDrawable && !isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
@@ -634,7 +632,7 @@ import java.util.concurrent.Callable;
   public void playAnimation() {
     if (isShown()) {
       lottieDrawable.playAnimation();
-      enableOrDisableHardwareLayer();
+      computeRenderMode();
     } else {
       playAnimationWhenShown = true;
     }
@@ -648,7 +646,7 @@ import java.util.concurrent.Callable;
   public void resumeAnimation() {
     if (isShown()) {
       lottieDrawable.resumeAnimation();
-      enableOrDisableHardwareLayer();
+      computeRenderMode();
     } else {
       playAnimationWhenShown = false;
       wasAnimatingWhenNotShown = true;
@@ -1001,7 +999,7 @@ import java.util.concurrent.Callable;
     wasAnimatingWhenNotShown = false;
     playAnimationWhenShown = false;
     lottieDrawable.cancelAnimation();
-    enableOrDisableHardwareLayer();
+    computeRenderMode();
   }
 
   @MainThread
@@ -1011,7 +1009,7 @@ import java.util.concurrent.Callable;
     wasAnimatingWhenNotShown = false;
     playAnimationWhenShown = false;
     lottieDrawable.pauseAnimation();
-    enableOrDisableHardwareLayer();
+    computeRenderMode();
   }
 
   /**
@@ -1085,7 +1083,7 @@ import java.util.concurrent.Callable;
     super.buildDrawingCache(autoScale);
     if (buildDrawingCacheDepth == 1 && getWidth() > 0 && getHeight() > 0 &&
         getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
-      setRenderMode(HARDWARE);
+      setRenderMode(RenderMode.HARDWARE);
     }
     buildDrawingCacheDepth--;
     L.endSection("buildDrawingCache");
@@ -1097,17 +1095,38 @@ import java.util.concurrent.Callable;
    * 1) There are dash paths and the device is pre-Pie.
    * 2) There are more than 4 masks and mattes and the device is pre-Pie.
    * Hardware acceleration is generally faster for those devices unless
-   * there are many large mattes and masks in which case there is a ton
+   * there are many large mattes and masks in which case there is a lot
    * of GPU uploadTexture thrashing which makes it much slower.
    * <p>
    * In most cases, hardware rendering will be faster, even if you have mattes and masks.
-   * However, if you have multiple mattes and masks (especially large ones) then you
+   * However, if you have multiple mattes and masks (especially large ones), you
    * should test both render modes. You should also test on pre-Pie and Pie+ devices
-   * because the underlying rendering enginge changed significantly.
+   * because the underlying rendering engine changed significantly.
+   *
+   * @see LottieDrawable#useSoftwareRendering(boolean)
+   * @see <a href="https://developer.android.com/guide/topics/graphics/hardware-accel#unsupported">Android Hardware Acceleration</a>
    */
   public void setRenderMode(RenderMode renderMode) {
     this.renderMode = renderMode;
-    enableOrDisableHardwareLayer();
+    computeRenderMode();
+  }
+
+  /**
+   * Returns the actual render mode being used. It will always be {@link RenderMode#HARDWARE} or {@link RenderMode#SOFTWARE}.
+   * When the render mode is set to AUTOMATIC, the value will be derived from {@link RenderMode#useSoftwareRendering(int, boolean, int)}.
+   */
+  public RenderMode getRenderMode() {
+    return useSoftwareRendering ? RenderMode.SOFTWARE : RenderMode.HARDWARE;
+  }
+
+  private void computeRenderMode() {
+    LottieComposition composition = this.composition;
+    if (composition == null) {
+      return;
+    }
+    useSoftwareRendering = renderMode.useSoftwareRendering(
+        Build.VERSION.SDK_INT, composition.hasDashPattern(), composition.getMaskAndMatteCount());
+    lottieDrawable.useSoftwareRendering(useSoftwareRendering);
   }
 
   /**
@@ -1127,44 +1146,11 @@ import java.util.concurrent.Callable;
   }
 
   /**
-   * Disable the extraScale mode in {@link #draw(Canvas)} function when scaleType is FitXY. It doesn't affect the rendering with other scaleTypes.
-   *
-   * <p>When there are 2 animation layout side by side, the default extra scale mode might leave 1 pixel not drawn between 2 animation, and
-   * disabling the extraScale mode can fix this problem</p>
-   *
-   * <b>Attention:</b> Disable the extra scale mode can downgrade the performance and may lead to larger memory footprint. Please only disable this
-   * mode when using animation with a reasonable dimension (smaller than screen size).
+   * This API no longer has any effect.
    */
+  @Deprecated
   public void disableExtraScaleModeInFitXY() {
     lottieDrawable.disableExtraScaleModeInFitXY();
-  }
-
-  private void enableOrDisableHardwareLayer() {
-    int layerType = LAYER_TYPE_SOFTWARE;
-    switch (renderMode) {
-      case HARDWARE:
-        layerType = LAYER_TYPE_HARDWARE;
-        break;
-      case SOFTWARE:
-        layerType = LAYER_TYPE_SOFTWARE;
-        break;
-      case AUTOMATIC:
-        boolean useHardwareLayer = true;
-        if (composition != null && composition.hasDashPattern() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-          useHardwareLayer = false;
-        } else if (composition != null && composition.getMaskAndMatteCount() > 4) {
-          useHardwareLayer = false;
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-          useHardwareLayer = false;
-        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N || Build.VERSION.SDK_INT == Build.VERSION_CODES.N_MR1) {
-          useHardwareLayer = false;
-        }
-        layerType = useHardwareLayer ? LAYER_TYPE_HARDWARE : LAYER_TYPE_SOFTWARE;
-        break;
-    }
-    if (layerType != getLayerType()) {
-      setLayerType(layerType, null);
-    }
   }
 
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
@@ -1189,6 +1175,7 @@ import java.util.concurrent.Callable;
     // if the composition changes.
     setImageDrawable(null);
     setImageDrawable(lottieDrawable);
+    computeRenderMode();
     if (wasAnimating) {
       // This is necessary because lottieDrawable will get unscheduled and canceled when the drawable is set to null.
       lottieDrawable.resumeAnimation();

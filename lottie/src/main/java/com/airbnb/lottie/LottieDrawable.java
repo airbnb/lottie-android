@@ -6,9 +6,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
@@ -26,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 
+import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.KeyPath;
@@ -100,7 +105,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean performanceTrackingEnabled;
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
-  private boolean isExtraScaleEnabled = true;
+
+  private boolean softwareRenderingEnabled = false;
+  private Bitmap softwareRenderingBitmap;
+  private final LPaint softwareRenderingClearPaint = new LPaint();
+  private final Canvas softwareRenderingCanvas = new Canvas();
+  private Paint softwareRenderingPaint;
+  private final Rect softwareRenderingBoundsRect = new Rect();
+
   /**
    * True if the drawable has not been drawn since the last invalidateSelf.
    * We can do this to prevent things like bounds from getting recalculated
@@ -246,6 +258,20 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return true;
   }
 
+  /**
+   * When set to true, Lottie will first render your animation to a bitmap and then draw the bitmap
+   * onto the original canvas.
+   *
+   * @see LottieAnimationView#setRenderMode(RenderMode)
+   */
+  public void useSoftwareRendering(boolean softwareRenderingEnabled) {
+    if (this.softwareRenderingEnabled == softwareRenderingEnabled) {
+      return;
+    }
+    this.softwareRenderingEnabled = softwareRenderingEnabled;
+    invalidateSelf();
+  }
+
   public void setPerformanceTrackingEnabled(boolean enabled) {
     performanceTrackingEnabled = enabled;
     if (composition != null) {
@@ -295,18 +321,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Disable the extraScale mode in {@link #draw(Canvas)} function when scaleType is FitXY. It doesn't affect the rendering with other scaleTypes.
-   *
-   * <p>When there are 2 animation layout side by side, the default extra scale mode might leave 1 pixel not drawn between 2 animation, and
-   * disabling the extraScale mode can fix this problem</p>
-   *
-   * <b>Attention:</b> Disable the extra scale mode can downgrade the performance and may lead to larger memory footprint. Please only disable this
-   * mode when using animation with a reasonable dimension (smaller than screen size).
-   *
-   * @see #drawWithNewAspectRatio(Canvas)
+   * This API no longer has any effect.
    */
+  @Deprecated
   public void disableExtraScaleModeInFitXY() {
-    this.isExtraScaleEnabled = false;
   }
 
   public boolean isApplyingOpacityToLayersEnabled() {
@@ -379,8 +397,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Override
   public void draw(@NonNull Canvas canvas) {
-    isDirty = false;
-
     L.beginSection("Drawable#draw");
 
     if (safeMode) {
@@ -392,6 +408,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     } else {
       drawInternal(canvas);
     }
+    isDirty = false;
 
     L.endSection("Drawable#draw");
   }
@@ -446,12 +463,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @MainThread
   public void playAnimation() {
     if (compositionLayer == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          playAnimation();
-        }
-      });
+      lazyCompositionTasks.add(c -> playAnimation());
       return;
     }
 
@@ -477,12 +489,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @MainThread
   public void resumeAnimation() {
     if (compositionLayer == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          resumeAnimation();
-        }
-      });
+      lazyCompositionTasks.add(c -> resumeAnimation());
       return;
     }
 
@@ -500,12 +507,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinFrame(final int minFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinFrame(minFrame);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinFrame(minFrame));
       return;
     }
     animator.setMinFrame(minFrame);
@@ -523,12 +525,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinProgress(final float minProgress) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinProgress(minProgress);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinProgress(minProgress));
       return;
     }
     setMinFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), minProgress));
@@ -542,12 +539,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMaxFrame(final int maxFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMaxFrame(maxFrame);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMaxFrame(maxFrame));
       return;
     }
     animator.setMaxFrame(maxFrame + 0.99f);
@@ -565,12 +557,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMaxProgress(@FloatRange(from = 0f, to = 1f) final float maxProgress) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMaxProgress(maxProgress);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMaxProgress(maxProgress));
       return;
     }
     setMaxFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), maxProgress));
@@ -583,12 +570,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinFrame(final String markerName) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinFrame(markerName);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinFrame(markerName));
       return;
     }
     Marker marker = composition.getMarker(markerName);
@@ -605,12 +587,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMaxFrame(final String markerName) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMaxFrame(markerName);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMaxFrame(markerName));
       return;
     }
     Marker marker = composition.getMarker(markerName);
@@ -628,12 +605,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinAndMaxFrame(final String markerName) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinAndMaxFrame(markerName);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinAndMaxFrame(markerName));
       return;
     }
     Marker marker = composition.getMarker(markerName);
@@ -654,12 +626,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinAndMaxFrame(final String startMarkerName, final String endMarkerName, final boolean playEndMarkerStartFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinAndMaxFrame(startMarkerName, endMarkerName, playEndMarkerStartFrame);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinAndMaxFrame(startMarkerName, endMarkerName, playEndMarkerStartFrame));
       return;
     }
     Marker startMarker = composition.getMarker(startMarkerName);
@@ -683,12 +650,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setMinAndMaxFrame(final int minFrame, final int maxFrame) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinAndMaxFrame(minFrame, maxFrame);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinAndMaxFrame(minFrame, maxFrame));
       return;
     }
     // Adding 0.99 ensures that the maxFrame itself gets played.
@@ -703,12 +665,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       @FloatRange(from = 0f, to = 1f) final float minProgress,
       @FloatRange(from = 0f, to = 1f) final float maxProgress) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setMinAndMaxProgress(minProgress, maxProgress);
-        }
-      });
+      lazyCompositionTasks.add(c -> setMinAndMaxProgress(minProgress, maxProgress));
       return;
     }
 
@@ -783,12 +740,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public void setFrame(final int frame) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setFrame(frame);
-        }
-      });
+      lazyCompositionTasks.add(c -> setFrame(frame));
       return;
     }
 
@@ -804,12 +756,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) final float progress) {
     if (composition == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          setProgress(progress);
-        }
-      });
+      lazyCompositionTasks.add(c -> setProgress(progress));
       return;
     }
     L.beginSection("Drawable#setProgress");
@@ -1023,12 +970,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public <T> void addValueCallback(
       final KeyPath keyPath, final T property, @Nullable final LottieValueCallback<T> callback) {
     if (compositionLayer == null) {
-      lazyCompositionTasks.add(new LazyCompositionTask() {
-        @Override
-        public void run(LottieComposition composition) {
-          addValueCallback(keyPath, property, callback);
-        }
-      });
+      lazyCompositionTasks.add(c -> addValueCallback(keyPath, property, callback));
       return;
     }
     boolean invalidate;
@@ -1190,16 +1132,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     callback.unscheduleDrawable(this, what);
   }
 
-  /**
-   * If the composition is larger than the canvas, we have to use a different method to scale it up.
-   * See the comments in {@link #draw(Canvas)} for more info.
-   */
-  private float getMaxScale(@NonNull Canvas canvas, LottieComposition composition) {
-    float maxScaleX = canvas.getWidth() / (float) composition.getBounds().width();
-    float maxScaleY = canvas.getHeight() / (float) composition.getBounds().height();
-    return Math.min(maxScaleX, maxScaleY);
-  }
-
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public void draw(Canvas canvas, Matrix matrix) {
     CompositionLayer compositionLayer = this.compositionLayer;
@@ -1216,41 +1148,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
-    int saveCount = -1;
     Rect bounds = getBounds();
     // In fitXY mode, the scale doesn't take effect.
     float scaleX = bounds.width() / (float) composition.getBounds().width();
     float scaleY = bounds.height() / (float) composition.getBounds().height();
 
-    if (isExtraScaleEnabled) {
-      float maxScale = Math.min(scaleX, scaleY);
-      float extraScale = 1f;
-      if (maxScale < 1f) {
-        extraScale = extraScale / maxScale;
-        scaleX = scaleX / extraScale;
-        scaleY = scaleY / extraScale;
-      }
-
-      if (extraScale > 1) {
-        saveCount = canvas.save();
-        float halfWidth = bounds.width() / 2f;
-        float halfHeight = bounds.height() / 2f;
-        float scaledHalfWidth = halfWidth * maxScale;
-        float scaledHalfHeight = halfHeight * maxScale;
-
-        canvas.translate(
-            halfWidth - scaledHalfWidth,
-            halfHeight - scaledHalfHeight);
-        canvas.scale(extraScale, extraScale, scaledHalfWidth, scaledHalfHeight);
-      }
-    }
-
     matrix.reset();
     matrix.preScale(scaleX, scaleY);
-    compositionLayer.draw(canvas, matrix, alpha);
-
-    if (saveCount > 0) {
-      canvas.restoreToCount(saveCount);
+    if (softwareRenderingEnabled) {
+      renderAndDrawAsBitmap(canvas, compositionLayer, matrix);
+    } else {
+      compositionLayer.draw(canvas, matrix, alpha);
     }
   }
 
@@ -1262,42 +1170,50 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     float scale = this.scale;
-    float extraScale = 1f;
-    float maxScale = getMaxScale(canvas, composition);
-    if (scale > maxScale) {
-      scale = maxScale;
-      extraScale = this.scale / scale;
-    }
-
-    int saveCount = -1;
-    if (extraScale > 1) {
-      // This is a bit tricky...
-      // We can't draw on a canvas larger than ViewConfiguration.get(context).getScaledMaximumDrawingCacheSize()
-      // which works out to be roughly the size of the screen because Android can't generate a
-      // bitmap large enough to render to.
-      // As a result, we cap the scale such that it will never be wider/taller than the screen
-      // and then only render in the top left corner of the canvas. We then use extraScale
-      // to scale up the rest of the scale. However, since we rendered the animation to the top
-      // left corner, we need to scale up and translate the canvas to zoom in on the top left
-      // corner.
-      saveCount = canvas.save();
-      float halfWidth = composition.getBounds().width() / 2f;
-      float halfHeight = composition.getBounds().height() / 2f;
-      float scaledHalfWidth = halfWidth * scale;
-      float scaledHalfHeight = halfHeight * scale;
-
-      canvas.translate(
-          getScale() * halfWidth - scaledHalfWidth,
-          getScale() * halfHeight - scaledHalfHeight);
-      canvas.scale(extraScale, extraScale, scaledHalfWidth, scaledHalfHeight);
-    }
 
     matrix.reset();
     matrix.preScale(scale, scale);
-    compositionLayer.draw(canvas, matrix, alpha);
-
-    if (saveCount > 0) {
-      canvas.restoreToCount(saveCount);
+    if (softwareRenderingEnabled) {
+      renderAndDrawAsBitmap(canvas, compositionLayer, matrix);
+    } else {
+      compositionLayer.draw(canvas, matrix, alpha);
     }
+  }
+
+  /**
+   * This is the software rendering pipeline. This draws the animation to an internally managed bitmap
+   * and then draws the bitmap to the original canvas.
+   *
+   * @see LottieDrawable#useSoftwareRendering(boolean)
+   * @see LottieAnimationView#setRenderMode(RenderMode)
+   */
+  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer, Matrix matrix) {
+    if (softwareRenderingPaint == null) {
+      softwareRenderingPaint = new LPaint();
+    }
+
+    int intrinsicWidth = getIntrinsicWidth();
+    int intrinsicHeight = getIntrinsicHeight();
+
+    if (softwareRenderingBitmap == null ||
+        softwareRenderingBitmap.getWidth() < intrinsicWidth ||
+        softwareRenderingBitmap.getHeight() < intrinsicHeight) {
+      softwareRenderingBitmap = Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888);
+      softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
+      softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+      softwareRenderingClearPaint.setColor(Color.BLACK);
+    }
+
+    if (isDirty) {
+      if (softwareRenderingBitmap.getWidth() == intrinsicWidth && softwareRenderingBitmap.getHeight() == intrinsicHeight) {
+        // eraseColor is ~10% faster than drawRect when covering the entire bitmap.
+        softwareRenderingBitmap.eraseColor(0);
+      } else {
+        softwareRenderingCanvas.drawRect(0f, 0f, intrinsicWidth, intrinsicHeight, softwareRenderingClearPaint);
+      }
+      compositionLayer.draw(softwareRenderingCanvas, matrix, alpha);
+      softwareRenderingBoundsRect.set(0, 0, intrinsicWidth, intrinsicHeight);
+    }
+    originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingBoundsRect, softwareRenderingBoundsRect, softwareRenderingPaint);
   }
 }

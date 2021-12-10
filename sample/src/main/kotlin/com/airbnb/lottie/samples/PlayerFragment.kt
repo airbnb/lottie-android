@@ -152,13 +152,13 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         binding.controlBar.hardwareAccelerationToggle.setOnClickListener {
-            val renderMode = if (binding.animationView.layerType == View.LAYER_TYPE_HARDWARE) {
+            val renderMode = if (binding.animationView.renderMode == RenderMode.HARDWARE) {
                 RenderMode.SOFTWARE
             } else {
                 RenderMode.HARDWARE
             }
-            binding.animationView.setRenderMode(renderMode)
-            binding.controlBar.hardwareAccelerationToggle.isActivated = binding.animationView.layerType == View.LAYER_TYPE_HARDWARE
+            binding.animationView.renderMode = renderMode
+            binding.controlBar.hardwareAccelerationToggle.isActivated = binding.animationView.renderMode == RenderMode.HARDWARE
         }
 
         binding.controlBar.enableApplyingOpacityToLayers.setOnClickListener {
@@ -435,7 +435,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         binding.animationView.setComposition(composition)
-        binding.controlBar.hardwareAccelerationToggle.isActivated = binding.animationView.layerType == View.LAYER_TYPE_HARDWARE
+        binding.controlBar.hardwareAccelerationToggle.isActivated = binding.animationView.renderMode == RenderMode.HARDWARE
         binding.animationView.setPerformanceTrackingEnabled(true)
         var renderTimeGraphRange = 4f
         binding.animationView.performanceTracker?.addFrameListener { ms ->
@@ -447,7 +447,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         // Scale up to fill the screen
-        binding.controlBarScale.scaleSeekBar.progress = 100
+        binding.controlBarScale.scaleSeekBar.progress = 50
 
         binding.bottomSheetKeyPaths.keyPathsRecyclerView.buildModelsWith(object : EpoxyRecyclerView.ModelBuilderCallback {
             override fun buildModels(controller: EpoxyController) {
@@ -512,7 +512,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         return@withState min(
                 screenWidth / (bounds?.width()?.toFloat() ?: screenWidth),
                 screenHeight / (bounds?.height()?.toFloat() ?: screenHeight)
-        )
+        ) * 2f
     }
 
     private fun beginDelayedTransition() = TransitionManager.beginDelayedTransition(binding.container, transition)
