@@ -332,6 +332,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private void buildCompositionLayer() {
+    LottieComposition composition = this.composition;
+    if (composition == null) {
+      return;
+    }
     compositionLayer = new CompositionLayer(
         this, LayerParser.parse(composition), composition.getLayers(), composition);
     if (outlineMasksAndMattes) {
