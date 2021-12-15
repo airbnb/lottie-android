@@ -107,7 +107,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is Float } as List<LottieDynamicProperty<Float>>,
         properties.filter { it.property is ScaleXY } as List<LottieDynamicProperty<ScaleXY>>,
         properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>,
-        properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>,
+        properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>, // LottieProperty.GRADIENT_COLOR is java.lang.Integer[], which cannot cast to an IntArray (int[])
         properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
         properties.filter { it.property is Bitmap } as List<LottieDynamicProperty<Bitmap>>,
     )
