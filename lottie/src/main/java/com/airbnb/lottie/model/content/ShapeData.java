@@ -26,7 +26,7 @@ public class ShapeData {
     curves = new ArrayList<>();
   }
 
-  private void setInitialPoint(float x, float y) {
+  public void setInitialPoint(float x, float y) {
     if (initialPoint == null) {
       initialPoint = new PointF();
     }
@@ -35,6 +35,10 @@ public class ShapeData {
 
   public PointF getInitialPoint() {
     return initialPoint;
+  }
+
+  public void setClosed(boolean closed) {
+    this.closed = closed;
   }
 
   public boolean isClosed() {

@@ -2,12 +2,16 @@ package com.airbnb.lottie.animation.content;
 
 import android.graphics.Path;
 
+import androidx.annotation.Nullable;
+
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.ShapeKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapePath;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShapeContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
@@ -16,7 +20,8 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   private final String name;
   private final boolean hidden;
   private final LottieDrawable lottieDrawable;
-  private final BaseKeyframeAnimation<?, Path> shapeAnimation;
+  private final ShapeKeyframeAnimation shapeAnimation;
+  @Nullable private List<ShapeModifierContent> shapeModifierContents;
 
   private boolean isPathValid;
   private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
@@ -40,6 +45,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+    @Nullable List<ShapeModifierContent> shapeModifierContents = null;
     for (int i = 0; i < contentsBefore.size(); i++) {
       Content content = contentsBefore.get(i);
       if (content instanceof TrimPathContent &&
@@ -48,8 +54,14 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
         TrimPathContent trimPath = (TrimPathContent) content;
         trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);
+      } else if (content instanceof ShapeModifierContent) {
+        if (shapeModifierContents == null) {
+          shapeModifierContents = new ArrayList<>();
+        }
+        shapeModifierContents.add((ShapeModifierContent) content);
       }
     }
+    shapeAnimation.setShapeModifiers(shapeModifierContents);
   }
 
   @Override public Path getPath() {
