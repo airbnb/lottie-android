@@ -96,7 +96,7 @@ class LottieDynamicProperties internal constructor(
     private val floatProperties: List<LottieDynamicProperty<Float>>,
     private val scaleProperties: List<LottieDynamicProperty<ScaleXY>>,
     private val colorFilterProperties: List<LottieDynamicProperty<ColorFilter>>,
-    // Java doesn't have reified types. All arrays are Integer[].
+    // Java doesn't have reified types. All LottieProperty arrays are Integer[].
     private val intArrayProperties: List<LottieDynamicProperty<Array<*>>>,
     private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
     private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
