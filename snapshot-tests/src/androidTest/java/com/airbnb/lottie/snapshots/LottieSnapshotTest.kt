@@ -118,7 +118,7 @@ class LottieSnapshotTest {
             NightModeTestCase(),
             ApplyOpacityToLayerTestCase(),
             OutlineMasksAndMattesTestCase(),
-            ComposeDynamicPropertiesTestCase(),
+//            ComposeDynamicPropertiesTestCase(),
             prodAnimations,
         )
 
