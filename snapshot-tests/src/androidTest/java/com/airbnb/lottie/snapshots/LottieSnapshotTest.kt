@@ -15,6 +15,7 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
 import com.airbnb.lottie.snapshots.tests.AssetsTestCase
 import com.airbnb.lottie.snapshots.tests.ColorStateListColorFilterTestCase
+import com.airbnb.lottie.snapshots.tests.ComposeDynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
@@ -97,6 +98,7 @@ class LottieSnapshotTest {
             NightModeTestCase(),
             ApplyOpacityToLayerTestCase(),
             OutlineMasksAndMattesTestCase(),
+            ComposeDynamicPropertiesTestCase(),
             prodAnimations,
         )
 

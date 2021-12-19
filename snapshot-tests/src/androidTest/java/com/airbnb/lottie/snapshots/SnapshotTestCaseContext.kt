@@ -3,13 +3,14 @@ package com.airbnb.lottie.snapshots
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -20,7 +21,11 @@ import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+
+private val ActivityContentLock = Mutex()
 
 /**
  * Set of properties that are available to all [SnapshotTestCase] runs.
@@ -31,6 +36,7 @@ interface SnapshotTestCaseContext {
     val bitmapPool: BitmapPool
     val animationViewPool: ObjectPool<LottieAnimationView>
     val filmStripViewPool: ObjectPool<FilmStripView>
+    fun onActivity(callback: (SnapshotTestActivity) -> Unit)
 }
 
 @Suppress("unused")
@@ -127,12 +133,38 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
     val canvas = Canvas(bitmap)
     filmStripView.setComposition(composition, name)
-    canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
     withContext(Dispatchers.Main) {
         log("Drawing $name")
         filmStripView.draw(canvas)
     }
     filmStripViewPool.release(filmStripView)
+    LottieCompositionCache.getInstance().clear()
+    snapshotter.record(bitmap, name, variant)
+    bitmapPool.release(bitmap)
+}
+
+suspend fun SnapshotTestCaseContext.snapshotComposable(
+    name: String,
+    variant: String = "default",
+    content: @Composable () -> Unit,
+) = withContext(Dispatchers.Default) {
+    log("Snapshotting $name")
+    val composeView = ComposeView(context)
+    composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+    onActivity { activity ->
+        activity.binding.content.addView(composeView)
+    }
+    awaitFrame()
+    composeView.setContent(content)
+    val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
+    val canvas = Canvas(bitmap)
+    withContext(Dispatchers.Main) {
+        log("Drawing $name")
+        composeView.draw(canvas)
+    }
+    onActivity { activity ->
+        activity.binding.content.removeView(composeView)
+    }
     LottieCompositionCache.getInstance().clear()
     snapshotter.record(bitmap, name, variant)
     bitmapPool.release(bitmap)

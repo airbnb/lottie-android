@@ -40,8 +40,9 @@ class BitmapPool {
 
         val bitmap = synchronized(bitmaps) {
             bitmaps
-                    .firstOrNull { it.width >= width && it.height >= height }
-                    ?.also { bitmaps.remove(it) }
+                .firstOrNull { it.width >= width && it.height >= height }
+                ?.also { bitmaps.remove(it) }
+                ?.also { it.eraseColor(0) }
         } ?: createNewBitmap(width, height)
 
         val croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
