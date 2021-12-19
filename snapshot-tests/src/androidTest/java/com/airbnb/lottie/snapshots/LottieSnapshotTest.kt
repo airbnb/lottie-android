@@ -1,7 +1,9 @@
 package com.airbnb.lottie.snapshots
 
 import android.Manifest
+import android.content.ComponentCallbacks2
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -86,6 +88,20 @@ class LottieSnapshotTest {
             override fun onActivity(callback: (SnapshotTestActivity) -> Unit) {
                 snapshotActivityRule.scenario.onActivity(callback)
             }
+        }
+        snapshotActivityRule.scenario.onActivity { activity ->
+            activity.registerComponentCallbacks(object : ComponentCallbacks2 {
+                override fun onConfigurationChanged(newConfig: Configuration) {}
+
+                override fun onLowMemory() {
+                    testCaseContext.bitmapPool.clear()
+                }
+
+                override fun onTrimMemory(level: Int) {
+                    testCaseContext.bitmapPool.clear()
+                }
+
+            })
         }
         val prodAnimations = ProdAnimationsTestCase()
         val testCases = listOf(
