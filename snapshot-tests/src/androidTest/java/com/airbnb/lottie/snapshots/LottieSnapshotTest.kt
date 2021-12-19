@@ -82,6 +82,10 @@ class LottieSnapshotTest {
                     setLayerType(View.LAYER_TYPE_NONE, null)
                 }
             }
+
+            override fun onActivity(callback: (SnapshotTestActivity) -> Unit) {
+                snapshotActivityRule.scenario.onActivity(callback)
+            }
         }
         val prodAnimations = ProdAnimationsTestCase()
         val testCases = listOf(
