@@ -30,6 +30,9 @@ class BitmapPool {
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP
         }
+        if (width > 1000 || height > 1000) {
+            Log.d(L.TAG, "Requesting a large bitmap for " + width + "x" + height)
+        }
 
         val blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
