@@ -17,6 +17,8 @@ android {
   buildTypes {
     release {
       minifyEnabled false
+      signingConfig signingConfigs.debug
+      debuggable false
     }
   }
   compileOptions {
@@ -63,6 +65,8 @@ dependencies {
   implementation "androidx.compose.ui:ui-tooling:$composeVersion"
   implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
   implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+  // Need this to side load a Baseline Profile when Benchmarking
+  implementation "androidx.profileinstaller:profileinstaller:$startupVersion"
 
   implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
 
