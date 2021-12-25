@@ -16,7 +16,11 @@ class LargeCompositionSoftwareRendering : SnapshotTestCase {
         snapshotWithImageView("Center") { av ->
             av.scaleType = ImageView.ScaleType.CENTER
         }
-        snapshotWithImageView("CenterCrop") { av ->
+        snapshotWithImageView("Center With Scale") { av ->
+            av.scaleType = ImageView.ScaleType.CENTER
+            av.scale = 0.08f
+        }
+        snapshotWithImageView("CenterInside") { av ->
             av.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
         snapshotWithImageView("FitCenter") { av ->
