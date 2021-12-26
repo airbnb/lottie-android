@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -81,7 +82,7 @@ class LargeCompositionSoftwareRendering : SnapshotTestCase {
     }
 
     private suspend fun SnapshotTestCaseContext.snapshotWithImageView(snapshotVariant: String, callback: (LottieAnimationView) -> Unit) {
-        withAnimationView("Tests/LargeComposition.json", "Large Composition Tests", snapshotVariant) { av ->
+        withAnimationView("Tests/LargeComposition.json", "Large Composition Tests", snapshotVariant, widthSpec = 100, heightSpec = 100) { av ->
             av.setBackgroundColor(0x7f7f7f7f)
             callback(av)
         }
@@ -91,15 +92,14 @@ class LargeCompositionSoftwareRendering : SnapshotTestCase {
         snapshotVariant: String,
         callback: @Composable (composition: LottieComposition) -> Unit
     ) {
-        snapshotComposable("Large Composition Tests", snapshotVariant) {
-            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/LargeComposition.json"))
+        val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/LargeComposition.json").value!!
+        snapshotComposable("Large Composition Tests - Compose", snapshotVariant) {
             Box(
                 modifier = Modifier
                     .size(100.dp)
                     .background(Color.Gray)
-            )
-            composition?.let { comp ->
-                callback(comp)
+            ) {
+                callback(composition)
             }
         }
     }
