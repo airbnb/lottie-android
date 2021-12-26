@@ -30,6 +30,9 @@ class BitmapPool {
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP
         }
+        if (width > 1000 || height > 1000) {
+            Log.d(L.TAG, "Requesting a large bitmap for " + width + "x" + height)
+        }
 
         val blockedStartTime = System.currentTimeMillis()
         semaphore.acquire()
@@ -40,8 +43,9 @@ class BitmapPool {
 
         val bitmap = synchronized(bitmaps) {
             bitmaps
-                    .firstOrNull { it.width >= width && it.height >= height }
-                    ?.also { bitmaps.remove(it) }
+                .firstOrNull { it.width >= width && it.height >= height }
+                ?.also { bitmaps.remove(it) }
+                ?.also { it.eraseColor(0) }
         } ?: createNewBitmap(width, height)
 
         val croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
