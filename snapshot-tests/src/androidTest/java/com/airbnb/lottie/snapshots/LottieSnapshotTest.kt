@@ -79,9 +79,7 @@ class LottieSnapshotTest {
                 }
             }
             override val filmStripViewPool: ObjectPool<FilmStripView> = ObjectPool {
-                FilmStripView(context).apply {
-                    setLayerType(View.LAYER_TYPE_NONE, null)
-                }
+                FilmStripView(context)
             }
 
             override fun onActivity(callback: (SnapshotTestActivity) -> Unit) {

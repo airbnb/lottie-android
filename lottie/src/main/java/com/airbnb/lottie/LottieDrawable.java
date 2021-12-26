@@ -1231,12 +1231,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     ensureSoftwareRenderingBitmap(renderWidth, renderHeight);
 
+    // Calculate the src bounds.
+    // src bounds are the size of the bitmap that was rendered. The math to calculate the smallest possible bitmap was done
+    // above so this is just the size of the bitmap that was rendered.
+    softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
+
     if (isDirty) {
       if (softwareRenderingBitmap.getWidth() == renderWidth && softwareRenderingBitmap.getHeight() == renderHeight) {
         // eraseColor is ~10% faster than drawRect when covering the entire bitmap.
         softwareRenderingBitmap.eraseColor(0);
       } else {
-        softwareRenderingCanvas.drawRect(left, top, right, bottom, softwareRenderingClearPaint);
+        softwareRenderingCanvas.drawRect(softwareRenderingSrcBoundsRect, softwareRenderingClearPaint);
       }
       softwareRenderingMatrix.preScale(scale, scale);
       // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
@@ -1246,11 +1251,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       // bitmap to avoid allocating and copying the empty space on the left and top.
       softwareRenderingMatrix.postTranslate(-left, -top);
       compositionLayer.draw(softwareRenderingCanvas, softwareRenderingMatrix, alpha);
-
-      // Calculate the src bounds.
-      // src bounds are the size of the bitmap that was rendered. The math to calculate the smallest possible bitmap was done
-      // above so this is just the size of the bitmap that was rendered.
-      softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
 
       // Calculate the dst bounds.
       // We need to map the rendered coordinates back to the canvas's coordinates. To do so, we need to invert the transform
