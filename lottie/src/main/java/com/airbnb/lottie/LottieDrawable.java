@@ -1209,12 +1209,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingMatrix.postConcat(parentMatrix);
     }
 
+    // TODO: don't allocate
     RectF softwareRenderingTransformedBounds = new RectF();
-    Rect bounds = getBounds();
-    // if (bounds.isEmpty()) {
-    //   // TODO: maybe check if bounds have been explicitly set so somebody *could* set it to empty if they wanted.
-    //   bounds.set(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
-    // }
     softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
     softwareRenderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
@@ -1241,10 +1237,22 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         softwareRenderingCanvas.drawRect(left, top, right, bottom, softwareRenderingClearPaint);
       }
       softwareRenderingMatrix.preScale(scale, scale);
+      softwareRenderingMatrix.preScale(getBounds().width() / (float) getIntrinsicWidth(), getBounds().height() / (float) getIntrinsicHeight());
       softwareRenderingMatrix.postTranslate(-left, -top);
       compositionLayer.draw(softwareRenderingCanvas, softwareRenderingMatrix, alpha);
       softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
-      softwareRenderingDstBoundsRect.set(left, top, right, bottom);
+      // TODO: don't allocate
+      RectF dstRectF = new RectF();
+      Matrix originalCanvasInverse = new Matrix();
+      originalCanvas.getMatrix().invert(originalCanvasInverse);
+      originalCanvasInverse.mapRect(dstRectF, softwareRenderingTransformedBounds);
+      softwareRenderingDstBoundsRect.set(
+          (int) Math.floor(dstRectF.left),
+          (int) Math.floor(dstRectF.top),
+          (int) Math.ceil(dstRectF.right),
+          (int) Math.ceil(dstRectF.bottom)
+      );
+      // softwareRenderingDstBoundsRect.set(left, top, right, bottom);
     }
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }

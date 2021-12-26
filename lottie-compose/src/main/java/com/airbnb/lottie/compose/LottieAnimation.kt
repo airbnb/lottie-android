@@ -107,7 +107,7 @@ fun LottieAnimation(
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.useSoftwareRendering(useSoftwareRendering)
             drawable.progress = progress
-            drawable.setBounds(0, 0, intSize.width, intSize.height)
+            drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
         }
     }
