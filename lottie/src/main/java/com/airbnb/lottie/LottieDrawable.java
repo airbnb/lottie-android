@@ -114,6 +114,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private Paint softwareRenderingPaint;
   private Rect softwareRenderingSrcBoundsRect;
   private Rect softwareRenderingDstBoundsRect;
+  private RectF softwareRenderingDstBoundsRectF;
+  private RectF softwareRenderingTransformedBounds;
+  private Matrix originalCanvasMatrix;
+  private Matrix originalCanvasMatrixInverse;
   private Matrix softwareRenderingMatrix;
 
   /**
@@ -1148,7 +1152,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, composition, compositionLayer, matrix);
+      renderAndDrawAsBitmap(canvas, compositionLayer, matrix);
     } else {
       compositionLayer.draw(canvas, matrix, alpha);
     }
@@ -1162,7 +1166,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, composition, compositionLayer, null);
+      renderAndDrawAsBitmap(canvas, compositionLayer, null);
     } else {
       Rect bounds = getBounds();
       // In fitXY mode, the scale doesn't take effect.
@@ -1184,7 +1188,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, composition, compositionLayer, null);
+      renderAndDrawAsBitmap(canvas, compositionLayer, null);
     } else {
       hardwareRenderingMatrix.reset();
       hardwareRenderingMatrix.preScale(scale, scale);
@@ -1199,18 +1203,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieDrawable#useSoftwareRendering(boolean)
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
-  private void renderAndDrawAsBitmap(
-      Canvas originalCanvas, LottieComposition composition, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
+  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
     ensureSoftwareObjectsInitialized();
 
     //noinspection deprecation
-    originalCanvas.getMatrix(softwareRenderingMatrix);
+    originalCanvas.getMatrix(originalCanvasMatrix);
+    softwareRenderingMatrix.set(originalCanvasMatrix);
     if (parentMatrix != null) {
       softwareRenderingMatrix.postConcat(parentMatrix);
     }
 
-    // TODO: don't allocate
-    RectF softwareRenderingTransformedBounds = new RectF();
     softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
     softwareRenderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
@@ -1237,22 +1239,27 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         softwareRenderingCanvas.drawRect(left, top, right, bottom, softwareRenderingClearPaint);
       }
       softwareRenderingMatrix.preScale(scale, scale);
+      // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
+      // This is how ImageView.ScaleType.FIT_XY works, for example.
       softwareRenderingMatrix.preScale(getBounds().width() / (float) getIntrinsicWidth(), getBounds().height() / (float) getIntrinsicHeight());
+      // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
+      // bitmap to avoid allocating and copying the empty space on the left and top.
       softwareRenderingMatrix.postTranslate(-left, -top);
       compositionLayer.draw(softwareRenderingCanvas, softwareRenderingMatrix, alpha);
+
+      // Calculate the src bounds.
+      // src bounds are the size of the bitmap that was rendered. The math to calculate the smallest possible bitmap was done
+      // above so this is just the size of the bitmap that was rendered.
       softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
-      // TODO: don't allocate
-      RectF dstRectF = new RectF();
-      Matrix originalCanvasInverse = new Matrix();
-      originalCanvas.getMatrix().invert(originalCanvasInverse);
-      originalCanvasInverse.mapRect(dstRectF, softwareRenderingTransformedBounds);
-      softwareRenderingDstBoundsRect.set(
-          (int) Math.floor(dstRectF.left),
-          (int) Math.floor(dstRectF.top),
-          (int) Math.ceil(dstRectF.right),
-          (int) Math.ceil(dstRectF.bottom)
-      );
-      // softwareRenderingDstBoundsRect.set(left, top, right, bottom);
+
+      // Calculate the dst bounds.
+      // We need to map the rendered coordinates back to the canvas's coordinates. To do so, we need to invert the transform
+      // of the original canvas.
+      originalCanvasMatrix.invert(originalCanvasMatrixInverse);
+      // Take the bounds of the rendered animation and map them to the canvas's coordinates.
+      // This is similar to the src rect above but the src bound may have a left and top offset.
+      originalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
+      convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
     }
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }
@@ -1264,6 +1271,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingPaint = new LPaint();
     softwareRenderingSrcBoundsRect = new Rect();
     softwareRenderingDstBoundsRect = new Rect();
+    softwareRenderingDstBoundsRectF = new RectF();
+    softwareRenderingTransformedBounds = new RectF();
+    originalCanvasMatrix = new Matrix();
+    originalCanvasMatrixInverse = new Matrix();
     softwareRenderingMatrix = new Matrix();
   }
 
@@ -1283,5 +1294,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingClearPaint.setColor(Color.BLACK);
       isDirty = true;
     }
+  }
+
+  /**
+   * Convert a RectF to a Rect
+   */
+  private void convertRect(RectF src, Rect dst) {
+    dst.set(
+        (int) Math.floor(src.left),
+        (int) Math.floor(src.top),
+        (int) Math.ceil(src.right),
+        (int) Math.ceil(src.bottom)
+    );
   }
 }
