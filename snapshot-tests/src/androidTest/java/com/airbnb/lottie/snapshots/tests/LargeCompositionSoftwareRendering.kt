@@ -82,7 +82,7 @@ class LargeCompositionSoftwareRendering : SnapshotTestCase {
     }
 
     private suspend fun SnapshotTestCaseContext.snapshotWithImageView(snapshotVariant: String, callback: (LottieAnimationView) -> Unit) {
-        withAnimationView("Tests/LargeComposition.json", "Large Composition Tests", snapshotVariant, widthSpec = 100, heightSpec = 100) { av ->
+        withAnimationView("Tests/LargeComposition.json", "Large Composition Tests", snapshotVariant, widthPx = 275, heightPx = 275) { av ->
             av.setBackgroundColor(0x7f7f7f7f)
             callback(av)
         }

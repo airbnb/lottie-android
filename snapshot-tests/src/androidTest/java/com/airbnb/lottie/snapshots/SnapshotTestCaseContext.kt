@@ -76,15 +76,8 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     assetName: String,
     snapshotName: String = assetName,
     snapshotVariant: String = "default",
-    widthSpec: Int = View.MeasureSpec.makeMeasureSpec(
-        context.resources.displayMetrics
-            .widthPixels,
-        View.MeasureSpec.EXACTLY
-    ),
-    heightSpec: Int = View.MeasureSpec.makeMeasureSpec(
-        context.resources.displayMetrics
-            .heightPixels, View.MeasureSpec.EXACTLY
-    ),
+    widthPx: Int = context.resources.displayMetrics.widthPixels,
+    heightPx: Int = context.resources.displayMetrics.heightPixels,
     callback: (LottieAnimationView) -> Unit,
 ) {
     val result = LottieCompositionFactory.fromAssetSync(context, assetName)
@@ -96,6 +89,14 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     animationView.scaleType = ImageView.ScaleType.FIT_CENTER
     callback(animationView)
     val animationViewContainer = animationView.parent as ViewGroup
+    val widthSpec = View.MeasureSpec.makeMeasureSpec(
+        widthPx,
+        View.MeasureSpec.EXACTLY,
+    )
+    val heightSpec: Int = View.MeasureSpec.makeMeasureSpec(
+        heightPx,
+        View.MeasureSpec.EXACTLY,
+    )
     animationViewContainer.measure(widthSpec, heightSpec)
     animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
     val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
