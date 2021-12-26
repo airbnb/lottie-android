@@ -96,7 +96,6 @@ fun LottieAnimation(
             matrix.preTranslate(translation.x.toFloat(), translation.y.toFloat())
             matrix.preScale(scale.scaleX, scale.scaleY)
 
-
             drawable.composition = composition
             if (dynamicProperties !== setDynamicProperties) {
                 setDynamicProperties?.removeFrom(drawable)
@@ -108,6 +107,7 @@ fun LottieAnimation(
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.useSoftwareRendering(useSoftwareRendering)
             drawable.progress = progress
+            drawable.setBounds(0, 0, intSize.width, intSize.height)
             drawable.draw(canvas.nativeCanvas, matrix)
         }
     }

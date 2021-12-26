@@ -14,6 +14,7 @@ import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -62,7 +63,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     void run(LottieComposition composition);
   }
 
-  private final Matrix matrix = new Matrix();
+  private final Matrix hardwareRenderingMatrix = new Matrix();
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
@@ -1141,10 +1142,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public void draw(Canvas canvas, Matrix matrix) {
     CompositionLayer compositionLayer = this.compositionLayer;
-    if (compositionLayer == null) {
+    LottieComposition composition = this.composition;
+    if (compositionLayer == null || composition == null) {
       return;
     }
-    compositionLayer.draw(canvas, matrix, alpha);
+
+    if (softwareRenderingEnabled) {
+      renderAndDrawAsBitmap(canvas, composition, compositionLayer, matrix);
+    } else {
+      compositionLayer.draw(canvas, matrix, alpha);
+    }
   }
 
   private void drawWithNewAspectRatio(Canvas canvas) {
@@ -1154,35 +1161,34 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
-    Rect bounds = getBounds();
-    // In fitXY mode, the scale doesn't take effect.
-    float scaleX = bounds.width() / (float) composition.getBounds().width();
-    float scaleY = bounds.height() / (float) composition.getBounds().height();
-
-    matrix.reset();
-    matrix.preScale(scaleX, scaleY);
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, composition, compositionLayer, scaleX, scaleY);
+      renderAndDrawAsBitmap(canvas, composition, compositionLayer, null);
     } else {
-      compositionLayer.draw(canvas, matrix, alpha);
+      Rect bounds = getBounds();
+      // In fitXY mode, the scale doesn't take effect.
+      float scaleX = bounds.width() / (float) composition.getBounds().width();
+      float scaleY = bounds.height() / (float) composition.getBounds().height();
+
+      hardwareRenderingMatrix.reset();
+      hardwareRenderingMatrix.preScale(scaleX, scaleY);
+      compositionLayer.draw(canvas, hardwareRenderingMatrix, alpha);
     }
   }
 
   private void drawWithOriginalAspectRatio(Canvas canvas) {
     CompositionLayer compositionLayer = this.compositionLayer;
     LottieComposition composition = this.composition;
+    float scale = this.scale;
     if (compositionLayer == null || composition == null) {
       return;
     }
 
-    float scale = this.scale;
-
-    matrix.reset();
-    matrix.preScale(scale, scale);
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, composition, compositionLayer, scale, scale);
+      renderAndDrawAsBitmap(canvas, composition, compositionLayer, null);
     } else {
-      compositionLayer.draw(canvas, matrix, alpha);
+      hardwareRenderingMatrix.reset();
+      hardwareRenderingMatrix.preScale(scale, scale);
+      compositionLayer.draw(canvas, hardwareRenderingMatrix, alpha);
     }
   }
 
@@ -1194,18 +1200,36 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
   private void renderAndDrawAsBitmap(
-      Canvas originalCanvas, LottieComposition composition, CompositionLayer compositionLayer, float scaleX, float scaleY) {
+      Canvas originalCanvas, LottieComposition composition, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
     ensureSoftwareObjectsInitialized();
 
-    float scaledCompositionWidth = composition.getBounds().width() * scaleX;
-    float scaledCompositionHeight = composition.getBounds().height() * scaleY;
+    //noinspection deprecation
+    originalCanvas.getMatrix(softwareRenderingMatrix);
+    if (parentMatrix != null) {
+      softwareRenderingMatrix.postConcat(parentMatrix);
+    }
 
-    float renderWidthScale = originalCanvas.getWidth() / scaledCompositionWidth;
-    float renderHeightScale = originalCanvas.getHeight() / scaledCompositionHeight;
-    float renderScale = Math.max(renderWidthScale, renderHeightScale);
+    RectF softwareRenderingTransformedBounds = new RectF();
+    Rect bounds = getBounds();
+    // if (bounds.isEmpty()) {
+    //   // TODO: maybe check if bounds have been explicitly set so somebody *could* set it to empty if they wanted.
+    //   bounds.set(0, 0, getIntrinsicWidth(), getIntrinsicHeight());
+    // }
+    softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
+    softwareRenderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
-    int renderWidth = (int) (scaledCompositionWidth * renderScale);
-    int renderHeight = (int) (scaledCompositionHeight * renderScale);
+    softwareRenderingTransformedBounds.intersect(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
+    int left = (int) Math.floor(softwareRenderingTransformedBounds.left);
+    int top = (int) Math.floor(softwareRenderingTransformedBounds.top);
+    int right = (int) Math.ceil(softwareRenderingTransformedBounds.right);
+    int bottom = (int) Math.ceil(softwareRenderingTransformedBounds.bottom);
+
+    int renderWidth = right - left;
+    int renderHeight = bottom - top;
+
+    if (renderWidth == 0 || renderHeight == 0) {
+      return;
+    }
 
     ensureSoftwareRenderingBitmap(renderWidth, renderHeight);
 
@@ -1214,13 +1238,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         // eraseColor is ~10% faster than drawRect when covering the entire bitmap.
         softwareRenderingBitmap.eraseColor(0);
       } else {
-        softwareRenderingCanvas.drawRect(0f, 0f, renderWidth, renderHeight, softwareRenderingClearPaint);
+        softwareRenderingCanvas.drawRect(left, top, right, bottom, softwareRenderingClearPaint);
       }
-      softwareRenderingMatrix.set(matrix);
-      softwareRenderingMatrix.postScale(renderScale, renderScale);
+      softwareRenderingMatrix.preScale(scale, scale);
+      softwareRenderingMatrix.postTranslate(-left, -top);
       compositionLayer.draw(softwareRenderingCanvas, softwareRenderingMatrix, alpha);
       softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
-      softwareRenderingDstBoundsRect.set(getBounds());
+      softwareRenderingDstBoundsRect.set(left, top, right, bottom);
     }
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }
