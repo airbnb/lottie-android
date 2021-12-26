@@ -230,7 +230,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return false;
     }
 
-    isDirty = false;
+    isDirty = true;
     clearComposition();
     this.composition = composition;
     buildCompositionLayer();

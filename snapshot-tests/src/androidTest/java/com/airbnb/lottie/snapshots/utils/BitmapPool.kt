@@ -16,6 +16,7 @@ class BitmapPool {
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()
 
+    @Synchronized
     fun clear() {
         bitmaps.clear()
     }
