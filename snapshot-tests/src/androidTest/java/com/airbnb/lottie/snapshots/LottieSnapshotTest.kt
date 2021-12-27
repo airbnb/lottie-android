@@ -17,11 +17,11 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
 import com.airbnb.lottie.snapshots.tests.AssetsTestCase
 import com.airbnb.lottie.snapshots.tests.ColorStateListColorFilterTestCase
-import com.airbnb.lottie.snapshots.tests.ComposeDynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
 import com.airbnb.lottie.snapshots.tests.FrameBoundariesTestCase
+import com.airbnb.lottie.snapshots.tests.LargeCompositionSoftwareRendering
 import com.airbnb.lottie.snapshots.tests.MarkersTestCase
 import com.airbnb.lottie.snapshots.tests.NightModeTestCase
 import com.airbnb.lottie.snapshots.tests.OutlineMasksAndMattesTestCase
@@ -56,22 +56,21 @@ class LottieSnapshotTest {
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
+    lateinit var testCaseContext: SnapshotTestCaseContext
+    lateinit var snapshotter: HappoSnapshotter
+
     @Before
     fun setup() {
         LottieCompositionCache.getInstance().resize(1)
-    }
-
-    @Test
-    fun testAll() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val snapshotter = HappoSnapshotter(context) { name, variant ->
+        snapshotter = HappoSnapshotter(context) { name, variant ->
             snapshotActivityRule.scenario.onActivity { activity ->
                 activity.updateUiForSnapshot(name, variant)
             }
         }
-        val testCaseContext: SnapshotTestCaseContext = object : SnapshotTestCaseContext {
+        testCaseContext = object : SnapshotTestCaseContext {
             override val context: Context = context
-            override val snapshotter: HappoSnapshotter = snapshotter
+            override val snapshotter: HappoSnapshotter = this@LottieSnapshotTest.snapshotter
             override val bitmapPool: BitmapPool = BitmapPool()
             override val animationViewPool: ObjectPool<LottieAnimationView> = ObjectPool {
                 val animationViewContainer = FrameLayout(context)
@@ -80,9 +79,7 @@ class LottieSnapshotTest {
                 }
             }
             override val filmStripViewPool: ObjectPool<FilmStripView> = ObjectPool {
-                FilmStripView(context).apply {
-                    setLayerType(View.LAYER_TYPE_NONE, null)
-                }
+                FilmStripView(context)
             }
 
             override fun onActivity(callback: (SnapshotTestActivity) -> Unit) {
@@ -103,7 +100,10 @@ class LottieSnapshotTest {
 
             })
         }
-        val prodAnimations = ProdAnimationsTestCase()
+    }
+
+    @Test
+    fun testAll() = runBlocking {
         val testCases = listOf(
             CustomBoundsTestCase(),
             ColorStateListColorFilterTestCase(),
@@ -118,13 +118,13 @@ class LottieSnapshotTest {
             NightModeTestCase(),
             ApplyOpacityToLayerTestCase(),
             OutlineMasksAndMattesTestCase(),
-//            ComposeDynamicPropertiesTestCase(),
-            prodAnimations,
+            LargeCompositionSoftwareRendering(),
+            ProdAnimationsTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
             launch {
-                with(prodAnimations) {
+                with(testCases.filterIsInstance<ProdAnimationsTestCase>().firstOrNull() ?: return@launch) {
                     // Kick off the downloads ahead of time so it can start while the other tests are snapshotting
                     testCaseContext.downloadAnimations()
                 }

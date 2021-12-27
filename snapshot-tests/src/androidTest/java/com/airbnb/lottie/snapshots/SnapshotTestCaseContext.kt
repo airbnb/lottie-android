@@ -1,8 +1,11 @@
 package com.airbnb.lottie.snapshots
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -22,8 +28,10 @@ import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
 private val ActivityContentLock = Mutex()
 
@@ -68,6 +76,8 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     assetName: String,
     snapshotName: String = assetName,
     snapshotVariant: String = "default",
+    widthPx: Int = context.resources.displayMetrics.widthPixels,
+    heightPx: Int = context.resources.displayMetrics.heightPixels,
     callback: (LottieAnimationView) -> Unit,
 ) {
     val result = LottieCompositionFactory.fromAssetSync(context, assetName)
@@ -78,16 +88,15 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     animationView.scale = 1f
     animationView.scaleType = ImageView.ScaleType.FIT_CENTER
     callback(animationView)
-    val widthSpec = View.MeasureSpec.makeMeasureSpec(
-        context.resources.displayMetrics
-            .widthPixels,
-        View.MeasureSpec.EXACTLY
-    )
-    val heightSpec = View.MeasureSpec.makeMeasureSpec(
-        context.resources.displayMetrics
-            .heightPixels, View.MeasureSpec.EXACTLY
-    )
     val animationViewContainer = animationView.parent as ViewGroup
+    val widthSpec = View.MeasureSpec.makeMeasureSpec(
+        widthPx,
+        View.MeasureSpec.EXACTLY,
+    )
+    val heightSpec: Int = View.MeasureSpec.makeMeasureSpec(
+        heightPx,
+        View.MeasureSpec.EXACTLY,
+    )
     animationViewContainer.measure(widthSpec, heightSpec)
     animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
     val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
@@ -133,6 +142,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
     val canvas = Canvas(bitmap)
     filmStripView.setComposition(composition, name)
+    canvas.drawColor(Color.BLACK, PorterDuff.Mode.CLEAR)
     withContext(Dispatchers.Main) {
         log("Drawing $name")
         filmStripView.draw(canvas)
@@ -150,17 +160,21 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
 ) = withContext(Dispatchers.Default) {
     log("Snapshotting $name")
     val composeView = ComposeView(context)
-    composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-    onActivity { activity ->
-        activity.binding.content.addView(composeView)
-    }
-    awaitFrame()
-    composeView.setContent(content)
-    val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
-    val canvas = Canvas(bitmap)
-    withContext(Dispatchers.Main) {
-        log("Drawing $name")
-        composeView.draw(canvas)
+    composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+    val bitmap = withContext(Dispatchers.Main) {
+        composeView.setContent(content)
+        suspendCancellableCoroutine<Bitmap> { cont ->
+            composeView.doOnLayout {
+                log("Drawing $name")
+                val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
+                val canvas = Canvas(bitmap)
+                composeView.draw(canvas)
+                cont.resume(bitmap)
+            }
+            onActivity { activity ->
+                activity.binding.content.addView(composeView)
+            }
+        }
     }
     onActivity { activity ->
         activity.binding.content.removeView(composeView)

@@ -12,7 +12,6 @@ class ObjectPool<T>(private val factory: () -> T) {
     private val objects = Collections.synchronizedList(ArrayList<T>())
     private val releasedObjects = HashSet<T>()
 
-    @ExperimentalCoroutinesApi
     @Synchronized
     fun acquire(): T {
         val blockedStartTime = System.currentTimeMillis()
