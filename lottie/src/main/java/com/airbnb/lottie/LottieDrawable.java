@@ -116,7 +116,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private Rect softwareRenderingDstBoundsRect;
   private RectF softwareRenderingDstBoundsRectF;
   private RectF softwareRenderingTransformedBounds;
-  private RectF softwareRenderingOriginalCanvasBounds;
   private Matrix softwareRenderingOriginalCanvasMatrix;
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
@@ -1218,13 +1217,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
     renderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
-    // If the canvas has a transform, then we need to transform its bounds by its matrix
-    // so that we know the coordinate space that the canvas is showing.
-    softwareRenderingOriginalCanvasBounds.set(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
-    softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingOriginalCanvasBounds);
-
     // We only need to render the portion of the animation that intersects with the canvas's bounds.
-    softwareRenderingTransformedBounds.intersect(softwareRenderingOriginalCanvasBounds);
+    softwareRenderingTransformedBounds.intersect(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
 
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
@@ -1270,7 +1264,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingDstBoundsRect = new Rect();
     softwareRenderingDstBoundsRectF = new RectF();
     softwareRenderingTransformedBounds = new RectF();
-    softwareRenderingOriginalCanvasBounds = new RectF();
     softwareRenderingOriginalCanvasMatrix = new Matrix();
     softwareRenderingOriginalCanvasMatrixInverse = new Matrix();
   }
