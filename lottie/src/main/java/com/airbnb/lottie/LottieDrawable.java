@@ -63,7 +63,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     void run(LottieComposition composition);
   }
 
-  private final Matrix hardwareRenderingMatrix = new Matrix();
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
@@ -107,6 +106,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
 
+  private final Matrix renderingMatrix = new Matrix();
   private boolean softwareRenderingEnabled = false;
   private Bitmap softwareRenderingBitmap;
   private final LPaint softwareRenderingClearPaint = new LPaint();
@@ -116,9 +116,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private Rect softwareRenderingDstBoundsRect;
   private RectF softwareRenderingDstBoundsRectF;
   private RectF softwareRenderingTransformedBounds;
-  private Matrix originalCanvasMatrix;
-  private Matrix originalCanvasMatrixInverse;
-  private Matrix softwareRenderingMatrix;
+  private RectF softwareRenderingOriginalCanvasBounds;
+  private Matrix softwareRenderingOriginalCanvasMatrix;
+  private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
   /**
    * True if the drawable has not been drawn since the last invalidateSelf.
@@ -1173,9 +1173,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       float scaleX = bounds.width() / (float) composition.getBounds().width();
       float scaleY = bounds.height() / (float) composition.getBounds().height();
 
-      hardwareRenderingMatrix.reset();
-      hardwareRenderingMatrix.preScale(scaleX, scaleY);
-      compositionLayer.draw(canvas, hardwareRenderingMatrix, alpha);
+      renderingMatrix.reset();
+      renderingMatrix.preScale(scaleX, scaleY);
+      compositionLayer.draw(canvas, renderingMatrix, alpha);
     }
   }
 
@@ -1190,9 +1190,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (softwareRenderingEnabled) {
       renderAndDrawAsBitmap(canvas, compositionLayer, null);
     } else {
-      hardwareRenderingMatrix.reset();
-      hardwareRenderingMatrix.preScale(scale, scale);
-      compositionLayer.draw(canvas, hardwareRenderingMatrix, alpha);
+      renderingMatrix.reset();
+      renderingMatrix.preScale(scale, scale);
+      compositionLayer.draw(canvas, renderingMatrix, alpha);
     }
   }
 
@@ -1204,26 +1204,30 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
   private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
-    ensureSoftwareObjectsInitialized();
+    ensureSoftwareRenderingObjectsInitialized();
 
     //noinspection deprecation
-    originalCanvas.getMatrix(originalCanvasMatrix);
-    softwareRenderingMatrix.set(originalCanvasMatrix);
+    originalCanvas.getMatrix(softwareRenderingOriginalCanvasMatrix);
+    softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
+    renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
     if (parentMatrix != null) {
-      softwareRenderingMatrix.postConcat(parentMatrix);
+      renderingMatrix.postConcat(parentMatrix);
     }
 
+    // Determine what bounds the animation will render to after taking into account the canvas and parent matrix.
     softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
-    softwareRenderingMatrix.mapRect(softwareRenderingTransformedBounds);
+    renderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
-    softwareRenderingTransformedBounds.intersect(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
-    int left = (int) Math.floor(softwareRenderingTransformedBounds.left);
-    int top = (int) Math.floor(softwareRenderingTransformedBounds.top);
-    int right = (int) Math.ceil(softwareRenderingTransformedBounds.right);
-    int bottom = (int) Math.ceil(softwareRenderingTransformedBounds.bottom);
+    // If the canvas has a transform, then we need to transform its bounds by its matrix
+    // so that we know the coordinate space that the canvas is showing.
+    softwareRenderingOriginalCanvasBounds.set(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
+    softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingOriginalCanvasBounds);
 
-    int renderWidth = right - left;
-    int renderHeight = bottom - top;
+    // We only need to render the portion of the animation that intersects with the canvas's bounds.
+    softwareRenderingTransformedBounds.intersect(softwareRenderingOriginalCanvasBounds);
+
+    int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
+    int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
 
     if (renderWidth == 0 || renderHeight == 0) {
       return;
@@ -1231,51 +1235,44 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     ensureSoftwareRenderingBitmap(renderWidth, renderHeight);
 
-    // Calculate the src bounds.
-    // src bounds are the size of the bitmap that was rendered. The math to calculate the smallest possible bitmap was done
-    // above so this is just the size of the bitmap that was rendered.
     softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
 
     if (isDirty) {
-      if (softwareRenderingBitmap.getWidth() == renderWidth && softwareRenderingBitmap.getHeight() == renderHeight) {
-        // eraseColor is ~10% faster than drawRect when covering the entire bitmap.
-        softwareRenderingBitmap.eraseColor(0);
-      } else {
-        softwareRenderingCanvas.drawRect(softwareRenderingSrcBoundsRect, softwareRenderingClearPaint);
-      }
-      softwareRenderingMatrix.preScale(scale, scale);
+      softwareRenderingBitmap.eraseColor(0);
+      renderingMatrix.preScale(scale, scale);
       // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
-      // This is how ImageView.ScaleType.FIT_XY works, for example.
-      softwareRenderingMatrix.preScale(getBounds().width() / (float) getIntrinsicWidth(), getBounds().height() / (float) getIntrinsicHeight());
+      // This is how ImageView.ScaleType.FIT_XY works.
+      renderingMatrix.preScale(getBounds().width() / (float) getIntrinsicWidth(), getBounds().height() / (float) getIntrinsicHeight());
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
-      // bitmap to avoid allocating and copying the empty space on the left and top.
-      softwareRenderingMatrix.postTranslate(-left, -top);
-      compositionLayer.draw(softwareRenderingCanvas, softwareRenderingMatrix, alpha);
+      // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
+      renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
+      compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha);
 
       // Calculate the dst bounds.
       // We need to map the rendered coordinates back to the canvas's coordinates. To do so, we need to invert the transform
       // of the original canvas.
-      originalCanvasMatrix.invert(originalCanvasMatrixInverse);
       // Take the bounds of the rendered animation and map them to the canvas's coordinates.
       // This is similar to the src rect above but the src bound may have a left and top offset.
-      originalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
+      softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
       convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
     }
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }
 
-  private void ensureSoftwareObjectsInitialized() {
+  private void ensureSoftwareRenderingObjectsInitialized() {
     if (softwareRenderingPaint != null) {
       return;
     }
     softwareRenderingPaint = new LPaint();
+    softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+    softwareRenderingClearPaint.setColor(Color.BLACK);
     softwareRenderingSrcBoundsRect = new Rect();
     softwareRenderingDstBoundsRect = new Rect();
     softwareRenderingDstBoundsRectF = new RectF();
     softwareRenderingTransformedBounds = new RectF();
-    originalCanvasMatrix = new Matrix();
-    originalCanvasMatrixInverse = new Matrix();
-    softwareRenderingMatrix = new Matrix();
+    softwareRenderingOriginalCanvasBounds = new RectF();
+    softwareRenderingOriginalCanvasMatrix = new Matrix();
+    softwareRenderingOriginalCanvasMatrixInverse = new Matrix();
   }
 
   private void ensureSoftwareRenderingBitmap(int renderWidth, int renderHeight) {
@@ -1284,14 +1281,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         softwareRenderingBitmap.getHeight() < renderHeight) {
       softwareRenderingBitmap = Bitmap.createBitmap(renderWidth, renderHeight, Bitmap.Config.ARGB_8888);
       softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
-      softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-      softwareRenderingClearPaint.setColor(Color.BLACK);
       isDirty = true;
-    } else if (softwareRenderingBitmap.getWidth() > renderWidth && softwareRenderingBitmap.getHeight() > renderHeight) {
+    } else if (softwareRenderingBitmap.getWidth() > renderWidth || softwareRenderingBitmap.getHeight() > renderHeight) {
       softwareRenderingBitmap = Bitmap.createBitmap(softwareRenderingBitmap, 0, 0, renderWidth, renderHeight);
       softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
-      softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-      softwareRenderingClearPaint.setColor(Color.BLACK);
       isDirty = true;
     }
   }
