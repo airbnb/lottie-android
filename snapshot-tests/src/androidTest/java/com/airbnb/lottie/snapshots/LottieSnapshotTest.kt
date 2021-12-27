@@ -5,7 +5,6 @@ import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
-import android.view.View
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -17,6 +16,7 @@ import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
 import com.airbnb.lottie.snapshots.tests.AssetsTestCase
 import com.airbnb.lottie.snapshots.tests.ColorStateListColorFilterTestCase
+import com.airbnb.lottie.snapshots.tests.ComposeDynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
@@ -119,6 +119,7 @@ class LottieSnapshotTest {
             ApplyOpacityToLayerTestCase(),
             OutlineMasksAndMattesTestCase(),
             LargeCompositionSoftwareRendering(),
+            ComposeDynamicPropertiesTestCase(),
             ProdAnimationsTestCase(),
         )
 
