@@ -96,7 +96,8 @@ class LottieDynamicProperties internal constructor(
     private val floatProperties: List<LottieDynamicProperty<Float>>,
     private val scaleProperties: List<LottieDynamicProperty<ScaleXY>>,
     private val colorFilterProperties: List<LottieDynamicProperty<ColorFilter>>,
-    private val intArrayProperties: List<LottieDynamicProperty<IntArray>>,
+    // Java doesn't have reified types. All LottieProperty arrays are Integer[].
+    private val intArrayProperties: List<LottieDynamicProperty<Array<*>>>,
     private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
     private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
 ) {
@@ -107,7 +108,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is Float } as List<LottieDynamicProperty<Float>>,
         properties.filter { it.property is ScaleXY } as List<LottieDynamicProperty<ScaleXY>>,
         properties.filter { it.property is ColorFilter } as List<LottieDynamicProperty<ColorFilter>>,
-        properties.filter { it.property is IntArray } as List<LottieDynamicProperty<IntArray>>,
+        properties.filter { it.property is Array<*> } as List<LottieDynamicProperty<Array<*>>>,
         properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
         properties.filter { it.property is Bitmap } as List<LottieDynamicProperty<Bitmap>>,
     )
@@ -157,7 +158,7 @@ class LottieDynamicProperties internal constructor(
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<ColorFilter>?)
         }
         intArrayProperties.forEach { p ->
-            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<IntArray>?)
+            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Array<*>>?)
         }
         typefaceProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Typeface>?)
