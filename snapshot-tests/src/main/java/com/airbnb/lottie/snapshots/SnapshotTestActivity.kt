@@ -5,7 +5,7 @@ import com.airbnb.lottie.snapshots.databinding.SnapshotTestsActivityBinding
 import com.airbnb.lottie.snapshots.utils.viewBinding
 
 class SnapshotTestActivity : AppCompatActivity() {
-    private val binding: SnapshotTestsActivityBinding by viewBinding()
+    val binding: SnapshotTestsActivityBinding by viewBinding()
 
     fun updateUiForSnapshot(snapshotName: String, snapshotVariant: String) {
         binding.counterTextView.post {

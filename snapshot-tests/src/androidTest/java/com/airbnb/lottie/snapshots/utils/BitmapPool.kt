@@ -15,20 +15,19 @@ class BitmapPool {
     private val semaphore = SuspendingSemaphore(MAX_RELEASED_BITMAPS)
     private val bitmaps = Collections.synchronizedList(ArrayList<Bitmap>())
     private val releasedBitmaps = ConcurrentHashMap<Bitmap, Bitmap>()
-    private val clearPaint by lazy {
-        Paint().apply {
-            xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-        }
-    }
 
+    @Synchronized
     fun clear() {
         bitmaps.clear()
     }
 
-    @ExperimentalCoroutinesApi
+    @Synchronized
     fun acquire(width: Int, height: Int): Bitmap {
         if (width <= 0 || height <= 0) {
             return TRANSPARENT_1X1_BITMAP
+        }
+        if (width > 1000 || height > 1000) {
+            Log.d(L.TAG, "Requesting a large bitmap for " + width + "x" + height)
         }
 
         val blockedStartTime = System.currentTimeMillis()
@@ -40,26 +39,24 @@ class BitmapPool {
 
         val bitmap = synchronized(bitmaps) {
             bitmaps
-                    .firstOrNull { it.width >= width && it.height >= height }
-                    ?.also { bitmaps.remove(it) }
+                .firstOrNull { it.width >= width && it.height >= height }
+                ?.also { bitmaps.remove(it) }
         } ?: createNewBitmap(width, height)
 
         val croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height)
         releasedBitmaps[croppedBitmap] = bitmap
 
-        Canvas(croppedBitmap).apply {
-            drawRect(0f, 0f, croppedBitmap.width.toFloat(), croppedBitmap.height.toFloat(), clearPaint)
-        }
-
         return croppedBitmap
     }
 
+    @Synchronized
     fun release(bitmap: Bitmap) {
         if (bitmap == TRANSPARENT_1X1_BITMAP) {
             return
         }
 
         val originalBitmap = releasedBitmaps.remove(bitmap) ?: throw IllegalArgumentException("Unable to find original bitmap.")
+        originalBitmap.eraseColor(0)
 
         bitmaps += originalBitmap
         semaphore.release()

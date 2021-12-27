@@ -77,12 +77,14 @@ public abstract class BaseLayer
 
   private final Path path = new Path();
   private final Matrix matrix = new Matrix();
+  private final Matrix canvasMatrix = new Matrix();
   private final Paint contentPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final Paint dstInPaint = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_IN);
   private final Paint dstOutPaint = new LPaint(Paint.ANTI_ALIAS_FLAG, PorterDuff.Mode.DST_OUT);
   private final Paint mattePaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final Paint clearPaint = new LPaint(PorterDuff.Mode.CLEAR);
   private final RectF rect = new RectF();
+  private final RectF canvasBounds = new RectF();
   private final RectF maskBoundsRect = new RectF();
   private final RectF matteBoundsRect = new RectF();
   private final RectF tempMaskBoundsRect = new RectF();
@@ -259,7 +261,17 @@ public abstract class BaseLayer
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
-    if (!rect.intersect(0, 0, canvas.getWidth(), canvas.getHeight())) {
+    // Intersect the mask and matte rect with the canvas bounds.
+    // If the canvas has a transform, then we need to transform its bounds by its matrix
+    // so that we know the coordinate space that the canvas is showing.
+    canvasBounds.set(0f, 0f, canvas.getWidth(), canvas.getHeight());
+    //noinspection deprecation
+    canvas.getMatrix(canvasMatrix);
+    if (!canvasMatrix.isIdentity()) {
+      canvasMatrix.invert(canvasMatrix);
+      canvasMatrix.mapRect(canvasBounds);
+    }
+    if (!rect.intersect(canvasBounds)) {
       rect.set(0, 0, 0, 0);
     }
 
