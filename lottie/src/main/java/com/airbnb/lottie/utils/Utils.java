@@ -66,7 +66,6 @@ public final class Utils {
   };
 
   private static final float INV_SQRT_2 = (float) (Math.sqrt(2) / 2.0);
-  private static float dpScale = -1;
 
   private Utils() {
   }
@@ -250,10 +249,7 @@ public final class Utils {
   }
 
   public static float dpScale() {
-    if (dpScale == -1) {
-      dpScale = Resources.getSystem().getDisplayMetrics().density;
-    }
-    return dpScale;
+    return Resources.getSystem().getDisplayMetrics().density;
   }
 
   public static float getAnimationScale(Context context) {
