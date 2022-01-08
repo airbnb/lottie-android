@@ -119,7 +119,7 @@ class FragmentVisibilityTests {
             val animationView = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
             // Wait for the animation view.
             // We have to use a property reference because the Fragment isn't resumed.
-            assertTrue(fragment.animationView.isAnimating)
+            assertTrue(animationView.isAnimating)
         }
     }
 
@@ -331,8 +331,6 @@ class FragmentVisibilityTests {
                                     animationWasPlayed = true
                                     IdlingRegistry.getInstance().register(LottieIdlingResource(this, name = "Lottie ${Random.nextFloat()}"))
                                 }
-                            } else {
-                                IdlingRegistry.getInstance().register(LottieIdlingAnimationResource(animationView, name = "Lottie finished animation ${Random.nextFloat()}"))
                             }
                         }
 
@@ -352,7 +350,10 @@ class FragmentVisibilityTests {
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
         scenario.onFragment { assertTrue(it.animationView!!.isAnimating) }
         onView(withId(R.id.animation_view)).check(matches(isDisplayed()))
-        scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
+        scenario.onAnimationEnded()
+        scenario.onFragment { fragment ->
+            assertFalse(fragment.animationView!!.isAnimating)
+        }
     }
 
     @Test
@@ -395,8 +396,6 @@ class FragmentVisibilityTests {
                                     animationWasPlayed = true
                                     IdlingRegistry.getInstance().register(LottieIdlingResource(this, name = "Lottie ${Random.nextFloat()}"))
                                 }
-                            } else {
-                                IdlingRegistry.getInstance().register(LottieIdlingAnimationResource(animationView, name = "Lottie finished animation ${Random.nextFloat()}"))
                             }
                         }
 
@@ -415,7 +414,7 @@ class FragmentVisibilityTests {
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
         scenario.onFragment { assertTrue(it.animationView!!.isAnimating) }
-        onView(withId(R.id.animation_view)).check(matches(isDisplayed()))
+        scenario.onAnimationEnded()
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
         scenario.onFragment { it.requireView().scrollBy(0, 10_000) }
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
@@ -458,6 +457,13 @@ class FragmentVisibilityTests {
                 Thread.sleep(200)
             }
         }
+    }
+
+    private fun <T : Fragment> FragmentScenario<T>.onAnimationEnded() {
+        onFragment { fragment ->
+            IdlingRegistry.getInstance().register(LottieIdlingAnimationResource(fragment.animationView!!, name = "Lottie finished animation ${Random.nextFloat()}"))
+        }
+        onIdle()
     }
 
     private val Fragment.animationView get() = requireView().findViewById<LottieAnimationView>(R.id.animation_view)
