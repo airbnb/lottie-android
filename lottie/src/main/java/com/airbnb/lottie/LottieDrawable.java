@@ -63,15 +63,28 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     void run(LottieComposition composition);
   }
 
+  /**
+   * Internal record keeping of the desired play state when {@link #isVisible()} transitions to or is false.
+   *
+   * If the animation was playing when it becomes invisible or play/pause is called on it while it is invisible, it will
+   * store the state and then take the appropriate action when the drawable becomes visible again.
+   */
+  private enum OnVisibleAction {
+    NONE,
+    PLAY,
+    RESUME,
+  }
+
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
 
-  //Call animationsEnabled() instead of using these fields directly
+  // Call animationsEnabled() instead of using these fields directly.
   private boolean systemAnimationsEnabled = true;
   private boolean ignoreSystemAnimationsDisabled = false;
 
   private boolean safeMode = false;
+  private OnVisibleAction onVisibleAction = OnVisibleAction.NONE;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
@@ -352,6 +365,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void clearComposition() {
     if (animator.isRunning()) {
       animator.cancel();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
     composition = null;
     compositionLayer = null;
@@ -478,11 +494,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (animationsEnabled() || getRepeatCount() == 0) {
-      animator.playAnimation();
+      if (isVisible()) {
+        animator.playAnimation();
+      } else {
+        onVisibleAction = OnVisibleAction.PLAY;
+      }
     }
     if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
   }
 
@@ -490,6 +513,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void endAnimation() {
     lazyCompositionTasks.clear();
     animator.endAnimation();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   /**
@@ -504,11 +530,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (animationsEnabled() || getRepeatCount() == 0) {
-      animator.resumeAnimation();
+      if (isVisible()) {
+        animator.resumeAnimation();
+      } else {
+        onVisibleAction = OnVisibleAction.RESUME;
+      }
     }
     if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
   }
 
@@ -841,6 +874,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return animator.isRunning();
   }
 
+  boolean isAnimatingOrWillAnimateOnVisible() {
+    if (isVisible()) {
+      return animator.isRunning();
+    } else {
+      return onVisibleAction == OnVisibleAction.PLAY || onVisibleAction == OnVisibleAction.RESUME;
+    }
+  }
+
   private boolean animationsEnabled() {
     return systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
   }
@@ -930,11 +971,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void cancelAnimation() {
     lazyCompositionTasks.clear();
     animator.cancel();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   public void pauseAnimation() {
     lazyCompositionTasks.clear();
     animator.pauseAnimation();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   @FloatRange(from = 0f, to = 1f)
@@ -1109,6 +1156,29 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return ((View) callback).getContext();
     }
     return null;
+  }
+
+  @Override public boolean setVisible(boolean visible, boolean restart) {
+    // Sometimes, setVisible(false) gets called twice in a row. If we don't check wasNotVisibleAlready, we could
+    // wind up clearing the onVisibleAction value for the second call.
+    boolean wasNotVisibleAlready = !isVisible();
+    boolean ret = super.setVisible(visible, restart);
+
+    if (visible) {
+      if (onVisibleAction == OnVisibleAction.PLAY) {
+        playAnimation();
+      } else if (onVisibleAction == OnVisibleAction.RESUME) {
+        resumeAnimation();
+      }
+    } else {
+      if (animator.isRunning()) {
+        pauseAnimation();
+        onVisibleAction = OnVisibleAction.RESUME;
+      } else if (!wasNotVisibleAlready) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
+    }
+    return ret;
   }
 
   /**
