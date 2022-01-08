@@ -17,6 +17,7 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
@@ -102,23 +103,21 @@ class FragmentVisibilityTests {
     @Test
     fun testDoesntStopOnPause() {
         class TestFragment : Fragment() {
-            lateinit var animationView: LottieAnimationView
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.auto_play, container, false)
             }
 
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                animationView = view.findViewById(R.id.animation_view)
-                IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
+                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
                 AlertDialog.Builder(requireContext()).setTitle("This is a dialog").show()
             }
         }
 
         val scenario = launchFragmentInContainer<TestFragment>(themeResId = R.style.Theme_AppCompat)
-        scenario.moveToState(Lifecycle.State.RESUMED)
+        onIdle()
         scenario.onFragment { fragment ->
+            val animationView = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
             // Wait for the animation view.
-            onView(withId(R.id.animation_view))
             // We have to use a property reference because the Fragment isn't resumed.
             assertTrue(fragment.animationView.isAnimating)
         }
