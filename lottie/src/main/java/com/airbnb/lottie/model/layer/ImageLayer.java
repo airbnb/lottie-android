@@ -48,7 +48,12 @@ public class ImageLayer extends BaseLayer {
     canvas.save();
     canvas.concat(parentMatrix);
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-    dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
+    if (lottieDrawable.getRescaleBitmaps()) {
+      dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
+    } else {
+      dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
+    }
+
     canvas.drawBitmap(bitmap, src, dst, paint);
     canvas.restore();
   }
@@ -56,7 +61,8 @@ public class ImageLayer extends BaseLayer {
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     super.getBounds(outBounds, parentMatrix, applyParents);
     if (lottieImageAsset != null) {
-      outBounds.set(0, 0, lottieImageAsset.getWidth() * Utils.dpScale(), lottieImageAsset.getHeight() * Utils.dpScale());
+      float scale = Utils.dpScale();
+      outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
       boundsMatrix.mapRect(outBounds);
     }
   }
@@ -65,8 +71,9 @@ public class ImageLayer extends BaseLayer {
   private Bitmap getBitmap() {
     if (imageAnimation != null) {
       Bitmap callbackBitmap = imageAnimation.getValue();
-      if (callbackBitmap != null)
+      if (callbackBitmap != null) {
         return callbackBitmap;
+      }
     }
     String refId = layerModel.getRefId();
     return lottieDrawable.getBitmapForId(refId);

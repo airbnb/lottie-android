@@ -894,6 +894,26 @@ import java.util.concurrent.Callable;
   }
 
   /**
+   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
+   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   *
+   * Defaults to false.
+   */
+  public void setRescaleBitmaps(boolean rescaleBitmaps) {
+    lottieDrawable.setRescaleBitmaps(rescaleBitmaps);
+  }
+
+  /**
+   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
+   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   *
+   * Defaults to false.
+   */
+  public boolean getRescaleBitmaps() {
+    return lottieDrawable.getRescaleBitmaps();
+  }
+
+  /**
    * Allows you to modify or clear a bitmap that was loaded for an image either automatically
    * through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}.
    *

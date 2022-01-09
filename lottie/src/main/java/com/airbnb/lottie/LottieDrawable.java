@@ -99,6 +99,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable
   TextDelegate textDelegate;
   private boolean enableMergePaths;
+  private boolean rescaleBitmaps = true;
   @Nullable
   private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -217,6 +218,26 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable
   public String getImageAssetsFolder() {
     return imageAssetsFolder;
+  }
+
+  /**
+   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
+   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   *
+   * Defaults to true.
+   */
+  public void setRescaleBitmaps(boolean rescaleBitmaps) {
+    this.rescaleBitmaps = rescaleBitmaps;
+  }
+
+  /**
+   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
+   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   *
+   * Defaults to true.
+   */
+  public boolean getRescaleBitmaps() {
+    return rescaleBitmaps;
   }
 
   /**
