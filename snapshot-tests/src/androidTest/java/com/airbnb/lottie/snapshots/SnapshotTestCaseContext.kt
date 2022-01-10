@@ -9,14 +9,14 @@ import android.graphics.PorterDuff
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnLayout
-import androidx.core.view.doOnPreDraw
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -27,13 +27,10 @@ import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
-
-private val ActivityContentLock = Mutex()
 
 /**
  * Set of properties that are available to all [SnapshotTestCase] runs.
@@ -153,6 +150,12 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     bitmapPool.release(bitmap)
 }
 
+/**
+ * Use this to signal that the composition is not ready to be snapshot yet.
+ * This use useful if you are using things like `rememberLottieComposition` which parses a composition asynchronously.
+ */
+val LocalSnapshotReady = compositionLocalOf { MutableStateFlow<Boolean?>(true) }
+
 suspend fun SnapshotTestCaseContext.snapshotComposable(
     name: String,
     variant: String = "default",
@@ -162,18 +165,33 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
     val composeView = ComposeView(context)
     composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
     val bitmap = withContext(Dispatchers.Main) {
-        composeView.setContent(content)
-        suspendCancellableCoroutine<Bitmap> { cont ->
-            composeView.doOnLayout {
-                log("Drawing $name")
-                val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
-                val canvas = Canvas(bitmap)
-                composeView.draw(canvas)
-                cont.resume(bitmap)
+        val readyFlow = MutableStateFlow<Boolean?>(null)
+        composeView.setContent {
+            CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
+                content()
             }
+            if (readyFlow.value == null) readyFlow.value = true
+        }
+        lateinit var onDrawListener: ViewTreeObserver.OnDrawListener
+        suspendCancellableCoroutine<Bitmap> { cont ->
+            onDrawListener = ViewTreeObserver.OnDrawListener {
+                composeView.post {
+                    if (readyFlow.value != true) {
+                        return@post
+                    }
+                    log("Drawing $name")
+                    val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
+                    val canvas = Canvas(bitmap)
+                    composeView.draw(canvas)
+                    cont.resume(bitmap)
+                }
+            }
+            composeView.viewTreeObserver.addOnDrawListener(onDrawListener)
             onActivity { activity ->
                 activity.binding.content.addView(composeView)
             }
+        }.also {
+            composeView.viewTreeObserver.removeOnDrawListener(onDrawListener)
         }
     }
     onActivity { activity ->
