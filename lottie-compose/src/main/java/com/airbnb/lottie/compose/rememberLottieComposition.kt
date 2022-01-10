@@ -159,9 +159,12 @@ private fun lottieTask(
                 when {
                     spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
                         ZipInputStream(fis),
-                        spec.fileName.takeIf { cacheKey != null },
+                        if (cacheKey == DefaultCacheKey) spec.fileName else cacheKey,
                     )
-                    else -> LottieCompositionFactory.fromJsonInputStream(fis, spec.fileName.takeIf { cacheKey != null })
+                    else -> LottieCompositionFactory.fromJsonInputStream(
+                        fis,
+                        if (cacheKey == DefaultCacheKey) spec.fileName else cacheKey,
+                    )
                 }
             }
         }
@@ -169,12 +172,20 @@ private fun lottieTask(
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromAsset(context, spec.assetName)
             } else {
-                LottieCompositionFactory.fromAsset(context, spec.assetName, null)
+                LottieCompositionFactory.fromAsset(context, spec.assetName, cacheKey)
             }
         }
         is LottieCompositionSpec.JsonString -> {
             val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
             LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
+        }
+        is LottieCompositionSpec.ContentProvider -> {
+            val inputStream = context.contentResolver.openInputStream(spec.uri)
+            if (cacheKey == DefaultCacheKey) {
+                LottieCompositionFactory.fromJsonInputStream(inputStream, spec.uri.toString())
+            } else {
+                LottieCompositionFactory.fromJsonInputStream(inputStream, cacheKey)
+            }
         }
     }
 }
