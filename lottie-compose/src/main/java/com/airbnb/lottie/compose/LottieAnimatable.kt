@@ -126,6 +126,8 @@ interface LottieAnimatable : LottieAnimationState {
      *                             you will want it to cancel immediately. However, if you have a state based
      *                             transition and you want an animation to finish playing before moving on to
      *                             the next one then you may want to set this to [LottieCancellationBehavior.OnIterationFinish].
+     * @param ignoreSystemAnimationsDisabled When set to true, the animation will animate even if animations are disabled at the OS level.
+     *                                       Defaults to false.
      */
     suspend fun animate(
         composition: LottieComposition?,
@@ -133,9 +135,10 @@ interface LottieAnimatable : LottieAnimationState {
         iterations: Int = this.iterations,
         speed: Float = this.speed,
         clipSpec: LottieClipSpec? = this.clipSpec,
-        initialProgress: Float =  defaultProgress(composition, clipSpec, speed),
+        initialProgress: Float = defaultProgress(composition, clipSpec, speed),
         continueFromPreviousAnimate: Boolean = false,
         cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
+        ignoreSystemAnimationsDisabled: Boolean = false,
     )
 }
 
@@ -207,6 +210,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
         initialProgress: Float,
         continueFromPreviousAnimate: Boolean,
         cancellationBehavior: LottieCancellationBehavior,
+        ignoreSystemAnimationsDisabled: Boolean,
     ) {
         mutex.mutate {
             require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
