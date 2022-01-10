@@ -12,6 +12,7 @@ android {
     targetSdk 30
     versionCode 1
     versionName VERSION_NAME
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   buildTypes {
     release {
@@ -39,6 +40,10 @@ android {
   }
   composeOptions {
     kotlinCompilerExtensionVersion composeVersion
+  }
+  packagingOptions {
+    exclude 'META-INF/AL2.0'
+    exclude 'META-INF/LGPL2.1'
   }
 }
 
@@ -72,4 +77,8 @@ dependencies {
   implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
   implementation 'com.airbnb.android:mavericks:2.3.0'
   implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
+
+  debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+
+  androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
 }
