@@ -34,7 +34,7 @@ class FilmStripView @JvmOverloads constructor(
     fun setImageAssetDelegate(delegate: ImageAssetDelegate?) {
         animationViews.forEach { it.setImageAssetDelegate(delegate) }
         // Enable bitmap rescaling for the first 4 views so both APIs get test coverage.
-        animationViews.forEachIndexed { i, av -> av.rescaleBitmaps = i <= 4 }
+        animationViews.forEachIndexed { i, av -> av.maintainOriginalImageBounds = i <= 4 }
     }
 
     fun setFontAssetDelegate(delegate: FontAssetDelegate?) {
