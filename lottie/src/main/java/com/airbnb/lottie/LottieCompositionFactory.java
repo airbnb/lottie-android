@@ -484,7 +484,6 @@ public class LottieCompositionFactory {
    * Check if a given InputStream points to a .zip compressed file
    */
   private static Boolean isZipCompressed(BufferedSource inputSource) {
-
     try {
       BufferedSource peek = inputSource.peek();
       for (byte b : MAGIC) {
@@ -494,11 +493,13 @@ public class LottieCompositionFactory {
       }
       peek.close();
       return true;
+    } catch (NoSuchMethodError e) {
+      // This happens in the Android Studio layout preview.
+      return false;
     } catch (Exception e) {
       Logger.error("Failed to check zip file header", e);
       return false;
     }
-
   }
 
   @Nullable
