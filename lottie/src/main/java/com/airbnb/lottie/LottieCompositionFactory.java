@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -92,15 +93,12 @@ public class LottieCompositionFactory {
    * might need an animation in the future.
    */
   public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
-        if (cacheKey != null && result.getValue() != null) {
-          LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
-        }
-        return result;
+    return cache(cacheKey, () -> {
+      LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
+      if (cacheKey != null && result.getValue() != null) {
+        LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
       }
+      return result;
     });
   }
 
@@ -155,12 +153,7 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName, @Nullable final String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromAssetSync(appContext, fileName, cacheKey);
-      }
-    });
+    return cache(cacheKey, () -> fromAssetSync(appContext, fileName, cacheKey));
   }
 
   /**
@@ -226,13 +219,10 @@ public class LottieCompositionFactory {
     // Prevent accidentally leaking an Activity.
     final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        @Nullable Context originalContext = contextRef.get();
-        Context context = originalContext != null ? originalContext : appContext;
-        return fromRawResSync(context, rawRes, cacheKey);
-      }
+    return cache(cacheKey, () -> {
+      @Nullable Context originalContext = contextRef.get();
+      Context context1 = originalContext != null ? originalContext : appContext;
+      return fromRawResSync(context1, rawRes, cacheKey);
     });
   }
 
@@ -290,12 +280,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonInputStreamSync(InputStream, String, boolean)
    */
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromJsonInputStreamSync(stream, cacheKey);
-      }
-    });
+    return cache(cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey));
   }
 
   /**
@@ -324,12 +309,9 @@ public class LottieCompositionFactory {
    */
   @Deprecated
   public static LottieTask<LottieComposition> fromJson(final JSONObject json, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        //noinspection deprecation
-        return fromJsonSync(json, cacheKey);
-      }
+    return cache(cacheKey, () -> {
+      //noinspection deprecation
+      return fromJsonSync(json, cacheKey);
     });
   }
 
@@ -348,12 +330,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonStringSync(String, String)
    */
   public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromJsonStringSync(json, cacheKey);
-      }
-    });
+    return cache(cacheKey, () -> fromJsonStringSync(json, cacheKey));
   }
 
   /**
@@ -369,12 +346,7 @@ public class LottieCompositionFactory {
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromJsonReaderSync(reader, cacheKey);
-      }
-    });
+    return cache(cacheKey, () -> fromJsonReaderSync(reader, cacheKey));
   }
 
 
@@ -403,12 +375,7 @@ public class LottieCompositionFactory {
 
 
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return cache(cacheKey, new Callable<LottieResult<LottieComposition>>() {
-      @Override
-      public LottieResult<LottieComposition> call() {
-        return fromZipStreamSync(inputStream, cacheKey);
-      }
-    });
+    return cache(cacheKey, () -> fromZipStreamSync(inputStream, cacheKey));
   }
 
   /**
@@ -521,12 +488,7 @@ public class LottieCompositionFactory {
       @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
     final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
-      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override
-        public LottieResult<LottieComposition> call() {
-          return new LottieResult<>(cachedComposition);
-        }
-      });
+      return new LottieTask<>(() -> new LottieResult<>(cachedComposition));
     }
     if (cacheKey != null && taskCache.containsKey(cacheKey)) {
       return taskCache.get(cacheKey);
@@ -534,19 +496,22 @@ public class LottieCompositionFactory {
 
     LottieTask<LottieComposition> task = new LottieTask<>(callable);
     if (cacheKey != null) {
-      task.addListener(new LottieListener<LottieComposition>() {
-        @Override
-        public void onResult(LottieComposition result) {
-          taskCache.remove(cacheKey);
-        }
+      AtomicBoolean resultAlreadyCalled = new AtomicBoolean(false);
+      task.addListener(result -> {
+        taskCache.remove(cacheKey);
+        resultAlreadyCalled.set(true);
       });
-      task.addFailureListener(new LottieListener<Throwable>() {
-        @Override
-        public void onResult(Throwable result) {
-          taskCache.remove(cacheKey);
-        }
+      task.addFailureListener(result -> {
+        taskCache.remove(cacheKey);
+        resultAlreadyCalled.set(true);
       });
-      taskCache.put(cacheKey, task);
+      // It is technically possible for the task to finish and for the listeners to get called
+      // before this code runs. If this happens, the task will be put in taskCache but never removed.
+      // This would require this thread to be sleeping at exactly this point in the code
+      // for long enough for the task to finish and call the listeners. Unlikely but not impossible.
+      if (!resultAlreadyCalled.get()) {
+        taskCache.put(cacheKey, task);
+      }
     }
     return task;
   }
