@@ -1116,11 +1116,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   @Nullable
   public LottieImageAsset getLottieImageAssetForId(String id) {
-    ImageAssetManager assetManager = getImageAssetManager();
-    if (assetManager != null) {
-      return assetManager.getImageAssetById(id);
+    LottieComposition composition = this.composition;
+    if (composition == null) {
+      return null;
     }
-    return null;
+    return composition.getImages().get(id);
   }
 
   private ImageAssetManager getImageAssetManager() {

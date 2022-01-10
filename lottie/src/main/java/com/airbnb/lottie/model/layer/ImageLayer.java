@@ -76,7 +76,15 @@ public class ImageLayer extends BaseLayer {
       }
     }
     String refId = layerModel.getRefId();
-    return lottieDrawable.getBitmapForId(refId);
+    Bitmap bitmapFromDrawable = lottieDrawable.getBitmapForId(refId);
+    if (bitmapFromDrawable != null) {
+      return bitmapFromDrawable;
+    }
+    LottieImageAsset asset = this.lottieImageAsset;
+    if (asset != null) {
+      return asset.getBitmap();
+    }
+    return null;
   }
 
   @SuppressWarnings("SingleStatementInBlock")
