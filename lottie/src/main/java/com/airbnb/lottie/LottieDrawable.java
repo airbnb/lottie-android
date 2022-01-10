@@ -99,7 +99,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable
   TextDelegate textDelegate;
   private boolean enableMergePaths;
-  private boolean rescaleBitmaps = true;
+  private boolean maintainOriginalImageBounds = false;
   @Nullable
   private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -221,23 +221,23 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
-   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
    *
-   * Defaults to true.
+   * Defaults to false.
    */
-  public void setRescaleBitmaps(boolean rescaleBitmaps) {
-    this.rescaleBitmaps = rescaleBitmaps;
+  public void setMaintainOriginalImageBounds(boolean maintainOriginalImageBounds) {
+    this.maintainOriginalImageBounds = maintainOriginalImageBounds;
   }
 
   /**
-   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
-   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
    *
-   * Defaults to true.
+   * Defaults to false.
    */
-  public boolean getRescaleBitmaps() {
-    return rescaleBitmaps;
+  public boolean getMaintainOriginalImageBounds() {
+    return maintainOriginalImageBounds;
   }
 
   /**

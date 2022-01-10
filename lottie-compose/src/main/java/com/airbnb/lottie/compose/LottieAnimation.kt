@@ -54,6 +54,12 @@ import kotlin.math.roundToInt
  *                         features so it defaults to off. The only way to know if your animation will work
  *                         well with merge paths or not is to try it. If your animation has merge paths and
  *                         doesn't render correctly, please file an issue.
+ * @param renderMode Allows you to specify whether you want Lottie to use hardware or software rendering.
+ *                   Defaults to AUTOMATIC. Refer to [LottieAnimationView.setRenderMode] for more info.
+ * @param maintainOriginalImageBounds When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation,
+ *                                    regardless of the bitmap size.
+ *                                    When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
+ *                                    Defaults to false.
  * @param dynamicProperties Allows you to change the properties of an animation dynamically. To use them, use
  *                          [rememberLottieDynamicProperties]. Refer to its docs for more info.
  * @param alignment Define where the animation should be placed within this composable if it has a different
@@ -69,6 +75,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
+    maintainOriginalImageBounds: Boolean = false,
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -106,6 +113,7 @@ fun LottieAnimation(
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.useSoftwareRendering(useSoftwareRendering)
+            drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.progress = progress
             drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
@@ -133,6 +141,7 @@ fun LottieAnimation(
     applyOpacityToLayers: Boolean = false,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
+    maintainOriginalImageBounds: Boolean = false,
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -153,6 +162,7 @@ fun LottieAnimation(
         applyOpacityToLayers,
         enableMergePaths,
         renderMode,
+        maintainOriginalImageBounds,
         dynamicProperties,
         alignment,
         contentScale,

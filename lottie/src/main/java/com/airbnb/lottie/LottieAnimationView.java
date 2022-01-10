@@ -900,7 +900,7 @@ import java.util.concurrent.Callable;
    * Defaults to false.
    */
   public void setRescaleBitmaps(boolean rescaleBitmaps) {
-    lottieDrawable.setRescaleBitmaps(rescaleBitmaps);
+    lottieDrawable.setMaintainOriginalImageBounds(rescaleBitmaps);
   }
 
   /**
@@ -910,7 +910,7 @@ import java.util.concurrent.Callable;
    * Defaults to false.
    */
   public boolean getRescaleBitmaps() {
-    return lottieDrawable.getRescaleBitmaps();
+    return lottieDrawable.getMaintainOriginalImageBounds();
   }
 
   /**

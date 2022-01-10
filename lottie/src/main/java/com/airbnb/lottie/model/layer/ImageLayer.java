@@ -48,7 +48,7 @@ public class ImageLayer extends BaseLayer {
     canvas.save();
     canvas.concat(parentMatrix);
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-    if (lottieDrawable.getRescaleBitmaps()) {
+    if (lottieDrawable.getMaintainOriginalImageBounds()) {
       dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
     } else {
       dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));

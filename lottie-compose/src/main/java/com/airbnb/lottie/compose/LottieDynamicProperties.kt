@@ -19,15 +19,14 @@ import com.airbnb.lottie.value.ScaleXY
  * This takes a vararg of individual dynamic properties which should be created with [rememberLottieDynamicProperty].
  *
  * @see rememberLottieDynamicProperty
- * @see LottieDrawable.setRescaleBitmaps
+ * @see LottieDrawable.setMaintainOriginalImageBounds
  */
 @Composable
 fun rememberLottieDynamicProperties(
-    rescaleBitmaps: Boolean = false,
     vararg properties: LottieDynamicProperty<*>,
 ): LottieDynamicProperties {
-    return remember(rescaleBitmaps, properties) {
-        LottieDynamicProperties(rescaleBitmaps, properties.toList())
+    return remember(properties) {
+        LottieDynamicProperties(properties.toList())
     }
 }
 
@@ -93,7 +92,6 @@ class LottieDynamicProperty<T> internal constructor(
  * @see rememberLottieDynamicProperties
  */
 class LottieDynamicProperties internal constructor(
-    private val rescaleBitmaps: Boolean,
     private val intProperties: List<LottieDynamicProperty<Int>>,
     private val pointFProperties: List<LottieDynamicProperty<PointF>>,
     private val floatProperties: List<LottieDynamicProperty<Float>>,
@@ -105,8 +103,7 @@ class LottieDynamicProperties internal constructor(
     private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
 ) {
     @Suppress("UNCHECKED_CAST")
-    constructor(rescaleBitmaps: Boolean, properties: List<LottieDynamicProperty<*>>) : this(
-        rescaleBitmaps,
+    constructor(properties: List<LottieDynamicProperty<*>>) : this(
         properties.filter { it.property is Int } as List<LottieDynamicProperty<Int>>,
         properties.filter { it.property is PointF } as List<LottieDynamicProperty<PointF>>,
         properties.filter { it.property is Float } as List<LottieDynamicProperty<Float>>,
@@ -118,7 +115,6 @@ class LottieDynamicProperties internal constructor(
     )
 
     internal fun addTo(drawable: LottieDrawable) {
-        drawable.rescaleBitmaps = rescaleBitmaps
         intProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
