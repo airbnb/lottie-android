@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -63,25 +62,19 @@ import java.util.concurrent.Callable;
  *
  * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
-@SuppressWarnings({"WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
+@SuppressWarnings({"WeakerAccess", "unused"}) public class LottieAnimationView extends AppCompatImageView {
 
   private static final String TAG = LottieAnimationView.class.getSimpleName();
-  private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = new LottieListener<Throwable>() {
-    @Override public void onResult(Throwable throwable) {
-      // By default, fail silently for network errors.
-      if (Utils.isNetworkException(throwable)) {
-        Logger.warning("Unable to load composition.", throwable);
-        return;
-      }
-      throw new IllegalStateException("Unable to parse composition", throwable);
+  private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = throwable -> {
+    // By default, fail silently for network errors.
+    if (Utils.isNetworkException(throwable)) {
+      Logger.warning("Unable to load composition.", throwable);
+      return;
     }
+    throw new IllegalStateException("Unable to parse composition", throwable);
   };
 
-  private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
-    @Override public void onResult(LottieComposition composition) {
-      setComposition(composition);
-    }
-  };
+  private final LottieListener<LottieComposition> loadedListener = this::setComposition;
 
   private final LottieListener<Throwable> wrappedFailureListener = new LottieListener<Throwable>() {
     @Override
@@ -204,7 +197,7 @@ import java.util.concurrent.Callable;
       ColorStateList csl = AppCompatResources.getColorStateList(getContext(), colorRes);
       SimpleColorFilter filter = new SimpleColorFilter(csl.getDefaultColor());
       KeyPath keyPath = new KeyPath("**");
-      LottieValueCallback<ColorFilter> callback = new LottieValueCallback<ColorFilter>(filter);
+      LottieValueCallback<ColorFilter> callback = new LottieValueCallback<>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
     }
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
@@ -424,12 +417,8 @@ import java.util.concurrent.Callable;
 
   private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
-      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() {
-          return cacheComposition
-              ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null);
-        }
-      }, true);
+      return new LottieTask<>(() -> cacheComposition
+          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null), true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
@@ -444,12 +433,8 @@ import java.util.concurrent.Callable;
 
   private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
-      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() {
-          return cacheComposition ?
-              LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null);
-        }
-      }, true);
+      return new LottieTask<>(() -> cacheComposition ?
+          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null), true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
@@ -1150,6 +1135,7 @@ import java.util.concurrent.Callable;
    */
   @Deprecated
   public void disableExtraScaleModeInFitXY() {
+    //noinspection deprecation
     lottieDrawable.disableExtraScaleModeInFitXY();
   }
 
