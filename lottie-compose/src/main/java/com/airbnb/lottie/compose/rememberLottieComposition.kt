@@ -181,11 +181,7 @@ private fun lottieTask(
         }
         is LottieCompositionSpec.ContentProvider -> {
             val inputStream = context.contentResolver.openInputStream(spec.uri)
-            if (cacheKey == DefaultCacheKey) {
-                LottieCompositionFactory.fromJsonInputStream(inputStream, spec.uri.toString())
-            } else {
-                LottieCompositionFactory.fromJsonInputStream(inputStream, cacheKey)
-            }
+            LottieCompositionFactory.fromJsonInputStream(inputStream, if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey)
         }
     }
 }
