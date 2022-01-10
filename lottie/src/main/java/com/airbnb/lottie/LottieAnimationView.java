@@ -894,22 +894,22 @@ import java.util.concurrent.Callable;
   }
 
   /**
-   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
-   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
    *
    * Defaults to false.
    */
-  public void setRescaleBitmaps(boolean rescaleBitmaps) {
-    lottieDrawable.setMaintainOriginalImageBounds(rescaleBitmaps);
+  public void setMaintainOriginalImageBounds(boolean maintainOriginalImageBounds) {
+    lottieDrawable.setMaintainOriginalImageBounds(maintainOriginalImageBounds);
   }
 
   /**
-   * When true, dynamically set bitmaps will be drawn at the size of the original bitmap.
-   * When false, dynamically set bitmaps will be drawn at 0,0 at the original bitmap but at whatever size the dynamic bitmap is.
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
    *
    * Defaults to false.
    */
-  public boolean getRescaleBitmaps() {
+  public boolean getMaintainOriginalImageBounds() {
     return lottieDrawable.getMaintainOriginalImageBounds();
   }
 
