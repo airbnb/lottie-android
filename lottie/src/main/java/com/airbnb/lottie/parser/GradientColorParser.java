@@ -55,6 +55,17 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     while (reader.hasNext()) {
       array.add((float) reader.nextDouble());
     }
+    if (array.size() == 4 && array.get(0) == 1f) {
+      // If a gradient color only contains one color at position 1, add a second stop with the same
+      // color at position 0. Android's LinearGradient shader requires at least two colors.
+      // https://github.com/airbnb/lottie-android/issues/1967
+      array.set(0, 0f);
+      array.add(1f);
+      array.add(array.get(1));
+      array.add(array.get(2));
+      array.add(array.get(3));
+      colorPoints = 2;
+    }
     if (isArray) {
       reader.endArray();
     }
