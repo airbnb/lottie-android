@@ -106,14 +106,6 @@ public class LottieCompositionFactoryTest extends BaseTest {
     }
 
     @Test
-    public void testCacheWorks() {
-        JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
-        LottieTask<LottieComposition> task1 = LottieCompositionFactory.fromJsonReader(reader, "foo");
-        LottieTask<LottieComposition> task2 = LottieCompositionFactory.fromJsonReader(reader, "foo");
-        assertSame(task1, task2);
-    }
-
-    @Test
     public void testZeroCacheWorks() {
         JsonReader reader = JsonReader.of(buffer(source(getNeverCompletingInputStream())));
         LottieCompositionFactory.setMaxCacheSize(1);
