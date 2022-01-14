@@ -94,9 +94,6 @@ import java.util.Set;
   private String animationName;
   private @RawRes int animationResId;
 
-  private boolean playAnimationWhenShown = false;
-  private boolean wasAnimatingWhenNotShown = false;
-  private boolean wasAnimatingWhenDetached = false;
   /**
    * When we set a new composition, we set LottieDrawable to null then back again so that ImageView re-checks its bounds.
    * However, this causes the drawable to get unscheduled briefly. Normally, we would pause the animation but in this case, we don't want to.
@@ -166,7 +163,6 @@ import java.util.Set;
 
     setFallbackResource(ta.getResourceId(R.styleable.LottieAnimationView_lottie_fallbackRes, 0));
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-      wasAnimatingWhenDetached = true;
       autoPlay = true;
     }
 
@@ -268,7 +264,7 @@ import java.util.Set;
     ss.animationName = animationName;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
-    ss.isAnimating = lottieDrawable.isAnimating() || (!ViewCompat.isAttachedToWindow(this) && wasAnimatingWhenDetached);
+    ss.isAnimating = lottieDrawable.isAnimatingOrWillAnimateOnVisible();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     ss.repeatMode = lottieDrawable.getRepeatMode();
     ss.repeatCount = lottieDrawable.getRepeatCount();
@@ -300,57 +296,11 @@ import java.util.Set;
     setRepeatCount(ss.repeatCount);
   }
 
-  @Override
-  protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-    // This can happen on older versions of Android because onVisibilityChanged gets called from the
-    // constructor of View so this will get called before lottieDrawable gets initialized.
-    // https://github.com/airbnb/lottie-android/issues/1143
-    // A simple null check on lottieDrawable would not work because when using Proguard optimization, a
-    // null check on a final field gets removed. As "usually" final fields cannot be null.
-    // However because this is called by super (View) before the initializer of the LottieAnimationView
-    // is called, it actually can be null here.
-    // Working around this by using a non final boolean that is set to true after the class initializer
-    // has run.
-    if (!isInitialized) {
-      return;
-    }
-    if (isShown()) {
-      if (wasAnimatingWhenNotShown) {
-        resumeAnimation();
-      } else if (playAnimationWhenShown) {
-        playAnimation();
-      }
-      wasAnimatingWhenNotShown = false;
-      playAnimationWhenShown = false;
-    } else {
-      if (isAnimating()) {
-        pauseAnimation();
-        wasAnimatingWhenNotShown = true;
-      }
-    }
-  }
-
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (!isInEditMode() && (autoPlay || wasAnimatingWhenDetached)) {
-      playAnimation();
-      // Autoplay from xml should only apply once.
-      autoPlay = false;
-      wasAnimatingWhenDetached = false;
+    if (!isInEditMode() && autoPlay) {
+      lottieDrawable.playAnimation();
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // This is needed to mimic newer platform behavior.
-      // https://stackoverflow.com/a/53625860/715633
-      onVisibilityChanged(this, getVisibility());
-    }
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    if (isAnimating()) {
-      cancelAnimation();
-      wasAnimatingWhenDetached = true;
-    }
-    super.onDetachedFromWindow();
   }
 
   /**
@@ -615,12 +565,8 @@ import java.util.Set;
    */
   @MainThread
   public void playAnimation() {
-    if (isShown()) {
-      lottieDrawable.playAnimation();
-      computeRenderMode();
-    } else {
-      playAnimationWhenShown = true;
-    }
+    lottieDrawable.playAnimation();
+    computeRenderMode();
   }
 
   /**
@@ -629,13 +575,8 @@ import java.util.Set;
    */
   @MainThread
   public void resumeAnimation() {
-    if (isShown()) {
-      lottieDrawable.resumeAnimation();
-      computeRenderMode();
-    } else {
-      playAnimationWhenShown = false;
-      wasAnimatingWhenNotShown = true;
-    }
+    lottieDrawable.resumeAnimation();
+    computeRenderMode();
   }
 
   /**
@@ -980,9 +921,6 @@ import java.util.Set;
 
   @MainThread
   public void cancelAnimation() {
-    wasAnimatingWhenDetached = false;
-    wasAnimatingWhenNotShown = false;
-    playAnimationWhenShown = false;
     lottieDrawable.cancelAnimation();
     computeRenderMode();
   }
@@ -990,9 +928,6 @@ import java.util.Set;
   @MainThread
   public void pauseAnimation() {
     autoPlay = false;
-    wasAnimatingWhenDetached = false;
-    wasAnimatingWhenNotShown = false;
-    playAnimationWhenShown = false;
     lottieDrawable.pauseAnimation();
     computeRenderMode();
   }

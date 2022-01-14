@@ -141,8 +141,7 @@ class FragmentVisibilityTests {
         }
 
         val scenario1 = launchFragmentInContainer<TestFragment>()
-        // Wait for the animation view.
-        onView(withId(R.id.animation_view))
+        onIdle()
 
         // Launch a new activity
         scenario1.onFragment { fragment ->
@@ -370,10 +369,7 @@ class FragmentVisibilityTests {
 
                         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
                             return when (viewType) {
-                                0 -> object : RecyclerView.ViewHolder(
-                                        LottieAnimationView(parent.context)
-                                                .apply { id = R.id.animation_view }
-                                ) {}
+                                0 -> object : RecyclerView.ViewHolder(LottieAnimationView(parent.context).apply { id = R.id.animation_view }) {}
                                 else -> object : RecyclerView.ViewHolder(TextView(parent.context)) {}
                             }
                         }
@@ -418,6 +414,7 @@ class FragmentVisibilityTests {
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
         scenario.onFragment { it.requireView().scrollBy(0, 10_000) }
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
+        // Animation already ended. Making sure it isn't playing again.
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
     }
 
