@@ -1,3 +1,41 @@
+# 5.0.0
+### New Features
+* Added support for the "Rounded Corners" effect on Shape and Rect layers ([#1953](https://github.com/airbnb/lottie-android/pull/1953))
+* Prior to 5.0, LottieAnimationView would _always_ call [setLayerType](https://developer.android.com/reference/android/view/View#setLayerType(int,%20android.graphics.Paint)) with either [HARDWARE](https://developer.android.com/reference/android/view/View#LAYER_TYPE_HARDWARE) or [SOFTWARE](https://developer.android.com/reference/android/view/View#LAYER_TYPE_SOFTWARE). In the hardware case, this would case Android to allocate a dedicated hardware buffer for the animation that had to be uploaded to the GPU separately. In the software case, LottieAnimationView would rely on View's internal [drawing cache](https://developer.android.com/reference/android/view/View#isDrawingCacheEnabled()).
+
+    This has a few disadvantages:
+
+  * The hardware/software distinction happened at the LottieAnimationView level. That means that consumers of LottieDrawable (such as lottie-compose) had no way to
+          choose a render mode.
+  * Dedicated memory for Lottie was _always_ allocated. In the software case, it would be a bitmap that is the size of the LottieAnimationView and in the hardware case, it was a dedicated hardware layer.
+  
+  Benefits as a result of this change:
+
+  * Reduced memory consumption. In the hardware case, no new memory is allocated. In the software case, Lottie will create a bitmap that is the intersection of your View/Composition bounds mapped with the drawing transformation which often yields a surface are that is smaller than the entire LottieAnimationView.
+  * lottie-compose now supports setting a RenderMode.
+  * Custom uses of LottieDrawable now support setting a RenderMode via [useSoftwareRendering](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L329).
+  * Lottie can now render outside of its composition bounds via [setClipToCompositionBounds](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L218).
+    Unless you are using one of the new APIs, you should not have to change anything in your code as a result of this page. It is intended to be an entirely internal implementation detail
+    that should improve performance by default and allow for new functionality.
+    
+    Please report any bugs or unexpected behavior that you experience as a result of this change.
+    [#1952](https://github.com/airbnb/lottie-android/pull/1952), [#1973](https://github.com/airbnb/lottie-android/pull/1973).
+* Prior to 5.0, LottieAnimationView handled all animation controls when the view's visibility or attach state changed. This worked fine for consumers of LottieAnimationView. However, custom uses of LottieDrawable were prone to leaking infinite animators if they did not properly handle cancelling animations correctly. This opens up the possibility for unexpected behavior and increased battery drain. Lottie now behaves more like animated drawables in the platform and moves this logic into the Drawable via its [setVisible](https://developer.android.com/reference/android/graphics/drawable/Drawable#setVisible(boolean,%20boolean)) API. This should lead to no explicit behavior changes if you are using LottieAnimationView. However, if you are using LottieDrawable directly and were explicitly pausing/cancelling animations on lifecycle changes, you may want to cross check your expected behavior with that of LottieDrawable after this update. This change also resolved a long standing bug when Lottie is used in RecyclerViews due to the complex way in which RecyclerView handles View lifecycles ([#1495](https://github.com/airbnb/lottie-android/issues/1495)).
+  [#1981](https://github.com/airbnb/lottie-android/issues/1981)
+* Add an API [setClipToCompositionBounds](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L218) on LottieAnimationView, LottieDrawable, and the LottieAnimation composable to prevent Lottie from clipping animations to the composition bounds.
+* Add an API to always render dynamically set bitmaps at the original animation bounds. Previously, dynamically set bitmaps would be rendered at their own size anchored to the top left
+  of the original bitmap. This meant that if you wanted to supply a lower resolution bitmap to save memory, it would render smaller. The default behavior remains the same but you can
+  enable [setMaintainOriginalImageBounds](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L264) to be able to supply lower resolution bitmaps ([#1706](https://github.com/airbnb/lottie-android/issues/1706)).
+* Add support for `LottieProperty.TEXT` to use dynamic properties for text. This enables dynamic text support for lottie-compose ([#1995](https://github.com/airbnb/lottie-android/issues/1495)).
+
+### Bugs Fixed
+* Fixed a rare NPE multi-threaded race condition ([#1959](https://github.com/airbnb/lottie-android/pull/1959))
+* Don't cache dpScale to support moving Activities between different displays ([#1915](https://github.com/airbnb/lottie-android/pull/1915))
+* Fixed some cases that would prevent LottieAnimationView or LottieDrawable from being rendered by the Android Studio layout preview ([#1984](https://github.com/airbnb/lottie-android/pull/1984))
+* Better handle animations in which there is only a single color in a gradient ([#1985](https://github.com/airbnb/lottie-android/pull/1985))
+* Fixed a rare race condition that could leak a LottieTask object ([#1986](https://github.com/airbnb/lottie-android/pull/1986))
+* Call onAnimationEnd when animations are cancelled to be consistent with platform APIs ([#1994](https://github.com/airbnb/lottie-android/issues/1994)).
+
 # 4.2.2
 ### Bugs Fixed
 * Removed allocations when setting paint alpha prior to API 29 ([#1929](https://github.com/airbnb/lottie-android/pull/1929))
