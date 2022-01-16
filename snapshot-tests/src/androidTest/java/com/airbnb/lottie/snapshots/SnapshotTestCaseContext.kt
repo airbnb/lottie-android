@@ -30,6 +30,7 @@ import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
@@ -187,77 +188,55 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
     log("Snapshotting $name")
     val composeView = ComposeView(context)
     composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-    var bitmap = withContext(Dispatchers.Main) {
-        val readyFlow = MutableStateFlow<Boolean?>(null)
-        composeView.setContent {
-            CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
-                content(RenderMode.SOFTWARE)
-            }
-            if (readyFlow.value == null) readyFlow.value = true
+    val readyFlow = MutableStateFlow<Boolean?>(null)
+    composeView.setContent {
+        CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
+            content(RenderMode.SOFTWARE)
         }
-        lateinit var onDrawListener: ViewTreeObserver.OnDrawListener
-        suspendCancellableCoroutine<Bitmap> { cont ->
-            onDrawListener = ViewTreeObserver.OnDrawListener {
-                composeView.viewTreeObserver.addOnDrawListener(onDrawListener)
-                composeView.post {
-                    if (readyFlow.value != true) {
-                        return@post
-                    }
-                    log("Drawing $name - Software")
-                    val b = bitmapPool.acquire(composeView.width, composeView.height)
-                    val canvas = Canvas(b)
-                    composeView.viewTreeObserver.removeOnDrawListener(onDrawListener)
-                    composeView.draw(canvas)
-                    cont.resume(b)
-                }
-            }
-            onActivity { activity ->
-                activity.binding.content.addView(composeView)
-            }
-        }
+        if (readyFlow.value == null) readyFlow.value = true
     }
     onActivity { activity ->
-        activity.binding.content.removeView(composeView)
+        activity.binding.content.addView(composeView)
     }
+    readyFlow.first { it == true }
+    composeView.awaitFrame()
+    log("Drawing $name - Software")
+    var bitmap = bitmapPool.acquire(composeView.width, composeView.height)
+    var canvas = Canvas(bitmap)
+    composeView.draw(canvas)
     snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Software" else variant)
     bitmapPool.release(bitmap)
 
     if (renderHardwareAndSoftware) {
-        bitmap = withContext(Dispatchers.Main) {
-            val readyFlow = MutableStateFlow<Boolean?>(null)
-            composeView.setContent {
-                CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
-                    content(RenderMode.HARDWARE)
-                }
-                if (readyFlow.value == null) readyFlow.value = true
+        readyFlow.value = null
+        composeView.setContent {
+            CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
+                content(RenderMode.HARDWARE)
             }
-            lateinit var onDrawListener: ViewTreeObserver.OnDrawListener
-            suspendCancellableCoroutine { cont ->
-                onDrawListener = ViewTreeObserver.OnDrawListener {
-                    composeView.viewTreeObserver.addOnDrawListener(onDrawListener)
-                    composeView.post {
-                        if (readyFlow.value != true) {
-                            return@post
-                        }
-                        log("Drawing $name - Hardware")
-                        val b = bitmapPool.acquire(composeView.width, composeView.height)
-                        val canvas = Canvas(b)
-                        composeView.viewTreeObserver.removeOnDrawListener(onDrawListener)
-                        composeView.draw(canvas)
-                        cont.resume(b)
-                    }
-                }
-                onActivity { activity ->
-                    activity.binding.content.addView(composeView)
-                }
-            }
+            if (readyFlow.value == null) readyFlow.value = true
         }
-        onActivity { activity ->
-            activity.binding.content.removeView(composeView)
-        }
+        readyFlow.first { it == true }
+        composeView.awaitFrame()
+        log("Drawing $name - Software")
+        bitmap = bitmapPool.acquire(composeView.width, composeView.height)
+        canvas = Canvas(bitmap)
+        composeView.draw(canvas)
         snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Hardware" else variant)
         bitmapPool.release(bitmap)
     }
 
+
+    onActivity { activity ->
+        activity.binding.content.removeView(composeView)
+    }
+
     LottieCompositionCache.getInstance().clear()
+}
+
+private suspend fun View.awaitFrame() {
+    suspendCancellableCoroutine<Unit> { cont ->
+        post {
+            cont.resume(Unit)
+        }
+    }
 }
