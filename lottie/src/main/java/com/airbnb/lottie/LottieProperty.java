@@ -199,7 +199,9 @@ public interface LottieProperty {
    * Keypath after the layer name.
    */
   Float DROP_SHADOW_RADIUS = 18f;
-
+  /**
+   * Set the color filter for an entire drawable content. Can be applied to fills, strokes, images, and solids.
+   */
   ColorFilter COLOR_FILTER = new ColorFilter();
   /**
    * Array of ARGB colors that map to position stops in the original gradient.
@@ -214,6 +216,8 @@ public interface LottieProperty {
    * Set on image layers.
    */
   Bitmap IMAGE = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
-
+  /**
+   * Replace the text for a text layer.
+   */
   CharSequence TEXT = "dynamic_text";
 }

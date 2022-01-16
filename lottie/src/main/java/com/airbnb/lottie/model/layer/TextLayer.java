@@ -242,7 +242,6 @@ public class TextLayer extends BaseLayer {
     if (textDelegate != null) {
       text = textDelegate.getTextInternal(getName(), text);
     }
-
     fillPaint.setTypeface(typeface);
     float textSize;
     if (textSizeCallbackAnimation != null) {
