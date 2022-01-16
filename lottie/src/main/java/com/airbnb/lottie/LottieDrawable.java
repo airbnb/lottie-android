@@ -209,6 +209,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return enableMergePaths;
   }
 
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
   public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
     if (clipToCompositionBounds != this.clipToCompositionBounds) {
       this.clipToCompositionBounds = clipToCompositionBounds;
@@ -216,6 +221,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
   public boolean getClipToCompositionBounds() {
     return clipToCompositionBounds;
   }
@@ -1291,7 +1301,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer) {
     ensureSoftwareRenderingObjectsInitialized();
 
-    // This block breaks Compose 200x400 bound when bottom end aligned
     //noinspection deprecation
     originalCanvas.getMatrix(softwareRenderingOriginalCanvasMatrix);
     softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);

@@ -336,10 +336,20 @@ import java.util.Set;
     return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
   }
 
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
   public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
     lottieDrawable.setClipToCompositionBounds(clipToCompositionBounds);
   }
 
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
   public boolean getClipToCompositionBounds() {
     return lottieDrawable.getClipToCompositionBounds();
   }

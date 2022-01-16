@@ -106,23 +106,23 @@ class LottieSnapshotTest {
     @Test
     fun testAll() = runBlocking {
         val testCases = listOf(
-//            CustomBoundsTestCase(),
-//            ColorStateListColorFilterTestCase(),
-//            FailureTestCase(),
-//            FrameBoundariesTestCase(),
+            CustomBoundsTestCase(),
+            ColorStateListColorFilterTestCase(),
+            FailureTestCase(),
+            FrameBoundariesTestCase(),
             ScaleTypesTestCase(),
             ComposeScaleTypesTestCase(),
-//            DynamicPropertiesTestCase(),
-//            MarkersTestCase(),
-//            AssetsTestCase(),
-//            TextTestCase(),
-//            PartialFrameProgressTestCase(),
-//            NightModeTestCase(),
-//            ApplyOpacityToLayerTestCase(),
-//            OutlineMasksAndMattesTestCase(),
-//            LargeCompositionSoftwareRendering(),
-//            ComposeDynamicPropertiesTestCase(),
-//            ProdAnimationsTestCase(),
+            DynamicPropertiesTestCase(),
+            MarkersTestCase(),
+            AssetsTestCase(),
+            TextTestCase(),
+            PartialFrameProgressTestCase(),
+            NightModeTestCase(),
+            ApplyOpacityToLayerTestCase(),
+            OutlineMasksAndMattesTestCase(),
+            LargeCompositionSoftwareRendering(),
+            ComposeDynamicPropertiesTestCase(),
+            ProdAnimationsTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {

@@ -9,8 +9,6 @@ class IssueReproActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = IssueReproActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.root.setOnClickListener {
-            binding.animationView.clipToCompositionBounds = !binding.animationView.clipToCompositionBounds
-        }
+        // Reproduce any issues here.
     }
 }
