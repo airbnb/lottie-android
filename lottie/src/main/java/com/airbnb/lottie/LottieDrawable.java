@@ -446,7 +446,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     } else {
       drawInternal(canvas);
     }
-    isDirty = false;
 
     L.endSection("Drawable#draw");
   }
@@ -461,7 +460,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer, null);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
     } else {
       // In fitXY mode, the scale doesn't take effect.
       float scaleX = bounds.width() / (float) composition.getBounds().width();
@@ -471,6 +470,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.preScale(scale * scaleX, scale * scaleY);
       compositionLayer.draw(canvas, renderingMatrix, alpha);
     }
+    isDirty = false;
   }
 
 // <editor-fold desc="animator">
@@ -1236,7 +1236,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer, matrix);
+      canvas.save();
+      canvas.concat(matrix);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+      canvas.restore();
     } else {
       compositionLayer.draw(canvas, matrix, alpha);
     }
@@ -1249,16 +1252,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieDrawable#useSoftwareRendering(boolean)
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
-  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
+  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer) {
     ensureSoftwareRenderingObjectsInitialized();
 
+    // This block breaks Compose 200x400 bound when bottom end aligned
     //noinspection deprecation
     originalCanvas.getMatrix(softwareRenderingOriginalCanvasMatrix);
     softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
     renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
-    if (parentMatrix != null) {
-      renderingMatrix.postConcat(parentMatrix);
-    }
 
     // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
     // This is how ImageView.ScaleType.FIT_XY works.
@@ -1271,7 +1272,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
     } else {
       // Find the full bounds of the animation.
-      compositionLayer.getBounds(softwareRenderingTransformedBounds, parentMatrix, false);
+      softwareRenderingTransformedBounds.set(0f, 0f, 0f, 0f);
+      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
     }
     softwareRenderingTransformedBounds.set(
         softwareRenderingTransformedBounds.left * scaleX,
@@ -1279,12 +1281,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         softwareRenderingTransformedBounds.right * scaleX,
         softwareRenderingTransformedBounds.bottom * scaleY
     );
+
+    // Transform the animation bounds to the bounds that they will render to on the canvas.
     renderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
-    if (clipToCompositionBounds) {
-      // We only need to render the portion of the animation that intersects with the canvas's bounds.
-      softwareRenderingTransformedBounds.intersect(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
-    }
 
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
@@ -1314,7 +1314,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
       convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
     }
+
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
+    isDirty = false;
   }
 
   private void ensureSoftwareRenderingObjectsInitialized() {
