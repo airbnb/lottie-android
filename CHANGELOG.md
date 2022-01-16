@@ -27,6 +27,7 @@
   of the original bitmap. This meant that if you wanted to supply a lower resolution bitmap to save memory, it would render smaller. The default behavior remains the same but you can
   enable [setMaintainOriginalImageBounds](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L264) to be able to supply lower resolution bitmaps ([#1706](https://github.com/airbnb/lottie-android/issues/1706)).
 * Add support for `LottieProperty.TEXT` to use dynamic properties for text. This enables dynamic text support for lottie-compose ([#1995](https://github.com/airbnb/lottie-android/issues/1495)).
+* Add getters for Marker fields ([#1998](https://github.com/airbnb/lottie-android/pull/1998))
 
 ### Bugs Fixed
 * Fixed a rare NPE multi-threaded race condition ([#1959](https://github.com/airbnb/lottie-android/pull/1959))
