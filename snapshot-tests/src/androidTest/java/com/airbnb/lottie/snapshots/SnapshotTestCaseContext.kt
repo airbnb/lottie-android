@@ -14,20 +14,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.doOnAttach
 import androidx.core.view.doOnLayout
-import androidx.core.view.doOnPreDraw
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
+import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.utils.BitmapPool
 import com.airbnb.lottie.snapshots.utils.HappoSnapshotter
 import com.airbnb.lottie.snapshots.utils.ObjectPool
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
@@ -78,6 +76,7 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     snapshotVariant: String = "default",
     widthPx: Int = context.resources.displayMetrics.widthPixels,
     heightPx: Int = context.resources.displayMetrics.heightPixels,
+    renderHardwareAndSoftware: Boolean = false,
     callback: (LottieAnimationView) -> Unit,
 ) {
     val result = LottieCompositionFactory.fromAssetSync(context, assetName)
@@ -101,10 +100,25 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     animationViewContainer.layout(0, 0, animationViewContainer.measuredWidth, animationViewContainer.measuredHeight)
     val bitmap = bitmapPool.acquire(animationView.width, animationView.height)
     val canvas = Canvas(bitmap)
-    log("Drawing $assetName")
-    animationView.draw(canvas)
-    animationViewPool.release(animationView)
-    snapshotter.record(bitmap, snapshotName, snapshotVariant)
+    if (renderHardwareAndSoftware) {
+        log("Drawing $assetName - hardware")
+        val renderMode = animationView.renderMode
+        animationView.renderMode = RenderMode.HARDWARE
+        animationView.draw(canvas)
+        snapshotter.record(bitmap, snapshotName, "$snapshotVariant - Hardware")
+
+        bitmap.eraseColor(0)
+        animationView.renderMode = RenderMode.SOFTWARE
+        animationView.draw(canvas)
+        animationViewPool.release(animationView)
+        snapshotter.record(bitmap, snapshotName, "$snapshotVariant - Software")
+        animationView.renderMode = renderMode
+    } else {
+        log("Drawing $assetName")
+        animationView.draw(canvas)
+        animationViewPool.release(animationView)
+        snapshotter.record(bitmap, snapshotName, snapshotVariant)
+    }
     bitmapPool.release(bitmap)
 }
 
@@ -153,23 +167,30 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     bitmapPool.release(bitmap)
 }
 
+fun SnapshotTestCaseContext.loadCompositionFromAssetsSync(fileName: String): LottieComposition {
+    return LottieCompositionFactory.fromAssetSync(context, fileName).value!!
+}
+
 suspend fun SnapshotTestCaseContext.snapshotComposable(
     name: String,
     variant: String = "default",
-    content: @Composable () -> Unit,
+    renderHardwareAndSoftware: Boolean = false,
+    content: @Composable (RenderMode) -> Unit,
 ) = withContext(Dispatchers.Default) {
     log("Snapshotting $name")
     val composeView = ComposeView(context)
     composeView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-    val bitmap = withContext(Dispatchers.Main) {
-        composeView.setContent(content)
+    var bitmap = withContext(Dispatchers.Main) {
+        composeView.setContent {
+            content(RenderMode.SOFTWARE)
+        }
         suspendCancellableCoroutine<Bitmap> { cont ->
             composeView.doOnLayout {
                 log("Drawing $name")
-                val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
-                val canvas = Canvas(bitmap)
+                val b = bitmapPool.acquire(composeView.width, composeView.height)
+                val canvas = Canvas(b)
                 composeView.draw(canvas)
-                cont.resume(bitmap)
+                cont.resume(b)
             }
             onActivity { activity ->
                 activity.binding.content.addView(composeView)
@@ -179,7 +200,33 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
     onActivity { activity ->
         activity.binding.content.removeView(composeView)
     }
-    LottieCompositionCache.getInstance().clear()
-    snapshotter.record(bitmap, name, variant)
+    snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Software" else variant)
     bitmapPool.release(bitmap)
+
+    if (renderHardwareAndSoftware) {
+        bitmap = withContext(Dispatchers.Main) {
+            composeView.setContent {
+                content(RenderMode.HARDWARE)
+            }
+            suspendCancellableCoroutine { cont ->
+                composeView.doOnLayout {
+                    log("Drawing $name")
+                    val b = bitmapPool.acquire(composeView.width, composeView.height)
+                    val canvas = Canvas(b)
+                    composeView.draw(canvas)
+                    cont.resume(b)
+                }
+                onActivity { activity ->
+                    activity.binding.content.addView(composeView)
+                }
+            }
+        }
+        onActivity { activity ->
+            activity.binding.content.removeView(composeView)
+        }
+        snapshotter.record(bitmap, name, "$variant - Hardware")
+        bitmapPool.release(bitmap)
+    }
+
+    LottieCompositionCache.getInstance().clear()
 }

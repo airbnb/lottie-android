@@ -59,6 +59,7 @@ import kotlin.math.roundToInt
  * @param alignment Define where the animation should be placed within this composable if it has a different
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
+ * @param clipToComposition Determines whether or not Lottie will clip the animation to the original animation composition bounds.
  */
 @Composable
 fun LottieAnimation(
@@ -72,6 +73,7 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
+    clipToComposition: Boolean = true,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
@@ -106,6 +108,7 @@ fun LottieAnimation(
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.useSoftwareRendering(useSoftwareRendering)
+            drawable.clipToCompositionBounds = clipToComposition
             drawable.progress = progress
             drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
@@ -136,6 +139,7 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
+    clipToComposition: Boolean = true,
 ) {
     val progress by animateLottieCompositionAsState(
         composition,
@@ -156,6 +160,7 @@ fun LottieAnimation(
         dynamicProperties,
         alignment,
         contentScale,
+        clipToComposition,
     )
 }
 

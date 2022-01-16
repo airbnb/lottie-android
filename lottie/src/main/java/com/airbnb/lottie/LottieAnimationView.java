@@ -184,6 +184,10 @@ import java.util.Set;
       setSpeed(ta.getFloat(R.styleable.LottieAnimationView_lottie_speed, 1f));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds)) {
+      setClipToCompositionBounds(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds, true));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -330,6 +334,26 @@ import java.util.Set;
    */
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
+  }
+
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * When set to true, the parent view may need to disable clipChildren so Lottie can render outside of the LottieAnimationView bounds.
+   *
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    lottieDrawable.setClipToCompositionBounds(clipToCompositionBounds);
+  }
+
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public boolean getClipToCompositionBounds() {
+    return lottieDrawable.getClipToCompositionBounds();
   }
 
   /**

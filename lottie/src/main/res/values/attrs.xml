@@ -28,5 +28,6 @@
             <enum name="hardware" value="1" />
             <enum name="software" value="2" />
         </attr>
+        <attr name="lottie_clipToCompositionBounds" format="boolean" />
     </declare-styleable>
 </resources>

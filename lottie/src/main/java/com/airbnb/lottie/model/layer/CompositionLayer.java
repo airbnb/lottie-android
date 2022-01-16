@@ -112,7 +112,7 @@ public class CompositionLayer extends BaseLayer {
     int childAlpha = isDrawingWithOffScreen ? 255 : parentAlpha;
     for (int i = layers.size() - 1; i >= 0; i--) {
       boolean nonEmptyClip = true;
-      if (!newClipRect.isEmpty()) {
+      if (lottieDrawable.getClipToCompositionBounds() && !newClipRect.isEmpty()) {
         nonEmptyClip = canvas.clipRect(newClipRect);
       }
       if (nonEmptyClip) {
