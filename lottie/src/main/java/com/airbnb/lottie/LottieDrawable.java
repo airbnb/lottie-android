@@ -1344,8 +1344,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     if (isDirty) {
       softwareRenderingBitmap.eraseColor(0);
-      renderingMatrix.preScale(scale, scale);
-      renderingMatrix.preScale(scaleX, scaleY);
+      renderingMatrix.preScale(scale * scaleX, scale * scaleY);
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
       // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
@@ -1359,7 +1358,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
       convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
     }
-
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }
 
