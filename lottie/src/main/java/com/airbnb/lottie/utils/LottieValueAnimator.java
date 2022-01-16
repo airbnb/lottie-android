@@ -262,6 +262,11 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return maxFrame == Integer.MAX_VALUE ? composition.getEndFrame() : maxFrame;
   }
 
+  @Override void notifyCancel() {
+    super.notifyCancel();
+    notifyEnd(isReversed());
+  }
+
   protected void postFrameCallback() {
     if (isRunning()) {
       removeFrameCallback(false);
