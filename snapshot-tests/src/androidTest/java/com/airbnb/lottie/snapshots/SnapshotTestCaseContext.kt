@@ -182,6 +182,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
                     log("Drawing $name")
                     val bitmap = bitmapPool.acquire(composeView.width, composeView.height)
                     val canvas = Canvas(bitmap)
+                    composeView.viewTreeObserver.removeOnDrawListener(onDrawListener)
                     composeView.draw(canvas)
                     cont.resume(bitmap)
                 }
@@ -190,8 +191,6 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
             onActivity { activity ->
                 activity.binding.content.addView(composeView)
             }
-        }.also {
-            composeView.viewTreeObserver.removeOnDrawListener(onDrawListener)
         }
     }
     onActivity { activity ->
