@@ -13,6 +13,18 @@ public class Marker {
     this.startFrame = startFrame;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public float getStartFrame() {
+    return startFrame;
+  }
+
+  public float getDurationFrames() {
+    return durationFrames;
+  }
+
   public boolean matchesName(String name) {
     if (this.name.equalsIgnoreCase(name)) {
       return true;
