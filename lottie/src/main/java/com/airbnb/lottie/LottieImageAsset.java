@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
 /**
- * Data class describing an image asset exported by bodymovin.
+ * Data class describing an image asset embedded in a Lottie json file.
  */
 public class LottieImageAsset {
   private final int width;
@@ -36,6 +36,9 @@ public class LottieImageAsset {
     return height;
   }
 
+  /**
+   * The reference id in the json file.
+   */
   public String getId() {
     return id;
   }

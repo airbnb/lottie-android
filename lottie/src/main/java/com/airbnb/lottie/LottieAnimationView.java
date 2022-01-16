@@ -844,6 +844,26 @@ import java.util.Set;
   }
 
   /**
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
+   *
+   * Defaults to false.
+   */
+  public void setMaintainOriginalImageBounds(boolean maintainOriginalImageBounds) {
+    lottieDrawable.setMaintainOriginalImageBounds(maintainOriginalImageBounds);
+  }
+
+  /**
+   * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
+   * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
+   *
+   * Defaults to false.
+   */
+  public boolean getMaintainOriginalImageBounds() {
+    return lottieDrawable.getMaintainOriginalImageBounds();
+  }
+
+  /**
    * Allows you to modify or clear a bitmap that was loaded for an image either automatically
    * through {@link #setImageAssetsFolder(String)} or with an {@link ImageAssetDelegate}.
    *
