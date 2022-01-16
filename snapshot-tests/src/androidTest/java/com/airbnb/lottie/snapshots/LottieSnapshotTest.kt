@@ -17,6 +17,7 @@ import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
 import com.airbnb.lottie.snapshots.tests.AssetsTestCase
 import com.airbnb.lottie.snapshots.tests.ColorStateListColorFilterTestCase
 import com.airbnb.lottie.snapshots.tests.ComposeDynamicPropertiesTestCase
+import com.airbnb.lottie.snapshots.tests.ComposeScaleTypesTestCase
 import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
@@ -105,22 +106,23 @@ class LottieSnapshotTest {
     @Test
     fun testAll() = runBlocking {
         val testCases = listOf(
-            CustomBoundsTestCase(),
-            ColorStateListColorFilterTestCase(),
-            FailureTestCase(),
-            FrameBoundariesTestCase(),
+//            CustomBoundsTestCase(),
+//            ColorStateListColorFilterTestCase(),
+//            FailureTestCase(),
+//            FrameBoundariesTestCase(),
             ScaleTypesTestCase(),
-            DynamicPropertiesTestCase(),
-            MarkersTestCase(),
-            AssetsTestCase(),
-            TextTestCase(),
-            PartialFrameProgressTestCase(),
-            NightModeTestCase(),
-            ApplyOpacityToLayerTestCase(),
-            OutlineMasksAndMattesTestCase(),
-            LargeCompositionSoftwareRendering(),
-            ComposeDynamicPropertiesTestCase(),
-            ProdAnimationsTestCase(),
+            ComposeScaleTypesTestCase(),
+//            DynamicPropertiesTestCase(),
+//            MarkersTestCase(),
+//            AssetsTestCase(),
+//            TextTestCase(),
+//            PartialFrameProgressTestCase(),
+//            NightModeTestCase(),
+//            ApplyOpacityToLayerTestCase(),
+//            OutlineMasksAndMattesTestCase(),
+//            LargeCompositionSoftwareRendering(),
+//            ComposeDynamicPropertiesTestCase(),
+//            ProdAnimationsTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
