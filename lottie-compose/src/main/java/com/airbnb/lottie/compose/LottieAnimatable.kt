@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.animation.core.AnimationConstants
+import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.foundation.MutatorMutex
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -9,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import com.airbnb.lottie.LottieComposition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
@@ -247,8 +247,10 @@ private class LottieAnimatableImpl : LottieAnimatable {
         }
     }
 
-    private suspend fun doFrame(iterations: Int): Boolean = withFrameNanos { frameNanos ->
-        val composition = composition ?: return@withFrameNanos true
+    // We use withInfiniteAnimationFrameNanos because it allows tests to add a CoroutineContext
+    // element that will cancel infinite transitions instead of preventing composition from ever going idle.
+    private suspend fun doFrame(iterations: Int): Boolean = withInfiniteAnimationFrameNanos { frameNanos ->
+        val composition = composition ?: return@withInfiniteAnimationFrameNanos true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
         lastFrameNanos = frameNanos
 
@@ -269,7 +271,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             if (iteration + dIterations > iterations) {
                 progress = endProgress
                 iteration = iterations
-                return@withFrameNanos false
+                return@withInfiniteAnimationFrameNanos false
             }
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress

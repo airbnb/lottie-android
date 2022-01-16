@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -63,25 +62,19 @@ import java.util.concurrent.Callable;
  *
  * @see <a href="http://airbnb.io/lottie">Full Documentation</a>
  */
-@SuppressWarnings({"WeakerAccess"}) public class LottieAnimationView extends AppCompatImageView {
+@SuppressWarnings({"WeakerAccess", "unused"}) public class LottieAnimationView extends AppCompatImageView {
 
   private static final String TAG = LottieAnimationView.class.getSimpleName();
-  private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = new LottieListener<Throwable>() {
-    @Override public void onResult(Throwable throwable) {
-      // By default, fail silently for network errors.
-      if (Utils.isNetworkException(throwable)) {
-        Logger.warning("Unable to load composition.", throwable);
-        return;
-      }
-      throw new IllegalStateException("Unable to parse composition", throwable);
+  private static final LottieListener<Throwable> DEFAULT_FAILURE_LISTENER = throwable -> {
+    // By default, fail silently for network errors.
+    if (Utils.isNetworkException(throwable)) {
+      Logger.warning("Unable to load composition.", throwable);
+      return;
     }
+    throw new IllegalStateException("Unable to parse composition", throwable);
   };
 
-  private final LottieListener<LottieComposition> loadedListener = new LottieListener<LottieComposition>() {
-    @Override public void onResult(LottieComposition composition) {
-      setComposition(composition);
-    }
-  };
+  private final LottieListener<LottieComposition> loadedListener = this::setComposition;
 
   private final LottieListener<Throwable> wrappedFailureListener = new LottieListener<Throwable>() {
     @Override
@@ -101,9 +94,6 @@ import java.util.concurrent.Callable;
   private String animationName;
   private @RawRes int animationResId;
 
-  private boolean playAnimationWhenShown = false;
-  private boolean wasAnimatingWhenNotShown = false;
-  private boolean wasAnimatingWhenDetached = false;
   /**
    * When we set a new composition, we set LottieDrawable to null then back again so that ImageView re-checks its bounds.
    * However, this causes the drawable to get unscheduled briefly. Normally, we would pause the animation but in this case, we don't want to.
@@ -173,7 +163,6 @@ import java.util.concurrent.Callable;
 
     setFallbackResource(ta.getResourceId(R.styleable.LottieAnimationView_lottie_fallbackRes, 0));
     if (ta.getBoolean(R.styleable.LottieAnimationView_lottie_autoPlay, false)) {
-      wasAnimatingWhenDetached = true;
       autoPlay = true;
     }
 
@@ -195,6 +184,10 @@ import java.util.concurrent.Callable;
       setSpeed(ta.getFloat(R.styleable.LottieAnimationView_lottie_speed, 1f));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds)) {
+      setClipToCompositionBounds(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds, true));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -204,7 +197,7 @@ import java.util.concurrent.Callable;
       ColorStateList csl = AppCompatResources.getColorStateList(getContext(), colorRes);
       SimpleColorFilter filter = new SimpleColorFilter(csl.getDefaultColor());
       KeyPath keyPath = new KeyPath("**");
-      LottieValueCallback<ColorFilter> callback = new LottieValueCallback<ColorFilter>(filter);
+      LottieValueCallback<ColorFilter> callback = new LottieValueCallback<>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
     }
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
@@ -275,7 +268,7 @@ import java.util.concurrent.Callable;
     ss.animationName = animationName;
     ss.animationResId = animationResId;
     ss.progress = lottieDrawable.getProgress();
-    ss.isAnimating = lottieDrawable.isAnimating() || (!ViewCompat.isAttachedToWindow(this) && wasAnimatingWhenDetached);
+    ss.isAnimating = lottieDrawable.isAnimatingOrWillAnimateOnVisible();
     ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
     ss.repeatMode = lottieDrawable.getRepeatMode();
     ss.repeatCount = lottieDrawable.getRepeatCount();
@@ -307,57 +300,11 @@ import java.util.concurrent.Callable;
     setRepeatCount(ss.repeatCount);
   }
 
-  @Override
-  protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-    // This can happen on older versions of Android because onVisibilityChanged gets called from the
-    // constructor of View so this will get called before lottieDrawable gets initialized.
-    // https://github.com/airbnb/lottie-android/issues/1143
-    // A simple null check on lottieDrawable would not work because when using Proguard optimization, a
-    // null check on a final field gets removed. As "usually" final fields cannot be null.
-    // However because this is called by super (View) before the initializer of the LottieAnimationView
-    // is called, it actually can be null here.
-    // Working around this by using a non final boolean that is set to true after the class initializer
-    // has run.
-    if (!isInitialized) {
-      return;
-    }
-    if (isShown()) {
-      if (wasAnimatingWhenNotShown) {
-        resumeAnimation();
-      } else if (playAnimationWhenShown) {
-        playAnimation();
-      }
-      wasAnimatingWhenNotShown = false;
-      playAnimationWhenShown = false;
-    } else {
-      if (isAnimating()) {
-        pauseAnimation();
-        wasAnimatingWhenNotShown = true;
-      }
-    }
-  }
-
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (!isInEditMode() && (autoPlay || wasAnimatingWhenDetached)) {
-      playAnimation();
-      // Autoplay from xml should only apply once.
-      autoPlay = false;
-      wasAnimatingWhenDetached = false;
+    if (!isInEditMode() && autoPlay) {
+      lottieDrawable.playAnimation();
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      // This is needed to mimic newer platform behavior.
-      // https://stackoverflow.com/a/53625860/715633
-      onVisibilityChanged(this, getVisibility());
-    }
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    if (isAnimating()) {
-      cancelAnimation();
-      wasAnimatingWhenDetached = true;
-    }
-    super.onDetachedFromWindow();
   }
 
   /**
@@ -387,6 +334,26 @@ import java.util.concurrent.Callable;
    */
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
+  }
+
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * When set to true, the parent view may need to disable clipChildren so Lottie can render outside of the LottieAnimationView bounds.
+   *
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    lottieDrawable.setClipToCompositionBounds(clipToCompositionBounds);
+  }
+
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public boolean getClipToCompositionBounds() {
+    return lottieDrawable.getClipToCompositionBounds();
   }
 
   /**
@@ -424,12 +391,8 @@ import java.util.concurrent.Callable;
 
   private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
-      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() {
-          return cacheComposition
-              ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null);
-        }
-      }, true);
+      return new LottieTask<>(() -> cacheComposition
+          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null), true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
@@ -444,12 +407,8 @@ import java.util.concurrent.Callable;
 
   private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
-      return new LottieTask<>(new Callable<LottieResult<LottieComposition>>() {
-        @Override public LottieResult<LottieComposition> call() {
-          return cacheComposition ?
-              LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null);
-        }
-      }, true);
+      return new LottieTask<>(() -> cacheComposition ?
+          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null), true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
@@ -630,12 +589,8 @@ import java.util.concurrent.Callable;
    */
   @MainThread
   public void playAnimation() {
-    if (isShown()) {
-      lottieDrawable.playAnimation();
-      computeRenderMode();
-    } else {
-      playAnimationWhenShown = true;
-    }
+    lottieDrawable.playAnimation();
+    computeRenderMode();
   }
 
   /**
@@ -644,13 +599,8 @@ import java.util.concurrent.Callable;
    */
   @MainThread
   public void resumeAnimation() {
-    if (isShown()) {
-      lottieDrawable.resumeAnimation();
-      computeRenderMode();
-    } else {
-      playAnimationWhenShown = false;
-      wasAnimatingWhenNotShown = true;
-    }
+    lottieDrawable.resumeAnimation();
+    computeRenderMode();
   }
 
   /**
@@ -1015,9 +965,6 @@ import java.util.concurrent.Callable;
 
   @MainThread
   public void cancelAnimation() {
-    wasAnimatingWhenDetached = false;
-    wasAnimatingWhenNotShown = false;
-    playAnimationWhenShown = false;
     lottieDrawable.cancelAnimation();
     computeRenderMode();
   }
@@ -1025,9 +972,6 @@ import java.util.concurrent.Callable;
   @MainThread
   public void pauseAnimation() {
     autoPlay = false;
-    wasAnimatingWhenDetached = false;
-    wasAnimatingWhenNotShown = false;
-    playAnimationWhenShown = false;
     lottieDrawable.pauseAnimation();
     computeRenderMode();
   }
@@ -1170,6 +1114,7 @@ import java.util.concurrent.Callable;
    */
   @Deprecated
   public void disableExtraScaleModeInFitXY() {
+    //noinspection deprecation
     lottieDrawable.disableExtraScaleModeInFitXY();
   }
 

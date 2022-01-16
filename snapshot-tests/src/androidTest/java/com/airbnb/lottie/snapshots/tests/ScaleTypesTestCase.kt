@@ -11,7 +11,7 @@ import com.airbnb.lottie.snapshots.withAnimationView
 
 class ScaleTypesTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() {
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "Wrap Content") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "Wrap Content", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -19,7 +19,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             }
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "Match Parent") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "Match Parent", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -27,7 +27,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             }
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@2x") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@2x", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -36,7 +36,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scale = 2f
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@4x") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@4x", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -45,7 +45,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scale = 4f
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -54,7 +54,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.CENTER_CROP
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerInside") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerInside", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -63,7 +63,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 fitXY") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 fitXY", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -72,7 +72,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.FIT_XY
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerInside @2x") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerInside @2x", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -82,7 +82,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scale = 2f
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop @2x") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop @2x", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -92,7 +92,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scale = 2f
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "600x300 centerInside") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "600x300 centerInside", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 600.dp.toInt()
@@ -101,7 +101,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "600x300 fitXY") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "600x300 fitXY", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 600.dp.toInt()
@@ -110,7 +110,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.FIT_XY
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x600 centerInside") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x600 centerInside", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()
@@ -119,7 +119,7 @@ class ScaleTypesTestCase : SnapshotTestCase {
             animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x600 fitXY") { animationView ->
+        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x600 fitXY", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
                 width = 300.dp.toInt()

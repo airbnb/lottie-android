@@ -63,15 +63,28 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     void run(LottieComposition composition);
   }
 
+  /**
+   * Internal record keeping of the desired play state when {@link #isVisible()} transitions to or is false.
+   *
+   * If the animation was playing when it becomes invisible or play/pause is called on it while it is invisible, it will
+   * store the state and then take the appropriate action when the drawable becomes visible again.
+   */
+  private enum OnVisibleAction {
+    NONE,
+    PLAY,
+    RESUME,
+  }
+
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
   private float scale = 1f;
 
-  //Call animationsEnabled() instead of using these fields directly
+  // Call animationsEnabled() instead of using these fields directly.
   private boolean systemAnimationsEnabled = true;
   private boolean ignoreSystemAnimationsDisabled = false;
 
   private boolean safeMode = false;
+  private OnVisibleAction onVisibleAction = OnVisibleAction.NONE;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
@@ -100,6 +113,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   TextDelegate textDelegate;
   private boolean enableMergePaths;
   private boolean maintainOriginalImageBounds = false;
+  private boolean clipToCompositionBounds = true;
   @Nullable
   private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -194,6 +208,27 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return enableMergePaths;
+  }
+
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    if (clipToCompositionBounds != this.clipToCompositionBounds) {
+      this.clipToCompositionBounds = clipToCompositionBounds;
+      invalidateSelf();
+    }
+  }
+
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public boolean getClipToCompositionBounds() {
+    return clipToCompositionBounds;
   }
 
   /**
@@ -373,6 +408,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void clearComposition() {
     if (animator.isRunning()) {
       animator.cancel();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
     composition = null;
     compositionLayer = null;
@@ -439,7 +477,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     } else {
       drawInternal(canvas);
     }
-    isDirty = false;
 
     L.endSection("Drawable#draw");
   }
@@ -450,6 +487,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     } else {
       drawWithOriginalAspectRatio(canvas);
     }
+    isDirty = false;
   }
 
   private boolean boundsMatchesCompositionAspectRatio() {
@@ -499,11 +537,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (animationsEnabled() || getRepeatCount() == 0) {
-      animator.playAnimation();
+      if (isVisible()) {
+        animator.playAnimation();
+      } else {
+        onVisibleAction = OnVisibleAction.PLAY;
+      }
     }
     if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
   }
 
@@ -511,6 +556,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void endAnimation() {
     lazyCompositionTasks.clear();
     animator.endAnimation();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   /**
@@ -525,11 +573,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (animationsEnabled() || getRepeatCount() == 0) {
-      animator.resumeAnimation();
+      if (isVisible()) {
+        animator.resumeAnimation();
+      } else {
+        onVisibleAction = OnVisibleAction.RESUME;
+      }
     }
     if (!animationsEnabled()) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
+      if (!isVisible()) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
     }
   }
 
@@ -848,6 +903,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
 
+  @SuppressWarnings("unused")
   public boolean isLooping() {
     return animator.getRepeatCount() == ValueAnimator.INFINITE;
   }
@@ -860,6 +916,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return false;
     }
     return animator.isRunning();
+  }
+
+  boolean isAnimatingOrWillAnimateOnVisible() {
+    if (isVisible()) {
+      return animator.isRunning();
+    } else {
+      return onVisibleAction == OnVisibleAction.PLAY || onVisibleAction == OnVisibleAction.RESUME;
+    }
   }
 
   private boolean animationsEnabled() {
@@ -951,11 +1015,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void cancelAnimation() {
     lazyCompositionTasks.clear();
     animator.cancel();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   public void pauseAnimation() {
     lazyCompositionTasks.clear();
     animator.pauseAnimation();
+    if (!isVisible()) {
+      onVisibleAction = OnVisibleAction.NONE;
+    }
   }
 
   @FloatRange(from = 0f, to = 1f)
@@ -1176,6 +1246,29 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return null;
   }
 
+  @Override public boolean setVisible(boolean visible, boolean restart) {
+    // Sometimes, setVisible(false) gets called twice in a row. If we don't check wasNotVisibleAlready, we could
+    // wind up clearing the onVisibleAction value for the second call.
+    boolean wasNotVisibleAlready = !isVisible();
+    boolean ret = super.setVisible(visible, restart);
+
+    if (visible) {
+      if (onVisibleAction == OnVisibleAction.PLAY) {
+        playAnimation();
+      } else if (onVisibleAction == OnVisibleAction.RESUME) {
+        resumeAnimation();
+      }
+    } else {
+      if (animator.isRunning()) {
+        pauseAnimation();
+        onVisibleAction = OnVisibleAction.RESUME;
+      } else if (!wasNotVisibleAlready) {
+        onVisibleAction = OnVisibleAction.NONE;
+      }
+    }
+    return ret;
+  }
+
   /**
    * These Drawable.Callback methods proxy the calls so that this is the drawable that is
    * actually invalidated, not a child one which will not pass the view's validateDrawable check.
@@ -1216,7 +1309,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer, matrix);
+      canvas.save();
+      canvas.concat(matrix);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+      canvas.restore();
     } else {
       compositionLayer.draw(canvas, matrix, alpha);
     }
@@ -1230,7 +1326,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer, null);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
     } else {
       Rect bounds = getBounds();
       // In fitXY mode, the scale doesn't take effect.
@@ -1252,7 +1348,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer, null);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
     } else {
       renderingMatrix.reset();
       renderingMatrix.preScale(scale, scale);
@@ -1267,23 +1363,38 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieDrawable#useSoftwareRendering(boolean)
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
-  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer, @Nullable Matrix parentMatrix) {
+  private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer) {
     ensureSoftwareRenderingObjectsInitialized();
 
     //noinspection deprecation
     originalCanvas.getMatrix(softwareRenderingOriginalCanvasMatrix);
     softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
     renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
-    if (parentMatrix != null) {
-      renderingMatrix.postConcat(parentMatrix);
-    }
 
-    // Determine what bounds the animation will render to after taking into account the canvas and parent matrix.
-    softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
+    // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
+    // This is how ImageView.ScaleType.FIT_XY works.
+    Rect bounds = getBounds();
+    float scaleX = bounds.width() / (float) getIntrinsicWidth();
+    float scaleY = bounds.height() / (float) getIntrinsicHeight();
+
+    if (clipToCompositionBounds) {
+      // Only render the intrinsic (composition) bounds.
+      softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
+    } else {
+      // Find the full bounds of the animation.
+      softwareRenderingTransformedBounds.set(0f, 0f, 0f, 0f);
+      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
+    }
+    softwareRenderingTransformedBounds.set(
+        softwareRenderingTransformedBounds.left * scaleX,
+        softwareRenderingTransformedBounds.top * scaleY,
+        softwareRenderingTransformedBounds.right * scaleX,
+        softwareRenderingTransformedBounds.bottom * scaleY
+    );
+
+    // Transform the animation bounds to the bounds that they will render to on the canvas.
     renderingMatrix.mapRect(softwareRenderingTransformedBounds);
 
-    // We only need to render the portion of the animation that intersects with the canvas's bounds.
-    softwareRenderingTransformedBounds.intersect(0f, 0f, originalCanvas.getWidth(), originalCanvas.getHeight());
 
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
@@ -1298,10 +1409,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     if (isDirty) {
       softwareRenderingBitmap.eraseColor(0);
-      renderingMatrix.preScale(scale, scale);
-      // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
-      // This is how ImageView.ScaleType.FIT_XY works.
-      renderingMatrix.preScale(getBounds().width() / (float) getIntrinsicWidth(), getBounds().height() / (float) getIntrinsicHeight());
+      renderingMatrix.preScale(scale * scaleX, scale * scaleY);
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
       // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);

@@ -46,6 +46,51 @@ class FragmentVisibilityTests {
     }
 
     @Test
+    fun testRecyclerViewCanAutoPlayInOnBindRebind() {
+        class TestFragment : Fragment() {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+                return RecyclerView(requireContext()).apply {
+                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                    // Setting itemAnimator to null is important for this test in order to
+                    // prevent the recyclerview from creating an additional viewholder for the
+                    // purposes of animation.
+                    itemAnimator = null
+                    adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+                            return object : RecyclerView.ViewHolder(LottieAnimationView(parent.context).apply {
+                                id = R.id.animation_view
+                                setAnimation(R.raw.heart)
+                                IdlingRegistry.getInstance().register(LottieIdlingResource(this))
+                            }) {}
+                        }
+
+                        override fun getItemCount(): Int = 1
+
+                        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+                            (holder.itemView as LottieAnimationView).apply {
+                                // Cancel first, then play. This prevents the animation from
+                                // carrying over from the initial binding.
+                                cancelAnimation()
+                                playAnimation()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        val fragmentScenario = launchFragmentInContainer<TestFragment>()
+        // I wasn't able to figure out exactly what was needed to create an idling resource.
+        // Waiting for [RecyclerView.doOnLayout] was insufficient.
+        Thread.sleep(500)
+        fragmentScenario.onFragment { fragment ->
+            (fragment.view as RecyclerView).adapter!!.notifyItemChanged(0)
+        }
+        Thread.sleep(500)
+        onView(withId(R.id.animation_view)).check(matches(isAnimating()))
+    }
+
+    @Test
     fun testAutoPlay() {
         class TestFragment : Fragment() {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -141,8 +186,7 @@ class FragmentVisibilityTests {
         }
 
         val scenario1 = launchFragmentInContainer<TestFragment>()
-        // Wait for the animation view.
-        onView(withId(R.id.animation_view))
+        onIdle()
 
         // Launch a new activity
         scenario1.onFragment { fragment ->
@@ -370,10 +414,7 @@ class FragmentVisibilityTests {
 
                         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
                             return when (viewType) {
-                                0 -> object : RecyclerView.ViewHolder(
-                                        LottieAnimationView(parent.context)
-                                                .apply { id = R.id.animation_view }
-                                ) {}
+                                0 -> object : RecyclerView.ViewHolder(LottieAnimationView(parent.context).apply { id = R.id.animation_view }) {}
                                 else -> object : RecyclerView.ViewHolder(TextView(parent.context)) {}
                             }
                         }
@@ -418,6 +459,7 @@ class FragmentVisibilityTests {
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
         scenario.onFragment { it.requireView().scrollBy(0, 10_000) }
         scenario.onFragment { it.requireView().scrollBy(0, -10_000) }
+        // Animation already ended. Making sure it isn't playing again.
         scenario.onFragment { assertFalse(it.animationView!!.isAnimating) }
     }
 
@@ -461,7 +503,8 @@ class FragmentVisibilityTests {
 
     private fun <T : Fragment> FragmentScenario<T>.onAnimationEnded() {
         onFragment { fragment ->
-            IdlingRegistry.getInstance().register(LottieIdlingAnimationResource(fragment.animationView!!, name = "Lottie finished animation ${Random.nextFloat()}"))
+            IdlingRegistry.getInstance()
+                .register(LottieIdlingAnimationResource(fragment.animationView!!, name = "Lottie finished animation ${Random.nextFloat()}"))
         }
         onIdle()
     }
