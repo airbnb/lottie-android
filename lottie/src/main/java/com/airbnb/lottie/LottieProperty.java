@@ -214,4 +214,6 @@ public interface LottieProperty {
    * Set on image layers.
    */
   Bitmap IMAGE = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+
+  CharSequence TEXT = "dynamic_text";
 }
