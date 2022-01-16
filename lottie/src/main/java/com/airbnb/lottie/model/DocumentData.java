@@ -14,20 +14,29 @@ public class DocumentData {
     CENTER
   }
 
-  public final String text;
-  @SuppressWarnings("WeakerAccess") public final String fontName;
-  public final float size;
-  @SuppressWarnings("WeakerAccess") public final Justification justification;
-  public final int tracking;
-  @SuppressWarnings("WeakerAccess") public final float lineHeight;
-  public final float baselineShift;
-  @ColorInt public final int color;
-  @ColorInt public final int strokeColor;
-  public final float strokeWidth;
-  public final boolean strokeOverFill;
+  public String text;
+  @SuppressWarnings("WeakerAccess") public String fontName;
+  public float size;
+  @SuppressWarnings("WeakerAccess") public Justification justification;
+  public int tracking;
+  @SuppressWarnings("WeakerAccess") public float lineHeight;
+  public float baselineShift;
+  @ColorInt public int color;
+  @ColorInt public int strokeColor;
+  public float strokeWidth;
+  public boolean strokeOverFill;
 
 
   public DocumentData(String text, String fontName, float size, Justification justification, int tracking,
+      float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
+      float strokeWidth, boolean strokeOverFill) {
+    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
+  }
+
+  public DocumentData() {
+  }
+
+  public void set(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
       float strokeWidth, boolean strokeOverFill) {
     this.text = text;

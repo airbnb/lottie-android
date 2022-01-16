@@ -25,7 +25,7 @@ import com.airbnb.lottie.value.ScaleXY
 fun rememberLottieDynamicProperties(
     vararg properties: LottieDynamicProperty<*>,
 ): LottieDynamicProperties {
-    return remember(properties) {
+    return remember(properties.contentHashCode()) {
         LottieDynamicProperties(properties.toList())
     }
 }
@@ -67,7 +67,7 @@ fun <T> rememberLottieDynamicProperty(
     vararg keyPath: String,
     callback: (frameInfo: LottieFrameInfo<T>) -> T,
 ): LottieDynamicProperty<T> {
-    val keyPathObj = remember(keyPath) { KeyPath(*keyPath) }
+    val keyPathObj = remember(keyPath.contentHashCode()) { KeyPath(*keyPath) }
     val callbackState by rememberUpdatedState(callback)
     return remember(keyPathObj, property) {
         LottieDynamicProperty(
@@ -101,6 +101,7 @@ class LottieDynamicProperties internal constructor(
     private val intArrayProperties: List<LottieDynamicProperty<Array<*>>>,
     private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
     private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
+    private val charSequenceProperties: List<LottieDynamicProperty<CharSequence>>,
 ) {
     @Suppress("UNCHECKED_CAST")
     constructor(properties: List<LottieDynamicProperty<*>>) : this(
@@ -112,6 +113,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is Array<*> } as List<LottieDynamicProperty<Array<*>>>,
         properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
         properties.filter { it.property is Bitmap } as List<LottieDynamicProperty<Bitmap>>,
+        properties.filter { it.property is CharSequence } as List<LottieDynamicProperty<CharSequence>>,
     )
 
     internal fun addTo(drawable: LottieDrawable) {
@@ -139,7 +141,9 @@ class LottieDynamicProperties internal constructor(
         bitmapProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
-
+        charSequenceProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
+        }
     }
 
     internal fun removeFrom(drawable: LottieDrawable) {
@@ -166,6 +170,9 @@ class LottieDynamicProperties internal constructor(
         }
         bitmapProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Bitmap>?)
+        }
+        charSequenceProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<CharSequence>?)
         }
     }
 }

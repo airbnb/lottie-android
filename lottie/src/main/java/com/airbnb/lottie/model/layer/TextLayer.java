@@ -538,6 +538,8 @@ public class TextLayer extends BaseLayer {
         typefaceCallbackAnimation.addUpdateListener(this);
         addAnimation(typefaceCallbackAnimation);
       }
+    } else if (property == LottieProperty.TEXT) {
+      textAnimation.setStringValueCallback((LottieValueCallback<String>) callback);
     }
   }
 }
