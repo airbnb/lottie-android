@@ -19,6 +19,7 @@ import com.airbnb.lottie.value.ScaleXY
  * This takes a vararg of individual dynamic properties which should be created with [rememberLottieDynamicProperty].
  *
  * @see rememberLottieDynamicProperty
+ * @see LottieDrawable.setMaintainOriginalImageBounds
  */
 @Composable
 fun rememberLottieDynamicProperties(
