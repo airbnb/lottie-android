@@ -451,26 +451,24 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private void drawInternal(@NonNull Canvas canvas) {
-    CompositionLayer compositionLayer = this.compositionLayer;
-    LottieComposition composition = this.composition;
-    float scale = this.scale;
-    Rect bounds = getBounds();
-    if (compositionLayer == null || composition == null) {
-      return;
-    }
-
-    if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer);
+    if (!boundsMatchesCompositionAspectRatio()) {
+      drawWithNewAspectRatio(canvas);
     } else {
-      // In fitXY mode, the scale doesn't take effect.
-      float scaleX = bounds.width() / (float) composition.getBounds().width();
-      float scaleY = bounds.height() / (float) composition.getBounds().height();
-
-      renderingMatrix.reset();
-      renderingMatrix.preScale(scale * scaleX, scale * scaleY);
-      compositionLayer.draw(canvas, renderingMatrix, alpha);
+      drawWithOriginalAspectRatio(canvas);
     }
     isDirty = false;
+  }
+
+  private boolean boundsMatchesCompositionAspectRatio() {
+    LottieComposition composition = this.composition;
+    if (composition == null || getBounds().isEmpty()) {
+      return true;
+    }
+    return aspectRatio(getBounds()) == aspectRatio(composition.getBounds());
+  }
+
+  private float aspectRatio(Rect rect) {
+    return rect.width() / (float) rect.height();
   }
 
 // <editor-fold desc="animator">
@@ -1245,6 +1243,44 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
+  private void drawWithNewAspectRatio(Canvas canvas) {
+    CompositionLayer compositionLayer = this.compositionLayer;
+    LottieComposition composition = this.composition;
+    if (compositionLayer == null || composition == null) {
+      return;
+    }
+
+    if (softwareRenderingEnabled) {
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+    } else {
+      Rect bounds = getBounds();
+      // In fitXY mode, the scale doesn't take effect.
+      float scaleX = bounds.width() / (float) composition.getBounds().width();
+      float scaleY = bounds.height() / (float) composition.getBounds().height();
+
+      renderingMatrix.reset();
+      renderingMatrix.preScale(scaleX, scaleY);
+      compositionLayer.draw(canvas, renderingMatrix, alpha);
+    }
+  }
+
+  private void drawWithOriginalAspectRatio(Canvas canvas) {
+    CompositionLayer compositionLayer = this.compositionLayer;
+    LottieComposition composition = this.composition;
+    float scale = this.scale;
+    if (compositionLayer == null || composition == null) {
+      return;
+    }
+
+    if (softwareRenderingEnabled) {
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+    } else {
+      renderingMatrix.reset();
+      renderingMatrix.preScale(scale, scale);
+      compositionLayer.draw(canvas, renderingMatrix, alpha);
+    }
+  }
+
   /**
    * This is the software rendering pipeline. This draws the animation to an internally managed bitmap
    * and then draws the bitmap to the original canvas.
@@ -1268,7 +1304,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     float scaleY = bounds.height() / (float) getIntrinsicHeight();
 
     if (clipToCompositionBounds) {
-      // Determine what bounds the animation will render to after taking into account the canvas and parent matrix.
+      // Only render the intrinsic (composition) bounds.
       softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
     } else {
       // Find the full bounds of the animation.
@@ -1316,7 +1352,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
-    isDirty = false;
   }
 
   private void ensureSoftwareRenderingObjectsInitialized() {
