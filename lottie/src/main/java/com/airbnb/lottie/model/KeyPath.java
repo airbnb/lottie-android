@@ -215,6 +215,28 @@ public class KeyPath {
     return keys.toString();
   }
 
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    KeyPath keyPath = (KeyPath) o;
+
+    if (!keys.equals(keyPath.keys)) {
+      return false;
+    }
+    return resolvedElement != null ? resolvedElement.equals(keyPath.resolvedElement) : keyPath.resolvedElement == null;
+  }
+
+  @Override public int hashCode() {
+    int result = keys.hashCode();
+    result = 31 * result + (resolvedElement != null ? resolvedElement.hashCode() : 0);
+    return result;
+  }
+
   @Override public String toString() {
     return "KeyPath{" + "keys=" + keys + ",resolved=" + (resolvedElement != null) + '}';
   }

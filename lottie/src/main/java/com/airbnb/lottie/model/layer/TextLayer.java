@@ -71,7 +71,6 @@ public class TextLayer extends BaseLayer {
   private BaseKeyframeAnimation<Float, Float> textSizeCallbackAnimation;
   @Nullable
   private BaseKeyframeAnimation<Typeface, Typeface> typefaceCallbackAnimation;
-  private BaseKeyframeAnimation<CharSequence, CharSequence> textCallbackAnimation;
 
   TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -242,10 +241,6 @@ public class TextLayer extends BaseLayer {
     TextDelegate textDelegate = lottieDrawable.getTextDelegate();
     if (textDelegate != null) {
       text = textDelegate.getTextInternal(getName(), text);
-    }
-    if (textCallbackAnimation != null) {
-      // TODO: convert consumer to CharSequence.
-      text = textCallbackAnimation.getValue().toString();
     }
 
     fillPaint.setTypeface(typeface);
@@ -545,17 +540,7 @@ public class TextLayer extends BaseLayer {
         addAnimation(typefaceCallbackAnimation);
       }
     } else if (property == LottieProperty.TEXT) {
-      if (textCallbackAnimation != null) {
-        removeAnimation(textCallbackAnimation);
-      }
-
-      if (callback == null) {
-        textCallbackAnimation = null;
-      } else {
-        textCallbackAnimation = new ValueCallbackKeyframeAnimation<>((LottieValueCallback<CharSequence>) callback);
-        textCallbackAnimation.addUpdateListener(this);
-        addAnimation(textCallbackAnimation);
-      }
+      textAnimation.setStringValueCallback((LottieValueCallback<String>) callback);
     }
   }
 }

@@ -25,7 +25,7 @@ import com.airbnb.lottie.value.ScaleXY
 fun rememberLottieDynamicProperties(
     vararg properties: LottieDynamicProperty<*>,
 ): LottieDynamicProperties {
-    return remember(properties) {
+    return remember(properties.contentHashCode()) {
         LottieDynamicProperties(properties.toList())
     }
 }
@@ -67,7 +67,7 @@ fun <T> rememberLottieDynamicProperty(
     vararg keyPath: String,
     callback: (frameInfo: LottieFrameInfo<T>) -> T,
 ): LottieDynamicProperty<T> {
-    val keyPathObj = remember(keyPath) { KeyPath(*keyPath) }
+    val keyPathObj = remember(keyPath.contentHashCode()) { KeyPath(*keyPath) }
     val callbackState by rememberUpdatedState(callback)
     return remember(keyPathObj, property) {
         LottieDynamicProperty(
