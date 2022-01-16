@@ -1,3 +1,9 @@
+# 5.0.0
+* Add support for dynamic text via `LottieProperty.TEXT` and the existing dynamic property APIs ([#1995](https://github.com/airbnb/lottie-android/issues/1995))
+* Added support for loading animations via content provider URIs (LottieCompositionSpec.ContentProvider) ([#1982](https://github.com/airbnb/lottie-android/pull/1982))
+* Fixed dynamic gradient properties ([#1969](https://github.com/airbnb/lottie-android/pull/1969)).
+* Prevent infinite animations from hanging espresso tests by using the same mechanism as androidx animations ([#1987](https://github.com/airbnb/lottie-android/pull/1987))
+
 # 4.2.0
 * [BREAKING CHANGE] LottieAnimation will now default to the composition size rather than `fillMaxSize()` ([#1892](https://github.com/airbnb/lottie-android/pull/1892))
 * Improved the performance of loading and parsing animations ([#1891](https://github.com/airbnb/lottie-android/pull/1891))
