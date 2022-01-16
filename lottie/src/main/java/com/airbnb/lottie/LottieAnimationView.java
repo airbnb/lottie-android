@@ -339,6 +339,8 @@ import java.util.Set;
   /**
    * Sets whether or not Lottie should clip to the original animation composition bounds.
    *
+   * When set to true, the parent view may need to disable clipChildren so Lottie can render outside of the LottieAnimationView bounds.
+   *
    * Defaults to true.
    */
   public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
