@@ -175,6 +175,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
         lateinit var onDrawListener: ViewTreeObserver.OnDrawListener
         suspendCancellableCoroutine<Bitmap> { cont ->
             onDrawListener = ViewTreeObserver.OnDrawListener {
+                composeView.viewTreeObserver.addOnDrawListener(onDrawListener)
                 composeView.post {
                     if (readyFlow.value != true) {
                         return@post
@@ -187,7 +188,6 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
                     cont.resume(bitmap)
                 }
             }
-            composeView.viewTreeObserver.addOnDrawListener(onDrawListener)
             onActivity { activity ->
                 activity.binding.content.addView(composeView)
             }
