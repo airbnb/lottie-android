@@ -223,10 +223,11 @@ public abstract class BaseStrokeContent
     float animEndValue = pathGroup.trimPath.getEnd().getValue() / 100f;
     float animOffsetValue = pathGroup.trimPath.getOffset().getValue() / 360f;
 
-    // if (animStartValue == 0f && animEndValue == 1f) {
-    //   canvas.drawPath(path, paint);
-    //   return;
-    // }
+    // If the start-end is ~100, consider it to be the full path.
+    if (animStartValue < 0.01f && animEndValue > 0.99f) {
+      canvas.drawPath(path, paint);
+      return;
+    }
 
     pm.setPath(path, false);
     float totalLength = pm.getLength();
