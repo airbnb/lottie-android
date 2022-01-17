@@ -203,7 +203,9 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
     log("Drawing $name - Software")
     var bitmap = bitmapPool.acquire(composeView.width, composeView.height)
     var canvas = Canvas(bitmap)
-    composeView.draw(canvas)
+    withContext(Dispatchers.Main) {
+        composeView.draw(canvas)
+    }
     snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Software" else variant)
     bitmapPool.release(bitmap)
 
@@ -220,7 +222,9 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
         log("Drawing $name - Software")
         bitmap = bitmapPool.acquire(composeView.width, composeView.height)
         canvas = Canvas(bitmap)
-        composeView.draw(canvas)
+        withContext(Dispatchers.Main) {
+            composeView.draw(canvas)
+        }
         snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Hardware" else variant)
         bitmapPool.release(bitmap)
     }
