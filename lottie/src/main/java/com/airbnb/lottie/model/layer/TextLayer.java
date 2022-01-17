@@ -459,6 +459,7 @@ public class TextLayer extends BaseLayer {
         Character.getType(codePoint) == Character.MODIFIER_SYMBOL ||
         Character.getType(codePoint) == Character.NON_SPACING_MARK ||
         Character.getType(codePoint) == Character.OTHER_SYMBOL ||
+        Character.getType(codePoint) == Character.DIRECTIONALITY_NONSPACING_MARK ||
         Character.getType(codePoint) == Character.SURROGATE;
   }
 

@@ -158,6 +158,15 @@ class TextTestCase : SnapshotTestCase {
             LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
         }
 
+        snapshotComposable("Compose Dynamic Text", "Hindi") {
+            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
+            LocalSnapshotReady.current.value = composition != null
+            val dynamicProperties = rememberLottieDynamicProperties(
+                rememberLottieDynamicProperty(LottieProperty.TEXT, "आपका लेख", "NAME"),
+            )
+            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+        }
+
         snapshotComposable("Compose Dynamic Text", "FrameInfo.startValue") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
             LocalSnapshotReady.current.value = composition != null
