@@ -40,12 +40,13 @@ public class PolystarShape implements ContentModel {
   private final AnimatableFloatValue innerRoundedness;
   private final AnimatableFloatValue outerRoundedness;
   private final boolean hidden;
+  private final boolean isReversed;
 
   public PolystarShape(String name, Type type, AnimatableFloatValue points,
       AnimatableValue<PointF, PointF> position,
       AnimatableFloatValue rotation, AnimatableFloatValue innerRadius,
       AnimatableFloatValue outerRadius, AnimatableFloatValue innerRoundedness,
-      AnimatableFloatValue outerRoundedness, boolean hidden) {
+      AnimatableFloatValue outerRoundedness, boolean hidden, boolean isReversed) {
     this.name = name;
     this.type = type;
     this.points = points;
@@ -56,6 +57,7 @@ public class PolystarShape implements ContentModel {
     this.innerRoundedness = innerRoundedness;
     this.outerRoundedness = outerRoundedness;
     this.hidden = hidden;
+    this.isReversed = isReversed;
   }
 
   public String getName() {
@@ -96,6 +98,10 @@ public class PolystarShape implements ContentModel {
 
   public boolean isHidden() {
     return hidden;
+  }
+
+  public boolean isReversed() {
+    return isReversed;
   }
 
   @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
