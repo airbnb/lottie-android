@@ -14,7 +14,6 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
@@ -26,7 +25,6 @@ import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.view.ViewCompat;
 
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Logger;
@@ -104,6 +102,10 @@ import java.util.Set;
   private boolean cacheComposition = true;
   private RenderMode renderMode = RenderMode.AUTOMATIC;
   private boolean useSoftwareRendering = false;
+  /**
+   * Keeps track of explicit user actions taken and prevents onRestoreInstanceState from overwriting already set values.
+   */
+  private final Set<UserActionTaken> userActionsTaken = new HashSet<>();
   private final Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
   /**
    * Prevents a StackOverflowException on 4.4 in which getDrawingCache() calls buildDrawingCache().
@@ -284,20 +286,28 @@ import java.util.Set;
     SavedState ss = (SavedState) state;
     super.onRestoreInstanceState(ss.getSuperState());
     animationName = ss.animationName;
-    if (!TextUtils.isEmpty(animationName)) {
+    if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && !TextUtils.isEmpty(animationName)) {
       setAnimation(animationName);
     }
     animationResId = ss.animationResId;
-    if (animationResId != 0) {
+    if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && animationResId != 0) {
       setAnimation(animationResId);
     }
-    setProgress(ss.progress);
-    if (ss.isAnimating) {
+    if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
+      setProgress(ss.progress);
+    }
+    if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
       playAnimation();
     }
-    lottieDrawable.setImagesAssetsFolder(ss.imageAssetsFolder);
-    setRepeatMode(ss.repeatMode);
-    setRepeatCount(ss.repeatCount);
+    if (!userActionsTaken.contains(UserActionTaken.SET_IMAGE_ASSETS)) {
+      setImageAssetsFolder(ss.imageAssetsFolder);
+    }
+    if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_MODE)) {
+      setRepeatMode(ss.repeatMode);
+    }
+    if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_COUNT)) {
+      setRepeatCount(ss.repeatCount);
+    }
   }
 
   @Override protected void onAttachedToWindow() {
@@ -513,6 +523,7 @@ import java.util.Set;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
+    userActionsTaken.add(UserActionTaken.SET_ANIMATION);
     clearComposition();
     cancelLoaderTask();
     this.compositionTask = compositionTask
@@ -589,6 +600,7 @@ import java.util.Set;
    */
   @MainThread
   public void playAnimation() {
+    userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.playAnimation();
     computeRenderMode();
   }
@@ -599,6 +611,7 @@ import java.util.Set;
    */
   @MainThread
   public void resumeAnimation() {
+    userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.resumeAnimation();
     computeRenderMode();
   }
@@ -781,6 +794,7 @@ import java.util.Set;
    * @param mode {@link LottieDrawable#RESTART} or {@link LottieDrawable#REVERSE}
    */
   public void setRepeatMode(@LottieDrawable.RepeatMode int mode) {
+    userActionsTaken.add(UserActionTaken.SET_REPEAT_MODE);
     lottieDrawable.setRepeatMode(mode);
   }
 
@@ -803,6 +817,7 @@ import java.util.Set;
    * @param count the number of times the animation should be repeated
    */
   public void setRepeatCount(int count) {
+    userActionsTaken.add(UserActionTaken.SET_REPEAT_COUNT);
     lottieDrawable.setRepeatCount(count);
   }
 
@@ -965,6 +980,7 @@ import java.util.Set;
 
   @MainThread
   public void cancelAnimation() {
+    userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.cancelAnimation();
     computeRenderMode();
   }
@@ -993,6 +1009,7 @@ import java.util.Set;
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    userActionsTaken.add(UserActionTaken.SET_PROGRESS);
     lottieDrawable.setProgress(progress);
   }
 
@@ -1193,5 +1210,14 @@ import java.util.Set;
             return new SavedState[size];
           }
         };
+  }
+
+  private enum UserActionTaken {
+    SET_ANIMATION,
+    SET_PROGRESS,
+    SET_REPEAT_MODE,
+    SET_REPEAT_COUNT,
+    SET_IMAGE_ASSETS,
+    PLAY_OPTION,
   }
 }
