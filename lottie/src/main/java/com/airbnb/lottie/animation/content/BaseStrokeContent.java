@@ -219,16 +219,25 @@ public abstract class BaseStrokeContent
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
       path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
     }
+    float animStartValue = pathGroup.trimPath.getStart().getValue() / 100f;
+    float animEndValue = pathGroup.trimPath.getEnd().getValue() / 100f;
+    float animOffsetValue = pathGroup.trimPath.getOffset().getValue() / 360f;
+
+    // If the start-end is ~100, consider it to be the full path.
+    if (animStartValue < 0.01f && animEndValue > 0.99f) {
+      canvas.drawPath(path, paint);
+      L.endSection("StrokeContent#applyTrimPath");
+      return;
+    }
+
     pm.setPath(path, false);
     float totalLength = pm.getLength();
     while (pm.nextContour()) {
       totalLength += pm.getLength();
     }
-    float offsetLength = totalLength * pathGroup.trimPath.getOffset().getValue() / 360f;
-    float startLength =
-        totalLength * (pathGroup.trimPath.getStart().getValue() / 100f) + offsetLength;
-    float endLength =
-        totalLength * (pathGroup.trimPath.getEnd().getValue() / 100f) + offsetLength;
+    float offsetLength = totalLength * animOffsetValue;
+    float startLength = totalLength * animStartValue + offsetLength;
+    float endLength = Math.min(totalLength * animEndValue + offsetLength, startLength + totalLength - 1f);
 
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
