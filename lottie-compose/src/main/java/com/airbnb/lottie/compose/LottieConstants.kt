@@ -1,5 +1,7 @@
 package com.airbnb.lottie.compose
 
+import android.content.Context
+
 object LottieConstants {
     /**
      * Use this with [animateLottieCompositionAsState]'s iterations parameter to repeat forever.

@@ -1,12 +1,14 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.utils.Utils
 
 /**
  * Returns a [LottieAnimationState] representing the progress of an animation.
@@ -31,6 +33,9 @@ import com.airbnb.lottie.LottieComposition
  *                             you will want it to cancel immediately. However, if you have a state based
  *                             transition and you want an animation to finish playing before moving on to
  *                             the next one then you may want to set this to [LottieCancellationBehavior.OnIterationFinish].
+ * @param ignoreSystemAnimatorScale By default, Lottie will respect the system animator scale set in developer options or set to 0
+ *                                  by things like battery saver mode. When set to 0, the speed will effectively become [Integer.MAX_VALUE].
+ *                                  Set this to false if you want to ignore the system animator scale and always default to normal speed.
  */
 @Composable
 fun animateLottieCompositionAsState(
@@ -41,6 +46,7 @@ fun animateLottieCompositionAsState(
     speed: Float = 1f,
     iterations: Int = 1,
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
+    ignoreSystemAnimatorScale: Boolean = false,
 ): LottieAnimationState {
     require(iterations > 0) { "Iterations must be a positive number ($iterations)." }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
@@ -48,11 +54,14 @@ fun animateLottieCompositionAsState(
     val animatable = rememberLottieAnimatable()
     var wasPlaying by remember { mutableStateOf(isPlaying) }
 
+    // Dividing by 0 correctly yields Float.POSITIVE_INFINITY here.
+    val actualSpeed = if (ignoreSystemAnimatorScale) speed else (speed / Utils.getAnimationScale(LocalContext.current))
+
     LaunchedEffect(
         composition,
         isPlaying,
         clipSpec,
-        speed,
+        actualSpeed,
         iterations,
     ) {
         if (isPlaying && !wasPlaying && restartOnPlay) {
@@ -64,7 +73,7 @@ fun animateLottieCompositionAsState(
         animatable.animate(
             composition,
             iterations = iterations,
-            speed = speed,
+            speed = actualSpeed,
             clipSpec = clipSpec,
             initialProgress = animatable.progress,
             continueFromPreviousAnimate = false,

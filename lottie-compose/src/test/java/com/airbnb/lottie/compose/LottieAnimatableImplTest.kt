@@ -279,6 +279,70 @@ class LottieAnimatableImplTest {
     }
 
     @Test
+    fun testInfiniteSpeed() {
+        val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
+        runTest {
+            launch {
+                anim.animate(composition, clipSpec = clipSpec, speed = Float.POSITIVE_INFINITY, iterations = LottieConstants.IterateForever)
+            }
+            assertFrame(
+                0,
+                progress = 0.57f,
+                isPlaying = false,
+                speed = Float.POSITIVE_INFINITY,
+                clipSpec = clipSpec,
+                isAtEnd = true,
+                iterations = LottieConstants.IterateForever,
+                iteration = LottieConstants.IterateForever,
+                lastFrameNanos = AnimationConstants.UnspecifiedTime,
+            )
+        }
+    }
+
+    @Test
+    fun testInfiniteSpeedWithIterations() {
+        val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
+        runTest {
+            launch {
+                anim.animate(composition, clipSpec = clipSpec, speed = Float.POSITIVE_INFINITY, iterations = 3)
+            }
+            assertFrame(
+                300,
+                progress = 0.57f,
+                isPlaying = false,
+                speed = Float.POSITIVE_INFINITY,
+                clipSpec = clipSpec,
+                isAtEnd = true,
+                iterations = 3,
+                iteration = 3,
+                lastFrameNanos = AnimationConstants.UnspecifiedTime,
+            )
+        }
+    }
+
+    @Test
+    fun testNegativeInfiniteSpeed() {
+        val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
+        runTest {
+            launch {
+                anim.animate(composition, clipSpec = clipSpec, speed = Float.NEGATIVE_INFINITY, iterations = LottieConstants.IterateForever)
+            }
+            assertFrame(
+                0,
+                progress = 0.33f,
+                isPlaying = false,
+                speed = Float.NEGATIVE_INFINITY,
+                clipSpec = clipSpec,
+                isAtEnd = true,
+                iterations = LottieConstants.IterateForever,
+                iteration = LottieConstants.IterateForever,
+                lastFrameNanos = AnimationConstants.UnspecifiedTime,
+            )
+        }
+    }
+
+
+    @Test
     fun testNonCancellable() = runTest {
         val job = launch {
             anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnIterationFinish)
