@@ -28,14 +28,18 @@
   enable [setMaintainOriginalImageBounds](https://github.com/airbnb/lottie-android/blob/c5b8318c7cf205e95db143955acbfc69f86bc339/lottie/src/main/java/com/airbnb/lottie/LottieDrawable.java#L264) to be able to supply lower resolution bitmaps ([#1706](https://github.com/airbnb/lottie-android/issues/1706)).
 * Add support for `LottieProperty.TEXT` to use dynamic properties for text. This enables dynamic text support for lottie-compose ([#1995](https://github.com/airbnb/lottie-android/issues/1495)).
 * Add getters for Marker fields ([#1998](https://github.com/airbnb/lottie-android/pull/1998))
+* Add support for reversed polystar paths ([#2003](https://github.com/airbnb/lottie-android/pull/2003))
 
 ### Bugs Fixed
-* Fixed a rare NPE multi-threaded race condition ([#1959](https://github.com/airbnb/lottie-android/pull/1959))
+* Fix a rare NPE multi-threaded race condition ([#1959](https://github.com/airbnb/lottie-android/pull/1959))
 * Don't cache dpScale to support moving Activities between different displays ([#1915](https://github.com/airbnb/lottie-android/pull/1915))
-* Fixed some cases that would prevent LottieAnimationView or LottieDrawable from being rendered by the Android Studio layout preview ([#1984](https://github.com/airbnb/lottie-android/pull/1984))
+* Fix some cases that would prevent LottieAnimationView or LottieDrawable from being rendered by the Android Studio layout preview ([#1984](https://github.com/airbnb/lottie-android/pull/1984))
 * Better handle animations in which there is only a single color in a gradient ([#1985](https://github.com/airbnb/lottie-android/pull/1985))
-* Fixed a rare race condition that could leak a LottieTask object ([#1986](https://github.com/airbnb/lottie-android/pull/1986))
-* Call onAnimationEnd when animations are cancelled to be consistent with platform APIs ([#1994](https://github.com/airbnb/lottie-android/issues/1994)).
+* Fix a rare race condition that could leak a LottieTask object ([#1986](https://github.com/airbnb/lottie-android/pull/1986))
+* Call onAnimationEnd when animations are cancelled to be consistent with platform APIs ([#1994](https://github.com/airbnb/lottie-android/issues/1994))
+* Fix a bug that would only render part of a path if the trim path extended from 0-100 and had an offset ([#1999](https://github.com/airbnb/lottie-android/pull/1999))
+* Add support for languages that use DIRECTIONALITY_NONSPACING_MARK like Hindi ([#2001](https://github.com/airbnb/lottie-android/pull/2001))
+* Prevent LottieAnimationView from overwriting user actions when restoring instance state ([#2002](https://github.com/airbnb/lottie-android/pull/2002))
 
 # 4.2.2
 ### Bugs Fixed
