@@ -33,7 +33,6 @@ public class PolystarContent
   private final LottieDrawable lottieDrawable;
   private final PolystarShape.Type type;
   private final boolean hidden;
-  private final boolean isReversed;
   private final BaseKeyframeAnimation<?, Float> pointsAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final BaseKeyframeAnimation<?, Float> rotationAnimation;
@@ -52,7 +51,6 @@ public class PolystarContent
     name = polystarShape.getName();
     type = polystarShape.getType();
     hidden = polystarShape.isHidden();
-    isReversed = polystarShape.isReversed();
     pointsAnimation = polystarShape.getPoints().createAnimation();
     positionAnimation = polystarShape.getPosition().createAnimation();
     rotationAnimation = polystarShape.getRotation().createAnimation();
@@ -150,9 +148,6 @@ public class PolystarContent
     currentAngle = Math.toRadians(currentAngle);
     // adjust current angle for partial points
     float anglePerPoint = (float) (2 * Math.PI / points);
-    if (isReversed) {
-      anglePerPoint *= -1;
-    }
     float halfAnglePerPoint = anglePerPoint / 2.0f;
     float partialPointAmount = points - (int) points;
     if (partialPointAmount != 0) {

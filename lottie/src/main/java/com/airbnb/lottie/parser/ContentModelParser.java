@@ -81,7 +81,7 @@ class ContentModelParser {
         model = ShapeTrimPathParser.parse(reader, composition);
         break;
       case "sr":
-        model = PolystarShapeParser.parse(reader, composition, d);
+        model = PolystarShapeParser.parse(reader, composition);
         break;
       case "mm":
         model = MergePathsParser.parse(reader);

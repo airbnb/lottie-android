@@ -21,15 +21,14 @@ class PolystarShapeParser {
       "os",
       "ir",
       "is",
-      "hd",
-      "d"
+      "hd"
   );
 
   private PolystarShapeParser() {
   }
 
   static PolystarShape parse(
-      JsonReader reader, LottieComposition composition, int d) throws IOException {
+      JsonReader reader, LottieComposition composition) throws IOException {
     String name = null;
     PolystarShape.Type type = null;
     AnimatableFloatValue points = null;
@@ -40,7 +39,6 @@ class PolystarShapeParser {
     AnimatableFloatValue innerRadius = null;
     AnimatableFloatValue innerRoundedness = null;
     boolean hidden = false;
-    boolean reversed = d == 3;
 
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
@@ -74,10 +72,6 @@ class PolystarShapeParser {
         case 9:
           hidden = reader.nextBoolean();
           break;
-        case 10:
-          // "d" is 2 for normal and 3 for reversed.
-          reversed = reader.nextInt() == 3;
-          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -86,6 +80,6 @@ class PolystarShapeParser {
 
     return new PolystarShape(
         name, type, points, position, rotation, innerRadius, outerRadius,
-        innerRoundedness, outerRoundedness, hidden, reversed);
+        innerRoundedness, outerRoundedness, hidden);
   }
 }
