@@ -213,7 +213,6 @@ private class LottieAnimatableImpl : LottieAnimatable {
         ignoreSystemAnimationsDisabled: Boolean,
     ) {
         mutex.mutate {
-            require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
             this.iteration = iteration
             this.iterations = iterations
             this.speed = speed
@@ -223,6 +222,11 @@ private class LottieAnimatableImpl : LottieAnimatable {
             if (!continueFromPreviousAnimate) lastFrameNanos = AnimationConstants.UnspecifiedTime
             if (composition == null) {
                 isPlaying = false
+                return@mutate
+            } else if (speed.isInfinite()) {
+                progress = endProgress
+                isPlaying = false
+                this.iteration = iterations
                 return@mutate
             }
 
