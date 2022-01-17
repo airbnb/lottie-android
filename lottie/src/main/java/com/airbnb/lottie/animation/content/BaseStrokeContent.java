@@ -226,6 +226,7 @@ public abstract class BaseStrokeContent
     // If the start-end is ~100, consider it to be the full path.
     if (animStartValue < 0.01f && animEndValue > 0.99f) {
       canvas.drawPath(path, paint);
+      L.endSection("StrokeContent#applyTrimPath");
       return;
     }
 
