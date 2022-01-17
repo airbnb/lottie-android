@@ -253,7 +253,7 @@ public abstract class BaseStrokeContent
         if (startLength > totalLength) {
           startValue = (startLength - totalLength) / length;
         } else {
-          startValue = offsetLength / length;
+          startValue = 0;
         }
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
@@ -267,7 +267,7 @@ public abstract class BaseStrokeContent
         } else {
           float startValue;
           if (startLength < currentLength) {
-            startValue = offsetLength / length;
+            startValue = 0;
           } else {
             startValue = (startLength - currentLength) / length;
           }
