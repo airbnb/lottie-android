@@ -10,17 +10,17 @@ import java.io.IOException;
 public class DocumentDataParser implements ValueParser<DocumentData> {
   public static final DocumentDataParser INSTANCE = new DocumentDataParser();
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
-      "t",
-      "f",
-      "s",
-      "j",
-      "tr",
-      "lh",
-      "ls",
-      "fc",
-      "sc",
-      "sw",
-      "of"
+      "t",  // 0
+      "f",  // 1
+      "s",  // 2
+      "j",  // 3
+      "tr", // 4
+      "lh", // 5
+      "ls", // 6
+      "fc", // 7
+      "sc", // 8
+      "sw", // 9
+      "of"  // 10
   );
 
   private DocumentDataParser() {

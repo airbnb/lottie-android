@@ -154,8 +154,8 @@ public final class Utils {
     }
     float start = length * startValue;
     float end = length * endValue;
-    float newStart = Math.min(start, end);
-    float newEnd = Math.max(start, end);
+    float newStart = start; //Math.min(start, end);
+    float newEnd = end; //Math.max(start, end);
 
     float offset = offsetValue * length;
     newStart += offset;

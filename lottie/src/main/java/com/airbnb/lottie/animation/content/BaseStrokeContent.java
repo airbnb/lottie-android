@@ -219,16 +219,23 @@ public abstract class BaseStrokeContent
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
       path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
     }
+    float animStartValue = pathGroup.trimPath.getStart().getValue() / 100f;
+    float animEndValue = pathGroup.trimPath.getEnd().getValue() / 100f;
+    float animOffsetValue = pathGroup.trimPath.getOffset().getValue() / 360f;
+
+    // if (animStartValue == 0f && animEndValue == 1f) {
+    //   canvas.drawPath(path, paint);
+    //   return;
+    // }
+
     pm.setPath(path, false);
     float totalLength = pm.getLength();
     while (pm.nextContour()) {
       totalLength += pm.getLength();
     }
-    float offsetLength = totalLength * pathGroup.trimPath.getOffset().getValue() / 360f;
-    float startLength =
-        totalLength * (pathGroup.trimPath.getStart().getValue() / 100f) + offsetLength;
-    float endLength =
-        totalLength * (pathGroup.trimPath.getEnd().getValue() / 100f) + offsetLength;
+    float offsetLength = totalLength * animOffsetValue;
+    float startLength = totalLength * animStartValue + offsetLength;
+    float endLength = Math.min(totalLength * animEndValue + offsetLength, startLength + totalLength - 1f);
 
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
@@ -244,7 +251,7 @@ public abstract class BaseStrokeContent
         if (startLength > totalLength) {
           startValue = (startLength - totalLength) / length;
         } else {
-          startValue = 0;
+          startValue = offsetLength / length;
         }
         float endValue = Math.min((endLength - totalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
@@ -258,7 +265,7 @@ public abstract class BaseStrokeContent
         } else {
           float startValue;
           if (startLength < currentLength) {
-            startValue = 0;
+            startValue = offsetLength / length;
           } else {
             startValue = (startLength - currentLength) / length;
           }
