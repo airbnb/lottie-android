@@ -15,21 +15,22 @@ class LottieApplication : MultiDexApplication() {
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
-            .build() }
+            .build()
+    }
 
     private val gson by lazy {
         GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
     }
 
     private val retrofit by lazy {
         Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl("https://api.lottiefiles.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
+            .client(okHttpClient)
+            .baseUrl("https://api.lottiefiles.com/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
     }
 
     val lottiefilesService: LottiefilesApi by lazy { retrofit.create(LottiefilesApi::class.java) }

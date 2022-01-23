@@ -10,8 +10,8 @@ abstract class MvRxViewModel<S : MvRxState>(initialState: S) : BaseMvRxViewModel
      * This uses [Dispatchers.Main.immediate] by default to mimic [viewModelScope].
      */
     fun <T : Any?> (suspend () -> T).execute(
-            dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
-            reducer: S.(Async<T>) -> S
+        dispatcher: CoroutineDispatcher = Dispatchers.Main.immediate,
+        reducer: S.(Async<T>) -> S
     ): Job {
         setState { reducer(Loading()) }
         return viewModelScope.launch(dispatcher) {

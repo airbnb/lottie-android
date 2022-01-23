@@ -10,13 +10,6 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
-import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
-import com.google.android.material.snackbar.Snackbar
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,23 +17,30 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.graphics.toColorInt
+import androidx.fragment.app.Fragment
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.airbnb.lottie.L
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 
 fun Fragment.startActivity(cls: Class<*>) {
     startActivity(Intent(context, cls))
 }
 
 fun String.urlIntent(): Intent =
-        Intent(Intent.ACTION_VIEW).setData(Uri.parse(this))
+    Intent(Intent.ACTION_VIEW).setData(Uri.parse(this))
 
 fun ViewGroup.inflate(@LayoutRes layout: Int, attachToRoot: Boolean = true): View =
-        LayoutInflater.from(context).inflate(layout, this, attachToRoot)
+    LayoutInflater.from(context).inflate(layout, this, attachToRoot)
 
 fun String.hasPermission(context: Context): Boolean =
-        ContextCompat.checkSelfPermission(context, this) == PackageManager.PERMISSION_GRANTED
+    ContextCompat.checkSelfPermission(context, this) == PackageManager.PERMISSION_GRANTED
 
 fun TextView.setDrawableLeft(@DrawableRes drawableRes: Int, activity: Activity) {
     val drawable = VectorDrawableCompat.create(resources, drawableRes, activity.theme)
@@ -48,7 +48,7 @@ fun TextView.setDrawableLeft(@DrawableRes drawableRes: Int, activity: Activity) 
 }
 
 fun View.showSnackbarLong(@StringRes message: Int) =
-        showSnackbarLong(resources.getString(message))
+    showSnackbarLong(resources.getString(message))
 
 fun View.showSnackbarLong(message: String) =
     Snackbar.make(this, message, Snackbar.LENGTH_LONG).show()
@@ -90,15 +90,15 @@ fun String?.toColorIntSafe(): Int {
         when (bgColor.length) {
             0 -> "#ffffff"
             4 -> "#%c%c%c%c%c%c".format(
-                    bgColor[1], bgColor[1],
-                    bgColor[2], bgColor[2],
-                    bgColor[3], bgColor[3]
+                bgColor[1], bgColor[1],
+                bgColor[2], bgColor[2],
+                bgColor[3], bgColor[3]
             )
             5 -> "#%c%c%c%c%c%c%c%c".format(
-                    bgColor[1], bgColor[1],
-                    bgColor[2], bgColor[2],
-                    bgColor[3], bgColor[3],
-                    bgColor[4], bgColor[4]
+                bgColor[1], bgColor[1],
+                bgColor[2], bgColor[2],
+                bgColor[3], bgColor[3],
+                bgColor[4], bgColor[4]
             )
             else -> bgColor
         }.toColorInt()

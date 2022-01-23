@@ -6,13 +6,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AnimationData(
-        val id: Long,
-        val title: String,
-        val description: String?,
-        private val bgColor: String?,
-        val preview: String?,
-        val lottieLink: String,
-        val userInfo: UserInfo?
+    val id: Long,
+    val title: String,
+    val description: String?,
+    private val bgColor: String?,
+    val preview: String?,
+    val lottieLink: String,
+    val userInfo: UserInfo?
 ) : Parcelable {
     val bgColorInt get() = bgColor.toColorIntSafe()
 }

@@ -17,9 +17,9 @@ import com.airbnb.lottie.samples.utils.getText
 import com.airbnb.lottie.samples.utils.viewBinding
 
 class ControlBarItemToggleView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val binding: ItemViewControlBarBinding by viewBinding()
 
@@ -50,8 +50,8 @@ class ControlBarItemToggleView @JvmOverloads constructor(
         super.childDrawableStateChanged(child)
         if (child is ImageView && child.drawable != null) {
             val color =
-                    if (child.isActivated) Color.WHITE
-                    else ContextCompat.getColor(context, R.color.control_bar_content_unactivated)
+                if (child.isActivated) Color.WHITE
+                else ContextCompat.getColor(context, R.color.control_bar_content_unactivated)
             DrawableCompat.setTint(child.drawable.mutate(), color)
         }
     }

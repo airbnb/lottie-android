@@ -12,9 +12,9 @@ import com.airbnb.lottie.samples.model.ShowcaseItem
 
 @ModelView(autoLayout = ModelView.Size.MATCH_WIDTH_WRAP_HEIGHT)
 class ShowcaseCarousel @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : EpoxyRecyclerView(context, attrs, defStyleAttr), EpoxyRecyclerView.ModelBuilderCallback {
 
     private var items: List<ShowcaseItem>? = null
@@ -35,9 +35,9 @@ class ShowcaseCarousel @JvmOverloads constructor(
     override fun buildModels(controller: EpoxyController) {
         items?.forEach {
             ShowcaseDemoItemViewModel_()
-                    .id(it.titleRes)
-                    .showcaseItem(it)
-                    .addTo(controller)
+                .id(it.titleRes)
+                .showcaseItem(it)
+                .addTo(controller)
         }
     }
 }

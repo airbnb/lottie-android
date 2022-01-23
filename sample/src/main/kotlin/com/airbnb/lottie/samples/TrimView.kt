@@ -2,16 +2,16 @@ package com.airbnb.lottie.samples
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.customview.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.customview.widget.ViewDragHelper
 
 class TrimView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private val leftAnchor by lazy {
@@ -26,7 +26,7 @@ class TrimView @JvmOverloads constructor(
     }
     private lateinit var callback: (Float, Float) -> Unit
 
-    private val dragHelper = ViewDragHelper.create(this, object: ViewDragHelper.Callback() {
+    private val dragHelper = ViewDragHelper.create(this, object : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int) = true
 
         override fun getViewHorizontalDragRange(child: View) = width

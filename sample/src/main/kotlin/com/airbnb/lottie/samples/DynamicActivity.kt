@@ -70,8 +70,10 @@ class DynamicActivity : AppCompatActivity() {
         binding.animationView.addValueCallback(leftArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         binding.animationView.addValueCallback(rightArm, LottieProperty.COLOR) { COLORS[colorIndex] }
         val point = PointF()
-        binding.animationView.addValueCallback(KeyPath("Body"),
-            LottieProperty.TRANSFORM_POSITION) { frameInfo ->
+        binding.animationView.addValueCallback(
+            KeyPath("Body"),
+            LottieProperty.TRANSFORM_POSITION
+        ) { frameInfo ->
             val startX = frameInfo.startValue.x
             var startY = frameInfo.startValue.y
             var endY = frameInfo.endValue.y
@@ -92,7 +94,7 @@ class DynamicActivity : AppCompatActivity() {
         binding.jumpHeight.text = "Extra jump height ${EXTRA_JUMP[extraJumpIndex]}"
     }
 
-    fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) =  a + percentage * (b - a)
+    fun lerp(a: Float, b: Float, @FloatRange(from = 0.0, to = 1.0) percentage: Float) = a + percentage * (b - a)
 
     companion object {
         val TAG = DynamicActivity::class.simpleName

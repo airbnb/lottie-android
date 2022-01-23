@@ -1,15 +1,15 @@
 package com.airbnb.lottie.samples.views
 
 import android.content.Context
-import androidx.customview.widget.ViewDragHelper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
+import androidx.customview.widget.ViewDragHelper
 
 class InterceptingFrameLayout @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     var viewDragHelper: ViewDragHelper? = null
