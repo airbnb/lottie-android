@@ -15,7 +15,7 @@ class DynamicTextActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val textDelegate = TextDelegate(binding.dynamicTextView)
-        binding.nameEditText.addTextChangedListener(object: TextWatcher {
+        binding.nameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 textDelegate.setText("NAME", s.toString())
             }

@@ -10,7 +10,7 @@ import com.airbnb.mvrx.BaseMvRxFragment
 
 
 private class BaseEpoxyController(
-        private val buildModelsCallback: EpoxyController.() -> Unit
+    private val buildModelsCallback: EpoxyController.() -> Unit
 ) : AsyncEpoxyController() {
     override fun buildModels() {
         buildModelsCallback()

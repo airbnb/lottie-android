@@ -8,32 +8,38 @@ import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
 import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.utils.MvRxViewModel
-import com.airbnb.mvrx.*
+import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.MvRxState
+import com.airbnb.mvrx.MvRxViewModelFactory
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
+import com.airbnb.mvrx.ViewModelContext
 import java.io.FileInputStream
 import kotlin.math.max
 import kotlin.math.min
 
 data class PlayerState(
-        val composition: Async<LottieComposition> = Uninitialized,
-        val controlsVisible: Boolean = true,
-        val controlBarVisible: Boolean = true,
-        val renderGraphVisible: Boolean = false,
-        val outlineMasksAndMattes: Boolean = false,
-        val borderVisible: Boolean = false,
-        val backgroundColorVisible: Boolean = false,
-        val scaleVisible: Boolean = false,
-        val speedVisible: Boolean = false,
-        val trimVisible: Boolean = false,
-        val useMergePaths: Boolean = false,
-        val minFrame: Int = 0,
-        val maxFrame: Int = 0,
-        val speed: Float = 1f,
-        val repeatCount: Int = ValueAnimator.INFINITE
+    val composition: Async<LottieComposition> = Uninitialized,
+    val controlsVisible: Boolean = true,
+    val controlBarVisible: Boolean = true,
+    val renderGraphVisible: Boolean = false,
+    val outlineMasksAndMattes: Boolean = false,
+    val borderVisible: Boolean = false,
+    val backgroundColorVisible: Boolean = false,
+    val scaleVisible: Boolean = false,
+    val speedVisible: Boolean = false,
+    val trimVisible: Boolean = false,
+    val useMergePaths: Boolean = false,
+    val minFrame: Int = 0,
+    val maxFrame: Int = 0,
+    val speed: Float = 1f,
+    val repeatCount: Int = ValueAnimator.INFINITE
 ) : MvRxState
 
 class PlayerViewModel(
-        initialState: PlayerState,
-        private val application: Application
+    initialState: PlayerState,
+    private val application: Application
 ) : MvRxViewModel<PlayerState>(initialState) {
 
     fun fetchAnimation(args: CompositionArgs) {
@@ -45,12 +51,12 @@ class PlayerViewModel(
             args.asset != null -> LottieCompositionFactory.fromAsset(application, args.asset, null)
             else -> error("Don't know how to fetch animation for $args")
         }
-                .addListener {
-                    setState {
-                        copy(composition = Success(it), minFrame = it.startFrame.toInt(), maxFrame = it.endFrame.toInt())
-                    }
+            .addListener {
+                setState {
+                    copy(composition = Success(it), minFrame = it.startFrame.toInt(), maxFrame = it.endFrame.toInt())
                 }
-                .addFailureListener { setState { copy(composition = Fail(it)) } }
+            }
+            .addFailureListener { setState { copy(composition = Fail(it)) } }
     }
 
     private fun taskForUri(uri: Uri): LottieTask<LottieComposition> {
@@ -101,14 +107,14 @@ class PlayerViewModel(
 
     fun setDistractionFree(distractionFree: Boolean) = setState {
         copy(
-                controlsVisible = !distractionFree,
-                controlBarVisible = !distractionFree,
-                renderGraphVisible = false,
-                borderVisible = false,
-                backgroundColorVisible = false,
-                scaleVisible = false,
-                speedVisible = false,
-                trimVisible = false
+            controlsVisible = !distractionFree,
+            controlBarVisible = !distractionFree,
+            renderGraphVisible = false,
+            borderVisible = false,
+            backgroundColorVisible = false,
+            scaleVisible = false,
+            speedVisible = false,
+            trimVisible = false
         )
     }
 

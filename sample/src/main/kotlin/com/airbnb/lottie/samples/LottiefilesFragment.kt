@@ -7,7 +7,12 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingDataAdapter
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.cachedIn
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.samples.api.LottiefilesApi
@@ -19,15 +24,20 @@ import com.airbnb.lottie.samples.utils.MvRxViewModel
 import com.airbnb.lottie.samples.utils.hideKeyboard
 import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.samples.views.AnimationItemView
-import com.airbnb.mvrx.*
+import com.airbnb.mvrx.BaseMvRxFragment
+import com.airbnb.mvrx.MvRxState
+import com.airbnb.mvrx.MvRxViewModelFactory
+import com.airbnb.mvrx.ViewModelContext
+import com.airbnb.mvrx.fragmentViewModel
+import com.airbnb.mvrx.withState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 data class LottiefilesState(
-        val mode: LottiefilesMode = LottiefilesMode.Recent,
-        val query: String = ""
+    val mode: LottiefilesMode = LottiefilesMode.Recent,
+    val query: String = ""
 ) : MvRxState
 
 class LottiefilesViewModel(initialState: LottiefilesState, private val api: LottiefilesApi) : MvRxViewModel<LottiefilesState>(initialState) {
@@ -61,9 +71,9 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
 }
 
 class LottiefilesDataSource(
-        private val api: LottiefilesApi,
-        val mode: LottiefilesMode,
-        private val query: String
+    private val api: LottiefilesApi,
+    val mode: LottiefilesMode,
+    private val query: String
 ) : PagingSource<Int, AnimationData>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, AnimationData> {
@@ -82,9 +92,9 @@ class LottiefilesDataSource(
             }
 
             LoadResult.Page(
-                    response.data,
-                    if (page == 1) null else page + 1,
-                    (page + 1).takeIf { page < response.lastPage }
+                response.data,
+                if (page == 1) null else page + 1,
+                (page + 1).takeIf { page < response.lastPage }
             )
         } catch (e: Exception) {
             LoadResult.Error(e)

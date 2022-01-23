@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.google.android.material.snackbar.Snackbar
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
@@ -15,9 +14,11 @@ import com.airbnb.lottie.samples.model.CompositionArgs
 import com.airbnb.lottie.samples.utils.BaseEpoxyFragment
 import com.airbnb.lottie.samples.utils.hasPermission
 import com.airbnb.lottie.samples.views.marquee
+import com.google.android.material.snackbar.Snackbar
 
 private const val RC_FILE = 1000
 private const val RC_CAMERA_PERMISSION = 1001
+
 class PreviewFragment : BaseEpoxyFragment() {
 
     override fun EpoxyController.buildModels() {
@@ -66,14 +67,14 @@ class PreviewFragment : BaseEpoxyFragment() {
             clickListener { _ ->
                 val urlOrJsonView = EditText(context)
                 AlertDialog.Builder(context)
-                        .setTitle(R.string.preview_url)
-                        .setView(urlOrJsonView)
-                        .setPositiveButton(R.string.preview_load) { _, _ ->
-                            val args = CompositionArgs(url = urlOrJsonView.text.toString())
-                            startActivity(PlayerActivity.intent(requireContext(), args))
-                        }
-                        .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
-                        .show()
+                    .setTitle(R.string.preview_url)
+                    .setView(urlOrJsonView)
+                    .setPositiveButton(R.string.preview_load) { _, _ ->
+                        val args = CompositionArgs(url = urlOrJsonView.text.toString())
+                        startActivity(PlayerActivity.intent(requireContext(), args))
+                    }
+                    .setNegativeButton(R.string.preview_cancel) { dialog, _ -> dialog.dismiss() }
+                    .show()
             }
         }
 
@@ -84,14 +85,14 @@ class PreviewFragment : BaseEpoxyFragment() {
             clickListener { _ ->
                 val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.select_dialog_item)
                 requireContext().assets.list("")?.asSequence()
-                        ?.filter { it.endsWith(".json") || it.endsWith(".zip") }
-                        ?.forEach { adapter.add(it) }
+                    ?.filter { it.endsWith(".json") || it.endsWith(".zip") }
+                    ?.forEach { adapter.add(it) }
                 AlertDialog.Builder(context)
-                        .setAdapter(adapter) { _, which ->
-                            val args = CompositionArgs(asset = adapter.getItem(which))
-                            startActivity(PlayerActivity.intent(requireContext(), args))
-                        }
-                        .show()
+                    .setAdapter(adapter) { _, which ->
+                        val args = CompositionArgs(asset = adapter.getItem(which))
+                        startActivity(PlayerActivity.intent(requireContext(), args))
+                    }
+                    .show()
             }
         }
     }
@@ -99,7 +100,7 @@ class PreviewFragment : BaseEpoxyFragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK) return
         when (requestCode) {
-            RC_FILE-> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(fileUri = data?.data)))
+            RC_FILE -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(fileUri = data?.data)))
         }
     }
 

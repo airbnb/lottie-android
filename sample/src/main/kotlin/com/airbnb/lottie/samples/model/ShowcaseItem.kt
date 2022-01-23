@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class ShowcaseItem(
-        @DrawableRes val drawableRes: Int,
-        @StringRes val titleRes: Int,
-        val clickListener: () -> Unit
+    @DrawableRes val drawableRes: Int,
+    @StringRes val titleRes: Int,
+    val clickListener: () -> Unit
 )

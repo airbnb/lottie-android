@@ -32,6 +32,7 @@ class LottieAnimationViewTest {
     @Test
     fun testCanSetAnAnimationAndChangeItBack() {
         class TestFragment : Fragment(R.layout.lottie_activity_main)
+
         val scenario = launchFragmentInContainer<TestFragment>()
         scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.onFragment { fragment ->
@@ -49,6 +50,7 @@ class LottieAnimationViewTest {
     @Test
     fun testStopsPlayingWhenDrawableSwitched() {
         class TestFragment : Fragment(R.layout.lottie_activity_main)
+
         val scenario = launchFragmentInContainer<TestFragment>()
         scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.onFragment { fragment ->

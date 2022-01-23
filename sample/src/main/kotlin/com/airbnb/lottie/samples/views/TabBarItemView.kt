@@ -9,9 +9,9 @@ import com.airbnb.lottie.samples.databinding.TabItemBinding
 import com.airbnb.lottie.samples.utils.viewBinding
 
 class TabBarItemView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val binding: TabItemBinding by viewBinding()
 

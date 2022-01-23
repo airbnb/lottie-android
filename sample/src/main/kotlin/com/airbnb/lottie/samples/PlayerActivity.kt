@@ -12,11 +12,10 @@ class PlayerActivity : AppCompatActivity(R.layout.player_activity) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS) ?:
-                    CompositionArgs(fileUri = intent.data)
+            val args = intent.getParcelableExtra(PlayerFragment.EXTRA_ANIMATION_ARGS) ?: CompositionArgs(fileUri = intent.data)
             supportFragmentManager.beginTransaction()
-                    .add(R.id.content, PlayerFragment.forAsset(args))
-                    .commit()
+                .add(R.id.content, PlayerFragment.forAsset(args))
+                .commit()
         }
     }
 

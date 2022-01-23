@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import com.airbnb.lottie.LottieAnimationView
 
 class WishListIconView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LottieAnimationView(context, attrs, defStyleAttr) {
 
     fun toggleWishlisted() {

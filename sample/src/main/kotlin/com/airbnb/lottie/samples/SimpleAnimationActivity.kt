@@ -23,7 +23,7 @@ class SimpleAnimationActivity : AppCompatActivity() {
             val assetName = intent.extras?.getString("animation") ?: ""
             val start = System.currentTimeMillis()
             composition = LottieCompositionFactory.fromAssetSync(this, assetName, null).value
-                    ?: throw IllegalArgumentException("Invalid composition $assetName")
+                ?: throw IllegalArgumentException("Invalid composition $assetName")
             Toast.makeText(this@SimpleAnimationActivity, "Done ${System.currentTimeMillis() - start}", Toast.LENGTH_SHORT).show()
         }
 
