@@ -12,6 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LottieCompose">
+
+        <profileable android:shell="true"/>
+
         <activity
             android:name=".ComposeActivity"
             android:label="@string/app_name"
