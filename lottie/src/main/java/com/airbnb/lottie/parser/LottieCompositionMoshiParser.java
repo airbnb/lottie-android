@@ -89,7 +89,7 @@ public class LottieCompositionMoshiParser {
           parseAssets(reader, composition, precomps, images);
           break;
         case 8:
-          parseFonts(reader, fonts);
+          parseFonts(reader, composition, fonts);
           break;
         case 9:
           parseChars(reader, composition, characters);
@@ -122,7 +122,11 @@ public class LottieCompositionMoshiParser {
         imageCount++;
       }
       layers.add(layer);
-      layerMap.put(layer.getId(), layer);
+      final long layerId = layer.getId();
+      if (layerMap.containsKey(layerId)) {
+        composition.addWarning("layer duplicated when parseLayers, layerId:" + layerId);
+      }
+      layerMap.put(layerId, layer);
 
       if (imageCount > 4) {
         Logger.warning("You have " + imageCount + " images. Lottie should primarily be " +
@@ -166,7 +170,11 @@ public class LottieCompositionMoshiParser {
             reader.beginArray();
             while (reader.hasNext()) {
               Layer layer = LayerParser.parse(reader, composition);
-              layerMap.put(layer.getId(), layer);
+              final long layerId = layer.getId();
+              if (layerMap.containsKey(layerId)) {
+                composition.addWarning("layer duplicated when parseAssets, layerId:" + layerId);
+              }
+              layerMap.put(layerId, layer);
               layers.add(layer);
             }
             reader.endArray();
@@ -202,7 +210,8 @@ public class LottieCompositionMoshiParser {
 
   private static final JsonReader.Options FONT_NAMES = JsonReader.Options.of("list");
 
-  private static void parseFonts(JsonReader reader, Map<String, Font> fonts) throws IOException {
+  private static void parseFonts(JsonReader reader, LottieComposition composition,
+      Map<String, Font> fonts) throws IOException {
     reader.beginObject();
     while (reader.hasNext()) {
       switch (reader.selectName(FONT_NAMES)) {
@@ -210,7 +219,11 @@ public class LottieCompositionMoshiParser {
           reader.beginArray();
           while (reader.hasNext()) {
             Font font = FontParser.parse(reader);
-            fonts.put(font.getName(), font);
+            final String fontName = font.getName();
+            if (fonts.containsKey(fontName)) {
+              composition.addWarning("font duplicated when parseFonts, fontName:" + fontName);
+            }
+            fonts.put(fontName, font);
           }
           reader.endArray();
           break;
@@ -228,7 +241,11 @@ public class LottieCompositionMoshiParser {
     reader.beginArray();
     while (reader.hasNext()) {
       FontCharacter character = FontCharacterParser.parse(reader, composition);
-      characters.put(character.hashCode(), character);
+      final int characterHash = character.hashCode();
+      if (characters.containsKey(characterHash)) {
+        composition.addWarning("character duplicated when parseChars, characterHash:" + characterHash);
+      }
+      characters.put(characterHash, character);
     }
     reader.endArray();
   }
