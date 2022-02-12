@@ -65,7 +65,10 @@ import kotlin.math.roundToInt
  * @param alignment Define where the animation should be placed within this composable if it has a different
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
+<<<<<<< HEAD
  * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
+=======
+>>>>>>> 34172f5c (Move full setRenerMode APIs to LottieDrawable, removed scale)
  */
 @Composable
 fun LottieAnimation(
@@ -80,20 +83,17 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    clipToCompositionBounds: Boolean = true,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
     var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
-    val useSoftwareRendering: Boolean = remember(renderMode, composition) {
-        renderMode.useSoftwareRendering(Build.VERSION.SDK_INT, composition?.hasDashPattern() ?: false, composition?.maskAndMatteCount ?: 0)
-    }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
+    val dpScale = Utils.dpScale()
     Canvas(
         modifier = modifier
-            .size((composition.bounds.width() / Utils.dpScale()).dp, (composition.bounds.height() / Utils.dpScale()).dp)
+            .size((composition.bounds.width() / dpScale).dp, (composition.bounds.height() / dpScale).dp)
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
@@ -106,6 +106,7 @@ fun LottieAnimation(
             matrix.preScale(scale.scaleX, scale.scaleY)
 
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
+            drawable.renderMode = renderMode
             drawable.composition = composition
             if (dynamicProperties !== setDynamicProperties) {
                 setDynamicProperties?.removeFrom(drawable)
@@ -114,9 +115,7 @@ fun LottieAnimation(
             }
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
-            drawable.useSoftwareRendering(useSoftwareRendering)
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
-            drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.progress = progress
             drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
@@ -148,7 +147,6 @@ fun LottieAnimation(
     dynamicProperties: LottieDynamicProperties? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    clipToCompositionBounds: Boolean = true,
 ) {
     val progress by animateLottieCompositionAsState(
         composition,
@@ -170,7 +168,6 @@ fun LottieAnimation(
         dynamicProperties,
         alignment,
         contentScale,
-        clipToCompositionBounds,
     )
 }
 

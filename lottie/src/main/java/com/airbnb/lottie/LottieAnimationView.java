@@ -88,7 +88,6 @@ import java.util.Set;
   @DrawableRes private int fallbackResource = 0;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
-  private boolean isInitialized;
   private String animationName;
   private @RawRes int animationResId;
 
@@ -100,21 +99,11 @@ import java.util.Set;
 
   private boolean autoPlay = false;
   private boolean cacheComposition = true;
-  private RenderMode renderMode = RenderMode.AUTOMATIC;
-  private boolean useSoftwareRendering = false;
   /**
    * Keeps track of explicit user actions taken and prevents onRestoreInstanceState from overwriting already set values.
    */
   private final Set<UserActionTaken> userActionsTaken = new HashSet<>();
   private final Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
-  /**
-   * Prevents a StackOverflowException on 4.4 in which getDrawingCache() calls buildDrawingCache().
-   * This isn't a great solution but it works and has very little performance overhead.
-   * At some point in the future, the original goal of falling back to hardware rendering when
-   * the animation is set to software rendering but it is too large to fit in a software bitmap
-   * should be reevaluated.
-   */
-  private int buildDrawingCacheDepth = 0;
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
   /**
@@ -186,10 +175,6 @@ import java.util.Set;
       setSpeed(ta.getFloat(R.styleable.LottieAnimationView_lottie_speed, 1f));
     }
 
-    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds)) {
-      setClipToCompositionBounds(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds, true));
-    }
-
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -201,9 +186,6 @@ import java.util.Set;
       KeyPath keyPath = new KeyPath("**");
       LottieValueCallback<ColorFilter> callback = new LottieValueCallback<>(filter);
       addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
-    }
-    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_scale)) {
-      lottieDrawable.setScale(ta.getFloat(R.styleable.LottieAnimationView_lottie_scale, 1f));
     }
 
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_renderMode)) {
@@ -224,9 +206,6 @@ import java.util.Set;
     ta.recycle();
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
-
-    computeRenderMode();
-    isInitialized = true;
   }
 
   @Override public void setImageResource(int resId) {
@@ -344,26 +323,6 @@ import java.util.Set;
    */
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieDrawable.isMergePathsEnabledForKitKatAndAbove();
-  }
-
-  /**
-   * Sets whether or not Lottie should clip to the original animation composition bounds.
-   *
-   * When set to true, the parent view may need to disable clipChildren so Lottie can render outside of the LottieAnimationView bounds.
-   *
-   * Defaults to true.
-   */
-  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
-    lottieDrawable.setClipToCompositionBounds(clipToCompositionBounds);
-  }
-
-  /**
-   * Gets whether or not Lottie should clip to the original animation composition bounds.
-   *
-   * Defaults to true.
-   */
-  public boolean getClipToCompositionBounds() {
-    return lottieDrawable.getClipToCompositionBounds();
   }
 
   /**
@@ -553,7 +512,6 @@ import java.util.Set;
     ignoreUnschedule = true;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
     ignoreUnschedule = false;
-    computeRenderMode();
     if (getDrawable() == lottieDrawable && !isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
       // hasn't changed.
@@ -602,7 +560,6 @@ import java.util.Set;
   public void playAnimation() {
     userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.playAnimation();
-    computeRenderMode();
   }
 
   /**
@@ -613,7 +570,6 @@ import java.util.Set;
   public void resumeAnimation() {
     userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.resumeAnimation();
-    computeRenderMode();
   }
 
   /**
@@ -955,41 +911,16 @@ import java.util.Set;
     });
   }
 
-  /**
-   * Set the scale on the current composition. The only cost of this function is re-rendering the
-   * current frame so you may call it frequent to scale something up or down.
-   * <p>
-   * The smaller the animation is, the better the performance will be. You may find that scaling an
-   * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
-   * with a scaleType such as centerInside will yield better performance with little perceivable
-   * quality loss.
-   * <p>
-   * You can also use a fixed view width/height in conjunction with the normal ImageView
-   * scaleTypes centerCrop and centerInside.
-   */
-  public void setScale(float scale) {
-    lottieDrawable.setScale(scale);
-    if (getDrawable() == lottieDrawable) {
-      setLottieDrawable();
-    }
-  }
-
-  public float getScale() {
-    return lottieDrawable.getScale();
-  }
-
   @MainThread
   public void cancelAnimation() {
     userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.cancelAnimation();
-    computeRenderMode();
   }
 
   @MainThread
   public void pauseAnimation() {
     autoPlay = false;
     lottieDrawable.pauseAnimation();
-    computeRenderMode();
   }
 
   /**
@@ -1051,26 +982,6 @@ import java.util.Set;
   }
 
   /**
-   * If rendering via software, Android will fail to generate a bitmap if the view is too large. Rather than displaying
-   * nothing, fallback on hardware acceleration which may incur a performance hit.
-   *
-   * @see #setRenderMode(RenderMode)
-   * @see com.airbnb.lottie.LottieDrawable#draw(android.graphics.Canvas)
-   */
-  @Override
-  public void buildDrawingCache(boolean autoScale) {
-    L.beginSection("buildDrawingCache");
-    buildDrawingCacheDepth++;
-    super.buildDrawingCache(autoScale);
-    if (buildDrawingCacheDepth == 1 && getWidth() > 0 && getHeight() > 0 &&
-        getLayerType() == LAYER_TYPE_SOFTWARE && getDrawingCache(autoScale) == null) {
-      setRenderMode(RenderMode.HARDWARE);
-    }
-    buildDrawingCacheDepth--;
-    L.endSection("buildDrawingCache");
-  }
-
-  /**
    * Call this to set whether or not to render with hardware or software acceleration.
    * Lottie defaults to Automatic which will use hardware acceleration unless:
    * 1) There are dash paths and the device is pre-Pie.
@@ -1084,12 +995,10 @@ import java.util.Set;
    * should test both render modes. You should also test on pre-Pie and Pie+ devices
    * because the underlying rendering engine changed significantly.
    *
-   * @see LottieDrawable#useSoftwareRendering(boolean)
    * @see <a href="https://developer.android.com/guide/topics/graphics/hardware-accel#unsupported">Android Hardware Acceleration</a>
    */
   public void setRenderMode(RenderMode renderMode) {
-    this.renderMode = renderMode;
-    computeRenderMode();
+    lottieDrawable.setRenderMode(renderMode);
   }
 
   /**
@@ -1097,17 +1006,7 @@ import java.util.Set;
    * When the render mode is set to AUTOMATIC, the value will be derived from {@link RenderMode#useSoftwareRendering(int, boolean, int)}.
    */
   public RenderMode getRenderMode() {
-    return useSoftwareRendering ? RenderMode.SOFTWARE : RenderMode.HARDWARE;
-  }
-
-  private void computeRenderMode() {
-    LottieComposition composition = this.composition;
-    if (composition == null) {
-      return;
-    }
-    useSoftwareRendering = renderMode.useSoftwareRendering(
-        Build.VERSION.SDK_INT, composition.hasDashPattern(), composition.getMaskAndMatteCount());
-    lottieDrawable.useSoftwareRendering(useSoftwareRendering);
+    return lottieDrawable.getRenderMode();
   }
 
   /**
@@ -1157,7 +1056,6 @@ import java.util.Set;
     // if the composition changes.
     setImageDrawable(null);
     setImageDrawable(lottieDrawable);
-    computeRenderMode();
     if (wasAnimating) {
       // This is necessary because lottieDrawable will get unscheduled and canceled when the drawable is set to null.
       lottieDrawable.resumeAnimation();

@@ -27,24 +27,6 @@ class ScaleTypesTestCase : SnapshotTestCase {
             }
         }
 
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@2x", renderHardwareAndSoftware = true) { animationView ->
-            animationView.progress = 1f
-            animationView.updateLayoutParams {
-                width = 300.dp.toInt()
-                height = 300.dp.toInt()
-            }
-            animationView.scale = 2f
-        }
-
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300@4x", renderHardwareAndSoftware = true) { animationView ->
-            animationView.progress = 1f
-            animationView.updateLayoutParams {
-                width = 300.dp.toInt()
-                height = 300.dp.toInt()
-            }
-            animationView.scale = 4f
-        }
-
         withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop", renderHardwareAndSoftware = true) { animationView ->
             animationView.progress = 1f
             animationView.updateLayoutParams {
@@ -70,26 +52,6 @@ class ScaleTypesTestCase : SnapshotTestCase {
                 height = 300.dp.toInt()
             }
             animationView.scaleType = ImageView.ScaleType.FIT_XY
-        }
-
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerInside @2x", renderHardwareAndSoftware = true) { animationView ->
-            animationView.progress = 1f
-            animationView.updateLayoutParams {
-                width = 300.dp.toInt()
-                height = 300.dp.toInt()
-            }
-            animationView.scaleType = ImageView.ScaleType.CENTER_INSIDE
-            animationView.scale = 2f
-        }
-
-        withAnimationView("Lottie Logo 1.json", "Scale Types", "300x300 centerCrop @2x", renderHardwareAndSoftware = true) { animationView ->
-            animationView.progress = 1f
-            animationView.updateLayoutParams {
-                width = 300.dp.toInt()
-                height = 300.dp.toInt()
-            }
-            animationView.scaleType = ImageView.ScaleType.CENTER_CROP
-            animationView.scale = 2f
         }
 
         withAnimationView("Lottie Logo 1.json", "Scale Types", "600x300 centerInside", renderHardwareAndSoftware = true) { animationView ->
@@ -129,5 +91,5 @@ class ScaleTypesTestCase : SnapshotTestCase {
         }
     }
 
-    private val Number.dp get() = this.toFloat() / (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    private val Number.dp get() = this.toFloat() * (Resources.getSystem().displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
 }

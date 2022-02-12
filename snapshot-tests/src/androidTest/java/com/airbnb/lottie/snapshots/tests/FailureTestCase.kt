@@ -19,7 +19,6 @@ class FailureTestCase : SnapshotTestCase {
         animationView.setAnimationFromJson("Not Valid Json", null)
         semaphore.acquire()
         animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        animationView.scale = 1f
         animationView.scaleType = ImageView.ScaleType.FIT_CENTER
         val widthSpec = View.MeasureSpec.makeMeasureSpec(
             context.resources.displayMetrics

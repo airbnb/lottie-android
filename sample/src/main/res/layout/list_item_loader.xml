@@ -5,14 +5,13 @@
     android:layout_height="match_parent">
 
     <com.airbnb.lottie.LottieAnimationView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/material_wave_loading"
-        app:lottie_scale="0.4"/>
+        app:lottie_rawRes="@raw/material_wave_loading"/>
 
 </merge>

@@ -45,10 +45,6 @@
             layout="@layout/control_bar_speed" />
 
         <include
-            android:id="@+id/control_bar_scale"
-            layout="@layout/control_bar_scale" />
-
-        <include
             android:id="@+id/control_bar_background_color"
             layout="@layout/control_bar_background_color" />
 

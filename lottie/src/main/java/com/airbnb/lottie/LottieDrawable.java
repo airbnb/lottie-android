@@ -20,6 +20,8 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 
 import androidx.annotation.FloatRange;
@@ -65,7 +67,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   /**
    * Internal record keeping of the desired play state when {@link #isVisible()} transitions to or is false.
-   *
+   * <p>
    * If the animation was playing when it becomes invisible or play/pause is called on it while it is invisible, it will
    * store the state and then take the appropriate action when the drawable becomes visible again.
    */
@@ -77,7 +79,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
-  private float scale = 1f;
 
   // Call animationsEnabled() instead of using these fields directly.
   private boolean systemAnimationsEnabled = true;
@@ -113,7 +114,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   TextDelegate textDelegate;
   private boolean enableMergePaths;
   private boolean maintainOriginalImageBounds = false;
-  private boolean clipToCompositionBounds = true;
   @Nullable
   private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -121,11 +121,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
 
+  private RenderMode renderMode = RenderMode.AUTOMATIC;
+  /**
+   * The actual render mode derived from {@link #renderMode}.
+   */
+  private boolean useSoftwareRendering = false;
   private final Matrix renderingMatrix = new Matrix();
-  private boolean softwareRenderingEnabled = false;
   private Bitmap softwareRenderingBitmap;
-  private final LPaint softwareRenderingClearPaint = new LPaint();
-  private final Canvas softwareRenderingCanvas = new Canvas();
+  private LPaint softwareRenderingClearPaint;
+  private Canvas softwareRenderingCanvas;
+  private Rect canvasClipBounds;
+  private RectF canvasClipBoundsRectF;
   private Paint softwareRenderingPaint;
   private Rect softwareRenderingSrcBoundsRect;
   private Rect softwareRenderingDstBoundsRect;
@@ -211,27 +217,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Sets whether or not Lottie should clip to the original animation composition bounds.
-   *
-   * Defaults to true.
-   */
-  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
-    if (clipToCompositionBounds != this.clipToCompositionBounds) {
-      this.clipToCompositionBounds = clipToCompositionBounds;
-      invalidateSelf();
-    }
-  }
-
-  /**
-   * Gets whether or not Lottie should clip to the original animation composition bounds.
-   *
-   * Defaults to true.
-   */
-  public boolean getClipToCompositionBounds() {
-    return clipToCompositionBounds;
-  }
-
-  /**
    * If you use image assets, you must explicitly specify the folder in assets/ in which they are
    * located because bodymovin uses the name filenames across all compositions (img_#).
    * Do NOT rename the images themselves.
@@ -258,7 +243,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
    * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
-   *
+   * <p>
    * Defaults to false.
    */
   public void setMaintainOriginalImageBounds(boolean maintainOriginalImageBounds) {
@@ -268,7 +253,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
    * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
-   *
+   * <p>
    * Defaults to false.
    */
   public boolean getMaintainOriginalImageBounds() {
@@ -291,7 +276,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     buildCompositionLayer();
     animator.setComposition(composition);
     setProgress(animator.getAnimatedFraction());
-    setScale(scale);
 
     // We copy the tasks to a new ArrayList so that if this method is called from multiple threads,
     // then there won't be two iterators iterating and removing at the same time.
@@ -308,6 +292,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     lazyCompositionTasks.clear();
 
     composition.setPerformanceTrackingEnabled(performanceTrackingEnabled);
+    computeRenderMode();
 
     // Ensure that ImageView updates the drawable width/height so it can
     // properly calculate its drawable matrix.
@@ -321,17 +306,41 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * When set to true, Lottie will first render your animation to a bitmap and then draw the bitmap
-   * onto the original canvas.
+   * Call this to set whether or not to render with hardware or software acceleration.
+   * Lottie defaults to Automatic which will use hardware acceleration unless:
+   * 1) There are dash paths and the device is pre-Pie.
+   * 2) There are more than 4 masks and mattes and the device is pre-Pie.
+   * Hardware acceleration is generally faster for those devices unless
+   * there are many large mattes and masks in which case there is a lot
+   * of GPU uploadTexture thrashing which makes it much slower.
+   * <p>
+   * In most cases, hardware rendering will be faster, even if you have mattes and masks.
+   * However, if you have multiple mattes and masks (especially large ones), you
+   * should test both render modes. You should also test on pre-Pie and Pie+ devices
+   * because the underlying rendering engine changed significantly.
    *
-   * @see LottieAnimationView#setRenderMode(RenderMode)
+   * @see <a href="https://developer.android.com/guide/topics/graphics/hardware-accel#unsupported">Android Hardware Acceleration</a>
    */
-  public void useSoftwareRendering(boolean softwareRenderingEnabled) {
-    if (this.softwareRenderingEnabled == softwareRenderingEnabled) {
+  public void setRenderMode(RenderMode renderMode) {
+    this.renderMode = renderMode;
+    computeRenderMode();
+  }
+
+  /**
+   * Returns the actual render mode being used. It will always be {@link RenderMode#HARDWARE} or {@link RenderMode#SOFTWARE}.
+   * When the render mode is set to AUTOMATIC, the value will be derived from {@link RenderMode#useSoftwareRendering(int, boolean, int)}.
+   */
+  public RenderMode getRenderMode() {
+    return useSoftwareRendering ? RenderMode.SOFTWARE : RenderMode.HARDWARE;
+  }
+
+  private void computeRenderMode() {
+    LottieComposition composition = this.composition;
+    if (composition == null) {
       return;
     }
-    this.softwareRenderingEnabled = softwareRenderingEnabled;
-    invalidateSelf();
+    useSoftwareRendering = renderMode.useSoftwareRendering(
+        Build.VERSION.SDK_INT, composition.hasDashPattern(), composition.getMaskAndMatteCount());
   }
 
   public void setPerformanceTrackingEnabled(boolean enabled) {
@@ -470,39 +479,47 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     if (safeMode) {
       try {
-        drawInternal(canvas);
+        if (useSoftwareRendering) {
+          renderAndDrawAsBitmap(canvas, compositionLayer);
+        } else {
+          drawDirectlyToCanvas(canvas);
+        }
       } catch (Throwable e) {
         Logger.error("Lottie crashed in draw!", e);
       }
     } else {
-      drawInternal(canvas);
+      if (useSoftwareRendering) {
+        renderAndDrawAsBitmap(canvas, compositionLayer);
+      } else {
+        drawDirectlyToCanvas(canvas);
+      }
     }
 
     L.endSection("Drawable#draw");
   }
 
-  private void drawInternal(@NonNull Canvas canvas) {
-    if (!boundsMatchesCompositionAspectRatio()) {
-      drawWithNewAspectRatio(canvas);
-    } else {
-      drawWithOriginalAspectRatio(canvas);
-    }
-    isDirty = false;
-  }
-
-  private boolean boundsMatchesCompositionAspectRatio() {
+  /**
+   * To be used by lottie-compose only.
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public void draw(Canvas canvas, Matrix matrix) {
+    CompositionLayer compositionLayer = this.compositionLayer;
     LottieComposition composition = this.composition;
-    if (composition == null || getBounds().isEmpty()) {
-      return true;
+    if (compositionLayer == null || composition == null) {
+      return;
     }
-    return aspectRatio(getBounds()) == aspectRatio(composition.getBounds());
+
+    if (useSoftwareRendering) {
+      canvas.save();
+      canvas.concat(matrix);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+      canvas.restore();
+    } else {
+      compositionLayer.draw(canvas, matrix, alpha);
+    }
   }
 
-  private float aspectRatio(Rect rect) {
-    return rect.width() / (float) rect.height();
-  }
-
-// <editor-fold desc="animator">
+  // <editor-fold desc="animator">
 
   @MainThread
   @Override
@@ -536,6 +553,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
+    computeRenderMode();
     if (animationsEnabled() || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.playAnimation();
@@ -572,6 +590,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
+    computeRenderMode();
     if (animationsEnabled() || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.resumeAnimation();
@@ -948,22 +967,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Set the scale on the current composition. The only cost of this function is re-rendering the
-   * current frame so you may call it frequent to scale something up or down.
-   * <p>
-   * The smaller the animation is, the better the performance will be. You may find that scaling an
-   * animation down then rendering it in a larger ImageView and letting ImageView scale it back up
-   * with a scaleType such as centerInside will yield better performance with little perceivable
-   * quality loss.
-   * <p>
-   * You can also use a fixed view width/height in conjunction with the normal ImageView
-   * scaleTypes centerCrop and centerInside.
-   */
-  public void setScale(float scale) {
-    this.scale = scale;
-  }
-
-  /**
    * Use this if you can't bundle images with your app. This may be useful if you download the
    * animations from the network or have the images saved to an SD Card. In that case, Lottie
    * will defer the loading of the bitmap to this delegate.
@@ -1004,10 +1007,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return textDelegate == null && composition.getCharacters().size() > 0;
   }
 
-  public float getScale() {
-    return scale;
-  }
-
   public LottieComposition getComposition() {
     return composition;
   }
@@ -1035,12 +1034,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Override
   public int getIntrinsicWidth() {
-    return composition == null ? -1 : (int) (composition.getBounds().width() * getScale());
+    return composition == null ? -1 : composition.getBounds().width();
   }
 
   @Override
   public int getIntrinsicHeight() {
-    return composition == null ? -1 : (int) (composition.getBounds().height() * getScale());
+    return composition == null ? -1 : composition.getBounds().height();
   }
 
   /**
@@ -1156,7 +1155,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Returns the bitmap that will be rendered for the given id in the Lottie animation file.
    * The id is the asset reference id stored in the "id" property of each object in the "assets" array.
-   *
+   * <p>
    * The returned bitmap could be from:
    * * Embedded in the animation file as a base64 string.
    * * In the same directory as the animation file.
@@ -1176,7 +1175,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Returns the {@link LottieImageAsset} that will be rendered for the given id in the Lottie animation file.
    * The id is the asset reference id stored in the "id" property of each object in the "assets" array.
-   *
+   * <p>
    * The returned bitmap could be from:
    * * Embedded in the animation file as a base64 string.
    * * In the same directory as the animation file.
@@ -1300,67 +1299,31 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     callback.unscheduleDrawable(this, what);
   }
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-  public void draw(Canvas canvas, Matrix matrix) {
+  /**
+   * Hardware accelerated render path.
+   */
+  private void drawDirectlyToCanvas(Canvas canvas) {
     CompositionLayer compositionLayer = this.compositionLayer;
     LottieComposition composition = this.composition;
     if (compositionLayer == null || composition == null) {
       return;
     }
 
-    if (softwareRenderingEnabled) {
-      canvas.save();
-      canvas.concat(matrix);
-      renderAndDrawAsBitmap(canvas, compositionLayer);
-      canvas.restore();
-    } else {
-      compositionLayer.draw(canvas, matrix, alpha);
-    }
-  }
+    Rect bounds = getBounds();
+    // In fitXY mode, the scale doesn't take effect.
+    float scaleX = bounds.width() / (float) composition.getBounds().width();
+    float scaleY = bounds.height() / (float) composition.getBounds().height();
 
-  private void drawWithNewAspectRatio(Canvas canvas) {
-    CompositionLayer compositionLayer = this.compositionLayer;
-    LottieComposition composition = this.composition;
-    if (compositionLayer == null || composition == null) {
-      return;
-    }
-
-    if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer);
-    } else {
-      Rect bounds = getBounds();
-      // In fitXY mode, the scale doesn't take effect.
-      float scaleX = bounds.width() / (float) composition.getBounds().width();
-      float scaleY = bounds.height() / (float) composition.getBounds().height();
-
-      renderingMatrix.reset();
-      renderingMatrix.preScale(scaleX, scaleY);
-      compositionLayer.draw(canvas, renderingMatrix, alpha);
-    }
-  }
-
-  private void drawWithOriginalAspectRatio(Canvas canvas) {
-    CompositionLayer compositionLayer = this.compositionLayer;
-    LottieComposition composition = this.composition;
-    float scale = this.scale;
-    if (compositionLayer == null || composition == null) {
-      return;
-    }
-
-    if (softwareRenderingEnabled) {
-      renderAndDrawAsBitmap(canvas, compositionLayer);
-    } else {
-      renderingMatrix.reset();
-      renderingMatrix.preScale(scale, scale);
-      compositionLayer.draw(canvas, renderingMatrix, alpha);
-    }
+    renderingMatrix.reset();
+    renderingMatrix.preScale(scaleX, scaleY);
+    compositionLayer.draw(canvas, renderingMatrix, alpha);
   }
 
   /**
-   * This is the software rendering pipeline. This draws the animation to an internally managed bitmap
-   * and then draws the bitmap to the original canvas.
+   * Software accelerated render path.
    *
-   * @see LottieDrawable#useSoftwareRendering(boolean)
+   * This draws the animation to an internally managed bitmap and then draws the bitmap to the original canvas.
+   *
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
   private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer) {
@@ -1368,33 +1331,35 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     //noinspection deprecation
     originalCanvas.getMatrix(softwareRenderingOriginalCanvasMatrix);
-    softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
-    renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
+
+    // Get the canvas clip bounds and map it to the coordinate space of canvas with it's current transform.
+    originalCanvas.getClipBounds(canvasClipBounds);
+    convertRect(canvasClipBounds, canvasClipBoundsRectF);
+    softwareRenderingOriginalCanvasMatrix.mapRect(canvasClipBoundsRectF);
+    convertRect(canvasClipBoundsRectF, canvasClipBounds);
+
+    boolean ignoreCanvasClipBounds = ignoreCanvasClipBounds();
+    if (ignoreCanvasClipBounds) {
+      // Calculate the full bounds of the animation.
+      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
+    } else {
+      // Start with the intrinsic bounds. This will later be unioned with the clip bounds to find the
+      // smallest possible render area.
+      softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
+    }
+    // Transform the animation bounds to the bounds that they will render to on the canvas.
+    softwareRenderingOriginalCanvasMatrix.mapRect(softwareRenderingTransformedBounds);
 
     // The bounds are usually intrinsicWidth x intrinsicHeight. If they are different, an external source is scaling this drawable.
     // This is how ImageView.ScaleType.FIT_XY works.
     Rect bounds = getBounds();
     float scaleX = bounds.width() / (float) getIntrinsicWidth();
     float scaleY = bounds.height() / (float) getIntrinsicHeight();
+    scaleRect(softwareRenderingTransformedBounds, scaleX, scaleY);
 
-    if (clipToCompositionBounds) {
-      // Only render the intrinsic (composition) bounds.
-      softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
-    } else {
-      // Find the full bounds of the animation.
-      softwareRenderingTransformedBounds.set(0f, 0f, 0f, 0f);
-      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
+    if (!ignoreCanvasClipBounds) {
+      softwareRenderingTransformedBounds.intersect(canvasClipBounds.left, canvasClipBounds.top, canvasClipBounds.right, canvasClipBounds.bottom);
     }
-    softwareRenderingTransformedBounds.set(
-        softwareRenderingTransformedBounds.left * scaleX,
-        softwareRenderingTransformedBounds.top * scaleY,
-        softwareRenderingTransformedBounds.right * scaleX,
-        softwareRenderingTransformedBounds.bottom * scaleY
-    );
-
-    // Transform the animation bounds to the bounds that they will render to on the canvas.
-    renderingMatrix.mapRect(softwareRenderingTransformedBounds);
-
 
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
@@ -1405,14 +1370,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     ensureSoftwareRenderingBitmap(renderWidth, renderHeight);
 
-    softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
-
     if (isDirty) {
-      softwareRenderingBitmap.eraseColor(0);
-      renderingMatrix.preScale(scale * scaleX, scale * scaleY);
+      renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
+      renderingMatrix.preScale(scaleX, scaleY);
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
       // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
+
+      softwareRenderingBitmap.eraseColor(0);
       compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha);
 
       // Calculate the dst bounds.
@@ -1420,35 +1385,45 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       // of the original canvas.
       // Take the bounds of the rendered animation and map them to the canvas's coordinates.
       // This is similar to the src rect above but the src bound may have a left and top offset.
+      softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
       softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
       convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
+      isDirty = false;
     }
+
+    softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
     originalCanvas.drawBitmap(softwareRenderingBitmap, softwareRenderingSrcBoundsRect, softwareRenderingDstBoundsRect, softwareRenderingPaint);
   }
 
   private void ensureSoftwareRenderingObjectsInitialized() {
-    if (softwareRenderingPaint != null) {
+    if (softwareRenderingCanvas != null) {
       return;
     }
+    softwareRenderingCanvas = new Canvas();
+    softwareRenderingTransformedBounds = new RectF();
+    softwareRenderingOriginalCanvasMatrix = new Matrix();
+    softwareRenderingOriginalCanvasMatrixInverse = new Matrix();
+    canvasClipBounds = new Rect();
+    canvasClipBoundsRectF = new RectF();
     softwareRenderingPaint = new LPaint();
+    softwareRenderingClearPaint = new LPaint();
     softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     softwareRenderingClearPaint.setColor(Color.BLACK);
     softwareRenderingSrcBoundsRect = new Rect();
     softwareRenderingDstBoundsRect = new Rect();
     softwareRenderingDstBoundsRectF = new RectF();
-    softwareRenderingTransformedBounds = new RectF();
-    softwareRenderingOriginalCanvasMatrix = new Matrix();
-    softwareRenderingOriginalCanvasMatrixInverse = new Matrix();
   }
 
   private void ensureSoftwareRenderingBitmap(int renderWidth, int renderHeight) {
     if (softwareRenderingBitmap == null ||
         softwareRenderingBitmap.getWidth() < renderWidth ||
         softwareRenderingBitmap.getHeight() < renderHeight) {
+      // The bitmap is larger. We need to create a new one.
       softwareRenderingBitmap = Bitmap.createBitmap(renderWidth, renderHeight, Bitmap.Config.ARGB_8888);
       softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
       isDirty = true;
     } else if (softwareRenderingBitmap.getWidth() > renderWidth || softwareRenderingBitmap.getHeight() > renderHeight) {
+      // The bitmap is smaller. Take subset of the original.
       softwareRenderingBitmap = Bitmap.createBitmap(softwareRenderingBitmap, 0, 0, renderWidth, renderHeight);
       softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
       isDirty = true;
@@ -1465,5 +1440,47 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         (int) Math.ceil(src.right),
         (int) Math.ceil(src.bottom)
     );
+  }
+
+  /**
+   * Convert a Rect to a RectF
+   */
+  private void convertRect(Rect src, RectF dst) {
+    dst.set(
+        src.left,
+        src.top,
+        src.right,
+        src.bottom);
+  }
+
+  private void scaleRect(RectF rect, float scaleX, float scaleY) {
+    rect.set(
+        rect.left * scaleX,
+        rect.top * scaleY,
+        rect.right * scaleX,
+        rect.bottom * scaleY
+    );
+  }
+
+  /**
+   * When a View's parent has clipChildren set to false, it doesn't affect the clipBound
+   * of its child canvases so we should explicitly check for it and draw the full animation
+   * bounds instead.
+   */
+  private boolean ignoreCanvasClipBounds() {
+    Callback callback = getCallback();
+    if (!(callback instanceof View)) {
+      // If the callback isn't a view then respect the canvas's clip bounds.
+      return false;
+    } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // getClipChildren() was not added until JB_MR2.
+      return true;
+    }
+    ViewParent parent = ((View) callback).getParent();
+    if (parent instanceof ViewGroup) {
+      return !((ViewGroup) parent).getClipChildren();
+    }
+    // Unlikely to ever happen. If the callback is a View, its parent should be a ViewGroup.
+    return false;
   }
 }
