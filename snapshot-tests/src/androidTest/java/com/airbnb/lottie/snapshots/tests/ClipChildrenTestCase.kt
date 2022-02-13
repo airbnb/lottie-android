@@ -19,7 +19,7 @@ import com.airbnb.lottie.snapshots.snapshotComposable
 
 class ClipChildrenTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() {
-        val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/Heart.json").value!!
+        val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/BeyondBounds.json").value!!
         snapshotComposable("Compose Clip Children", "Clip", renderHardwareAndSoftware = true) { renderMode ->
             Box(
                 contentAlignment = Alignment.Center,
