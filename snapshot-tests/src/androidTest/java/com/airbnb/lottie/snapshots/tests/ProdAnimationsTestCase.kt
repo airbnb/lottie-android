@@ -25,6 +25,10 @@ import java.io.FileInputStream
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
 
+/**
+ * TODO:
+ * prod-com.eharmony-lottie-loader-data
+ */
 class ProdAnimationsTestCase : SnapshotTestCase {
     private val filesChannel = Channel<File>(capacity = 2_048)
 

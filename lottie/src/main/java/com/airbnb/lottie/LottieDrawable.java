@@ -6,13 +6,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -114,6 +111,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   TextDelegate textDelegate;
   private boolean enableMergePaths;
   private boolean maintainOriginalImageBounds = false;
+  private boolean clipToCompositionBounds = true;
   @Nullable
   private CompositionLayer compositionLayer;
   private int alpha = 255;
@@ -213,6 +211,31 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return enableMergePaths;
+  }
+
+  /**
+   * Sets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    if (clipToCompositionBounds != this.clipToCompositionBounds) {
+      this.clipToCompositionBounds = clipToCompositionBounds;
+      CompositionLayer compositionLayer = this.compositionLayer;
+      if (compositionLayer != null) {
+        compositionLayer.setClipToCompositionBounds(clipToCompositionBounds);
+      }
+      invalidateSelf();
+    }
+  }
+
+  /**
+   * Gets whether or not Lottie should clip to the original animation composition bounds.
+   *
+   * Defaults to true.
+   */
+  public boolean getClipToCompositionBounds() {
+    return clipToCompositionBounds;
   }
 
   /**
@@ -411,6 +434,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (outlineMasksAndMattes) {
       compositionLayer.setOutlineMasksAndMattes(true);
     }
+    compositionLayer.setClipToCompositionBounds(clipToCompositionBounds);
   }
 
   public void clearComposition() {
@@ -1339,14 +1363,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingOriginalCanvasMatrix.mapRect(canvasClipBoundsRectF);
     convertRect(canvasClipBoundsRectF, canvasClipBounds);
 
-    boolean ignoreCanvasClipBounds = ignoreCanvasClipBounds();
-    if (ignoreCanvasClipBounds) {
-      // Calculate the full bounds of the animation.
-      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
-    } else {
+    if (clipToCompositionBounds) {
       // Start with the intrinsic bounds. This will later be unioned with the clip bounds to find the
       // smallest possible render area.
       softwareRenderingTransformedBounds.set(0f, 0f, getIntrinsicWidth(), getIntrinsicHeight());
+    } else {
+      // Calculate the full bounds of the animation.
+      compositionLayer.getBounds(softwareRenderingTransformedBounds, null, false);
     }
     // Transform the animation bounds to the bounds that they will render to on the canvas.
     softwareRenderingOriginalCanvasMatrix.mapRect(softwareRenderingTransformedBounds);
@@ -1358,7 +1381,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     float scaleY = bounds.height() / (float) getIntrinsicHeight();
     scaleRect(softwareRenderingTransformedBounds, scaleX, scaleY);
 
-    if (!ignoreCanvasClipBounds) {
+    if (!ignoreCanvasClipBounds()) {
       softwareRenderingTransformedBounds.intersect(canvasClipBounds.left, canvasClipBounds.top, canvasClipBounds.right, canvasClipBounds.bottom);
     }
 
