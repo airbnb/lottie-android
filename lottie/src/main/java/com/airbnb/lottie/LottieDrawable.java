@@ -128,7 +128,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean useSoftwareRendering = false;
   private final Matrix renderingMatrix = new Matrix();
   private Bitmap softwareRenderingBitmap;
-  private LPaint softwareRenderingClearPaint;
   private Canvas softwareRenderingCanvas;
   private Rect canvasClipBounds;
   private RectF canvasClipBoundsRectF;
@@ -1408,9 +1407,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     canvasClipBounds = new Rect();
     canvasClipBoundsRectF = new RectF();
     softwareRenderingPaint = new LPaint();
-    softwareRenderingClearPaint = new LPaint();
-    softwareRenderingClearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-    softwareRenderingClearPaint.setColor(Color.BLACK);
     softwareRenderingSrcBoundsRect = new Rect();
     softwareRenderingDstBoundsRect = new Rect();
     softwareRenderingDstBoundsRectF = new RectF();
@@ -1474,12 +1470,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (!(callback instanceof View)) {
       // If the callback isn't a view then respect the canvas's clip bounds.
       return false;
-    } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      // getClipChildren() was not added until JB_MR2.
-      return true;
     }
     ViewParent parent = ((View) callback).getParent();
-    if (parent instanceof ViewGroup) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && parent instanceof ViewGroup) {
       return !((ViewGroup) parent).getClipChildren();
     }
     // Unlikely to ever happen. If the callback is a View, its parent should be a ViewGroup.

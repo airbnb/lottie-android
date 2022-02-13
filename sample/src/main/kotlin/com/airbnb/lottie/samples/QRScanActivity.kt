@@ -14,6 +14,7 @@ import com.dlazaro66.qrcodereaderview.QRCodeReaderView
 
 class QRScanActivity : AppCompatActivity(), QRCodeReaderView.OnQRCodeReadListener {
     private val binding: QrscanActivityBinding by viewBinding()
+    @Suppress("DEPRECATION")
     private val vibrator by lazy { getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
 
     // Sometimes the qr code is read twice in rapid succession. This prevents it from being read
