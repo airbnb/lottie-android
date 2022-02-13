@@ -9,6 +9,6 @@ import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.P)
-@Ignore
+@Ignore("Base Test")
 public class BaseTest {
 }

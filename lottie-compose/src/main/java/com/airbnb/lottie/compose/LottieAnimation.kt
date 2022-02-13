@@ -65,10 +65,6 @@ import kotlin.math.roundToInt
  * @param alignment Define where the animation should be placed within this composable if it has a different
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
-<<<<<<< HEAD
- * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
-=======
->>>>>>> 34172f5c (Move full setRenerMode APIs to LottieDrawable, removed scale)
  */
 @Composable
 fun LottieAnimation(
