@@ -59,6 +59,5 @@
         android:id="@+id/animation_9"
         android:layout_width="@dimen/film_strip_size"
         android:layout_height="@dimen/film_strip_size"
-        app:lottie_clipToCompositionBounds="false"
         app:lottie_renderMode="hardware" />
 </GridLayout>

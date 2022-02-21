@@ -33,7 +33,6 @@ class ClipChildrenTestCase : SnapshotTestCase {
                     renderMode = renderMode,
                     modifier = Modifier
                         .size(200.dp, 100.dp)
-                        .clipToBounds()
                 )
             }
         }
@@ -49,6 +48,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
                     0.7f,
                     contentScale = ContentScale.Crop,
                     renderMode = renderMode,
+                    clipToCompositionBounds = false,
                     modifier = Modifier
                         .size(200.dp, 100.dp)
                 )
@@ -56,7 +56,6 @@ class ClipChildrenTestCase : SnapshotTestCase {
         }
 
         val binding = ClipChildrenBinding.inflate(LayoutInflater.from(context))
-        binding.root.clipChildren = true
         binding.animationView.setComposition(composition)
         binding.root.measureAndLayout()
 
@@ -67,7 +66,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
 
         val bitmap2 = bitmapPool.acquire(binding.root.width, binding.root.height)
         canvas.setBitmap(bitmap2)
-        binding.root.clipChildren = false
+        binding.animationView.clipToCompositionBounds = false
         binding.root.draw(canvas)
         snapshotter.record(bitmap1, "Clip Children", "Dont Clip")
 
