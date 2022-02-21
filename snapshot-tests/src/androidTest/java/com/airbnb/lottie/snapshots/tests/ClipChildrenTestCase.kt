@@ -67,7 +67,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
         canvas.setBitmap(bitmap2)
         binding.animationView.clipToCompositionBounds = false
         binding.root.draw(canvas)
-        snapshotter.record(bitmap1, "Clip Children", "Dont Clip")
+        snapshotter.record(bitmap2, "Clip Children", "Don't Clip")
 
     }
 
