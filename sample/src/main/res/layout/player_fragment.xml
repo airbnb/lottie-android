@@ -22,7 +22,7 @@
                 android:id="@+id/animationView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="center"
+                android:scaleType="centerInside"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
                 app:lottie_autoPlay="true" />
