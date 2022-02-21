@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieCompositionFactory
@@ -27,7 +26,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
                     .size(400.dp, 400.dp)
             ) {
                 LottieAnimation(
-                    composition, 
+                    composition,
                     0.7f,
                     contentScale = ContentScale.Crop,
                     renderMode = renderMode,
@@ -73,7 +72,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
     }
 
     private fun View.measureAndLayout() {
-        val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        val spec = View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY)
         measure(spec, spec)
         layout(0, 0, measuredWidth, measuredHeight)
     }

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="400dp"
-    android:layout_height="400dp"
-    android:clipChildren="false">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="600px"
+    android:layout_height="600px"
+    android:clipChildren="false"
+    tools:ignore="PxUsage">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animation_view"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
+        android:layout_width="400px"
+        android:layout_height="200px"
         android:layout_gravity="center"
         android:scaleType="centerCrop" />
 
