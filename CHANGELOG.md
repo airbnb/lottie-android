@@ -1,4 +1,4 @@
-# 5.0.0
+# 5.0.1
 ### New Features
 * [Removed API] Removed the `setScale(float)` APIs from `LottieAnimationView` and `LottieDrawable`. The expected behavior was highly ambiguous when paired with other scale types and canvas transformations. For the vast majority of cases, ImageView.ScaleType should be sufficient. For remaining cases, you may apply transformations to Canvas and use `LottieDrawable#draw` directly. 
 * Added support for the "Rounded Corners" effect on Shape and Rect layers ([#1953](https://github.com/airbnb/lottie-android/pull/1953))

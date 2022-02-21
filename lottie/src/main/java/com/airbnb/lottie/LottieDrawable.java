@@ -518,6 +518,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
 
+    isDirty = false;
     L.endSection("Drawable#draw");
   }
 
@@ -540,6 +541,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     } else {
       compositionLayer.draw(canvas, matrix, alpha);
     }
+    isDirty = false;
   }
 
   // <editor-fold desc="animator">
@@ -1412,7 +1414,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingOriginalCanvasMatrix.invert(softwareRenderingOriginalCanvasMatrixInverse);
       softwareRenderingOriginalCanvasMatrixInverse.mapRect(softwareRenderingDstBoundsRectF, softwareRenderingTransformedBounds);
       convertRect(softwareRenderingDstBoundsRectF, softwareRenderingDstBoundsRect);
-      isDirty = false;
     }
 
     softwareRenderingSrcBoundsRect.set(0, 0, renderWidth, renderHeight);
