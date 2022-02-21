@@ -47,7 +47,7 @@ public class LottieTaskTest extends BaseTest {
   /**
    * This hangs on CI but not locally.
    */
-  @Ignore
+  @Ignore("hangs on ci")
   @Test
   public void testRemoveListener() {
     final Semaphore lock = new Semaphore(0);

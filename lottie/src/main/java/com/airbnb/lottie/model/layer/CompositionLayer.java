@@ -33,6 +33,8 @@ public class CompositionLayer extends BaseLayer {
   @Nullable private Boolean hasMatte;
   @Nullable private Boolean hasMasks;
 
+  private boolean clipToCompositionBounds = true;
+
   public CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
     super(lottieDrawable, layerModel);
@@ -88,6 +90,10 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
+  public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
+    this.clipToCompositionBounds = clipToCompositionBounds;
+  }
+
   @Override public void setOutlineMasksAndMattes(boolean outline) {
     super.setOutlineMasksAndMattes(outline);
     for (BaseLayer layer : layers) {
@@ -112,7 +118,9 @@ public class CompositionLayer extends BaseLayer {
     int childAlpha = isDrawingWithOffScreen ? 255 : parentAlpha;
     for (int i = layers.size() - 1; i >= 0; i--) {
       boolean nonEmptyClip = true;
-      if (lottieDrawable.getClipToCompositionBounds() && !newClipRect.isEmpty()) {
+      // Only clip precomps. This mimics the way After Effects renders animations.
+      boolean ignoreClipOnThisLayer = !clipToCompositionBounds && "__container".equals(layerModel.getName());
+      if (!ignoreClipOnThisLayer && !newClipRect.isEmpty()) {
         nonEmptyClip = canvas.clipRect(newClipRect);
       }
       if (nonEmptyClip) {

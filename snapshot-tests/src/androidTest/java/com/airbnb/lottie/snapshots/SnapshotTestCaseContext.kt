@@ -1,7 +1,6 @@
 package com.airbnb.lottie.snapshots
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -9,7 +8,6 @@ import android.graphics.PorterDuff
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -17,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.doOnLayout
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
@@ -86,7 +83,6 @@ suspend fun SnapshotTestCaseContext.withAnimationView(
     val animationView = animationViewPool.acquire()
     animationView.setComposition(composition)
     animationView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-    animationView.scale = 1f
     animationView.scaleType = ImageView.ScaleType.FIT_CENTER
     callback(animationView)
     val animationViewContainer = animationView.parent as ViewGroup
@@ -142,7 +138,6 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     callback: ((FilmStripView) -> Unit)? = null,
 ) = withContext(Dispatchers.Default) {
     log("Snapshotting $name")
-    val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
     val filmStripView = filmStripViewPool.acquire()
     filmStripView.setOutlineMasksAndMattes(false)
     filmStripView.setApplyingOpacityToLayersEnabled(false)
@@ -153,6 +148,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
         }
     })
     callback?.invoke(filmStripView)
+    val spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
     filmStripView.measure(spec, spec)
     filmStripView.layout(0, 0, filmStripView.measuredWidth, filmStripView.measuredHeight)
     val bitmap = bitmapPool.acquire(filmStripView.width, filmStripView.height)
@@ -228,7 +224,6 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
         snapshotter.record(bitmap, name, if (renderHardwareAndSoftware) "$variant - Hardware" else variant)
         bitmapPool.release(bitmap)
     }
-
 
     onActivity { activity ->
         activity.binding.content.removeView(composeView)

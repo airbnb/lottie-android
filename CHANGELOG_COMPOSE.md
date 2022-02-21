@@ -1,4 +1,5 @@
 # 5.0.0
+* You can tell Lottie to render the full animation even if it extends beyond the original composition bounds by setting `clipToCompositionBounds` to false.
 * Add support for dynamic text via `LottieProperty.TEXT` and the existing dynamic property APIs ([#1995](https://github.com/airbnb/lottie-android/issues/1995))
 * Respect Android system animator scale (include 0 for modes like battery saver) ([#2000](https://github.com/airbnb/lottie-android/pull/2000))
 * Added support for loading animations via content provider URIs (LottieCompositionSpec.ContentProvider) ([#1982](https://github.com/airbnb/lottie-android/pull/1982))

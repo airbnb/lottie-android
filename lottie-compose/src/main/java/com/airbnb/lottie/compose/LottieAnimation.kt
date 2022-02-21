@@ -1,7 +1,6 @@
 package com.airbnb.lottie.compose
 
 import android.graphics.Matrix
-import android.os.Build
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -85,15 +84,13 @@ fun LottieAnimation(
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
     var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
-    val useSoftwareRendering: Boolean = remember(renderMode, composition) {
-        renderMode.useSoftwareRendering(Build.VERSION.SDK_INT, composition?.hasDashPattern() ?: false, composition?.maskAndMatteCount ?: 0)
-    }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
+    val dpScale = Utils.dpScale()
     Canvas(
         modifier = modifier
-            .size((composition.bounds.width() / Utils.dpScale()).dp, (composition.bounds.height() / Utils.dpScale()).dp)
+            .size((composition.bounds.width() / dpScale).dp, (composition.bounds.height() / dpScale).dp)
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
@@ -106,6 +103,7 @@ fun LottieAnimation(
             matrix.preScale(scale.scaleX, scale.scaleY)
 
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
+            drawable.renderMode = renderMode
             drawable.composition = composition
             if (dynamicProperties !== setDynamicProperties) {
                 setDynamicProperties?.removeFrom(drawable)
@@ -114,7 +112,6 @@ fun LottieAnimation(
             }
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
-            drawable.useSoftwareRendering(useSoftwareRendering)
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.progress = progress

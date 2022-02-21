@@ -18,16 +18,15 @@
         <attr name="lottie_progress" format="float" />
         <attr name="lottie_enableMergePathsForKitKatAndAbove" format="boolean" />
         <attr name="lottie_colorFilter" format="color" />
-        <attr name="lottie_scale" format="float" />
         <attr name="lottie_speed" format="float" />
         <attr name="lottie_cacheComposition" format="boolean" />
         <attr name="lottie_ignoreDisabledSystemAnimations" format="boolean" />
+        <attr name="lottie_clipToCompositionBounds" format="boolean" />
         <!-- These values must be kept in sync with the RenderMode enum -->
         <attr name="lottie_renderMode" format="enum">
             <enum name="automatic" value="0" />
             <enum name="hardware" value="1" />
             <enum name="software" value="2" />
         </attr>
-        <attr name="lottie_clipToCompositionBounds" format="boolean" />
     </declare-styleable>
 </resources>

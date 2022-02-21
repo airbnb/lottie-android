@@ -27,7 +27,6 @@ data class PlayerState(
     val outlineMasksAndMattes: Boolean = false,
     val borderVisible: Boolean = false,
     val backgroundColorVisible: Boolean = false,
-    val scaleVisible: Boolean = false,
     val speedVisible: Boolean = false,
     val trimVisible: Boolean = false,
     val useMergePaths: Boolean = false,
@@ -79,10 +78,6 @@ class PlayerViewModel(
 
     fun setBackgroundColorVisible(visible: Boolean) = setState { copy(backgroundColorVisible = visible) }
 
-    fun toggleScaleVisible() = setState { copy(scaleVisible = !scaleVisible) }
-
-    fun setScaleVisible(visible: Boolean) = setState { copy(scaleVisible = visible) }
-
     fun toggleSpeedVisible() = setState { copy(speedVisible = !speedVisible) }
 
     fun setSpeedVisible(visible: Boolean) = setState { copy(speedVisible = visible) }
@@ -112,7 +107,6 @@ class PlayerViewModel(
             renderGraphVisible = false,
             borderVisible = false,
             backgroundColorVisible = false,
-            scaleVisible = false,
             speedVisible = false,
             trimVisible = false
         )

@@ -45,7 +45,6 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import kotlin.math.abs
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
@@ -196,13 +195,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             binding.controlBarBackgroundColor.backgroundColorContainer.animateVisible(it)
         }
 
-        binding.controlBar.scaleToggle.setOnClickListener { viewModel.toggleScaleVisible() }
-        binding.controlBarScale.closeScaleButton.setOnClickListener { viewModel.setScaleVisible(false) }
-        viewModel.selectSubscribe(PlayerState::scaleVisible) {
-            binding.controlBar.scaleToggle.isActivated = it
-            binding.controlBarScale.scaleContainer.animateVisible(it)
-        }
-
         binding.controlBar.trimToggle.setOnClickListener { viewModel.toggleTrimVisible() }
         binding.controlBarTrim.closeTrimButton.setOnClickListener { viewModel.setTrimVisible(false) }
         viewModel.selectSubscribe(PlayerState::trimVisible) {
@@ -282,16 +274,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             // Click the animation view to re-render it for debugging purposes.
             binding.animationView.invalidate()
         }
-
-        binding.controlBarScale.scaleSeekBar.setOnSeekBarChangeListener(OnSeekBarChangeListenerAdapter(
-            onProgressChanged = { _, progress, _ ->
-                val minScale = minScale()
-                val maxScale = maxScale()
-                val scale = minScale + progress / 100f * (maxScale - minScale)
-                binding.animationView.scale = scale
-                binding.controlBarScale.scaleText.text = "%.0f%%".format(scale * 100)
-            }
-        ))
 
         arrayOf(
             binding.controlBarBackgroundColor.backgroundButton1,
@@ -451,9 +433,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             binding.controlBarPlayerControls.renderTimesGraph.invalidate()
         }
 
-        // Scale up to fill the screen
-        binding.controlBarScale.scaleSeekBar.progress = 50
-
         binding.bottomSheetKeyPaths.keyPathsRecyclerView.buildModelsWith(object : EpoxyRecyclerView.ModelBuilderCallback {
             override fun buildModels(controller: EpoxyController) {
                 binding.animationView.resolveKeyPath(KeyPath("**")).forEachIndexed { index, keyPath ->
@@ -506,18 +485,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             if (warnings.isEmpty()) R.drawable.ic_sentiment_satisfied
             else R.drawable.ic_sentiment_dissatisfied
         )
-    }
-
-    private fun minScale() = 0.05f
-
-    private fun maxScale(): Float = withState(viewModel) { state ->
-        val screenWidth = resources.displayMetrics.widthPixels.toFloat()
-        val screenHeight = resources.displayMetrics.heightPixels.toFloat()
-        val bounds = state.composition()?.bounds
-        return@withState min(
-            screenWidth / (bounds?.width()?.toFloat() ?: screenWidth),
-            screenHeight / (bounds?.height()?.toFloat() ?: screenHeight)
-        ) * 2f
     }
 
     private fun beginDelayedTransition() = TransitionManager.beginDelayedTransition(binding.container, transition)
