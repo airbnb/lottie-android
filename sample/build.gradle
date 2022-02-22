@@ -11,7 +11,7 @@ android {
     applicationId "com.airbnb.lottie"
     minSdk 16
     targetSdk 30
-    versionCode 69
+    versionCode 70
     versionName VERSION_NAME
     multiDexEnabled true
     buildConfigField("String", "BITRISE_GIT_BRANCH", "\"" + System.getenv("BITRISE_GIT_BRANCH") + "\"")
