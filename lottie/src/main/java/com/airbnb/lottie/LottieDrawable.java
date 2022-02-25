@@ -1354,6 +1354,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * @see LottieAnimationView#setRenderMode(RenderMode)
    */
   private void renderAndDrawAsBitmap(Canvas originalCanvas, CompositionLayer compositionLayer) {
+    if (composition == null || compositionLayer == null) {
+      return;
+    }
     ensureSoftwareRenderingObjectsInitialized();
 
     //noinspection deprecation
