@@ -1,3 +1,7 @@
+# 5.0.2
+### Bugs Fixed
+* Prevent a crash when using software rendering before a composition has been set ([#2025](https://github.com/airbnb/lottie-android/pull/2025))
+
 # 5.0.1
 ### New Features
 * [Removed API] Removed the `setScale(float)` APIs from `LottieAnimationView` and `LottieDrawable`. The expected behavior was highly ambiguous when paired with other scale types and canvas transformations. For the vast majority of cases, ImageView.ScaleType should be sufficient. For remaining cases, you may apply transformations to Canvas and use `LottieDrawable#draw` directly. 
