@@ -41,19 +41,19 @@ class ShowcaseFragment : BaseEpoxyFragment() {
 
     private val showcaseItems = listOf(
         ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_dynamic_properties) {
-            startActivity(Intent(requireContext(), DynamicActivity::class.java))
+            it.startActivity(Intent(it, DynamicActivity::class.java))
         },
         ShowcaseItem(R.drawable.gilbert_animated, R.string.showcase_item_animated_text) {
-            startActivity(Intent(requireContext(), TypographyDemoActivity::class.java))
+            it.startActivity(Intent(it, TypographyDemoActivity::class.java))
         },
         ShowcaseItem(R.drawable.gilbert_animated, R.string.showcase_item_dynamic_text) {
-            startActivity(Intent(requireContext(), DynamicTextActivity::class.java))
+            it.startActivity(Intent(it, DynamicTextActivity::class.java))
         },
         ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_bullseye) {
-            startActivity(Intent(requireContext(), BullseyeActivity::class.java))
+            it.startActivity(Intent(it, BullseyeActivity::class.java))
         },
         ShowcaseItem(R.drawable.showcase_preview_lottie, R.string.showcase_item_recycler_view) {
-            startActivity(Intent(requireContext(), WishListActivity::class.java))
+            it.startActivity(Intent(it, WishListActivity::class.java))
         }
     )
     private val viewModel: ShowcaseViewModel by fragmentViewModel()

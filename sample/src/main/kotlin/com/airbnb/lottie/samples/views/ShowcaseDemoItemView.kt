@@ -23,6 +23,6 @@ class ShowcaseDemoItemView @JvmOverloads constructor(
 
         binding.titleView.text = resources.getText(item.titleRes)
 
-        binding.cardView.setOnClickListener { item.clickListener() }
+        binding.cardView.setOnClickListener { item.clickListener(this.context.applicationContext) }
     }
 }
