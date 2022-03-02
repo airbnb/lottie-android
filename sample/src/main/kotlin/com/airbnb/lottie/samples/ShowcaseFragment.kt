@@ -76,12 +76,13 @@ class ShowcaseFragment : BaseEpoxyFragment() {
             }
         } else {
             collectionItems.forEach {
+                val activityContext = requireActivity()
                 animationItemView {
                     id(it.id)
                     title(it.title)
                     if (it.preview != null) previewUrl("https://assets9.lottiefiles.com/${it.preview}")
                     previewBackgroundColor(it.bgColorInt)
-                    onClickListener { _ -> startActivity(PlayerActivity.intent(requireContext(), CompositionArgs(animationDataV2 = it))) }
+                    onClickListener { _ -> activityContext.startActivity(PlayerActivity.intent(activityContext, CompositionArgs(animationDataV2 = it))) }
                 }
             }
         }
