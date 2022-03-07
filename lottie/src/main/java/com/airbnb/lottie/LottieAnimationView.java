@@ -236,6 +236,19 @@ import java.util.Set;
     super.unscheduleDrawable(who);
   }
 
+  @Override public void invalidate() {
+    super.invalidate();
+    Drawable d = getDrawable();
+    if (d instanceof LottieDrawable && ((LottieDrawable) d).getRenderMode() == RenderMode.SOFTWARE) {
+      // This normally isn't needed. However, when using software rendering, Lottie caches rendered bitmaps
+      // and updates it when the animation changes internally.
+      // If you have dynamic properties with a value callback and want to update the value of the dynamic property, you need a way
+      // to tell Lottie that the bitmap is dirty and it needs to be re-rendered. Normal drawables always re-draw the actual shapes
+      // so this isn't an issue but for this path, we have to take the extra step of setting the dirty flag.
+      lottieDrawable.invalidateSelf();
+    }
+  }
+
   @Override public void invalidateDrawable(@NonNull Drawable dr) {
     if (getDrawable() == lottieDrawable) {
       // We always want to invalidate the root drawable so it redraws the whole drawable.
