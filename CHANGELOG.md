@@ -1,3 +1,7 @@
+# 5.0.3
+### Bugs Fixed
+* Invalidate the software renering bitmap when invalidate is called ([#2034](https://github.com/airbnb/lottie-android/pull/2034))
+
 # 5.0.2
 ### Bugs Fixed
 * Prevent a crash when using software rendering before a composition has been set ([#2025](https://github.com/airbnb/lottie-android/pull/2025))
