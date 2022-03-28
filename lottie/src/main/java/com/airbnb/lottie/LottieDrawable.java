@@ -1433,7 +1433,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingOriginalCanvasMatrixInverse = new Matrix();
     canvasClipBounds = new Rect();
     canvasClipBoundsRectF = new RectF();
-    softwareRenderingPaint = new LPaint();
+    softwareRenderingPaint = new LPaint(Paint.FILTER_BITMAP_FLAG);
     softwareRenderingSrcBoundsRect = new Rect();
     softwareRenderingDstBoundsRect = new Rect();
     softwareRenderingDstBoundsRectF = new RectF();
