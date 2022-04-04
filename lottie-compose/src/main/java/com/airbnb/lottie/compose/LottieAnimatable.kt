@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import com.airbnb.lottie.LottieComposition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
@@ -255,10 +256,22 @@ private class LottieAnimatableImpl : LottieAnimatable {
         }
     }
 
-    // We use withInfiniteAnimationFrameNanos because it allows tests to add a CoroutineContext
-    // element that will cancel infinite transitions instead of preventing composition from ever going idle.
-    private suspend fun doFrame(iterations: Int): Boolean = withInfiniteAnimationFrameNanos { frameNanos ->
-        val composition = composition ?: return@withInfiniteAnimationFrameNanos true
+    private suspend fun doFrame(iterations: Int): Boolean {
+        return if (iterations == LottieConstants.IterateForever) {
+            // We use withInfiniteAnimationFrameNanos because it allows tests to add a CoroutineContext
+            // element that will cancel infinite transitions instead of preventing composition from ever going idle.
+            withInfiniteAnimationFrameNanos { frameNanos ->
+                onFrame(iterations, frameNanos)
+            }
+        } else {
+            withFrameNanos { frameNanos ->
+                onFrame(iterations, frameNanos)
+            }
+        }
+    }
+
+    private fun onFrame(iterations: Int, frameNanos: Long): Boolean {
+        val composition = composition ?: return true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
         lastFrameNanos = frameNanos
 
@@ -279,7 +292,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             if (iteration + dIterations > iterations) {
                 progress = endProgress
                 iteration = iterations
-                return@withInfiniteAnimationFrameNanos false
+                return false
             }
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
@@ -289,7 +302,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             }
         }
 
-        true
+        return true
     }
 }
 
