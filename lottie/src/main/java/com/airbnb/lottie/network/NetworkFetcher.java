@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.WorkerThread;
 
 import com.airbnb.lottie.LottieComposition;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class NetworkFetcher {
 
   @NonNull

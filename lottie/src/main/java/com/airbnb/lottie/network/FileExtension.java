@@ -1,10 +1,11 @@
 package com.airbnb.lottie.network;
 
-import com.airbnb.lottie.utils.Logger;
+import androidx.annotation.RestrictTo;
 
 /**
  * Helpers for known Lottie file types.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public enum FileExtension {
   JSON(".json"),
   ZIP(".zip");
