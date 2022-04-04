@@ -5,6 +5,7 @@ import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.WorkerThread;
 
 import com.airbnb.lottie.utils.Logger;
@@ -20,6 +21,7 @@ import java.io.OutputStream;
 /**
  * Helper class to save and restore animations fetched from an URL to the app disk cache.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class NetworkCache {
 
   @NonNull
