@@ -265,23 +265,32 @@ public class TextLayer extends BaseLayer {
     }
     tracking = tracking * Utils.dpScale() * textSize / 100.0f;
 
+    float textWidth = getTextWidth(text, tracking);
+    float safeSpace = getTextWidth("  ", tracking);
+    float canvasWidth =  canvas.getWidth() - safeSpace;
+
     // Split full text in multiple lines
-    List<String> textLines = getTextLines(text);
+    List<String> textLines;
+    if (textWidth >= canvasWidth) {
+      textLines = getTextLinesBasedOnCanvasSize(text, canvasWidth, tracking);
+    } else {
+      textLines = getTextLines(text);
+    }
+
     int textLineCount = textLines.size();
     for (int l = 0; l < textLineCount; l++) {
 
       String textLine = textLines.get(l);
       // We have to manually add the tracking between characters as the strokePaint ignores it
-      float textLineWidth = strokePaint.measureText(textLine) + (textLine.length() - 1) * tracking;
+      float textLineWidth = getTextWidth(textLine, tracking);
 
       canvas.save();
 
       // Apply horizontal justification
-      applyJustification(documentData.justification, canvas, textLineWidth);
+      applyJustificationWithSafeSpace(documentData.justification, canvas, textLineWidth, safeSpace);
 
-      // Center text vertically
-      float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
-      float translateY = l * lineHeight - multilineTranslateY;
+      // Vertical position based on line count
+      float translateY = l * lineHeight;
       canvas.translate(0, translateY);
 
       // Draw each line
@@ -313,6 +322,36 @@ public class TextLayer extends BaseLayer {
         .replaceAll("\n", "\r");
     String[] textLinesArray = formattedText.split("\r");
     return Arrays.asList(textLinesArray);
+  }
+
+  private List<String> getTextLinesBasedOnCanvasSize(String text, float canvasWidth, float tracking) {
+    List<String> lines = new ArrayList<>();
+    StringBuilder line = new StringBuilder();
+    for (char c : text.toCharArray()) {
+      StringBuilder newLine = new StringBuilder(line);
+      newLine.append(c);
+      String textLine = newLine.toString();
+      float textWidth = getTextWidth(textLine, tracking);
+      if (textWidth >= canvasWidth) {
+        int lastSpace = newLine.lastIndexOf(" ");
+        if (lastSpace != -1 && c != ' ') {
+          lines.add(newLine.substring(0, lastSpace));
+          line = new StringBuilder(newLine.substring(lastSpace).trim());
+        } else {
+          lines.add(line.toString().trim());
+          line = new StringBuilder();
+          line.append(String.valueOf(c).trim());
+        }
+      } else {
+        line.append(c);
+      }
+    }
+    lines.add(line.toString());
+    return lines;
+  }
+
+  private float getTextWidth(String text, float tracking) {
+    return strokePaint.measureText(text) + (text.length() - 1) * tracking;
   }
 
   private void drawFontTextLine(String text, DocumentData documentData, Canvas canvas, float tracking) {
@@ -351,6 +390,22 @@ public class TextLayer extends BaseLayer {
         break;
       case CENTER:
         canvas.translate(-textLineWidth / 2, 0);
+        break;
+    }
+  }
+
+  private void applyJustificationWithSafeSpace(Justification justification, Canvas canvas, float textLineWidth, float safeSpace) {
+    switch (justification) {
+      case LEFT_ALIGN:
+        // Do nothing. Default is left aligned.
+        break;
+      case RIGHT_ALIGN:
+        float rightTranslation = canvas.getWidth() - textLineWidth - safeSpace;
+        canvas.translate(rightTranslation, 0);
+        break;
+      case CENTER:
+        float centerTranslation = (canvas.getWidth() - textLineWidth - safeSpace) / 2;
+        canvas.translate(centerTranslation, 0);
         break;
     }
   }
