@@ -551,7 +551,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public void start() {
     // Don't auto play when in edit mode.
     Callback callback = getCallback();
-    if (callback instanceof View && !((View) callback).isInEditMode()) {
+    if (!(callback instanceof View) || !((View) callback).isInEditMode()) {
       playAnimation();
     }
   }
