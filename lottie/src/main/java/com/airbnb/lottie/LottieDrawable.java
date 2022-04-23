@@ -975,7 +975,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
   }
 
-  void setSystemAnimationsAreEnabled(Boolean areEnabled) {
+  /**
+   * Tell Lottie that system animations are disabled. When using {@link LottieAnimationView} or Compose {@code LottieAnimation}, this is done
+   * automatically. However, if you are using LottieDrawable on its own, you should set this to false when
+   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0.
+   */
+  public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
   }
 
