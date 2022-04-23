@@ -195,7 +195,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     if (opacityStopPositions.length < 2) {
       return color;
     }
-    for (int i = 0; i < opacityStopPositions.length; i++) {
+    for (int i = 1; i < opacityStopPositions.length; i++) {
       float opacityStopPosition = opacityStopPositions[i];
       if (opacityStopPosition < position && i != opacityStopPositions.length - 1) {
         continue;
