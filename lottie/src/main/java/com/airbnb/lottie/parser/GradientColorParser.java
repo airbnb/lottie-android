@@ -160,10 +160,10 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
         }
         newColors[i] = getColorInBetweenColorStops(position, opacityStopOpacities[opacityIndex], colorStopPositions, colorStopColors);
       } else {
+        // This os a step derived from a color stop.
         newColors[i] = getColorWithOpacityStops(colorStopColors[colorStopIndex], position, opacityStopPositions, opacityStopOpacities);
       }
     }
-
     return new GradientColor(newPositions, newColors);
   }
 
@@ -181,7 +181,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       float distanceToLowerColor = position - colorStopPositions[i - 1];
       float percentage = distanceToLowerColor / distanceBetweenColors;
       int upperColor = colorStopColors[i];
-      int lowerColor = colorStopColors[i];
+      int lowerColor = colorStopColors[i - 1];
       int a = (int) (opacity * 255);
       int r = MiscUtils.lerp(Color.red(lowerColor), Color.red(upperColor), percentage);
       int g = MiscUtils.lerp(Color.green(lowerColor), Color.green(upperColor), percentage);
@@ -192,9 +192,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
   }
 
   private int getColorWithOpacityStops(int color, float position, float[] opacityStopPositions, float[] opacityStopOpacities) {
-    if (opacityStopPositions.length < 2) {
-      return color;
-    } else if (position <= opacityStopPositions[0]) {
+    if (opacityStopOpacities.length < 2 || position <= opacityStopPositions[0]) {
       int a = (int) (opacityStopOpacities[0] * 255);
       int r = Color.red(color);
       int g = Color.green(color);
