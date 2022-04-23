@@ -101,7 +101,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
    */
   protected float getInterpolatedCurrentKeyframeProgress() {
     Keyframe<K> keyframe = getCurrentKeyframe();
-    if (keyframe.isStatic()) {
+    // Keyframe should not be null here but there seems to be a Xiaomi Android 10 specific crash.
+    // https://github.com/airbnb/lottie-android/issues/2050
+    if (keyframe == null || keyframe.isStatic()) {
       return 0f;
     }
     //noinspection ConstantConditions
