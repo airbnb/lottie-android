@@ -67,7 +67,7 @@ public class LottieDrawableTest extends BaseTest {
     LottieDrawable drawable = new LottieDrawable();
     drawable.setComposition(composition);
     drawable.setMaxProgress(0.25f);
-    assertEquals(121.99f, drawable.getMaxFrame());
+    assertEquals(121f, drawable.getMaxFrame());
   }
 
   @Test

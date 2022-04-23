@@ -138,8 +138,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
     if (keepMinAndMaxFrames) {
       setMinAndMaxFrames(
-          (int) Math.max(this.minFrame, composition.getStartFrame()),
-          (int) Math.min(this.maxFrame, composition.getEndFrame())
+          Math.max(this.minFrame, composition.getStartFrame()),
+          Math.min(this.maxFrame, composition.getEndFrame())
       );
     } else {
       setMinAndMaxFrames((int) composition.getStartFrame(), (int) composition.getEndFrame());
