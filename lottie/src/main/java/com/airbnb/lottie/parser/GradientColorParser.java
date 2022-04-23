@@ -123,6 +123,9 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       return gradientColor;
     }
 
+    // When there are opacity stops, we create a merged list of color stops and opacity stops.
+    // For a given color stop, we linearly interpolate the opacity for the two opacity stops around it.
+    // For a given opacity stop, we linearly interpolate the color for the two color stops around it.
     float[] colorStopPositions = gradientColor.getPositions();
     int[] colorStopColors = gradientColor.getColors();
 
@@ -154,14 +157,13 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       if (colorStopIndex < 0 || opacityIndex > 0) {
         // This is a stop derived from an opacity stop.
         if (opacityIndex < 0) {
-          throw new IllegalArgumentException("Unable to find opacity stop position for " + position);
-          // TODO: use this backup instead…
-          // opacityIndex = -(opacityIndex + 1);
+          // The formula here is derived from the return value for binarySearch. When an item isn't found, it returns -insertionPoint - 1.
+          opacityIndex = -(opacityIndex + 1);
         }
         newColors[i] = getColorInBetweenColorStops(position, opacityStopOpacities[opacityIndex], colorStopPositions, colorStopColors);
       } else {
         // This os a step derived from a color stop.
-        newColors[i] = getColorWithOpacityStops(colorStopColors[colorStopIndex], position, opacityStopPositions, opacityStopOpacities);
+        newColors[i] = getColorInBetweenOpacityStops(position, colorStopColors[colorStopIndex], opacityStopPositions, opacityStopOpacities);
       }
     }
     return new GradientColor(newPositions, newColors);
@@ -191,7 +193,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     throw new IllegalArgumentException("Unreachable code.");
   }
 
-  private int getColorWithOpacityStops(int color, float position, float[] opacityStopPositions, float[] opacityStopOpacities) {
+  private int getColorInBetweenOpacityStops(float position, int color, float[] opacityStopPositions, float[] opacityStopOpacities) {
     if (opacityStopOpacities.length < 2 || position <= opacityStopPositions[0]) {
       int a = (int) (opacityStopOpacities[0] * 255);
       int r = Color.red(color);
