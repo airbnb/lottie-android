@@ -691,7 +691,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       lazyCompositionTasks.add(c -> setMaxProgress(maxProgress));
       return;
     }
-    setMaxFrame((int) MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), maxProgress));
+    animator.setMaxFrame(MiscUtils.lerp(composition.getStartFrame(), composition.getEndFrame(), maxProgress));
   }
 
   /**
