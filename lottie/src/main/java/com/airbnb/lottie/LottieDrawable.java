@@ -583,6 +583,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (animationsEnabled() || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.playAnimation();
+        onVisibleAction = OnVisibleAction.NONE;
       } else {
         onVisibleAction = OnVisibleAction.PLAY;
       }
@@ -620,6 +621,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (animationsEnabled() || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.resumeAnimation();
+        onVisibleAction = OnVisibleAction.NONE;
       } else {
         onVisibleAction = OnVisibleAction.RESUME;
       }
