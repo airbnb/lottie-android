@@ -1,3 +1,15 @@
+# 5.1.1
+### New Features
+* Added support for gradient opacity stops at different points than color stops ([#2062](https://github.com/airbnb/lottie-android/pull/2062))
+* Allow notifying LottieDrawable that system animations are disabled ([#2063](https://github.com/airbnb/lottie-android/pull/2063))
+
+### Bugs Fixed
+* Removed some rounding errors that occurred when setting min/max frames ([#2064](https://github.com/airbnb/lottie-android/pull/2064))
+* Clear onVisibleAction one it is consumed ([#2066](https://github.com/airbnb/lottie-android/pull/2066))
+* Fixed a Xiaomi Android 10 specific crash ([#2061](https://github.com/airbnb/lottie-android/pull/2061))
+* Made LottieAnimationView.start() mimic playAnimation ([#2056](https://github.com/airbnb/lottie-android/pull/2056))
+* Remove @RestrictTo from LottieNetworkFetcher ([#2049](https://github.com/airbnb/lottie-android/pull/2049))
+
 # 5.0.3
 ### Bugs Fixed
 * Invalidate the software renering bitmap when invalidate is called ([#2034](https://github.com/airbnb/lottie-android/pull/2034))
