@@ -64,7 +64,7 @@ private fun Example1() {
             iterations = LottieConstants.IterateForever,
         )
     }
-    LottieAnimation(anim.composition, anim.progress)
+    LottieAnimation(anim.composition, { anim.progress })
 }
 
 @Composable
@@ -84,7 +84,7 @@ private fun Example2() {
         }
     }
     Box {
-        LottieAnimation(anim.composition, anim.progress)
+        LottieAnimation(anim.composition, { anim.progress })
         Slider(
             value = sliderGestureProgress ?: anim.progress,
             onValueChange = { sliderGestureProgress = it },
@@ -110,7 +110,7 @@ private fun Example3() {
         )
     }
     Box {
-        LottieAnimation(composition, anim.progress)
+        LottieAnimation(composition, { anim.progress })
         Slider(
             value = speed,
             onValueChange = { speed = it },
@@ -144,7 +144,7 @@ private fun Example4() {
     }
     LottieAnimation(
         composition,
-        animatable.progress,
+        { animatable.progress },
         modifier = Modifier
             .clickable { nonce++ }
     )
@@ -162,7 +162,7 @@ private fun Example5() {
     }
     LottieAnimation(
         composition,
-        animatable.progress,
+        { animatable.progress },
         modifier = Modifier
             .clickable { shouldPlay = !shouldPlay }
     )
