@@ -69,7 +69,7 @@ import kotlin.math.roundToInt
 @Composable
 fun LottieAnimation(
     composition: LottieComposition?,
-    @FloatRange(from = 0.0, to = 1.0) progressProvider: () -> Float,
+    progressProvider: () -> Float,
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
