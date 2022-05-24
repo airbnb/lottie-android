@@ -90,7 +90,7 @@ fun SingleCompositionTransition(section: TransitionSection) {
             } while (s == TransitionSection.LoopMiddle)
         }
     }
-    LottieAnimation(composition, animatable.progress)
+    LottieAnimation(composition, { animatable.progress })
 }
 
 @Composable
@@ -113,5 +113,5 @@ fun SplitCompositionTransition(section: TransitionSection) {
         )
     }
 
-    LottieAnimation(animatable.composition, animatable.progress)
+    LottieAnimation(animatable.composition, { animatable.progress })
 }

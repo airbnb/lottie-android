@@ -32,12 +32,12 @@ import kotlin.math.roundToInt
  *
  * @param composition The composition that will be rendered. To generate a [LottieComposition], you can use
  *                    [rememberLottieComposition].
- * @param progress The progress (between 0 and 1) that should be rendered. If you want to render a specific
- *                 frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
- *                 to use one of the overloaded LottieAnimation composables that drives the animation for you.
- *                 The overloads that have isPlaying as a parameter instead of progress will drive the
- *                 animation automatically. You may want to use this version if you want to drive the animation
- *                 from your own Animatable or via events such as download progress or a gesture.
+ * @param progressProvider A provider for the progress (between 0 and 1) that should be rendered. If you want to render a
+ *                         specific frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
+ *                         to use one of the overloaded LottieAnimation composables that drives the animation for you.
+ *                         The overloads that have isPlaying as a parameter instead of progress will drive the
+ *                         animation automatically. You may want to use this version if you want to drive the animation
+ *                         from your own Animatable or via events such as download progress or a gesture.
  * @param outlineMasksAndMattes Enable this to debug slow animations by outlining masks and mattes.
  *                              The performance overhead of the masks and mattes will be proportional to the
  *                              surface area of all of the masks/mattes combined.
@@ -69,7 +69,7 @@ import kotlin.math.roundToInt
 @Composable
 fun LottieAnimation(
     composition: LottieComposition?,
-    @FloatRange(from = 0.0, to = 1.0) progress: Float,
+    @FloatRange(from = 0.0, to = 1.0) progressProvider: () -> Float,
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
@@ -114,7 +114,7 @@ fun LottieAnimation(
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
-            drawable.progress = progress
+            drawable.progress = progressProvider()
             drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
         }
@@ -122,8 +122,44 @@ fun LottieAnimation(
 }
 
 /**
+ * This is like [LottieAnimation] except that it takes a raw progress parameter instead of taking a progress provider.
+ *
+ * @see LottieAnimation
+ */
+@Composable
+fun LottieAnimation(
+    composition: LottieComposition?,
+    @FloatRange(from = 0.0, to = 1.0) progress: Float,
+    modifier: Modifier = Modifier,
+    outlineMasksAndMattes: Boolean = false,
+    applyOpacityToLayers: Boolean = false,
+    enableMergePaths: Boolean = false,
+    renderMode: RenderMode = RenderMode.AUTOMATIC,
+    maintainOriginalImageBounds: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    clipToCompositionBounds: Boolean = true,
+) {
+    LottieAnimation(
+        composition,
+        { progress },
+        modifier,
+        outlineMasksAndMattes,
+        applyOpacityToLayers,
+        enableMergePaths,
+        renderMode,
+        maintainOriginalImageBounds,
+        dynamicProperties,
+        alignment,
+        contentScale,
+        clipToCompositionBounds,
+    )
+}
+
+/**
  * This is like [LottieAnimation] except that it handles driving the animation via [animateLottieCompositionAsState]
- * instead of taking a raw progress parameter.
+ * instead of taking a progress provider.
  *
  * @see LottieAnimation
  * @see animateLottieCompositionAsState
@@ -157,7 +193,7 @@ fun LottieAnimation(
     )
     LottieAnimation(
         composition,
-        progress,
+        { progress },
         modifier,
         outlineMasksAndMattes,
         applyOpacityToLayers,

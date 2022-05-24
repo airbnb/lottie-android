@@ -60,7 +60,7 @@ private fun WalkthroughAnimation(pagerState: PagerState) {
     val progress by derivedStateOf { (pagerState.currentPage + pagerState.currentPageOffset) / (pagerState.pageCount - 1f) }
     LottieAnimation(
         composition,
-        progress,
+        { progress },
         modifier = Modifier
             .fillMaxSize()
     )

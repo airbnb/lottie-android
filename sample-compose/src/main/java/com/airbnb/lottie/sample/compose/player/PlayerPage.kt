@@ -255,7 +255,7 @@ fun PlayerPageContent(
         ) {
             PlayerPageLottieAnimation(
                 composition,
-                state.animatable.progress,
+                { state.animatable.progress },
                 modifier = Modifier
                     // TODO: figure out how maxWidth can play nice with the aspectRatio modifier inside of LottieAnimation.
                     .fillMaxWidth()
@@ -291,12 +291,12 @@ fun PlayerPageContent(
 @Composable
 private fun PlayerPageLottieAnimation(
     composition: LottieComposition?,
-    progress: Float,
+    progressProvider: () -> Float,
     modifier: Modifier = Modifier,
 ) {
     LottieAnimation(
         composition,
-        progress,
+        progressProvider,
         modifier = modifier,
     )
 }

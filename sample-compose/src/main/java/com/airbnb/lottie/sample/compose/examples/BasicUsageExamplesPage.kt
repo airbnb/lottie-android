@@ -140,7 +140,7 @@ private fun Example6() {
     )
     LottieAnimation(
         composition,
-        progress,
+        { progress },
     )
 }
 
