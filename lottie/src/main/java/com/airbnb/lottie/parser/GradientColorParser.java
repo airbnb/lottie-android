@@ -234,34 +234,22 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
 
     int aIndex = 0;
     int bIndex = 0;
-    int mergedIndex = 0;
     int numDuplicates = 0;
     // This will be the merged list but may be longer than what is needed if there are duplicates.
     // If there are, the 0 elements at the end need to be truncated.
     float[] mergedNotTruncated = new float[arrayA.length + arrayB.length];
     for (int i = 0; i < mergedNotTruncated.length; i++) {
-      final float a;
-      if (aIndex < arrayA.length) {
-        a = arrayA[aIndex];
-      } else {
-        a = Float.NaN;
-      }
-
-      final float b;
-      if (bIndex < arrayB.length) {
-        b = arrayB[bIndex];
-      } else {
-        b = Float.NaN;
-      }
+      final float a = aIndex < arrayA.length ? arrayA[aIndex] : Float.NaN;
+      final float b = bIndex < arrayB.length ? arrayB[bIndex] : Float.NaN;
 
       if (Float.isNaN(b) || a < b) {
-        mergedNotTruncated[mergedIndex++] = a;
+        mergedNotTruncated[i] = a;
         aIndex++;
       } else if (Float.isNaN(a) || b < a) {
-        mergedNotTruncated[mergedIndex++] = b;
+        mergedNotTruncated[i] = b;
         bIndex++;
       } else {
-        mergedNotTruncated[mergedIndex++] = a;
+        mergedNotTruncated[i] = a;
         aIndex++;
         bIndex++;
         numDuplicates++;
@@ -273,8 +261,6 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     }
 
 
-    float[] merged = new float[mergedNotTruncated.length - numDuplicates];
-    System.arraycopy(mergedNotTruncated, 0, merged, 0, merged.length);
-    return merged;
+    return Arrays.copyOf(mergedNotTruncated, mergedNotTruncated.length - numDuplicates);
   }
 }
