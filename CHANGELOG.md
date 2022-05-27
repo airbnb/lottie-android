@@ -1,3 +1,7 @@
+# 5.2.0
+### Bugs Fixed
+* De-dupe gradient stops. On pre-Oreo devices, if you had color and opacity stops in the same place and used hardware acceleration, you may have seen artifacts at the stop positions as of 5.1.1 [#20814](https://github.com/airbnb/lottie-android/pull/2081)
+
 # 5.1.1
 ### New Features
 * Added support for gradient opacity stops at different points than color stops ([#2062](https://github.com/airbnb/lottie-android/pull/2062))

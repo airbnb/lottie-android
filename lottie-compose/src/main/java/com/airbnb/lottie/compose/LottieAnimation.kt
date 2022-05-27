@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
  *
  * @param composition The composition that will be rendered. To generate a [LottieComposition], you can use
  *                    [rememberLottieComposition].
- * @param progressProvider A provider for the progress (between 0 and 1) that should be rendered. If you want to render a
+ * @param progress A provider for the progress (between 0 and 1) that should be rendered. If you want to render a
  *                         specific frame, you can use [LottieComposition.getFrameForProgress]. In most cases, you will want
  *                         to use one of the overloaded LottieAnimation composables that drives the animation for you.
  *                         The overloads that have isPlaying as a parameter instead of progress will drive the
@@ -69,7 +69,7 @@ import kotlin.math.roundToInt
 @Composable
 fun LottieAnimation(
     composition: LottieComposition?,
-    progressProvider: () -> Float,
+    progress: () -> Float,
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
@@ -114,7 +114,7 @@ fun LottieAnimation(
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
-            drawable.progress = progressProvider()
+            drawable.progress = progress()
             drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
         }
@@ -127,6 +127,7 @@ fun LottieAnimation(
  * @see LottieAnimation
  */
 @Composable
+@Deprecated("Pass progress as a lambda instead of a float. This overload will be removed in the next release.")
 fun LottieAnimation(
     composition: LottieComposition?,
     @FloatRange(from = 0.0, to = 1.0) progress: Float,
@@ -192,18 +193,18 @@ fun LottieAnimation(
         iterations,
     )
     LottieAnimation(
-        composition,
-        { progress },
-        modifier,
-        outlineMasksAndMattes,
-        applyOpacityToLayers,
-        enableMergePaths,
-        renderMode,
-        maintainOriginalImageBounds,
-        dynamicProperties,
-        alignment,
-        contentScale,
-        clipToCompositionBounds,
+        composition = composition,
+        progress = { progress },
+        modifier = modifier,
+        outlineMasksAndMattes = outlineMasksAndMattes,
+        applyOpacityToLayers = applyOpacityToLayers,
+        enableMergePaths = enableMergePaths,
+        renderMode = renderMode,
+        maintainOriginalImageBounds = maintainOriginalImageBounds,
+        dynamicProperties = dynamicProperties,
+        alignment = alignment,
+        contentScale = contentScale,
+        clipToCompositionBounds = clipToCompositionBounds,
     )
 }
 
