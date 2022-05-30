@@ -1,7 +1,7 @@
 package com.airbnb.lottie.snapshots.tests
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.TextDelegate
 import com.airbnb.lottie.compose.LottieAnimation
@@ -12,7 +12,6 @@ import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 import com.airbnb.lottie.snapshots.LocalSnapshotReady
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
-import com.airbnb.lottie.snapshots.loadCompositionFromAssetsSync
 import com.airbnb.lottie.snapshots.snapshotComposable
 import com.airbnb.lottie.snapshots.withAnimationView
 
@@ -140,53 +139,68 @@ class TextTestCase : SnapshotTestCase {
 
         snapshotComposable("Compose Dynamic Text", "Emoji") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
-            LocalSnapshotReady.current.value = composition != null
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.TEXT, "NAME") {
                     "🔥💪💯"
                 },
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
 
         snapshotComposable("Compose Dynamic Text", "Taiwanese") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
-            LocalSnapshotReady.current.value = composition != null
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.TEXT, "我的密碼", "NAME"),
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
 
         snapshotComposable("Compose Dynamic Text", "Hindi") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
-            LocalSnapshotReady.current.value = composition != null
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.TEXT, "आपका लेख", "NAME"),
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
 
         snapshotComposable("Compose Dynamic Text", "FrameInfo.startValue") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
-            LocalSnapshotReady.current.value = composition != null
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.TEXT, "NAME") { frameInfo ->
                     "${frameInfo.startValue}!!!"
                 },
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
 
         snapshotComposable("Compose Dynamic Text", "FrameInfo.endValue") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/DynamicText.json"))
-            LocalSnapshotReady.current.value = composition != null
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.TEXT, "NAME") { frameInfo ->
                     "${frameInfo.endValue}!!!"
                 },
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
     }
 }

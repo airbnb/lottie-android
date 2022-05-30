@@ -3,6 +3,7 @@ package com.airbnb.lottie.snapshots.tests
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieProperty
@@ -36,45 +37,48 @@ class ComposeDynamicPropertiesTestCase : SnapshotTestCase {
                     "Gradient Fill"
                 )
             )
-            LottieAnimation(composition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
 
         val heartComposition = LottieCompositionFactory.fromAssetSync(context, "Tests/Heart.json").value!!
         snapshotComposable("Compose Dynamic Image", "Default") {
             val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/Heart.json"))
-            LocalSnapshotReady.current.value = composition != null
-            LottieAnimation(composition, 0f)
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
+            LottieAnimation(composition, { 0f })
         }
         snapshotComposable("Compose Dynamic Image", "Default - Maintain Original Bounds") {
-            LottieAnimation(heartComposition, 0f, maintainOriginalImageBounds = true)
+            LottieAnimation(heartComposition, { 0f }, maintainOriginalImageBounds = true)
         }
         snapshotComposable("Compose Dynamic Image", "Smaller") {
             val bitmap = getBitmapFromAssets("Images/Heart-80.png")
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.IMAGE, bitmap, "Heart"),
             )
-            LottieAnimation(heartComposition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(heartComposition, { 0f }, dynamicProperties = dynamicProperties)
         }
         snapshotComposable("Compose Dynamic Image", "Smaller - Maintain Original Bounds") {
             val bitmap = getBitmapFromAssets("Images/Heart-80.png")
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.IMAGE, bitmap, "Heart"),
             )
-            LottieAnimation(heartComposition, 0f, dynamicProperties = dynamicProperties, maintainOriginalImageBounds = true)
+            LottieAnimation(heartComposition, { 0f }, dynamicProperties = dynamicProperties, maintainOriginalImageBounds = true)
         }
         snapshotComposable("Compose Dynamic Image", "Larger") {
             val bitmap = getBitmapFromAssets("Images/Heart-1200.png")
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.IMAGE, bitmap, "Heart"),
             )
-            LottieAnimation(heartComposition, 0f, dynamicProperties = dynamicProperties)
+            LottieAnimation(heartComposition, { 0f }, dynamicProperties = dynamicProperties)
         }
         snapshotComposable("Compose Dynamic Image", "Larger - Maintain Original Bounds") {
             val bitmap = getBitmapFromAssets("Images/Heart-1200.png")
             val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(LottieProperty.IMAGE, bitmap, "Heart"),
             )
-            LottieAnimation(heartComposition, 0f, dynamicProperties = dynamicProperties, maintainOriginalImageBounds = true)
+            LottieAnimation(heartComposition, { 0f }, dynamicProperties = dynamicProperties, maintainOriginalImageBounds = true)
         }
     }
 

@@ -13,7 +13,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieAnimationView
@@ -189,7 +192,12 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
         CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
             content(RenderMode.SOFTWARE)
         }
-        if (readyFlow.value == null) readyFlow.value = true
+        val readyFlowValue by readyFlow.collectAsState()
+        LaunchedEffect(readyFlowValue) {
+            if (readyFlowValue == null) {
+                readyFlow.value = true
+            }
+        }
     }
     onActivity { activity ->
         activity.binding.content.addView(composeView)
@@ -211,7 +219,12 @@ suspend fun SnapshotTestCaseContext.snapshotComposable(
             CompositionLocalProvider(LocalSnapshotReady provides readyFlow) {
                 content(RenderMode.HARDWARE)
             }
-            if (readyFlow.value == null) readyFlow.value = true
+            val readyFlowValue by readyFlow.collectAsState()
+            LaunchedEffect(readyFlowValue) {
+                if (readyFlowValue == null) {
+                    readyFlow.value = true
+                }
+            }
         }
         readyFlow.first { it == true }
         composeView.awaitFrame()

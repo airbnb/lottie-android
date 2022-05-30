@@ -124,7 +124,7 @@ private fun Example5() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
     LottieAnimation(
         composition,
-        progress = 0.65f,
+        progress = { 0.65f },
     )
 }
 
