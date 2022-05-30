@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -15,8 +14,6 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.snapshotComposable
@@ -55,25 +52,25 @@ class LargeCompositionSoftwareRendering : SnapshotTestCase {
         }
 
         snapshotWithComposable("Fit") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.Fit)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.Fit)
         }
         snapshotWithComposable("Crop") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.Crop)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.Crop)
         }
         snapshotWithComposable("FillBounds") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.FillBounds)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.FillBounds)
         }
         snapshotWithComposable("FillWidth") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.FillWidth)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.FillWidth)
         }
         snapshotWithComposable("FillHeight") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.FillHeight)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.FillHeight)
         }
         snapshotWithComposable("Inside") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.Inside)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.Inside)
         }
         snapshotWithComposable("None") { comp ->
-            LottieAnimation(comp, progress = 0f, contentScale = ContentScale.None)
+            LottieAnimation(comp, progress = { 0f }, contentScale = ContentScale.None)
         }
     }
 

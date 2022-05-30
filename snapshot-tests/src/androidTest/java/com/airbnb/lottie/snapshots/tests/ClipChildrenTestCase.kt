@@ -27,7 +27,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
             ) {
                 LottieAnimation(
                     composition,
-                    0.7f,
+                    { 0.7f },
                     contentScale = ContentScale.Crop,
                     renderMode = renderMode,
                     modifier = Modifier
@@ -44,7 +44,7 @@ class ClipChildrenTestCase : SnapshotTestCase {
             ) {
                 LottieAnimation(
                     composition,
-                    0.7f,
+                    { 0.7f },
                     contentScale = ContentScale.Crop,
                     renderMode = renderMode,
                     clipToCompositionBounds = false,

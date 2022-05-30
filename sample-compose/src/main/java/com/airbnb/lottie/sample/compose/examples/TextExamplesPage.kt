@@ -51,7 +51,7 @@ private fun Example1() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.name))
     LottieAnimation(
         composition,
-        progress = 0f,
+        progress = { 0f },
     )
 }
 
@@ -65,7 +65,7 @@ private fun Example2() {
 
     LottieAnimation(
         composition,
-        progress = 0f,
+        progress = { 0f },
         dynamicProperties = dynamicProperties,
     )
 }

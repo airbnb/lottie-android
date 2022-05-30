@@ -61,7 +61,7 @@ fun ContentScaleExamplesPage() {
             ) {
                 LottieAnimation(
                     composition,
-                    progress = 0f,
+                    progress = { 0f },
                     alignment = alignment,
                     contentScale = contentScale,
                 )

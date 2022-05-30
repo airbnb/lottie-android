@@ -32,7 +32,7 @@ class WalkthroughAnimationTest {
             ) {
                 LottieAnimation(
                     composition,
-                    progress,
+                    { progress },
                 )
             }
 

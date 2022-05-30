@@ -17,7 +17,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "Wrap Content", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 renderMode = renderMode,
             )
         }
@@ -25,7 +25,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "720p", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(720.dp, 1280.dp)
@@ -35,7 +35,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300@2x", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
@@ -46,7 +46,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300@4x", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
@@ -57,7 +57,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300 Crop", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Crop,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -68,7 +68,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300 Inside", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Inside,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -79,7 +79,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300 FillBounds", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -90,7 +90,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300 Fit 2x", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Fit,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -102,7 +102,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x300 Crop 2x", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Crop,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -114,7 +114,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "600x600 Inside", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Inside,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -125,7 +125,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "600x600 FillBounds", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -136,7 +136,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "600x600 Fit", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.Fit,
                 renderMode = renderMode,
                 modifier = Modifier
@@ -147,7 +147,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose Scale Types", "300x600 FitBounds", renderHardwareAndSoftware = true) { renderMode ->
             LottieAnimation(
                 composition,
-                1f,
+                { 1f },
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier

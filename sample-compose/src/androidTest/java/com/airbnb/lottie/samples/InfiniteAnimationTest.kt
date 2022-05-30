@@ -36,7 +36,7 @@ class InfiniteAnimationTest {
             ) {
                 LottieAnimation(
                     composition,
-                    progress,
+                    { progress },
                 )
                 Text(
                     "Composition Loaded!",
