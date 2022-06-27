@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.FontAssetDelegate;
+import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.MutablePair;
 import com.airbnb.lottie.utils.Logger;
 
@@ -55,19 +56,20 @@ public class FontAssetManager {
     this.defaultFontFileExtension = defaultFontFileExtension;
   }
 
-  public Typeface getTypeface(String fontFamily, String style) {
-    tempPair.set(fontFamily, style);
+  public Typeface getTypeface(Font font) {
+    tempPair.set(font.getFamily(), font.getStyle());
     Typeface typeface = fontMap.get(tempPair);
     if (typeface != null) {
       return typeface;
     }
-    Typeface typefaceWithDefaultStyle = getFontFamily(fontFamily);
-    typeface = typefaceForStyle(typefaceWithDefaultStyle, style);
+    Typeface typefaceWithDefaultStyle = getFontFamily(font);
+    typeface = typefaceForStyle(typefaceWithDefaultStyle, font.getStyle());
     fontMap.put(tempPair, typeface);
     return typeface;
   }
 
-  private Typeface getFontFamily(String fontFamily) {
+  private Typeface getFontFamily(Font font) {
+    String fontFamily = font.getFamily();
     Typeface defaultTypeface = fontFamilies.get(fontFamily);
     if (defaultTypeface != null) {
       return defaultTypeface;
@@ -83,6 +85,10 @@ public class FontAssetManager {
       if (path != null) {
         typeface = Typeface.createFromAsset(assetManager, path);
       }
+    }
+
+    if (font.getTypeface() != null) {
+      return font.getTypeface();
     }
 
     if (typeface == null) {

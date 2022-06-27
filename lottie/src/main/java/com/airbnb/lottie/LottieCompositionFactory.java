@@ -9,11 +9,13 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 import androidx.annotation.WorkerThread;
 
+import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.LottieCompositionCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -23,8 +25,12 @@ import com.airbnb.lottie.utils.Utils;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -94,7 +100,7 @@ public class LottieCompositionFactory {
    */
   public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable final String cacheKey) {
     return cache(cacheKey, () -> {
-      LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
+      LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(context, url, cacheKey);
       if (cacheKey != null && result.getValue() != null) {
         LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
       }
@@ -120,7 +126,7 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromUrlSync(Context context, String url, @Nullable String cacheKey) {
-    LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(url, cacheKey);
+    LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(context, url, cacheKey);
     if (cacheKey != null && result.getValue() != null) {
       LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
     }
@@ -163,7 +169,7 @@ public class LottieCompositionFactory {
    * <p>
    * To skip the cache, add null as a third parameter.
    *
-   * @see #fromZipStreamSync(ZipInputStream, String)
+   * @see #fromZipStreamSync(Context, ZipInputStream, String)
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName) {
@@ -178,13 +184,13 @@ public class LottieCompositionFactory {
    * <p>
    * Pass null as the cache key to skip the cache.
    *
-   * @see #fromZipStreamSync(ZipInputStream, String)
+   * @see #fromZipStreamSync(Context, ZipInputStream, String)
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
     try {
       if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
-        return fromZipStreamSync(new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
+        return fromZipStreamSync(context, new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
     } catch (IOException e) {
@@ -254,7 +260,7 @@ public class LottieCompositionFactory {
     try {
       BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
       if (isZipCompressed(source)) {
-        return fromZipStreamSync(new ZipInputStream(source.inputStream()), cacheKey);
+        return fromZipStreamSync(context, new ZipInputStream(source.inputStream()), cacheKey);
       }
       return fromJsonInputStreamSync(source.inputStream(), cacheKey);
     } catch (Resources.NotFoundException e) {
@@ -374,28 +380,56 @@ public class LottieCompositionFactory {
   }
 
 
+  /**
+   * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
+   * that takes Context as the first parameter.
+   */
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromZipStreamSync(inputStream, cacheKey));
+    return fromZipStream(null, inputStream, cacheKey);
+  }
+
+  /**
+   * @see #fromZipStreamSync(Context, ZipInputStream, String)
+   */
+  public static LottieTask<LottieComposition> fromZipStream(Context context, final ZipInputStream inputStream, @Nullable final String cacheKey) {
+    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey));
   }
 
   /**
    * Parses a zip input stream into a Lottie composition.
    * Your zip file should just be a folder with your json file and images zipped together.
    * It will automatically store and configure any images inside the animation if they exist.
+   *
+   * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
+   * that takes Context as the first parameter.
    */
-  @WorkerThread
   public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
+    return fromZipStreamSync(null, inputStream, cacheKey);
+  }
+
+    /**
+     * Parses a zip input stream into a Lottie composition.
+     * Your zip file should just be a folder with your json file and images zipped together.
+     * It will automatically store and configure any images inside the animation if they exist.
+     *
+     * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
+     *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
+     *                font family (fFamily) in your animation file.
+     */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromZipStreamSync(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
     try {
-      return fromZipStreamSyncInternal(inputStream, cacheKey);
+      return fromZipStreamSyncInternal(context, inputStream, cacheKey);
     } finally {
       closeQuietly(inputStream);
     }
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(ZipInputStream inputStream, @Nullable String cacheKey) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
+    Map<String, Typeface> fonts = new HashMap<>();
 
     try {
       ZipEntry entry = inputStream.getNextEntry();
@@ -412,6 +446,29 @@ public class LottieCompositionFactory {
           String[] splitName = entryName.split("/");
           String name = splitName[splitName.length - 1];
           images.put(name, BitmapFactory.decodeStream(inputStream));
+        } else if (entryName.contains(".ttf") || entryName.contains(".otf")) {
+          String[] splitName = entryName.split("/");
+          String fileName = splitName[splitName.length - 1];
+          String fontFamily = fileName.split("\\.")[0];
+          File tempFile = new File(context.getCacheDir(), fileName);
+          FileOutputStream fos = new FileOutputStream(tempFile);
+          try {
+            try (OutputStream output = new FileOutputStream(tempFile)) {
+              byte[] buffer = new byte[4 * 1024];
+              int read;
+              while ((read = inputStream.read(buffer)) != -1) {
+                output.write(buffer, 0, read);
+              }
+              output.flush();
+            }
+          } catch (Throwable e) {
+            Logger.warning("Unable to save font " + fontFamily + " to the temporary file: " + fileName + ". ", e);
+          }
+          Typeface typeface = Typeface.createFromFile(tempFile);
+          if (!tempFile.delete()) {
+            Logger.warning("Failed to delete temp font file " + tempFile.getAbsolutePath() + ".");
+          }
+          fonts.put(fontFamily, typeface);
         } else {
           inputStream.closeEntry();
         }
@@ -431,6 +488,19 @@ public class LottieCompositionFactory {
       LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
       if (imageAsset != null) {
         imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
+      }
+    }
+
+    for (Map.Entry<String, Typeface> e : fonts.entrySet()) {
+      boolean found = false;
+      for (Font font : composition.getFonts().values()) {
+        if (font.getFamily().equals(e.getKey())) {
+          found = true;
+          font.setTypeface(e.getValue());
+        }
+      }
+      if (!found) {
+        Logger.warning("Parsed font for " + e.getKey() + " however it was not found in the animation.");
       }
     }
 
