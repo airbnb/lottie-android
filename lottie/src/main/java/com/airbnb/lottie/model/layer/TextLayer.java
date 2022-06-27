@@ -300,7 +300,7 @@ public class TextLayer extends BaseLayer {
         return callbackTypeface;
       }
     }
-    Typeface drawableTypeface = lottieDrawable.getTypeface(font.getFamily(), font.getStyle());
+    Typeface drawableTypeface = lottieDrawable.getTypeface(font);
     if (drawableTypeface != null) {
       return drawableTypeface;
     }

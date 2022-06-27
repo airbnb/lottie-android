@@ -1,5 +1,6 @@
 package com.airbnb.lottie.network;
 
+import android.content.Context;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -33,20 +34,20 @@ public class NetworkFetcher {
 
   @NonNull
   @WorkerThread
-  public LottieResult<LottieComposition> fetchSync(@NonNull String url, @Nullable String cacheKey) {
-    LottieComposition result = fetchFromCache(url, cacheKey);
+  public LottieResult<LottieComposition> fetchSync(Context context, @NonNull String url, @Nullable String cacheKey) {
+    LottieComposition result = fetchFromCache(context, url, cacheKey);
     if (result != null) {
       return new LottieResult<>(result);
     }
 
     Logger.debug("Animation for " + url + " not found in cache. Fetching from network.");
 
-    return fetchFromNetwork(url, cacheKey);
+    return fetchFromNetwork(context, url, cacheKey);
   }
 
   @Nullable
   @WorkerThread
-  private LottieComposition fetchFromCache(@NonNull String url, @Nullable String cacheKey) {
+  private LottieComposition fetchFromCache(Context context, @NonNull String url, @Nullable String cacheKey) {
     if (cacheKey == null) {
       return null;
     }
@@ -59,7 +60,7 @@ public class NetworkFetcher {
     InputStream inputStream = cacheResult.second;
     LottieResult<LottieComposition> result;
     if (extension == FileExtension.ZIP) {
-      result = LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(inputStream), url);
+      result = LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), url);
     } else {
       result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, url);
     }
@@ -71,7 +72,7 @@ public class NetworkFetcher {
 
   @NonNull
   @WorkerThread
-  private LottieResult<LottieComposition> fetchFromNetwork(@NonNull String url, @Nullable String cacheKey) {
+  private LottieResult<LottieComposition> fetchFromNetwork(Context context, @NonNull String url, @Nullable String cacheKey) {
     Logger.debug("Fetching " + url);
 
     LottieFetchResult fetchResult = null;
@@ -80,7 +81,7 @@ public class NetworkFetcher {
       if (fetchResult.isSuccessful()) {
         InputStream inputStream = fetchResult.bodyByteStream();
         String contentType = fetchResult.contentType();
-        LottieResult<LottieComposition> result = fromInputStream(url, inputStream, contentType, cacheKey);
+        LottieResult<LottieComposition> result = fromInputStream(context, url, inputStream, contentType, cacheKey);
         Logger.debug("Completed fetch from network. Success: " + (result.getValue() != null));
         return result;
       } else {
@@ -100,7 +101,7 @@ public class NetworkFetcher {
   }
 
   @NonNull
-  private LottieResult<LottieComposition> fromInputStream(@NonNull String url, @NonNull InputStream inputStream, @Nullable String contentType,
+  private LottieResult<LottieComposition> fromInputStream(Context context, @NonNull String url, @NonNull InputStream inputStream, @Nullable String contentType,
       @Nullable String cacheKey) throws IOException {
     FileExtension extension;
     LottieResult<LottieComposition> result;
@@ -115,7 +116,7 @@ public class NetworkFetcher {
         url.split("\\?")[0].endsWith(".lottie")) {
       Logger.debug("Handling zip response.");
       extension = FileExtension.ZIP;
-      result = fromZipStream(url, inputStream, cacheKey);
+      result = fromZipStream(context, url, inputStream, cacheKey);
     } else {
       Logger.debug("Received json response.");
       extension = FileExtension.JSON;
@@ -130,13 +131,13 @@ public class NetworkFetcher {
   }
 
   @NonNull
-  private LottieResult<LottieComposition> fromZipStream(@NonNull String url, @NonNull InputStream inputStream, @Nullable String cacheKey)
+  private LottieResult<LottieComposition> fromZipStream(Context context, @NonNull String url, @NonNull InputStream inputStream, @Nullable String cacheKey)
       throws IOException {
     if (cacheKey == null) {
-      return LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(inputStream), null);
+      return LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), null);
     }
     File file = networkCache.writeTempCacheFile(url, inputStream, FileExtension.ZIP);
-    return LottieCompositionFactory.fromZipStreamSync(new ZipInputStream(new FileInputStream(file)), url);
+    return LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(new FileInputStream(file)), url);
   }
 
   @NonNull

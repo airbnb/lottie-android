@@ -33,6 +33,7 @@ import androidx.annotation.RestrictTo;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
+import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.CompositionLayer;
@@ -1244,10 +1245,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   @Nullable
-  public Typeface getTypeface(String fontFamily, String style) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
+  public Typeface getTypeface(Font font) {
     FontAssetManager assetManager = getFontAssetManager();
     if (assetManager != null) {
-      return assetManager.getTypeface(fontFamily, style);
+      return assetManager.getTypeface(font);
     }
     return null;
   }
