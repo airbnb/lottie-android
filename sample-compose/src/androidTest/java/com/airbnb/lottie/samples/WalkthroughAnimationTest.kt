@@ -21,7 +21,7 @@ class WalkthroughAnimationTest {
     @Test
     fun testWalkthroughCompletes() {
         val composition = LottieCompositionFactory.fromRawResSync(composeTestRule.activity, R.raw.walkthrough).value!!
-        var animationCompleted = true
+        var animationCompleted = false
 
         composeTestRule.setContent {
             val progress by animateLottieCompositionAsState(composition, iterations = 1)
