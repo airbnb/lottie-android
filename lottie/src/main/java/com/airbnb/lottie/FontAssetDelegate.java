@@ -11,6 +11,13 @@ import android.graphics.Typeface;
 @SuppressWarnings({"unused", "WeakerAccess"}) public class FontAssetDelegate {
 
   /**
+   * Override this if you want to return a Typeface from a font family.
+   */
+  public Typeface fetchFont(String fontFamily) {
+    return null;
+  }
+
+  /**
    * Override this if you want to return a Typeface from a font family and style.
    */
   public Typeface fetchFont(String fontFamily, String fontStyle, String fontName) {
@@ -19,6 +26,13 @@ import android.graphics.Typeface;
 
   /**
    * Override this if you want to specify the asset path for a given font family.
+   */
+  public String getFontPath(String fontFamily) {
+    return null;
+  }
+
+  /**
+   * Override this if you want to specify the asset path for a given font family and style.
    */
   public String getFontPath(String fontFamily, String fontStyle, String fontName) {
     return null;
