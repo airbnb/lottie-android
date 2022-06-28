@@ -76,12 +76,13 @@ public class FontAssetManager {
     }
 
     Typeface typeface = null;
+    String fontStyle = font.getStyle();
     if (delegate != null) {
-      typeface = delegate.fetchFont(fontFamily);
+      typeface = delegate.fetchFont(fontFamily, fontStyle);
     }
 
     if (delegate != null && typeface == null) {
-      String path = delegate.getFontPath(fontFamily);
+      String path = delegate.getFontPath(fontFamily, fontStyle);
       if (path != null) {
         typeface = Typeface.createFromAsset(assetManager, path);
       }
