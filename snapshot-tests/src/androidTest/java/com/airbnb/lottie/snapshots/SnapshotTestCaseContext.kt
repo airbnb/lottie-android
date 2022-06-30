@@ -146,7 +146,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     filmStripView.setApplyingOpacityToLayersEnabled(false)
     filmStripView.setImageAssetDelegate { BitmapFactory.decodeResource(context.resources, R.drawable.airbnb) }
     filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {
-        override fun getFontPath(fontFamily: String?): String {
+        override fun getFontPath(fontFamily: String?, fontStyle: String?, fontName: String?): String {
             return "fonts/Roboto.ttf"
         }
     })

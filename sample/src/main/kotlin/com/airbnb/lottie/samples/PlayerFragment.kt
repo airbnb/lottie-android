@@ -105,7 +105,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         binding.controlBarPlayerControls.lottieVersionView.text = getString(R.string.lottie_version, BuildConfig.VERSION_NAME)
 
         binding.animationView.setFontAssetDelegate(object : FontAssetDelegate() {
-            override fun fetchFont(fontFamily: String?): Typeface {
+            override fun fetchFont(fontFamily: String?, fontStyle: String?, fontName: String?): Typeface {
                 return Typeface.DEFAULT
             }
         })
