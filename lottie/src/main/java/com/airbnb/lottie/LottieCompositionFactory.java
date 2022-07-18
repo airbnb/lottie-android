@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.util.Base64;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
@@ -501,6 +502,31 @@ public class LottieCompositionFactory {
       }
       if (!found) {
         Logger.warning("Parsed font for " + e.getKey() + " however it was not found in the animation.");
+      }
+    }
+
+    if (images.isEmpty()) {
+      for (Map.Entry<String, LottieImageAsset> entry : composition.getImages().entrySet()) {
+        LottieImageAsset asset = entry.getValue();
+        if (asset == null) {
+          return null;
+        }
+        String filename = asset.getFileName();
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inScaled = true;
+        opts.inDensity = 160;
+
+        if (filename.startsWith("data:") && filename.indexOf("base64,") > 0) {
+          // Contents look like a base64 data URI, with the format data:image/png;base64,<data>.
+          byte[] data;
+          try {
+            data = Base64.decode(filename.substring(filename.indexOf(',') + 1), Base64.DEFAULT);
+          } catch (IllegalArgumentException e) {
+            Logger.warning("data URL did not have correct base64 format.", e);
+            return null;
+          }
+          asset.setBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, opts));
+        }
       }
     }
 
