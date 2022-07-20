@@ -23,7 +23,7 @@ Click the sponsor button above to learn more
 
 <a href="https://www.tonal.com/"><img src="images/tonal.svg" alt="Tonal" width="300" /></a>
 
-<a href="https://getstream.io/chat/sdk/android/?utm_source=OpenCollective&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=OpenCollective_Jan2022_AndroidChatSDK"><img src="images/stream.png" alt="Stream" width="300" /></a>
+<a href="https://getstream.io/chat/?utm_source=OpenCollective_Lottie&utm_medium=Github_Repo_Content_Ad&utm_content=Developer&utm_campaign=Lottie_July2022_Chat_klmh22"><img src="images/stream.png" alt="Stream" width="300" /></a>
 
 <a href="https://www.coinbase.com/"><img src="images/coinbase.svg" alt="Coinbase" width="300" /></a>
 
