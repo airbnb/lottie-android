@@ -122,8 +122,8 @@ public class ImageAssetManager {
       return null;
     }
     if (bitmap == null) {
-        Logger.warning("Decoded image is NULL.");
-        return null;
+      Logger.warning("Decoded image `" + id + "` is null.");
+      return null;
     }
     bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
     return putBitmap(id, bitmap);
