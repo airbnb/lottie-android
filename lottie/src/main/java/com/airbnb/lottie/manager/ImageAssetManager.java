@@ -118,7 +118,11 @@ public class ImageAssetManager {
     try {
       bitmap = BitmapFactory.decodeStream(is, null, opts);
     } catch (IllegalArgumentException e) {
-      Logger.warning("Unable to decode image.", e);
+      Logger.warning("Unable to decode image `" + id + "`.", e);
+      return null;
+    }
+    if (bitmap == null) {
+      Logger.warning("Decoded image `" + id + "` is null.");
       return null;
     }
     bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
