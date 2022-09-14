@@ -134,6 +134,7 @@ interface LottieAnimatable : LottieAnimationState {
         composition: LottieComposition?,
         iteration: Int = this.iteration,
         iterations: Int = this.iterations,
+        reverseOnRepeat: Boolean = this.reverseOnRepeat,
         speed: Float = this.speed,
         clipSpec: LottieClipSpec? = this.clipSpec,
         initialProgress: Float = defaultProgress(composition, clipSpec, speed),
@@ -160,11 +161,18 @@ private class LottieAnimatableImpl : LottieAnimatable {
     override var iterations: Int by mutableStateOf(1)
         private set
 
+    override var reverseOnRepeat: Boolean by mutableStateOf(false)
+        private set
+
     override var clipSpec: LottieClipSpec? by mutableStateOf(null)
         private set
 
     override var speed: Float by mutableStateOf(1f)
         private set
+
+    private val speedValue: Float by derivedStateOf {
+        if (reverseOnRepeat && iteration % 2 == 0) -speed else speed
+    }
 
     override var composition: LottieComposition? by mutableStateOf(null)
         private set
@@ -206,6 +214,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
         composition: LottieComposition?,
         iteration: Int,
         iterations: Int,
+        reverseOnRepeat: Boolean,
         speed: Float,
         clipSpec: LottieClipSpec?,
         initialProgress: Float,
@@ -216,6 +225,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
         mutex.mutate {
             this.iteration = iteration
             this.iterations = iterations
+            this.reverseOnRepeat = reverseOnRepeat
             this.speed = speed
             this.clipSpec = clipSpec
             this.composition = composition
@@ -278,9 +288,9 @@ private class LottieAnimatableImpl : LottieAnimatable {
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
 
-        val dProgress = dNanos / 1_000_000 / composition.duration * speed
+        val dProgress = dNanos / 1_000_000 / composition.duration * speedValue
         val progressPastEndOfIteration = when {
-            speed < 0 -> minProgress - (progress + dProgress)
+            speedValue < 0 -> minProgress - (progress + dProgress)
             else -> progress + dProgress - maxProgress
         }
         if (progressPastEndOfIteration < 0f) {
@@ -297,7 +307,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
             progress = when {
-                speed < 0 -> maxProgress - progressPastEndRem
+                speedValue < 0 -> maxProgress - progressPastEndRem
                 else -> minProgress + progressPastEndRem
             }
         }

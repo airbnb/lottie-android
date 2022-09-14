@@ -341,6 +341,34 @@ class LottieAnimatableImplTest {
         }
     }
 
+    @Test
+    fun testReverseOnRepeat() = runTest {
+        val job = launch {
+            anim.animate(
+                composition,
+                reverseOnRepeat = true,
+                iterations = LottieConstants.IterateForever,
+            )
+        }
+        assertFrame(0, progress = 0f, iteration = 1, iterations = LottieConstants.IterateForever)
+
+        mapOf(
+            0L to 0.0f,
+            300L to 0.5f,
+            598L to 0.99f,
+            599L to 1.0f,
+            601L to 0.99f, // start reversing animation
+            899L to 0.5f,
+            1199L to 0.0f,
+        ).forEach { (frameTime, expectedProgress) ->
+            clock.frameMs(frameTime)
+            assertEquals(
+                "Expecting progress $expectedProgress @ frame $frameTime, but was ${anim.progress}",
+                expectedProgress, anim.progress, 0.01f
+            )
+        }
+        job.cancel()
+    }
 
     @Test
     fun testNonCancellable() = runTest {
