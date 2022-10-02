@@ -55,7 +55,7 @@ public class AnimatableValueParser {
 
   static AnimatableTextFrame parseDocumentData(
       JsonReader reader, LottieComposition composition) throws IOException {
-    return new AnimatableTextFrame(parse(reader, composition, DocumentDataParser.INSTANCE));
+    return new AnimatableTextFrame(parse(reader, Utils.dpScale(), composition, DocumentDataParser.INSTANCE));
   }
 
   static AnimatableColorValue parseColor(

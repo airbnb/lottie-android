@@ -2,7 +2,10 @@ package com.airbnb.lottie.model;
 
 import static androidx.annotation.RestrictTo.Scope.LIBRARY;
 
+import android.graphics.PointF;
+
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
 @RestrictTo(LIBRARY)
@@ -25,12 +28,13 @@ public class DocumentData {
   @ColorInt public int strokeColor;
   public float strokeWidth;
   public boolean strokeOverFill;
+  @Nullable public PointF positionOffset;
 
 
   public DocumentData(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill) {
-    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill);
+      float strokeWidth, boolean strokeOverFill, PointF positionOffset) {
+    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill, positionOffset);
   }
 
   public DocumentData() {
@@ -38,7 +42,7 @@ public class DocumentData {
 
   public void set(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill) {
+      float strokeWidth, boolean strokeOverFill, PointF positionOffset) {
     this.text = text;
     this.fontName = fontName;
     this.size = size;
@@ -50,6 +54,7 @@ public class DocumentData {
     this.strokeColor = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOverFill = strokeOverFill;
+    this.positionOffset = positionOffset;
   }
 
   @Override public int hashCode() {

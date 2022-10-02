@@ -199,6 +199,9 @@ public class TextLayer extends BaseLayer {
       float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
       float translateY = l * lineHeight - multilineTranslateY;
       canvas.translate(0, translateY);
+      if (documentData.positionOffset != null) {
+        canvas.translate(documentData.positionOffset.x, documentData.positionOffset.y);
+      }
 
       // Draw each line
       drawGlyphTextLine(textLine, documentData, parentMatrix, font, canvas, parentScale, fontScale);
@@ -283,6 +286,9 @@ public class TextLayer extends BaseLayer {
       float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
       float translateY = l * lineHeight - multilineTranslateY;
       canvas.translate(0, translateY);
+      if (documentData.positionOffset != null) {
+        // canvas.translate(-documentData.offset.x, -documentData.offset.y);
+      }
 
       // Draw each line
       drawFontTextLine(textLine, documentData, canvas, tracking);
