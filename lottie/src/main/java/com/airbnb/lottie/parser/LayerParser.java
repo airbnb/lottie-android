@@ -82,8 +82,8 @@ public class LayerParser {
     int solidWidth = 0;
     int solidHeight = 0;
     int solidColor = 0;
-    int preCompWidth = 0;
-    int preCompHeight = 0;
+    float preCompWidth = 0;
+    float preCompHeight = 0;
     long parentId = -1;
     float timeStretch = 1f;
     float startFrame = 0f;
@@ -236,10 +236,10 @@ public class LayerParser {
           startFrame = (float) reader.nextDouble();
           break;
         case 16:
-          preCompWidth = (int) (reader.nextInt() * Utils.dpScale());
+          preCompWidth = (float) (reader.nextDouble() * Utils.dpScale());
           break;
         case 17:
-          preCompHeight = (int) (reader.nextInt() * Utils.dpScale());
+          preCompHeight = (float) (reader.nextDouble() * Utils.dpScale());
           break;
         case 18:
           inFrame = (float) reader.nextDouble();

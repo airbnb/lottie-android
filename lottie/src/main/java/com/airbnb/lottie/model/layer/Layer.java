@@ -51,8 +51,8 @@ public class Layer {
   private final int solidColor;
   private final float timeStretch;
   private final float startFrame;
-  private final int preCompWidth;
-  private final int preCompHeight;
+  private final float preCompWidth;
+  private final float preCompHeight;
   @Nullable private final AnimatableTextFrame text;
   @Nullable private final AnimatableTextProperties textProperties;
   @Nullable private final AnimatableFloatValue timeRemapping;
@@ -65,7 +65,7 @@ public class Layer {
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
-      float timeStretch, float startFrame, int preCompWidth, int preCompHeight,
+      float timeStretch, float startFrame, float preCompWidth, float preCompHeight,
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
       List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
       @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
@@ -124,11 +124,11 @@ public class Layer {
     return refId;
   }
 
-  int getPreCompWidth() {
+  float getPreCompWidth() {
     return preCompWidth;
   }
 
-  int getPreCompHeight() {
+  float getPreCompHeight() {
     return preCompHeight;
   }
 
