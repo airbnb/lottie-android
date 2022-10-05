@@ -170,7 +170,10 @@ private class LottieAnimatableImpl : LottieAnimatable {
     override var speed: Float by mutableStateOf(1f)
         private set
 
-    private val speedValue: Float by derivedStateOf {
+    /**
+     * Inverse speed value is used to play the animation in reverse when [reverseOnRepeat] is true.
+     */
+    private val frameSpeed: Float by derivedStateOf {
         if (reverseOnRepeat && iteration % 2 == 0) -speed else speed
     }
 
@@ -288,9 +291,9 @@ private class LottieAnimatableImpl : LottieAnimatable {
         val minProgress = clipSpec?.getMinProgress(composition) ?: 0f
         val maxProgress = clipSpec?.getMaxProgress(composition) ?: 1f
 
-        val dProgress = dNanos / 1_000_000 / composition.duration * speedValue
+        val dProgress = dNanos / 1_000_000 / composition.duration * frameSpeed
         val progressPastEndOfIteration = when {
-            speedValue < 0 -> minProgress - (progress + dProgress)
+            frameSpeed < 0 -> minProgress - (progress + dProgress)
             else -> progress + dProgress - maxProgress
         }
         if (progressPastEndOfIteration < 0f) {
@@ -307,7 +310,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
             progress = when {
-                speedValue < 0 -> maxProgress - progressPastEndRem
+                frameSpeed < 0 -> maxProgress - progressPastEndRem
                 else -> minProgress + progressPastEndRem
             }
         }
