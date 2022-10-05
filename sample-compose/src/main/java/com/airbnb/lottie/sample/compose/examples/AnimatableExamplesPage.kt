@@ -50,6 +50,9 @@ fun AnimatableExamplesPage() {
             ExampleCard("Example 5", "Click to toggle playback") {
                 Example5()
             }
+            ExampleCard("Example 6", "Reverse Animation on Repeat") {
+                Example6()
+            }
         }
     }
 }
@@ -167,3 +170,18 @@ private fun Example5() {
             .clickable { shouldPlay = !shouldPlay }
     )
 }
+
+@Composable
+private fun Example6() {
+    val anim = rememberLottieAnimatable()
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
+    LaunchedEffect(composition) {
+        anim.animate(
+            composition,
+            iterations = LottieConstants.IterateForever,
+            reverseOnRepeat = true,
+        )
+    }
+    LottieAnimation(anim.composition, { anim.progress })
+}
+
