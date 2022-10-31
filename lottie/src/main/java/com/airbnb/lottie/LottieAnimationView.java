@@ -1022,7 +1022,7 @@ import java.util.Set;
    * Call this to set whether or not to render with hardware or software acceleration.
    * Lottie defaults to Automatic which will use hardware acceleration unless:
    * 1) There are dash paths and the device is pre-Pie.
-   * 2) There are more than 4 masks and mattes and the device is pre-Pie.
+   * 2) There are more than 4 masks and mattes.
    * Hardware acceleration is generally faster for those devices unless
    * there are many large mattes and masks in which case there is a lot
    * of GPU uploadTexture thrashing which makes it much slower.
