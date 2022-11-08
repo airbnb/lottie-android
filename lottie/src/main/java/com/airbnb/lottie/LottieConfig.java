@@ -18,12 +18,14 @@ public class LottieConfig {
   @Nullable final LottieNetworkFetcher networkFetcher;
   @Nullable final LottieNetworkCacheProvider cacheProvider;
   final boolean enableSystraceMarkers;
+  final boolean enableNetworkCache;
 
   private LottieConfig(@Nullable LottieNetworkFetcher networkFetcher, @Nullable LottieNetworkCacheProvider cacheProvider,
-      boolean enableSystraceMarkers) {
+      boolean enableSystraceMarkers, boolean enableNetworkCache) {
     this.networkFetcher = networkFetcher;
     this.cacheProvider = cacheProvider;
     this.enableSystraceMarkers = enableSystraceMarkers;
+    this.enableNetworkCache = enableNetworkCache;
   }
 
   public static final class Builder {
@@ -33,6 +35,7 @@ public class LottieConfig {
     @Nullable
     private LottieNetworkCacheProvider cacheProvider;
     private boolean enableSystraceMarkers = false;
+    private boolean enableNetworkCache = true;
 
     /**
      * Lottie has a default network fetching stack built on {@link java.net.HttpURLConnection}. However, if you would like to hook into your own
@@ -98,9 +101,19 @@ public class LottieConfig {
       return this;
     }
 
+    /**
+     * Disable this if you want to completely disable internal Lottie cache for retrieving network animations.
+     * Internal network cache is enabled by default.
+     */
+    @NonNull
+    public Builder setEnableNetworkCache(boolean enable) {
+      enableNetworkCache = enable;
+      return this;
+    }
+
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers);
+      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache);
     }
   }
 }
