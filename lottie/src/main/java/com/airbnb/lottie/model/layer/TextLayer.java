@@ -348,18 +348,20 @@ public class TextLayer extends BaseLayer {
 
   private void applyJustification(DocumentData documentData, Canvas canvas, float textLineWidth) {
     float lineStart = 0f;
+    float lineTop = 0f;
     if (documentData.boxPosition != null) {
-      lineStart += documentData.boxPosition.x;
+      lineStart = documentData.boxPosition.x;
+      lineTop = documentData.boxPosition.y;
     }
     switch (documentData.justification) {
       case LEFT_ALIGN:
-        canvas.translate(-lineStart, 0);
+        canvas.translate(-lineStart, -lineTop);
         break;
       case RIGHT_ALIGN:
-        canvas.translate(-lineStart - textLineWidth, 0);
+        canvas.translate(-lineStart - textLineWidth, -lineTop);
         break;
       case CENTER:
-        canvas.translate(-lineStart - textLineWidth / 2, 0);
+        canvas.translate(-lineStart - textLineWidth / 2, -lineTop);
         break;
     }
   }
