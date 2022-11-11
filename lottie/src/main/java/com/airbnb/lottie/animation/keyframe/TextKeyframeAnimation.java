@@ -1,7 +1,5 @@
 package com.airbnb.lottie.animation.keyframe;
 
-import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.model.DocumentData;
 import com.airbnb.lottie.value.Keyframe;
 import com.airbnb.lottie.value.LottieFrameInfo;
@@ -39,7 +37,7 @@ public class TextKeyframeAnimation extends KeyframeAnimation<DocumentData> {
         DocumentData baseDocumentData = frameInfo.getInterpolatedKeyframeProgress() == 1f ? frameInfo.getEndValue() : frameInfo.getStartValue();
         documentData.set(text, baseDocumentData.fontName, baseDocumentData.size, baseDocumentData.justification, baseDocumentData.tracking,
             baseDocumentData.lineHeight, baseDocumentData.baselineShift, baseDocumentData.color, baseDocumentData.strokeColor,
-            baseDocumentData.strokeWidth, baseDocumentData.strokeOverFill);
+            baseDocumentData.strokeWidth, baseDocumentData.strokeOverFill, baseDocumentData.boxPosition);
         return documentData;
       }
     });

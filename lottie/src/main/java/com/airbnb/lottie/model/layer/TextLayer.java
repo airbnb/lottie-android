@@ -20,7 +20,6 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;
-import com.airbnb.lottie.model.DocumentData.Justification;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
@@ -193,12 +192,15 @@ public class TextLayer extends BaseLayer {
       canvas.save();
 
       // Apply horizontal justification
-      applyJustification(documentData.justification, canvas, textLineWidth);
+      applyJustification(documentData, canvas, textLineWidth);
 
       // Center text vertically
       float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
       float translateY = l * lineHeight - multilineTranslateY;
       canvas.translate(0, translateY);
+      if (documentData.boxPosition != null) {
+        canvas.translate(documentData.boxPosition.x, documentData.boxPosition.y);
+      }
 
       // Draw each line
       drawGlyphTextLine(textLine, documentData, parentMatrix, font, canvas, parentScale, fontScale);
@@ -277,7 +279,7 @@ public class TextLayer extends BaseLayer {
       canvas.save();
 
       // Apply horizontal justification
-      applyJustification(documentData.justification, canvas, textLineWidth);
+      applyJustification(documentData, canvas, textLineWidth);
 
       // Center text vertically
       float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
@@ -341,16 +343,22 @@ public class TextLayer extends BaseLayer {
     return textLineWidth;
   }
 
-  private void applyJustification(Justification justification, Canvas canvas, float textLineWidth) {
-    switch (justification) {
+  private void applyJustification(DocumentData documentData, Canvas canvas, float textLineWidth) {
+    float lineStart = 0f;
+    float lineTop = 0f;
+    if (documentData.boxPosition != null) {
+      lineStart = documentData.boxPosition.x;
+      lineTop = documentData.boxPosition.y;
+    }
+    switch (documentData.justification) {
       case LEFT_ALIGN:
-        // Do nothing. Default is left aligned.
+        canvas.translate(-lineStart, -lineTop);
         break;
       case RIGHT_ALIGN:
-        canvas.translate(-textLineWidth, 0);
+        canvas.translate(-lineStart - textLineWidth, -lineTop);
         break;
       case CENTER:
-        canvas.translate(-textLineWidth / 2, 0);
+        canvas.translate(-lineStart - textLineWidth / 2, -lineTop);
         break;
     }
   }
