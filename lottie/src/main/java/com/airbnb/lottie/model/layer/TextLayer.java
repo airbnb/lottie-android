@@ -285,9 +285,6 @@ public class TextLayer extends BaseLayer {
       float multilineTranslateY = (textLineCount - 1) * lineHeight / 2;
       float translateY = l * lineHeight - multilineTranslateY;
       canvas.translate(0, translateY);
-      if (documentData.boxPosition != null) {
-        // canvas.translate(-documentData.offset.x, -documentData.offset.y);
-      }
 
       // Draw each line
       drawFontTextLine(textLine, documentData, canvas, tracking);
