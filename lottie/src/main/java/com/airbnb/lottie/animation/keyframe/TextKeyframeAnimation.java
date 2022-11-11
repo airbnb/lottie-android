@@ -37,7 +37,7 @@ public class TextKeyframeAnimation extends KeyframeAnimation<DocumentData> {
         DocumentData baseDocumentData = frameInfo.getInterpolatedKeyframeProgress() == 1f ? frameInfo.getEndValue() : frameInfo.getStartValue();
         documentData.set(text, baseDocumentData.fontName, baseDocumentData.size, baseDocumentData.justification, baseDocumentData.tracking,
             baseDocumentData.lineHeight, baseDocumentData.baselineShift, baseDocumentData.color, baseDocumentData.strokeColor,
-            baseDocumentData.strokeWidth, baseDocumentData.strokeOverFill, baseDocumentData.positionOffset);
+            baseDocumentData.strokeWidth, baseDocumentData.strokeOverFill, baseDocumentData.boxPosition);
         return documentData;
       }
     });

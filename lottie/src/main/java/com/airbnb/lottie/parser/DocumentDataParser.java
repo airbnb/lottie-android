@@ -42,7 +42,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     int strokeColor = 0;
     float strokeWidth = 0f;
     boolean strokeOverFill = true;
-    PointF offset = null;
+    PointF boxPosition = null;
 
     reader.beginObject();
     while (reader.hasNext()) {
@@ -87,7 +87,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           break;
         case 11:
           reader.beginArray();
-          offset = new PointF((float) reader.nextDouble() * scale, (float) reader.nextDouble() * scale);
+          boxPosition = new PointF((float) reader.nextDouble() * scale, (float) reader.nextDouble() * scale);
           reader.endArray();
           break;
         default:
@@ -98,6 +98,6 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     reader.endObject();
 
     return new DocumentData(text, fontName, size, justification, tracking, lineHeight,
-        baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill, offset);
+        baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill, boxPosition);
   }
 }

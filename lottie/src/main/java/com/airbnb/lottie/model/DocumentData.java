@@ -28,13 +28,13 @@ public class DocumentData {
   @ColorInt public int strokeColor;
   public float strokeWidth;
   public boolean strokeOverFill;
-  @Nullable public PointF positionOffset;
+  @Nullable public PointF boxPosition;
 
 
   public DocumentData(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill, PointF positionOffset) {
-    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill, positionOffset);
+      float strokeWidth, boolean strokeOverFill, PointF boxPosition) {
+    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill, boxPosition);
   }
 
   public DocumentData() {
@@ -54,7 +54,7 @@ public class DocumentData {
     this.strokeColor = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOverFill = strokeOverFill;
-    this.positionOffset = positionOffset;
+    this.boxPosition = positionOffset;
   }
 
   @Override public int hashCode() {

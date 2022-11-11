@@ -21,7 +21,7 @@ class ComposeIssueReproActivity : AppCompatActivity() {
 
     @Composable
     fun Content() {
-        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.sz))
         val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
         LottieAnimation(composition, { progress })
     }
