@@ -182,7 +182,7 @@ import java.util.Set;
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
 
     boolean hasProgress = ta.hasValue(R.styleable.LottieAnimationView_lottie_progress);
-    setProgressInternal(hasProgress, ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0f));
+    setProgressInternal(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0f), hasProgress);
 
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
@@ -293,7 +293,7 @@ import java.util.Set;
       setAnimation(animationResId);
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
-      setProgressInternal(false, ss.progress);
+      setProgressInternal(ss.progress, false);
     }
     if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
       playAnimation();
@@ -980,12 +980,12 @@ import java.util.Set;
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    setProgressInternal(true, progress);
+    setProgressInternal(progress, true);
   }
 
   private void setProgressInternal(
-      boolean fromUser,
-      @FloatRange(from = 0f, to = 1f) float progress) {
+      @FloatRange(from = 0f, to = 1f) float progress,
+      boolean fromUser) {
     if (fromUser) {
       userActionsTaken.add(UserActionTaken.SET_PROGRESS);
     }
