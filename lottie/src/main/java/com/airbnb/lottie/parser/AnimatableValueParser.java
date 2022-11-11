@@ -65,8 +65,9 @@ public class AnimatableValueParser {
 
   static AnimatableGradientColorValue parseGradientColor(
       JsonReader reader, LottieComposition composition, int points) throws IOException {
-    return new AnimatableGradientColorValue(
+    AnimatableGradientColorValue animatableGradientColorValue = new AnimatableGradientColorValue(
         parse(reader, composition, new GradientColorParser(points)));
+    return animatableGradientColorValue;
   }
 
   /**

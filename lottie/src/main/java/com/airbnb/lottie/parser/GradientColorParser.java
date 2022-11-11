@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.parser.moshi.JsonReader;
+import com.airbnb.lottie.utils.GammaEvaluator;
 import com.airbnb.lottie.utils.MiscUtils;
 
 import java.io.IOException;
@@ -167,7 +168,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     return new GradientColor(newPositions, newColors);
   }
 
-  private int getColorInBetweenColorStops(float position, float opacity, float[] colorStopPositions, int[] colorStopColors) {
+  int getColorInBetweenColorStops(float position, float opacity, float[] colorStopPositions, int[] colorStopColors) {
     if (colorStopColors.length < 2 || position == colorStopPositions[0]) {
       return colorStopColors[0];
     }
@@ -183,9 +184,9 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       int upperColor = colorStopColors[i];
       int lowerColor = colorStopColors[i - 1];
       int a = (int) (opacity * 255);
-      int r = MiscUtils.lerp(Color.red(lowerColor), Color.red(upperColor), percentage);
-      int g = MiscUtils.lerp(Color.green(lowerColor), Color.green(upperColor), percentage);
-      int b = MiscUtils.lerp(Color.blue(lowerColor), Color.blue(upperColor), percentage);
+      int r = GammaEvaluator.evaluate(percentage, Color.red(lowerColor), Color.red(upperColor));
+      int g = GammaEvaluator.evaluate(percentage, Color.green(lowerColor), Color.green(upperColor));
+      int b = GammaEvaluator.evaluate(percentage, Color.blue(lowerColor), Color.blue(upperColor));
       return Color.argb(a, r, g, b);
     }
     throw new IllegalArgumentException("Unreachable code.");
