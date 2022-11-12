@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model.content;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ShapeContent;
@@ -27,7 +28,7 @@ public class ShapePath implements ContentModel {
     return shapePath;
   }
 
-  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+  @Override public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
     return new ShapeContent(drawable, layer, this);
   }
 

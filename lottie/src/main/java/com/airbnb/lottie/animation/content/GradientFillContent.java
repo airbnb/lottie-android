@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
 import com.airbnb.lottie.L;
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
@@ -64,14 +65,14 @@ public class GradientFillContent
   float blurMaskFilterRadius = 0f;
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
-  public GradientFillContent(final LottieDrawable lottieDrawable, BaseLayer layer, GradientFill fill) {
+  public GradientFillContent(final LottieDrawable lottieDrawable, LottieComposition composition, BaseLayer layer, GradientFill fill) {
     this.layer = layer;
     name = fill.getName();
     hidden = fill.isHidden();
     this.lottieDrawable = lottieDrawable;
     type = fill.getGradientType();
     path.setFillType(fill.getFillType());
-    cacheSteps = (int) (lottieDrawable.getComposition().getDuration() / CACHE_STEPS_MS);
+    cacheSteps = (int) (composition.getDuration() / CACHE_STEPS_MS);
 
     colorAnimation = fill.getGradientColor().createAnimation();
     colorAnimation.addUpdateListener(this);

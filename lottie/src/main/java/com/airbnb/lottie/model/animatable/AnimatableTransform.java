@@ -4,6 +4,7 @@ import android.graphics.PointF;
 
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ModifierContent;
@@ -104,7 +105,7 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
 
   @Nullable
   @Override
-  public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+  public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
     return null;
   }
 }

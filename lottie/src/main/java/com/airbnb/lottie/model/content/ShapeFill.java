@@ -4,6 +4,7 @@ import android.graphics.Path;
 
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.FillContent;
@@ -49,7 +50,7 @@ public class ShapeFill implements ContentModel {
     return hidden;
   }
 
-  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+  @Override public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
     return new FillContent(drawable, layer, this);
   }
 

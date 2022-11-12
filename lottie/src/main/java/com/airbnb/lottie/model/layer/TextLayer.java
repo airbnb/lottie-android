@@ -426,7 +426,7 @@ public class TextLayer extends BaseLayer {
     List<ContentGroup> contents = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
       ShapeGroup sg = shapes.get(i);
-      contents.add(new ContentGroup(lottieDrawable, this, sg));
+      contents.add(new ContentGroup(lottieDrawable, this, sg, composition));
     }
     contentsForCharacter.put(character, contents);
     return contents;
