@@ -179,6 +179,10 @@ import java.util.Set;
       setClipToCompositionBounds(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds, true));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_defaultFontFileExtension)) {
+      setDefaultFontFileExtension(ta.getString(R.styleable.LottieAnimationView_lottie_defaultFontFileExtension));
+    }
+
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
     setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
@@ -895,6 +899,21 @@ import java.util.Set;
    */
   public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
     lottieDrawable.setImageAssetDelegate(assetDelegate);
+  }
+
+  /**
+   * By default, Lottie will look in src/assets/fonts/FONT_NAME.ttf
+   * where FONT_NAME is the fFamily specified in your Lottie file.
+   * If your fonts have a different extension, you can override the
+   * default here.
+   *
+   * Alternatively, you can use {@link #setFontAssetDelegate(FontAssetDelegate)}
+   * for more control.
+   *
+   * @see #setFontAssetDelegate(FontAssetDelegate)
+   */
+  public void setDefaultFontFileExtension(String extension) {
+    lottieDrawable.setDefaultFontFileExtension(extension);
   }
 
   /**
