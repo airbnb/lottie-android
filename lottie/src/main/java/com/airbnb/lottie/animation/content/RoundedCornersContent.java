@@ -161,9 +161,9 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
         // oriented point to CubicCurveData (path segments).
         CubicCurveData previousCurveData = modifiedCurves.get(floorMod(modifiedCurvesIndex - 1, modifiedCurves.size()));
         CubicCurveData currentCurveData = modifiedCurves.get(modifiedCurvesIndex);
-        previousCurveData.setControlPoint2(previousCurve.getVertex().x, previousCurve.getVertex().y);
+        previousCurveData.setControlPoint2(previousCurve.getControlPoint2().x, previousCurve.getControlPoint2().y);
         previousCurveData.setVertex(previousCurve.getVertex().x, previousCurve.getVertex().y);
-        currentCurveData.setControlPoint1(startingCurve.getVertex().x, startingCurve.getVertex().y);
+        currentCurveData.setControlPoint1(startingCurve.getControlPoint1().x, startingCurve.getControlPoint1().y);
         modifiedCurvesIndex++;
       }
     }
