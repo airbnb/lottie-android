@@ -131,6 +131,12 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
   @Override public void resolveKeyPath(
       KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, this);
+    for (int i = 0; i < contentGroup.getContents().size(); i++) {
+      Content content = contentGroup.getContents().get(i);
+      if (content instanceof KeyPathElementContent) {
+        MiscUtils.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath, (KeyPathElementContent) content);
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")

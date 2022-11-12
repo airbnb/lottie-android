@@ -251,6 +251,20 @@ class DynamicPropertiesTestCase : SnapshotTestCase {
         )
 
         testDynamicProperty(
+            "Repeater contents",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
+            LottieProperty.TRANSFORM_POSITION,
+            LottieRelativePointValueCallback(PointF(100f, 100f))
+        )
+
+        testDynamicProperty(
+            "Repeater sub-contents",
+            KeyPath("Shape Layer 1", "Repeater Shape", "Fill 1"),
+            LottieProperty.COLOR_FILTER,
+            LottieValueCallback(SimpleColorFilter(Color.GREEN))
+        )
+
+        testDynamicProperty(
             "Repeater transform start opacity",
             KeyPath("Shape Layer 1", "Repeater Shape", "Repeater 1"),
             LottieProperty.TRANSFORM_START_OPACITY,
