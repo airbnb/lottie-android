@@ -1,21 +1,21 @@
 package com.airbnb.lottie.samples
 
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
-import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieCompositionFactory
 
-class LottieIdlingResource(animationView: LottieAnimationView? = null, private val name: String = "Lottie") : IdlingResource {
-
-    init {
-        animationView?.addLottieOnCompositionLoadedListener {
-            isIdle = true
-            callback?.onTransitionToIdle()
-            IdlingRegistry.getInstance().unregister(this)
-        }
-    }
+class LottieIdlingResource(private val name: String = "Lottie") : IdlingResource {
 
     private var callback: IdlingResource.ResourceCallback? = null
     private var isIdle = false
+
+    init {
+        LottieCompositionFactory.registerLottieTaskIdleListener { idle ->
+            isIdle = idle
+            if (idle) {
+                callback?.onTransitionToIdle()
+            }
+        }
+    }
 
     override fun getName() = name
 

@@ -33,10 +33,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -58,6 +63,7 @@ public class LottieCompositionFactory {
    * parse tasks prior to the cache getting populated.
    */
   private static final Map<String, LottieTask<LottieComposition>> taskCache = new HashMap<>();
+  private static final Set<LottieTaskIdleListener> taskIdleListeners = new HashSet<>();
 
   /**
    * reference magic bytes for zip compressed files.
@@ -81,6 +87,21 @@ public class LottieCompositionFactory {
     taskCache.clear();
     LottieCompositionCache.getInstance().clear();
     L.networkCache(context).clear();
+  }
+
+  /**
+   * Use this to register a callback for when the composition factory is idle or not.
+   * This can be used to provide data to an espresso idling resource.
+   * Refer to FragmentVisibilityTests and its LottieIdlingResource in the Lottie repo for
+   * an example.
+   */
+  public static void registerLottieTaskIdleListener(LottieTaskIdleListener listener) {
+    taskIdleListeners.add(listener);
+    listener.onIdleChanged(taskCache.size() == 0);
+  }
+
+  public static void unregisterLottieTaskIdleListener(LottieTaskIdleListener listener) {
+    taskIdleListeners.remove(listener);
   }
 
   /**
@@ -596,10 +617,16 @@ public class LottieCompositionFactory {
       task.addListener(result -> {
         taskCache.remove(cacheKey);
         resultAlreadyCalled.set(true);
+        if (taskCache.size() == 0) {
+          notifyTaskCacheIdleListeners(true);
+        }
       });
       task.addFailureListener(result -> {
         taskCache.remove(cacheKey);
         resultAlreadyCalled.set(true);
+        if (taskCache.size() == 0) {
+          notifyTaskCacheIdleListeners(true);
+        }
       });
       // It is technically possible for the task to finish and for the listeners to get called
       // before this code runs. If this happens, the task will be put in taskCache but never removed.
@@ -607,8 +634,18 @@ public class LottieCompositionFactory {
       // for long enough for the task to finish and call the listeners. Unlikely but not impossible.
       if (!resultAlreadyCalled.get()) {
         taskCache.put(cacheKey, task);
+        if (taskCache.size() == 1) {
+          notifyTaskCacheIdleListeners(false);
+        }
       }
     }
     return task;
+  }
+
+  private static void notifyTaskCacheIdleListeners(boolean idle) {
+    List<LottieTaskIdleListener> listeners = new ArrayList<>(taskIdleListeners);
+    for (int i = 0; i < listeners.size(); i++) {
+      listeners.get(i).onIdleChanged(idle);
+    }
   }
 }
