@@ -106,6 +106,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private ImageAssetDelegate imageAssetDelegate;
   @Nullable
   private FontAssetManager fontAssetManager;
+  /**
+   * Will be set if manually overridden by {@link #setDefaultFontFileExtension(String)}.
+   * This must be stored as a field in case it is set before the font asset delegate
+   * has been created.
+   */
+  @Nullable String defaultFontFileExtension;
   @Nullable
   FontAssetDelegate fontAssetDelegate;
   @Nullable
@@ -1262,9 +1268,32 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
     if (fontAssetManager == null) {
       fontAssetManager = new FontAssetManager(getCallback(), fontAssetDelegate);
+      String defaultExtension = this.defaultFontFileExtension;
+      if (defaultExtension != null) {
+        fontAssetManager.setDefaultFontFileExtension(defaultFontFileExtension);
+      }
     }
 
     return fontAssetManager;
+  }
+
+  /**
+   * By default, Lottie will look in src/assets/fonts/FONT_NAME.ttf
+   * where FONT_NAME is the fFamily specified in your Lottie file.
+   * If your fonts have a different extension, you can override the
+   * default here.
+   *
+   * Alternatively, you can use {@link #setFontAssetDelegate(FontAssetDelegate)}
+   * for more control.
+   *
+   * @see #setFontAssetDelegate(FontAssetDelegate)
+   */
+  public void setDefaultFontFileExtension(String extension) {
+    defaultFontFileExtension = extension;
+    FontAssetManager fam = getFontAssetManager();
+    if (fam != null) {
+      fam.setDefaultFontFileExtension(extension);
+    }
   }
 
   @Nullable
