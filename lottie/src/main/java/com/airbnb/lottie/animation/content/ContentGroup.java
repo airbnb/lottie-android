@@ -115,6 +115,10 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
   }
 
+  public List<Content> getContents() {
+    return contents;
+  }
+
   List<PathContent> getPathList() {
     if (pathContents == null) {
       pathContents = new ArrayList<>();
