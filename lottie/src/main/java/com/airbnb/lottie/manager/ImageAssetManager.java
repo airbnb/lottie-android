@@ -38,7 +38,7 @@ public class ImageAssetManager {
       return;
     }
 
-    context = ((View) callback).getContext();
+    context = ((View) callback).getContext().getApplicationContext();
     this.imageAssets = imageAssets;
     setDelegate(delegate);
   }
