@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -29,6 +30,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.nhaarman.mockitokotlin2.mock
+import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -40,9 +42,18 @@ import kotlin.random.Random
 @LargeTest
 class FragmentVisibilityTests {
 
+    lateinit var idlingResource: LottieIdlingResource
+
     @Before
     fun setup() {
         LottieCompositionCache.getInstance().clear()
+        idlingResource = LottieIdlingResource()
+        IdlingRegistry.getInstance().register(idlingResource)
+    }
+    
+    @After
+    fun teardown() {
+        IdlingRegistry.getInstance().unregister(idlingResource)
     }
 
     @Test
@@ -60,7 +71,6 @@ class FragmentVisibilityTests {
                             return object : RecyclerView.ViewHolder(LottieAnimationView(parent.context).apply {
                                 id = R.id.animation_view
                                 setAnimation(R.raw.heart)
-                                IdlingRegistry.getInstance().register(LottieIdlingResource(this))
                             }) {}
                         }
 
@@ -96,10 +106,6 @@ class FragmentVisibilityTests {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.auto_play, container, false)
             }
-
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
-            }
         }
         launchFragmentInContainer<TestFragment>()
         onView(withId(R.id.animation_view)).check(matches(isAnimating()))
@@ -118,7 +124,6 @@ class FragmentVisibilityTests {
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
                 val animationView = requireView().findViewById<LottieAnimationView>(R.id.animation_view)
                 animationView.pauseAnimation()
-                IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
             }
         }
         launchFragmentInContainer<TestFragment>()
@@ -130,10 +135,6 @@ class FragmentVisibilityTests {
         class TestFragment : Fragment() {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.auto_play_gone, container, false)
-            }
-
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
             }
         }
 
@@ -153,7 +154,6 @@ class FragmentVisibilityTests {
             }
 
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
                 AlertDialog.Builder(requireContext()).setTitle("This is a dialog").show()
             }
         }
@@ -181,7 +181,6 @@ class FragmentVisibilityTests {
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
                 animationView = view.findViewById(R.id.animation_view)
                 animationView.addAnimatorListener(animationListener)
-                IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
             }
         }
 
@@ -226,7 +225,6 @@ class FragmentVisibilityTests {
                                 repeatMode = LottieDrawable.RESTART
                                 setAnimation(R.raw.heart)
                                 playAnimation()
-                                IdlingRegistry.getInstance().register(LottieIdlingResource(this))
                             }
                         }
                     }
@@ -244,10 +242,6 @@ class FragmentVisibilityTests {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.no_auto_play, container, false)
             }
-
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
-            }
         }
         launchFragmentInContainer<TestFragment>()
         onView(withId(R.id.animation_view)).check(matches(isNotAnimating()))
@@ -258,10 +252,6 @@ class FragmentVisibilityTests {
         class TestFragment : Fragment() {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.auto_play, container, false)
-            }
-
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
             }
         }
 
@@ -287,7 +277,6 @@ class FragmentVisibilityTests {
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
                 val animationView = view.findViewById<LottieAnimationView>(R.id.animation_view)
                 animationView.playAnimation()
-                IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
             }
         }
         launchFragmentInContainer<TestFragment>()
@@ -304,7 +293,6 @@ class FragmentVisibilityTests {
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
                 val animationView = view.findViewById<LottieAnimationView>(R.id.animation_view)
                 animationView.playAnimation()
-                IdlingRegistry.getInstance().register(LottieIdlingResource(animationView))
             }
         }
 
@@ -326,7 +314,6 @@ class FragmentVisibilityTests {
 
             override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
                 view.findViewById<View>(R.id.container).isVisible = false
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
             }
         }
 
@@ -373,7 +360,6 @@ class FragmentVisibilityTests {
                                     setAnimation(R.raw.heart)
                                     playAnimation()
                                     animationWasPlayed = true
-                                    IdlingRegistry.getInstance().register(LottieIdlingResource(this, name = "Lottie ${Random.nextFloat()}"))
                                 }
                             }
                         }
@@ -435,7 +421,6 @@ class FragmentVisibilityTests {
                                     setAnimation(R.raw.heart)
                                     playAnimation()
                                     animationWasPlayed = true
-                                    IdlingRegistry.getInstance().register(LottieIdlingResource(this, name = "Lottie ${Random.nextFloat()}"))
                                 }
                             }
                         }
@@ -468,10 +453,6 @@ class FragmentVisibilityTests {
         class TestFragment : Fragment() {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
                 return inflater.inflate(R.layout.auto_play, container, false)
-            }
-
-            override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-                IdlingRegistry.getInstance().register(LottieIdlingResource(view.findViewById(R.id.animation_view)))
             }
         }
 

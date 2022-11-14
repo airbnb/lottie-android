@@ -30,6 +30,7 @@
 .idea/modules.xml
 .idea/codeStyleSettings.xml
 .idea/compiler.xml
+.idea/androidTestResultsUserPreferences.xml
 
 # Gradle
 .idea/**/gradle.xml
