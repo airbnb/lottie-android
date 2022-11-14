@@ -55,7 +55,7 @@ public abstract class BaseLayer
       CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case SHAPE:
-        return new ShapeLayer(drawable, layerModel, compositionLayer);
+        return new ShapeLayer(drawable, layerModel, compositionLayer, composition);
       case PRE_COMP:
         return new CompositionLayer(drawable, layerModel,
             composition.getPrecomps(layerModel.getRefId()), composition);

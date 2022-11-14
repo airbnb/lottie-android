@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model.content;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.TrimPathContent;
@@ -65,7 +66,7 @@ public class ShapeTrimPath implements ContentModel {
     return hidden;
   }
 
-  @Override public Content toContent(LottieDrawable drawable, BaseLayer layer) {
+  @Override public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
     return new TrimPathContent(layer, this);
   }
 

@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ContentGroup;
@@ -22,13 +23,13 @@ public class ShapeLayer extends BaseLayer {
   private final ContentGroup contentGroup;
   private final CompositionLayer compositionLayer;
 
-  ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer) {
+  ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer, LottieComposition composition) {
     super(lottieDrawable, layerModel);
     this.compositionLayer = compositionLayer;
 
     // Naming this __container allows it to be ignored in KeyPath matching.
     ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes(), false);
-    contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup);
+    contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup, composition);
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
   }
 

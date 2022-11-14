@@ -8,6 +8,7 @@ import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
@@ -30,11 +31,11 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final Paint offScreenPaint = new LPaint();
   private final RectF offScreenRectF = new RectF();
 
-  private static List<Content> contentsFromModels(LottieDrawable drawable, BaseLayer layer,
+  private static List<Content> contentsFromModels(LottieDrawable drawable, LottieComposition composition, BaseLayer layer,
       List<ContentModel> contentModels) {
     List<Content> contents = new ArrayList<>(contentModels.size());
     for (int i = 0; i < contentModels.size(); i++) {
-      Content content = contentModels.get(i).toContent(drawable, layer);
+      Content content = contentModels.get(i).toContent(drawable, composition, layer);
       if (content != null) {
         contents.add(content);
       }
@@ -63,9 +64,9 @@ public class ContentGroup implements DrawingContent, PathContent,
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
-  public ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup) {
+  public ContentGroup(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeGroup shapeGroup, LottieComposition composition) {
     this(lottieDrawable, layer, shapeGroup.getName(),
-        shapeGroup.isHidden(), contentsFromModels(lottieDrawable, layer, shapeGroup.getItems()),
+        shapeGroup.isHidden(), contentsFromModels(lottieDrawable, composition, layer, shapeGroup.getItems()),
         findTransform(shapeGroup.getItems()));
   }
 
