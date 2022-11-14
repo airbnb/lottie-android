@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 import androidx.core.os.TraceCompat;
 
@@ -22,6 +23,7 @@ public class L {
 
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
+  private static boolean networkCacheEnabled = true;
   private static String[] sections;
   private static long[] startTimeNs;
   private static int traceDepth = 0;
@@ -45,6 +47,10 @@ public class L {
       sections = new String[MAX_DEPTH];
       startTimeNs = new long[MAX_DEPTH];
     }
+  }
+
+  public static void setNetworkCacheEnabled(boolean enabled) {
+    networkCacheEnabled = enabled;
   }
 
   public static void beginSection(String section) {
@@ -103,8 +109,11 @@ public class L {
     return local;
   }
 
-  @NonNull
+  @Nullable
   public static NetworkCache networkCache(@NonNull final Context context) {
+    if (!networkCacheEnabled) {
+      return null;
+    }
     final Context appContext = context.getApplicationContext();
     NetworkCache local = networkCache;
     if (local == null) {

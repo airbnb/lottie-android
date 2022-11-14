@@ -18,6 +18,7 @@ import androidx.annotation.WorkerThread;
 
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.LottieCompositionCache;
+import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.parser.LottieCompositionMoshiParser;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Logger;
@@ -27,7 +28,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +86,10 @@ public class LottieCompositionFactory {
   public static void clearCache(Context context) {
     taskCache.clear();
     LottieCompositionCache.getInstance().clear();
-    L.networkCache(context).clear();
+    final NetworkCache networkCache = L.networkCache(context);
+    if (networkCache != null) {
+      networkCache.clear();
+    }
   }
 
   /**
