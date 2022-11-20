@@ -61,6 +61,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   private final boolean hidden;
   private final List<Content> contents;
   private final LottieDrawable lottieDrawable;
+  private final BaseLayer layer;
   @Nullable private List<PathContent> pathContents;
   @Nullable private TransformKeyframeAnimation transformAnimation;
 
@@ -74,6 +75,7 @@ public class ContentGroup implements DrawingContent, PathContent,
       String name, boolean hidden, List<Content> contents, @Nullable AnimatableTransform transform) {
     this.name = name;
     this.lottieDrawable = lottieDrawable;
+    this.layer = layer;
     this.hidden = hidden;
     this.contents = contents;
 
@@ -97,7 +99,7 @@ public class ContentGroup implements DrawingContent, PathContent,
   }
 
   @Override public void onValueChanged() {
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public String getName() {

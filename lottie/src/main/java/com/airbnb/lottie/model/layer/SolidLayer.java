@@ -25,8 +25,8 @@ public class SolidLayer extends BaseLayer {
   private final Layer layerModel;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 
-  SolidLayer(LottieDrawable lottieDrawable, Layer layerModel) {
-    super(lottieDrawable, layerModel);
+  SolidLayer(LottieDrawable lottieDrawable, CompositionLayer compositionLayer, Layer layerModel) {
+    super(lottieDrawable, compositionLayer, layerModel);
     this.layerModel = layerModel;
 
     paint.setAlpha(0);

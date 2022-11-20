@@ -23,12 +23,14 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
   private static final float ROUNDED_CORNER_MAGIC_NUMBER = 0.5519f;
 
   private final LottieDrawable lottieDrawable;
+  private final BaseLayer layer;
   private final String name;
   private final BaseKeyframeAnimation<Float, Float> roundedCorners;
   @Nullable private ShapeData shapeData;
 
   public RoundedCornersContent(LottieDrawable lottieDrawable, BaseLayer layer, RoundedCorners roundedCorners) {
     this.lottieDrawable = lottieDrawable;
+    this.layer = layer;
     this.name = roundedCorners.getName();
     this.roundedCorners = roundedCorners.getCornerRadius().createAnimation();
     layer.addAnimation(this.roundedCorners);
@@ -40,7 +42,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
   }
 
   @Override public void onValueChanged() {
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

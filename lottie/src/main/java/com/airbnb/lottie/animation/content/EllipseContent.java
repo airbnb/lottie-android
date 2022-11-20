@@ -28,11 +28,13 @@ public class EllipseContent
   private final BaseKeyframeAnimation<?, PointF> sizeAnimation;
   private final BaseKeyframeAnimation<?, PointF> positionAnimation;
   private final CircleShape circleShape;
+  private final BaseLayer layer;
 
   private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
 
   public EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
+    this.layer = layer;
     name = circleShape.getName();
     this.lottieDrawable = lottieDrawable;
     sizeAnimation = circleShape.getSize().createAnimation();
@@ -52,7 +54,7 @@ public class EllipseContent
 
   private void invalidate() {
     isPathValid = false;
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

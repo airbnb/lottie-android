@@ -37,9 +37,9 @@ public class CompositionLayer extends BaseLayer {
 
   private boolean clipToCompositionBounds = true;
 
-  public CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
+  public CompositionLayer(LottieDrawable lottieDrawable, CompositionLayer parentCompositionLayer, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
-    super(lottieDrawable, layerModel);
+    super(lottieDrawable, parentCompositionLayer, layerModel);
 
     AnimatableFloatValue timeRemapping = layerModel.getTimeRemapping();
     if (timeRemapping != null) {

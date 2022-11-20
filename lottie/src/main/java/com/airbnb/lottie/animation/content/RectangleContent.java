@@ -24,6 +24,7 @@ public class RectangleContent
   private final Path path = new Path();
   private final RectF rect = new RectF();
 
+  private final BaseLayer layer;
   private final String name;
   private final boolean hidden;
   private final LottieDrawable lottieDrawable;
@@ -37,6 +38,7 @@ public class RectangleContent
   private boolean isPathValid;
 
   public RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape) {
+    this.layer = layer;
     name = rectShape.getName();
     hidden = rectShape.isHidden();
     this.lottieDrawable = lottieDrawable;
@@ -65,7 +67,7 @@ public class RectangleContent
 
   private void invalidate() {
     isPathValid = false;
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override

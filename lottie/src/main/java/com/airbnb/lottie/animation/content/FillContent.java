@@ -77,7 +77,7 @@ public class FillContent
   }
 
   @Override public void onValueChanged() {
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
@@ -98,15 +98,26 @@ public class FillContent
       return;
     }
     L.beginSection("FillContent#draw");
+    L.beginSection("FillContent#getColor");
     int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
+    int finalColor = (clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF);
+    L.endSection("FillContent#getColor");
+    L.beginSection("FillContent#setColor");
+    paint.setColor(finalColor);
+    L.endSection("FillContent#setColor");
 
     if (colorFilterAnimation != null) {
-      paint.setColorFilter(colorFilterAnimation.getValue());
+      L.beginSection("FillContent#setColorFilter.getValue");
+      ColorFilter value = colorFilterAnimation.getValue();
+      L.endSection("FillContent#setColorFilter.getValue");
+      L.beginSection("FillContent#setColorFilter.paint");
+      paint.setColorFilter(value);
+      L.endSection("FillContent#setColorFilter.paint");
     }
 
     if (blurAnimation != null) {
+      L.beginSection("FillContent#blur");
       float blurRadius = blurAnimation.getValue();
       if (blurRadius == 0f) {
         paint.setMaskFilter(null);
@@ -115,17 +126,24 @@ public class FillContent
         paint.setMaskFilter(blur);
       }
       blurMaskFilterRadius = blurRadius;
+      L.endSection("FillContent#blur");
     }
     if (dropShadowAnimation != null) {
+      L.beginSection("FillContent#dropShadow");
       dropShadowAnimation.applyTo(paint);
+      L.endSection("FillContent#dropShadow");
     }
 
+    L.beginSection("FillContent#addPath");
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
       path.addPath(paths.get(i).getPath(), parentMatrix);
     }
+    L.endSection("FillContent#addPath");
 
+    L.beginSection("FillContent#drawPath");
     canvas.drawPath(path, paint);
+    L.endSection("FillContent#drawPath");
 
     L.endSection("FillContent#draw");
   }

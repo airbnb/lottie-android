@@ -21,11 +21,9 @@ import java.util.List;
 
 public class ShapeLayer extends BaseLayer {
   private final ContentGroup contentGroup;
-  private final CompositionLayer compositionLayer;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer, LottieComposition composition) {
-    super(lottieDrawable, layerModel);
-    this.compositionLayer = compositionLayer;
+    super(lottieDrawable, compositionLayer, layerModel);
 
     // Naming this __container allows it to be ignored in KeyPath matching.
     ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes(), false);

@@ -125,7 +125,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
   }
 
   @Override public void onValueChanged() {
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public void resolveKeyPath(

@@ -9,7 +9,9 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.RenderNode;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
@@ -57,16 +59,16 @@ public abstract class BaseLayer
       case SHAPE:
         return new ShapeLayer(drawable, layerModel, compositionLayer, composition);
       case PRE_COMP:
-        return new CompositionLayer(drawable, layerModel,
+        return new CompositionLayer(drawable, compositionLayer, layerModel,
             composition.getPrecomps(layerModel.getRefId()), composition);
       case SOLID:
-        return new SolidLayer(drawable, layerModel);
+        return new SolidLayer(drawable, compositionLayer, layerModel);
       case IMAGE:
-        return new ImageLayer(drawable, layerModel);
+        return new ImageLayer(drawable, compositionLayer, layerModel);
       case NULL:
-        return new NullLayer(drawable, layerModel);
+        return new NullLayer(drawable, compositionLayer, layerModel);
       case TEXT:
-        return new TextLayer(drawable, layerModel);
+        return new TextLayer(drawable, compositionLayer, layerModel);
       case UNKNOWN:
       default:
         // Do nothing
@@ -115,9 +117,11 @@ public abstract class BaseLayer
 
   float blurMaskFilterRadius = 0f;
   @Nullable BlurMaskFilter blurMaskFilter;
+  @Nullable protected final CompositionLayer compositionLayer;
 
-  BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
+  BaseLayer(LottieDrawable lottieDrawable, @Nullable CompositionLayer compositionLayer, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
+    this.compositionLayer = compositionLayer;
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
     if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
@@ -190,8 +194,27 @@ public abstract class BaseLayer
     }
   }
 
-  private void invalidateSelf() {
-    lottieDrawable.invalidateSelf();
+  protected boolean isInvalid = false;
+
+  public void invalidateSelf() {
+    isInvalid = true;
+    if (compositionLayer == null) {
+      // TODO: do this via inheritance.
+      lottieDrawable.invalidateSelf();
+    } else {
+      compositionLayer.invalidateSelf();
+    }
+    // if (parentLayer != null) {
+    //   parentLayer.invalidateSelf();
+    // }
+    // if (parentLayers != null) {
+    //   for (BaseLayer layer : parentLayers) {
+    //     layer.invalidateSelf();
+    //   }
+    // }
+    // if (matteLayer != null) {
+    //   matteLayer.invalidateSelf();
+    // }
   }
 
   public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
@@ -226,14 +249,33 @@ public abstract class BaseLayer
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
+
+  RenderNode renderNode;
+  String renderNodeName;
+  private final Matrix lastDrawnMatrix = new Matrix();
+
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  public void draw(Canvas originalCanvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
       return;
     }
+    L.beginSection("Layer#setup");
+    if (renderNode == null) {
+      L.beginSection("Layer#newRenderNode");
+      renderNodeName = layerModel.getId() + ":" + layerModel.getName();
+      if (parentLayers != null) {
+        for (BaseLayer layer : parentLayers) {
+          renderNodeName += "_" + layer.getName();
+        }
+      }
+      renderNode = new RenderNode(renderNodeName);
+      L.endSection("Layer#newRenderNode");
+    }
+
     buildParentLayerListIfNeeded();
+    L.endSection("Layer#setup");
     L.beginSection("Layer#parentMatrix");
     matrix.reset();
     matrix.set(parentMatrix);
@@ -241,6 +283,7 @@ public abstract class BaseLayer
       matrix.preConcat(parentLayers.get(i).transform.getMatrix());
     }
     L.endSection("Layer#parentMatrix");
+    L.beginSection("Layer#opacity");
     // It is unclear why but getting the opacity here would sometimes NPE.
     // The extra code here is designed to avoid this.
     // https://github.com/airbnb/lottie-android/issues/2083
@@ -253,29 +296,71 @@ public abstract class BaseLayer
       }
     }
     int alpha = (int) ((parentAlpha / 255f * (float) opacity / 100f) * 255);
-    if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
+    L.endSection("Layer#opacity");
+    L.beginSection("Layer#hasMatteOrMask");
+    boolean hasMatteOrMask = !hasMatteOnThisLayer() && !hasMasksOnThisLayer();
+    L.endSection("Layer#hasMatteOrMask");
+    L.beginSection("Layer#reuseRenderNode");
+    L.endSection("Layer#reuseRenderNode");
+    if (hasMatteOrMask) {
       matrix.preConcat(transform.getMatrix());
+      boolean reuseRenderNode = renderNode.hasDisplayList() && !isInvalid && matrix.equals(lastDrawnMatrix);
+      if (reuseRenderNode) {
+        L.beginSection("Layer#drawRenderNode");
+        originalCanvas.drawRenderNode(renderNode);
+        L.endSection("Layer#drawRenderNode");
+        recordRenderTime(L.endSection(drawTraceName));
+        return;
+      }
+      L.beginSection("Layer#setPositionAndBeginRecording");
+      renderNode.setPosition(layerModel.getComposition().getBounds());
+      Canvas recordingCanvas = renderNode.beginRecording();
+      L.endSection("Layer#setPositionAndBeginRecording");
+
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha);
+      lastDrawnMatrix.set(matrix);
+      drawLayer(recordingCanvas, matrix, alpha);
       L.endSection("Layer#drawLayer");
+      L.beginSection("Layer#endRecording");
+      renderNode.endRecording();
+      L.endSection("Layer#endRecording");
+      L.beginSection("Layer#drawRenderNode");
+      originalCanvas.drawRenderNode(renderNode);
+      L.endSection("Layer#drawRenderNode");
       recordRenderTime(L.endSection(drawTraceName));
+      isInvalid = false;
       return;
     }
 
     L.beginSection("Layer#computeBounds");
     getBounds(rect, matrix, false);
+    L.endSection("Layer#computeBounds");
 
     intersectBoundsWithMatte(rect, parentMatrix);
 
     matrix.preConcat(transform.getMatrix());
     intersectBoundsWithMask(rect, matrix);
 
+    boolean reuseRenderNode = renderNode.hasDisplayList() && !isInvalid && matrix.equals(lastDrawnMatrix);
+    if (reuseRenderNode) {
+      L.beginSection("Layer#drawRenderNode");
+      originalCanvas.drawRenderNode(renderNode);
+      L.endSection("Layer#drawRenderNode");
+      recordRenderTime(L.endSection(drawTraceName));
+      return;
+    }
+    L.beginSection("Layer#setPositionAndCompositingLayer");
+    renderNode.setPosition(layerModel.getComposition().getBounds());
+    renderNode.setUseCompositingLayer(true, new Paint());
+    Canvas recordingCanvas = renderNode.beginRecording();
+    L.endSection("Layer#setPositionAndCompositingLayer");
+
     // Intersect the mask and matte rect with the canvas bounds.
     // If the canvas has a transform, then we need to transform its bounds by its matrix
     // so that we know the coordinate space that the canvas is showing.
-    canvasBounds.set(0f, 0f, canvas.getWidth(), canvas.getHeight());
+    canvasBounds.set(0f, 0f, recordingCanvas.getWidth(), recordingCanvas.getHeight());
     //noinspection deprecation
-    canvas.getMatrix(canvasMatrix);
+    recordingCanvas.getMatrix(canvasMatrix);
     if (!canvasMatrix.isIdentity()) {
       canvasMatrix.invert(canvasMatrix);
       canvasMatrix.mapRect(canvasBounds);
@@ -284,43 +369,41 @@ public abstract class BaseLayer
       rect.set(0, 0, 0, 0);
     }
 
-    L.endSection("Layer#computeBounds");
-
     // Ensure that what we are drawing is >=1px of width and height.
     // On older devices, drawing to an offscreen buffer of <1px would draw back as a black bar.
     // https://github.com/airbnb/lottie-android/issues/1625
     if (rect.width() >= 1f && rect.height() >= 1f) {
       L.beginSection("Layer#saveLayer");
       contentPaint.setAlpha(255);
-      Utils.saveLayerCompat(canvas, rect, contentPaint);
+      Utils.saveLayerCompat(recordingCanvas, rect, contentPaint);
       L.endSection("Layer#saveLayer");
 
       // Clear the off screen buffer. This is necessary for some phones.
-      clearCanvas(canvas);
+      clearCanvas(recordingCanvas);
       L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha);
+      drawLayer(recordingCanvas, matrix, alpha);
       L.endSection("Layer#drawLayer");
 
       if (hasMasksOnThisLayer()) {
-        applyMasks(canvas, matrix);
+        applyMasks(recordingCanvas, matrix);
       }
 
       if (hasMatteOnThisLayer()) {
         L.beginSection("Layer#drawMatte");
         L.beginSection("Layer#saveLayer");
-        Utils.saveLayerCompat(canvas, rect, mattePaint, SAVE_FLAGS);
+        Utils.saveLayerCompat(recordingCanvas, rect, mattePaint, SAVE_FLAGS);
         L.endSection("Layer#saveLayer");
-        clearCanvas(canvas);
+        clearCanvas(recordingCanvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha);
+        matteLayer.draw(recordingCanvas, parentMatrix, alpha);
         L.beginSection("Layer#restoreLayer");
-        canvas.restore();
+        recordingCanvas.restore();
         L.endSection("Layer#restoreLayer");
         L.endSection("Layer#drawMatte");
       }
 
       L.beginSection("Layer#restoreLayer");
-      canvas.restore();
+      recordingCanvas.restore();
       L.endSection("Layer#restoreLayer");
     }
 
@@ -328,11 +411,18 @@ public abstract class BaseLayer
       outlineMasksAndMattesPaint.setStyle(Paint.Style.STROKE);
       outlineMasksAndMattesPaint.setColor(0xFFFC2803);
       outlineMasksAndMattesPaint.setStrokeWidth(4);
-      canvas.drawRect(rect, outlineMasksAndMattesPaint);
+      recordingCanvas.drawRect(rect, outlineMasksAndMattesPaint);
       outlineMasksAndMattesPaint.setStyle(Paint.Style.FILL);
       outlineMasksAndMattesPaint.setColor(0x50EBEBEB);
-      canvas.drawRect(rect, outlineMasksAndMattesPaint);
+      recordingCanvas.drawRect(rect, outlineMasksAndMattesPaint);
     }
+
+    renderNode.endRecording();
+    L.beginSection("Layer#drawRenderNode");
+    originalCanvas.drawRenderNode(renderNode);
+    L.endSection("Layer#drawRenderNode");
+    isInvalid = false;
+    lastDrawnMatrix.set(matrix);
 
     recordRenderTime(L.endSection(drawTraceName));
   }
@@ -602,11 +692,14 @@ public abstract class BaseLayer
   }
 
   private void buildParentLayerListIfNeeded() {
+    L.beginSection("Layer#buildParentLayerIfNeeded");
     if (parentLayers != null) {
+      L.endSection("Layer#buildParentLayerIfNeeded");
       return;
     }
     if (parentLayer == null) {
       parentLayers = Collections.emptyList();
+      L.endSection("Layer#buildParentLayerIfNeeded");
       return;
     }
 
@@ -616,6 +709,7 @@ public abstract class BaseLayer
       parentLayers.add(layer);
       layer = layer.parentLayer;
     }
+    L.endSection("Layer#buildParentLayerIfNeeded");
   }
 
   @Override

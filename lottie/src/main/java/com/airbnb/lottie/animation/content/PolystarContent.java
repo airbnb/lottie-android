@@ -31,6 +31,7 @@ public class PolystarContent
 
   private final String name;
   private final LottieDrawable lottieDrawable;
+  private final BaseLayer layer;
   private final PolystarShape.Type type;
   private final boolean hidden;
   private final boolean isReversed;
@@ -48,6 +49,7 @@ public class PolystarContent
   public PolystarContent(LottieDrawable lottieDrawable, BaseLayer layer,
       PolystarShape polystarShape) {
     this.lottieDrawable = lottieDrawable;
+    this.layer = layer;
 
     name = polystarShape.getName();
     type = polystarShape.getType();
@@ -93,7 +95,7 @@ public class PolystarContent
 
   private void invalidate() {
     isPathValid = false;
-    lottieDrawable.invalidateSelf();
+    layer.invalidateSelf();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

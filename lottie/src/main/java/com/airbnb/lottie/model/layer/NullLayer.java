@@ -7,8 +7,8 @@ import android.graphics.RectF;
 import com.airbnb.lottie.LottieDrawable;
 
 public class NullLayer extends BaseLayer {
-  NullLayer(LottieDrawable lottieDrawable, Layer layerModel) {
-    super(lottieDrawable, layerModel);
+  NullLayer(LottieDrawable lottieDrawable, CompositionLayer compositionLayer, Layer layerModel) {
+    super(lottieDrawable, compositionLayer, layerModel);
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {

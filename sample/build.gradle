@@ -10,7 +10,8 @@ android {
   compileSdk 33
   defaultConfig {
     applicationId "com.airbnb.lottie"
-    minSdk 16
+    // DO NOT SUBMIT
+    minSdk 29
     targetSdk 33
     versionCode 70
     versionName VERSION_NAME
