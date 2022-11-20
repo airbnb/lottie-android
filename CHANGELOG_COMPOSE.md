@@ -1,3 +1,6 @@
+###5.3.0
+* Add reverseOnRepeat ([#2128](https://github.com/airbnb/lottie-android/pull/2128))
+
 # 5.2.0
 * [BREAKING CHANGE]
 LottieAnimation now takes progress as a `() -> Float` rather than a `Float`. This allows Lottie to redraw without triggering a recomposition every time progress updates. For more information, refer to the Compose [phase docs](https://developer.android.com/jetpack/compose/phases). The existing API will exist as deprecated for one more release but will then be removed. For the vast majority of use cases:

@@ -1,3 +1,21 @@
+# 5.3.0
+### New Features
+* Allow animations in zip files to contain embedded base64 encoded images ([#2110](https://github.com/airbnb/lottie-android/pull/2110))
+* Allow zip files to contain embedded fonts. Context was added to some LottieCompositionFactory APIs to support this ([#2102](https://github.com/airbnb/lottie-android/pull/2102))
+* Add fontStyle and fontName as parameters in new overloads in FontAssetDelegate ([#2103](https://github.com/airbnb/lottie-android/pull/2103))
+* Allow decimal values for precomp size ([#2138](https://github.com/airbnb/lottie-android/pull/2138))
+* Allow interpolating in between gradeients that have different numbers of opacity stops ([#2160](https://github.com/airbnb/lottie-android/pull/2160))
+* Support box position in document data ([#2139](https://github.com/airbnb/lottie-android/pull/2139))
+* Allow repeater contents to be the target of dynamic properties ([#2164](https://github.com/airbnb/lottie-android/pull/2164))
+* Provide a global LottieTask listener to aid in Espresso idle resources ([#2161](https://github.com/airbnb/lottie-android/pull/2161))
+* Allow setting a default font extension ([#2166](https://github.com/airbnb/lottie-android/pull/2166))
+* Add an option to completely disable Lottie's network cache ([#2158](https://github.com/airbnb/lottie-android/pull/2158))
+### Bugs Fixed
+* Fixed an NPE when decoding an invalid bitmap ([#2117](https://github.com/airbnb/lottie-android/pull/2117))
+* Only store application context in ImageAssetManager ([#2163](https://github.com/airbnb/lottie-android/pull/2163))
+* Prevent rounded corner effects from trying to round a shape that has control points on its vertices already ([#2165](https://github.com/airbnb/lottie-android/pull/2165))
+* Pass LottieComposition directly while building layers to avoid race conditions ([#2167](https://github.com/airbnb/lottie-android/pull/2167))
+
 # 5.2.0
 ### Bugs Fixed
 * De-dupe gradient stops. On pre-Oreo devices, if you had color and opacity stops in the same place and used hardware acceleration, you may have seen artifacts at the stop positions as of 5.1.1 [#20814](https://github.com/airbnb/lottie-android/pull/2081)
