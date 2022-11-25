@@ -23,7 +23,8 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
       "sc", // 8
       "sw", // 9
       "of", // 10
-      "ps" // 11
+      "ps", // 11
+      "sz" // 12
   );
 
   private DocumentDataParser() {
@@ -43,6 +44,7 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     float strokeWidth = 0f;
     boolean strokeOverFill = true;
     PointF boxPosition = null;
+    PointF boxSize = null;
 
     reader.beginObject();
     while (reader.hasNext()) {
@@ -90,6 +92,11 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
           boxPosition = new PointF((float) reader.nextDouble() * scale, (float) reader.nextDouble() * scale);
           reader.endArray();
           break;
+        case 12:
+          reader.beginArray();
+          boxSize = new PointF((float) reader.nextDouble() * scale, (float) reader.nextDouble() * scale);
+          reader.endArray();
+          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -98,6 +105,6 @@ public class DocumentDataParser implements ValueParser<DocumentData> {
     reader.endObject();
 
     return new DocumentData(text, fontName, size, justification, tracking, lineHeight,
-        baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill, boxPosition);
+        baselineShift, fillColor, strokeColor, strokeWidth, strokeOverFill, boxPosition, boxSize);
   }
 }
