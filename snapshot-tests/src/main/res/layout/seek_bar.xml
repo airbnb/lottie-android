@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="512dp"
+    android:layout_height="64dp">
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_gravity="center"
+        android:progress="50"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</FrameLayout>

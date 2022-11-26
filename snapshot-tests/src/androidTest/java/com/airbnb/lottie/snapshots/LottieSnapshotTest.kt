@@ -30,6 +30,7 @@ import com.airbnb.lottie.snapshots.tests.OutlineMasksAndMattesTestCase
 import com.airbnb.lottie.snapshots.tests.PartialFrameProgressTestCase
 import com.airbnb.lottie.snapshots.tests.ProdAnimationsTestCase
 import com.airbnb.lottie.snapshots.tests.ScaleTypesTestCase
+import com.airbnb.lottie.snapshots.tests.SeekBarTestCase
 import com.airbnb.lottie.snapshots.tests.SoftwareRenderingDynamicPropertiesInvalidationTestCase
 import com.airbnb.lottie.snapshots.tests.TextTestCase
 import com.airbnb.lottie.snapshots.utils.BitmapPool
@@ -127,6 +128,7 @@ class LottieSnapshotTest {
             ProdAnimationsTestCase(),
             ClipChildrenTestCase(),
             SoftwareRenderingDynamicPropertiesInvalidationTestCase(),
+            SeekBarTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
