@@ -44,7 +44,7 @@ public class DocumentData {
 
   public void set(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill, PointF positionOffset, PointF boxSize) {
+      float strokeWidth, boolean strokeOverFill, PointF boxPosition, PointF boxSize) {
     this.text = text;
     this.fontName = fontName;
     this.size = size;
@@ -56,7 +56,7 @@ public class DocumentData {
     this.strokeColor = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOverFill = strokeOverFill;
-    this.boxPosition = positionOffset;
+    this.boxPosition = boxPosition;
     this.boxSize = boxSize;
   }
 
