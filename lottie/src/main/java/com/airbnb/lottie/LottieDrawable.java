@@ -1255,11 +1255,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private ImageAssetManager getImageAssetManager() {
-    if (getCallback() == null) {
-      // We can't get a bitmap since we can't get a Context from the callback.
-      return null;
-    }
-
     if (imageAssetManager != null && !imageAssetManager.hasSameContext(getContext())) {
       imageAssetManager = null;
     }
