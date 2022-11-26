@@ -18,23 +18,25 @@ public class DocumentData {
   }
 
   public String text;
-  @SuppressWarnings("WeakerAccess") public String fontName;
+  public String fontName;
   public float size;
-  @SuppressWarnings("WeakerAccess") public Justification justification;
+  public Justification justification;
   public int tracking;
-  @SuppressWarnings("WeakerAccess") public float lineHeight;
+  /** Extra space in between lines. */
+  public float lineHeight;
   public float baselineShift;
   @ColorInt public int color;
   @ColorInt public int strokeColor;
   public float strokeWidth;
   public boolean strokeOverFill;
   @Nullable public PointF boxPosition;
+  @Nullable public PointF boxSize;
 
 
   public DocumentData(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill, PointF boxPosition) {
-    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill, boxPosition);
+      float strokeWidth, boolean strokeOverFill, PointF boxPosition, PointF boxSize) {
+    set(text, fontName, size, justification, tracking, lineHeight, baselineShift, color, strokeColor, strokeWidth, strokeOverFill, boxPosition, boxSize);
   }
 
   public DocumentData() {
@@ -42,7 +44,7 @@ public class DocumentData {
 
   public void set(String text, String fontName, float size, Justification justification, int tracking,
       float lineHeight, float baselineShift, @ColorInt int color, @ColorInt int strokeColor,
-      float strokeWidth, boolean strokeOverFill, PointF positionOffset) {
+      float strokeWidth, boolean strokeOverFill, PointF boxPosition, PointF boxSize) {
     this.text = text;
     this.fontName = fontName;
     this.size = size;
@@ -54,7 +56,8 @@ public class DocumentData {
     this.strokeColor = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOverFill = strokeOverFill;
-    this.boxPosition = positionOffset;
+    this.boxPosition = boxPosition;
+    this.boxSize = boxSize;
   }
 
   @Override public int hashCode() {

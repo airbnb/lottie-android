@@ -1017,7 +1017,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
-   * the documentation at http://airbnb.io/lottie for more information about importing shapes from
+   * the documentation at <a href="http://airbnb.io/lottie">http://airbnb.io/lottie</a> for more information about importing shapes from
    * Sketch or Illustrator to avoid this.
    */
   public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
