@@ -39,7 +39,7 @@ class AssetsTestCase : SnapshotTestCase {
 
     private fun CoroutineScope.parseCompositionsFromAssets(context: Context, assets: List<String>) = produce(
         context = Executors.newSingleThreadExecutor().asCoroutineDispatcher(),
-        capacity = 10,
+        capacity = 1,
     ) {
         for (asset in assets) {
             val result = LottieCompositionFactory.fromAssetSync(context, asset)
