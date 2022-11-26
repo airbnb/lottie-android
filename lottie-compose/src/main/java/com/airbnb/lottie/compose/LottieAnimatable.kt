@@ -318,16 +318,18 @@ private class LottieAnimatableImpl : LottieAnimatable {
             val dIterations = (progressPastEndOfIteration / durationProgress).toInt() + 1
 
             if (iteration + dIterations > iterations) {
-                progressRaw = endProgress
+                updateProgress(endProgress)
                 iteration = iterations
                 return false
             }
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
-            progressRaw = when {
-                frameSpeed < 0 -> maxProgress - progressPastEndRem
-                else -> minProgress + progressPastEndRem
-            }
+            updateProgress(
+                when {
+                    frameSpeed < 0 -> maxProgress - progressPastEndRem
+                    else -> minProgress + progressPastEndRem
+                }
+            )
         }
 
         return true
