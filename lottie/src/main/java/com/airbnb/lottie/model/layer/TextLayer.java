@@ -265,7 +265,7 @@ public class TextLayer extends BaseLayer {
     for (int i = 0; i < textLineCount; i++) {
       String textLine = textLines.get(i);
       float boxWidth = documentData.boxSize == null ? 0f : documentData.boxSize.x;
-      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, tracking, 0f, 0f, false);
+      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, 0f, tracking, 0f, false);
       for (int j = 0; j < lines.size(); j++) {
         TextSubLine line = lines.get(j);
         lineIndex++;
@@ -335,7 +335,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private List<TextSubLine> splitGlyphTextIntoLines(
-      String textLine, float boxWidth, Font font, float tracking, float fontScale, float parentScale, boolean usingGlyphs) {
+      String textLine, float boxWidth, Font font, float fontScale, float tracking, float parentScale, boolean usingGlyphs) {
     int lineCount = 0;
 
     float currentLineWidth = 0;
