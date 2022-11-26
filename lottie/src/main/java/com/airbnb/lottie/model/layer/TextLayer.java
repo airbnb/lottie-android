@@ -197,7 +197,7 @@ public class TextLayer extends BaseLayer {
     for (int i = 0; i < textLineCount; i++) {
       String textLine = textLines.get(i);
       float boxWidth = documentData.boxSize == null ? 0f : documentData.boxSize.x;
-      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, fontScale, tracking, parentScale, true);
+      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, fontScale, tracking, true);
       for (int j = 0; j < lines.size(); j++) {
         TextSubLine line = lines.get(j);
         lineIndex++;
@@ -223,7 +223,7 @@ public class TextLayer extends BaseLayer {
         continue;
       }
       drawCharacterAsGlyph(character, fontScale, documentData, canvas);
-      float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale + tracking * parentScale;
+      float tx = (float) character.getWidth() * fontScale * Utils.dpScale() + tracking;
       canvas.translate(tx, 0);
     }
   }
@@ -265,7 +265,7 @@ public class TextLayer extends BaseLayer {
     for (int i = 0; i < textLineCount; i++) {
       String textLine = textLines.get(i);
       float boxWidth = documentData.boxSize == null ? 0f : documentData.boxSize.x;
-      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, 0f, tracking, 0f, false);
+      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, 0f, tracking, false);
       for (int j = 0; j < lines.size(); j++) {
         TextSubLine line = lines.get(j);
         lineIndex++;
@@ -334,8 +334,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private List<TextSubLine> splitGlyphTextIntoLines(
-      String textLine, float boxWidth, Font font, float fontScale, float tracking, float parentScale, boolean usingGlyphs) {
+  private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking, boolean usingGlyphs) {
     int lineCount = 0;
 
     float currentLineWidth = 0;
@@ -357,7 +356,7 @@ public class TextLayer extends BaseLayer {
         if (character == null) {
           continue;
         }
-        currentCharWidth = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale + tracking * parentScale;
+        currentCharWidth = (float) character.getWidth() * fontScale * Utils.dpScale() + tracking;
       } else {
         currentCharWidth = fillPaint.measureText(textLine.substring(i, i + 1)) + tracking;
       }
