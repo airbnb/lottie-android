@@ -126,11 +126,7 @@ public class TextLayer extends BaseLayer {
       return;
     }
     canvas.save();
-
-    if (!lottieDrawable.useTextGlyphs()) {
-      // Parent matrices are applied directly to the glyph paths.
-      canvas.concat(parentMatrix);
-    }
+    canvas.concat(parentMatrix);
 
     configurePaint(documentData, parentMatrix);
 
@@ -209,14 +205,14 @@ public class TextLayer extends BaseLayer {
         canvas.save();
 
         offsetCanvas(canvas, documentData, lineIndex, line.width);
-        drawGlyphTextLine(line.text, documentData, parentMatrix, font, canvas, parentScale, fontScale, tracking);
+        drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
 
         canvas.restore();
       }
     }
   }
 
-  private void drawGlyphTextLine(String text, DocumentData documentData, Matrix parentMatrix,
+  private void drawGlyphTextLine(String text, DocumentData documentData,
       Font font, Canvas canvas, float parentScale, float fontScale, float tracking) {
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
@@ -226,7 +222,7 @@ public class TextLayer extends BaseLayer {
         // Something is wrong. Potentially, they didn't export the text as a glyph.
         continue;
       }
-      drawCharacterAsGlyph(character, parentMatrix, fontScale, documentData, canvas);
+      drawCharacterAsGlyph(character, fontScale, documentData, canvas);
       float tx = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale + tracking * parentScale;
       canvas.translate(tx, 0);
     }
@@ -425,7 +421,6 @@ public class TextLayer extends BaseLayer {
 
   private void drawCharacterAsGlyph(
       FontCharacter character,
-      Matrix parentMatrix,
       float fontScale,
       DocumentData documentData,
       Canvas canvas) {
@@ -433,7 +428,7 @@ public class TextLayer extends BaseLayer {
     for (int j = 0; j < contentGroups.size(); j++) {
       Path path = contentGroups.get(j).getPath();
       path.computeBounds(rectF, false);
-      matrix.set(parentMatrix);
+      matrix.reset();
       matrix.preTranslate(0, -documentData.baselineShift * Utils.dpScale());
       matrix.preScale(fontScale, fontScale);
       path.transform(matrix);
@@ -619,11 +614,6 @@ public class TextLayer extends BaseLayer {
     void set(String text, float width) {
       this.text = text;
       this.width = width;
-    }
-
-    void reset() {
-      text = "";
-      width = 0f;
     }
   }
 }
