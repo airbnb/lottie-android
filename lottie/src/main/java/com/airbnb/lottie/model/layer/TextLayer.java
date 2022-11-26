@@ -165,8 +165,7 @@ public class TextLayer extends BaseLayer {
     } else if (strokeWidthAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthAnimation.getValue());
     } else {
-      float parentScale = Utils.getScale(parentMatrix);
-      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale() * parentScale);
+      strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale());
     }
   }
 
