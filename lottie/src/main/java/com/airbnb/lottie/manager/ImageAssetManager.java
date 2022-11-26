@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class ImageAssetManager {
   private static final Object bitmapHashLock = new Object();
-  private final Context context;
+  @Nullable private final Context context;
   private final String imagesFolder;
   @Nullable private ImageAssetDelegate delegate;
   private final Map<String, LottieImageAsset> imageAssets;
@@ -31,16 +31,14 @@ public class ImageAssetManager {
     } else {
       this.imagesFolder = imagesFolder;
     }
+    this.imageAssets = imageAssets;
+    setDelegate(delegate);
     if (!(callback instanceof View)) {
-      Logger.warning("LottieDrawable must be inside of a view for images to work.");
-      this.imageAssets = new HashMap<>();
       context = null;
       return;
     }
 
     context = ((View) callback).getContext().getApplicationContext();
-    this.imageAssets = imageAssets;
-    setDelegate(delegate);
   }
 
   public void setDelegate(@Nullable ImageAssetDelegate assetDelegate) {
@@ -83,6 +81,12 @@ public class ImageAssetManager {
         putBitmap(id, bitmap);
       }
       return bitmap;
+    }
+    Context context = this.context;
+    if (context == null) {
+      // If there is no context, the image has to be embedded or provided via
+      // a delegate.
+      return null;
     }
 
     String filename = asset.getFileName();
