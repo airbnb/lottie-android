@@ -12,8 +12,7 @@ import java.util.List;
 public class FontCharacter {
 
   public static int hashFor(char character, String fontFamily, String style) {
-    int result = 0;
-    result = 31 * result + (int) character;
+    int result = (int) character;
     result = 31 * result + fontFamily.hashCode();
     result = 31 * result + style.hashCode();
     return result;

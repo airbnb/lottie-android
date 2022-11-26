@@ -48,6 +48,10 @@ public class TextLayer extends BaseLayer {
   }};
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
   private final LongSparseArray<String> codePointCache = new LongSparseArray<>();
+  /**
+   * If this is paragraph text, one line may wrap depending on the size of the document data box.
+   */
+  private final List<TextSubLine> textSubLines = new ArrayList<>();
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
@@ -146,7 +150,7 @@ public class TextLayer extends BaseLayer {
     configurePaint(documentData, parentMatrix);
 
     if (lottieDrawable.useTextGlyphs()) {
-      drawTextGlyphs(documentData, parentMatrix, font, canvas);
+      drawTextWithGlyphs(documentData, parentMatrix, font, canvas);
     } else {
       drawTextWithFont(documentData, font, canvas);
     }
@@ -185,7 +189,7 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private void drawTextGlyphs(
+  private void drawTextWithGlyphs(
       DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
     float textSize;
     if (textSizeCallbackAnimation != null) {
@@ -208,17 +212,22 @@ public class TextLayer extends BaseLayer {
     } else if (trackingAnimation != null) {
       tracking += trackingAnimation.getValue();
     }
+    int lineIndex = -1;
     for (int i = 0; i < textLineCount; i++) {
-
       String textLine = textLines.get(i);
-      float lineWidth = getTextLineWidthForGlyphs(textLine, font, fontScale, parentScale);
+      float boxWidth = documentData.boxSize == null ? 0f : documentData.boxSize.x;
+      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, fontScale, tracking, parentScale, true);
+      for (int j = 0; j < lines.size(); j++) {
+        TextSubLine line = lines.get(j);
+        lineIndex++;
 
-      canvas.save();
+        canvas.save();
 
-      offsetCanvas(canvas, documentData, i, lineWidth);
-      drawGlyphTextLine(textLine, documentData, parentMatrix, font, canvas, parentScale, fontScale, tracking);
+        offsetCanvas(canvas, documentData, lineIndex, line.width);
+        drawGlyphTextLine(line.text, documentData, parentMatrix, font, canvas, parentScale, fontScale, tracking);
 
-      canvas.restore();
+        canvas.restore();
+      }
     }
   }
 
@@ -271,34 +280,40 @@ public class TextLayer extends BaseLayer {
     // Split full text in multiple lines
     List<String> textLines = getTextLines(text);
     int textLineCount = textLines.size();
+    int lineIndex = -1;
     for (int i = 0; i < textLineCount; i++) {
-      String line = textLines.get(i);
-      // Shortcut to not calculate line width for left align which doesn't need it.
-      float lineWidth = documentData.justification == DocumentData.Justification.LEFT_ALIGN ? 0f :
-          strokePaint.measureText(line) + (line.length() - 1) * tracking;
+      String textLine = textLines.get(i);
+      float boxWidth = documentData.boxSize == null ? 0f : documentData.boxSize.x;
+      List<TextSubLine> lines = splitGlyphTextIntoLines(textLine, boxWidth, font, tracking, 0f, 0f, false);
+      for (int j = 0; j < lines.size(); j++) {
+        TextSubLine line = lines.get(j);
+        lineIndex++;
 
-      canvas.save();
-      offsetCanvas(canvas, documentData, i, lineWidth);
-      drawFontTextLine(line, documentData, canvas, tracking);
-      canvas.restore();
+        canvas.save();
+
+        offsetCanvas(canvas, documentData, lineIndex, line.width);
+        drawFontTextLine(line.text, documentData, canvas, tracking);
+
+        canvas.restore();
+      }
     }
   }
 
   private void offsetCanvas(Canvas canvas, DocumentData documentData, int lineIndex, float lineWidth) {
     PointF position = documentData.boxPosition;
     PointF size = documentData.boxSize;
-    float dy = lineIndex * documentData.lineHeight * Utils.dpScale();
+    float lineOffset = lineIndex * documentData.lineHeight * Utils.dpScale();
     float lineStart = position == null ? 0f : position.x;
-    float boxWidth = size == null ? 0 : size.x;
+    float boxWidth = size == null ? 0f : size.x;
     switch (documentData.justification) {
       case LEFT_ALIGN:
-        canvas.translate(lineStart, dy);
+        canvas.translate(lineStart, lineOffset);
         break;
       case RIGHT_ALIGN:
-        canvas.translate(lineStart + boxWidth - lineWidth, dy);
+        canvas.translate(lineStart + boxWidth - lineWidth, lineOffset);
         break;
       case CENTER:
-        canvas.translate(lineStart + boxWidth / 2f - lineWidth / 2f, dy);
+        canvas.translate(lineStart + boxWidth / 2f - lineWidth / 2f, lineOffset);
         break;
     }
   }
@@ -338,9 +353,20 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private float getTextLineWidthForGlyphs(
-      String textLine, Font font, float fontScale, float parentScale) {
-    float textLineWidth = 0;
+  private List<TextSubLine> splitGlyphTextIntoLines(
+      String textLine, float boxWidth, Font font, float tracking, float fontScale, float parentScale, boolean usingGlyphs) {
+    int lineCount = 0;
+
+    float currentLineWidth = 0;
+    int currentLineStartIndex = 0;
+
+    int currentWordStartIndex = 0;
+    float currentWordWidth = 0f;
+    boolean nextCharacterStartsWord = false;
+
+    // The measured size of a space.
+    float spaceWidth = 0f;
+
     for (int i = 0; i < textLine.length(); i++) {
       char c = textLine.charAt(i);
       int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
@@ -348,9 +374,68 @@ public class TextLayer extends BaseLayer {
       if (character == null) {
         continue;
       }
-      textLineWidth += character.getWidth() * fontScale * Utils.dpScale() * parentScale;
+
+      float currentCharWidth;
+      if (usingGlyphs) {
+        currentCharWidth = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale + tracking * parentScale;
+      } else {
+        currentCharWidth = fillPaint.measureText(textLine.substring(i, i + 1)) + tracking;
+      }
+
+      if (c == ' ') {
+        spaceWidth = currentCharWidth;
+        nextCharacterStartsWord = true;
+      } else if (nextCharacterStartsWord) {
+        nextCharacterStartsWord = false;
+        currentWordStartIndex = i;
+        currentWordWidth = currentCharWidth;
+      } else {
+        currentWordWidth += currentCharWidth;
+      }
+      currentLineWidth += currentCharWidth;
+
+      if (boxWidth > 0f && currentLineWidth >= boxWidth) {
+        if (c == ' ') {
+          // Spaces at the end of a line don't do anything. Ignore it.
+          // The next non-space character will hit the conditions below.
+          continue;
+        }
+        TextSubLine subLine = ensureEnoughSubLines(++lineCount);
+        if (currentWordStartIndex == currentLineStartIndex) {
+          // Only word on line is wider than box, start wrapping mid-word.
+          String substr = textLine.substring(currentLineStartIndex, i);
+          String trimmed = substr.trim();
+          float trimmedSpace = (trimmed.length() - substr.length()) * spaceWidth;
+          subLine.set(trimmed, currentLineWidth - currentCharWidth - trimmedSpace);
+          currentLineStartIndex = i;
+          currentLineWidth = currentCharWidth;
+          currentWordStartIndex = currentLineStartIndex;
+          currentWordWidth = currentCharWidth;
+        } else {
+          String substr = textLine.substring(currentLineStartIndex, currentWordStartIndex - 1);
+          String trimmed = substr.trim();
+          float trimmedSpace = (substr.length() - trimmed.length()) * spaceWidth;
+          subLine.set(trimmed, currentLineWidth - currentWordWidth - trimmedSpace - spaceWidth);
+          currentLineStartIndex = currentWordStartIndex;
+          currentLineWidth = currentWordWidth;
+        }
+      }
     }
-    return textLineWidth;
+    if (currentLineWidth > 0f) {
+      TextSubLine line = ensureEnoughSubLines(++lineCount);
+      line.set(textLine.substring(currentLineStartIndex), currentLineWidth);
+    }
+    return textSubLines.subList(0, lineCount);
+  }
+
+  /**
+   * Elements are reused and not deleted to save allocations.
+   */
+  private TextSubLine ensureEnoughSubLines(int numLines) {
+    for (int i = textSubLines.size(); i < numLines; i++) {
+      textSubLines.add(new TextSubLine());
+    }
+    return textSubLines.get(numLines - 1);
   }
 
   private void drawCharacterAsGlyph(
@@ -539,6 +624,21 @@ public class TextLayer extends BaseLayer {
       }
     } else if (property == LottieProperty.TEXT) {
       textAnimation.setStringValueCallback((LottieValueCallback<String>) callback);
+    }
+  }
+
+  private static class TextSubLine {
+    private String text = "";
+    private float width = 0f;
+
+    void set(String text, float width) {
+      this.text = text;
+      this.width = width;
+    }
+
+    void reset() {
+      text = "";
+      width = 0f;
     }
   }
 }
