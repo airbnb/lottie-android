@@ -95,14 +95,17 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
 
-    frameRaw += isReversed() ? -dFrames : dFrames;
-    boolean ended = !MiscUtils.contains(frameRaw, getMinFrame(), getMaxFrame());
-    frameRaw = MiscUtils.clamp(frameRaw, getMinFrame(), getMaxFrame());
+    float newFrameRaw = frameRaw + (isReversed() ? -dFrames : dFrames);
+    boolean ended = !MiscUtils.contains(newFrameRaw, getMinFrame(), getMaxFrame());
+    float previousFrameRaw = frameRaw;
+    frameRaw = MiscUtils.clamp(newFrameRaw, getMinFrame(), getMaxFrame());
     frame = useCompositionFrameRate ? (float) Math.floor(frameRaw) : frameRaw;
 
     lastFrameTimeNs = frameTimeNanos;
 
-    notifyUpdate();
+    if (!useCompositionFrameRate || frameRaw != previousFrameRaw) {
+      notifyUpdate();
+    }
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
         frameRaw = speed < 0 ? getMinFrame() : getMaxFrame();
