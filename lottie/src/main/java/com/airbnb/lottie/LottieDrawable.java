@@ -1066,8 +1066,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   public boolean useTextGlyphs() {
-    return fontAssetDelegate == null && fontMap == null &&
-        textDelegate == null && composition.getCharacters().size() > 0;
+    return fontMap == null && textDelegate == null && composition.getCharacters().size() > 0;
   }
 
   public LottieComposition getComposition() {
