@@ -184,7 +184,10 @@ import java.util.Set;
     }
 
     setImageAssetsFolder(ta.getString(R.styleable.LottieAnimationView_lottie_imageAssetsFolder));
-    setProgress(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0));
+
+    boolean hasProgress = ta.hasValue(R.styleable.LottieAnimationView_lottie_progress);
+    setProgressInternal(ta.getFloat(R.styleable.LottieAnimationView_lottie_progress, 0f), hasProgress);
+
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
@@ -294,7 +297,7 @@ import java.util.Set;
       setAnimation(animationResId);
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
-      setProgress(ss.progress);
+      setProgressInternal(ss.progress, false);
     }
     if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
       playAnimation();
@@ -996,7 +999,15 @@ import java.util.Set;
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    userActionsTaken.add(UserActionTaken.SET_PROGRESS);
+    setProgressInternal(progress, true);
+  }
+
+  private void setProgressInternal(
+      @FloatRange(from = 0f, to = 1f) float progress,
+      boolean fromUser) {
+    if (fromUser) {
+      userActionsTaken.add(UserActionTaken.SET_PROGRESS);
+    }
     lottieDrawable.setProgress(progress);
   }
 
