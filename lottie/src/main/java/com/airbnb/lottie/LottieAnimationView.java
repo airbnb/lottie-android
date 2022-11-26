@@ -407,7 +407,8 @@ import java.util.Set;
   private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
       return new LottieTask<>(() -> cacheComposition
-          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null), true);
+          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null),
+          true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
@@ -423,7 +424,8 @@ import java.util.Set;
   private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
       return new LottieTask<>(() -> cacheComposition ?
-          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null), true);
+          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null),
+          true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
