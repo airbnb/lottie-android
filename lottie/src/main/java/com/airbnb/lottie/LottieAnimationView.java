@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.ColorFilter;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
@@ -37,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -351,9 +353,9 @@ import java.util.Set;
 
   /**
    * Sets whether or not Lottie should clip to the original animation composition bounds.
-   *
+   * <p>
    * When set to true, the parent view may need to disable clipChildren so Lottie can render outside of the LottieAnimationView bounds.
-   *
+   * <p>
    * Defaults to true.
    */
   public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
@@ -362,7 +364,7 @@ import java.util.Set;
 
   /**
    * Gets whether or not Lottie should clip to the original animation composition bounds.
-   *
+   * <p>
    * Defaults to true.
    */
   public boolean getClipToCompositionBounds() {
@@ -405,7 +407,8 @@ import java.util.Set;
   private LottieTask<LottieComposition> fromRawRes(@RawRes final int rawRes) {
     if (isInEditMode()) {
       return new LottieTask<>(() -> cacheComposition
-          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null), true);
+          ? LottieCompositionFactory.fromRawResSync(getContext(), rawRes) : LottieCompositionFactory.fromRawResSync(getContext(), rawRes, null),
+          true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromRawRes(getContext(), rawRes) : LottieCompositionFactory.fromRawRes(getContext(), rawRes, null);
@@ -421,7 +424,8 @@ import java.util.Set;
   private LottieTask<LottieComposition> fromAssets(final String assetName) {
     if (isInEditMode()) {
       return new LottieTask<>(() -> cacheComposition ?
-          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null), true);
+          LottieCompositionFactory.fromAssetSync(getContext(), assetName) : LottieCompositionFactory.fromAssetSync(getContext(), assetName, null),
+          true);
     } else {
       return cacheComposition ?
           LottieCompositionFactory.fromAsset(getContext(), assetName) : LottieCompositionFactory.fromAsset(getContext(), assetName, null);
@@ -861,7 +865,7 @@ import java.util.Set;
   /**
    * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
    * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
-   *
+   * <p>
    * Defaults to false.
    */
   public void setMaintainOriginalImageBounds(boolean maintainOriginalImageBounds) {
@@ -871,7 +875,7 @@ import java.util.Set;
   /**
    * When true, dynamically set bitmaps will be drawn with the exact bounds of the original animation, regardless of the bitmap size.
    * When false, dynamically set bitmaps will be drawn at the top left of the original image but with its own bounds.
-   *
+   * <p>
    * Defaults to false.
    */
   public boolean getMaintainOriginalImageBounds() {
@@ -909,7 +913,7 @@ import java.util.Set;
    * where FONT_NAME is the fFamily specified in your Lottie file.
    * If your fonts have a different extension, you can override the
    * default here.
-   *
+   * <p>
    * Alternatively, you can use {@link #setFontAssetDelegate(FontAssetDelegate)}
    * for more control.
    *
@@ -924,6 +928,21 @@ import java.util.Set;
    */
   public void setFontAssetDelegate(FontAssetDelegate assetDelegate) {
     lottieDrawable.setFontAssetDelegate(assetDelegate);
+  }
+
+  /**
+   * Set a map from font name keys to Typefaces.
+   * The keys can be in the form:
+   * * fontFamily
+   * * fontFamily-fontStyle
+   * * fontName
+   * All 3 are defined as fName, fFamily, and fStyle in the Lottie file.
+   * <p>
+   * If you change a value in fontMap, create a new map or call
+   * {@link #invalidate()}. Setting the same map again will noop.
+   */
+  public void setFontMap(@Nullable Map<String, Typeface> fontMap) {
+    lottieDrawable.setFontMap(fontMap);
   }
 
   /**

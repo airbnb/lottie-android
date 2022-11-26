@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import android.graphics.Matrix
+import android.graphics.Typeface
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.FontAssetDelegate
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
@@ -65,6 +67,7 @@ import kotlin.math.roundToInt
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
  * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
+ * @param fontMap A map of keys to Typefaces. The key can be: "fName", "fFamily", or "fFamily-fStyle" as specified in your Lottie file.
  */
 @Composable
 fun LottieAnimation(
@@ -80,6 +83,7 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
+    fontMap: Map<String, Typeface>? = null,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
@@ -105,6 +109,7 @@ fun LottieAnimation(
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.renderMode = renderMode
             drawable.composition = composition
+            drawable.setFontMap(fontMap)
             if (dynamicProperties !== setDynamicProperties) {
                 setDynamicProperties?.removeFrom(drawable)
                 dynamicProperties?.addTo(drawable)
@@ -184,6 +189,7 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
+    fontMap: Map<String, Typeface>? = null,
 ) {
     val progress by animateLottieCompositionAsState(
         composition,
@@ -207,6 +213,7 @@ fun LottieAnimation(
         alignment = alignment,
         contentScale = contentScale,
         clipToCompositionBounds = clipToCompositionBounds,
+        fontMap = fontMap,
     )
 }
 
