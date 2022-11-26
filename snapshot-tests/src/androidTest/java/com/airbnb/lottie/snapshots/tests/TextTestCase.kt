@@ -1,5 +1,6 @@
 package com.airbnb.lottie.snapshots.tests
 
+import android.graphics.Typeface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import com.airbnb.lottie.LottieProperty
@@ -135,6 +136,15 @@ class TextTestCase : SnapshotTestCase {
             val textDelegate = TextDelegate(animationView)
             animationView.setTextDelegate(textDelegate)
             textDelegate.setText("NAME", "\uD83D\uDC91")
+        }
+
+        snapshotComposable("Compose FontMap", "Text") {
+            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/Text.json"))
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
+            LottieAnimation(composition, { 0f }, fontMap = mapOf("Helvetica" to Typeface.SERIF))
         }
 
         snapshotComposable("Compose Dynamic Text", "Emoji") {
