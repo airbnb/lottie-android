@@ -24,16 +24,19 @@ buildscript {
 
   repositories {
     google()
-    gradlePluginPortal()
+    mavenCentral()
   }
   dependencies {
-    classpath 'org.ajoberstar:grgit:2.3.0'
+    classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.1'
     classpath 'com.android.tools.build:gradle:7.0.4'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath "net.ltgt.gradle:gradle-errorprone-plugin:2.0.2"
     classpath 'com.vanniktech:gradle-maven-publish-plugin:0.18.0'
     classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.30'
   }
+}
+
+plugins {
+  id 'net.ltgt.errorprone' version '3.0.1' apply false
 }
 
 allprojects {
