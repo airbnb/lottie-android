@@ -131,21 +131,6 @@ public class TextLayer extends BaseLayer {
       // Parent matrices are applied directly to the glyph paths.
       canvas.concat(parentMatrix);
     }
-    // DO NOT SUBMIT
-    if (documentData.boxSize != null & documentData.boxPosition != null) {
-      if (lottieDrawable.useTextGlyphs()) {
-        canvas.save();
-        canvas.concat(parentMatrix);
-      }
-      Paint paint = new Paint();
-      paint.setColor(Color.BLUE);
-      paint.setAlpha(128);
-      canvas.drawRect(documentData.boxPosition.x, documentData.boxPosition.y, documentData.boxPosition.x + documentData.boxSize.x,
-          documentData.boxPosition.y + documentData.boxSize.y, paint);
-      if (lottieDrawable.useTextGlyphs()) {
-        canvas.restore();
-      }
-    }
 
     configurePaint(documentData, parentMatrix);
 
