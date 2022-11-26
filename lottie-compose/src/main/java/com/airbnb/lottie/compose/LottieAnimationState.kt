@@ -31,6 +31,8 @@ interface LottieAnimationState : State<Float> {
 
     val speed: Float
 
+    val useCompositionFrameRate: Boolean
+
     val composition: LottieComposition?
 
     val lastFrameNanos: Long get() = AnimationConstants.UnspecifiedTime

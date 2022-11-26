@@ -127,8 +127,15 @@ interface LottieAnimatable : LottieAnimationState {
      *                             you will want it to cancel immediately. However, if you have a state based
      *                             transition and you want an animation to finish playing before moving on to
      *                             the next one then you may want to set this to [LottieCancellationBehavior.OnIterationFinish].
-     * @param ignoreSystemAnimationsDisabled When set to true, the animation will animate even if animations are disabled at the OS level.
+     * @param ignoreSystemAnimationsDisabled When set to true, the animation will animate even if animations
+     *                                       are disabled at the OS level.
      *                                       Defaults to false.
+     * @param useCompositionFrameRate Lottie files can specify a target frame rate. By default, Lottie ignores it
+     *                                and re-renders on every frame. If that behavior is undesirable, you can set
+     *                                this to true to use the composition frame rate instead.
+     *                                Note: composition frame rates are usually lower than display frame rates
+     *                                so this will likely make your animation feel janky. However, it may be desirable
+     *                                for specific situations such as pixel art that are intended to have low frame rates.
      */
     suspend fun animate(
         composition: LottieComposition?,
@@ -141,15 +148,13 @@ interface LottieAnimatable : LottieAnimationState {
         continueFromPreviousAnimate: Boolean = false,
         cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
         ignoreSystemAnimationsDisabled: Boolean = false,
+        useCompositionFrameRate: Boolean = false,
     )
 }
 
 @Stable
 private class LottieAnimatableImpl : LottieAnimatable {
     override var isPlaying: Boolean by mutableStateOf(false)
-        private set
-
-    override var progress: Float by mutableStateOf(0f)
         private set
 
     override val value: Float
@@ -170,6 +175,9 @@ private class LottieAnimatableImpl : LottieAnimatable {
     override var speed: Float by mutableStateOf(1f)
         private set
 
+    override var useCompositionFrameRate: Boolean by mutableStateOf(false)
+        private set
+
     /**
      * Inverse speed value is used to play the animation in reverse when [reverseOnRepeat] is true.
      */
@@ -178,6 +186,11 @@ private class LottieAnimatableImpl : LottieAnimatable {
     }
 
     override var composition: LottieComposition? by mutableStateOf(null)
+        private set
+
+    private var progressRaw: Float by mutableStateOf(0f)
+
+    override var progress: Float by mutableStateOf(0f)
         private set
 
     override var lastFrameNanos: Long by mutableStateOf(AnimationConstants.UnspecifiedTime)
@@ -204,7 +217,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
     ) {
         mutex.mutate {
             this.composition = composition
-            this.progress = progress
+            updateProgress(progress)
             this.iteration = iteration
             isPlaying = false
             if (resetLastFrameNanos) {
@@ -224,6 +237,7 @@ private class LottieAnimatableImpl : LottieAnimatable {
         continueFromPreviousAnimate: Boolean,
         cancellationBehavior: LottieCancellationBehavior,
         ignoreSystemAnimationsDisabled: Boolean,
+        useCompositionFrameRate: Boolean,
     ) {
         mutex.mutate {
             this.iteration = iteration
@@ -232,13 +246,14 @@ private class LottieAnimatableImpl : LottieAnimatable {
             this.speed = speed
             this.clipSpec = clipSpec
             this.composition = composition
-            this.progress = initialProgress
+            updateProgress(initialProgress)
+            this.useCompositionFrameRate = useCompositionFrameRate
             if (!continueFromPreviousAnimate) lastFrameNanos = AnimationConstants.UnspecifiedTime
             if (composition == null) {
                 isPlaying = false
                 return@mutate
             } else if (speed.isInfinite()) {
-                progress = endProgress
+                updateProgress(endProgress)
                 isPlaying = false
                 this.iteration = iterations
                 return@mutate
@@ -293,29 +308,41 @@ private class LottieAnimatableImpl : LottieAnimatable {
 
         val dProgress = dNanos / 1_000_000 / composition.duration * frameSpeed
         val progressPastEndOfIteration = when {
-            frameSpeed < 0 -> minProgress - (progress + dProgress)
-            else -> progress + dProgress - maxProgress
+            frameSpeed < 0 -> minProgress - (progressRaw + dProgress)
+            else -> progressRaw + dProgress - maxProgress
         }
         if (progressPastEndOfIteration < 0f) {
-            progress = progress.coerceIn(minProgress, maxProgress) + dProgress
+            updateProgress(progressRaw.coerceIn(minProgress, maxProgress) + dProgress)
         } else {
             val durationProgress = maxProgress - minProgress
             val dIterations = (progressPastEndOfIteration / durationProgress).toInt() + 1
 
             if (iteration + dIterations > iterations) {
-                progress = endProgress
+                progressRaw = endProgress
                 iteration = iterations
                 return false
             }
             iteration += dIterations
             val progressPastEndRem = progressPastEndOfIteration - (dIterations - 1) * durationProgress
-            progress = when {
+            progressRaw = when {
                 frameSpeed < 0 -> maxProgress - progressPastEndRem
                 else -> minProgress + progressPastEndRem
             }
         }
 
         return true
+    }
+
+    private fun Float.roundToCompositionFrameRate(composition: LottieComposition?): Float {
+        composition ?: return this
+        val frameRate = composition.frameRate
+        val interval = 1 / frameRate
+        return this - this % interval
+    }
+
+    private fun updateProgress(progress: Float) {
+        this.progressRaw = progress
+        this.progress = if (useCompositionFrameRate) progress.roundToCompositionFrameRate(composition) else progress
     }
 }
 

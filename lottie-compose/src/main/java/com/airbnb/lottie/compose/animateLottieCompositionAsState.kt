@@ -51,6 +51,7 @@ fun animateLottieCompositionAsState(
     iterations: Int = 1,
     cancellationBehavior: LottieCancellationBehavior = LottieCancellationBehavior.Immediately,
     ignoreSystemAnimatorScale: Boolean = false,
+    useCompositionFrameRate: Boolean = false,
 ): LottieAnimationState {
     require(iterations > 0) { "Iterations must be a positive number ($iterations)." }
     require(speed.isFinite()) { "Speed must be a finite number. It is $speed." }
@@ -83,6 +84,7 @@ fun animateLottieCompositionAsState(
             initialProgress = animatable.progress,
             continueFromPreviousAnimate = false,
             cancellationBehavior = cancellationBehavior,
+            useCompositionFrameRate = useCompositionFrameRate,
         )
     }
 

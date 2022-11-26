@@ -216,6 +216,10 @@ import java.util.Set;
         )
     );
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_useCompositionFrameRate)) {
+      setUseCompositionFrameRate(ta.getBoolean(R.styleable.LottieAnimationView_lottie_useCompositionFrameRate, false));
+    }
+
     ta.recycle();
 
     lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
@@ -331,6 +335,19 @@ import java.util.Set;
    */
   public void setIgnoreDisabledSystemAnimations(boolean ignore) {
     lottieDrawable.setIgnoreDisabledSystemAnimations(ignore);
+  }
+
+  /**
+   * Lottie files can specify a target frame rate. By default, Lottie ignores it and re-renders
+   * on every frame. If that behavior is undesirable, you can set this to true to use the composition
+   * frame rate instead.
+   * <p>
+   * Note: composition frame rates are usually lower than display frame rates
+   * so this will likely make your animation feel janky. However, it may be desirable
+   * for specific situations such as pixel art that are intended to have low frame rates.
+   */
+  public void setUseCompositionFrameRate(boolean useCompositionFrameRate) {
+    lottieDrawable.setUseCompositionFrameRate(useCompositionFrameRate);
   }
 
   /**

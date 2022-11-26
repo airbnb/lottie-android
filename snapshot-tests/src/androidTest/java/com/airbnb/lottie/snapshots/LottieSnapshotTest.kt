@@ -19,6 +19,7 @@ import com.airbnb.lottie.snapshots.tests.ClipChildrenTestCase
 import com.airbnb.lottie.snapshots.tests.ColorStateListColorFilterTestCase
 import com.airbnb.lottie.snapshots.tests.ComposeDynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.ComposeScaleTypesTestCase
+import com.airbnb.lottie.snapshots.tests.CompositionFrameRate
 import com.airbnb.lottie.snapshots.tests.CustomBoundsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
@@ -129,6 +130,7 @@ class LottieSnapshotTest {
             ClipChildrenTestCase(),
             SoftwareRenderingDynamicPropertiesInvalidationTestCase(),
             SeekBarTestCase(),
+            CompositionFrameRate(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
