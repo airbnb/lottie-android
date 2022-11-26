@@ -350,14 +350,13 @@ public class TextLayer extends BaseLayer {
 
     for (int i = 0; i < textLine.length(); i++) {
       char c = textLine.charAt(i);
-      int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
-      FontCharacter character = composition.getCharacters().get(characterHash);
-      if (character == null) {
-        continue;
-      }
-
       float currentCharWidth;
       if (usingGlyphs) {
+        int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
+        FontCharacter character = composition.getCharacters().get(characterHash);
+        if (character == null) {
+          continue;
+        }
         currentCharWidth = (float) character.getWidth() * fontScale * Utils.dpScale() * parentScale + tracking * parentScale;
       } else {
         currentCharWidth = fillPaint.measureText(textLine.substring(i, i + 1)) + tracking;
