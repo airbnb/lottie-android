@@ -22,8 +22,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: Run Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDebug --no-daemon
       - name: Zip reports
         if: always()
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
@@ -43,8 +44,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest --no-daemon
       - name: Zip reports
         if: always()
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
@@ -64,6 +66,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: Echo SHA (do not submit)
         run: echo $GITHUB_SHA
       - name: Build app
@@ -72,7 +75,7 @@ jobs:
           LOTTIE_S3_SECRET_KEY: ${{ secrets.LOTTIE_S3_SECRET_KEY }}
           LOTTIE_HAPPO_API_KEY: ${{ secrets.LOTTIE_HAPPO_API_KEY }}
           LOTTIE_HAPPO_SECRET_KEY: ${{ secrets.LOTTIE_HAPPO_SECRET_KEY }}
-        run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest
+        run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
         uses: emulator-wtf/run-tests@master
         with:
@@ -86,7 +89,7 @@ jobs:
         with:
           message: |
             **Snapshot Tests**
-            **28**: [Report](https://happo.io/a/27/report/${{ env.GITHUB_SHA }}-android28) [Diff](https://happo.io/a/27/p/27/compare/master-android28/${{ env.GITHUB_SHA }}-android28)
+            **28**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android28) [Diff](https://happo.io/a/27/p/27/compare/master-android28/${{ github.sha }}-android28)
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -99,6 +102,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: "Deploy Snapshot"
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
