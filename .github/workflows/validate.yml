@@ -84,7 +84,7 @@ jobs:
         with:
           message: |
             **Snapshot Tests**
-            **28**: [Report](https://happo.io/a/27/report/$GITHUB_SHA-android28) [Diff](https://happo.io/a/27/p/27/compare/master-android28/$GITHUB_SHA-android28)
+            **28**: [Report](https://happo.io/a/27/report/${{ env. GITHUB_SHA }}-android28) [Diff](https://happo.io/a/27/p/27/compare/master-android28/${{ env.GITHUB_SHA }}-android28)
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
