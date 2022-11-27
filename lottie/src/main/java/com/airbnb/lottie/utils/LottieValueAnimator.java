@@ -158,6 +158,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
     float frame = this.frame;
     this.frame = 0f;
+    this.frameRaw = 0f;
     setFrame((int) frame);
     notifyUpdate();
   }
@@ -167,7 +168,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
       return;
     }
     this.frameRaw = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
-    this.frame = useCompositionFrameRate ? (float) Math.floor(frameRaw) : frameRaw;
+    this.frame = useCompositionFrameRate ? ((float) Math.floor(frameRaw)) : frameRaw;
     lastFrameTimeNs = 0;
     notifyUpdate();
   }
@@ -245,9 +246,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     postFrameCallback();
     lastFrameTimeNs = 0;
     if (isReversed() && getFrame() == getMinFrame()) {
-      frame = getMaxFrame();
+      setFrame(getMaxFrame());
     } else if (!isReversed() && getFrame() == getMaxFrame()) {
-      frame = getMinFrame();
+      setFrame(getMinFrame());
     }
   }
 
