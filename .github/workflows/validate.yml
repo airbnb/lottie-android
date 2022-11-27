@@ -78,7 +78,7 @@ jobs:
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
-            model=Pixel2,version=28
+            model=Pixel2,version=29
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
         with:
