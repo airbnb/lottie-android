@@ -65,6 +65,11 @@ jobs:
           distribution: 'zulu'
           java-version: 11
       - name: Build app
+        env:
+          LOTTIE_S3_API_KEY: ${{ secrets.LOTTIE_S3_API_KEY }}
+          LOTTIE_S3_SECRET_KEY: ${{ secrets.LOTTIE_S3_SECRET_KEY }}
+          LOTTIE_HAPPO_API_KEY: ${{ secrets.LOTTIE_HAPPO_API_KEY }}
+          LOTTIE_HAPPO_SECRET_KEY: ${{ secrets.LOTTIE_HAPPO_SECRET_KEY }}
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest
       - name: Run tests
         uses: emulator-wtf/run-tests@master
