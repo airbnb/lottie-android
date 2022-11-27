@@ -72,7 +72,8 @@ jobs:
           api-token: ${{ secrets.EW_API_TOKEN }}
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
-          devices: Pixel2,version=28
+          devices: |
+            model=Pixel2,version=28
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
         with:
