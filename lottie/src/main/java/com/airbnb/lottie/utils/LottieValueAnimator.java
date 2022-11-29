@@ -21,12 +21,14 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   private float speed = 1f;
   private boolean speedReversedForRepeatMode = false;
   private long lastFrameTimeNs = 0;
+  private float frameRaw = 0;
   private float frame = 0;
   private int repeatCount = 0;
   private float minFrame = Integer.MIN_VALUE;
   private float maxFrame = Integer.MAX_VALUE;
   @Nullable private LottieComposition composition;
   @VisibleForTesting protected boolean running = false;
+  private boolean useCompositionFrameRate = false;
 
   public LottieValueAnimator() {
   }
@@ -78,6 +80,10 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     return running;
   }
 
+  public void setUseCompositionFrameRate(boolean useCompositionFrameRate) {
+    this.useCompositionFrameRate = useCompositionFrameRate;
+  }
+
   @Override public void doFrame(long frameTimeNanos) {
     postFrameCallback();
     if (composition == null || !isRunning()) {
@@ -89,16 +95,21 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
 
-    frame += isReversed() ? -dFrames : dFrames;
-    boolean ended = !MiscUtils.contains(frame, getMinFrame(), getMaxFrame());
-    frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
+    float newFrameRaw = frameRaw + (isReversed() ? -dFrames : dFrames);
+    boolean ended = !MiscUtils.contains(newFrameRaw, getMinFrame(), getMaxFrame());
+    float previousFrameRaw = frameRaw;
+    frameRaw = MiscUtils.clamp(newFrameRaw, getMinFrame(), getMaxFrame());
+    frame = useCompositionFrameRate ? (float) Math.floor(frameRaw) : frameRaw;
 
     lastFrameTimeNs = frameTimeNanos;
 
-    notifyUpdate();
+    if (!useCompositionFrameRate || frameRaw != previousFrameRaw) {
+      notifyUpdate();
+    }
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
-        frame = speed < 0 ? getMinFrame() : getMaxFrame();
+        frameRaw = speed < 0 ? getMinFrame() : getMaxFrame();
+        frame = frameRaw;
         removeFrameCallback();
         notifyEnd(isReversed());
       } else {
@@ -108,7 +119,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
           speedReversedForRepeatMode = !speedReversedForRepeatMode;
           reverseAnimationSpeed();
         } else {
-          frame = isReversed() ? getMaxFrame() : getMinFrame();
+          frameRaw = isReversed() ? getMaxFrame() : getMinFrame();
+          frame = frameRaw;
         }
         lastFrameTimeNs = frameTimeNanos;
       }
@@ -146,15 +158,17 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
     float frame = this.frame;
     this.frame = 0f;
+    this.frameRaw = 0f;
     setFrame((int) frame);
     notifyUpdate();
   }
 
   public void setFrame(float frame) {
-    if (this.frame == frame) {
+    if (this.frameRaw == frame) {
       return;
     }
-    this.frame = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
+    this.frameRaw = MiscUtils.clamp(frame, getMinFrame(), getMaxFrame());
+    this.frame = useCompositionFrameRate ? ((float) Math.floor(frameRaw)) : frameRaw;
     lastFrameTimeNs = 0;
     notifyUpdate();
   }
@@ -232,9 +246,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     postFrameCallback();
     lastFrameTimeNs = 0;
     if (isReversed() && getFrame() == getMinFrame()) {
-      frame = getMaxFrame();
+      setFrame(getMaxFrame());
     } else if (!isReversed() && getFrame() == getMaxFrame()) {
-      frame = getMinFrame();
+      setFrame(getMinFrame());
     }
   }
 

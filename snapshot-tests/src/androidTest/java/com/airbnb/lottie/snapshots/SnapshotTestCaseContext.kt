@@ -144,6 +144,7 @@ suspend fun SnapshotTestCaseContext.snapshotComposition(
     val filmStripView = filmStripViewPool.acquire()
     filmStripView.setOutlineMasksAndMattes(false)
     filmStripView.setApplyingOpacityToLayersEnabled(false)
+    filmStripView.setUseCompositionFrameRate(false)
     filmStripView.setImageAssetDelegate { BitmapFactory.decodeResource(context.resources, R.drawable.airbnb) }
     if (composition.characters.isEmpty) {
         filmStripView.setFontAssetDelegate(object : FontAssetDelegate() {

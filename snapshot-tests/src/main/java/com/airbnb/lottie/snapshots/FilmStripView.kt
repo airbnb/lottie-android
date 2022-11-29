@@ -49,6 +49,10 @@ class FilmStripView @JvmOverloads constructor(
         animationViews.forEach { it.setOutlineMasksAndMattes(outline) }
     }
 
+    fun setUseCompositionFrameRate(outline: Boolean) {
+        animationViews.forEach { it.setUseCompositionFrameRate(outline) }
+    }
+
     private fun Float.round(decimals: Int): Float {
         var multiplier = 1f
         repeat(decimals) { multiplier *= 10 }
