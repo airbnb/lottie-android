@@ -116,11 +116,11 @@ public class Layer {
     return layerId;
   }
 
-  String getName() {
+  public String getName() {
     return layerName;
   }
 
-  @Nullable String getRefId() {
+  public @Nullable String getRefId() {
     return refId;
   }
 
