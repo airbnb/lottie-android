@@ -67,8 +67,6 @@ jobs:
           distribution: 'zulu'
           java-version: 11
           cache: 'gradle'
-      - name: Echo SHA (do not submit)
-        run: echo $GITHUB_SHA
       - name: Build app
         env:
           LOTTIE_S3_API_KEY: ${{ secrets.LOTTIE_S3_API_KEY }}
