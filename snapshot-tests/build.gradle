@@ -13,9 +13,8 @@ android {
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    buildConfigField("String", "BITRISE_GIT_BRANCH", "\"" + System.getenv("GITHUB_HEAD_REF") + "\"")
-    buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")
-    buildConfigField("String", "GIT_BRANCH", "\"" + gitBranch + "\"")
+    buildConfigField("String", "GIT_BRANCH", "\"" + System.getenv("GITHUB_HEAD_REF") + "\"")
+    buildConfigField("String", "GIT_SHA", "\"" + System.getenv("GITHUB_SHA") + "\"")
   }
 
   buildTypes {
