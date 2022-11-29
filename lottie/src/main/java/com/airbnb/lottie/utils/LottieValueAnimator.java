@@ -28,7 +28,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   private float maxFrame = Integer.MAX_VALUE;
   @Nullable private LottieComposition composition;
   @VisibleForTesting protected boolean running = false;
-  private boolean useCompositionFrameRate = true;
+  private boolean useCompositionFrameRate = false;
 
   public LottieValueAnimator() {
   }
