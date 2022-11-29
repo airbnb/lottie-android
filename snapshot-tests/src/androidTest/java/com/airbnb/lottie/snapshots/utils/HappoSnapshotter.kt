@@ -51,7 +51,7 @@ class HappoSnapshotter(
     private val bucket = "lottie-happo"
     private val happoApiKey = BuildConfig.HappoApiKey
     private val happoSecretKey = BuildConfig.HappoSecretKey
-    private val gitBranch = URLEncoder.encode((if (BuildConfig.BITRISE_GIT_BRANCH == "null") BuildConfig.GIT_BRANCH else BuildConfig.BITRISE_GIT_BRANCH).replace("/", "_"), "UTF-8")
+    private val gitBranch = URLEncoder.encode((BuildConfig.GIT_BRANCH).replace("/", "_"), "UTF-8")
     private val androidVersion = "android${Build.VERSION.SDK_INT}"
     private val reportNamePrefixes = listOf(BuildConfig.GIT_SHA, gitBranch, BuildConfig.VERSION_NAME).filter { it.isNotBlank() }
     // Use this when running snapshots locally.
