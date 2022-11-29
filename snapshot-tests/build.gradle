@@ -13,7 +13,7 @@ android {
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    buildConfigField("String", "GIT_BRANCH", "\"" + System.getenv("GITHUB_REF") + "\"")
+    buildConfigField("String", "GIT_BRANCH", "\"" + System.getenv("GITHUB_REF_NAME") + "\"")
     buildConfigField("String", "GIT_SHA", "\"" + System.getenv("GITHUB_SHA") + "\"")
   }
 
