@@ -22,8 +22,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: Run Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintDebug --no-daemon
       - name: Zip reports
         if: always()
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
@@ -43,8 +44,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testDebugUnitTest --no-daemon
       - name: Zip reports
         if: always()
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
@@ -54,6 +56,41 @@ jobs:
         with:
           name: unit_test_reports
           path: reports.zip
+  snapshot-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          cache: 'gradle'
+      - name: Echo SHA (do not submit)
+        run: echo $GITHUB_SHA
+      - name: Build app
+        env:
+          LOTTIE_S3_API_KEY: ${{ secrets.LOTTIE_S3_API_KEY }}
+          LOTTIE_S3_SECRET_KEY: ${{ secrets.LOTTIE_S3_SECRET_KEY }}
+          LOTTIE_HAPPO_API_KEY: ${{ secrets.LOTTIE_HAPPO_API_KEY }}
+          LOTTIE_HAPPO_SECRET_KEY: ${{ secrets.LOTTIE_HAPPO_SECRET_KEY }}
+        run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
+      - name: Run tests
+        uses: emulator-wtf/run-tests@master
+        with:
+          api-token: ${{ secrets.EW_API_TOKEN }}
+          app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
+          test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
+          devices: |
+            model=Pixel2,version=31
+          outputs-dir: build/test-results
+      - uses: mshick/add-pr-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          message: |
+            **Snapshot Tests**
+            **API 31**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android31) [Diff](https://happo.io/a/27/p/27/compare/master-android31/${{ github.sha }}-android28)
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -66,6 +103,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 11
+          cache: 'gradle'
       - name: "Deploy Snapshot"
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
