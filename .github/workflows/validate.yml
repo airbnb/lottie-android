@@ -81,7 +81,7 @@ jobs:
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
-            model=Pixel2,version=31
+            model=Pixel2Atd,version=31
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
         if: github.event_name == 'pull_request'
