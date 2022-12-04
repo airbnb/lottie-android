@@ -86,6 +86,7 @@ jobs:
       - uses: mshick/add-pr-comment@v2
         if: github.event_name == 'pull_request'
         with:
+          message-id: ${{ github.sha }}
           message: |
             **Snapshot Tests**
             **API 31**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android31) [Diff](https://happo.io/a/27/p/27/compare/master-android31/${{ github.sha }}-android31)
