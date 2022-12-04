@@ -81,7 +81,8 @@ jobs:
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
-            model=Pixel2Atd,version=31
+            model=Pixel2,version=23
+            model=Pixel2,version=31
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
         if: github.event_name == 'pull_request'
@@ -89,6 +90,7 @@ jobs:
           message-id: ${{ github.sha }}
           message: |
             **Snapshot Tests**
+            **API 23**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android23) [Diff](https://happo.io/a/27/p/27/compare/master-android23/${{ github.sha }}-android31)
             **API 31**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android31) [Diff](https://happo.io/a/27/p/27/compare/master-android31/${{ github.sha }}-android31)
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
