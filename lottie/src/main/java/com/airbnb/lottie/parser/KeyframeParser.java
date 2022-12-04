@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
+import com.airbnb.lottie.L;
+import com.airbnb.lottie.Lottie;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.MiscUtils;
@@ -332,7 +334,7 @@ class KeyframeParser {
     cp2.x = MiscUtils.clamp(cp2.x, -1f, 1f);
     cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
     int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
-    WeakReference<Interpolator> interpolatorRef = getInterpolator(hash);
+    WeakReference<Interpolator> interpolatorRef = L.getDisablePathInterpolatorCache() ? null : getInterpolator(hash);
     if (interpolatorRef != null) {
       interpolator = interpolatorRef.get();
     }
@@ -350,13 +352,15 @@ class KeyframeParser {
           interpolator = new LinearInterpolator();
         }
       }
-      try {
-        putInterpolator(hash, new WeakReference<>(interpolator));
-      } catch (ArrayIndexOutOfBoundsException e) {
-        // It is not clear why but SparseArrayCompat sometimes fails with this:
-        //     https://github.com/airbnb/lottie-android/issues/452
-        // Because this is not a critical operation, we can safely just ignore it.
-        // I was unable to repro this to attempt a proper fix.
+      if (!L.getDisablePathInterpolatorCache()) {
+        try {
+          putInterpolator(hash, new WeakReference<>(interpolator));
+        } catch (ArrayIndexOutOfBoundsException e) {
+          // It is not clear why but SparseArrayCompat sometimes fails with this:
+          //     https://github.com/airbnb/lottie-android/issues/452
+          // Because this is not a critical operation, we can safely just ignore it.
+          // I was unable to repro this to attempt a proper fix.
+        }
       }
     }
     return interpolator;
