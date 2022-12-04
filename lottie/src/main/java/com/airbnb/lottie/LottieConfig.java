@@ -19,13 +19,15 @@ public class LottieConfig {
   @Nullable final LottieNetworkCacheProvider cacheProvider;
   final boolean enableSystraceMarkers;
   final boolean enableNetworkCache;
+  final boolean disablePathInterpolatorCache;
 
   private LottieConfig(@Nullable LottieNetworkFetcher networkFetcher, @Nullable LottieNetworkCacheProvider cacheProvider,
-      boolean enableSystraceMarkers, boolean enableNetworkCache) {
+      boolean enableSystraceMarkers, boolean enableNetworkCache, boolean disablePathInterpolatorCache) {
     this.networkFetcher = networkFetcher;
     this.cacheProvider = cacheProvider;
     this.enableSystraceMarkers = enableSystraceMarkers;
     this.enableNetworkCache = enableNetworkCache;
+    this.disablePathInterpolatorCache = disablePathInterpolatorCache;
   }
 
   public static final class Builder {
@@ -36,6 +38,7 @@ public class LottieConfig {
     private LottieNetworkCacheProvider cacheProvider;
     private boolean enableSystraceMarkers = false;
     private boolean enableNetworkCache = true;
+    private boolean disablePathInterpolatorCache = true;
 
     /**
      * Lottie has a default network fetching stack built on {@link java.net.HttpURLConnection}. However, if you would like to hook into your own
@@ -111,9 +114,22 @@ public class LottieConfig {
       return this;
     }
 
+    /**
+     * When parsing animations, Lottie has a path interpolator cache. This cache allows Lottie to reuse PathInterpolators
+     * across an animation. This is desirable in most cases. However, when shared across screenshot tests, it can cause slight
+     * deviations in the rendering due to underlying approximations in the PathInterpolator.
+     *
+     * The cache is enabled by default and should probably only be disabled for screenshot tests.
+     */
+    @NonNull
+    public Builder setDisablePathInterpolatorCache(boolean disable) {
+      disablePathInterpolatorCache = disable;
+      return this;
+    }
+
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache);
+      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache, disablePathInterpolatorCache);
     }
   }
 }

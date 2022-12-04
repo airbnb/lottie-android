@@ -20,5 +20,7 @@ public class Lottie {
     L.setCacheProvider(lottieConfig.cacheProvider);
     L.setTraceEnabled(lottieConfig.enableSystraceMarkers);
     L.setNetworkCacheEnabled(lottieConfig.enableNetworkCache);
+    L.setNetworkCacheEnabled(lottieConfig.enableNetworkCache);
+    L.setDisablePathInterpolatorCache(lottieConfig.disablePathInterpolatorCache);
   }
 }

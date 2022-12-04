@@ -24,6 +24,7 @@ public class L {
   private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
   private static boolean networkCacheEnabled = true;
+  private static boolean disablePathInterpolatorCache = true;
   private static String[] sections;
   private static long[] startTimeNs;
   private static int traceDepth = 0;
@@ -129,5 +130,13 @@ public class L {
       }
     }
     return local;
+  }
+
+  public static void setDisablePathInterpolatorCache(boolean disablePathInterpolatorCache) {
+    L.disablePathInterpolatorCache = disablePathInterpolatorCache;
+  }
+
+  public static boolean getDisablePathInterpolatorCache() {
+    return disablePathInterpolatorCache;
   }
 }

@@ -11,7 +11,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
+import com.airbnb.lottie.Lottie
 import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieConfig
 import com.airbnb.lottie.model.LottieCompositionCache
 import com.airbnb.lottie.snapshots.tests.ApplyOpacityToLayerTestCase
 import com.airbnb.lottie.snapshots.tests.AssetsTestCase
@@ -67,6 +69,11 @@ class LottieSnapshotTest {
     @Before
     fun setup() {
         LottieCompositionCache.getInstance().resize(1)
+        Lottie.initialize(
+            LottieConfig.Builder()
+                .setDisablePathInterpolatorCache(true)
+                .build()
+        )
         val context = ApplicationProvider.getApplicationContext<Context>()
         snapshotter = HappoSnapshotter(context) { name, variant ->
             snapshotActivityRule.scenario.onActivity { activity ->
