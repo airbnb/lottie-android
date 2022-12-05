@@ -229,7 +229,7 @@ public class TransformKeyframeAnimation {
     BaseKeyframeAnimation<PointF, PointF> anchorPoint = this.anchorPoint;
     if (anchorPoint != null) {
       PointF anchorPointValue = anchorPoint.getValue();
-      if (anchorPointValue.x != 0 || anchorPointValue.y != 0) {
+      if (anchorPointValue != null && anchorPointValue.x != 0 || anchorPointValue.y != 0) {
         matrix.preTranslate(-anchorPointValue.x, -anchorPointValue.y);
       }
     }
