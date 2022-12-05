@@ -60,9 +60,9 @@ public class NetworkFetcher {
     InputStream inputStream = cacheResult.second;
     LottieResult<LottieComposition> result;
     if (extension == FileExtension.ZIP) {
-      result = LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), url);
+      result = LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), cacheKey);
     } else {
-      result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, url);
+      result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, cacheKey);
     }
     if (result.getValue() != null) {
       return result.getValue();
