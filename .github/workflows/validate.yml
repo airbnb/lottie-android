@@ -1,7 +1,7 @@
 name: Validate
 
 on:
-  pull_request:
+  pull_request_target:
   push:
     branches:
       - master
@@ -85,7 +85,7 @@ jobs:
             model=Pixel2,version=31
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         with:
           message-id: ${{ github.sha }}
           message: |
