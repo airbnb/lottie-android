@@ -11,6 +11,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public abstract class BaseLottieAnimator extends ValueAnimator {
   private final Set<ValueAnimator.AnimatorUpdateListener> updateListeners = new CopyOnWriteArraySet<>();
   private final Set<AnimatorListener> listeners = new CopyOnWriteArraySet<>();
+  private final Set<Animator.AnimatorPauseListener> pauseListeners = new CopyOnWriteArraySet<>();
+
 
   @Override public long getStartDelay() {
     throw new UnsupportedOperationException("LottieAnimator does not support getStartDelay.");
@@ -62,6 +64,14 @@ public abstract class BaseLottieAnimator extends ValueAnimator {
     }
   }
 
+  @Override public void addPauseListener(AnimatorPauseListener listener) {
+    pauseListeners.add(listener);
+  }
+
+  @Override public void removePauseListener(AnimatorPauseListener listener) {
+    pauseListeners.remove(listener);
+  }
+
   void notifyRepeat() {
     for (Animator.AnimatorListener listener : listeners) {
       listener.onAnimationRepeat(this);
@@ -87,6 +97,22 @@ public abstract class BaseLottieAnimator extends ValueAnimator {
   void notifyUpdate() {
     for (ValueAnimator.AnimatorUpdateListener listener : updateListeners) {
       listener.onAnimationUpdate(this);
+    }
+  }
+
+  void notifyPause() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      for (AnimatorPauseListener pauseListener : pauseListeners) {
+        pauseListener.onAnimationPause(this);
+      }
+    }
+  }
+
+  void notifyResume() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      for (AnimatorPauseListener pauseListener : pauseListeners) {
+        pauseListener.onAnimationResume(this);
+      }
     }
   }
 }

@@ -238,6 +238,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   @MainThread
   public void pauseAnimation() {
     removeFrameCallback();
+    notifyPause();
   }
 
   @MainThread
@@ -250,6 +251,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     } else if (!isReversed() && getFrame() == getMaxFrame()) {
       setFrame(getMinFrame());
     }
+    notifyResume();
   }
 
   @MainThread
