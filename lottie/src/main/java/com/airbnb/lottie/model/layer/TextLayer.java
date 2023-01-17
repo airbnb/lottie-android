@@ -282,7 +282,8 @@ public class TextLayer extends BaseLayer {
   private void offsetCanvas(Canvas canvas, DocumentData documentData, int lineIndex, float lineWidth) {
     PointF position = documentData.boxPosition;
     PointF size = documentData.boxSize;
-    float lineOffset = lineIndex * documentData.lineHeight * Utils.dpScale();
+    float lineStartY = position == null ? 0f : position.y;
+    float lineOffset = (lineIndex * documentData.lineHeight * Utils.dpScale()) + lineStartY;
     float lineStart = position == null ? 0f : position.x;
     float boxWidth = size == null ? 0f : size.x;
     switch (documentData.justification) {
