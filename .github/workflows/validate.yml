@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: gradle/wrapper-validation-action@v1
   lint:
     runs-on: ubuntu-latest
@@ -41,6 +43,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -63,6 +67,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -101,6 +107,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
