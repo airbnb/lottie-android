@@ -1,7 +1,7 @@
 name: Validate
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches:
       - master
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - uses: gradle/wrapper-validation-action@v1
   lint:
     runs-on: ubuntu-latest
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -65,14 +65,14 @@ jobs:
   snapshot-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo stp
+      - name: Echo step
         run: |
           echo ${{ github.event_name }}
-          echo SHA ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          echo SHA ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -97,7 +97,7 @@ jobs:
             model=Pixel2,version=31
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         with:
           message-id: ${{ github.sha }}
           message: |
@@ -112,7 +112,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
