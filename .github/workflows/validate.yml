@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
