@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - uses: gradle/wrapper-validation-action@v1
   lint:
     runs-on: ubuntu-latest
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -65,10 +65,14 @@ jobs:
   snapshot-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Echo stp
+        run: |
+          echo ${{ github.event_name }}
+          echo SHA ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -108,7 +112,7 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
