@@ -65,10 +65,6 @@ jobs:
   snapshot-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo step
-        run: |
-          echo ${{ github.event_name }}
-          echo SHA ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
       - name: Checkout the code
         uses: actions/checkout@v2
         with:
