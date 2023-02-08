@@ -69,11 +69,8 @@ jobs:
           cache: 'gradle'
       - name: Setup env
         shell: bash
-        env:
-          ENV_PASSPHRASE: ${{ env.ENV_PASSPHRASE }}
         run: |
-          echo $ENV_PASSPHRASE | md5
-          gpg --quiet --batch --yes --decrypt --passphrase="$ENV_PASSPHRASE" \
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ vars.ENV_PASSPHRASE }}" \
             --output snapshot-env snapshot-env.gpg
           while read line; do
             echo "$line" >> $GITHUB_ENV
