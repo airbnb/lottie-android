@@ -70,7 +70,7 @@ jobs:
       - name: Setup env
         shell: bash
         run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ vars.ENV_PASSPHRASE }}" \
+          echo ${{ vars.ENV_PASSPHRASE }} | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 \
             --output snapshot-env snapshot-env.gpg
           while read line; do
             echo "$line" >> $GITHUB_ENV
