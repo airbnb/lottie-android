@@ -44,3 +44,4 @@ build
 *auto-save*
 credentials/*
 secring.gpg
+snapshot-env
