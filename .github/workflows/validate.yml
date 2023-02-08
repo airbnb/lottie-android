@@ -1,7 +1,7 @@
 name: Validate
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches:
       - master
@@ -67,12 +67,20 @@ jobs:
           distribution: 'zulu'
           java-version: 11
           cache: 'gradle'
+      - name: Setup env
+        shell: bash
+        run: |
+          echo ${{ vars.ENV_PASSPHRASE }} | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 \
+            --output snapshot-env snapshot-env.gpg
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < snapshot-env
       - name: Build app
         env:
-          LOTTIE_S3_API_KEY: ${{ secrets.LOTTIE_S3_API_KEY }}
-          LOTTIE_S3_SECRET_KEY: ${{ secrets.LOTTIE_S3_SECRET_KEY }}
-          LOTTIE_HAPPO_API_KEY: ${{ secrets.LOTTIE_HAPPO_API_KEY }}
-          LOTTIE_HAPPO_SECRET_KEY: ${{ secrets.LOTTIE_HAPPO_SECRET_KEY }}
+          LOTTIE_S3_API_KEY: ${{ env.LOTTIE_S3_API_KEY }}
+          LOTTIE_S3_SECRET_KEY: ${{ env.LOTTIE_S3_SECRET_KEY }}
+          LOTTIE_HAPPO_API_KEY: ${{ env.LOTTIE_HAPPO_API_KEY }}
+          LOTTIE_HAPPO_SECRET_KEY: ${{ env.LOTTIE_HAPPO_SECRET_KEY }}
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
         uses: emulator-wtf/run-tests@master
@@ -85,7 +93,7 @@ jobs:
             model=Pixel2,version=31
           outputs-dir: build/test-results
       - uses: mshick/add-pr-comment@v2
-        if: github.event_name == 'pull_request_target'
+        if: github.event_name == 'pull_request'
         with:
           message-id: ${{ github.sha }}
           message: |
@@ -110,4 +118,3 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
         run: ./deploy_snapshot.sh
-
