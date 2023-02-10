@@ -71,7 +71,9 @@ jobs:
         shell: bash
         run: |
           curl https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1 > snapshot-env
-          echo snapshot-env
+          echo snapshot-env:
+          cat snapshot-env
+          echo -----
           while read line; do
             echo "$line" >> $GITHUB_ENV
           done < snapshot-env
