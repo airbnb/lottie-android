@@ -70,11 +70,13 @@ jobs:
       - name: Setup env
         shell: bash
         run: |
-          echo ${{ vars.ENV_PASSPHRASE }} | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 \
-            --output snapshot-env snapshot-env.gpg
+          curl https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1 > snapshot-env
+          echo snapshot-env
           while read line; do
             echo "$line" >> $GITHUB_ENV
           done < snapshot-env
+          echo 1: $TEST1
+          echo 2: $TEST2
       - name: Build app
         env:
           LOTTIE_S3_API_KEY: ${{ env.LOTTIE_S3_API_KEY }}
