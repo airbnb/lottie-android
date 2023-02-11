@@ -35,12 +35,14 @@ jobs:
      - name: Unzip artifact
        run: |
          unzip apks.zip
+         ls -l
+         ls -l apks
      - name: Run tests
        uses: emulator-wtf/run-tests@master
        with:
          api-token: ${{ secrets.EW_API_TOKEN }}
-         app: debug/snapshot-tests-debug.apk
-         test: androidTest/debug/snapshot-tests-debug-androidTest.apk
+         app: apks/snapshot-tests-debug.apk
+         test: apks/snapshot-tests-debug-androidTest.apk
          devices: |
            model=Pixel2,version=23
            model=Pixel2,version=31
