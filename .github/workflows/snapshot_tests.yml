@@ -36,3 +36,23 @@ jobs:
          unzip apks.zip
          ls -l
          ls -l apks
+     - name: Run tests
+       uses: emulator-wtf/run-tests@master
+       with:
+         api-token: ${{ secrets.EW_API_TOKEN }}
+         app: apks/snapshot-tests-debug.apk
+         test: apks/snapshot-tests-debug-androidTest.apk
+         devices: |
+           model=Pixel2,version=23
+           model=Pixel2,version=31
+         outputs-dir: build/test-results
+         directories-to-pull: /sdcard/Download/
+     - name: 'Post PR comment'
+       uses: mshick/add-pr-comment@v2
+       if: github.event_name == 'pull_request'
+       with:
+         message-id: ${{ github.sha }}
+         message: |
+           **Snapshot Tests**
+           **API 23**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android23) [Diff](https://happo.io/a/27/p/27/compare/master-android23/${{ github.sha }}-android23)
+           **API 31**: [Report](https://happo.io/a/27/report/${{ github.sha }}-android31) [Diff](https://happo.io/a/27/p/27/compare/master-android31/${{ github.sha }}-android31)
