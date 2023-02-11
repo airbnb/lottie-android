@@ -85,7 +85,7 @@ class LottieSnapshotTest {
         var happoApiKey = BuildConfig.HappoApiKey
         var happoSecretKey = BuildConfig.HappoSecretKey
         @Suppress("KotlinConstantConditions")
-        if (BuildConfig.S3AccessKey == "") {
+        if (BuildConfig.S3AccessKey == "" || BuildConfig.S3AccessKey == "null") {
             val client = OkHttpClient()
             val request = Request.Builder()
                 .url("https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1/snapshots")
