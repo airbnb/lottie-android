@@ -61,31 +61,25 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v2
+      - name: Setup env
+        shell: bash
+        run: |
+          curl https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1 > snapshot-env
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < snapshot-env
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
           java-version: 11
           cache: 'gradle'
-      - name: Setup env
-        shell: bash
-        run: |
-          echo ${{ vars.ENV_PASSPHRASE }} | gpg --quiet --batch --yes --decrypt --passphrase-fd 0 \
-            --output snapshot-env snapshot-env.gpg
-          while read line; do
-            echo "$line" >> $GITHUB_ENV
-          done < snapshot-env
       - name: Build app
-        env:
-          LOTTIE_S3_API_KEY: ${{ env.LOTTIE_S3_API_KEY }}
-          LOTTIE_S3_SECRET_KEY: ${{ env.LOTTIE_S3_SECRET_KEY }}
-          LOTTIE_HAPPO_API_KEY: ${{ env.LOTTIE_HAPPO_API_KEY }}
-          LOTTIE_HAPPO_SECRET_KEY: ${{ env.LOTTIE_HAPPO_SECRET_KEY }}
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
         uses: emulator-wtf/run-tests@master
         with:
-          api-token: ${{ secrets.EW_API_TOKEN }}
+          api-token: ${{ env.EW_API_TOKEN }}
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
