@@ -58,7 +58,7 @@ class ProdAnimationsTestCase(private val s3AccessKey: String, private val s3Secr
     suspend fun SnapshotTestCaseContext.downloadAnimations() = coroutineScope {
         val transferUtility = TransferUtility.builder()
             .context(context)
-            .s3Client(AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey)))
+            .s3Client(AmazonS3Client(BasicAWSCredentials(s3AccessKey, s3SecretKey)))
             .defaultBucket("lottie-prod-animations")
             .build()
 
