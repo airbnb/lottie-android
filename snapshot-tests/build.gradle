@@ -9,7 +9,7 @@ android {
   defaultConfig {
     applicationId "com.airbnb.lottie.snapshots"
     minSdk 21
-    targetSdk 30
+    targetSdk 29
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

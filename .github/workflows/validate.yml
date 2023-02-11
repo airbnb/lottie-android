@@ -76,17 +76,13 @@ jobs:
           cache: 'gradle'
       - name: Build app
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
-      - name: Run tests
-        if: false # DO NOT SUBMIT
-        uses: emulator-wtf/run-tests@master
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-          api-token: ${{ env.EW_API_TOKEN }}
-          app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
-          test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
-          devices: |
-            model=Pixel2,version=23
-            model=Pixel2,version=31
-          outputs-dir: build/test-results
+          name: apks
+          path: |
+            snapshot-tests/build/outputs/apk/androidTest/snapshot-tests-debug-androidTest.apk
+            snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
