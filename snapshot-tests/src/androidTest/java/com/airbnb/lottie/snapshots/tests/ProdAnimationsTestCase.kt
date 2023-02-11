@@ -25,11 +25,7 @@ import java.io.FileInputStream
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.zip.ZipInputStream
 
-/**
- * TODO:
- * prod-com.eharmony-lottie-loader-data
- */
-class ProdAnimationsTestCase : SnapshotTestCase {
+class ProdAnimationsTestCase(private val s3AccessKey: String, private val s3SecretKey: String) : SnapshotTestCase {
     private val filesChannel = Channel<File>(capacity = 2_048)
 
     override suspend fun SnapshotTestCaseContext.run() = coroutineScope {
@@ -45,8 +41,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
-    fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
+    private fun CoroutineScope.parseCompositions(files: ReceiveChannel<File>) = produce(
         context = Dispatchers.IO,
         capacity = 50,
     ) {
@@ -92,7 +87,7 @@ class ProdAnimationsTestCase : SnapshotTestCase {
 
     private fun fetchAllObjects(bucket: String): List<S3ObjectSummary> {
         val allObjects = mutableListOf<S3ObjectSummary>()
-        val s3Client = AmazonS3Client(BasicAWSCredentials(BuildConfig.S3AccessKey, BuildConfig.S3SecretKey))
+        val s3Client = AmazonS3Client(BasicAWSCredentials(s3AccessKey, s3SecretKey))
         var request = ListObjectsV2Request().apply {
             bucketName = bucket
         }

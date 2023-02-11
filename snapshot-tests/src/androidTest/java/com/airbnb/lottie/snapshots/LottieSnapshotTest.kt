@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
+import android.os.Debug
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
@@ -68,6 +69,8 @@ class LottieSnapshotTest {
 
     lateinit var testCaseContext: SnapshotTestCaseContext
     lateinit var snapshotter: HappoSnapshotter
+    private lateinit var s3AccessKey: String
+    private lateinit var s3SecretKey: String
 
     @Before
     fun setup() {
@@ -78,8 +81,8 @@ class LottieSnapshotTest {
                 .build()
         )
         val context = ApplicationProvider.getApplicationContext<Context>()
-        var s3AccessKey = BuildConfig.S3AccessKey
-        var s3SecretKey = BuildConfig.S3SecretKey
+        s3AccessKey = BuildConfig.S3AccessKey
+        s3SecretKey = BuildConfig.S3SecretKey
         var happoApiKey = BuildConfig.HappoApiKey
         var happoSecretKey = BuildConfig.HappoSecretKey
         @Suppress("KotlinConstantConditions")
@@ -153,7 +156,7 @@ class LottieSnapshotTest {
             OutlineMasksAndMattesTestCase(),
             LargeCompositionSoftwareRendering(),
             ComposeDynamicPropertiesTestCase(),
-            ProdAnimationsTestCase(),
+            ProdAnimationsTestCase(s3AccessKey, s3SecretKey),
             ClipChildrenTestCase(),
             SoftwareRenderingDynamicPropertiesInvalidationTestCase(),
             SeekBarTestCase(),
