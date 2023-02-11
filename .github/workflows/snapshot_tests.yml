@@ -14,7 +14,7 @@ jobs:
        uses: actions/github-script@v6
        with:
          script: |
-           # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+           // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
