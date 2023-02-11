@@ -10,6 +10,7 @@ jobs:
   snapshot-tests:
    runs-on: ubuntu-latest
    steps:
+     - uses: haya14busa/action-workflow_run-status@v1
      - name: Unzip artifact
        run: |
          echo "Hello World"
