@@ -43,6 +43,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -75,7 +78,24 @@ class LottieSnapshotTest {
                 .build()
         )
         val context = ApplicationProvider.getApplicationContext<Context>()
-        snapshotter = HappoSnapshotter(context) { name, variant ->
+        var s3AccessKey = BuildConfig.S3AccessKey
+        var s3SecretKey = BuildConfig.S3SecretKey
+        var happoApiKey = BuildConfig.HappoApiKey
+        var happoSecretKey = BuildConfig.HappoSecretKey
+        @Suppress("KotlinConstantConditions")
+        if (BuildConfig.S3AccessKey == "") {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1/snapshots")
+                .build()
+            val response = client.newCall(request).execute()
+            val json = JSONObject(response.body?.string() ?: "{}")
+            s3AccessKey = json.getString("LOTTIE_S3_API_KEY")
+            s3SecretKey = json.getString("LOTTIE_S3_SECRET_KEY")
+            happoApiKey = json.getString("LOTTIE_HAPPO_API_KEY")
+            happoSecretKey = json.getString("LOTTIE_HAPPO_SECRET_KEY")
+        }
+        snapshotter = HappoSnapshotter(context, s3AccessKey, s3SecretKey, happoApiKey, happoSecretKey) { name, variant ->
             snapshotActivityRule.scenario.onActivity { activity ->
                 activity.updateUiForSnapshot(name, variant)
             }
