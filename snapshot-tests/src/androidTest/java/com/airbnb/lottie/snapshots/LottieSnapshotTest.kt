@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.FrameLayout
-import androidx.compose.animation.core.snap
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -61,7 +60,7 @@ class LottieSnapshotTest {
     @get:Rule
     val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
     lateinit var testCaseContext: SnapshotTestCaseContext
@@ -81,7 +80,6 @@ class LottieSnapshotTest {
                 activity.updateUiForSnapshot(name, variant)
             }
         }
-        snapshotter.setupCacheDir()
         testCaseContext = object : SnapshotTestCaseContext {
             override val context: Context = context
             override val snapshotter: HappoSnapshotter = this@LottieSnapshotTest.snapshotter
@@ -120,26 +118,26 @@ class LottieSnapshotTest {
     fun testAll() = runBlocking {
         val testCases = listOf(
             CustomBoundsTestCase(),
-//            ColorStateListColorFilterTestCase(),
-//            FailureTestCase(),
-//            FrameBoundariesTestCase(),
-//            ScaleTypesTestCase(),
-//            ComposeScaleTypesTestCase(),
-//            DynamicPropertiesTestCase(),
-//            MarkersTestCase(),
-//            AssetsTestCase(),
-//            TextTestCase(),
-//            PartialFrameProgressTestCase(),
-//            NightModeTestCase(),
-//            ApplyOpacityToLayerTestCase(),
-//            OutlineMasksAndMattesTestCase(),
-//            LargeCompositionSoftwareRendering(),
-//            ComposeDynamicPropertiesTestCase(),
-//            ProdAnimationsTestCase(),
-//            ClipChildrenTestCase(),
-//            SoftwareRenderingDynamicPropertiesInvalidationTestCase(),
-//            SeekBarTestCase(),
-//            CompositionFrameRate(),
+            ColorStateListColorFilterTestCase(),
+            FailureTestCase(),
+            FrameBoundariesTestCase(),
+            ScaleTypesTestCase(),
+            ComposeScaleTypesTestCase(),
+            DynamicPropertiesTestCase(),
+            MarkersTestCase(),
+            AssetsTestCase(),
+            TextTestCase(),
+            PartialFrameProgressTestCase(),
+            NightModeTestCase(),
+            ApplyOpacityToLayerTestCase(),
+            OutlineMasksAndMattesTestCase(),
+            LargeCompositionSoftwareRendering(),
+            ComposeDynamicPropertiesTestCase(),
+            ProdAnimationsTestCase(),
+            ClipChildrenTestCase(),
+            SoftwareRenderingDynamicPropertiesInvalidationTestCase(),
+            SeekBarTestCase(),
+            CompositionFrameRate(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
