@@ -9,7 +9,7 @@ android {
   defaultConfig {
     applicationId "com.airbnb.lottie.snapshots"
     minSdk 21
-    targetSdk 29
+    targetSdk 30
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -39,7 +39,7 @@ android {
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
-        "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
         "-Xopt-in=kotlin.RequiresOptIn",
     ]
   }
