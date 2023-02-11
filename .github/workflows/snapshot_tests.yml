@@ -10,11 +10,12 @@ jobs:
   snapshot-tests:
    runs-on: ubuntu-latest
    steps:
-     - name: 'Download artifact'
+     - uses: haya14busa/action-workflow_run-status@v1
+     - name: Download artifact
+       # From https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
        uses: actions/github-script@v6
        with:
          script: |
-           # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -49,7 +50,7 @@ jobs:
          directories-to-pull: /sdcard/Download/
      - name: 'Post PR comment'
        uses: mshick/add-pr-comment@v2
-       if: github.event_name == 'pull_request'
+       if: github.event.workflow_run.event == 'pull_request'
        with:
          message-id: ${{ github.sha }}
          message: |
