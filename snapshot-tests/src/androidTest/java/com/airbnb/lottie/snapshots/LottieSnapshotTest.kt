@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Debug
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
@@ -95,7 +94,6 @@ class LottieSnapshotTest {
             val json = JSONObject(response.body?.string() ?: "{}")
             s3AccessKey = json.getString("LOTTIE_S3_API_KEY")
             s3SecretKey = json.getString("LOTTIE_S3_SECRET_KEY")
-            Log.d("Gabe", "Downloaded keys: ${s3AccessKey.subSequence(0, 3)} ${s3SecretKey.subSequence(0, 3)}")
             happoApiKey = json.getString("LOTTIE_HAPPO_API_KEY")
             happoSecretKey = json.getString("LOTTIE_HAPPO_SECRET_KEY")
         }
