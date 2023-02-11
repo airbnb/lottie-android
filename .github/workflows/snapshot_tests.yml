@@ -11,10 +11,7 @@ jobs:
    runs-on: ubuntu-latest
    steps:
      - uses: haya14busa/action-workflow_run-status@v1
-     - name: Unzip artifact
-       run: |
-         echo "Hello World"
-     - name: 'Download artifact'
+     - name: Download artifact
        # From https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
        uses: actions/github-script@v6
        with:
