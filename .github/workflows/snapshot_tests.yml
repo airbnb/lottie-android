@@ -35,7 +35,7 @@ jobs:
        run: |
          unzip apks.zip
          ls -l
-         ls -l apks
+         ls -l debug
      - name: Run tests
        uses: emulator-wtf/run-tests@master
        with:
