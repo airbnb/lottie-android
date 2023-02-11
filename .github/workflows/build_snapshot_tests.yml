@@ -1,0 +1,29 @@
+name: Build snapshot tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-snapshot-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          cache: 'gradle'
+      - name: Build app
+        run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: apks
+          path: |
+            snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
+            snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
