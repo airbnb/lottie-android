@@ -66,14 +66,8 @@ jobs:
         run: |
           curl https://us-central1-lottie-snapshots.cloudfunctions.net/snapshot-env-v1 > snapshot-env
           while read line; do
-            echo READING $line
             echo "$line" >> $GITHUB_ENV
           done < snapshot-env
-      - name: Test env
-        shell: bash
-        run: |
-          echo 1: ${{ env.TEST1 }}
-          echo 2: ${{ env.TEST2 }}
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
@@ -85,7 +79,7 @@ jobs:
       - name: Run tests
         uses: emulator-wtf/run-tests@master
         with:
-          api-token: ${{ secrets.EW_API_TOKEN }}
+          api-token: ${{ env.EW_API_TOKEN }}
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
