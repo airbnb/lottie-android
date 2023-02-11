@@ -46,6 +46,10 @@ jobs:
            model=Pixel2,version=31
          outputs-dir: build/test-results
          directories-to-pull: /sdcard/Download/
+     - name: Check files
+       run: |
+         ls -l build/test-results/Pixel2_api31/sdcard/Download
+         ls -l build/test-results/Pixel2_api23/sdcard/Download
      - name: 'Post PR comment'
        uses: mshick/add-pr-comment@v2
        if: github.event.workflow_run.event == 'pull_request'
