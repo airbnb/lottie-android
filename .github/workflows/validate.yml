@@ -77,6 +77,7 @@ jobs:
       - name: Build app
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
+        if: false # DO NOT SUBMIT
         uses: emulator-wtf/run-tests@master
         with:
           api-token: ${{ env.EW_API_TOKEN }}
