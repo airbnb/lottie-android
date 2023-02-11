@@ -53,7 +53,7 @@ jobs:
          directories-to-pull: /sdcard/Download/
      - name: 'Post PR comment'
        uses: mshick/add-pr-comment@v2
-       if: github.event_name == 'pull_request'
+       if: github.event.workflow_run.event == 'pull_request'
        with:
          message-id: ${{ github.sha }}
          message: |
