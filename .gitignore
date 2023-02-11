@@ -5,6 +5,7 @@
 
 # From https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 # User-specific stuff
+.idea/kotlinc.xml
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
