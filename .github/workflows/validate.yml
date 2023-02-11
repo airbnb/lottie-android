@@ -81,7 +81,7 @@ jobs:
         with:
           name: apks
           path: |
-            snapshot-tests/build/outputs/apk/androidTest/snapshot-tests-debug-androidTest.apk
+            snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
             snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
