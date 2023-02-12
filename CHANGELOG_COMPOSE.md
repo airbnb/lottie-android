@@ -1,5 +1,7 @@
-###5.3.0
+# 6.0.0
 * Add reverseOnRepeat ([#2128](https://github.com/airbnb/lottie-android/pull/2128))
+* Allow setting a font map for custom fonts ([#2180](https://github.com/airbnb/lottie-android/pull/2180))
+* Allow images to be rendered ([#2183](https://github.com/airbnb/lottie-android/pull/2072))
 
 # 5.2.0
 * [BREAKING CHANGE]
