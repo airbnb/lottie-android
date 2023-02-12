@@ -1,4 +1,4 @@
-name: Snapshot tests
+name: Post PR comment
 
 on:
   workflow_run:
@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  download:
+  post-comment:
     runs-on: ubuntu-latest
     steps:
       - uses: haya14busa/action-workflow_run-status@v1
@@ -40,10 +40,10 @@ jobs:
             echo "$line" >> $GITHUB_ENV
           done < env
       - name: 'Post PR comment'
-        issue: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v2
         if: github.event.workflow_run.event == 'pull_request'
         with:
-          number: ${{ env.PR_NUMBER }}
+          issue: ${{ env.PR_NUMBER }}
           message-id: ${{ env.GITHUB_SHA }}
           message: |
             **Snapshot Tests**
