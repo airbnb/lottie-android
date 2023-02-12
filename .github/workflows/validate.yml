@@ -91,7 +91,7 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          mkdir -p ./pr
+          mkdir -p ./env
           echo PR_NUMBER=$PR_NUMBER > ./env/env
           echo GITHUB_SHA=${{ github.sha }}
       - uses: actions/upload-artifact@v3
