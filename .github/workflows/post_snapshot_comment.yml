@@ -4,8 +4,7 @@ on:
   workflow_run:
     workflows: [Validate]
     types:
-      # TODO: change this back to completed
-      - in_progress
+      - completed
 
 jobs:
   download:
