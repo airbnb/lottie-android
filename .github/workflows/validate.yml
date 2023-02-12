@@ -86,6 +86,18 @@ jobs:
             model=Pixel2,version=23
             model=Pixel2,version=31
           outputs-dir: build/test-results
+      - name: Save PR number
+        if: github.event_name == 'pull_request'
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          mkdir -p ./pr
+          echo PR_NUMBER=$PR_NUMBER > ./env/env
+          echo GITHUB_SHA=${{ github.sha }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: env
+          path: env/
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
