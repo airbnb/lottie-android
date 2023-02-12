@@ -40,7 +40,7 @@ jobs:
             echo "$line" >> $GITHUB_ENV
           done < env
       - name: 'Post PR comment'
-        uses: mshick/add-pr-comment@v2
+        issue: mshick/add-pr-comment@v2
         if: github.event.workflow_run.event == 'pull_request'
         with:
           number: ${{ env.PR_NUMBER }}
