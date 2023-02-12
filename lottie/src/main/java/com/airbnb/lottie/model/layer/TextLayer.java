@@ -282,8 +282,9 @@ public class TextLayer extends BaseLayer {
   private void offsetCanvas(Canvas canvas, DocumentData documentData, int lineIndex, float lineWidth) {
     PointF position = documentData.boxPosition;
     PointF size = documentData.boxSize;
-    float lineStartY = position == null ? 0f : position.y;
-    float lineOffset = (lineIndex * documentData.lineHeight * Utils.dpScale()) + lineStartY;
+    float dpScale = Utils.dpScale();
+    float lineStartY = position == null ? 0f : documentData.lineHeight * dpScale + position.y;
+    float lineOffset = (lineIndex * documentData.lineHeight * dpScale) + lineStartY;
     float lineStart = position == null ? 0f : position.x;
     float boxWidth = size == null ? 0f : size.x;
     switch (documentData.justification) {
@@ -334,7 +335,8 @@ public class TextLayer extends BaseLayer {
     }
   }
 
-  private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking, boolean usingGlyphs) {
+  private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking,
+      boolean usingGlyphs) {
     int lineCount = 0;
 
     float currentLineWidth = 0;
