@@ -283,8 +283,8 @@ public class TextLayer extends BaseLayer {
     PointF position = documentData.boxPosition;
     PointF size = documentData.boxSize;
     float dpScale = Utils.dpScale();
-    float potentialOffset = position == null ? 0f : documentData.lineHeight * dpScale + position.y;
-    float lineOffset = (lineIndex * documentData.lineHeight * dpScale) + potentialOffset;
+    float lineStartY = position == null ? 0f : documentData.lineHeight * dpScale + position.y;
+    float lineOffset = (lineIndex * documentData.lineHeight * dpScale) + lineStartY;
     float lineStart = position == null ? 0f : position.x;
     float boxWidth = size == null ? 0f : size.x;
     switch (documentData.justification) {
