@@ -9,9 +9,9 @@ on:
 jobs:
   post-comment:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request'
     steps:
       - uses: haya14busa/action-workflow_run-status@v1
-        if: github.event.workflow_run.event == 'pull_request'
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
