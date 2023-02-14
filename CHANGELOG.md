@@ -5,7 +5,7 @@
 * Allow zip files to contain embedded fonts. Context was added to some LottieCompositionFactory APIs to support this ([#2102](https://github.com/airbnb/lottie-android/pull/2102))
 * Add fontStyle and fontName as parameters in new overloads in FontAssetDelegate ([#2103](https://github.com/airbnb/lottie-android/pull/2103))
 * Allow decimal values for precomp size ([#2138](https://github.com/airbnb/lottie-android/pull/2138))
-* Allow interpolating in between gradeients that have different numbers of opacity stops ([#2160](https://github.com/airbnb/lottie-android/pull/2160))
+* Allow interpolating in between gradients that have different numbers of opacity stops ([#2160](https://github.com/airbnb/lottie-android/pull/2160))
 * Support box position in document data ([#2139](https://github.com/airbnb/lottie-android/pull/2139))
 * Allow repeater contents to be the target of dynamic properties ([#2164](https://github.com/airbnb/lottie-android/pull/2164))
 * Provide a global LottieTask listener to aid in Espresso idle resources ([#2161](https://github.com/airbnb/lottie-android/pull/2161))
