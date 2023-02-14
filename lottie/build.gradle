@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import net.ltgt.gradle.errorprone.CheckSeverity
 
 plugins {
@@ -28,6 +29,11 @@ android {
       includeAndroidResources = true
     }
   }
+}
+
+mavenPublishing {
+  publishToMavenCentral(SonatypeHost.DEFAULT)
+  signAllPublications()
 }
 
 dependencies {

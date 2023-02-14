@@ -14,7 +14,7 @@ import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
  *
  * If your dynamic property does the following, you must call {@link LottieAnimationView#invalidate()} or
  * {@link LottieDrawable#invalidateSelf()} each time you want to update this value.
- * 1. Use {@link com.airbnb.lottie.RenderMode.SOFTWARE}
+ * 1. Use {@link com.airbnb.lottie.RenderMode#SOFTWARE}
  * 2. Rendering a static image (the animation is either paused or there are no values
  *    changing within the animation itself)
  * When using software rendering, Lottie caches the internal rendering bitmap. Whenever the animation changes

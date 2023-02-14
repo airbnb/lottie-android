@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
   id 'com.android.library'
   id 'kotlin-android'
@@ -34,6 +36,11 @@ android {
   composeOptions {
     kotlinCompilerExtensionVersion composeVersion
   }
+}
+
+mavenPublishing {
+  publishToMavenCentral(SonatypeHost.DEFAULT)
+  signAllPublications()
 }
 
 dependencies {
