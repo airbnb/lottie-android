@@ -130,7 +130,7 @@ public class LottieCompositionFactory {
         LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
       }
       return result;
-    });
+    }, null);
   }
 
   /**
@@ -184,7 +184,7 @@ public class LottieCompositionFactory {
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName, @Nullable final String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return cache(cacheKey, () -> fromAssetSync(appContext, fileName, cacheKey));
+    return cache(cacheKey, () -> fromAssetSync(appContext, fileName, cacheKey), null);
   }
 
   /**
@@ -254,7 +254,7 @@ public class LottieCompositionFactory {
       @Nullable Context originalContext = contextRef.get();
       Context context1 = originalContext != null ? originalContext : appContext;
       return fromRawResSync(context1, rawRes, cacheKey);
-    });
+    }, null);
   }
 
   /**
@@ -311,7 +311,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonInputStreamSync(InputStream, String, boolean)
    */
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey));
+    return cache(cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey), () -> closeQuietly(stream));
   }
 
   /**
@@ -343,7 +343,7 @@ public class LottieCompositionFactory {
     return cache(cacheKey, () -> {
       //noinspection deprecation
       return fromJsonSync(json, cacheKey);
-    });
+    }, null);
   }
 
   /**
@@ -361,7 +361,7 @@ public class LottieCompositionFactory {
    * @see #fromJsonStringSync(String, String)
    */
   public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromJsonStringSync(json, cacheKey));
+    return cache(cacheKey, () -> fromJsonStringSync(json, cacheKey), null);
   }
 
   /**
@@ -377,7 +377,7 @@ public class LottieCompositionFactory {
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromJsonReaderSync(reader, cacheKey));
+    return cache(cacheKey, () -> fromJsonReaderSync(reader, cacheKey), () -> Utils.closeQuietly(reader));
   }
 
 
@@ -417,7 +417,7 @@ public class LottieCompositionFactory {
    * @see #fromZipStreamSync(Context, ZipInputStream, String)
    */
   public static LottieTask<LottieComposition> fromZipStream(Context context, final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey));
+    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), () -> closeQuietly(inputStream));
   }
 
   /**
@@ -604,17 +604,24 @@ public class LottieCompositionFactory {
    * If not, create a new task for the callable.
    * Then, add the new task to the task cache and set up listeners so it gets cleared when done.
    */
-  private static LottieTask<LottieComposition> cache(
-      @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable) {
+  private static LottieTask<LottieComposition> cache(@Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable,
+      @Nullable Runnable onCached) {
+    LottieTask<LottieComposition> task = null;
     final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
-      return new LottieTask<>(() -> new LottieResult<>(cachedComposition));
+      task = new LottieTask<>(() -> new LottieResult<>(cachedComposition));
     }
     if (cacheKey != null && taskCache.containsKey(cacheKey)) {
-      return taskCache.get(cacheKey);
+      task = taskCache.get(cacheKey);
+    }
+    if (task != null) {
+      if (onCached != null) {
+        onCached.run();
+      }
+      return task;
     }
 
-    LottieTask<LottieComposition> task = new LottieTask<>(callable);
+    task = new LottieTask<>(callable);
     if (cacheKey != null) {
       AtomicBoolean resultAlreadyCalled = new AtomicBoolean(false);
       task.addListener(result -> {

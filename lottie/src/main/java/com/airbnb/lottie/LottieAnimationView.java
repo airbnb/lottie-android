@@ -470,6 +470,8 @@ import java.util.Set;
    * <p>
    * This is particularly useful for animations loaded from the network. You can fetch the
    * bodymovin json from the network and pass it directly here.
+   * <p>
+   * Auto-closes the stream.
    */
   public void setAnimation(InputStream stream, @Nullable String cacheKey) {
     setCompositionTask(LottieCompositionFactory.fromJsonInputStream(stream, cacheKey));
