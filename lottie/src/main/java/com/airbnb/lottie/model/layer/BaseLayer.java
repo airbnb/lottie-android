@@ -571,22 +571,34 @@ public abstract class BaseLayer
   }
 
   void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    L.beginSection("BaseLayer#setProgress");
     // Time stretch should not be applied to the layer transform.
+    L.beginSection("BaseLayer#setProgress.transform");
     transform.setProgress(progress);
+    L.endSection("BaseLayer#setProgress.transform");
     if (mask != null) {
+      L.beginSection("BaseLayer#setProgress.mask");
       for (int i = 0; i < mask.getMaskAnimations().size(); i++) {
         mask.getMaskAnimations().get(i).setProgress(progress);
       }
+      L.endSection("BaseLayer#setProgress.mask");
     }
     if (inOutAnimation != null) {
+      L.beginSection("BaseLayer#setProgress.inout");
       inOutAnimation.setProgress(progress);
+      L.endSection("BaseLayer#setProgress.inout");
     }
     if (matteLayer != null) {
+      L.beginSection("BaseLayer#setProgress.matte");
       matteLayer.setProgress(progress);
+      L.endSection("BaseLayer#setProgress.matte");
     }
+    L.beginSection("BaseLayer#setProgress.animations." + animations.size());
     for (int i = 0; i < animations.size(); i++) {
       animations.get(i).setProgress(progress);
     }
+    L.endSection("BaseLayer#setProgress.animations." + animations.size());
+    L.endSection("BaseLayer#setProgress");
   }
 
   private void buildParentLayerListIfNeeded() {

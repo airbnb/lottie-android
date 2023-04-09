@@ -46,7 +46,9 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
+    L.beginSection("BaseKeyframeAnimation#setProgress");
     if (keyframesWrapper.isEmpty()) {
+      L.endSection("BaseKeyframeAnimation#setProgress");
       return;
     }
     if (progress < getStartDelayProgress()) {
@@ -56,18 +58,22 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     if (progress == this.progress) {
+      L.endSection("BaseKeyframeAnimation#setProgress");
       return;
     }
     this.progress = progress;
     if (keyframesWrapper.isValueChanged(progress)) {
       notifyListeners();
     }
+    L.endSection("BaseKeyframeAnimation#setProgress");
   }
 
   public void notifyListeners() {
+    L.beginSection("BaseKeyframeAnimation#notifyListeners");
     for (int i = 0; i < listeners.size(); i++) {
       listeners.get(i).onValueChanged();
     }
+    L.endSection("BaseKeyframeAnimation#notifyListeners");
   }
 
   protected Keyframe<K> getCurrentKeyframe() {

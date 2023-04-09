@@ -12,6 +12,7 @@ import com.airbnb.lottie.network.LottieNetworkCacheProvider;
 import com.airbnb.lottie.network.LottieNetworkFetcher;
 import com.airbnb.lottie.network.NetworkCache;
 import com.airbnb.lottie.network.NetworkFetcher;
+import com.airbnb.lottie.utils.LottieTrace;
 
 import java.io.File;
 
@@ -21,20 +22,16 @@ public class L {
   public static boolean DBG = false;
   public static final String TAG = "LOTTIE";
 
-  private static final int MAX_DEPTH = 20;
   private static boolean traceEnabled = false;
   private static boolean networkCacheEnabled = true;
   private static boolean disablePathInterpolatorCache = true;
-  private static String[] sections;
-  private static long[] startTimeNs;
-  private static int traceDepth = 0;
-  private static int depthPastMaxDepth = 0;
 
   private static LottieNetworkFetcher fetcher;
   private static LottieNetworkCacheProvider cacheProvider;
 
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
+  private static ThreadLocal<LottieTrace> lottieTrace;
 
   private L() {
   }
@@ -44,9 +41,8 @@ public class L {
       return;
     }
     traceEnabled = enabled;
-    if (traceEnabled) {
-      sections = new String[MAX_DEPTH];
-      startTimeNs = new long[MAX_DEPTH];
+    if (traceEnabled && lottieTrace == null) {
+      lottieTrace = new ThreadLocal<>();
     }
   }
 
@@ -58,34 +54,23 @@ public class L {
     if (!traceEnabled) {
       return;
     }
-    if (traceDepth == MAX_DEPTH) {
-      depthPastMaxDepth++;
-      return;
-    }
-    sections[traceDepth] = section;
-    startTimeNs[traceDepth] = System.nanoTime();
-    TraceCompat.beginSection(section);
-    traceDepth++;
+    getTrace().beginSection(section);
   }
 
   public static float endSection(String section) {
-    if (depthPastMaxDepth > 0) {
-      depthPastMaxDepth--;
-      return 0;
-    }
     if (!traceEnabled) {
       return 0;
     }
-    traceDepth--;
-    if (traceDepth == -1) {
-      throw new IllegalStateException("Can't end trace section. There are none.");
+    return getTrace().endSection(section);
+  }
+
+  private static LottieTrace getTrace() {
+    LottieTrace trace = lottieTrace.get();
+    if (trace == null) {
+      trace = new LottieTrace();
+      lottieTrace.set(trace);
     }
-    if (!section.equals(sections[traceDepth])) {
-      throw new IllegalStateException("Unbalanced trace call " + section +
-          ". Expected " + sections[traceDepth] + ".");
-    }
-    TraceCompat.endSection();
-    return (System.nanoTime() - startTimeNs[traceDepth]) / 1000000f;
+    return trace;
   }
 
   public static void setFetcher(LottieNetworkFetcher customFetcher) {
@@ -121,11 +106,8 @@ public class L {
       synchronized (NetworkCache.class) {
         local = networkCache;
         if (local == null) {
-          networkCache = local = new NetworkCache(cacheProvider != null ? cacheProvider : new LottieNetworkCacheProvider() {
-            @Override @NonNull public File getCacheDir() {
-              return new File(appContext.getCacheDir(), "lottie_network_cache");
-            }
-          });
+          networkCache = local = new NetworkCache(cacheProvider != null ? cacheProvider :
+              () -> new File(appContext.getCacheDir(), "lottie_network_cache"));
         }
       }
     }
