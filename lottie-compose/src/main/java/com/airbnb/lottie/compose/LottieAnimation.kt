@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
@@ -67,6 +68,8 @@ import kotlin.math.roundToInt
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
  * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
  * @param fontMap A map of keys to Typefaces. The key can be: "fName", "fFamily", or "fFamily-fStyle" as specified in your Lottie file.
+ * @param asyncUpdates When set to true, some parts of animation updates will be done off of the main thread.
+ *                     For more details, refer to the docs of [AsyncUpdates].
  */
 @Composable
 fun LottieAnimation(
@@ -83,6 +86,7 @@ fun LottieAnimation(
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
     fontMap: Map<String, Typeface>? = null,
+    asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
@@ -107,6 +111,7 @@ fun LottieAnimation(
 
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
             drawable.renderMode = renderMode
+            drawable.asyncUpdates = asyncUpdates
             drawable.composition = composition
             drawable.setFontMap(fontMap)
             if (dynamicProperties !== setDynamicProperties) {
@@ -145,20 +150,22 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
+    asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
     LottieAnimation(
-        composition,
-        { progress },
-        modifier,
-        outlineMasksAndMattes,
-        applyOpacityToLayers,
-        enableMergePaths,
-        renderMode,
-        maintainOriginalImageBounds,
-        dynamicProperties,
-        alignment,
-        contentScale,
-        clipToCompositionBounds,
+        composition = composition,
+        progress = { progress },
+        modifier = modifier,
+        outlineMasksAndMattes = outlineMasksAndMattes,
+        applyOpacityToLayers = applyOpacityToLayers,
+        enableMergePaths = enableMergePaths,
+        renderMode = renderMode,
+        maintainOriginalImageBounds = maintainOriginalImageBounds,
+        dynamicProperties = dynamicProperties,
+        alignment = alignment,
+        contentScale = contentScale,
+        clipToCompositionBounds = clipToCompositionBounds,
+        asyncUpdates = asyncUpdates,
     )
 }
 
@@ -189,6 +196,7 @@ fun LottieAnimation(
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
     fontMap: Map<String, Typeface>? = null,
+    asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
     val progress by animateLottieCompositionAsState(
         composition,
@@ -213,6 +221,7 @@ fun LottieAnimation(
         contentScale = contentScale,
         clipToCompositionBounds = clipToCompositionBounds,
         fontMap = fontMap,
+        asyncUpdates = asyncUpdates,
     )
 }
 

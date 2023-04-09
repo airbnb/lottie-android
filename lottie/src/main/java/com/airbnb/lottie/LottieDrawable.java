@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PathMeasure;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -39,6 +40,7 @@ import com.airbnb.lottie.model.Marker;
 import com.airbnb.lottie.model.layer.CompositionLayer;
 import com.airbnb.lottie.parser.LayerParser;
 import com.airbnb.lottie.utils.Logger;
+import com.airbnb.lottie.utils.LottieThreadFactory;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieFrameInfo;
@@ -52,6 +54,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This can be used to show an lottie animation in any place that would normally take a drawable.
@@ -87,14 +94,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private OnVisibleAction onVisibleAction = OnVisibleAction.NONE;
 
   private final ArrayList<LazyCompositionTask> lazyCompositionTasks = new ArrayList<>();
-  private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = new ValueAnimator.AnimatorUpdateListener() {
-    @Override
-    public void onAnimationUpdate(ValueAnimator animation) {
-      if (compositionLayer != null) {
-        compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
-      }
-    }
-  };
 
   /**
    * ImageAssetManager created automatically by Lottie for views.
@@ -146,6 +145,57 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private RectF softwareRenderingTransformedBounds;
   private Matrix softwareRenderingOriginalCanvasMatrix;
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
+
+  private AsyncUpdates asyncUpdates = AsyncUpdates.AUTOMATIC;
+  private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = animation -> {
+    if (getAsyncUpdatesEnabled()) {
+      // Render a new frame.
+      // If draw is called while lastDrawnProgress is still recent enough, it will
+      // draw straight away and then enqueue a background setProgress immediately after draw
+      // finishes.
+      invalidateSelf();
+    } else if (compositionLayer != null) {
+      compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
+    }
+  };
+
+  /**
+   * Ensures that setProgress and draw will never happen at the same time on different threads.
+   * If that were to happen, parts of the animation may be on one frame while other parts would
+   * be on another.
+   */
+  private final Semaphore setProgressDrawLock = new Semaphore(1);
+  /**
+   * The executor that {@link AsyncUpdates} will be run on.
+   * <p/>
+   * Defaults to a core size of 0 so that when no animations are playing, there will be no
+   * idle cores consuming resources.
+   * <p/>
+   * Allows up to two active threads so that if there are many animations, they can all work in parallel.
+   * Two was arbitrarily chosen but should be sufficient for most uses cases. In the case of a single
+   * animation, this should never exceed one.
+   * <p/>
+   * Each thread will timeout after 35ms which gives it enough time to persist for one frame, one dropped frame
+   * and a few extra ms just in case.
+   */
+  private static final Executor setProgressExecutor = new ThreadPoolExecutor(0, 2, 35, TimeUnit.MILLISECONDS,
+      new LinkedBlockingQueue<>(), new LottieThreadFactory());
+  private final Runnable updateProgressRunnable = () -> {
+    CompositionLayer compositionLayer = this.compositionLayer;
+    if (compositionLayer == null) {
+      return;
+    }
+    try {
+      setProgressDrawLock.acquire();
+      compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
+    } catch (InterruptedException e) {
+      // Do nothing.
+    } finally {
+      setProgressDrawLock.release();
+    }
+  };
+  private float lastDrawnProgress = -Float.MAX_VALUE;
+  private static final float MAX_DELTA_MS_ASYNC_SET_PROGRESS = 3 / 60f * 1000;
 
   /**
    * True if the drawable has not been drawn since the last invalidateSelf.
@@ -359,6 +409,32 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Returns the current value of {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
+   */
+  public AsyncUpdates getAsyncUpdates() {
+    return asyncUpdates;
+  }
+
+  /**
+   * Similar to {@link #getAsyncUpdates()} except it returns the actual
+   * boolean value for whether async updates are enabled or not.
+   * This is useful when the mode is automatic and you want to know
+   * whether automatic is defaulting to enabled or not.
+   */
+  public boolean getAsyncUpdatesEnabled() {
+    return asyncUpdates == AsyncUpdates.ENABLED;
+  }
+
+  /**
+   * **Note: this API is experimental and may changed.**
+   * <p/>
+   * Sets the current value for {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
+   */
+  public void setAsyncUpdates(AsyncUpdates asyncUpdates) {
+    this.asyncUpdates = asyncUpdates;
+  }
+
+  /**
    * Returns the actual render mode being used. It will always be {@link RenderMode#HARDWARE} or {@link RenderMode#SOFTWARE}.
    * When the render mode is set to AUTOMATIC, the value will be derived from {@link RenderMode#useSoftwareRendering(int, boolean, int)}.
    */
@@ -457,6 +533,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     composition = null;
     compositionLayer = null;
     imageAssetManager = null;
+    lastDrawnProgress = -Float.MAX_VALUE;
     animator.clearComposition();
     invalidateSelf();
   }
@@ -506,30 +583,77 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return PixelFormat.TRANSLUCENT;
   }
 
+  /**
+   * Helper for the async execution path to potentially call setProgress
+   * before drawing if the current progress has drifted sufficiently far
+   * from the last set progress.
+   *
+   * @see AsyncUpdates
+   * @see #setAsyncUpdates(AsyncUpdates)
+   */
+  private boolean shouldSetProgressBeforeDrawing() {
+    LottieComposition composition = this.composition;
+    if (composition == null) {
+      return false;
+    }
+    float lastDrawnProgress = this.lastDrawnProgress;
+    float currentProgress = animator.getAnimatedValueAbsolute();
+    this.lastDrawnProgress = currentProgress;
+
+    float duration = composition.getDuration();
+
+    float deltaProgress = Math.abs(currentProgress - lastDrawnProgress);
+    float deltaMs = deltaProgress * duration;
+    return deltaMs >= MAX_DELTA_MS_ASYNC_SET_PROGRESS;
+  }
+
   @Override
   public void draw(@NonNull Canvas canvas) {
-    L.beginSection("Drawable#draw");
+    CompositionLayer compositionLayer = this.compositionLayer;
+    if (compositionLayer == null) {
+      return;
+    }
+    boolean asyncUpdatesEnabled = getAsyncUpdatesEnabled();
+    try {
+      if (asyncUpdatesEnabled) {
+        setProgressDrawLock.acquire();
+      }
+      L.beginSection("Drawable#draw");
 
-    if (safeMode) {
-      try {
+      if (asyncUpdatesEnabled && shouldSetProgressBeforeDrawing()) {
+        setProgress(animator.getAnimatedValueAbsolute());
+      }
+
+      if (safeMode) {
+        try {
+          if (useSoftwareRendering) {
+            renderAndDrawAsBitmap(canvas, compositionLayer);
+          } else {
+            drawDirectlyToCanvas(canvas);
+          }
+        } catch (Throwable e) {
+          Logger.error("Lottie crashed in draw!", e);
+        }
+      } else {
         if (useSoftwareRendering) {
           renderAndDrawAsBitmap(canvas, compositionLayer);
         } else {
           drawDirectlyToCanvas(canvas);
         }
-      } catch (Throwable e) {
-        Logger.error("Lottie crashed in draw!", e);
       }
-    } else {
-      if (useSoftwareRendering) {
-        renderAndDrawAsBitmap(canvas, compositionLayer);
-      } else {
-        drawDirectlyToCanvas(canvas);
+
+      isDirty = false;
+    } catch (InterruptedException e) {
+      // Do nothing.
+    } finally {
+      L.endSection("Drawable#draw");
+      if (asyncUpdatesEnabled) {
+        setProgressDrawLock.release();
+        if (compositionLayer.getProgress() != animator.getAnimatedValueAbsolute()) {
+          setProgressExecutor.execute(updateProgressRunnable);
+        }
       }
     }
-
-    isDirty = false;
-    L.endSection("Drawable#draw");
   }
 
   /**
@@ -542,16 +666,35 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     if (compositionLayer == null || composition == null) {
       return;
     }
+    boolean asyncUpdatesEnabled = getAsyncUpdatesEnabled();
+    try {
+      if (asyncUpdatesEnabled) {
+        setProgressDrawLock.acquire();
+      }
 
-    if (useSoftwareRendering) {
-      canvas.save();
-      canvas.concat(matrix);
-      renderAndDrawAsBitmap(canvas, compositionLayer);
-      canvas.restore();
-    } else {
-      compositionLayer.draw(canvas, matrix, alpha);
+      if (asyncUpdatesEnabled && shouldSetProgressBeforeDrawing()) {
+        setProgress(animator.getAnimatedValueAbsolute());
+      }
+
+      if (useSoftwareRendering) {
+        canvas.save();
+        canvas.concat(matrix);
+        renderAndDrawAsBitmap(canvas, compositionLayer);
+        canvas.restore();
+      } else {
+        compositionLayer.draw(canvas, matrix, alpha);
+      }
+      isDirty = false;
+    } catch (InterruptedException e) {
+      // Do nothing.
+    } finally {
+      if (asyncUpdatesEnabled) {
+        setProgressDrawLock.release();
+        if (compositionLayer.getProgress() != animator.getAnimatedValueAbsolute()) {
+          setProgressExecutor.execute(updateProgressRunnable);
+        }
+      }
     }
-    isDirty = false;
   }
 
   // <editor-fold desc="animator">

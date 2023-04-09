@@ -31,5 +31,10 @@
             <enum name="hardware" value="1" />
             <enum name="software" value="2" />
         </attr>
+        <attr name="lottie_asyncUpdates" format="enum">
+            <enum name="automatic" value="0" />
+            <enum name="enabled" value="1" />
+            <enum name="disabled" value="2" />
+        </attr>
     </declare-styleable>
 </resources>
