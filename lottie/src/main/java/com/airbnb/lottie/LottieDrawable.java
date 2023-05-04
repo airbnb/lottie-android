@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -614,6 +615,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     boolean asyncUpdatesEnabled = getAsyncUpdatesEnabled();
+    Log.d("Gabe", "draw asyncUpdatesEnabled " + asyncUpdatesEnabled);
     try {
       if (asyncUpdatesEnabled) {
         setProgressDrawLock.acquire();
@@ -670,10 +672,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     try {
       if (asyncUpdatesEnabled) {
         setProgressDrawLock.acquire();
-      }
-
-      if (asyncUpdatesEnabled && shouldSetProgressBeforeDrawing()) {
-        setProgress(animator.getAnimatedValueAbsolute());
+        if (shouldSetProgressBeforeDrawing()) {
+          setProgress(animator.getAnimatedValueAbsolute());
+        }
       }
 
       if (useSoftwareRendering) {
