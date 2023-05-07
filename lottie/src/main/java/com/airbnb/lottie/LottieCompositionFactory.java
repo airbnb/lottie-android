@@ -315,6 +315,17 @@ public class LottieCompositionFactory {
   }
 
   /**
+   * @see #fromJsonInputStreamSync(InputStream, String, boolean)
+   */
+  public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey, boolean close) {
+    return cache(cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey, close), () -> {
+      if (close) {
+        closeQuietly(stream);
+      }
+    });
+  }
+
+  /**
    * Return a LottieComposition for the given InputStream to json.
    */
   @WorkerThread
@@ -323,8 +334,11 @@ public class LottieCompositionFactory {
   }
 
 
+  /**
+   * Return a LottieComposition for the given InputStream to json.
+   */
   @WorkerThread
-  private static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
+  public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
     try {
       return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
     } finally {
@@ -424,7 +438,7 @@ public class LottieCompositionFactory {
    * Parses a zip input stream into a Lottie composition.
    * Your zip file should just be a folder with your json file and images zipped together.
    * It will automatically store and configure any images inside the animation if they exist.
-   *
+   * <p>
    * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
    * that takes Context as the first parameter.
    */
@@ -432,15 +446,15 @@ public class LottieCompositionFactory {
     return fromZipStreamSync(null, inputStream, cacheKey);
   }
 
-    /**
-     * Parses a zip input stream into a Lottie composition.
-     * Your zip file should just be a folder with your json file and images zipped together.
-     * It will automatically store and configure any images inside the animation if they exist.
-     *
-     * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
-     *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
-     *                font family (fFamily) in your animation file.
-     */
+  /**
+   * Parses a zip input stream into a Lottie composition.
+   * Your zip file should just be a folder with your json file and images zipped together.
+   * It will automatically store and configure any images inside the animation if they exist.
+   *
+   * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
+   *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
+   *                font family (fFamily) in your animation file.
+   */
   @WorkerThread
   public static LottieResult<LottieComposition> fromZipStreamSync(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
     try {
