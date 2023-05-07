@@ -91,15 +91,17 @@ fun LottieAnimation(
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
     val dpScale = Utils.dpScale()
+    val widthDp = (composition.bounds.width() / dpScale).dp
+    val heightDp = (composition.bounds.height() / dpScale).dp
+    val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
+    val scale = contentScale.computeScaleFactor(compositionSize, Size(widthDp.value / dpScale, heightDp.value / dpScale))
     Canvas(
         modifier = modifier
-            .size((composition.bounds.width() / dpScale).dp, (composition.bounds.height() / dpScale).dp)
+            .size(widthDp * scale.scaleX, heightDp * scale.scaleY)
     ) {
         drawIntoCanvas { canvas ->
-            val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
             val intSize = IntSize(size.width.roundToInt(), size.height.roundToInt())
 
-            val scale = contentScale.computeScaleFactor(compositionSize, size)
             val translation = alignment.align(compositionSize * scale, intSize, layoutDirection)
             matrix.reset()
             matrix.preTranslate(translation.x.toFloat(), translation.y.toFloat())
