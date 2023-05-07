@@ -4,17 +4,18 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.airbnb.lottie.issues'
+    compileSdk 33
     defaultConfig {
         applicationId "com.airbnb.lottie.issues"
         minSdk 16
-        targetSdk 30
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding true
@@ -23,5 +24,5 @@ android {
 
 dependencies {
     implementation project(':lottie')
-    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation libs.androidx.appcompat
 }

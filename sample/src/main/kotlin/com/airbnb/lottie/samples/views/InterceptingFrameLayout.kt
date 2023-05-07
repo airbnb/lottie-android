@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -19,6 +20,7 @@ class InterceptingFrameLayout @JvmOverloads constructor(
         return super.onInterceptTouchEvent(ev)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         viewDragHelper?.processTouchEvent(event)
         return true

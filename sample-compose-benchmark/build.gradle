@@ -4,21 +4,22 @@ plugins {
 }
 
 android {
-  compileSdk 31
+  namespace 'com.airbnb.lottie.sample.compose.benchmark'
+  compileSdk 33
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
   }
 
   defaultConfig {
     minSdk 30
-    targetSdk 31
+    targetSdk 33
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -35,10 +36,10 @@ android {
 }
 
 dependencies {
-  implementation 'androidx.test.ext:junit:1.1.3'
-  implementation 'androidx.test.espresso:espresso-core:3.4.0'
-  implementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-  implementation 'androidx.benchmark:benchmark-macro-junit4:1.1.0-beta01'
+  implementation AndroidX.test.ext.junit
+  implementation AndroidX.test.espresso.core
+  implementation AndroidX.test.uiAutomator
+  implementation AndroidX.benchmark.macroJunit4
 }
 
 androidComponents {

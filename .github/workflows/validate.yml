@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
           cache: 'gradle'
       - name: Run Lint
         run: ./gradlew lintDebug --no-daemon
@@ -43,7 +43,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
           cache: 'gradle'
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest --no-daemon
@@ -72,7 +72,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
           cache: 'gradle'
       - name: Build app
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
@@ -109,7 +109,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
           cache: 'gradle'
       - name: "Deploy Snapshot"
         env:

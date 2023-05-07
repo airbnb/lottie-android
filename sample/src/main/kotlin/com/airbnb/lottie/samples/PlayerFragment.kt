@@ -14,6 +14,8 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -30,6 +32,7 @@ import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.databinding.PlayerFragmentBinding
 import com.airbnb.lottie.samples.model.CompositionArgs
+import com.airbnb.lottie.samples.utils.getParcelableCompat
 import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.samples.views.BottomSheetItemView
 import com.airbnb.lottie.samples.views.BottomSheetItemViewModel_
@@ -100,7 +103,25 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(false)
-        setHasOptionsMenu(true)
+        (requireActivity() as MenuHost).addMenuProvider(object : MenuProvider {
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_player, menu)
+            }
+
+            override fun onMenuItemSelected(item: MenuItem): Boolean {
+                if (item.isCheckable) item.isChecked = !item.isChecked
+                when (item.itemId) {
+                    android.R.id.home -> requireActivity().finish()
+                    R.id.visibility -> {
+                        viewModel.setDistractionFree(item.isChecked)
+                        val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
+                        item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
+                    }
+                }
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         binding.controlBarPlayerControls.lottieVersionView.text = getString(R.string.lottie_version, BuildConfig.VERSION_NAME)
 
@@ -110,7 +131,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             }
         })
 
-        val args = arguments?.getParcelable<CompositionArgs>(EXTRA_ANIMATION_ARGS)
+        val args = arguments?.getParcelableCompat(EXTRA_ANIMATION_ARGS, CompositionArgs::class.java)
             ?: throw IllegalArgumentException("No composition args specified")
         args.animationData?.bgColorInt?.let {
             binding.controlBarBackgroundColor.backgroundButton1.setBackgroundColor(it)
@@ -392,25 +413,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
     override fun onDestroyView() {
         binding.animationView.removeAnimatorListener(animatorListener)
         super.onDestroyView()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.fragment_player, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.isCheckable) item.isChecked = !item.isChecked
-        when (item.itemId) {
-            android.R.id.home -> requireActivity().finish()
-            R.id.info -> Unit
-            R.id.visibility -> {
-                viewModel.setDistractionFree(item.isChecked)
-                val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector
-                item.icon = ContextCompat.getDrawable(requireContext(), menuIcon)
-            }
-        }
-        return true
     }
 
     private fun onCompositionLoaded(composition: LottieComposition?) {

@@ -1,38 +1,42 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
 plugins {
     id 'com.android.application'
     id "kotlin-android"
 }
 
 android {
-    compileSdk 31
+    namespace 'com.airbnb.lottie.issues.compose'
+    compileSdk 33
     defaultConfig {
         applicationId "com.airbnb.lottie.issues.compose"
         minSdk 21
-        targetSdk 30
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion composeVersion
+        kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
     }
 }
 
 dependencies {
     implementation project(':lottie-compose')
-    implementation "androidx.appcompat:appcompat:$appcompatVersion"
-    implementation "androidx.activity:activity-compose:$activityVersion"
-    implementation "androidx.compose.ui:ui:$composeVersion"
-    implementation "androidx.compose.material:material:$composeVersion"
-    implementation "androidx.compose.material:material-icons-extended:$composeVersion"
-    implementation "androidx.compose.ui:ui-tooling:$composeVersion"
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity.compose
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.ui
+    implementation libs.compose.material
+    implementation libs.compose.material.icons.extended
+    implementation libs.compose.ui.tooling
 }
