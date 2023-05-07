@@ -554,13 +554,6 @@ public class LottieCompositionFactory {
       }
     }
 
-    // Ensure that all bitmaps have been set.
-    for (Map.Entry<String, LottieImageAsset> entry : composition.getImages().entrySet()) {
-      if (entry.getValue().getBitmap() == null) {
-        return new LottieResult<>(new IllegalStateException("There is no image for " + entry.getValue().getFileName()));
-      }
-    }
-
     if (cacheKey != null) {
       LottieCompositionCache.getInstance().put(cacheKey, composition);
     }
