@@ -76,7 +76,7 @@ tasks.withType(JavaCompile) {
   // remove the if condition if you want to run NullAway on test code
   if (!name.toLowerCase().contains("test")) {
     options.errorprone {
-      option("NullAway:AnnotatedPackages:_", "com.airbnb.lottie")
+      option("NullAway:AnnotatedPackages", "com.airbnb.lottie")
       // TODO: enable these and fix errors one by one.
       check("NullAway", CheckSeverity.OFF)
       check("StringSplitter", CheckSeverity.OFF)

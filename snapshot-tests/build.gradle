@@ -63,25 +63,26 @@ kapt {
 
 dependencies {
   implementation project(':lottie-compose')
-  implementation AndroidX.core.ktx
-  implementation AndroidX.activity.compose
-  implementation AndroidX.appCompat
-  implementation AndroidX.compose.ui
-  implementation AndroidX.compose.ui.tooling
-  implementation AndroidX.compose.material
+  implementation libs.androidx.appcompat
+  implementation libs.androidx.core.ktx
+  implementation libs.androidx.activity.compose
+  implementation platform(libs.compose.bom)
+  implementation libs.compose.ui
+  implementation libs.compose.ui.tooling
+  implementation libs.compose.material
 
-  implementation Square.okHttp3
+  implementation libs.okhttp
 
   androidTestImplementation libs.aws.android.sdk.s3
   androidTestImplementation(libs.aws.android.sdk.mobile.client) { transitive = true }
   androidTestImplementation(libs.aws.android.sdk.auth.userpools) { transitive = true }
 
-  androidTestImplementation AndroidX.test.ext.junit
-  androidTestImplementation AndroidX.test.espresso.core
-  androidTestImplementation AndroidX.test.espresso.idlingResource
-  androidTestImplementation AndroidX.test.core
-  androidTestImplementation AndroidX.test.rules
+  androidTestImplementation libs.androidx.test.junit
+  androidTestImplementation libs.androidx.test.espresso
+  androidTestImplementation libs.androidx.test.espresso.idling
+  androidTestImplementation libs.androidx.test.core
+  androidTestImplementation libs.androidx.test.rules
   androidTestImplementation libs.jjwt
-  androidTestImplementation Testing.mockito.android
-  androidTestImplementation Testing.mockito.kotlin
+  androidTestImplementation libs.mockito.android
+  androidTestImplementation libs.mockito.kotlin
 }
