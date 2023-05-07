@@ -403,7 +403,6 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         if (item.isCheckable) item.isChecked = !item.isChecked
         when (item.itemId) {
             android.R.id.home -> requireActivity().finish()
-            R.id.info -> Unit
             R.id.visibility -> {
                 viewModel.setDistractionFree(item.isChecked)
                 val menuIcon = if (item.isChecked) R.drawable.ic_eye_teal else R.drawable.ic_eye_selector

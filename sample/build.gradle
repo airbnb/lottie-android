@@ -1,16 +1,17 @@
 plugins {
   id 'com.android.application'
   id "kotlin-android"
-  id 'kotlin-kapt'
   id 'kotlin-parcelize'
+  id 'com.google.devtools.ksp'
 }
 
 android {
-  compileSdk 31
+  namespace 'com.airbnb.lottie.samples'
+  compileSdk 33
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdk 16
-    targetSdk 30
+    targetSdk 33
     versionCode 70
     versionName VERSION_NAME
     multiDexEnabled true
@@ -21,6 +22,7 @@ android {
   }
   buildFeatures {
     viewBinding true
+    buildConfig true
   }
   buildTypes {
     debug {
@@ -39,11 +41,11 @@ android {
     baseline file("lint-baseline.xml")
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
   }
   sourceSets {
@@ -59,39 +61,39 @@ android {
 
 dependencies {
   implementation project(':lottie')
-  implementation 'androidx.multidex:multidex:2.0.1'
+  implementation libs.androidx.multidex
 
-  implementation "androidx.appcompat:appcompat:$appcompatVersion"
-  implementation "androidx.recyclerview:recyclerview:1.2.1"
-  implementation "androidx.paging:paging-runtime-ktx:3.0.1"
-  implementation "androidx.cardview:cardview:1.0.0"
-  implementation "androidx.core:core-ktx:$coreVersion"
-  implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-  implementation "androidx.browser:browser:1.3.0"
-  implementation "com.google.android.material:material:$materialVersion"
+  implementation libs.androidx.appcompat
+  implementation libs.androidx.recyclerview
+  implementation libs.androidx.paging.runtime.ktx
+  implementation libs.androidx.cardview
+  implementation libs.androidx.core.ktx
+  implementation libs.androidx.constraintlayout
+  implementation libs.androidx.browser
+  implementation libs.google.material
 
-  implementation "com.airbnb.android:epoxy:$epoxyVersion"
-  kapt "com.airbnb.android:epoxy-processor:$epoxyVersion"
-  implementation 'com.airbnb.android:mvrx:1.5.1'
+  implementation libs.epoxy
+  ksp libs.epoxy.processor
+  implementation libs.mvrx
 
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-  implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.2'
-  implementation 'com.github.PhilJay:MPAndroidChart:3.1.0'
-  implementation 'com.google.code.gson:gson:2.8.8'
-  implementation 'com.squareup.okhttp3:okhttp:4.9.1'
-  implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-  implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-  implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-  implementation 'com.github.bumptech.glide:glide:4.12.0'
+  implementation libs.kotlinx.coroutines.android
+  implementation libs.qrcodereaderview
+  implementation libs.mpandroidchart
+  implementation libs.gson
+  implementation libs.okhttp
+  implementation libs.retrofit
+  implementation libs.retrofit.rxjava
+  implementation libs.retrofit.gson
+  implementation libs.glide
 
-  debugImplementation 'androidx.fragment:fragment-testing:1.3.6'
+  debugImplementation libs.androidx.fragment.testing
 
-  testImplementation "junit:junit:$junitVersion"
-  androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
-  androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-  androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
-  androidTestImplementation 'androidx.test:core:1.3.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
-  androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+  testImplementation libs.junit4
+  androidTestImplementation libs.androidx.test.junit
+  androidTestImplementation libs.androidx.test.espresso
+  androidTestImplementation libs.androidx.test.espresso.idling
+  androidTestImplementation libs.androidx.test.core
+  androidTestImplementation libs.androidx.test.rules
+  androidTestImplementation libs.mockito.android
+  androidTestImplementation libs.mockito.kotlin
 }

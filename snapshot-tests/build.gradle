@@ -1,3 +1,5 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
 plugins {
   id 'com.android.application'
   id "kotlin-android"
@@ -5,11 +7,12 @@ plugins {
 }
 
 android {
-  compileSdk 31
+  namespace 'com.airbnb.lottie.snapshots'
+  compileSdk 33
   defaultConfig {
     applicationId "com.airbnb.lottie.snapshots"
     minSdk 21
-    targetSdk 30
+    targetSdk 33
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -30,12 +33,12 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
 
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
@@ -46,10 +49,11 @@ android {
   buildFeatures {
     compose true
     viewBinding true
+    buildConfig true
   }
 
   composeOptions {
-    kotlinCompilerExtensionVersion composeVersion
+    kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
   }
 }
 
@@ -59,25 +63,25 @@ kapt {
 
 dependencies {
   implementation project(':lottie-compose')
-  implementation "androidx.core:core-ktx:$coreVersion"
-  implementation "androidx.activity:activity-compose:$activityVersion"
-  implementation 'androidx.appcompat:appcompat:1.4.0-beta01'
-  implementation "androidx.compose.ui:ui:$composeVersion"
-  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-  implementation "androidx.compose.material:material:$composeVersion"
+  implementation AndroidX.core.ktx
+  implementation AndroidX.activity.compose
+  implementation AndroidX.appCompat
+  implementation AndroidX.compose.ui
+  implementation AndroidX.compose.ui.tooling
+  implementation AndroidX.compose.material
 
-  implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+  implementation Square.okHttp3
 
-  androidTestImplementation "com.amazonaws:aws-android-sdk-s3:$awsVersion"
-  androidTestImplementation("com.amazonaws:aws-android-sdk-mobile-client:$awsVersion") { transitive = true }
-  androidTestImplementation("com.amazonaws:aws-android-sdk-auth-userpools:$awsVersion") { transitive = true }
+  androidTestImplementation libs.aws.android.sdk.s3
+  androidTestImplementation(libs.aws.android.sdk.mobile.client) { transitive = true }
+  androidTestImplementation(libs.aws.android.sdk.auth.userpools) { transitive = true }
 
-  androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
-  androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-  androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
-  androidTestImplementation 'androidx.test:core:1.3.0'
-  androidTestImplementation 'androidx.test:rules:1.4.0'
-  androidTestImplementation 'io.jsonwebtoken:jjwt:0.9.1'
-  androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
-  androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+  androidTestImplementation AndroidX.test.ext.junit
+  androidTestImplementation AndroidX.test.espresso.core
+  androidTestImplementation AndroidX.test.espresso.idlingResource
+  androidTestImplementation AndroidX.test.core
+  androidTestImplementation AndroidX.test.rules
+  androidTestImplementation libs.jjwt
+  androidTestImplementation Testing.mockito.android
+  androidTestImplementation Testing.mockito.kotlin
 }

@@ -8,11 +8,12 @@ plugins {
 }
 
 android {
+  namespace 'com.airbnb.lottie'
   resourcePrefix 'lottie_'
-  compileSdk 31
+  compileSdk 33
   defaultConfig {
     minSdk 16
-    targetSdk 30
+    targetSdk 33
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   lintOptions {
@@ -21,8 +22,8 @@ android {
     textOutput 'stdout'
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
   testOptions {
     unitTests {
@@ -37,21 +38,20 @@ mavenPublishing {
 }
 
 dependencies {
-  implementation "androidx.appcompat:appcompat:$appcompatVersion"
+  implementation libs.androidx.appcompat
   // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
   //noinspection GradleDependency
-  implementation("com.squareup.okio:okio:1.17.4")
+  implementation libs.okio
 
-  annotationProcessor "com.uber.nullaway:nullaway:0.9.2"
-  errorprone "com.google.errorprone:error_prone_core:2.9.0"
-  //noinspection GradleDynamicVersion
-  errorproneJavac "com.google.errorprone:javac:9+181-r4173-1"
+  annotationProcessor libs.nullaway
+  errorprone libs.errorprone.core
+  errorproneJavac libs.errorprone.javac
 
-  testImplementation "org.mockito:mockito-core:$mockitoVersion"
-  testImplementation "org.robolectric:robolectric:$robolectricVersion"
-  testImplementation "junit:junit:$junitVersion"
-  androidTestImplementation "androidx.test.ext:junit:$extJunitVersion"
-  androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+  testImplementation libs.mockito.core
+  testImplementation libs.robolectric
+  testImplementation libs.junit4
+  androidTestImplementation libs.androidx.test.junit
+  androidTestImplementation libs.androidx.test.espresso
 }
 
 task sourcesJar(type: Jar) {
@@ -76,7 +76,7 @@ tasks.withType(JavaCompile) {
   // remove the if condition if you want to run NullAway on test code
   if (!name.toLowerCase().contains("test")) {
     options.errorprone {
-      option("NullAway:AnnotatedPackages", "com.airbnb.lottie")
+      option("NullAway:AnnotatedPackages:_", "com.airbnb.lottie")
       // TODO: enable these and fix errors one by one.
       check("NullAway", CheckSeverity.OFF)
       check("StringSplitter", CheckSeverity.OFF)

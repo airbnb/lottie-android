@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.airbnb.lottie.samples">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name=".LottieApplication"
@@ -17,6 +10,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,17 +24,21 @@
         </activity>
         <activity
             android:name=".TypographyDemoActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
         <activity
             android:name=".BullseyeActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".QRScanActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
         <activity android:name=".DynamicActivity" />
         <activity
             android:name=".PlayerActivity"
+            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -55,14 +53,30 @@
                     android:scheme="content" />
             </intent-filter>
         </activity>
-        <activity android:name=".DynamicTextActivity" />
-        <activity android:name=".WishListActivity" />
+        <activity
+            android:name=".DynamicTextActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WishListActivity"
+            android:exported="false" />
 
         <activity
             android:name=".SimpleAnimationActivity"
             android:exported="true" />
 
-        <activity android:name=".EmptyActivity" />
+        <activity
+            android:name=".EmptyActivity"
+            android:exported="false" />
     </application>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

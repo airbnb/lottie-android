@@ -1,3 +1,5 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
 plugins {
   id 'com.android.application'
   id "kotlin-android"
@@ -5,11 +7,12 @@ plugins {
 }
 
 android {
-  compileSdk 31
+  namespace 'com.airbnb.lottie.sample.compose'
+  compileSdk 33
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
     minSdk 21
-    targetSdk 30
+    targetSdk 33
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -22,26 +25,27 @@ android {
     }
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = '17'
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
         "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
         "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
+        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
         "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
-        "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
         "-Xopt-in=kotlin.RequiresOptIn",
     ]
   }
   buildFeatures {
     compose true
+    buildConfig true
   }
   composeOptions {
-    kotlinCompilerExtensionVersion composeVersion
+    kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
   }
   packagingOptions {
     exclude 'META-INF/AL2.0'
@@ -55,34 +59,35 @@ kapt {
 
 dependencies {
   implementation project(':lottie-compose')
-  implementation "androidx.core:core-ktx:$coreVersion"
-  implementation "androidx.activity:activity-compose:$activityVersion"
-  implementation 'androidx.appcompat:appcompat:1.4.0-beta01'
-  implementation "com.google.android.material:material:$materialVersion"
-  implementation "androidx.compose.ui:ui:$composeVersion"
-  implementation "androidx.compose.material:material:$composeVersion"
-  implementation "androidx.compose.material:material-icons-extended:$composeVersion"
-  implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-  implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
-  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+  implementation libs.androidx.appcompat
+  implementation libs.androidx.core.ktx
+  implementation libs.androidx.activity.compose
+  implementation libs.google.material
+  implementation platform(libs.compose.bom)
+  implementation libs.compose.ui
+  implementation libs.compose.foundation
+  implementation libs.compose.material
+  implementation libs.compose.material.icons.extended
+  implementation libs.compose.ui.tooling
+  implementation libs.androidx.navigation.ui
+  implementation libs.androidx.navigation.compose
+  implementation libs.androidx.viewmodel.ktx
   // Need this to side load a Baseline Profile when Benchmarking
-  implementation "androidx.profileinstaller:profileinstaller:$startupVersion"
+  implementation libs.profileinstaller
 
-  implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
 
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+  implementation libs.kotlinx.coroutines.android
 
-  implementation "com.google.dagger:dagger:$daggerVersion"
-  kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+  implementation libs.dagger
+  kapt libs.dagger.compiler
 
-  implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-  implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
-  implementation "com.google.accompanist:accompanist-coil:0.15.0"
-  implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
-  implementation 'com.airbnb.android:mavericks:2.3.0'
-  implementation 'com.airbnb.android:mavericks-compose:2.1.0-alpha02'
+  implementation libs.retrofit
+  implementation libs.retrofit.moshi
+  implementation libs.coil.compose
+  implementation libs.mavericks
+  implementation libs.mavericks.compose
 
-  debugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
+  debugImplementation libs.compose.ui.test.manifest
 
-  androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+  androidTestImplementation libs.compose.ui.test.junit
 }
