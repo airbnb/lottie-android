@@ -15,4 +15,6 @@
         <ignore regexp="com.bumptech.glide.request.target.NotificationTarget" />
     </issue>
     <issue id="MonochromeLauncherIcon" severity="ignore" />
+    <issue id="VectorPath" severity="ignore" />
+    <issue id="Overdraw" severity="ignore" />
 </lint>

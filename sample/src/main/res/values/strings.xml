@@ -3,9 +3,6 @@
     <string name="invalid_assets">Unable to load assets</string>
     <string name="permission_required">Camera permissions are required to use the QR Scanner</string>
     <string name="scan_prompt">Scan QR Code from lottiefiles.com</string>
-    <string name="render_times_graph">Show real time render time graph</string>
-    <string name="hardware_acceleration">Use hardware acceleration</string>
-    <string name="enable_merge_paths">Enable merge paths (KK+ only)</string>
     <string name="menu_item_visibility">Hide Controls</string>
 
     <!-- Shortcuts -->
@@ -22,8 +19,6 @@
     <string name="qr_code_overlay">QR code overlay</string>
     <string name="qr_permission_denied">QR scanning requires the camera permission.</string>
 
-    <string name="scale">Scale</string>
-    <string name="background">Background</string>
     <string name="ms">ms</string>
 
     <string name="bottom_bar_showcase">Showcase</string>
@@ -75,8 +70,6 @@
     <string name="popular">Popular</string>
     <string name="recent">Recent</string>
     <string name="search">Search</string>
-
-    <string name="anonymous">Anonymous</string>
 
     <string name="showcase_item_bullseye">\nBullseye</string>
     <string name="showcase_item_dynamic_properties">Dynamic\nProperties</string>
