@@ -134,13 +134,18 @@ fun PlayerPage(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { PlayerPageTopAppBar(state, compositionResult.value) },
-    ) {
-        PlayerPageContent(
-            state,
-            compositionResult.value,
-            compositionResult.isLoading,
-            animationBackgroundColor,
-        )
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .padding(padding)
+        ) {
+            PlayerPageContent(
+                state,
+                compositionResult.value,
+                compositionResult.isLoading,
+                animationBackgroundColor,
+            )
+        }
     }
 
     if (state.showWarningsDialog) {
@@ -306,7 +311,7 @@ private fun PlayerControlsRow(
     state: PlayerPageState,
     composition: LottieComposition?,
 ) {
-    val totalTime = ((composition?.duration ?: 0L / state.animatable.speed) / 1000.0)
+    val totalTime = (((composition?.duration ?: (0L / state.animatable.speed)) / 1000.0))
     val totalTimeFormatted = ("%.1f").format(totalTime)
 
     val progressFormatted = ("%.1f").format(state.animatable.progress * totalTime)

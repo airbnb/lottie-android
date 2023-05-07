@@ -60,7 +60,7 @@ private fun HeartColor() {
         )
     }
     var colorIndex by remember { mutableStateOf(0) }
-    val color by derivedStateOf { colors[colorIndex] }
+    val color by remember { derivedStateOf { colors[colorIndex] } }
     val blurRadius = with(LocalDensity.current) { 12.dp.toPx() }
 
     val dynamicProperties = rememberLottieDynamicProperties(
@@ -100,7 +100,7 @@ private fun JumpHeight() {
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("AndroidWave.json"))
     val extraJumpHeights = remember { listOf(0.dp, 24.dp, 48.dp, 128.dp) }
     var extraJumpIndex by remember { mutableStateOf(0) }
-    val extraJumpHeight by derivedStateOf { extraJumpHeights[extraJumpIndex] }
+    val extraJumpHeight by remember { derivedStateOf { extraJumpHeights[extraJumpIndex] } }
     val extraJumpHeightPx = with(LocalDensity.current) { extraJumpHeight.toPx() }
 
     val point = remember { PointF() }

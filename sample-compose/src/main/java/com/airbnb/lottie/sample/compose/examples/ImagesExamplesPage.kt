@@ -106,7 +106,7 @@ fun StoredOnImageAsset() {
         LottieCompositionSpec.RawRes(R.raw.we_accept),
         cacheKey = null,
     )
-    val imageAsset by derivedStateOf { composition?.images?.get("image_0") }
+    val imageAsset by remember { derivedStateOf { composition?.images?.get("image_0") } }
     val bitmap = rememberBitmapFromAssets("Images/android.png")
     LaunchedEffect(imageAsset, bitmap) {
         if (imageAsset != null && bitmap != null) {

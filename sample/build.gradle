@@ -46,7 +46,7 @@ android {
   }
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_17.toString()
-    freeCompilerArgs += ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"]
+    freeCompilerArgs += ["-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"]
   }
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'

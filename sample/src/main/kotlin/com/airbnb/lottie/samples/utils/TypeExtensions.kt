@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -94,12 +96,14 @@ fun String?.toColorIntSafe(): Int {
                 bgColor[2], bgColor[2],
                 bgColor[3], bgColor[3]
             )
+
             5 -> "#%c%c%c%c%c%c%c%c".format(
                 bgColor[1], bgColor[1],
                 bgColor[2], bgColor[2],
                 bgColor[3], bgColor[3],
                 bgColor[4], bgColor[4]
             )
+
             else -> bgColor
         }.toColorInt()
     } catch (e: IllegalArgumentException) {
@@ -111,4 +115,22 @@ fun String?.toColorIntSafe(): Int {
 fun Context.hideKeyboard() {
     val inputMethodManager = getSystemService<InputMethodManager>()!!
     inputMethodManager.hideSoftInputFromWindow((this as Activity).currentFocus?.windowToken, 0)
+}
+
+fun <T : Parcelable> Intent.getParcelableExtraCompat(key: String, klass: Class<T>): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelableExtra(key, klass)
+    } else {
+        @Suppress("DEPRECATION")
+        getParcelableExtra(key)
+    }
+}
+
+fun <T : Parcelable> Bundle.getParcelableCompat(key: String, klass: Class<T>): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelable(key, klass)
+    } else {
+        @Suppress("DEPRECATION")
+        getParcelable(key)
+    }
 }

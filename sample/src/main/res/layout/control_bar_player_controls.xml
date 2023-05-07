@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/controlsContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -20,24 +20,31 @@
             android:layout_marginLeft="16dp"
             android:gravity="center_horizontal"
             android:text="@string/ms"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/renderTimesGraph"
             android:layout_width="match_parent"
             android:layout_height="96dp"
             android:layout_marginLeft="64dp"
-            android:layout_marginRight="64dp"/>
+            android:layout_marginRight="64dp" />
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:paddingBottom="12dp"
         android:paddingTop="12dp">
+
+        <ImageButton
+            android:id="@+id/loopButton"
+            android:layout_width="64dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_loop" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -50,7 +57,7 @@
                 android:layout_height="32dp"
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_play_pause"/>
+                app:srcCompat="@drawable/ic_play_pause" />
 
             <TextView
                 android:id="@+id/currentFrameView"
@@ -61,7 +68,8 @@
                 android:layout_marginTop="16dp"
                 android:text="0"
                 android:textColor="#464646"
-                android:textSize="10sp"/>
+                android:textSize="10sp"
+                tools:ignore="SmallSp" />
         </RelativeLayout>
 
         <androidx.appcompat.widget.AppCompatSeekBar
@@ -69,15 +77,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
-
-        <ImageButton
-            android:id="@+id/loopButton"
-            android:layout_width="64dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/ic_loop"/>
+            android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
@@ -91,7 +91,8 @@
         android:text="@string/render_times_per_layer_button"
         android:textColor="@color/item_selected_teal"
         android:textSize="10sp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:ignore="SmallSp" />
 
     <TextView
         android:id="@+id/lottieVersionView"
@@ -100,11 +101,12 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="14dp"
         android:textColor="@color/text_color"
-        android:textSize="10sp"/>
+        android:textSize="10sp"
+        tools:ignore="SmallSp" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/divider_height"
         android:layout_gravity="bottom"
-        android:background="@color/divider"/>
+        android:background="@color/divider" />
 </FrameLayout>
