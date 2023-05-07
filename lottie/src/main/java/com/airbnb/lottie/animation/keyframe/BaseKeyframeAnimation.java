@@ -63,9 +63,6 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
     this.progress = progress;
     if (keyframesWrapper.isValueChanged(progress)) {
-      // Cache the current value.
-      // Commented out to see if this is causing a variation in snapshot tests.
-      // getValue();
       notifyListeners();
     }
     L.endSection("BaseKeyframeAnimation#setProgress");

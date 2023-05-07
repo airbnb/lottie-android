@@ -3,7 +3,7 @@ package com.airbnb.lottie.utils;
 import androidx.core.os.TraceCompat;
 
 public class LottieTrace {
-  private static final int MAX_DEPTH = 20;
+  private static final int MAX_DEPTH = 5;
 
   private final String[] sections = new String[MAX_DEPTH];
   private final long[] startTimeNs = new long[MAX_DEPTH];

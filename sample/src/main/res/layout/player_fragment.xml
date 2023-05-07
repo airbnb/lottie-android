@@ -25,6 +25,7 @@
                 android:scaleType="centerInside"
                 android:layout_gravity="center"
                 android:background="@drawable/outline"
+                app:lottie_asyncUpdates="enabled"
                 app:lottie_autoPlay="true" />
 
             <ProgressBar
