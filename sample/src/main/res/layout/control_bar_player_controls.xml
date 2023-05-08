@@ -35,8 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:paddingBottom="12dp"
-        android:paddingTop="12dp">
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
 
         <RelativeLayout
             android:layout_width="wrap_content"
