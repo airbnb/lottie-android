@@ -38,14 +38,6 @@
         android:paddingBottom="12dp"
         android:paddingTop="12dp">
 
-        <ImageButton
-            android:id="@+id/loopButton"
-            android:layout_width="64dp"
-            android:layout_height="32dp"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/ic_loop" />
-
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,6 +70,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/loopButton"
+            android:layout_width="64dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_loop" />
     </LinearLayout>
 
     <TextView
