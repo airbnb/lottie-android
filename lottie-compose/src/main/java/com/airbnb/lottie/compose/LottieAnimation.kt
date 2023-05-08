@@ -86,7 +86,7 @@ fun LottieAnimation(
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
-    var setDynamicProperties: LottieDynamicProperties? by remember { mutableStateOf(null) }
+    var setDynamicProperties: LottieDynamicProperties? by remember(composition) { mutableStateOf(null) }
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
