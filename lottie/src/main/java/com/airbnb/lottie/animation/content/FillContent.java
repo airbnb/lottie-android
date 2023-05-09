@@ -31,6 +31,11 @@ import java.util.List;
 
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
+  private static final int DIRTY_FLAG_COLOR = 1;
+  private static final int DIRTY_FLAG_OPACITY = 1 << 1;
+  private static final int DIRTY_FLAG_COLOR_FILTER = 1 << 2;
+  private static final int DIRTY_FLAG_BLUR = 1 << 3;
+  private static final int DIRTY_FLAG_DROP_SHADOW = 1 << 3;
   private final Path path = new Path();
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final BaseLayer layer;
@@ -46,6 +51,8 @@ public class FillContent
 
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
+  private int dirtyFlags = 0;
+
   public FillContent(final LottieDrawable lottieDrawable, BaseLayer layer, ShapeFill fill) {
     this.layer = layer;
     name = fill.getName();
@@ -53,7 +60,7 @@ public class FillContent
     this.lottieDrawable = lottieDrawable;
     if (layer.getBlurEffect() != null) {
       blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
-      blurAnimation.addUpdateListener(this);
+      blurAnimation.addUpdateListener(() -> setDirty(DIRTY_FLAG_BLUR));
       layer.addAnimation(blurAnimation);
     }
     if (layer.getDropShadowEffect() != null) {
@@ -80,6 +87,14 @@ public class FillContent
     lottieDrawable.invalidateSelf();
   }
 
+  @Override public void updateDirtyNodes() {
+    if (isDirty(DIRTY_FLAG_COLOR | DIRTY_FLAG_OPACITY)) {
+      int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
+      int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
+      paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
+    }
+  }
+
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     for (int i = 0; i < contentsAfter.size(); i++) {
       Content content = contentsAfter.get(i);
@@ -98,9 +113,6 @@ public class FillContent
       return;
     }
     L.beginSection("FillContent#draw");
-    int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
@@ -190,5 +202,14 @@ public class FillContent
     } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
       dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
+  }
+
+  private void setDirty(int flag) {
+    dirtyFlags |= flag;
+    layer.onValueChanged();
+  }
+
+  private boolean isDirty(int flag) {
+    return (dirtyFlags & flag) != 0;
   }
 }

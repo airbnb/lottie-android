@@ -24,13 +24,17 @@ public class ShapeLayer extends BaseLayer {
   private final CompositionLayer compositionLayer;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer, LottieComposition composition) {
-    super(lottieDrawable, layerModel);
+    super(lottieDrawable, compositionLayer, layerModel);
     this.compositionLayer = compositionLayer;
 
     // Naming this __container allows it to be ignored in KeyPath matching.
     ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes(), false);
     contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup, composition);
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
+  }
+
+  @Override void updateDirtyNodes() {
+    super.updateDirtyNodes();
   }
 
   @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {

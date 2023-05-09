@@ -39,8 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BaseLayer
-    implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+public abstract class BaseLayer implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
   /**
    * These flags were in Canvas but they were deprecated and removed.
    * TODO: test removing these on older versions of Android.
@@ -50,23 +49,22 @@ public abstract class BaseLayer
   private static final int MATRIX_SAVE_FLAG = 0x01;
   private static final int SAVE_FLAGS = CLIP_SAVE_FLAG | CLIP_TO_LAYER_SAVE_FLAG | MATRIX_SAVE_FLAG;
 
-  @Nullable
-  static BaseLayer forModel(
-      CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
+  private static final int DIRTY_FLAG_CHILD_LAYER = 1;
+
+  @Nullable static BaseLayer forModel(CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
     switch (layerModel.getLayerType()) {
       case SHAPE:
         return new ShapeLayer(drawable, layerModel, compositionLayer, composition);
       case PRE_COMP:
-        return new CompositionLayer(drawable, layerModel,
-            composition.getPrecomps(layerModel.getRefId()), composition);
+        return new CompositionLayer(drawable, compositionLayer, layerModel, composition.getPrecomps(layerModel.getRefId()), composition);
       case SOLID:
-        return new SolidLayer(drawable, layerModel);
+        return new SolidLayer(drawable, compositionLayer, layerModel);
       case IMAGE:
-        return new ImageLayer(drawable, layerModel);
+        return new ImageLayer(drawable, compositionLayer, layerModel);
       case NULL:
-        return new NullLayer(drawable, layerModel);
+        return new NullLayer(drawable, compositionLayer, layerModel);
       case TEXT:
-        return new TextLayer(drawable, layerModel);
+        return new TextLayer(drawable, compositionLayer, layerModel);
       case UNKNOWN:
       default:
         // Do nothing
@@ -91,19 +89,16 @@ public abstract class BaseLayer
   private final String drawTraceName;
   final Matrix boundsMatrix = new Matrix();
   final LottieDrawable lottieDrawable;
+  @Nullable private final CompositionLayer compositionLayer;
   final Layer layerModel;
-  @Nullable
-  private MaskKeyframeAnimation mask;
-  @Nullable
-  private FloatKeyframeAnimation inOutAnimation;
-  @Nullable
-  private BaseLayer matteLayer;
+  @Nullable private MaskKeyframeAnimation mask;
+  @Nullable private FloatKeyframeAnimation inOutAnimation;
+  @Nullable private BaseLayer matteLayer;
   /**
    * This should only be used by {@link #buildParentLayerListIfNeeded()}
    * to construct the list of parent layers.
    */
-  @Nullable
-  private BaseLayer parentLayer;
+  @Nullable private BaseLayer parentLayer;
   private List<BaseLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
@@ -116,8 +111,11 @@ public abstract class BaseLayer
   float blurMaskFilterRadius = 0f;
   @Nullable BlurMaskFilter blurMaskFilter;
 
-  BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
+  private int dirtyFlags;
+
+  BaseLayer(LottieDrawable lottieDrawable, CompositionLayer compositionLayer, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
+    this.compositionLayer = compositionLayer;
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
     if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
@@ -157,8 +155,7 @@ public abstract class BaseLayer
     outlineMasksAndMattes = outline;
   }
 
-  @Override
-  public void onValueChanged() {
+  @Override public void onValueChanged() {
     invalidateSelf();
   }
 
@@ -190,8 +187,16 @@ public abstract class BaseLayer
     }
   }
 
-  private void invalidateSelf() {
-    lottieDrawable.invalidateSelf();
+  public boolean isDirty() {
+    return dirtyFlags != 0;
+  }
+
+  public void invalidateSelf() {
+    if (compositionLayer == null) {
+      lottieDrawable.invalidateSelf();
+    } else {
+      compositionLayer.invalidateSelf();
+    }
   }
 
   public void addAnimation(@Nullable BaseKeyframeAnimation<?, ?> newAnimation) {
@@ -205,10 +210,7 @@ public abstract class BaseLayer
     animations.remove(animation);
   }
 
-  @CallSuper
-  @Override
-  public void getBounds(
-      RectF outBounds, Matrix parentMatrix, boolean applyParents) {
+  @CallSuper @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     rect.set(0, 0, 0, 0);
     buildParentLayerListIfNeeded();
     boundsMatrix.set(parentMatrix);
@@ -226,8 +228,7 @@ public abstract class BaseLayer
     boundsMatrix.preConcat(transform.getMatrix());
   }
 
-  @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
@@ -338,8 +339,7 @@ public abstract class BaseLayer
   }
 
   private void recordRenderTime(float ms) {
-    lottieDrawable.getComposition()
-        .getPerformanceTracker().recordRenderTime(layerModel.getName(), ms);
+    lottieDrawable.getComposition().getPerformanceTracker().recordRenderTime(layerModel.getName(), ms);
 
   }
 
@@ -391,12 +391,8 @@ public abstract class BaseLayer
           if (i == 0) {
             maskBoundsRect.set(tempMaskBoundsRect);
           } else {
-            maskBoundsRect.set(
-                Math.min(maskBoundsRect.left, tempMaskBoundsRect.left),
-                Math.min(maskBoundsRect.top, tempMaskBoundsRect.top),
-                Math.max(maskBoundsRect.right, tempMaskBoundsRect.right),
-                Math.max(maskBoundsRect.bottom, tempMaskBoundsRect.bottom)
-            );
+            maskBoundsRect.set(Math.min(maskBoundsRect.left, tempMaskBoundsRect.left), Math.min(maskBoundsRect.top, tempMaskBoundsRect.top),
+                Math.max(maskBoundsRect.right, tempMaskBoundsRect.right), Math.max(maskBoundsRect.bottom, tempMaskBoundsRect.bottom));
           }
       }
     }
@@ -496,8 +492,8 @@ public abstract class BaseLayer
     return true;
   }
 
-  private void applyAddMask(Canvas canvas, Matrix matrix,
-      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+  private void applyAddMask(Canvas canvas, Matrix matrix, BaseKeyframeAnimation<ShapeData, Path> maskAnimation,
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
     path.transform(matrix);
@@ -505,8 +501,8 @@ public abstract class BaseLayer
     canvas.drawPath(path, contentPaint);
   }
 
-  private void applyInvertedAddMask(Canvas canvas, Matrix matrix,
-      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+  private void applyInvertedAddMask(Canvas canvas, Matrix matrix, BaseKeyframeAnimation<ShapeData, Path> maskAnimation,
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, contentPaint);
     canvas.drawRect(rect, contentPaint);
     Path maskPath = maskAnimation.getValue();
@@ -524,8 +520,8 @@ public abstract class BaseLayer
     canvas.drawPath(path, dstOutPaint);
   }
 
-  private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix,
-      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+  private void applyInvertedSubtractMask(Canvas canvas, Matrix matrix, BaseKeyframeAnimation<ShapeData, Path> maskAnimation,
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, dstOutPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
@@ -536,8 +532,8 @@ public abstract class BaseLayer
     canvas.restore();
   }
 
-  private void applyIntersectMask(Canvas canvas, Matrix matrix,
-      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+  private void applyIntersectMask(Canvas canvas, Matrix matrix, BaseKeyframeAnimation<ShapeData, Path> maskAnimation,
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, dstInPaint);
     Path maskPath = maskAnimation.getValue();
     path.set(maskPath);
@@ -547,8 +543,8 @@ public abstract class BaseLayer
     canvas.restore();
   }
 
-  private void applyInvertedIntersectMask(Canvas canvas, Matrix matrix,
-      BaseKeyframeAnimation<ShapeData, Path> maskAnimation, BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
+  private void applyInvertedIntersectMask(Canvas canvas, Matrix matrix, BaseKeyframeAnimation<ShapeData, Path> maskAnimation,
+      BaseKeyframeAnimation<Integer, Integer> opacityAnimation) {
     Utils.saveLayerCompat(canvas, rect, dstInPaint);
     canvas.drawRect(rect, contentPaint);
     dstOutPaint.setAlpha((int) (opacityAnimation.getValue() * 2.55f));
@@ -601,6 +597,9 @@ public abstract class BaseLayer
     L.endSection("BaseLayer#setProgress");
   }
 
+  void updateDirtyNodes() {
+  }
+
   private void buildParentLayerListIfNeeded() {
     if (parentLayers != null) {
       return;
@@ -618,13 +617,11 @@ public abstract class BaseLayer
     }
   }
 
-  @Override
-  public String getName() {
+  @Override public String getName() {
     return layerModel.getName();
   }
 
-  @Nullable
-  public BlurEffect getBlurEffect() {
+  @Nullable public BlurEffect getBlurEffect() {
     return layerModel.getBlurEffect();
   }
 
@@ -637,19 +634,15 @@ public abstract class BaseLayer
     return blurMaskFilter;
   }
 
-  @Nullable
-  public DropShadowEffect getDropShadowEffect() {
+  @Nullable public DropShadowEffect getDropShadowEffect() {
     return layerModel.getDropShadowEffect();
   }
 
-  @Override
-  public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
+  @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
     // Do nothing
   }
 
-  @Override
-  public void resolveKeyPath(
-      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+  @Override public void resolveKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     if (matteLayer != null) {
       KeyPath matteCurrentPartialKeyPath = currentPartialKeyPath.addKey(matteLayer.getName());
       if (keyPath.fullyResolvesTo(matteLayer.getName(), depth)) {
@@ -680,13 +673,10 @@ public abstract class BaseLayer
     }
   }
 
-  void resolveChildKeyPath(
-      KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
+  void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
   }
 
-  @CallSuper
-  @Override
-  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  @CallSuper @Override public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     transform.applyValueCallback(property, callback);
   }
 }

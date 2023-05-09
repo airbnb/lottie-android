@@ -76,8 +76,8 @@ public class TextLayer extends BaseLayer {
   @Nullable
   private BaseKeyframeAnimation<Typeface, Typeface> typefaceCallbackAnimation;
 
-  TextLayer(LottieDrawable lottieDrawable, Layer layerModel) {
-    super(lottieDrawable, layerModel);
+  TextLayer(LottieDrawable lottieDrawable, CompositionLayer compositionLayer, Layer layerModel) {
+    super(lottieDrawable, compositionLayer, layerModel);
     this.lottieDrawable = lottieDrawable;
     composition = layerModel.getComposition();
     //noinspection ConstantConditions

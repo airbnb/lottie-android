@@ -29,8 +29,8 @@ public class ImageLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
 
-  ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) {
-    super(lottieDrawable, layerModel);
+  ImageLayer(LottieDrawable lottieDrawable, CompositionLayer compositionLayer, Layer layerModel) {
+    super(lottieDrawable, compositionLayer, layerModel);
     lottieImageAsset = lottieDrawable.getLottieImageAssetForId(layerModel.getRefId());
   }
 

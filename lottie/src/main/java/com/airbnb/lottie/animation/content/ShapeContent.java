@@ -19,7 +19,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
 
   private final String name;
   private final boolean hidden;
-  private final LottieDrawable lottieDrawable;
+  private final BaseLayer layer;
   private final ShapeKeyframeAnimation shapeAnimation;
   @Nullable private List<ShapeModifierContent> shapeModifierContents;
 
@@ -29,19 +29,15 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   public ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
     name = shape.getName();
     hidden = shape.isHidden();
-    this.lottieDrawable = lottieDrawable;
+    this.layer = layer;
     shapeAnimation = shape.getShapePath().createAnimation();
     layer.addAnimation(shapeAnimation);
     shapeAnimation.addUpdateListener(this);
   }
 
   @Override public void onValueChanged() {
-    invalidate();
-  }
-
-  private void invalidate() {
     isPathValid = false;
-    lottieDrawable.invalidateSelf();
+    layer.onValueChanged();
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {

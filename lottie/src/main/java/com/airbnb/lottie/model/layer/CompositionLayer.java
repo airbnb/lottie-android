@@ -37,9 +37,9 @@ public class CompositionLayer extends BaseLayer {
 
   private boolean clipToCompositionBounds = true;
 
-  public CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
-      LottieComposition composition) {
-    super(lottieDrawable, layerModel);
+  public CompositionLayer(LottieDrawable lottieDrawable, @Nullable CompositionLayer compositionLayer,
+      Layer layerModel, List<Layer> layerModels, LottieComposition composition) {
+    super(lottieDrawable, compositionLayer, layerModel);
 
     AnimatableFloatValue timeRemapping = layerModel.getTimeRemapping();
     if (timeRemapping != null) {
@@ -51,8 +51,7 @@ public class CompositionLayer extends BaseLayer {
       this.timeRemapping = null;
     }
 
-    LongSparseArray<BaseLayer> layerMap =
-        new LongSparseArray<>(composition.getLayers().size());
+    LongSparseArray<BaseLayer> layerMap = new LongSparseArray<>(composition.getLayers().size());
 
     BaseLayer mattedLayer = null;
     for (int i = layerModels.size() - 1; i >= 0; i--) {
@@ -166,7 +165,20 @@ public class CompositionLayer extends BaseLayer {
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
     }
+    updateDirtyNodes();
     L.endSection("CompositionLayer#setProgress");
+  }
+
+  @Override
+  public void updateDirtyNodes() {
+    L.beginSection("CompositionLayer#updateDirtyNodes");
+    for (int i = layers.size() - 1; i >= 0; i--) {
+      BaseLayer layer = layers.get(i);
+      if (layer.isDirty()) {
+        layer.updateDirtyNodes();
+      }
+    }
+    L.endSection("CompositionLayer#updateDirtyNodes");
   }
 
   public float getProgress() {
@@ -210,17 +222,13 @@ public class CompositionLayer extends BaseLayer {
     return hasMatte;
   }
 
-  @Override
-  protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
-      KeyPath currentPartialKeyPath) {
+  @Override protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator, KeyPath currentPartialKeyPath) {
     for (int i = 0; i < layers.size(); i++) {
       layers.get(i).resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+  @SuppressWarnings("unchecked") @Override public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     super.addValueCallback(property, callback);
 
     if (property == LottieProperty.TIME_REMAP) {

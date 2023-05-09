@@ -5,5 +5,7 @@ import java.util.List;
 public interface Content {
   String getName();
 
+  void updateDirtyNodes();
+
   void setContents(List<Content> contentsBefore, List<Content> contentsAfter);
 }
