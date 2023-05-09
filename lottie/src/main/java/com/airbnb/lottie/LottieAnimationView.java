@@ -209,6 +209,14 @@ import java.util.Set;
       setRenderMode(RenderMode.values()[renderModeOrdinal]);
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_asyncUpdates)) {
+      int asyncUpdatesOrdinal = ta.getInt(R.styleable.LottieAnimationView_lottie_asyncUpdates, AsyncUpdates.AUTOMATIC.ordinal());
+      if (asyncUpdatesOrdinal >= RenderMode.values().length) {
+        asyncUpdatesOrdinal = AsyncUpdates.AUTOMATIC.ordinal();
+      }
+      setAsyncUpdates(AsyncUpdates.values()[asyncUpdatesOrdinal]);
+    }
+
     setIgnoreDisabledSystemAnimations(
         ta.getBoolean(
             R.styleable.LottieAnimationView_lottie_ignoreDisabledSystemAnimations,
@@ -1110,6 +1118,30 @@ import java.util.Set;
    */
   public RenderMode getRenderMode() {
     return lottieDrawable.getRenderMode();
+  }
+
+  /**
+   * Returns the current value of {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
+   */
+  public AsyncUpdates getAsyncUpdates() {
+    return lottieDrawable.getAsyncUpdates();
+  }
+
+  /**
+   * Similar to {@link #getAsyncUpdates()} except it returns the actual
+   * boolean value for whether async updates are enabled or not.
+   */
+  public boolean getAsyncUpdatesEnabled() {
+    return lottieDrawable.getAsyncUpdatesEnabled();
+  }
+
+  /**
+   * **Note: this API is experimental and may changed.**
+   * <p/>
+   * Sets the current value for {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
+   */
+  public void setAsyncUpdates(AsyncUpdates asyncUpdates) {
+    lottieDrawable.setAsyncUpdates(asyncUpdates);
   }
 
   /**
