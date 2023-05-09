@@ -9,7 +9,6 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PathMeasure;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -17,7 +16,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -615,7 +613,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     boolean asyncUpdatesEnabled = getAsyncUpdatesEnabled();
-    Log.d("Gabe", "draw asyncUpdatesEnabled " + asyncUpdatesEnabled);
     try {
       if (asyncUpdatesEnabled) {
         setProgressDrawLock.acquire();
@@ -1326,7 +1323,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public <T> void addValueCallback(KeyPath keyPath, T property,
       final SimpleLottieValueCallback<T> callback) {
-    addValueCallback(keyPath, property, new LottieValueCallback<T>() {
+    addValueCallback(keyPath, property, new LottieValueCallback<>() {
       @Override
       public T getValue(LottieFrameInfo<T> frameInfo) {
         return callback.getValue(frameInfo);
