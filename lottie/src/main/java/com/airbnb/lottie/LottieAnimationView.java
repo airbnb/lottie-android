@@ -36,6 +36,7 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,18 +75,49 @@ import java.util.Set;
     throw new IllegalStateException("Unable to parse composition", throwable);
   };
 
-  private final LottieListener<LottieComposition> loadedListener = this::setComposition;
+  private final LottieListener<LottieComposition> loadedListener = new WeakSuccessListener(this);
 
-  private final LottieListener<Throwable> wrappedFailureListener = new LottieListener<Throwable>() {
-    @Override
-    public void onResult(Throwable result) {
-      if (fallbackResource != 0) {
-        setImageResource(fallbackResource);
+  private static class WeakSuccessListener implements LottieListener<LottieComposition> {
+
+    private final WeakReference<LottieAnimationView> targetReference;
+
+    public WeakSuccessListener(LottieAnimationView target) {
+      this.targetReference = new WeakReference<>(target);
+    }
+
+    @Override public void onResult(LottieComposition result) {
+      LottieAnimationView targetView = targetReference.get();
+      if (targetView == null) {
+        return;
       }
-      LottieListener<Throwable> l = failureListener == null ? DEFAULT_FAILURE_LISTENER : failureListener;
+      targetView.setComposition(result);
+    }
+  }
+
+  private final LottieListener<Throwable> wrappedFailureListener = new WeakFailureListener(this);
+
+  private static class WeakFailureListener implements LottieListener<Throwable> {
+
+    private final WeakReference<LottieAnimationView> targetReference;
+
+    public WeakFailureListener(LottieAnimationView target) {
+      this.targetReference = new WeakReference<>(target);
+    }
+
+    @Override public void onResult(Throwable result) {
+      LottieAnimationView targetView = targetReference.get();
+      if (targetView == null) {
+        return;
+      }
+
+      if (targetView.fallbackResource != 0) {
+        targetView.setImageResource(targetView.fallbackResource);
+      }
+      LottieListener<Throwable> l = targetView.failureListener == null ? DEFAULT_FAILURE_LISTENER : targetView.failureListener;
       l.onResult(result);
     }
-  };
+  }
+
   @Nullable private LottieListener<Throwable> failureListener;
   @DrawableRes private int fallbackResource = 0;
 
