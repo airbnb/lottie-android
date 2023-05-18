@@ -35,6 +35,7 @@ public class RectangleContent
   /** This corner radius is from a layer item. The first one is from the roundedness on this specific rect. */
   @Nullable private BaseKeyframeAnimation<Float, Float> roundedCornersAnimation = null;
   private boolean isPathValid;
+  private int generation = 0;
 
   public RectangleContent(LottieDrawable lottieDrawable, BaseLayer layer, RectangleShape rectShape) {
     name = rectShape.getName();
@@ -65,6 +66,7 @@ public class RectangleContent
 
   private void invalidate() {
     isPathValid = false;
+    generation++;
     lottieDrawable.invalidateSelf();
   }
 
@@ -159,6 +161,10 @@ public class RectangleContent
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public int getGeneration() {
+    return generation;
   }
 
   @Override

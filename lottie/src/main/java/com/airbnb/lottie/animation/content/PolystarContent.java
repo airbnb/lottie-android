@@ -44,6 +44,7 @@ public class PolystarContent
 
   private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
+  private int generation;
 
   public PolystarContent(LottieDrawable lottieDrawable, BaseLayer layer,
       PolystarShape polystarShape) {
@@ -93,6 +94,7 @@ public class PolystarContent
 
   private void invalidate() {
     isPathValid = false;
+    generation++;
     lottieDrawable.invalidateSelf();
   }
 
@@ -135,6 +137,10 @@ public class PolystarContent
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public int getGeneration() {
+    return generation;
   }
 
   @Override public String getName() {

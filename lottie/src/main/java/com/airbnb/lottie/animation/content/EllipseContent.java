@@ -31,6 +31,7 @@ public class EllipseContent
 
   private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
   private boolean isPathValid;
+  private int generation = 0;
 
   public EllipseContent(LottieDrawable lottieDrawable, BaseLayer layer, CircleShape circleShape) {
     name = circleShape.getName();
@@ -52,6 +53,7 @@ public class EllipseContent
 
   private void invalidate() {
     isPathValid = false;
+    generation++;
     lottieDrawable.invalidateSelf();
   }
 
@@ -114,6 +116,10 @@ public class EllipseContent
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public int getGeneration() {
+    return generation;
   }
 
   @Override public void resolveKeyPath(

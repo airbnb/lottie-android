@@ -4,6 +4,7 @@ import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -32,6 +33,8 @@ import java.util.List;
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
   private final Path path = new Path();
+  private final Matrix pathWithParentMatrixMatrix = new Matrix();
+  private int pathGeneration = -23094820;
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final BaseLayer layer;
   private final String name;
@@ -43,6 +46,12 @@ public class FillContent
   private final LottieDrawable lottieDrawable;
   @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius;
+
+  private static final int DIRTY_FLAG_COLOR = 1;
+  private static final int DIRTY_FLAG_OPACITY = 1 << 1;
+  private int colorDirtyFlags = DIRTY_FLAG_COLOR | DIRTY_FLAG_OPACITY;
+  private int colorFromAnimations = 0;
+  private int lastAlpha = Integer.MAX_VALUE;
 
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
@@ -69,10 +78,16 @@ public class FillContent
     path.setFillType(fill.getFillType());
 
     colorAnimation = fill.getColor().createAnimation();
-    colorAnimation.addUpdateListener(this);
+    colorAnimation.addUpdateListener(() -> {
+      colorDirtyFlags |= DIRTY_FLAG_COLOR;
+      onValueChanged();
+    });
     layer.addAnimation(colorAnimation);
     opacityAnimation = fill.getOpacity().createAnimation();
-    opacityAnimation.addUpdateListener(this);
+    opacityAnimation.addUpdateListener(() -> {
+      colorDirtyFlags |= DIRTY_FLAG_OPACITY;
+      onValueChanged();
+    });
     layer.addAnimation(opacityAnimation);
   }
 
@@ -98,9 +113,23 @@ public class FillContent
       return;
     }
     L.beginSection("FillContent#draw");
-    int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setColor((clamp(alpha, 0, 255) << 24) | (color & 0xFFFFFF));
+
+    boolean hasDirtyFlags = colorDirtyFlags != 0;
+    if ((colorDirtyFlags & DIRTY_FLAG_COLOR) != 0) {
+      int color = ((ColorKeyframeAnimation) this.colorAnimation).getIntValue();
+      colorFromAnimations = (colorFromAnimations & 0xFF000000) | (color & 0xFFFFFF);
+      colorDirtyFlags &= ~DIRTY_FLAG_COLOR;
+    }
+    if ((colorDirtyFlags & DIRTY_FLAG_OPACITY) != 0) {
+      int alpha = (int) ((opacityAnimation.getValue() / 100f) * 255);
+      colorFromAnimations = (clamp(alpha, 0, 255) << 24) | (colorFromAnimations & 0xFFFFFF);
+      colorDirtyFlags &= ~DIRTY_FLAG_OPACITY;
+    }
+    int finalAlpha = Color.alpha(colorFromAnimations) * parentAlpha / 255;
+    if (finalAlpha != lastAlpha || hasDirtyFlags) {
+      paint.setColor(finalAlpha << 24 | (colorFromAnimations & 0xFFFFFF));
+    }
+    lastAlpha = finalAlpha;
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
@@ -120,14 +149,32 @@ public class FillContent
       dropShadowAnimation.applyTo(paint);
     }
 
-    path.reset();
-    for (int i = 0; i < paths.size(); i++) {
-      path.addPath(paths.get(i).getPath(), parentMatrix);
-    }
-
+    updatePath(parentMatrix);
     canvas.drawPath(path, paint);
-
     L.endSection("FillContent#draw");
+  }
+
+  private void updatePath(Matrix parentMatrix) {
+    int pathGeneration = pathGeneration();
+    if (this.pathGeneration != pathGeneration || !parentMatrix.equals(pathWithParentMatrixMatrix)) {
+      path.rewind();
+      for (int i = 0; i < paths.size(); i++) {
+        Path newPath = paths.get(i).getPath();
+        path.addPath(newPath);
+      }
+      path.transform(parentMatrix);
+      this.pathGeneration = pathGeneration;
+      pathWithParentMatrixMatrix.set(parentMatrix);
+    }
+  }
+
+  private int pathGeneration() {
+    int result = 0;
+    for (int i = paths.size() - 1; i >= 0; i--) {
+      PathContent content = paths.get(i);
+      result = 31 * result + content.getGeneration();
+    }
+    return result;
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {

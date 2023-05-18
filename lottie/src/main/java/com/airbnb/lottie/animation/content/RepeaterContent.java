@@ -105,6 +105,11 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
+  @Override
+  public int getGeneration() {
+    return contentGroup.getGeneration();
+  }
+
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();

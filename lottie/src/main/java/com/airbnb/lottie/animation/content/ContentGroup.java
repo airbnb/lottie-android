@@ -30,6 +30,7 @@ public class ContentGroup implements DrawingContent, PathContent,
 
   private final Paint offScreenPaint = new LPaint();
   private final RectF offScreenRectF = new RectF();
+  private int generation;
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, LottieComposition composition, BaseLayer layer,
       List<ContentModel> contentModels) {
@@ -158,6 +159,17 @@ public class ContentGroup implements DrawingContent, PathContent,
       }
     }
     return path;
+  }
+
+  @Override public int getGeneration() {
+    int result = 0;
+    for (int i = contents.size() - 1; i >= 0; i--) {
+      Content content = contents.get(i);
+      if (content instanceof PathContent) {
+        result = 31 * result + ((PathContent) content).getGeneration();
+      }
+    }
+    return result;
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {

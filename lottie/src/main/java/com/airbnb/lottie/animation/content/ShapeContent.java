@@ -24,6 +24,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
   @Nullable private List<ShapeModifierContent> shapeModifierContents;
 
   private boolean isPathValid;
+  private int generation = 0;
   private final CompoundTrimPathContent trimPaths = new CompoundTrimPathContent();
 
   public ShapeContent(LottieDrawable lottieDrawable, BaseLayer layer, ShapePath shape) {
@@ -41,6 +42,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
 
   private void invalidate() {
     isPathValid = false;
+    generation++;
     lottieDrawable.invalidateSelf();
   }
 
@@ -89,6 +91,10 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
 
     isPathValid = true;
     return path;
+  }
+
+  @Override public int getGeneration() {
+    return generation;
   }
 
   @Override public String getName() {

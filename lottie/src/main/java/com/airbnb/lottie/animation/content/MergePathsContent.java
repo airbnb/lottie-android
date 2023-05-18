@@ -76,6 +76,15 @@ public class MergePathsContent implements PathContent, GreedyContent {
     return path;
   }
 
+  @Override public int getGeneration() {
+    int result = 0;
+    for (int i = pathContents.size() - 1; i >= 0; i--) {
+      PathContent content = pathContents.get(i);
+      result = 31 * result + content.getGeneration();
+    }
+    return result;
+  }
+
   @Override public String getName() {
     return name;
   }
