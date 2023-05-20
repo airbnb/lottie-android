@@ -1,3 +1,5 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
 plugins {
   id 'com.android.application'
   id "org.jetbrains.kotlin.android"
@@ -51,6 +53,14 @@ android {
     exclude 'META-INF/NOTICE.txt'
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/NOTICE'
+  }
+}
+
+configurations.configureEach {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "androidx.lifecycle" && requested.name == "lifecycle-viewmodel") {
+      useVersion versionFor(project, AndroidX.lifecycle.viewModel)
+    }
   }
 }
 
