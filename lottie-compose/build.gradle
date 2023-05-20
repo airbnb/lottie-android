@@ -3,7 +3,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 
 plugins {
   id 'com.android.library'
-  id 'kotlin-android'
+  id 'org.jetbrains.kotlin.android'
   id 'com.vanniktech.maven.publish'
 }
 
@@ -20,12 +20,7 @@ android {
       minifyEnabled false
     }
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += [
         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     ]

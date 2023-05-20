@@ -40,12 +40,7 @@ android {
     textOutput 'stdout'
     baseline file("lint-baseline.xml")
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += ["-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"]
   }
   sourceSets {

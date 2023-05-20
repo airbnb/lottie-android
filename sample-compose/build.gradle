@@ -24,10 +24,6 @@ android {
       debuggable false
     }
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
   kotlinOptions {
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
