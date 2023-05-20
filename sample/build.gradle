@@ -3,7 +3,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 plugins {
   id 'com.android.application'
   id "org.jetbrains.kotlin.android"
-  id 'kotlin-parcelize'
+  id 'org.jetbrains.kotlin.plugin.parcelize'
   id 'com.google.devtools.ksp'
 }
 
