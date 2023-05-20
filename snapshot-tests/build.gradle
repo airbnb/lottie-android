@@ -3,7 +3,6 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 plugins {
   id 'com.android.application'
   id "org.jetbrains.kotlin.android"
-  id 'kotlin-kapt'
 }
 
 android {
@@ -49,10 +48,6 @@ android {
   composeOptions {
     kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
   }
-}
-
-kapt {
-  correctErrorTypes = true
 }
 
 dependencies {
