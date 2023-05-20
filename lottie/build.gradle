@@ -50,24 +50,6 @@ dependencies {
   androidTestImplementation libs.androidx.test.espresso
 }
 
-task sourcesJar(type: Jar) {
-  from android.sourceSets.main.java.srcDirs
-  archiveClassifier.set('sources')
-}
-
-task javadoc(type: Javadoc) {
-  source = android.sourceSets.main.java.srcDirs
-  configurations.implementation.setCanBeResolved(true)
-  classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.implementation
-}
-
-tasks.withType(Javadoc) {
-  // This started failing with the following when upgrading to AGP 7 and JDK 11.
-  // TODO: investigate why once AGP 7 is stable.
-  // javadoc: error - The code being documented uses modules but the packages defined in https://developer.android.com/reference/ are in the unnamed module.
-  failOnError false
-}
-
 tasks.withType(JavaCompile).configureEach {
   // remove the if condition if you want to run NullAway on test code
   if (!name.toLowerCase().contains("test")) {
