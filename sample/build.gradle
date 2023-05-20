@@ -45,9 +45,6 @@ android {
   kotlinOptions {
     freeCompilerArgs += ["-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"]
   }
-  sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
-  }
   packagingOptions {
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
