@@ -1,4 +1,5 @@
 import org.ajoberstar.grgit.Grgit
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id 'net.ltgt.errorprone' apply false
@@ -11,6 +12,25 @@ plugins {
 }
 
 allprojects {
+  def compileJavaVersion = 17
+  def targetJavaVersion = 17
+  pluginManager.withPlugin("java") {
+    java {
+      toolchain {
+        languageVersion.set(JavaLanguageVersion.of(compileJavaVersion))
+      }
+    }
+    tasks.withType(JavaCompile).configureEach {
+      options.release.set(targetJavaVersion)
+    }
+  }
+  pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+    kotlin {
+      jvmToolchain(compileJavaVersion)
+    }
+    tasks.withType(KotlinCompile).configureEach {
+      kotlinOptions.jvmTarget = targetJavaVersion
+    }
   }
 }
 
