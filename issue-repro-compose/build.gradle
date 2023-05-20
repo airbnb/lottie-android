@@ -2,7 +2,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 
 plugins {
     id 'com.android.application'
-    id "kotlin-android"
+    id "org.jetbrains.kotlin.android"
 }
 
 android {
