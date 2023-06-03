@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
+import android.annotation.SuppressLint;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,7 +9,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RecordingCanvas;
 import android.graphics.RectF;
+import android.graphics.RenderNode;
 import android.os.Build;
 
 import androidx.annotation.CallSuper;
@@ -109,6 +112,9 @@ public abstract class BaseLayer
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
   final TransformKeyframeAnimation transform;
   private boolean visible = true;
+
+  @SuppressLint("NewApi")
+  private final RenderNode renderNode = new RenderNode("BaseLayer");
 
   private boolean outlineMasksAndMattes;
   @Nullable private Paint outlineMasksAndMattesPaint;
@@ -290,38 +296,46 @@ public abstract class BaseLayer
     // On older devices, drawing to an offscreen buffer of <1px would draw back as a black bar.
     // https://github.com/airbnb/lottie-android/issues/1625
     if (rect.width() >= 1f && rect.height() >= 1f) {
-      L.beginSection("Layer#saveLayer");
-      contentPaint.setAlpha(255);
-      Utils.saveLayerCompat(canvas, rect, contentPaint);
-      L.endSection("Layer#saveLayer");
-
-      // Clear the off screen buffer. This is necessary for some phones.
-      clearCanvas(canvas);
-      L.beginSection("Layer#drawLayer");
-      drawLayer(canvas, matrix, alpha);
-      L.endSection("Layer#drawLayer");
-
-      if (hasMasksOnThisLayer()) {
-        applyMasks(canvas, matrix);
-      }
-
-      if (hasMatteOnThisLayer()) {
-        L.beginSection("Layer#drawMatte");
+      if (renderNode.hasDisplayList()) {
+        canvas.drawRenderNode(renderNode);
+      } else {
+        renderNode.setPosition(0, 0, canvas.getWidth(), canvas.getHeight());
+        RecordingCanvas recordingCanvas = renderNode.beginRecording();
+        Canvas canvas2 = L.renderNode ? recordingCanvas : canvas;
         L.beginSection("Layer#saveLayer");
-        Utils.saveLayerCompat(canvas, rect, mattePaint, SAVE_FLAGS);
+        contentPaint.setAlpha(255);
+        Utils.saveLayerCompat(canvas2, rect, contentPaint);
         L.endSection("Layer#saveLayer");
-        clearCanvas(canvas);
-        //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha);
-        L.beginSection("Layer#restoreLayer");
-        canvas.restore();
-        L.endSection("Layer#restoreLayer");
-        L.endSection("Layer#drawMatte");
-      }
 
-      L.beginSection("Layer#restoreLayer");
-      canvas.restore();
-      L.endSection("Layer#restoreLayer");
+        // Clear the off screen buffer. This is necessary for some phones.
+        clearCanvas(canvas2);
+        L.beginSection("Layer#drawLayer");
+        drawLayer(canvas2, matrix, alpha);
+        L.endSection("Layer#drawLayer");
+
+        if (hasMasksOnThisLayer()) {
+          applyMasks(canvas2, matrix);
+        }
+
+        if (hasMatteOnThisLayer()) {
+          L.beginSection("Layer#drawMatte");
+          L.beginSection("Layer#saveLayer");
+          Utils.saveLayerCompat(canvas2, rect, mattePaint, SAVE_FLAGS);
+          L.endSection("Layer#saveLayer");
+          clearCanvas(canvas2);
+          //noinspection ConstantConditions
+          matteLayer.draw(canvas2, parentMatrix, alpha);
+          L.beginSection("Layer#restoreLayer");
+          canvas2.restore();
+          L.endSection("Layer#restoreLayer");
+          L.endSection("Layer#drawMatte");
+        }
+
+        L.beginSection("Layer#restoreLayer");
+        canvas2.restore();
+        L.endSection("Layer#restoreLayer");
+        renderNode.endRecording();
+      }
     }
 
     if (outlineMasksAndMattes && outlineMasksAndMattesPaint != null) {

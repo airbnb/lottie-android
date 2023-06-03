@@ -15,6 +15,7 @@ import com.airbnb.lottie.network.NetworkFetcher;
 import com.airbnb.lottie.utils.LottieTrace;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class L {
@@ -32,6 +33,10 @@ public class L {
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
   private static ThreadLocal<LottieTrace> lottieTrace;
+
+  public static boolean renderNode = true;
+
+  public static AtomicLong drawTimeNs = new AtomicLong(0L);
 
   private L() {
   }

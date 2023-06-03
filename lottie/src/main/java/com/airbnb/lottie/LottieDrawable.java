@@ -680,7 +680,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         renderAndDrawAsBitmap(canvas, compositionLayer);
         canvas.restore();
       } else {
+        long start = System.nanoTime();
         compositionLayer.draw(canvas, matrix, alpha);
+        long end = System.nanoTime();
+        L.drawTimeNs.getAndAdd(end - start);
       }
       isDirty = false;
     } catch (InterruptedException e) {
@@ -1560,6 +1563,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
 
+    long start = System.nanoTime();
     renderingMatrix.reset();
     Rect bounds = getBounds();
     if (!bounds.isEmpty()) {
@@ -1571,6 +1575,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.preTranslate(bounds.left, bounds.top);
     }
     compositionLayer.draw(canvas, renderingMatrix, alpha);
+    long end = System.nanoTime();
+    L.drawTimeNs.getAndAdd(end - start);
   }
 
   /**
