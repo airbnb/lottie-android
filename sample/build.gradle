@@ -53,14 +53,6 @@ android {
   }
 }
 
-configurations.configureEach {
-  resolutionStrategy.eachDependency {
-    if (requested.group == "androidx.lifecycle" && requested.name == "lifecycle-viewmodel") {
-      useVersion versionFor(project, AndroidX.lifecycle.viewModel)
-    }
-  }
-}
-
 dependencies {
   implementation project(':lottie')
   implementation libs.androidx.multidex
@@ -68,6 +60,7 @@ dependencies {
   implementation libs.androidx.appcompat
   implementation libs.androidx.recyclerview
   implementation libs.androidx.paging.runtime.ktx
+  implementation libs.androidx.viewmodel.ktx
   implementation libs.androidx.cardview
   implementation libs.androidx.core.ktx
   implementation libs.androidx.constraintlayout
