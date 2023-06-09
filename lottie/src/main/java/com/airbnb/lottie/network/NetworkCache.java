@@ -1,7 +1,6 @@
 package com.airbnb.lottie.network;
 
 
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
