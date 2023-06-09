@@ -1,3 +1,7 @@
+# 6.0.1
+### Bugs Fixes
+* Allow loading URLs with a length of greater than 255 chars ([#2311](https://github.com/airbnb/lottie-android/pull/2311))
+
 # 6.0.0
 ### New Features
 * Major overhaul of text layout. Text layout should be more consistent across the board ([#2162](https://github.com/airbnb/lottie-android/pull/2162))
