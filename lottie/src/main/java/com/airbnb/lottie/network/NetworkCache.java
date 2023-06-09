@@ -175,7 +175,6 @@ public class NetworkCache {
       //     2. Upon upgrading, if the cache key algorithm changes,
       //        all old cached animations will get orphaned.
       sanitizedUrl = getMD5(sanitizedUrl, maxUrlLength);
-      Log.d("Gabe", "Caching file as " + sanitizedUrl);
     }
 
     return prefix + sanitizedUrl + suffix;
