@@ -17,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Helper class to save and restore animations fetched from an URL to the app disk cache.
@@ -156,6 +158,42 @@ public class NetworkCache {
   }
 
   private static String filenameForUrl(String url, FileExtension extension, boolean isTemp) {
-    return "lottie_cache_" + url.replaceAll("\\W+", "") + (isTemp ? extension.tempExtension() : extension.extension);
+    String prefix = "lottie_cache_";
+    String suffix = (isTemp ? extension.tempExtension() : extension.extension);
+    String sanitizedUrl = url.replaceAll("\\W+", "");
+    // The max filename on Android is 255 chars.
+    int maxUrlLength = 255 - prefix.length() - suffix.length();
+    if (sanitizedUrl.length() > maxUrlLength) {
+      // If the url is too long, use md5 as the cache key instead.
+      // md5 is preferable to substring because it is impossible to know
+      // which parts of the url are significant. If it is the end chars
+      // then substring could cause multiple animations to use the same
+      // cache key.
+      // md5 is probably better for everything but:
+      //     1. It is slower and unnecessary in most cases.
+      //     2. Upon upgrading, if the cache key algorithm changes,
+      //        all old cached animations will get orphaned.
+      sanitizedUrl = getMD5(sanitizedUrl, maxUrlLength);
+    }
+
+    return prefix + sanitizedUrl + suffix;
+  }
+
+  private static String getMD5(String input, int maxLength) {
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      // For some reason, md5 doesn't exist, return a substring.
+      // This should never happen.
+      return input.substring(0, maxLength);
+    }
+    byte[] messageDigest = md.digest(input.getBytes());
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < messageDigest.length; i++) {
+      byte b = messageDigest[i];
+      sb.append(String.format("%02x", b));
+    }
+    return sb.toString();
   }
 }
