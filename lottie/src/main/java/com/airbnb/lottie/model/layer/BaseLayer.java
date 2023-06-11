@@ -67,6 +67,8 @@ public abstract class BaseLayer
         return new NullLayer(drawable, layerModel);
       case TEXT:
         return new TextLayer(drawable, layerModel);
+      case CAMERA:
+        return new CameraLayer(drawable, layerModel, compositionLayer);
       case UNKNOWN:
       default:
         // Do nothing
@@ -162,7 +164,7 @@ public abstract class BaseLayer
     invalidateSelf();
   }
 
-  Layer getLayerModel() {
+  public Layer getLayerModel() {
     return layerModel;
   }
 

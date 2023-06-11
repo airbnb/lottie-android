@@ -3,6 +3,7 @@ package com.airbnb.lottie.model.layer;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.model.animatable.AnimatableCameraTransform;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
@@ -19,13 +20,20 @@ import java.util.Locale;
 public class Layer {
 
   public enum LayerType {
-    PRE_COMP,
-    SOLID,
-    IMAGE,
-    NULL,
-    SHAPE,
-    TEXT,
-    UNKNOWN
+    PRE_COMP, // 0
+    SOLID,    // 1
+    IMAGE,    // 2
+    NULL,     // 3
+    SHAPE,    // 4
+    TEXT,     // 5
+    UNKNOWN,  // 6
+    UNUSED1,  // 7
+    UNUSED2,  // 8
+    UNUSED3,  // 9
+    UNUSED4,  // 10
+    UNUSED5,  // 11
+    UNUSED6,  // 12
+    CAMERA,   // 13
   }
 
   public enum MatteType {
@@ -61,6 +69,10 @@ public class Layer {
   private final boolean hidden;
   @Nullable private final BlurEffect blurEffect;
   @Nullable private final DropShadowEffect dropShadowEffect;
+  /**
+   * Only set for Camera layers.
+   */
+  @Nullable private final AnimatableCameraTransform cameraTransform;
 
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
@@ -69,7 +81,7 @@ public class Layer {
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
       List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
       @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
-      @Nullable DropShadowEffect dropShadowEffect) {
+      @Nullable DropShadowEffect dropShadowEffect, @Nullable AnimatableCameraTransform cameraTransform) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -94,6 +106,7 @@ public class Layer {
     this.hidden = hidden;
     this.blurEffect = blurEffect;
     this.dropShadowEffect = dropShadowEffect;
+    this.cameraTransform = cameraTransform;
   }
 
   LottieComposition getComposition() {
@@ -166,6 +179,10 @@ public class Layer {
 
   int getSolidWidth() {
     return solidWidth;
+  }
+
+  @Nullable public AnimatableCameraTransform getCameraTransform() {
+    return cameraTransform;
   }
 
   @Nullable AnimatableTextFrame getText() {

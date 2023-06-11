@@ -5,6 +5,7 @@ import android.graphics.PointF;
 
 import androidx.annotation.ColorInt;
 
+import com.airbnb.lottie.animation.Point3F;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 
 import java.io.IOException;
@@ -99,6 +100,71 @@ class JsonUtils {
     }
     reader.endObject();
     return new PointF(x * scale, y * scale);
+  }
+
+  static Point3F jsonToPoint3(JsonReader reader, float scale) throws IOException {
+    switch (reader.peek()) {
+      case NUMBER:
+        return jsonNumbersToPoint3(reader, scale);
+      case BEGIN_ARRAY:
+        return jsonArrayToPoint3(reader, scale);
+      case BEGIN_OBJECT:
+        return jsonObjectToPoint3(reader, scale);
+      default:
+        throw new IllegalArgumentException("Unknown point starts with " + reader.peek());
+    }
+  }
+
+  private static Point3F jsonNumbersToPoint3(JsonReader reader, float scale) throws IOException {
+    float x = (float) reader.nextDouble();
+    float y = (float) reader.nextDouble();
+    float z = (float) reader.nextDouble();
+    while (reader.hasNext()) {
+      reader.skipValue();
+    }
+    return new Point3F(x * scale, y * scale, z * scale);
+  }
+
+  private static Point3F jsonArrayToPoint3(JsonReader reader, float scale) throws IOException {
+    float x;
+    float y;
+    float z;
+    reader.beginArray();
+    x = (float) reader.nextDouble();
+    y = (float) reader.nextDouble();
+    z = (float) reader.nextDouble();
+    while (reader.peek() != JsonReader.Token.END_ARRAY) {
+      reader.skipValue();
+    }
+    reader.endArray();
+    return new Point3F(x * scale, y * scale, z * scale);
+  }
+
+  private static final JsonReader.Options POINT3_NAMES = JsonReader.Options.of("x", "y", "z");
+
+  private static Point3F jsonObjectToPoint3(JsonReader reader, float scale) throws IOException {
+    float x = 0f;
+    float y = 0f;
+    float z = 0f;
+    reader.beginObject();
+    while (reader.hasNext()) {
+      switch (reader.selectName(POINT3_NAMES)) {
+        case 0:
+          x = valueFromObject(reader);
+          break;
+        case 1:
+          y = valueFromObject(reader);
+          break;
+        case 2:
+          z = valueFromObject(reader);
+          break;
+        default:
+          reader.skipName();
+          reader.skipValue();
+      }
+    }
+    reader.endObject();
+    return new Point3F(x * scale, y * scale, z * scale);
   }
 
   static float valueFromObject(JsonReader reader) throws IOException {

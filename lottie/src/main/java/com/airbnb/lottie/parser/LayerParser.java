@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 
 import com.airbnb.lottie.LottieComposition;
+import com.airbnb.lottie.model.animatable.AnimatableCameraTransform;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
@@ -59,7 +60,7 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false, null, null);
+        Layer.MatteType.NONE, null, false, null, null, null);
   }
 
   private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
@@ -96,6 +97,7 @@ public class LayerParser {
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
     AnimatableTransform transform = null;
+    AnimatableCameraTransform cameraTransform = null;
     AnimatableTextFrame text = null;
     AnimatableTextProperties textProperties = null;
     AnimatableFloatValue timeRemapping = null;
@@ -117,7 +119,7 @@ public class LayerParser {
           break;
         case 3:
           int layerTypeInt = reader.nextInt();
-          if (layerTypeInt < Layer.LayerType.UNKNOWN.ordinal()) {
+          if (layerTypeInt < Layer.LayerType.UNKNOWN.ordinal() || layerTypeInt == Layer.LayerType.CAMERA.ordinal()) {
             layerType = Layer.LayerType.values()[layerTypeInt];
           } else {
             layerType = Layer.LayerType.UNKNOWN;
@@ -136,7 +138,12 @@ public class LayerParser {
           solidColor = Color.parseColor(reader.nextString());
           break;
         case 8:
-          transform = AnimatableTransformParser.parse(reader, composition);
+          if (layerType == Layer.LayerType.CAMERA) {
+            transform = new AnimatableTransform();
+            cameraTransform = AnimatableCameraTransformParser.parse(reader, composition);
+          } else {
+            transform = AnimatableTransformParser.parse(reader, composition);
+          }
           break;
         case 9:
           int matteTypeIndex = reader.nextInt();
@@ -287,6 +294,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden, blurEffect, dropShadowEffect);
+        timeRemapping, hidden, blurEffect, dropShadowEffect, cameraTransform);
   }
 }

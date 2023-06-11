@@ -6,6 +6,7 @@ import com.airbnb.lottie.model.animatable.AnimatableColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableGradientColorValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
+import com.airbnb.lottie.model.animatable.AnimatablePoint3Value;
 import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
@@ -40,6 +41,11 @@ public class AnimatableValueParser {
   static AnimatablePointValue parsePoint(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatablePointValue(KeyframesParser.parse(reader, composition, Utils.dpScale(), PointFParser.INSTANCE, true));
+  }
+
+  static AnimatablePoint3Value parsePoint3(
+      JsonReader reader, LottieComposition composition, boolean isDp) throws IOException {
+    return new AnimatablePoint3Value(KeyframesParser.parse(reader, composition, isDp ? Utils.dpScale() : 1f, Point3FParser.INSTANCE, false));
   }
 
   static AnimatableScaleValue parseScale(

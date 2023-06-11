@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
 
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
@@ -27,6 +26,7 @@ import java.util.List;
 public class CompositionLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
   private final List<BaseLayer> layers = new ArrayList<>();
+  private final List<CameraLayer> cameraLayers = new ArrayList<>();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
   private final Paint layerPaint = new Paint();
@@ -59,6 +59,9 @@ public class CompositionLayer extends BaseLayer {
       Layer lm = layerModels.get(i);
       BaseLayer layer = BaseLayer.forModel(this, lm, lottieDrawable, composition);
       if (layer == null) {
+        continue;
+      } else if (layer instanceof CameraLayer) {
+        cameraLayers.add((CameraLayer) layer);
         continue;
       }
       layerMap.put(layer.getLayerModel().getId(), layer);
@@ -104,6 +107,15 @@ public class CompositionLayer extends BaseLayer {
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+    if (cameraLayers.size() > 0) {
+      cameraLayers.get(0).drawLayer(canvas, parentMatrix, parentAlpha);
+    } else {
+      drawLayerInternal(canvas, parentMatrix, parentAlpha);
+    }
+  }
+
+
+  void drawLayerInternal(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
     L.beginSection("CompositionLayer#draw");
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
     parentMatrix.mapRect(newClipRect);
@@ -165,6 +177,9 @@ public class CompositionLayer extends BaseLayer {
     }
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
+    }
+    for (int i = cameraLayers.size() - 1; i >= 0; i--) {
+      cameraLayers.get(i).setProgress(progress);
     }
     L.endSection("CompositionLayer#setProgress");
   }
