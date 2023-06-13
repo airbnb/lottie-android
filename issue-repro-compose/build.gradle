@@ -2,7 +2,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 
 plugins {
     id 'com.android.application'
-    id "kotlin-android"
+    id "org.jetbrains.kotlin.android"
 }
 
 android {
@@ -14,13 +14,6 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose true

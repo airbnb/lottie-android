@@ -1,7 +1,9 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
 plugins {
   id 'com.android.application'
-  id "kotlin-android"
-  id 'kotlin-parcelize'
+  id "org.jetbrains.kotlin.android"
+  id 'org.jetbrains.kotlin.plugin.parcelize'
   id 'com.google.devtools.ksp'
 }
 
@@ -40,16 +42,8 @@ android {
     textOutput 'stdout'
     baseline file("lint-baseline.xml")
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += ["-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"]
-  }
-  sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
   }
   packagingOptions {
     exclude 'META-INF/LICENSE.txt'
@@ -66,6 +60,7 @@ dependencies {
   implementation libs.androidx.appcompat
   implementation libs.androidx.recyclerview
   implementation libs.androidx.paging.runtime.ktx
+  implementation libs.androidx.viewmodel.ktx
   implementation libs.androidx.cardview
   implementation libs.androidx.core.ktx
   implementation libs.androidx.constraintlayout

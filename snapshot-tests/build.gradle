@@ -2,8 +2,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 
 plugins {
   id 'com.android.application'
-  id "kotlin-android"
-  id 'kotlin-kapt'
+  id "org.jetbrains.kotlin.android"
 }
 
 android {
@@ -32,13 +31,7 @@ android {
     }
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
-
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
@@ -55,10 +48,6 @@ android {
   composeOptions {
     kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
   }
-}
-
-kapt {
-  correctErrorTypes = true
 }
 
 dependencies {

@@ -1323,7 +1323,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   public <T> void addValueCallback(KeyPath keyPath, T property,
       final SimpleLottieValueCallback<T> callback) {
-    addValueCallback(keyPath, property, new LottieValueCallback<>() {
+    addValueCallback(keyPath, property, new LottieValueCallback<T>() {
       @Override
       public T getValue(LottieFrameInfo<T> frameInfo) {
         return callback.getValue(frameInfo);

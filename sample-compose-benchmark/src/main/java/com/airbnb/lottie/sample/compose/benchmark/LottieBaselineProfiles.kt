@@ -15,6 +15,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 
@@ -36,7 +37,6 @@ class LottieBaselineProfiles {
     }
 
     @Test
-    @OptIn(ExperimentalTime::class)
     fun baselineProfiles() {
         baselineProfileRule.collectBaselineProfile(
             packageName = PACKAGE_NAME,
@@ -59,7 +59,6 @@ class LottieBaselineProfiles {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun UiScrollable.waitUntilReady() {
         this.waitUntil {
             // We know that there are at least 9 children
@@ -67,8 +66,7 @@ class LottieBaselineProfiles {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
-    private fun UiObject.clickAndWait(maxWaitTime: Duration = Duration.seconds(5)) {
+    private fun UiObject.clickAndWait(maxWaitTime: Duration = 5.seconds) {
         val maxWaitTimeMs = maxWaitTime.toLong(DurationUnit.MILLISECONDS)
         click()
         device.waitForIdle(maxWaitTimeMs)
@@ -76,8 +74,7 @@ class LottieBaselineProfiles {
         device.pressBack()
     }
 
-    @OptIn(ExperimentalTime::class)
-    private fun <T> T.waitUntil(maxWaitTime: Duration = Duration.seconds(5), condition: (T) -> Boolean) {
+    private fun <T> T.waitUntil(maxWaitTime: Duration = 5.seconds, condition: (T) -> Boolean) {
         var waitTime = 0L
         val maxWaitTimeMs = maxWaitTime.toLong(DurationUnit.MILLISECONDS)
         val incrementalDelay = 150L

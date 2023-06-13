@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -37,6 +36,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.random.Random
+import androidx.appcompat.R as AppcompatR
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -59,7 +59,7 @@ class FragmentVisibilityTests {
     @Test
     fun testRecyclerViewCanAutoPlayInOnBindRebind() {
         class TestFragment : Fragment() {
-            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
                 return RecyclerView(requireContext()).apply {
                     layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     // Setting itemAnimator to null is important for this test in order to
@@ -158,7 +158,7 @@ class FragmentVisibilityTests {
             }
         }
 
-        val scenario = launchFragmentInContainer<TestFragment>(themeResId = R.style.Theme_AppCompat)
+        val scenario = launchFragmentInContainer<TestFragment>(themeResId = AppcompatR.style.Theme_AppCompat)
         onIdle()
         scenario.onFragment { fragment ->
             val animationView = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)

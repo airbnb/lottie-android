@@ -2,7 +2,7 @@ import static de.fayard.refreshVersions.core.Versions.versionFor
 
 plugins {
   id 'com.android.application'
-  id "kotlin-android"
+  id "org.jetbrains.kotlin.android"
   id 'kotlin-kapt'
 }
 
@@ -24,12 +24,7 @@ android {
       debuggable false
     }
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-  }
   kotlinOptions {
-    jvmTarget = '17'
     freeCompilerArgs += [
         "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
