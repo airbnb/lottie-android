@@ -1,15 +1,18 @@
 package com.airbnb.lottie;
 
-import org.junit.Before;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
-
-import static org.mockito.Mockito.*;
 
 public class LottieTaskTest extends BaseTest {
 
@@ -18,10 +21,8 @@ public class LottieTaskTest extends BaseTest {
   @Mock
   public LottieListener<Throwable> failureListener;
 
-  @Before
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
-  }
+  @Rule
+  public MockitoRule rule = MockitoJUnit.rule();
 
   @Test
   public void testListener() {
@@ -29,7 +30,7 @@ public class LottieTaskTest extends BaseTest {
         .addListener(successListener)
         .addFailureListener(failureListener);
     verify(successListener, times(1)).onResult(5);
-    verifyZeroInteractions(failureListener);
+    verifyNoInteractions(failureListener);
   }
 
   @Test
@@ -40,7 +41,7 @@ public class LottieTaskTest extends BaseTest {
     }, true)
         .addListener(successListener)
         .addFailureListener(failureListener);
-    verifyZeroInteractions(successListener);
+    verifyNoInteractions(successListener);
     verify(failureListener, times(1)).onResult(exception);
   }
 
@@ -69,8 +70,8 @@ public class LottieTaskTest extends BaseTest {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    verifyZeroInteractions(successListener);
-    verifyZeroInteractions(failureListener);
+    verifyNoInteractions(successListener);
+    verifyNoInteractions(failureListener);
   }
 
   @Test
@@ -84,6 +85,6 @@ public class LottieTaskTest extends BaseTest {
     task.addListener(successListener);
     task.addFailureListener(failureListener);
     verify(successListener, times(1)).onResult(5);
-    verifyZeroInteractions(failureListener);
+    verifyNoInteractions(failureListener);
   }
 }
