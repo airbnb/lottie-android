@@ -41,7 +41,6 @@ dependencies {
 
   annotationProcessor libs.nullaway
   errorprone libs.errorprone.core
-  errorproneJavac libs.errorprone.javac
 
   testImplementation libs.mockito.core
   testImplementation libs.robolectric
