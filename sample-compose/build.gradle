@@ -26,13 +26,10 @@ android {
   }
   kotlinOptions {
     freeCompilerArgs += [
-        "-Xallow-jvm-ir-dependencies",
         "-Xskip-prerelease-check",
-        "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
         "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-        "-Xopt-in=androidx.compose.material.ExperimentalMaterialApi",
-        "-Xopt-in=kotlin.RequiresOptIn",
+        "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
+        "-opt-in=kotlin.RequiresOptIn",
     ]
   }
   buildFeatures {
