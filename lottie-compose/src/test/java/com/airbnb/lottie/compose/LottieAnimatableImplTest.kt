@@ -6,8 +6,7 @@ import com.airbnb.lottie.LottieCompositionFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -431,11 +430,7 @@ class LottieAnimatableImplTest {
         assertEquals("lastFrameNanos at %d".format(frameTimeMs), lastFrameNanos, anim.lastFrameNanos)
     }
 
-    private fun runTest(test: suspend CoroutineScope.() -> Unit) {
-        runBlockingTest {
-            withContext(clock) {
-                test()
-            }
-        }
+    private fun runTest(test: suspend CoroutineScope.() -> Unit) = kotlinx.coroutines.test.runTest(context = clock + UnconfinedTestDispatcher()) {
+        test()
     }
 }
