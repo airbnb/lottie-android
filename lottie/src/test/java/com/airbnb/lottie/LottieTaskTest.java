@@ -1,18 +1,14 @@
 package com.airbnb.lottie;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
+
+import static org.mockito.Mockito.*;
 
 public class LottieTaskTest extends BaseTest {
 
