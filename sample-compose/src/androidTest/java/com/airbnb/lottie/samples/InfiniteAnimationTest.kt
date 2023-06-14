@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,7 @@ import org.junit.Test
 class InfiniteAnimationTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule(ComposeActivity::class.java)
+    val composeTestRule = createAndroidComposeRule(ComponentActivity::class.java)
 
     @Test
     fun testInfiniteAnimation() {
