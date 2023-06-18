@@ -72,6 +72,7 @@ import kotlin.math.roundToInt
  *                     For more details, refer to the docs of [AsyncUpdates].
  */
 @Composable
+@JvmOverloads
 fun LottieAnimation(
     composition: LottieComposition?,
     progress: () -> Float,
@@ -177,6 +178,7 @@ fun LottieAnimation(
  * @see animateLottieCompositionAsState
  */
 @Composable
+@JvmOverloads
 fun LottieAnimation(
     composition: LottieComposition?,
     modifier: Modifier = Modifier,

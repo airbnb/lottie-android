@@ -71,6 +71,7 @@ private const val DefaultCacheKey = "__LottieInternalDefaultCacheKey__"
  *                retrying again. [rememberLottieRetrySignal] can be used to handle explicit retires.
  */
 @Composable
+@JvmOverloads
 fun rememberLottieComposition(
     spec: LottieCompositionSpec,
     imageAssetsFolder: String? = null,
