@@ -418,13 +418,20 @@ public class LottieCompositionFactory {
     }
   }
 
-
   /**
    * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
    * that takes Context as the first parameter.
    */
   public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey) {
     return fromZipStream(null, inputStream, cacheKey);
+  }
+
+  /**
+   * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
+   * that takes Context as the first parameter.
+   */
+  public static LottieTask<LottieComposition> fromZipStream(final ZipInputStream inputStream, @Nullable final String cacheKey, boolean close) {
+    return fromZipStream(null, inputStream, cacheKey, close);
   }
 
   /**
@@ -435,6 +442,29 @@ public class LottieCompositionFactory {
   }
 
   /**
+   * @see #fromZipStreamSync(Context, ZipInputStream, String)
+   */
+  public static LottieTask<LottieComposition> fromZipStream(Context context, final ZipInputStream inputStream,
+      @Nullable final String cacheKey, boolean close) {
+    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), close ? () -> closeQuietly(inputStream) : null);
+  }
+
+  /**
+   * Parses a zip input stream into a Lottie composition.
+   * Your zip file should just be a folder with your json file and images zipped together.
+   * It will automatically store and configure any images inside the animation if they exist.
+   * <p>
+   * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
+   * that takes Context as the first parameter.
+   * <p>
+   * The ZipInputStream will be automatically closed at the end. If you would like to keep it open, use the overload
+   * with a close parameter and pass in false.
+   */
+  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
+    return fromZipStreamSync(inputStream, cacheKey, true);
+  }
+
+  /**
    * Parses a zip input stream into a Lottie composition.
    * Your zip file should just be a folder with your json file and images zipped together.
    * It will automatically store and configure any images inside the animation if they exist.
@@ -442,8 +472,25 @@ public class LottieCompositionFactory {
    * In this overload, embedded fonts will NOT be parsed. If your zip file has custom fonts, use the overload
    * that takes Context as the first parameter.
    */
-  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey) {
-    return fromZipStreamSync(null, inputStream, cacheKey);
+  public static LottieResult<LottieComposition> fromZipStreamSync(ZipInputStream inputStream, @Nullable String cacheKey, boolean close) {
+    return fromZipStreamSync(null, inputStream, cacheKey, close);
+  }
+
+  /**
+   * Parses a zip input stream into a Lottie composition.
+   * Your zip file should just be a folder with your json file and images zipped together.
+   * It will automatically store and configure any images inside the animation if they exist.
+   * <p>
+   * The ZipInputStream will be automatically closed at the end. If you would like to keep it open, use the overload
+   * with a close parameter and pass in false.
+   *
+   * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
+   *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
+   *                font family (fFamily) in your animation file.
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromZipStreamSync(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
+    return fromZipStreamSync(context, inputStream, cacheKey, true);
   }
 
   /**
@@ -456,11 +503,14 @@ public class LottieCompositionFactory {
    *                font family (fFamily) in your animation file.
    */
   @WorkerThread
-  public static LottieResult<LottieComposition> fromZipStreamSync(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromZipStreamSync(@Nullable Context context, ZipInputStream inputStream,
+      @Nullable String cacheKey, boolean close) {
     try {
       return fromZipStreamSyncInternal(context, inputStream, cacheKey);
     } finally {
-      closeQuietly(inputStream);
+      if (close) {
+        closeQuietly(inputStream);
+      }
     }
   }
 
