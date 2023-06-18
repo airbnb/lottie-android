@@ -8,6 +8,8 @@ max_line_length = 140
 indent_size = 4
 ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_name_count_to_use_star_import = 2147483647
+ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
 
 [*.java]
 ij_java_class_count_to_use_import_on_demand = 2147483647
