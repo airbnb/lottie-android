@@ -9,7 +9,6 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.sample.compose.ComposeActivity
 import com.airbnb.lottie.sample.compose.R
 import org.junit.Rule
 import org.junit.Test

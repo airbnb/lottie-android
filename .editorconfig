@@ -10,8 +10,8 @@ ij_kotlin_allow_trailing_comma = true
 ij_kotlin_allow_trailing_comma_on_call_site = true
 
 [*.java]
-ij_java_class_count_to_use_import_on_demand = 3
-ij_java_names_count_to_use_import_on_demand = 3
-ij_java_packages_to_use_import_on_demand = 3
+ij_java_class_count_to_use_import_on_demand = 2147483647
+ij_java_names_count_to_use_import_on_demand = 2147483647
+ij_java_packages_to_use_import_on_demand = 2147483647
 ij_java_blank_lines_after_class_header = 1
 ij_java_imports_layout = *,|,javax.**,java.**,|,$*
