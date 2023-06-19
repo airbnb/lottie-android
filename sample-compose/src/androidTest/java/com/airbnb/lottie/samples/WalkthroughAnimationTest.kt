@@ -1,5 +1,6 @@
 package com.airbnb.lottie.samples
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -8,7 +9,6 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.sample.compose.ComposeActivity
 import com.airbnb.lottie.sample.compose.R
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +16,7 @@ import org.junit.Test
 class WalkthroughAnimationTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule(ComposeActivity::class.java)
+    val composeTestRule = createAndroidComposeRule(ComponentActivity::class.java)
 
     @Test
     fun testWalkthroughCompletes() {

@@ -6,9 +6,11 @@ import com.airbnb.lottie.LottieCompositionFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.withContext
-import org.junit.Assert.*
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -30,7 +32,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testSingleIterationProgress() = runTest {
+    fun testSingleIterationProgress() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -47,7 +49,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testJumpFromOneIterationToEndOfNext() = runTest {
+    fun testJumpFromOneIterationToEndOfNext() = runTestWithClock {
         launch {
             anim.animate(composition, iterations = 2)
         }
@@ -60,7 +62,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testTwoIterations() = runTest {
+    fun testTwoIterations() = runTestWithClock {
         launch {
             anim.animate(composition, iterations = 2)
         }
@@ -75,7 +77,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testJumpsFromOneIterationToThree() = runTest {
+    fun testJumpsFromOneIterationToThree() = runTestWithClock {
         val job = launch {
             anim.animate(composition, iterations = 3)
         }
@@ -87,7 +89,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testCancels() = runTest {
+    fun testCancels() = runTestWithClock {
         val job = launch {
             anim.animate(composition)
         }
@@ -100,7 +102,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testReverse() = runTest {
+    fun testReverse() = runTestWithClock {
         launch {
             anim.animate(composition, speed = -1f)
         }
@@ -111,7 +113,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testClipSpec() = runTest {
+    fun testClipSpec() = runTestWithClock {
         val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec)
@@ -122,7 +124,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testClipSpecWithTwoIterations() = runTest {
+    fun testClipSpecWithTwoIterations() = runTestWithClock {
         val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, iterations = 2)
@@ -134,7 +136,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testNegativeSpeedWithClipSpec() = runTest {
+    fun testNegativeSpeedWithClipSpec() = runTestWithClock {
         val clipSpec = LottieClipSpec.Progress(0.25f, 0.75f)
         launch {
             anim.animate(composition, clipSpec = clipSpec, speed = -1f)
@@ -145,7 +147,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testChangingEndClipSpec() = runTest {
+    fun testChangingEndClipSpec() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -161,7 +163,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testChangingBeginningClipSpec() = runTest {
+    fun testChangingBeginningClipSpec() = runTestWithClock {
         launch {
             anim.animate(composition, iterations = 2)
         }
@@ -178,7 +180,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testResumingAnimation() = runTest {
+    fun testResumingAnimation() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -199,7 +201,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testReRunAnimation() = runTest {
+    fun testReRunAnimation() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -214,7 +216,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testSnapNoopToThenResume() = runTest {
+    fun testSnapNoopToThenResume() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -230,7 +232,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testSnapToThenResume() = runTest {
+    fun testSnapToThenResume() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -247,7 +249,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testSnapToAnotherIterationThenResume() = runTest {
+    fun testSnapToAnotherIterationThenResume() = runTestWithClock {
         launch {
             anim.animate(composition, iterations = 3)
         }
@@ -264,7 +266,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testChangeSpeed() = runTest {
+    fun testChangeSpeed() = runTestWithClock {
         launch {
             anim.animate(composition)
         }
@@ -281,7 +283,7 @@ class LottieAnimatableImplTest {
     @Test
     fun testInfiniteSpeed() {
         val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
-        runTest {
+        runTestWithClock {
             launch {
                 anim.animate(composition, clipSpec = clipSpec, speed = Float.POSITIVE_INFINITY, iterations = LottieConstants.IterateForever)
             }
@@ -302,7 +304,7 @@ class LottieAnimatableImplTest {
     @Test
     fun testInfiniteSpeedWithIterations() {
         val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
-        runTest {
+        runTestWithClock {
             launch {
                 anim.animate(composition, clipSpec = clipSpec, speed = Float.POSITIVE_INFINITY, iterations = 3)
             }
@@ -323,7 +325,7 @@ class LottieAnimatableImplTest {
     @Test
     fun testNegativeInfiniteSpeed() {
         val clipSpec = LottieClipSpec.Progress(0.33f, 0.57f)
-        runTest {
+        runTestWithClock {
             launch {
                 anim.animate(composition, clipSpec = clipSpec, speed = Float.NEGATIVE_INFINITY, iterations = LottieConstants.IterateForever)
             }
@@ -342,7 +344,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testReverseOnRepeat() = runTest {
+    fun testReverseOnRepeat() = runTestWithClock {
         val job = launch {
             anim.animate(
                 composition,
@@ -371,7 +373,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testNonCancellable() = runTest {
+    fun testNonCancellable() = runTestWithClock {
         val job = launch {
             anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnIterationFinish)
         }
@@ -382,7 +384,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testCancelWithMultipleIterations() = runTest {
+    fun testCancelWithMultipleIterations() = runTestWithClock {
         val job = launch {
             anim.animate(composition, cancellationBehavior = LottieCancellationBehavior.OnIterationFinish, iterations = 3)
         }
@@ -393,7 +395,7 @@ class LottieAnimatableImplTest {
     }
 
     @Test
-    fun testCompositionCreated() = runTest {
+    fun testCompositionCreated() = runTestWithClock {
         val clipSpec = LottieClipSpec.Frame(20, 25)
         val job1 = launch {
             anim.animate(null, clipSpec = clipSpec)
@@ -431,11 +433,7 @@ class LottieAnimatableImplTest {
         assertEquals("lastFrameNanos at %d".format(frameTimeMs), lastFrameNanos, anim.lastFrameNanos)
     }
 
-    private fun runTest(test: suspend CoroutineScope.() -> Unit) {
-        runBlockingTest {
-            withContext(clock) {
-                test()
-            }
-        }
+    private fun runTestWithClock(test: suspend CoroutineScope.() -> Unit) = runTest(context = clock + UnconfinedTestDispatcher()) {
+        test()
     }
 }
