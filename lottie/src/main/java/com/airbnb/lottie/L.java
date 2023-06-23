@@ -75,10 +75,16 @@ public class L {
 
   public static void setFetcher(LottieNetworkFetcher customFetcher) {
     fetcher = customFetcher;
+    synchronized (NetworkCache.class) {
+      networkFetcher = null;
+    }
   }
 
   public static void setCacheProvider(LottieNetworkCacheProvider customProvider) {
     cacheProvider = customProvider;
+    synchronized (NetworkFetcher.class) {
+      networkCache = null;
+    }
   }
 
   @NonNull
