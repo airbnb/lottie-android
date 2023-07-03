@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -90,7 +91,7 @@ import java.util.Set;
       if (targetView == null) {
         return;
       }
-      targetView.setComposition(result);
+      targetView.setCompositionInternal(result);
     }
   }
 
@@ -123,6 +124,7 @@ import java.util.Set;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
   private String animationName;
+  private String animationUrl;
   private @RawRes int animationResId;
 
   /**
@@ -457,6 +459,7 @@ import java.util.Set;
   public void setAnimation(@RawRes final int rawRes) {
     this.animationResId = rawRes;
     animationName = null;
+    animationUrl = null;
     setCompositionTask(fromRawRes(rawRes));
   }
 
@@ -474,6 +477,7 @@ import java.util.Set;
   public void setAnimation(final String assetName) {
     this.animationName = assetName;
     animationResId = 0;
+    animationUrl = null;
     setCompositionTask(fromAssets(assetName));
   }
 
@@ -514,6 +518,7 @@ import java.util.Set;
    * Auto-closes the stream.
    */
   public void setAnimation(InputStream stream, @Nullable String cacheKey) {
+    animationUrl = null;
     setCompositionTask(LottieCompositionFactory.fromJsonInputStream(stream, cacheKey));
   }
 
@@ -532,6 +537,10 @@ import java.util.Set;
    * @see Lottie#initialize(LottieConfig)
    */
   public void setAnimationFromUrl(String url) {
+    if (Objects.equals(animationUrl, url)) {
+      return;
+    }
+    animationUrl = url;
     LottieTask<LottieComposition> task = cacheComposition ?
         LottieCompositionFactory.fromUrl(getContext(), url) : LottieCompositionFactory.fromUrl(getContext(), url, null);
     setCompositionTask(task);
@@ -552,6 +561,10 @@ import java.util.Set;
    * @see Lottie#initialize(LottieConfig)
    */
   public void setAnimationFromUrl(String url, @Nullable String cacheKey) {
+    if (Objects.equals(animationUrl, url)) {
+      return;
+    }
+    animationUrl = url;
     LottieTask<LottieComposition> task = LottieCompositionFactory.fromUrl(getContext(), url, cacheKey);
     setCompositionTask(task);
   }
@@ -608,6 +621,11 @@ import java.util.Set;
    * using {@link R.attr#lottie_cacheComposition}.
    */
   public void setComposition(@NonNull LottieComposition composition) {
+    animationUrl = null;
+    setCompositionInternal(composition);
+  }
+
+  private void setCompositionInternal(@NonNull LottieComposition composition) {
     if (L.DBG) {
       Log.v(TAG, "Set Composition \n" + composition);
     }
