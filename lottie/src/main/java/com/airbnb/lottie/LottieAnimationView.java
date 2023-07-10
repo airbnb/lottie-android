@@ -112,6 +112,8 @@ import java.util.Set;
 
       if (targetView.fallbackResource != 0) {
         targetView.setImageResource(targetView.fallbackResource);
+      } else {
+        targetView.clearComposition();
       }
       LottieListener<Throwable> l = targetView.failureListener == null ? DEFAULT_FAILURE_LISTENER : targetView.failureListener;
       l.onResult(result);
@@ -588,7 +590,6 @@ import java.util.Set;
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
     userActionsTaken.add(UserActionTaken.SET_ANIMATION);
-    clearComposition();
     cancelLoaderTask();
     this.compositionTask = compositionTask
         .addListener(loadedListener)

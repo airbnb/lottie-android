@@ -5,7 +5,9 @@ import android.graphics.drawable.ColorDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
+import androidx.test.espresso.Espresso.onIdle
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -15,6 +17,8 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +64,32 @@ class LottieAnimationViewTest {
             view.playAnimation()
             view.setImageDrawable(ColorDrawable(Color.GREEN))
             assertFalse(view.isAnimating)
+        }
+    }
+
+    @Test
+    fun testClearsCompositionOnLoadFailure() {
+        val idlingResource = LottieIdlingResource()
+        IdlingRegistry.getInstance().register(idlingResource)
+
+        class TestFragment : Fragment(R.layout.lottie_activity_main)
+
+        val scenario = launchFragmentInContainer<TestFragment>()
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.onFragment { fragment ->
+            val composition = LottieCompositionFactory.fromRawResSync(fragment.requireContext(), R.raw.hamburger_arrow).value!!
+            val view = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
+            view.setComposition(composition)
+            view.playAnimation()
+            view.setAnimationFromUrl("https://a/bad/url")
+            assertNotNull(view.composition) // Existing composition is not immediately cleared.
+        }
+
+        onIdle()
+
+        scenario.onFragment { fragment ->
+            val view = fragment.requireView().findViewById<LottieAnimationView>(R.id.animation_view)
+            assertNull(view.composition) // Existing composition is cleared only after load failure.
         }
     }
 }
