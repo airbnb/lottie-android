@@ -77,9 +77,10 @@ jobs:
       - name: Build app
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
-        uses: emulator-wtf/run-tests@v0.9.19
+        uses: emulator-wtf/run-tests@v0.9.6
         with:
           api-token: ${{ env.EW_API_TOKEN }}
+          version: 0.9.19
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
