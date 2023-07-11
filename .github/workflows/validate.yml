@@ -20,7 +20,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - uses: gradle/gradle-build-action@v2
       - name: Run Lint
@@ -42,7 +42,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - uses: gradle/gradle-build-action@v2
       - name: Run Unit Tests
@@ -71,13 +71,13 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - uses: gradle/gradle-build-action@v2
       - name: Build app
         run: ./gradlew snapshot-tests:assembleDebug snapshot-tests:assembleDebugAndroidTest --no-daemon
       - name: Run tests
-        uses: emulator-wtf/run-tests@v0.9.6
+        uses: emulator-wtf/run-tests@v0.9.19
         with:
           api-token: ${{ env.EW_API_TOKEN }}
           app: snapshot-tests/build/outputs/apk/debug/snapshot-tests-debug.apk
@@ -101,14 +101,14 @@ jobs:
   deploy:
     if: github.event_name == 'push' && github.repository == 'airbnb/lottie-android' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    needs: [ lint, unit-test, gradle-wrapper, snapshot-tests ]
+    needs: [lint, unit-test, gradle-wrapper, snapshot-tests]
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
       - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: 17
       - uses: gradle/gradle-build-action@v2
       - name: "Deploy Snapshot"
