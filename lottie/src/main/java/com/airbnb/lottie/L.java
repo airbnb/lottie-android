@@ -74,11 +74,21 @@ public class L {
   }
 
   public static void setFetcher(LottieNetworkFetcher customFetcher) {
+    if ((fetcher == null && customFetcher == null) || (fetcher != null && fetcher.equals(customFetcher))) {
+      return;
+    }
+
     fetcher = customFetcher;
+    networkFetcher = null;
   }
 
   public static void setCacheProvider(LottieNetworkCacheProvider customProvider) {
+    if ((cacheProvider == null && customProvider == null) || (cacheProvider != null && cacheProvider.equals(customProvider))) {
+      return;
+    }
+
     cacheProvider = customProvider;
+    networkCache = null;
   }
 
   @NonNull
