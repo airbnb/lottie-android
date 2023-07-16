@@ -32,6 +32,8 @@
 .idea/codeStyleSettings.xml
 .idea/compiler.xml
 .idea/androidTestResultsUserPreferences.xml
+.idea/appInsightsSettings.xml
+.idea/migrations.xml
 
 # Gradle
 .idea/**/gradle.xml
