@@ -1,5 +1,18 @@
+# 6.1.0
+### New Features
+* New multithreaded `asyncUpdates` feature which moves the entire update phase of an animation off of the main thread. For more information, refer to [this blog post](https://gpeal.medium.com/lottie-android-6-1-lottie-goes-multithreaded-67c09c091fd7). ([#2276](https://github.com/airbnb/lottie-android/pull/2276))
+* Allow `LottieCompositionFactory` to not close input streams ([#2286](https://github.com/airbnb/lottie-android/pull/2286) and [#2319](https://github.com/airbnb/lottie-android/pull/2319))
+* Allow Lottie to be initialized multiple times ([#2323](https://github.com/airbnb/lottie-android/pull/2323))
+
+### Bugs Fixed
+* Close input streams for cache hits ([#2253](https://github.com/airbnb/lottie-android/pull/2253))
+* Always use ApplicationContext in ImageAssetManager to ensure it can be reused ([#2289](https://github.com/airbnb/lottie-android/pull/2289))
+* Hold weak references to success/failure listeners ([#2293](https://github.com/airbnb/lottie-android/pull/2293))
+* Add default values for line join and cap types ([#2337](https://github.com/airbnb/lottie-android/pull/2337))
+* Apply layer parent opacity to text ([#2336](https://github.com/airbnb/lottie-android/pull/2336))
+
 # 6.0.1
-### Bugs Fixes
+### Bugs Fixed
 * Allow loading URLs with a length of greater than 255 chars ([#2311](https://github.com/airbnb/lottie-android/pull/2311))
 
 # 6.0.0
