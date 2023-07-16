@@ -123,6 +123,10 @@ class ShapeStrokeParser {
     // Telegram sometimes omits opacity.
     // https://github.com/airbnb/lottie-android/issues/1600
     opacity = opacity == null ? new AnimatableIntegerValue(Collections.singletonList(new Keyframe<>(100))) : opacity;
+    // Unclear why these are omitted sometimes but default to After Effects default value
+    // https://github.com/airbnb/lottie-android/issues/2325
+    capType = capType == null ? ShapeStroke.LineCapType.BUTT : capType;
+    joinType = joinType == null ? ShapeStroke.LineJoinType.MITER : joinType;
     return new ShapeStroke(
         name, offset, lineDashPattern, color, opacity, width, capType, joinType, miterLimit, hidden);
   }
