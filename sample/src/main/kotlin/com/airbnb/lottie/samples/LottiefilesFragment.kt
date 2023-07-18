@@ -102,7 +102,10 @@ class LottiefilesDataSource(
     }
 
     override fun getRefreshKey(state: PagingState<Int, AnimationData>): Int? {
-        return state.closestItemToPosition(state.anchorPosition ?: return null)?.id as Int?
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
     }
 }
 
