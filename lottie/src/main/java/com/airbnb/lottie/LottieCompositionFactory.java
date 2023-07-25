@@ -333,21 +333,13 @@ public class LottieCompositionFactory {
     return fromJsonInputStreamSync(stream, cacheKey, true);
   }
 
-
   /**
    * Return a LottieComposition for the given InputStream to json.
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
-    try {
-      return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
-    } finally {
-      if (close) {
-        closeQuietly(stream);
-      }
-    }
+    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey, close);
   }
-
 
   /**
    * @see #fromJsonSync(JSONObject, String)
@@ -394,12 +386,15 @@ public class LottieCompositionFactory {
     return cache(cacheKey, () -> fromJsonReaderSync(reader, cacheKey), () -> Utils.closeQuietly(reader));
   }
 
-
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey) {
-    return fromJsonReaderSyncInternal(reader, cacheKey, true);
+    return fromJsonReaderSync(reader, cacheKey, true);
   }
 
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
+    return fromJsonReaderSyncInternal(reader, cacheKey, close);
+  }
 
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
       com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
