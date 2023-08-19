@@ -38,7 +38,7 @@ public class NetworkCache {
     if (parentDir.exists()) {
       File[] files = parentDir.listFiles();
       if (files != null && files.length > 0) {
-        for (File file : parentDir.listFiles()) {
+        for (File file : files) {
           file.delete();
         }
       }
