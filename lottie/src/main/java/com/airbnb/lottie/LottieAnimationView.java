@@ -1022,6 +1022,13 @@ import java.util.Set;
   }
 
   /**
+   * Clear the value callback for all nodes that match the given {@link KeyPath} and property.
+   */
+  public <T> void clearValueCallback(KeyPath keyPath, T property) {
+    lottieDrawable.addValueCallback(keyPath, property, (LottieValueCallback<T>) null);
+  }
+
+  /**
    * Add a property callback for the specified {@link KeyPath}. This {@link KeyPath} can resolve
    * to multiple contents. In that case, the callback's value will apply to all of them.
    * <p>
