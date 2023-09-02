@@ -1282,6 +1282,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * <p>
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
+   *
+   * Set the callback to null to clear it.
    */
   public <T> void addValueCallback(
       final KeyPath keyPath, final T property, @Nullable final LottieValueCallback<T> callback) {
