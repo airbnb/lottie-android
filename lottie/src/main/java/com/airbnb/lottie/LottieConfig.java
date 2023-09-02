@@ -42,7 +42,7 @@ public class LottieConfig {
     private boolean enableSystraceMarkers = false;
     private boolean enableNetworkCache = true;
     private boolean disablePathInterpolatorCache = true;
-    private AsyncUpdates enableAsyncUpdatesByDefault = AsyncUpdates.AUTOMATIC;
+    private AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
 
     /**
      * Lottie has a default network fetching stack built on {@link java.net.HttpURLConnection}. However, if you would like to hook into your own
@@ -137,14 +137,14 @@ public class LottieConfig {
      */
     @NonNull
     public Builder setDefaultAsyncUpdates(AsyncUpdates asyncUpdates) {
-      enableAsyncUpdatesByDefault = asyncUpdates;
+      defaultAsyncUpdates = asyncUpdates;
       return this;
     }
 
     @NonNull
     public LottieConfig build() {
       return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache, disablePathInterpolatorCache,
-          enableAsyncUpdatesByDefault);
+          defaultAsyncUpdates);
     }
   }
 }
