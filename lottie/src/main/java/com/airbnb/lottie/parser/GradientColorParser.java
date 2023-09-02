@@ -177,6 +177,14 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       if (colorStopPosition < position && i != colorStopPositions.length - 1) {
         continue;
       }
+      if (i == colorStopPositions.length - 1 && position >= colorStopPosition) {
+        return Color.argb(
+            (int) (opacity * 255),
+            Color.red(colorStopColors[i]),
+            Color.green(colorStopColors[i]),
+            Color.blue(colorStopColors[i])
+        );
+      }
       // We found the position in which position is between i - 1 and i.
       float distanceBetweenColors = colorStopPositions[i] - colorStopPositions[i - 1];
       float distanceToLowerColor = position - colorStopPositions[i - 1];
