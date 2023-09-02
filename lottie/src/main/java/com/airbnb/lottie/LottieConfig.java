@@ -20,14 +20,17 @@ public class LottieConfig {
   final boolean enableSystraceMarkers;
   final boolean enableNetworkCache;
   final boolean disablePathInterpolatorCache;
+  final AsyncUpdates defaultAsyncUpdates;
 
   private LottieConfig(@Nullable LottieNetworkFetcher networkFetcher, @Nullable LottieNetworkCacheProvider cacheProvider,
-      boolean enableSystraceMarkers, boolean enableNetworkCache, boolean disablePathInterpolatorCache) {
+      boolean enableSystraceMarkers, boolean enableNetworkCache, boolean disablePathInterpolatorCache,
+      AsyncUpdates defaultAsyncUpdates) {
     this.networkFetcher = networkFetcher;
     this.cacheProvider = cacheProvider;
     this.enableSystraceMarkers = enableSystraceMarkers;
     this.enableNetworkCache = enableNetworkCache;
     this.disablePathInterpolatorCache = disablePathInterpolatorCache;
+    this.defaultAsyncUpdates = defaultAsyncUpdates;
   }
 
   public static final class Builder {
@@ -39,6 +42,7 @@ public class LottieConfig {
     private boolean enableSystraceMarkers = false;
     private boolean enableNetworkCache = true;
     private boolean disablePathInterpolatorCache = true;
+    private AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
 
     /**
      * Lottie has a default network fetching stack built on {@link java.net.HttpURLConnection}. However, if you would like to hook into your own
@@ -127,9 +131,20 @@ public class LottieConfig {
       return this;
     }
 
+    /**
+     * Sets the default value for async updates.
+     * @see LottieDrawable#setAsyncUpdates(AsyncUpdates)
+     */
+    @NonNull
+    public Builder setDefaultAsyncUpdates(AsyncUpdates asyncUpdates) {
+      defaultAsyncUpdates = asyncUpdates;
+      return this;
+    }
+
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache, disablePathInterpolatorCache);
+      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache, disablePathInterpolatorCache,
+          defaultAsyncUpdates);
     }
   }
 }

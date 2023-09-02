@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-import androidx.core.os.TraceCompat;
 
 import com.airbnb.lottie.network.DefaultLottieNetworkFetcher;
 import com.airbnb.lottie.network.LottieNetworkCacheProvider;
@@ -25,6 +24,7 @@ public class L {
   private static boolean traceEnabled = false;
   private static boolean networkCacheEnabled = true;
   private static boolean disablePathInterpolatorCache = true;
+  private static AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
 
   private static LottieNetworkFetcher fetcher;
   private static LottieNetworkCacheProvider cacheProvider;
@@ -130,5 +130,13 @@ public class L {
 
   public static boolean getDisablePathInterpolatorCache() {
     return disablePathInterpolatorCache;
+  }
+
+  public static void setDefaultAsyncUpdates(AsyncUpdates asyncUpdates) {
+    L.defaultAsyncUpdates = asyncUpdates;
+  }
+
+  public static AsyncUpdates getDefaultAsyncUpdates() {
+    return L.defaultAsyncUpdates;
   }
 }

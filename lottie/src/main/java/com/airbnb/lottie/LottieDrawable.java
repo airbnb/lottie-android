@@ -31,6 +31,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 
 import com.airbnb.lottie.animation.LPaint;
+import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.Font;
@@ -145,7 +146,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private Matrix softwareRenderingOriginalCanvasMatrix;
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
-  private AsyncUpdates asyncUpdates = AsyncUpdates.AUTOMATIC;
+  /** Use the getter so that it can fall back to {@link L#getDefaultAsyncUpdates()}. */
+  @Nullable private AsyncUpdates asyncUpdates;
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = animation -> {
     if (getAsyncUpdatesEnabled()) {
       // Render a new frame.
@@ -411,7 +413,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Returns the current value of {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
    */
   public AsyncUpdates getAsyncUpdates() {
-    return asyncUpdates;
+    AsyncUpdates asyncUpdates = this.asyncUpdates;
+    if (asyncUpdates != null) {
+      return asyncUpdates;
+    }
+    return L.getDefaultAsyncUpdates();
   }
 
   /**
@@ -421,7 +427,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * whether automatic is defaulting to enabled or not.
    */
   public boolean getAsyncUpdatesEnabled() {
-    return asyncUpdates == AsyncUpdates.ENABLED;
+    return getAsyncUpdates() == AsyncUpdates.ENABLED;
   }
 
   /**
