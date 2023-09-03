@@ -3,6 +3,7 @@ package com.airbnb.lottie.samples
 import androidx.multidex.MultiDexApplication
 import com.airbnb.lottie.L
 import com.airbnb.lottie.samples.api.LottiefilesApi
+import com.airbnb.mvrx.Mavericks
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -37,6 +38,7 @@ class LottieApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        Mavericks.initialize(this)
         L.DBG = true
     }
 }

@@ -6,8 +6,6 @@ import com.airbnb.epoxy.AsyncEpoxyController
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.lottie.samples.R
 import com.airbnb.lottie.samples.databinding.BaseFragmentBinding
-import com.airbnb.mvrx.BaseMvRxFragment
-
 
 private class BaseEpoxyController(
     private val buildModelsCallback: EpoxyController.() -> Unit
@@ -17,11 +15,11 @@ private class BaseEpoxyController(
     }
 }
 
-abstract class BaseEpoxyFragment : BaseMvRxFragment(R.layout.base_fragment) {
+abstract class BaseEpoxyFragment : BaseFragment(R.layout.base_fragment) {
     protected val binding: BaseFragmentBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.recyclerView.setController(BaseEpoxyController { buildModels() })
+        binding.recyclerView.setControllerAndBuildModels(BaseEpoxyController { buildModels() })
     }
 
     override fun invalidate() {

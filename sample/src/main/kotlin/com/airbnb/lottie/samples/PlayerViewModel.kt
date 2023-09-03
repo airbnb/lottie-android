@@ -7,11 +7,11 @@ import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
 import com.airbnb.lottie.samples.model.CompositionArgs
-import com.airbnb.lottie.samples.utils.MvRxViewModel
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
+import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.MavericksViewModel
+import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.ViewModelContext
@@ -34,12 +34,12 @@ data class PlayerState(
     val maxFrame: Int = 0,
     val speed: Float = 1f,
     val repeatCount: Int = ValueAnimator.INFINITE
-) : MvRxState
+) : MavericksState
 
 class PlayerViewModel(
     initialState: PlayerState,
     private val application: Application
-) : MvRxViewModel<PlayerState>(initialState) {
+) : MavericksViewModel<PlayerState>(initialState) {
 
     fun fetchAnimation(args: CompositionArgs) {
         val url = args.url ?: args.animationDataV2?.file ?: args.animationData?.lottieLink
@@ -112,7 +112,7 @@ class PlayerViewModel(
         )
     }
 
-    companion object : MvRxViewModelFactory<PlayerViewModel, PlayerState> {
+    companion object : MavericksViewModelFactory<PlayerViewModel, PlayerState> {
         override fun create(viewModelContext: ViewModelContext, state: PlayerState): PlayerViewModel {
             return PlayerViewModel(state, viewModelContext.app())
         }

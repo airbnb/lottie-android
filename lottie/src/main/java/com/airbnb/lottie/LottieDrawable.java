@@ -33,7 +33,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 
 import com.airbnb.lottie.animation.LPaint;
-import com.airbnb.lottie.animation.keyframe.PathKeyframe;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.Font;
@@ -336,7 +335,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
-   * the documentation at http://airbnb.io/lottie for more information about importing shapes from
+   * the documentation at <a href="http://airbnb.io/lottie">airbnb.io/lottie</a> for more information about importing shapes from
    * Sketch or Illustrator to avoid this.
    */
   public void setImagesAssetsFolder(@Nullable String imageAssetsFolder) {
@@ -460,7 +459,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * <p/>
    * Sets the current value for {@link AsyncUpdates}. Refer to the docs for {@link AsyncUpdates} for more info.
    */
-  public void setAsyncUpdates(AsyncUpdates asyncUpdates) {
+  public void setAsyncUpdates(@Nullable AsyncUpdates asyncUpdates) {
     this.asyncUpdates = asyncUpdates;
   }
 
@@ -1318,7 +1317,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * <p>
    * Internally, this will check if the {@link KeyPath} has already been resolved with
    * {@link #resolveKeyPath(KeyPath)} and will resolve it if it hasn't.
-   *
+   * <p>
    * Set the callback to null to clear it.
    */
   public <T> void addValueCallback(

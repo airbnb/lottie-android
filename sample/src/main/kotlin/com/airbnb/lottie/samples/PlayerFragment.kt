@@ -32,12 +32,12 @@ import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.model.KeyPath
 import com.airbnb.lottie.samples.databinding.PlayerFragmentBinding
 import com.airbnb.lottie.samples.model.CompositionArgs
+import com.airbnb.lottie.samples.utils.BaseFragment
 import com.airbnb.lottie.samples.utils.getParcelableCompat
 import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.samples.views.BottomSheetItemView
 import com.airbnb.lottie.samples.views.BottomSheetItemViewModel_
 import com.airbnb.lottie.samples.views.ControlBarItemToggleView
-import com.airbnb.mvrx.BaseMvRxFragment
 import com.airbnb.mvrx.fragmentViewModel
 import com.airbnb.mvrx.withState
 import com.github.mikephil.charting.components.LimitLine
@@ -50,7 +50,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
+class PlayerFragment : BaseFragment(R.layout.player_fragment) {
     private val binding: PlayerFragmentBinding by viewBinding()
     private val viewModel: PlayerViewModel by fragmentViewModel()
 
@@ -147,7 +147,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
 
         binding.controlBarTrim.minFrameView.setOnClickListener { showMinFrameDialog() }
         binding.controlBarTrim.maxFrameView.setOnClickListener { showMaxFrameDialog() }
-        viewModel.selectSubscribe(PlayerState::minFrame, PlayerState::maxFrame) { minFrame, maxFrame ->
+        viewModel.onEach(PlayerState::minFrame, PlayerState::maxFrame) { minFrame, maxFrame ->
             binding.animationView.setMinAndMaxFrame(minFrame, maxFrame)
             // I think this is a lint bug. It complains about int being <ErrorType>
             //noinspection StringFormatMatches
@@ -157,7 +157,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         viewModel.fetchAnimation(args)
-        viewModel.asyncSubscribe(PlayerState::composition, onFail = {
+        viewModel.onAsync(PlayerState::composition, onFail = {
             Snackbar.make(binding.coordinatorLayout, R.string.composition_load_error, Snackbar.LENGTH_LONG).show()
             Log.w(L.TAG, "Error loading composition.", it)
         }) {
@@ -166,7 +166,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         binding.controlBar.borderToggle.setOnClickListener { viewModel.toggleBorderVisible() }
-        viewModel.selectSubscribe(PlayerState::borderVisible) {
+        viewModel.onEach(PlayerState::borderVisible) {
             binding.controlBar.borderToggle.isActivated = it
             binding.controlBar.borderToggle.setImageResource(
                 if (it) R.drawable.ic_border_on
@@ -191,12 +191,12 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
             binding.controlBar.enableApplyingOpacityToLayers.isActivated = isApplyingOpacityToLayersEnabled
         }
 
-        viewModel.selectSubscribe(PlayerState::controlsVisible) { binding.controlBarPlayerControls.controlsContainer.animateVisible(it) }
+        viewModel.onEach(PlayerState::controlsVisible) { binding.controlBarPlayerControls.controlsContainer.animateVisible(it) }
 
-        viewModel.selectSubscribe(PlayerState::controlBarVisible) { binding.controlBar.root.animateVisible(it) }
+        viewModel.onEach(PlayerState::controlBarVisible) { binding.controlBar.root.animateVisible(it) }
 
         binding.controlBar.renderGraphToggle.setOnClickListener { viewModel.toggleRenderGraphVisible() }
-        viewModel.selectSubscribe(PlayerState::renderGraphVisible) {
+        viewModel.onEach(PlayerState::renderGraphVisible) {
             binding.controlBar.renderGraphToggle.isActivated = it
             binding.controlBarPlayerControls.renderTimesGraphContainer.animateVisible(it)
             binding.controlBarPlayerControls.renderTimesPerLayerButton.animateVisible(it)
@@ -204,38 +204,38 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
         }
 
         binding.controlBar.masksAndMattesToggle.setOnClickListener { viewModel.toggleOutlineMasksAndMattes() }
-        viewModel.selectSubscribe(PlayerState::outlineMasksAndMattes) {
+        viewModel.onEach(PlayerState::outlineMasksAndMattes) {
             binding.controlBar.masksAndMattesToggle.isActivated = it
             binding.animationView.setOutlineMasksAndMattes(it)
         }
 
         binding.controlBar.backgroundColorToggle.setOnClickListener { viewModel.toggleBackgroundColorVisible() }
         binding.controlBarBackgroundColor.closeBackgroundColorButton.setOnClickListener { viewModel.setBackgroundColorVisible(false) }
-        viewModel.selectSubscribe(PlayerState::backgroundColorVisible) {
+        viewModel.onEach(PlayerState::backgroundColorVisible) {
             binding.controlBar.backgroundColorToggle.isActivated = it
             binding.controlBarBackgroundColor.backgroundColorContainer.animateVisible(it)
         }
 
         binding.controlBar.trimToggle.setOnClickListener { viewModel.toggleTrimVisible() }
         binding.controlBarTrim.closeTrimButton.setOnClickListener { viewModel.setTrimVisible(false) }
-        viewModel.selectSubscribe(PlayerState::trimVisible) {
+        viewModel.onEach(PlayerState::trimVisible) {
             binding.controlBar.trimToggle.isActivated = it
             binding.controlBarTrim.trimContainer.animateVisible(it)
         }
 
         binding.controlBar.mergePathsToggle.setOnClickListener { viewModel.toggleMergePaths() }
-        viewModel.selectSubscribe(PlayerState::useMergePaths) {
+        viewModel.onEach(PlayerState::useMergePaths) {
             binding.animationView.enableMergePathsForKitKatAndAbove(it)
             binding.controlBar.mergePathsToggle.isActivated = it
         }
 
         binding.controlBar.speedToggle.setOnClickListener { viewModel.toggleSpeedVisible() }
         binding.controlBarSpeed.closeSpeedButton.setOnClickListener { viewModel.setSpeedVisible(false) }
-        viewModel.selectSubscribe(PlayerState::speedVisible) {
+        viewModel.onEach(PlayerState::speedVisible) {
             binding.controlBar.speedToggle.isActivated = it
             binding.controlBarSpeed.speedContainer.isVisible = it
         }
-        viewModel.selectSubscribe(PlayerState::speed) {
+        viewModel.onEach(PlayerState::speed) {
             binding.animationView.speed = it
             binding.controlBarSpeed.speedButtonsContainer
                 .children
@@ -259,7 +259,7 @@ class PlayerFragment : BaseMvRxFragment(R.layout.player_fragment) {
 
 
         binding.controlBarPlayerControls.loopButton.setOnClickListener { viewModel.toggleLoop() }
-        viewModel.selectSubscribe(PlayerState::repeatCount) {
+        viewModel.onEach(PlayerState::repeatCount) {
             binding.animationView.repeatCount = it
             binding.controlBarPlayerControls.loopButton.isActivated = binding.animationView.repeatCount == ValueAnimator.INFINITE
         }
