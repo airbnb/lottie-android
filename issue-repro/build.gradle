@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.airbnb.lottie.issues'
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.airbnb.lottie.issues"
         minSdk 16
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
     }
