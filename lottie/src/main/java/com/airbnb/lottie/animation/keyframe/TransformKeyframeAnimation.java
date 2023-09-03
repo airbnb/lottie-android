@@ -221,7 +221,7 @@ public class TransformKeyframeAnimation {
     BaseKeyframeAnimation<ScaleXY, ScaleXY> scale = this.scale;
     if (scale != null) {
       ScaleXY scaleTransform = scale.getValue();
-      if (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f) {
+      if (scaleTransform != null && (scaleTransform.getScaleX() != 1f || scaleTransform.getScaleY() != 1f)) {
         matrix.preScale(scaleTransform.getScaleX(), scaleTransform.getScaleY());
       }
     }
@@ -229,7 +229,7 @@ public class TransformKeyframeAnimation {
     BaseKeyframeAnimation<PointF, PointF> anchorPoint = this.anchorPoint;
     if (anchorPoint != null) {
       PointF anchorPointValue = anchorPoint.getValue();
-      if (anchorPointValue != null && anchorPointValue.x != 0 || anchorPointValue.y != 0) {
+      if (anchorPointValue != null && (anchorPointValue.x != 0 || anchorPointValue.y != 0)) {
         matrix.preTranslate(-anchorPointValue.x, -anchorPointValue.y);
       }
     }
