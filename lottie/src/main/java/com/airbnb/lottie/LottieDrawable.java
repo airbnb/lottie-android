@@ -16,6 +16,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -83,6 +85,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     RESUME,
   }
 
+  /**
+   * Prior to Oreo, you could only call invalidateDrawable() from the main thread.
+   * This means that when async updates are enabled, we must post the invalidate call to the main thread.
+   * Newer devices can call invalidate directly from whatever thread asyncUpdates runs on.
+   */
+  private static final boolean invalidateSelfOnMainThread = Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1;
+
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
 
@@ -146,6 +155,13 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private Matrix softwareRenderingOriginalCanvasMatrix;
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
+  /**
+   * True if the drawable has not been drawn since the last invalidateSelf.
+   * We can do this to prevent things like bounds from getting recalculated
+   * many times.
+   */
+  private boolean isDirty = false;
+
   /** Use the getter so that it can fall back to {@link L#getDefaultAsyncUpdates()}. */
   @Nullable private AsyncUpdates asyncUpdates;
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = animation -> {
@@ -181,6 +197,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   private static final Executor setProgressExecutor = new ThreadPoolExecutor(0, 2, 35, TimeUnit.MILLISECONDS,
       new LinkedBlockingQueue<>(), new LottieThreadFactory());
+  private Handler mainThreadHandler;
+  private Runnable invalidateSelfRunnable;
+
   private final Runnable updateProgressRunnable = () -> {
     CompositionLayer compositionLayer = this.compositionLayer;
     if (compositionLayer == null) {
@@ -189,6 +208,19 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     try {
       setProgressDrawLock.acquire();
       compositionLayer.setProgress(animator.getAnimatedValueAbsolute());
+      // Refer to invalidateSelfOnMainThread for more info.
+      if (invalidateSelfOnMainThread && isDirty) {
+        if (mainThreadHandler == null) {
+          mainThreadHandler = new Handler(Looper.getMainLooper());
+          invalidateSelfRunnable = () -> {
+            final Callback callback = getCallback();
+            if (callback != null) {
+              callback.invalidateDrawable(this);
+            }
+          };
+        }
+        mainThreadHandler.post(invalidateSelfRunnable);
+      }
     } catch (InterruptedException e) {
       // Do nothing.
     } finally {
@@ -197,13 +229,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   };
   private float lastDrawnProgress = -Float.MAX_VALUE;
   private static final float MAX_DELTA_MS_ASYNC_SET_PROGRESS = 3 / 60f * 1000;
-
-  /**
-   * True if the drawable has not been drawn since the last invalidateSelf.
-   * We can do this to prevent things like bounds from getting recalculated
-   * many times.
-   */
-  private boolean isDirty = false;
 
   @IntDef({RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
@@ -561,6 +586,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       return;
     }
     isDirty = true;
+
+    // Refer to invalidateSelfOnMainThread for more info.
+    if (invalidateSelfOnMainThread && Looper.getMainLooper() != Looper.myLooper()) {
+      return;
+    }
     final Callback callback = getCallback();
     if (callback != null) {
       callback.invalidateDrawable(this);
