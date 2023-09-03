@@ -20,19 +20,16 @@ import com.airbnb.lottie.sample.compose.R
 @Composable
 fun ViewPagerExamplePage() {
     val colors = listOf(Color.Red, Color.Green, Color.Blue, Color.Magenta)
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { colors.size }
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
-        HorizontalPager(
-            colors.size,
-            state = pagerState
-        ) { page ->
+        HorizontalPager(pagerState) { page ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(colors[page])
+                    .background(colors[page]),
             )
         }
         WalkthroughAnimation(pagerState, colors.size)
@@ -47,6 +44,6 @@ private fun WalkthroughAnimation(pagerState: PagerState, size: Int) {
         composition,
         { progress },
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(),
     )
 }

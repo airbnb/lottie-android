@@ -4,6 +4,7 @@
 
 androidx-activity-compose = "androidx.activity:activity-compose:_"
 androidx-appcompat = "androidx.appcompat:appcompat:_"
+androidx-fragment = "androidx.fragment:fragment-ktx:_"
 androidx-browser = "androidx.browser:browser:_"
 androidx-cardview = "androidx.cardview:cardview:_"
 androidx-collection-ktx = "androidx.collection:collection:_"

@@ -9,11 +9,11 @@ plugins {
 
 android {
   namespace 'com.airbnb.lottie.samples'
-  compileSdk 33
+  compileSdk 34
   defaultConfig {
     applicationId "com.airbnb.lottie"
     minSdk 16
-    targetSdk 33
+    targetSdk 34
     versionCode 70
     versionName VERSION_NAME
     multiDexEnabled true
@@ -58,6 +58,7 @@ dependencies {
   implementation libs.androidx.multidex
 
   implementation libs.androidx.appcompat
+  implementation libs.androidx.fragment
   implementation libs.androidx.recyclerview
   implementation libs.androidx.paging.runtime.ktx
   implementation libs.androidx.viewmodel.ktx
@@ -69,7 +70,7 @@ dependencies {
 
   implementation libs.epoxy
   ksp libs.epoxy.processor
-  implementation libs.mvrx
+  implementation libs.mavericks
 
   implementation libs.kotlinx.coroutines.android
   implementation libs.qrcodereaderview

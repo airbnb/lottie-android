@@ -2,10 +2,10 @@ import org.ajoberstar.grgit.Grgit
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  id "com.android.tools.build" apply false
   id 'net.ltgt.errorprone' apply false
   id "com.google.devtools.ksp" apply false
   id "org.ajoberstar.grgit" apply false
-  id "com.android.library" apply false
   id "org.jetbrains.kotlin.jvm" apply false
   id "com.vanniktech.maven.publish" apply false
   id "org.jetbrains.dokka" apply false
@@ -13,7 +13,7 @@ plugins {
 
 allprojects {
   def compileJavaVersion = JavaVersion.VERSION_17
-  def targetJavaVersion = JavaVersion.VERSION_1_8
+  def targetJavaVersion = JavaVersion.VERSION_17
   pluginManager.withPlugin("java") {
     java {
       toolchain {

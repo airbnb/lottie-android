@@ -8,11 +8,11 @@ plugins {
 
 android {
   namespace 'com.airbnb.lottie.sample.compose'
-  compileSdk 33
+  compileSdk 34
   defaultConfig {
     applicationId "com.airbnb.lottie.sample.compose"
     minSdk 21
-    targetSdk 33
+    targetSdk 34
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

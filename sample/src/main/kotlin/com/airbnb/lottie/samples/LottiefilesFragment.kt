@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingDataAdapter
@@ -20,13 +20,14 @@ import com.airbnb.lottie.samples.databinding.LottiefilesFragmentBinding
 import com.airbnb.lottie.samples.model.AnimationData
 import com.airbnb.lottie.samples.model.AnimationResponse
 import com.airbnb.lottie.samples.model.CompositionArgs
-import com.airbnb.lottie.samples.utils.MvRxViewModel
+import com.airbnb.lottie.samples.utils.BaseFragment
 import com.airbnb.lottie.samples.utils.hideKeyboard
 import com.airbnb.lottie.samples.utils.viewBinding
 import com.airbnb.lottie.samples.views.AnimationItemView
-import com.airbnb.mvrx.BaseMvRxFragment
-import com.airbnb.mvrx.MvRxState
-import com.airbnb.mvrx.MvRxViewModelFactory
+import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.MavericksView
+import com.airbnb.mvrx.MavericksViewModel
+import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.ViewModelContext
 import com.airbnb.mvrx.fragmentViewModel
 import com.airbnb.mvrx.withState
@@ -38,9 +39,9 @@ import kotlinx.coroutines.launch
 data class LottiefilesState(
     val mode: LottiefilesMode = LottiefilesMode.Recent,
     val query: String = ""
-) : MvRxState
+) : MavericksState
 
-class LottiefilesViewModel(initialState: LottiefilesState, private val api: LottiefilesApi) : MvRxViewModel<LottiefilesState>(initialState) {
+class LottiefilesViewModel(initialState: LottiefilesState, private val api: LottiefilesApi) : MavericksViewModel<LottiefilesState>(initialState) {
 
     private var mode = initialState.mode
     private var query = initialState.query
@@ -51,7 +52,7 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
     }.flow.cachedIn(viewModelScope)
 
     init {
-        selectSubscribe(LottiefilesState::mode, LottiefilesState::query) { mode, query ->
+        onEach(LottiefilesState::mode, LottiefilesState::query) { mode, query ->
             this.mode = mode
             this.query = query
             dataSource?.invalidate()
@@ -62,7 +63,7 @@ class LottiefilesViewModel(initialState: LottiefilesState, private val api: Lott
 
     fun setQuery(query: String) = setState { copy(query = query) }
 
-    companion object : MvRxViewModelFactory<LottiefilesViewModel, LottiefilesState> {
+    companion object : MavericksViewModelFactory<LottiefilesViewModel, LottiefilesState> {
         override fun create(viewModelContext: ViewModelContext, state: LottiefilesState): LottiefilesViewModel {
             val service = viewModelContext.app<LottieApplication>().lottiefilesService
             return LottiefilesViewModel(state, service)
@@ -109,7 +110,7 @@ class LottiefilesDataSource(
     }
 }
 
-class LottiefilesFragment : BaseMvRxFragment(R.layout.lottiefiles_fragment) {
+class LottiefilesFragment : BaseFragment(R.layout.lottiefiles_fragment) {
     private val binding: LottiefilesFragmentBinding by viewBinding()
     private val viewModel: LottiefilesViewModel by fragmentViewModel()
 
