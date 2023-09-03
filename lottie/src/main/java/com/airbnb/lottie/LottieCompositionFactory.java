@@ -151,6 +151,10 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromUrlSync(Context context, String url, @Nullable String cacheKey) {
+    final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+    if (cachedComposition != null) {
+      return new LottieResult<>(cachedComposition);
+    }
     LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(context, url, cacheKey);
     if (cacheKey != null && result.getValue() != null) {
       LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
@@ -213,6 +217,10 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromAssetSync(Context context, String fileName, @Nullable String cacheKey) {
+    final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+    if (cachedComposition != null) {
+      return new LottieResult<>(cachedComposition);
+    }
     try {
       if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
         return fromZipStreamSync(context, new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
@@ -282,6 +290,10 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromRawResSync(Context context, @RawRes int rawRes, @Nullable String cacheKey) {
+    final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+    if (cachedComposition != null) {
+      return new LottieResult<>(cachedComposition);
+    }
     try {
       BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
       if (isZipCompressed(source)) {
@@ -376,8 +388,6 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
-
-
     ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
     return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
   }
@@ -399,6 +409,10 @@ public class LottieCompositionFactory {
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
       com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
+      final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+      if (cachedComposition != null) {
+        return new LottieResult<>(cachedComposition);
+      }
       LottieComposition composition = LottieCompositionMoshiParser.parse(reader);
       if (cacheKey != null) {
         LottieCompositionCache.getInstance().put(cacheKey, composition);
@@ -516,6 +530,10 @@ public class LottieCompositionFactory {
     Map<String, Typeface> fonts = new HashMap<>();
 
     try {
+      final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+      if (cachedComposition != null) {
+        return new LottieResult<>(cachedComposition);
+      }
       ZipEntry entry = inputStream.getNextEntry();
       while (entry != null) {
         final String entryName = entry.getName();

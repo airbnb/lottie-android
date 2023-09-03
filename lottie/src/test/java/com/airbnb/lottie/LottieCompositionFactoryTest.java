@@ -18,6 +18,7 @@ import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
 @SuppressWarnings("ReferenceEquality")
@@ -44,6 +45,20 @@ public class LottieCompositionFactoryTest extends BaseTest {
         assertNull(result.getException());
         assertNotNull(result.getValue());
     }
+
+  @Test
+  public void testLoadJsonStringHitsCache() {
+    LottieResult<LottieComposition> result1 = LottieCompositionFactory.fromJsonStringSync(JSON, "json");
+    LottieResult<LottieComposition> result2 = LottieCompositionFactory.fromJsonStringSync(JSON, "json");
+    assertEquals(result1, result2);
+  }
+
+  @Test
+  public void testLoadDifferentJsonStringsDoesntHitsCache() {
+    LottieResult<LottieComposition> result1 = LottieCompositionFactory.fromJsonStringSync(JSON, "jso1");
+    LottieResult<LottieComposition> result2 = LottieCompositionFactory.fromJsonStringSync(JSON, "json2");
+    assertNotEquals(result1, result2);
+  }
 
     @Test
     public void testLoadInvalidJsonString() {
