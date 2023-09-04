@@ -12,12 +12,17 @@
       <option name="composableFile" value="true" />
       <option name="previewFile" value="true" />
     </inspection_tool>
+    <inspection_tool class="PreviewApiLevelMustBeValid" enabled="true" level="ERROR" enabled_by_default="true">
+      <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
+    </inspection_tool>
     <inspection_tool class="PreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="composableFile" value="true" />
       <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="PreviewFontScaleMustBeGreaterThanZero" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="PreviewMultipleParameterProviders" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
@@ -33,9 +38,11 @@
     </inspection_tool>
     <inspection_tool class="PreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
       <option name="composableFile" value="true" />
+      <option name="previewFile" value="true" />
     </inspection_tool>
     <inspection_tool class="SameParameterValue" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SwitchStatementWithTooFewBranches" enabled="false" level="WARNING" enabled_by_default="false">

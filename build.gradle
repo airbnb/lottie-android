@@ -3,12 +3,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id "com.android.tools.build" apply false
+  id "com.android.application" apply false
+  id "com.android.test" apply false
   id 'net.ltgt.errorprone' apply false
   id "com.google.devtools.ksp" apply false
   id "org.ajoberstar.grgit" apply false
-  id "org.jetbrains.kotlin.jvm" apply false
+  id "org.jetbrains.kotlin.android" apply false
   id "com.vanniktech.maven.publish" apply false
   id "org.jetbrains.dokka" apply false
+  id "androidx.baselineprofile" apply false
 }
 
 allprojects {

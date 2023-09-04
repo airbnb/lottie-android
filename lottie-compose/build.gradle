@@ -5,6 +5,7 @@ plugins {
   id 'com.android.library'
   id 'org.jetbrains.kotlin.android'
   id 'com.vanniktech.maven.publish'
+  id 'androidx.baselineprofile'
 }
 
 android {
@@ -38,11 +39,19 @@ mavenPublishing {
   signAllPublications()
 }
 
+baselineProfile {
+  filter {
+    include 'com.airbnb.lottie.compose.**'
+  }
+}
+
 dependencies {
   api project(':lottie')
   implementation platform(libs.compose.bom)
   implementation libs.compose.foundation
   implementation libs.compose.ui
+
+  baselineProfile project(':baselineprofile')
 
   testImplementation libs.robolectric
   testImplementation libs.androidx.collection.ktx

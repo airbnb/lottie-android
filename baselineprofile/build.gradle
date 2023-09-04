@@ -1,0 +1,43 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
+plugins {
+  id 'com.android.test'
+  id 'org.jetbrains.kotlin.android'
+  id 'androidx.baselineprofile'
+}
+
+android {
+  namespace 'com.airbnb.lottie.baselineprofile'
+  compileSdk 34
+
+  defaultConfig {
+    minSdk 28
+    targetSdk 34
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
+  }
+
+  targetProjectPath = ":app-benchmark"
+
+  testOptions.managedDevices.devices {
+    pixel6Api34(ManagedVirtualDevice) {
+      device = "Pixel 6"
+      apiLevel = 34
+      systemImageSource = "google"
+    }
+  }
+}
+
+baselineProfile {
+  managedDevices += "pixel6Api34"
+  useConnectedDevices = false
+}
+
+dependencies {
+  implementation libs.okio
+  implementation libs.androidx.test.junit
+  implementation libs.androidx.test.espresso
+  implementation libs.androidx.test.uiautomator
+  implementation libs.androidx.test.macrobenchmark
+}

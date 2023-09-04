@@ -1,0 +1,62 @@
+plugins {
+  id 'com.android.test'
+  id 'org.jetbrains.kotlin.android'
+  id 'androidx.baselineprofile'
+}
+
+android {
+  namespace 'com.airbnb.lottie.benchmark'
+  compileSdk 34
+
+  kotlinOptions {
+    freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+  }
+
+  defaultConfig {
+    minSdk 30
+    targetSdk 34
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+  }
+
+  buildTypes {
+    release {
+      debuggable = true
+      signingConfig = debug.signingConfig
+    }
+  }
+
+  targetProjectPath = ":app-benchmark"
+  experimentalProperties["android.experimental.self-instrumenting"] = true
+
+  testOptions.managedDevices.devices {
+    pixel6Api31(com.android.build.api.dsl.ManagedVirtualDevice) {
+      device = "Pixel 6"
+      apiLevel = 31
+      systemImageSource = "aosp"
+    }
+  }
+}
+
+baselineProfile {
+  managedDevices += "pixel6Api31"
+
+  // Enables using connected devices to generate profiles. The default is
+  // `true`. When using connected devices, they must be rooted or API 33 and
+  // higher.
+  useConnectedDevices = false
+}
+
+dependencies {
+  implementation libs.androidx.test.junit
+  implementation libs.androidx.test.espresso
+  implementation libs.androidx.test.uiautomator
+  implementation libs.androidx.test.macrobenchmark
+  implementation libs.compose.ui.test.junit
+}
+
+//androidComponents {
+//  beforeVariants(selector().all()) {
+//    enabled = buildType == "release"
+//  }
+//}
