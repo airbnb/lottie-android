@@ -40,10 +40,6 @@ android {
 
 baselineProfile {
   managedDevices += "pixel6Api31"
-
-  // Enables using connected devices to generate profiles. The default is
-  // `true`. When using connected devices, they must be rooted or API 33 and
-  // higher.
   useConnectedDevices = false
 }
 
@@ -54,9 +50,3 @@ dependencies {
   implementation libs.androidx.test.macrobenchmark
   implementation libs.compose.ui.test.junit
 }
-
-//androidComponents {
-//  beforeVariants(selector().all()) {
-//    enabled = buildType == "release"
-//  }
-//}
