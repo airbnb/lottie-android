@@ -10,6 +10,7 @@ plugins {
 ////                         # available:'0.60.0'
 ////                         # available:'0.60.1'
 ////                         # available:'0.60.2'
+////                         # available:'0.60.3'
 }
 
 dependencyResolutionManagement {
@@ -28,4 +29,6 @@ include ':sample-compose'
 include ':issue-repro'
 include ':issue-repro-compose'
 include ':snapshot-tests'
-include ':sample-compose-benchmark'
+include ':benchmark'
+include ':app-benchmark'
+include ':baselineprofile'

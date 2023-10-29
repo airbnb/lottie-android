@@ -1,0 +1,50 @@
+import static de.fayard.refreshVersions.core.Versions.versionFor
+
+plugins {
+    id 'com.android.application'
+    id "org.jetbrains.kotlin.android"
+    id 'androidx.baselineprofile'
+}
+
+android {
+    namespace 'com.airbnb.lottie.benchmark.app'
+    compileSdk 34
+    defaultConfig {
+        applicationId "com.airbnb.lottie.benchmark.app"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            debuggable false
+            proguardFiles("proguard-rules.pro")
+        }
+        create("benchmark") {
+            initWith(release)
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = versionFor(project, AndroidX.compose.compiler)
+    }
+}
+
+dependencies {
+    implementation project(':lottie-compose')
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.activity.compose
+    implementation platform(libs.compose.bom)
+    implementation libs.compose.ui
+    implementation libs.compose.material
+    implementation libs.compose.material.icons.extended
+    implementation libs.compose.ui.tooling
+    // Need this to side load a Baseline Profile when Benchmarking
+    implementation libs.profileinstaller
+}

@@ -5,6 +5,7 @@ plugins {
   id 'com.android.library'
   id 'net.ltgt.errorprone'
   id 'com.vanniktech.maven.publish'
+  id 'androidx.baselineprofile'
 }
 
 android {
@@ -33,6 +34,13 @@ mavenPublishing {
   signAllPublications()
 }
 
+baselineProfile {
+  filter {
+    include 'com.airbnb.lottie.**'
+    exclude 'com.airbnb.lottie.compose.**'
+  }
+}
+
 dependencies {
   implementation libs.androidx.appcompat
   // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
@@ -41,6 +49,8 @@ dependencies {
 
   annotationProcessor libs.nullaway
   errorprone libs.errorprone.core
+
+  baselineProfile project(':baselineprofile')
 
   testImplementation libs.mockito.core
   testImplementation libs.robolectric

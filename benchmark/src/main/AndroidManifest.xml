@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
-        <package android:name="com.airbnb.lottie.sample.compose" />
+        <package android:name="com.airbnb.lottie.benchmark.app" />
     </queries>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"

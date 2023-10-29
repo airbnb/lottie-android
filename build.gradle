@@ -9,6 +9,7 @@ plugins {
   id "org.jetbrains.kotlin.jvm" apply false
   id "com.vanniktech.maven.publish" apply false
   id "org.jetbrains.dokka" apply false
+  id "androidx.baselineprofile" apply false
 }
 
 allprojects {
