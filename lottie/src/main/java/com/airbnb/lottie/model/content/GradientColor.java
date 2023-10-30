@@ -37,6 +37,15 @@ public class GradientColor {
       positions[i] = MiscUtils.lerp(gc1.positions[i], gc2.positions[i], progress);
       colors[i] = GammaEvaluator.evaluate(progress, gc1.colors[i], gc2.colors[i]);
     }
+
+    // Not all keyframes that this GradientColor are used for will have the same length.
+    // AnimatableGradientColorValue.ensureInterpolatableKeyframes may add extra positions
+    // for some keyframes but not others to ensure that it is interpolatable.
+    // If there are extra positions here, just duplicate the last value in the gradient.
+    for (int i = gc1.colors.length; i < positions.length; i++) {
+      positions[i] = positions[gc1.colors.length - 1];
+      colors[i] = colors[gc1.colors.length - 1];
+    }
   }
 
   public GradientColor copyWithPositions(float[] positions) {
