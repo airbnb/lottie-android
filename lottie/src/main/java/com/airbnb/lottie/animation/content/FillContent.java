@@ -123,7 +123,7 @@ public class FillContent
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       final BlendModeCompat blendMode = layer.getBlendMode().toCoreBlendMode();
-      if(blendMode!=null)
+      if (blendMode != null)
         PaintCompat.setBlendMode(paint, blendMode);
     }
 
