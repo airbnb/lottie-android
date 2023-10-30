@@ -8,6 +8,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
+import com.airbnb.lottie.model.content.LBlendMode;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.Mask;
@@ -49,7 +50,8 @@ public class LayerParser {
       "op", // 19
       "tm", // 20
       "cl", // 21
-      "hd" // 22
+      "hd", // 22
+      "bm" // 23
   );
 
   public static Layer parse(LottieComposition composition) {
@@ -59,7 +61,8 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false, null, null);
+        Layer.MatteType.NONE, null, false, null, null,
+        LBlendMode.NORMAL);
   }
 
   private static final JsonReader.Options TEXT_NAMES = JsonReader.Options.of(
@@ -95,6 +98,7 @@ public class LayerParser {
     DropShadowEffect dropShadowEffect = null;
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
+    LBlendMode blendMode = LBlendMode.NORMAL;
     AnimatableTransform transform = null;
     AnimatableTextFrame text = null;
     AnimatableTextProperties textProperties = null;
@@ -256,6 +260,14 @@ public class LayerParser {
         case 22:
           hidden = reader.nextBoolean();
           break;
+        case 23:
+          int blendModeIndex = reader.nextInt();
+          if (blendModeIndex >= LBlendMode.values().length) {
+            composition.addWarning("Unsupported Blend Mode: " + blendModeIndex);
+            break;
+          }
+          blendMode = LBlendMode.values()[blendModeIndex];
+          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -287,6 +299,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden, blurEffect, dropShadowEffect);
+        timeRemapping, hidden, blurEffect, dropShadowEffect, blendMode);
   }
 }

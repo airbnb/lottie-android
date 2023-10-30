@@ -1,7 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
@@ -9,6 +8,7 @@ import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ContentModel;
+import com.airbnb.lottie.model.content.LBlendMode;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.value.Keyframe;
@@ -61,6 +61,8 @@ public class Layer {
   private final boolean hidden;
   @Nullable private final BlurEffect blurEffect;
   @Nullable private final DropShadowEffect dropShadowEffect;
+  private final LBlendMode blendMode;
+
 
   public Layer(List<ContentModel> shapes, LottieComposition composition, String layerName, long layerId,
       LayerType layerType, long parentId, @Nullable String refId, List<Mask> masks,
@@ -69,7 +71,7 @@ public class Layer {
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
       List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
       @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
-      @Nullable DropShadowEffect dropShadowEffect) {
+      @Nullable DropShadowEffect dropShadowEffect, LBlendMode blendMode) {
     this.shapes = shapes;
     this.composition = composition;
     this.layerName = layerName;
@@ -94,6 +96,7 @@ public class Layer {
     this.hidden = hidden;
     this.blurEffect = blurEffect;
     this.dropShadowEffect = dropShadowEffect;
+    this.blendMode = blendMode;
   }
 
   LottieComposition getComposition() {
@@ -186,6 +189,11 @@ public class Layer {
 
   public boolean isHidden() {
     return hidden;
+  }
+
+  @Nullable
+  public LBlendMode getBlendMode() {
+    return blendMode;
   }
 
   @Nullable public BlurEffect getBlurEffect() {

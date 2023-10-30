@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.content;
 
 import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
+import android.graphics.BlendMode;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -9,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.os.Build;
 
 import androidx.annotation.Nullable;
 
@@ -118,6 +120,12 @@ public class FillContent
     }
     if (dropShadowAnimation != null) {
       dropShadowAnimation.applyTo(paint);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      final BlendMode blendMode = layer.getBlendMode().toCoreBlendMode();
+      if(blendMode!=null)
+        paint.setBlendMode(blendMode);
     }
 
     path.reset();
