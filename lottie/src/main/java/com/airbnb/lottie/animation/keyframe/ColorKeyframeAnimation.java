@@ -25,7 +25,10 @@ public class ColorKeyframeAnimation extends KeyframeAnimation<Integer> {
       throw new IllegalStateException("Missing values for keyframe.");
     }
 
-    if (valueCallback != null) {
+    // keyframe.endFrame should not be null under normal operation.
+    // It is not clear why this would be null and when it does, it seems to be extremely rare.
+    // https://github.com/airbnb/lottie-android/issues/2361
+    if (valueCallback != null && keyframe.endFrame != null) {
       //noinspection ConstantConditions
       Integer value = valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame, keyframe.startValue,
           keyframe.endValue, keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
