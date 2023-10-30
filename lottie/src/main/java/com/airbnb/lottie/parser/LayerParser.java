@@ -51,7 +51,7 @@ public class LayerParser {
       "tm", // 20
       "cl", // 21
       "hd", // 22
-      "bm" // 23
+      "bm"  // 23
   );
 
   public static Layer parse(LottieComposition composition) {
