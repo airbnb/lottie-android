@@ -264,6 +264,7 @@ public class LayerParser {
           int blendModeIndex = reader.nextInt();
           if (blendModeIndex >= LBlendMode.values().length) {
             composition.addWarning("Unsupported Blend Mode: " + blendModeIndex);
+            blendMode = LBlendMode.NORMAL;
             break;
           }
           blendMode = LBlendMode.values()[blendModeIndex];
