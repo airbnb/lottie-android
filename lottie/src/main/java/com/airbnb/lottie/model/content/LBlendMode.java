@@ -1,9 +1,9 @@
 package com.airbnb.lottie.model.content;
 
-import android.graphics.BlendMode;
 import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.graphics.BlendModeCompat;
 
 /**
  * Lottie BlendMode,
@@ -32,42 +32,42 @@ public enum LBlendMode {
 
   @Nullable
   @RequiresApi(api = Build.VERSION_CODES.Q)
-  public BlendMode toCoreBlendMode() {
+  public BlendModeCompat toCoreBlendMode() {
     switch (this){
       case NORMAL:
         return null; // BlendMode.CLEAR?
       case MULTIPLY:
-        return BlendMode.MULTIPLY;
+        return BlendModeCompat.MULTIPLY;
       case SCREEN:
-        return BlendMode.SCREEN;
+        return BlendModeCompat.SCREEN;
       case OVERLAY:
-        return BlendMode.OVERLAY;
+        return BlendModeCompat.OVERLAY;
       case DARKEN:
-        return BlendMode.DARKEN;
+        return BlendModeCompat.DARKEN;
       case LIGHTEN:
-        return BlendMode.LIGHTEN;
+        return BlendModeCompat.LIGHTEN;
       case COLOR_DODGE:
-        return BlendMode.COLOR_DODGE;
+        return BlendModeCompat.COLOR_DODGE;
       case COLOR_BURN:
-        return BlendMode.COLOR_BURN;
+        return BlendModeCompat.COLOR_BURN;
       case HARD_LIGHT:
-        return BlendMode.HARD_LIGHT;
+        return BlendModeCompat.HARD_LIGHT;
       case SOFT_LIGHT:
-        return BlendMode.SOFT_LIGHT;
+        return BlendModeCompat.SOFT_LIGHT;
       case DIFFERENCE:
-        return BlendMode.DIFFERENCE;
+        return BlendModeCompat.DIFFERENCE;
       case EXCLUSION:
-        return BlendMode.EXCLUSION;
+        return BlendModeCompat.EXCLUSION;
       case HUE:
-        return BlendMode.HUE;
+        return BlendModeCompat.HUE;
       case SATURATION:
-        return BlendMode.SATURATION;
+        return BlendModeCompat.SATURATION;
       case COLOR:
-        return BlendMode.COLOR;
+        return BlendModeCompat.COLOR;
       case LUMINOSITY:
-        return BlendMode.LUMINOSITY;
+        return BlendModeCompat.LUMINOSITY;
       case ADD:
-        return BlendMode.PLUS;
+        return BlendModeCompat.PLUS;
       case HARD_MIX:
         return null;  // todo: fix this
       default:

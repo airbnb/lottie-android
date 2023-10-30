@@ -1,8 +1,5 @@
 package com.airbnb.lottie.animation.content;
 
-import static com.airbnb.lottie.utils.MiscUtils.clamp;
-
-import android.graphics.BlendMode;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -11,9 +8,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
-
 import androidx.annotation.Nullable;
-
+import androidx.core.graphics.BlendModeCompat;
+import androidx.core.graphics.PaintCompat;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -30,6 +27,8 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
@@ -123,9 +122,9 @@ public class FillContent
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      final BlendMode blendMode = layer.getBlendMode().toCoreBlendMode();
+      final BlendModeCompat blendMode = layer.getBlendMode().toCoreBlendMode();
       if(blendMode!=null)
-        paint.setBlendMode(blendMode);
+        PaintCompat.setBlendMode(paint, blendMode);
     }
 
     path.reset();
