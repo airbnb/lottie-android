@@ -32,7 +32,7 @@ public enum LBlendMode {
 
   @Nullable
   @RequiresApi(api = Build.VERSION_CODES.Q)
-  public BlendModeCompat toCoreBlendMode() {
+  public BlendModeCompat toNativeBlendMode() {
     switch (this){
       case NORMAL:
         return null; // BlendMode.CLEAR?
