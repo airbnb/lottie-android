@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -553,6 +554,12 @@ import java.util.Set;
    */
   public void setAnimationFromUrl(String url, @Nullable String cacheKey) {
     LottieTask<LottieComposition> task = LottieCompositionFactory.fromUrl(getContext(), url, cacheKey);
+    setCompositionTask(task);
+  }
+
+  public void setAnimationFromDotLottie(ZipInputStream stream, @Nullable String cacheKey) {
+    LottieTask<LottieComposition> task = cacheComposition ?
+        LottieCompositionFactory.fromZipStream(stream, cacheKey) : LottieCompositionFactory.fromZipStream(stream, null);
     setCompositionTask(task);
   }
 
