@@ -559,7 +559,7 @@ import java.util.zip.ZipInputStream;
 
   public void setAnimationFromDotLottie(ZipInputStream stream, @Nullable String cacheKey) {
     LottieTask<LottieComposition> task = cacheComposition ?
-        LottieCompositionFactory.fromZipStream(stream, cacheKey) : LottieCompositionFactory.fromZipStream(stream, null);
+        LottieCompositionFactory.fromZipStream(getContext(), stream, cacheKey) : LottieCompositionFactory.fromZipStream(getContext(), stream, null);
     setCompositionTask(task);
   }
 
