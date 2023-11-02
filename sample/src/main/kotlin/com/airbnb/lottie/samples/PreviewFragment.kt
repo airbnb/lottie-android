@@ -52,7 +52,7 @@ class PreviewFragment : BaseEpoxyFragment() {
                         addCategory(Intent.CATEGORY_OPENABLE)
                     }
                     @Suppress("DEPRECATION")
-                    startActivityForResult(Intent.createChooser(intent, "Select a JSON file"), RC_FILE)
+                    startActivityForResult(Intent.createChooser(intent, "Select a JSON, ZIP, or dotLottie file"), RC_FILE)
                 } catch (ex: ActivityNotFoundException) {
                     // Potentially direct the user to the Market with a Dialog
                     Toast.makeText(context, "Please install a File Manager.", Toast.LENGTH_SHORT).show()

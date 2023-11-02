@@ -15,7 +15,8 @@ import com.airbnb.mvrx.MvRxViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.ViewModelContext
-import java.io.FileInputStream
+import java.io.File
+import java.util.zip.ZipInputStream
 import kotlin.math.max
 import kotlin.math.min
 
@@ -59,13 +60,26 @@ class PlayerViewModel(
     }
 
     private fun taskForUri(uri: Uri): LottieTask<LottieComposition> {
+        var useZipStream: Boolean
+
         val fis = when (uri.scheme) {
-            "file" -> FileInputStream(uri.path ?: error("File has no path!"))
-            "content" -> application.contentResolver.openInputStream(uri)
+            "file" -> File(uri.path ?: error("File has no path!"))
+                .also { useZipStream = it.extension == "lottie" || it.extension == "zip" }
+                .inputStream()
+            "content" -> {
+                val resolver = application.contentResolver
+                val type = resolver.getType(uri)
+                useZipStream = type == "application/octet-stream" || type == "application/zip"
+                resolver.openInputStream(uri)
+            }
             else -> error("Unknown scheme ${uri.scheme}")
         }
 
-        return LottieCompositionFactory.fromJsonInputStream(fis, null)
+        return if (useZipStream) {
+            LottieCompositionFactory.fromZipStream(ZipInputStream(fis), null)
+        } else {
+            LottieCompositionFactory.fromJsonInputStream(fis, null)
+        }
     }
 
     fun toggleRenderGraphVisible() = setState { copy(renderGraphVisible = !renderGraphVisible) }
