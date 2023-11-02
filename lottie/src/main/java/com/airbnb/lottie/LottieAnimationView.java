@@ -557,6 +557,11 @@ import java.util.zip.ZipInputStream;
     setCompositionTask(task);
   }
 
+  /**
+   * Load a <a href="https://dotlottie.io/">dotLottie</a> animation from a ZipInputStream.
+   * <p>
+   * Auto-closes the stream.
+   */
   public void setAnimationFromDotLottie(ZipInputStream stream, @Nullable String cacheKey) {
     LottieTask<LottieComposition> task = cacheComposition ?
         LottieCompositionFactory.fromZipStream(getContext(), stream, cacheKey) : LottieCompositionFactory.fromZipStream(getContext(), stream, null);
