@@ -36,11 +36,13 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PushbackInputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipInputStream;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
@@ -508,6 +510,9 @@ import java.util.Set;
    * Sets the animation from an arbitrary InputStream.
    * This will load and deserialize the file asynchronously.
    * <p>
+   * If this is a Zip file, wrap your InputStream with a ZipInputStream to use the overload
+   * designed for zip files.
+   * <p>
    * This is particularly useful for animations loaded from the network. You can fetch the
    * bodymovin json from the network and pass it directly here.
    * <p>
@@ -515,6 +520,19 @@ import java.util.Set;
    */
   public void setAnimation(InputStream stream, @Nullable String cacheKey) {
     setCompositionTask(LottieCompositionFactory.fromJsonInputStream(stream, cacheKey));
+  }
+
+  /**
+   * Sets the animation from a ZipInputStream.
+   * This will load and deserialize the file asynchronously.
+   * <p>
+   * This is particularly useful for animations loaded from the network. You can fetch the
+   * bodymovin json from the network and pass it directly here.
+   * <p>
+   * Auto-closes the stream.
+   */
+  public void setAnimation(ZipInputStream stream, @Nullable String cacheKey) {
+    setCompositionTask(LottieCompositionFactory.fromZipStream(stream, cacheKey));
   }
 
   /**
