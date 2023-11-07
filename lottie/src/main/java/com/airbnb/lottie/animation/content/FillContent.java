@@ -31,6 +31,7 @@ import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public class FillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
+
   private final Path path = new Path();
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
   private final BaseLayer layer;
@@ -123,8 +124,9 @@ public class FillContent
     // Set layer paint blend mode
     final BlendModeCompat blendMode = layer.getBlendMode().toNativeBlendMode();
     if (blendMode != null) // PaintCompat.setBlendMode accepts null but no surprises please
+    {
       PaintCompat.setBlendMode(paint, blendMode);
-
+    }
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
