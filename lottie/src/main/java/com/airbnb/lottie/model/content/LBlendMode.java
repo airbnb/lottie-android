@@ -31,13 +31,10 @@ public enum LBlendMode {
   HARD_MIX;
 
   @Nullable
-  @RequiresApi(api = Build.VERSION_CODES.Q)
   public BlendModeCompat toNativeBlendMode() {
-    switch (this){
+    switch (this) {
       case NORMAL:
         return null; // BlendMode.CLEAR?
-      case MULTIPLY:
-        return BlendModeCompat.MULTIPLY;
       case SCREEN:
         return BlendModeCompat.SCREEN;
       case OVERLAY:
@@ -46,6 +43,25 @@ public enum LBlendMode {
         return BlendModeCompat.DARKEN;
       case LIGHTEN:
         return BlendModeCompat.LIGHTEN;
+      case ADD:
+        return BlendModeCompat.PLUS;
+      default:
+        // return toNativeBlendModeQ(); // enable via flag or wait for support
+        return null;
+    }
+  }
+
+  /**
+   * BlendModes that are only supported on Q+
+   * Placeholder, to be enabled via flag or
+   * enabled when platform is more widely adopted
+   */
+  @Nullable
+  @RequiresApi(api = Build.VERSION_CODES.Q)
+  private BlendModeCompat toNativeBlendModeQ() {
+    switch (this) {
+      case MULTIPLY:
+        return BlendModeCompat.MULTIPLY;
       case COLOR_DODGE:
         return BlendModeCompat.COLOR_DODGE;
       case COLOR_BURN:
@@ -66,10 +82,8 @@ public enum LBlendMode {
         return BlendModeCompat.COLOR;
       case LUMINOSITY:
         return BlendModeCompat.LUMINOSITY;
-      case ADD:
-        return BlendModeCompat.PLUS;
-      case HARD_MIX:
-        return null;  // todo: fix this
+      case HARD_MIX: // present in Lottie, but requires platform support
+        return null;
       default:
         return null;
     }

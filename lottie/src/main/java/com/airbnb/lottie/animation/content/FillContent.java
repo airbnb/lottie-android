@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.os.Build;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.BlendModeCompat;
 import androidx.core.graphics.PaintCompat;
@@ -121,11 +120,11 @@ public class FillContent
       dropShadowAnimation.applyTo(paint);
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      final BlendModeCompat blendMode = layer.getBlendMode().toNativeBlendMode();
-      if (blendMode != null)
-        PaintCompat.setBlendMode(paint, blendMode);
-    }
+    // Set layer paint blend mode
+    final BlendModeCompat blendMode = layer.getBlendMode().toNativeBlendMode();
+    if (blendMode != null) // PaintCompat.setBlendMode accepts null but no surprises please
+      PaintCompat.setBlendMode(paint, blendMode);
+
 
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
