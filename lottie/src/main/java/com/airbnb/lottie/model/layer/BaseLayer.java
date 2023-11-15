@@ -42,6 +42,7 @@ import java.util.List;
 
 public abstract class BaseLayer
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
+
   /**
    * These flags were in Canvas but they were deprecated and removed.
    * TODO: test removing these on older versions of Android.
@@ -693,5 +694,11 @@ public abstract class BaseLayer
   @Override
   public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
     transform.applyValueCallback(property, callback);
+  }
+
+  @Override public String toString() {
+    return "BaseLayer{" +
+        "name=" + layerModel.getName() +
+        '}';
   }
 }

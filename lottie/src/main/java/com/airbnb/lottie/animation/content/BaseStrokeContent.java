@@ -13,6 +13,7 @@ import android.graphics.PathMeasure;
 import android.graphics.RectF;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -178,7 +179,7 @@ public abstract class BaseStrokeContent
       float blurRadius = blurAnimation.getValue();
       if (blurRadius == 0f) {
         paint.setMaskFilter(null);
-      } else if (blurRadius != blurMaskFilterRadius){
+      } else if (blurRadius != blurMaskFilterRadius) {
         BlurMaskFilter blur = layer.getBlurMaskFilter(blurRadius);
         paint.setMaskFilter(blur);
       }
@@ -248,22 +249,24 @@ public abstract class BaseStrokeContent
     }
 
     float currentLength = 0;
+    float trimPathTotalLength = trimPath.getType() == ShapeTrimPath.Type.SIMULTANEOUSLY ? totalLength : trimPath.getTotalLength();
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
       trimPathPath.set(pathGroup.paths.get(j).getPath());
       trimPathPath.transform(parentMatrix);
       pm.setPath(trimPathPath, false);
       float length = pm.getLength();
-      if (endLength > totalLength && endLength - totalLength < currentLength + length &&
-          currentLength < endLength - totalLength) {
+      // boolean isSimultaneousOnNextShape = trimPath.getType() == ShapeTrimPath.Type.SIMULTANEOUSLY && endLength > totalLength &&
+      if (endLength > trimPathTotalLength && endLength - trimPathTotalLength < currentLength + length &&
+          currentLength < endLength - trimPathTotalLength) {
         // Draw the segment when the end is greater than the length which wraps around to the
         // beginning.
         float startValue;
-        if (startLength > totalLength) {
-          startValue = (startLength - totalLength) / length;
+        if (startLength > trimPathTotalLength) {
+          startValue = (startLength - trimPathTotalLength) / length;
         } else {
           startValue = 0;
         }
-        float endValue = Math.min((endLength - totalLength) / length, 1);
+        float endValue = Math.min((endLength - trimPathTotalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         canvas.drawPath(trimPathPath, paint);
       } else
@@ -401,11 +404,17 @@ public abstract class BaseStrokeContent
    * Data class to help drawing trim paths individually.
    */
   private static final class PathGroup {
+
     private final List<PathContent> paths = new ArrayList<>();
     @Nullable private final TrimPathContent trimPath;
 
     private PathGroup(@Nullable TrimPathContent trimPath) {
       this.trimPath = trimPath;
     }
+  }
+
+  @NonNull @Override public String toString() {
+    return "BaseStrokeContent{" +
+        "layer=" + layer + '}';
   }
 }

@@ -25,7 +25,7 @@ public class TrimPathContent implements Content, DrawingContent, BaseKeyframeAni
   private final Path path = new Path();
   private final PathMeasure pathMeasure = new PathMeasure();
 
-  private float totalLength = 0f;
+  private float totalLength;
   private float startLength = 0f;
   private float endLength = 0f;
   private float lengthConsumed = 0f;
@@ -69,8 +69,8 @@ public class TrimPathContent implements Content, DrawingContent, BaseKeyframeAni
     lengthConsumed += length;
   }
 
-  public float getLengthConsumed() {
-    return lengthConsumed;
+  public float getTotalLength() {
+    return totalLength;
   }
 
   public float getStartLength() {
@@ -88,7 +88,7 @@ public class TrimPathContent implements Content, DrawingContent, BaseKeyframeAni
       path.addPath(pathContents.get(i).getPath(), parentMatrix);
     }
     pathMeasure.setPath(path, false);
-    float totalLength = pathMeasure.getLength();
+    totalLength = pathMeasure.getLength();
     while (pathMeasure.nextContour()) {
       totalLength += pathMeasure.getLength();
     }
