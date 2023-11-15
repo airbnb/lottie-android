@@ -220,14 +220,14 @@ public abstract class BaseStrokeContent
       path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
     }
 
-    float startLength, endLength;
-
     pm.setPath(path, false);
     float totalLength = pm.getLength();
     while (pm.nextContour()) {
       totalLength += pm.getLength();
     }
 
+    float startLength;
+    float endLength;
     if (trimPath.getType() == ShapeTrimPath.Type.SIMULTANEOUSLY) {
       float animStartValue = trimPath.getStart().getValue() / 100f;
       float animEndValue = trimPath.getEnd().getValue() / 100f;
@@ -255,7 +255,6 @@ public abstract class BaseStrokeContent
       trimPathPath.transform(parentMatrix);
       pm.setPath(trimPathPath, false);
       float length = pm.getLength();
-      // boolean isSimultaneousOnNextShape = trimPath.getType() == ShapeTrimPath.Type.SIMULTANEOUSLY && endLength > totalLength &&
       if (endLength > trimPathTotalLength && endLength - trimPathTotalLength < currentLength + length &&
           currentLength < endLength - trimPathTotalLength) {
         // Draw the segment when the end is greater than the length which wraps around to the
@@ -414,7 +413,6 @@ public abstract class BaseStrokeContent
   }
 
   @NonNull @Override public String toString() {
-    return "BaseStrokeContent{" +
-        "layer=" + layer + '}';
+    return "BaseStrokeContent{" + layer.getName() + '}';
   }
 }

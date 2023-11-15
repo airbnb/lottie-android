@@ -54,10 +54,12 @@ public class TrimPathContent implements Content, DrawingContent, BaseKeyframeAni
   }
 
   @Override public void setContents(List<Content> contentsBefore, List<Content> contentsAfter) {
-    for (int i = 0; i < contentsAfter.size(); i++) {
-      Content c = contentsAfter.get(i);
-      if (c instanceof PathContent) {
-        pathContents.add((PathContent) c);
+    if (type == ShapeTrimPath.Type.INDIVIDUALLY) {
+      for (int i = 0; i < contentsAfter.size(); i++) {
+        Content c = contentsAfter.get(i);
+        if (c instanceof PathContent) {
+          pathContents.add((PathContent) c);
+        }
       }
     }
   }
@@ -82,21 +84,30 @@ public class TrimPathContent implements Content, DrawingContent, BaseKeyframeAni
   }
 
   @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
-    lengthConsumed = 0f;
-    path.rewind();
-    for (int i = 0; i < pathContents.size(); i++) {
-      path.addPath(pathContents.get(i).getPath(), parentMatrix);
-    }
-    pathMeasure.setPath(path, false);
-    totalLength = pathMeasure.getLength();
-    while (pathMeasure.nextContour()) {
-      totalLength += pathMeasure.getLength();
-    }
+    if (type == ShapeTrimPath.Type.INDIVIDUALLY) {
+      // For INDIVIDUALLY, all shapes that this trim path applies to are considered to be
+      // one merged shape with respect to start/end/offset.
+      // For each draw pass, when this trim path is "drawn", it will calculate the total length of the shapes
+      // that it applies to and keep track of how much of that length has been consumed.
+      // Each shape will then be able to figure out what segment of the trim path is currently
+      // visible and which part of its own shape overlaps with the overall trim path.
+      lengthConsumed = 0f;
+      path.rewind();
+      for (int i = 0; i < pathContents.size(); i++) {
+        path.addPath(pathContents.get(i).getPath(), parentMatrix);
+      }
+      pathMeasure.setPath(path, false);
+      totalLength = pathMeasure.getLength();
+      while (pathMeasure.nextContour()) {
+        totalLength += pathMeasure.getLength();
+      }
 
-    startLength = totalLength * startAnimation.getValue() / 100f;
-    float end = endAnimation.getValue() / 100f;
-    float offset = offsetAnimation.getValue() / 360f;
-    endLength = totalLength * (end + offset);
+      float offset = offsetAnimation.getValue() / 360f;
+      float start = startAnimation.getValue() / 100f;
+      startLength = totalLength * (start + offset);
+      float end = endAnimation.getValue() / 100f;
+      endLength = totalLength * (end + offset);
+    }
   }
 
   @Override public String getName() {
