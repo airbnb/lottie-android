@@ -121,7 +121,6 @@ public class FillContent
       dropShadowAnimation.applyTo(paint);
     }
 
-    // Set layer paint blend mode
     final BlendModeCompat blendMode = layer.getBlendMode().toNativeBlendMode();
     if (blendMode != null) // PaintCompat.setBlendMode accepts null but no surprises please
     {
