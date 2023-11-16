@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.BlendModeCompat;
 import androidx.core.graphics.PaintCompat;
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
@@ -67,6 +66,8 @@ public class FillContent
       return;
     }
 
+    PaintCompat.setBlendMode(paint, layer.getBlendMode().toNativeBlendMode());
+
     path.setFillType(fill.getFillType());
 
     colorAnimation = fill.getColor().createAnimation();
@@ -119,12 +120,6 @@ public class FillContent
     }
     if (dropShadowAnimation != null) {
       dropShadowAnimation.applyTo(paint);
-    }
-
-    final BlendModeCompat blendMode = layer.getBlendMode().toNativeBlendMode();
-    if (blendMode != null) // PaintCompat.setBlendMode accepts null but no surprises please
-    {
-      PaintCompat.setBlendMode(paint, blendMode);
     }
 
     path.reset();
