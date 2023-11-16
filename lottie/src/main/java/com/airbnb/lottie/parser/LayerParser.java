@@ -28,30 +28,31 @@ public class LayerParser {
   }
 
   private static final JsonReader.Options NAMES = JsonReader.Options.of(
-      "nm", // 0
-      "ind", // 1
-      "refId", // 2
-      "ty", // 3
+      "nm",     // 0
+      "ind",    // 1
+      "refId",  // 2
+      "ty",     // 3
       "parent", // 4
-      "sw", // 5
-      "sh", // 6
-      "sc", // 7
-      "ks", // 8
-      "tt", // 9
+      "sw",     // 5
+      "sh",     // 6
+      "sc",     // 7
+      "ks",     // 8
+      "tt",     // 9
       "masksProperties", // 10
       "shapes", // 11
-      "t", // 12
+      "t",  // 12
       "ef", // 13
       "sr", // 14
       "st", // 15
-      "w", // 16
-      "h", // 17
+      "w",  // 16
+      "h",  // 17
       "ip", // 18
       "op", // 19
       "tm", // 20
       "cl", // 21
       "hd", // 22
-      "bm"  // 23
+      "ao", // 23
+      "bm"  // 24
   );
 
   public static Layer parse(LottieComposition composition) {
@@ -96,6 +97,7 @@ public class LayerParser {
     boolean hidden = false;
     BlurEffect blurEffect = null;
     DropShadowEffect dropShadowEffect = null;
+    boolean autoOrient = false;
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
     LBlendMode blendMode = LBlendMode.NORMAL;
@@ -261,12 +263,10 @@ public class LayerParser {
           hidden = reader.nextBoolean();
           break;
         case 23:
+          autoOrient = reader.nextInt() == 1;
+          break;
+        case 24:
           int blendModeIndex = reader.nextInt();
-          if (blendModeIndex >= LBlendMode.values().length) {
-            composition.addWarning("Unsupported Blend Mode: " + blendModeIndex);
-            blendMode = LBlendMode.NORMAL;
-            break;
-          }
           blendMode = LBlendMode.values()[blendModeIndex];
           break;
         default:
@@ -297,6 +297,12 @@ public class LayerParser {
       composition.addWarning("Convert your Illustrator layers to shape layers.");
     }
 
+    if (autoOrient) {
+      if (transform == null) {
+        transform = new AnimatableTransform();
+      }
+      transform.setAutoOrient(autoOrient);
+    }
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,

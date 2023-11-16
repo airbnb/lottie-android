@@ -34,6 +34,8 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   @Nullable
   private final AnimatableFloatValue endOpacity;
 
+  private boolean autoOrient = false;
+
   public AnimatableTransform() {
     this(null, null, null, null, null, null, null, null, null);
   }
@@ -52,6 +54,13 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
     this.endOpacity = endOpacity;
     this.skew = skew;
     this.skewAngle = skewAngle;
+  }
+
+  /**
+   * This is set as a property of the layer so it is parsed and set separately.
+   */
+  public void setAutoOrient(boolean autoOrient) {
+    this.autoOrient = autoOrient;
   }
 
   @Nullable
@@ -97,6 +106,10 @@ public class AnimatableTransform implements ModifierContent, ContentModel {
   @Nullable
   public AnimatableFloatValue getSkewAngle() {
     return skewAngle;
+  }
+
+  public boolean isAutoOrient() {
+    return autoOrient;
   }
 
   public TransformKeyframeAnimation createAnimation() {
