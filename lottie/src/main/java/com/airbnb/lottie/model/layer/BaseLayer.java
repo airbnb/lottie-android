@@ -28,6 +28,7 @@ import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
 import com.airbnb.lottie.model.content.BlurEffect;
+import com.airbnb.lottie.model.content.LBlendMode;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.parser.DropShadowEffect;
@@ -626,6 +627,10 @@ public abstract class BaseLayer
   @Nullable
   public BlurEffect getBlurEffect() {
     return layerModel.getBlurEffect();
+  }
+
+  public LBlendMode getBlendMode() {
+    return layerModel.getBlendMode();
   }
 
   public BlurMaskFilter getBlurMaskFilter(float radius) {
