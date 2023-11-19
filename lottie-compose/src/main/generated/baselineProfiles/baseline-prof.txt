@@ -86,8 +86,8 @@ HSPLcom/airbnb/lottie/compose/LottieAnimatableKt;->rememberLottieAnimatable(Land
 Lcom/airbnb/lottie/compose/LottieAnimationKt;
 HPLcom/airbnb/lottie/compose/LottieAnimationKt;->LottieAnimation$lambda$3(Landroidx/compose/runtime/MutableState;)Lcom/airbnb/lottie/compose/LottieDynamicProperties;
 HSPLcom/airbnb/lottie/compose/LottieAnimationKt;->LottieAnimation(Lcom/airbnb/lottie/LottieComposition;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZZZLcom/airbnb/lottie/RenderMode;ZLcom/airbnb/lottie/compose/LottieDynamicProperties;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;ZLjava/util/Map;Lcom/airbnb/lottie/AsyncUpdates;Landroidx/compose/runtime/Composer;III)V
-HPLcom/airbnb/lottie/compose/LottieAnimationKt;->access$LottieAnimation$lambda$3(Landroidx/compose/runtime/MutableState;)Lcom/airbnb/lottie/compose/LottieDynamicProperties;
-HSPLcom/airbnb/lottie/compose/LottieAnimationKt;->access$times-UQTWf7w(JJ)J
+HSPLcom/airbnb/lottie/compose/LottieAnimationKt;->access$LottieAnimation$lambda$3(Landroidx/compose/runtime/MutableState;)Lcom/airbnb/lottie/compose/LottieDynamicProperties;
+HPLcom/airbnb/lottie/compose/LottieAnimationKt;->access$times-UQTWf7w(JJ)J
 HPLcom/airbnb/lottie/compose/LottieAnimationKt;->times-UQTWf7w(JJ)J
 Lcom/airbnb/lottie/compose/LottieAnimationKt$LottieAnimation$2;
 HSPLcom/airbnb/lottie/compose/LottieAnimationKt$LottieAnimation$2;-><init>(Lcom/airbnb/lottie/LottieComposition;Landroidx/compose/ui/layout/ContentScale;Landroidx/compose/ui/Alignment;Landroid/graphics/Matrix;Lcom/airbnb/lottie/LottieDrawable;ZLcom/airbnb/lottie/RenderMode;Lcom/airbnb/lottie/AsyncUpdates;Ljava/util/Map;Lcom/airbnb/lottie/compose/LottieDynamicProperties;ZZZZLkotlin/jvm/functions/Function0;Landroidx/compose/runtime/MutableState;)V

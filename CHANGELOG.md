@@ -1,8 +1,30 @@
+# 6.2.0
+### New Features
+* Implement screen, overlay, darken, lighten, and add blend modes ([#2408](https://github.com/airbnb/lottie-android/pull/2408))
+* Implement auto-orient ([#2416](https://github.com/airbnb/lottie-android/pull/2416))
+* Allow globally configuring asyncUpdates ([#2356](https://github.com/airbnb/lottie-android/pull/2356))
+* Add an optional `close` param to LottieCompositionFactory.fromJsonReader ([#2342](https://github.com/airbnb/lottie-android/pull/2342))
+* Allow dynamic properties for solid layer colors ([#2378](https://github.com/airbnb/lottie-android/pull/2378))
+* Update baseline profiles ([#2404](https://github.com/airbnb/lottie-android/pull/2404))
+* Add a ZipInputStream overload to LottieAnimationView.setAnimation ([#2411](https://github.com/airbnb/lottie-android/pull/2411))
+
+### Bugs Fixed
+* Upgrade okio ([#2418](https://github.com/airbnb/lottie-android/pull/2418))
+* Improve cache hits for synchronous LottieCompositionFactory methods ([#2379](https://github.com/airbnb/lottie-android/pull/2379))
+* Fix gradient interpolation for opacity stops beyond the last color stop ([#2377](https://github.com/airbnb/lottie-android/pull/2377))
+* Fix Potential NPE In NetworkCache.clearCache ([#2364](https://github.com/airbnb/lottie-android/pull/2364))
+* Fix an IllegalArgumentException when creating a bitmap ([#2351](https://github.com/airbnb/lottie-android/pull/2351))
+* Fix rounded corners for non-closed paths ([#2405](https://github.com/airbnb/lottie-android/pull/2405))
+* Fix varying opacity stops across keyframes in the same gradient  ([#2406](https://github.com/airbnb/lottie-android/pull/2406))
+* Fix a NullPointerException in ColorKeyframeAnimation  ([#2407](https://github.com/airbnb/lottie-android/pull/2407))
+
 # 6.1.0
 ### New Features
 * New multithreaded `asyncUpdates` feature which moves the entire update phase of an animation off of the main thread. For more information, refer to [this blog post](https://gpeal.medium.com/lottie-android-6-1-lottie-goes-multithreaded-67c09c091fd7). ([#2276](https://github.com/airbnb/lottie-android/pull/2276))
 * Allow `LottieCompositionFactory` to not close input streams ([#2286](https://github.com/airbnb/lottie-android/pull/2286) and [#2319](https://github.com/airbnb/lottie-android/pull/2319))
 * Allow Lottie to be initialized multiple times ([#2323](https://github.com/airbnb/lottie-android/pull/2323))
+* Add an additional null check to TransformKeyframeAnimation ([#2381](https://github.com/airbnb/lottie-android/pull/2381))
+* Fix asyncUpdates for Nougat and below ([#2380](https://github.com/airbnb/lottie-android/pull/2380))
 
 ### Bugs Fixed
 * Close input streams for cache hits ([#2253](https://github.com/airbnb/lottie-android/pull/2253))
