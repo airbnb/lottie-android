@@ -7,9 +7,11 @@ plugins {
   id "com.google.devtools.ksp" apply false
   id "org.ajoberstar.grgit" apply false
   id "org.jetbrains.kotlin.jvm" apply false
+  id "org.jetbrains.kotlin.multiplatform" apply false
   id "com.vanniktech.maven.publish" apply false
   id "org.jetbrains.dokka" apply false
   id "androidx.baselineprofile" apply false
+  id "org.jetbrains.compose" apply false
 }
 
 allprojects {
@@ -22,15 +24,17 @@ allprojects {
       }
     }
     tasks.withType(JavaCompile).configureEach {
-      options.release.set(targetJavaVersion.majorVersion)
+      options.release.set(targetJavaVersion.majorVersion.toInteger())
     }
   }
-  pluginManager.withPlugin("org.jetbrains.kotlin.android") {
-    kotlin {
-      jvmToolchain(compileJavaVersion.majorVersion.toInteger())
-    }
-    tasks.withType(KotlinCompile).configureEach {
-      kotlinOptions.jvmTarget = targetJavaVersion.toString()
+  ["org.jetbrains.kotlin.android","org.jetbrains.kotlin.multiplatform"].forEach { kotlinPlugin ->
+    pluginManager.withPlugin(kotlinPlugin) {
+      kotlin {
+        jvmToolchain(compileJavaVersion.majorVersion.toInteger())
+      }
+      tasks.withType(KotlinCompile).configureEach {
+        kotlinOptions.jvmTarget = targetJavaVersion.toString()
+      }
     }
   }
   ["com.android.library", "com.android.application"].forEach { androidPlugin ->
@@ -49,6 +53,6 @@ ext {
   gitBranch = git.branch.current().name
 }
 
-tasks.register('clean', Delete) {
-  delete rootProject.buildDir
-}
+//tasks.register('clean', Delete) {
+//  delete rootProject.buildDir
+//}
