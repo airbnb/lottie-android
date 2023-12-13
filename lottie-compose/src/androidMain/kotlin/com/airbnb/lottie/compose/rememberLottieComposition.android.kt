@@ -143,7 +143,6 @@ private fun lottieTask(
                 LottieCompositionFactory.fromRawRes(context, spec.resId, cacheKey)
             }
         }
-
         is LottieCompositionSpec.Url -> {
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromUrl(context, spec.url)
@@ -151,7 +150,6 @@ private fun lottieTask(
                 LottieCompositionFactory.fromUrl(context, spec.url, cacheKey)
             }
         }
-
         is LottieCompositionSpec.File -> {
             if (isWarmingCache) {
                 // Warming the cache is done from the main thread so we can't
@@ -172,7 +170,6 @@ private fun lottieTask(
                 }
             }
         }
-
         is LottieCompositionSpec.Asset -> {
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromAsset(context, spec.assetName)
@@ -180,12 +177,10 @@ private fun lottieTask(
                 LottieCompositionFactory.fromAsset(context, spec.assetName, cacheKey)
             }
         }
-
         is LottieCompositionSpec.JsonString -> {
             val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
             LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
         }
-
         is LottieCompositionSpec.ContentProvider -> {
             val inputStream = context.contentResolver.openInputStream(spec.uri)
             LottieCompositionFactory.fromJsonInputStream(inputStream, if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey)

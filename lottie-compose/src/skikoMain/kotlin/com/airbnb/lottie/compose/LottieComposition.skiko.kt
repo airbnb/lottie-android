@@ -57,33 +57,3 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
 
     return result
 }
-
-//private class LottieCompositionResultImpl(
-//    val deferred: CompletableDeferred<LottieComposition>
-//) : LottieCompositionResult {
-//
-//    override var value: LottieComposition? = null
-//        internal set
-//
-//    override var error: Throwable? by mutableStateOf(null)
-//        internal set
-//
-//    override var isLoading: Boolean by mutableStateOf(false)
-//        internal set
-//
-//    override var isComplete: Boolean by mutableStateOf(false)
-//        internal set
-//
-//    override val isFailure: Boolean by derivedStateOf {
-//        error != null
-//    }
-//
-//    override val isSuccess: Boolean by derivedStateOf {
-//        value != null
-//    }
-//
-//    override suspend fun await(): LottieComposition {
-//        return deferred.await()
-//    }
-//
-//}
