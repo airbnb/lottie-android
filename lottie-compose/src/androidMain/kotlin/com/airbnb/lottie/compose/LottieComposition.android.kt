@@ -16,8 +16,9 @@ internal actual val LottieComposition.lastFrame: Float
     get() = endFrame
 
 @Composable
-actual fun rememberLottieComposition(spec: LottieCompositionSpec) : LottieCompositionResult = rememberLottieComposition(
-    spec = spec,
-    imageAssetsFolder = null
-)
+actual fun rememberLottieComposition(spec: LottieCompositionSpec) : LottieCompositionResult =
+    rememberLottieComposition(
+        spec = spec,
+        imageAssetsFolder = null
+    )
 

@@ -34,12 +34,11 @@ internal actual val LottieComposition.lastFrame : Float
 @Composable
 actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompositionResult {
 
-    val result = remember {
-        LottieCompositionResultImpl()
+    val result by remember(spec) {
+        mutableStateOf(LottieCompositionResultImpl())
     }
 
     LaunchedEffect(spec){
-
         when (spec){
             is LottieCompositionSpec.JsonString -> {
                 withContext(Dispatchers.Default) {
@@ -53,9 +52,7 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
                     }
                 }
             }
-            else -> throw IllegalStateException("Unknown LottieCompositionSpec")
         }
-
     }
 
     return result
