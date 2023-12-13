@@ -48,15 +48,15 @@ kotlin {
         val desktopMain by getting
         val jsMain by getting
 
-        val iosArm64 by getting
-        val iosX64 by getting
-        val iosSimulatorArm64 by getting
+        val iosArm64Main by getting
+        val iosX64Main by getting
+        val iosSimulatorArm64Main by getting
 
         val iosMain by creating {
             dependsOn(commonMain)
-            iosArm64.dependsOn(this)
-            iosX64.dependsOn(this)
-            iosSimulatorArm64.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosX64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
         }
 
         val skikoMain by creating {
