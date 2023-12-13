@@ -15,11 +15,8 @@ kotlin {
                 implementation(project(":sample-compose-multiplatform:shared"))
 
                 implementation(compose.desktop.currentOs)
-                api(compose.runtime)
-                api(compose.foundation)
-                api(compose.material)
-                api(compose.ui)
-                api(compose.materialIconsExtended)
+                implementation(compose.runtime)
+                implementation(compose.ui)
             }
         }
     }
