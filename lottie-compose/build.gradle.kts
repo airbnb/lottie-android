@@ -2,10 +2,11 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
   id("com.android.library")
-  id("org.jetbrains.kotlin.multiplatform")
+  kotlin("multiplatform")
   id("com.vanniktech.maven.publish")
   id("androidx.baselineprofile")
   id("org.jetbrains.compose")
+  kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -64,6 +65,9 @@ kotlin {
             desktopMain.dependsOn(this)
             jsMain.dependsOn(this)
             iosMain.dependsOn(this)
+            dependencies {
+                implementation(libs.kotlinx.serialization.json)
+            }
         }
     }
 }

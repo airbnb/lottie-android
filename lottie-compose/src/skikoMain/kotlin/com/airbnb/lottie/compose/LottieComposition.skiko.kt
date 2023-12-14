@@ -3,19 +3,11 @@ package com.airbnb.lottie.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.jetbrains.skia.skottie.Animation
 import org.jetbrains.skia.sksg.InvalidationController
@@ -23,7 +15,8 @@ import org.jetbrains.skia.sksg.InvalidationController
 
 actual class LottieComposition internal constructor(
     internal val animation: Animation,
-    internal val invalidationController: InvalidationController = InvalidationController()
+    internal val invalidationController: InvalidationController = InvalidationController(),
+    internal val lottieData: LottieData
 )
 
 internal actual val LottieComposition.fps: Float
@@ -34,6 +27,10 @@ internal actual val LottieComposition.durationMillis: Float
 
 internal actual val LottieComposition.lastFrame : Float
     get() = animation.outPoint
+
+internal actual fun LottieComposition.marker(markerName : String) : Marker? =
+    lottieData.markersMap?.get(markerName)
+
 
 
 @Composable
@@ -59,7 +56,7 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
             is LottieCompositionSpec.JsonString -> {
                 withContext(Dispatchers.Default) {
                     try {
-                        val composition = LottieComposition(Animation.makeFromString(spec.jsonString))
+                        val composition = parseFromJsonString(spec.jsonString)
                         result.complete(composition)
                     } catch (c: CancellationException) {
                         throw c
@@ -72,4 +69,11 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
     }
 
     return result
+}
+
+private fun parseFromJsonString(jsonString: String) : LottieComposition {
+    return LottieComposition(
+        animation = Animation.makeFromString(jsonString),
+        lottieData = LottieCompositionParser.parse(jsonString)
+    )
 }

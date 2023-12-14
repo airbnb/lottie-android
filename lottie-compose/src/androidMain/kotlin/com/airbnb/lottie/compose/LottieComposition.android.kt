@@ -15,6 +15,10 @@ internal actual val LottieComposition.durationMillis: Float
 internal actual val LottieComposition.lastFrame: Float
     get() = endFrame
 
+internal actual fun LottieComposition.marker(markerName : String) : Marker? =
+    getMarker(markerName)
+
+
 @Composable
 actual fun rememberLottieComposition(spec: LottieCompositionSpec) : LottieCompositionResult =
     rememberLottieComposition(

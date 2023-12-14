@@ -15,6 +15,8 @@ internal expect val LottieComposition.durationMillis : Float
 
 internal expect val LottieComposition.lastFrame : Float
 
+internal expect fun LottieComposition.marker(markerName : String) : Marker?
+
 /**
  * Takes a [LottieCompositionSpec], attempts to load and parse the animation, and returns a [LottieCompositionResult].
  *
