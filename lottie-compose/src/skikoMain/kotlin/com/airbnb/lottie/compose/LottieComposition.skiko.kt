@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -8,9 +9,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.jetbrains.skia.skottie.Animation
 import org.jetbrains.skia.sksg.InvalidationController
@@ -36,6 +41,16 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
 
     val result by remember(spec) {
         mutableStateOf(LottieCompositionResultImpl())
+    }
+
+    DisposableEffect(result.value) {
+        val old = result.value
+
+        onDispose {
+            kotlin.runCatching {
+                old?.animation?.close()
+            }
+        }
     }
 
     LaunchedEffect(spec){

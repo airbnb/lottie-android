@@ -45,7 +45,7 @@ actual fun LottieAnimation(
             .size(defaultSize)
     ) {
         drawIntoCanvas {
-            if (composition != null) {
+            if (composition != null && !composition.animation.isClosed) {
                 val currentProgress = progress()
                 composition.animation.seek(currentProgress, composition.invalidationController)
 
