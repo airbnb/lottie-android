@@ -8,8 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -54,31 +52,31 @@ actual fun LottieAnimation(
         }.toTypedArray()
     }
 
-    val compositionSize = remember(composition?.animation) {
-        composition?.animation?.size?.let { Size(it.x, it.y) } ?: Size.Zero
-    }
 
     Canvas(modifier.size(defaultSize)) {
+        if (composition == null || composition.animation.isClosed || composition.invalidationController.isClosed)
+            return@Canvas
+
+        val compositionSize = composition.animation.size.let { Size(it.x, it.y) }
+
+        val scale = contentScale.computeScaleFactor(compositionSize, size)
+        val intSize = size.round()
+        val translation = alignment.align(compositionSize * scale, intSize, layoutDirection).toOffset()
+
         drawIntoCanvas {
-            if (composition == null || composition.animation.isClosed || composition.invalidationController.isClosed)
-                return@drawIntoCanvas
+            if (clipToCompositionBounds)
+                it.clipRect(0f, 0f, size.width, size.height)
 
-            val scale = contentScale.computeScaleFactor(compositionSize, size)
-            val intSize = size.round()
-            val translation = alignment.align(compositionSize.round(), intSize, layoutDirection).toOffset()
+            it.translate(translation.x, translation.y)
+            it.scale(scale.scaleX, scale.scaleY)
 
-            scale(scale.scaleX, scale.scaleY) {
-                translate(translation.x, translation.y) {
-
-                    composition.animation
-                        .seek(progress(), composition.invalidationController)
-                        .render(
-                            canvas = it.nativeCanvas,
-                            dst = Rect.makeWH(compositionSize.width, compositionSize.height),
-                            *flags
-                        )
-                }
-            }
+            composition.animation
+                .seek(progress(), composition.invalidationController)
+                .render(
+                    canvas = it.nativeCanvas,
+                    dst = Rect.makeWH(compositionSize.width, compositionSize.height),
+                    *flags
+                )
         }
     }
 }
