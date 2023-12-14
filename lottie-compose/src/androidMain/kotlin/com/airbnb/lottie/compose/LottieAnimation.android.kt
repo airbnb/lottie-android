@@ -31,11 +31,17 @@ import kotlin.math.roundToInt
 actual fun LottieAnimation(
     composition : LottieComposition?,
     progress : () -> Float,
-    modifier: Modifier
+    modifier: Modifier,
+    alignment: Alignment,
+    contentScale: ContentScale,
+    clipToCompositionBounds: Boolean
 ) = LottieAnimation(
     composition = composition,
     progress = progress,
     modifier = modifier,
+    alignment = alignment,
+    contentScale = contentScale,
+    clipToCompositionBounds = clipToCompositionBounds,
     renderMode = RenderMode.AUTOMATIC
 )
 
@@ -237,8 +243,4 @@ fun LottieAnimation(
         fontMap = fontMap,
         asyncUpdates = asyncUpdates,
     )
-}
-
-private operator fun Size.times(scale: ScaleFactor): IntSize {
-    return IntSize((width * scale.scaleX).toInt(), (height * scale.scaleY).toInt())
 }

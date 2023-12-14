@@ -33,7 +33,7 @@ internal actual val LottieComposition.durationMillis: Float
     get() = animation.duration * 1000
 
 internal actual val LottieComposition.lastFrame : Float
-    get() = animation.fPS * animation.duration
+    get() = animation.outPoint
 
 
 @Composable
@@ -49,6 +49,7 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
         onDispose {
             kotlin.runCatching {
                 old?.animation?.close()
+                old?.invalidationController?.close()
             }
         }
     }

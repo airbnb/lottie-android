@@ -9,7 +9,7 @@ fun main() {
 
         Window(
             onCloseRequest = ::exitApplication,
-            title = "Compottie example",
+            title = "Compose Multiplatform example",
             state = windowState,
         ) {
            App()

@@ -3,7 +3,12 @@ package com.airbnb.lottie.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ScaleFactor
+import androidx.compose.ui.unit.IntSize
 
 
 /**
@@ -19,13 +24,19 @@ import androidx.compose.ui.Modifier
  *                         The overloads that have isPlaying as a parameter instead of progress will drive the
  *                         animation automatically. You may want to use this version if you want to drive the animation
  *                         from your own Animatable or via events such as download progress or a gesture.
- *                     For more details, refer to the docs of [AsyncUpdates].
+ * @param alignment Define where the animation should be placed within this composable if it has a different
+ *                  size than this composable.
+ * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
+ * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
  */
 @Composable
 expect fun LottieAnimation(
     composition : LottieComposition?,
     progress : () -> Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    clipToCompositionBounds: Boolean = false,
 )
 
 /**
@@ -45,6 +56,9 @@ fun LottieAnimation(
     speed: Float = 1f,
     iterations: Int = 1,
     reverseOnRepeat: Boolean = false,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    clipToCompositionBounds: Boolean = true,
 ) {
     val progress by animateLottieCompositionAsState(
         composition = composition,
@@ -58,8 +72,16 @@ fun LottieAnimation(
     LottieAnimation(
         composition = composition,
         progress = { progress },
-        modifier = modifier
+        modifier = modifier,
+        alignment = alignment,
+        contentScale = contentScale,
+        clipToCompositionBounds = clipToCompositionBounds
     )
 }
+
+internal operator fun Size.times(scale: ScaleFactor): IntSize {
+    return IntSize((width * scale.scaleX).toInt(), (height * scale.scaleY).toInt())
+}
+
 
 
