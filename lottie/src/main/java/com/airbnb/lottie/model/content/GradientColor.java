@@ -30,7 +30,7 @@ public class GradientColor {
   public void lerp(GradientColor gc1, GradientColor gc2, float progress) {
     // Fast return in case start and end is the same
     // or if progress is at start/end or out of [0,1] bounds
-    if (gc1 == gc2) {
+    if (gc1.equals(gc2)) {
       copyFrom(gc1);
       return;
     } else if (progress <= 0f) {
