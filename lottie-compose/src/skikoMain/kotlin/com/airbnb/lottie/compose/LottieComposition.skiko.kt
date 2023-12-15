@@ -1,16 +1,15 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.skia.skottie.Animation
 import org.jetbrains.skia.sksg.InvalidationController
+import kotlin.coroutines.cancellation.CancellationException
 
 
 actual class LottieComposition internal constructor(
@@ -40,30 +39,10 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
         mutableStateOf(LottieCompositionResultImpl())
     }
 
-    DisposableEffect(result.value) {
-        val old = result.value
-
-        onDispose {
-            kotlin.runCatching {
-                old?.animation?.close()
-                old?.invalidationController?.close()
-            }
-        }
-    }
-
-    LaunchedEffect(spec){
-        when (spec){
+    LaunchedEffect(spec) {
+        when (spec) {
             is LottieCompositionSpec.JsonString -> {
-                withContext(Dispatchers.Default) {
-                    try {
-                        val composition = parseFromJsonString(spec.jsonString)
-                        result.complete(composition)
-                    } catch (c: CancellationException) {
-                        throw c
-                    } catch (t: Throwable) {
-                        result.completeExceptionally(t)
-                    }
-                }
+                result.tryCompleteFromJsonString(spec.jsonString)
             }
         }
     }
@@ -71,9 +50,18 @@ actual fun rememberLottieComposition(spec : LottieCompositionSpec) : LottieCompo
     return result
 }
 
-private fun parseFromJsonString(jsonString: String) : LottieComposition {
-    return LottieComposition(
-        animation = Animation.makeFromString(jsonString),
-        lottieData = LottieCompositionParser.parse(jsonString)
-    )
+private suspend fun LottieCompositionResultImpl.tryCompleteFromJsonString(jsonString: String) {
+    return withContext(Dispatchers.Default) {
+        try {
+            val composition = LottieComposition(
+                animation = Animation.makeFromString(jsonString),
+                lottieData = LottieCompositionParser.parse(jsonString)
+            )
+            complete(composition)
+        } catch (c: CancellationException) {
+            throw c
+        } catch (t: Throwable) {
+            completeExceptionally(t)
+        }
+    }
 }
