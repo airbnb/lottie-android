@@ -189,12 +189,16 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
       float distanceBetweenColors = colorStopPositions[i] - colorStopPositions[i - 1];
       float distanceToLowerColor = position - colorStopPositions[i - 1];
       float percentage = distanceToLowerColor / distanceBetweenColors;
+
       int upperColor = colorStopColors[i];
       int lowerColor = colorStopColors[i - 1];
+      int intermediateColor = GammaEvaluator.evaluate(percentage, lowerColor, upperColor);
+
       int a = (int) (opacity * 255);
-      int r = GammaEvaluator.evaluate(percentage, Color.red(lowerColor), Color.red(upperColor));
-      int g = GammaEvaluator.evaluate(percentage, Color.green(lowerColor), Color.green(upperColor));
-      int b = GammaEvaluator.evaluate(percentage, Color.blue(lowerColor), Color.blue(upperColor));
+      int r = Color.red(intermediateColor);
+      int g = Color.green(intermediateColor);
+      int b = Color.blue(intermediateColor);
+
       return Color.argb(a, r, g, b);
     }
     throw new IllegalArgumentException("Unreachable code.");
@@ -268,7 +272,6 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     if (numDuplicates == 0) {
       return mergedNotTruncated;
     }
-
 
     return Arrays.copyOf(mergedNotTruncated, mergedNotTruncated.length - numDuplicates);
   }
