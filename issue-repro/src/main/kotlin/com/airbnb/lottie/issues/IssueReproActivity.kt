@@ -10,5 +10,8 @@ class IssueReproActivity : AppCompatActivity() {
         val binding = IssueReproActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         // Reproduce any issues here.
+        binding.animationView.setOnClickListener {
+            binding.animationView.progress += 0.01f
+        }
     }
 }

@@ -36,6 +36,7 @@
 .idea/appInsightsSettings.xml
 .idea/migrations.xml
 .idea/deploymentTargetSelector.xml
+.idea/detekt.xml
 
 # Gradle
 .idea/**/gradle.xml

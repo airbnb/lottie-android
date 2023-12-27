@@ -268,7 +268,7 @@ public abstract class BaseStrokeContent
         float endValue = Math.min((endLength - trimPathTotalLength) / length, 1);
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         canvas.drawPath(trimPathPath, paint);
-      } else
+      } else {
         //noinspection StatementWithEmptyBody
         if (currentLength + length < startLength || currentLength > endLength) {
           // Do nothing
@@ -290,7 +290,8 @@ public abstract class BaseStrokeContent
           Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
           canvas.drawPath(trimPathPath, paint);
         }
-      currentLength += length;
+        currentLength += length;
+      }
     }
     trimPath.consumeLength(totalLength);
     L.endSection("StrokeContent#applyTrimPath");
