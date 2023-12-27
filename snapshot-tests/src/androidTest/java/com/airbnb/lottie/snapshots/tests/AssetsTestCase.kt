@@ -31,7 +31,7 @@ class AssetsTestCase : SnapshotTestCase {
                 listAssets(assets, pathWithPrefix)
                 return@forEach
             }
-            if (!animation.endsWith(".json") && !animation.endsWith(".zip")) return@forEach
+            if (!animation.endsWith(".json") && !animation.endsWith(".zip") && !animation.endsWith(".tgs")) return@forEach
             assets += pathWithPrefix
         }
         return assets
