@@ -385,6 +385,14 @@ class DynamicPropertiesTestCase : SnapshotTestCase {
             assetName = "Tests/SolidLayerTransform.json"
         )
 
+        testDynamicProperty(
+            "Solid Color w/ null",
+            KeyPath("Cyan Solid 1", "**"),
+            LottieProperty.COLOR,
+            LottieValueCallback(null),
+            assetName = "Tests/SolidLayerTransform.json"
+        )
+
         withDrawable("Tests/DynamicGradient.json", "Gradient Colors", "Linear Gradient Fill") { drawable ->
             val value = object : LottieValueCallback<Array<Int>>() {
                 override fun getValue(frameInfo: LottieFrameInfo<Array<Int>>?): Array<Int> {
