@@ -227,6 +227,8 @@ public class LottieCompositionFactory {
     try {
       if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
         return fromZipStreamSync(context, new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
+      } else if (fileName.endsWith(".gz") || fileName.endsWith(".tgs")) {
+        return fromJsonInputStreamSync(new GZIPInputStream(context.getAssets().open(fileName)), cacheKey);
       }
       return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
     } catch (IOException e) {
