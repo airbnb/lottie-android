@@ -225,12 +225,13 @@ public class LottieCompositionFactory {
       return new LottieResult<>(cachedComposition);
     }
     try {
-      if (fileName.endsWith(".zip") || fileName.endsWith(".lottie")) {
-        return fromZipStreamSync(context, new ZipInputStream(context.getAssets().open(fileName)), cacheKey);
-      } else if (fileName.endsWith(".gz") || fileName.endsWith(".tgs")) {
-        return fromJsonInputStreamSync(new GZIPInputStream(context.getAssets().open(fileName)), cacheKey);
+      BufferedSource source = Okio.buffer(source(context.getAssets().open(fileName)));
+      if (isZipCompressed(source)) {
+        return fromZipStreamSync(context, new ZipInputStream(source.inputStream()), cacheKey);
+      } else if (isGzipCompressed(source)) {
+        return fromJsonInputStreamSync(new GZIPInputStream(source.inputStream()), cacheKey);
       }
-      return fromJsonInputStreamSync(context.getAssets().open(fileName), cacheKey);
+      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
     } catch (IOException e) {
       return new LottieResult<>(e);
     }
