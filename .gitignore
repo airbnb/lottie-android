@@ -35,6 +35,7 @@
 .idea/androidTestResultsUserPreferences.xml
 .idea/appInsightsSettings.xml
 .idea/migrations.xml
+.idea/deploymentTargetSelector.xml
 
 # Gradle
 .idea/**/gradle.xml
