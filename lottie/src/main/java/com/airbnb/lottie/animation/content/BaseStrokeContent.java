@@ -263,9 +263,12 @@ public abstract class BaseStrokeContent
         if (startLength > trimPathTotalLength) {
           startValue = (startLength - trimPathTotalLength) / length;
         } else {
-          startValue = 0;
+          startValue = startLength / length;
         }
         float endValue = Math.min((endLength - trimPathTotalLength) / length, 1);
+        if (startValue == endValue && endLength != startLength) {
+          endValue += 1;
+        }
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         canvas.drawPath(trimPathPath, paint);
       } else {
