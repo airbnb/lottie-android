@@ -42,15 +42,16 @@ public class SolidLayer extends BaseLayer {
       return;
     }
 
-    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
-    int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * opacity / 100f) * 255);
-    paint.setAlpha(alpha);
     Integer color = colorAnimation == null ? null : colorAnimation.getValue();
     if (color != null) {
       paint.setColor(color);
     } else {
       paint.setColor(layerModel.getSolidColor());
     }
+
+    int opacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    int alpha = (int) (parentAlpha / 255f * (backgroundAlpha / 255f * opacity / 100f) * 255);
+    paint.setAlpha(alpha);
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
