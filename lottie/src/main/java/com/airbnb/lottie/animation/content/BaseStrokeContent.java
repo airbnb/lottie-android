@@ -1,7 +1,5 @@
 package com.airbnb.lottie.animation.content;
 
-import static com.airbnb.lottie.utils.MiscUtils.clamp;
-
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -11,11 +9,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.RectF;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -36,6 +32,8 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.airbnb.lottie.utils.MiscUtils.clamp;
 
 public abstract class BaseStrokeContent
     implements BaseKeyframeAnimation.AnimationListener, KeyPathElementContent, DrawingContent {
@@ -265,10 +263,7 @@ public abstract class BaseStrokeContent
         } else {
           startValue = startLength / length;
         }
-        float endValue = Math.min((endLength - trimPathTotalLength) / length, 1);
-        if (startValue == endValue && endLength != startLength) {
-          endValue += 1;
-        }
+        float endValue = startValue + (endLength - startLength) / length;
         Utils.applyTrimPathIfNeeded(trimPathPath, startValue, endValue, 0);
         canvas.drawPath(trimPathPath, paint);
       } else {
