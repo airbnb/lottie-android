@@ -18,7 +18,7 @@ class ClipTextToBoundingBoxTestCase : SnapshotTestCase {
             "Clip glyph text to bounding box",
             "Disabled"
         ) { filmStripView ->
-            filmStripView.setClipTextToBoundingBox(true)
+            filmStripView.setClipTextToBoundingBox(false)
         }
 
         withFilmStripView(
@@ -33,7 +33,7 @@ class ClipTextToBoundingBoxTestCase : SnapshotTestCase {
             "Clip font text to bounding box",
             "Disabled"
         ) { filmStripView ->
-            filmStripView.setClipTextToBoundingBox(true)
+            filmStripView.setClipTextToBoundingBox(false)
         }
     }
 }
