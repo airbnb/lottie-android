@@ -204,7 +204,7 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        if (offsetCanvas(canvas, documentData, lineIndex, line.width) || !lottieDrawable.getClipTextToBoundingBox()) {
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
           drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
         }
 
@@ -273,7 +273,7 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        if (offsetCanvas(canvas, documentData, lineIndex, line.width) || !lottieDrawable.getClipTextToBoundingBox()) {
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
           drawFontTextLine(line.text, documentData, canvas, tracking);
         }
 
@@ -288,7 +288,7 @@ public class TextLayer extends BaseLayer {
     float dpScale = Utils.dpScale();
     float lineStartY = position == null ? 0f : documentData.lineHeight * dpScale + position.y;
     float lineOffset = (lineIndex * documentData.lineHeight * dpScale) + lineStartY;
-    if (size != null && position != null && lineOffset >= position.y + size.y + documentData.size) {
+    if (lottieDrawable.getClipTextToBoundingBox() && size != null && position != null && lineOffset >= position.y + size.y + documentData.size) {
       return false;
     }
     float lineStart = position == null ? 0f : position.x;

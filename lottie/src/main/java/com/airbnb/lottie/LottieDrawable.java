@@ -552,7 +552,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * that overflows past its height will not be drawn.
    */
   public void setClipTextToBoundingBox(boolean clipTextToBoundingBox) {
-    if (clipTextToBoundingBox != this.clipToCompositionBounds) {
+    if (clipTextToBoundingBox != this.clipTextToBoundingBox) {
       this.clipTextToBoundingBox = clipTextToBoundingBox;
       invalidateSelf();
     }
