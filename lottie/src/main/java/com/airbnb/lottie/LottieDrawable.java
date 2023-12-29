@@ -135,6 +135,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean performanceTrackingEnabled;
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
+  private boolean clipTextToBoundingBox = false;
 
   private RenderMode renderMode = RenderMode.AUTOMATIC;
   /**
@@ -537,6 +538,24 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   public boolean isApplyingOpacityToLayersEnabled() {
     return isApplyingOpacityToLayersEnabled;
+  }
+
+  /**
+   * @see #setClipTextToBoundingBox(boolean)
+   */
+  public boolean getClipTextToBoundingBox() {
+    return clipTextToBoundingBox;
+  }
+
+  /**
+   * When true, if there is a bounding box set on a text layer (paragraph text), any text
+   * that overflows past its height will not be drawn.
+   */
+  public void setClipTextToBoundingBox(boolean clipTextToBoundingBox) {
+    if (clipTextToBoundingBox != this.clipToCompositionBounds) {
+      this.clipTextToBoundingBox = clipTextToBoundingBox;
+      invalidateSelf();
+    }
   }
 
   private void buildCompositionLayer() {

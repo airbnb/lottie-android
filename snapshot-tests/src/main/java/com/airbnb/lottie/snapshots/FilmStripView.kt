@@ -45,6 +45,10 @@ class FilmStripView @JvmOverloads constructor(
         animationViews.forEach { it.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled) }
     }
 
+    fun setClipTextToBoundingBox(isApplyingOpacityToLayersEnabled: Boolean) {
+        animationViews.forEach { it.clipTextToBoundingBox = isApplyingOpacityToLayersEnabled }
+    }
+
     fun setOutlineMasksAndMattes(outline: Boolean) {
         animationViews.forEach { it.setOutlineMasksAndMattes(outline) }
     }

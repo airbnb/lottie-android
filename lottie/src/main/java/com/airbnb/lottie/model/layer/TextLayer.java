@@ -204,7 +204,7 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width) || !lottieDrawable.getClipTextToBoundingBox()) {
           drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
         }
 
@@ -273,7 +273,7 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width) || !lottieDrawable.getClipTextToBoundingBox()) {
           drawFontTextLine(line.text, documentData, canvas, tracking);
         }
 
