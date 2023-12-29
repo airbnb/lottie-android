@@ -226,6 +226,8 @@ public interface LottieProperty {
    * Replace a path. This can only be used on path contents. For other shapes such as rectangles and polystars,
    * use LottieProperties corresponding to their specific properties.
    * <p>
+   * If you need to do any operations on the path such as morphing, use the Jetpack androidx.graphics.path library.
+   * <p>
    * In After Effects, any of those other shapes can be converted to a bezier path by right clicking it and
    * selecting "Convert To Bezier Path".
    */
