@@ -14,6 +14,16 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.constrain
 
+/**
+ * Custom layout modifier that Lottie uses instead of the normal size modifier.
+ *
+ * This modifier will:
+ * * Attempt to size the composable to width/height (which is set to the composition bounds)
+ * * Constrain the size to the incoming constraints
+ *
+ * However, if the incoming constraints are unbounded in exactly one dimension, it will constrain that
+ * dimension to maintain the correct aspect ratio of the composition.
+ */
 @Stable
 internal fun Modifier.lottieSize(
     width: Int,
@@ -55,7 +65,6 @@ internal data class LottieAnimationSizeElement(
     }
 }
 
-
 internal class LottieAnimationSizeNode(
     var width: Int,
     var height: Int,
@@ -63,18 +72,21 @@ internal class LottieAnimationSizeNode(
     override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
         val constrainedSize = constraints.constrain(IntSize(width, height))
         val wrappedConstraints = when {
+            // We are constrained in the width dimension but not the height dimension.
             constraints.maxHeight == Constraints.Infinity && constraints.maxWidth != Constraints.Infinity -> Constraints(
                 minWidth = constrainedSize.width,
                 maxWidth = constrainedSize.width,
                 minHeight = constrainedSize.width * height / width,
                 maxHeight = constrainedSize.width * height / width,
             )
+            // We are constrained in the height dimension but not the width dimension.
             constraints.maxWidth == Constraints.Infinity && constraints.maxHeight != Constraints.Infinity -> Constraints(
                 minWidth = constrainedSize.height * width / height,
                 maxWidth = constrainedSize.height * width / height,
                 minHeight = constrainedSize.height,
                 maxHeight = constrainedSize.height,
             )
+            // We are constrained in both or neither dimension. Use the constrained size.
             else -> Constraints(
                 minWidth = constrainedSize.width,
                 maxWidth = constrainedSize.width,
