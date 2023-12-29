@@ -1,11 +1,22 @@
 package com.airbnb.lottie.snapshots.tests
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.snapshots.R
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.loadCompositionFromAssetsSync
@@ -153,6 +164,24 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 modifier = Modifier
                     .size(300.dp, 600.dp)
             )
+        }
+
+        val largeSquareComposition = loadCompositionFromAssetsSync("Tests/LargeSquare.json")
+        snapshotComposable("Compose fill max width", "Large square", renderHardwareAndSoftware = true) { renderMode ->
+            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+                LottieAnimation(
+                    composition = largeSquareComposition,
+                    progress = { 1f },
+                    contentScale = ContentScale.FillWidth,
+                    renderMode = renderMode,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Other content",
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
     }
 }
