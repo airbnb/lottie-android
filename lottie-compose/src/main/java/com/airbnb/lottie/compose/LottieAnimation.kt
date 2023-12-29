@@ -22,7 +22,6 @@ import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
-import com.airbnb.lottie.utils.Utils
 import kotlin.math.roundToInt
 
 /**
@@ -93,11 +92,10 @@ fun LottieAnimation(
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
-    val dpScale = Utils.dpScale()
     val bounds = composition.bounds
     Canvas(
         modifier = modifier
-            .lottieSize((bounds.width() * dpScale).roundToInt(), (bounds.height() * dpScale).roundToInt())
+            .lottieSize(bounds.width(), bounds.height())
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(bounds.width().toFloat(), bounds.height().toFloat())
