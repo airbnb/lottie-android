@@ -2,6 +2,7 @@ package com.airbnb.lottie;
 
 import android.graphics.Bitmap;
 import android.graphics.ColorFilter;
+import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 
@@ -220,4 +221,15 @@ public interface LottieProperty {
    * Replace the text for a text layer.
    */
   CharSequence TEXT = "dynamic_text";
+
+  /**
+   * Replace a path. This can only be used on path contents. For other shapes such as rectangles and polystars,
+   * use LottieProperties corresponding to their specific properties.
+   * <p>
+   * If you need to do any operations on the path such as morphing, use the Jetpack androidx.graphics.path library.
+   * <p>
+   * In After Effects, any of those other shapes can be converted to a bezier path by right clicking it and
+   * selecting "Convert To Bezier Path".
+   */
+  Path PATH = new Path();
 }
