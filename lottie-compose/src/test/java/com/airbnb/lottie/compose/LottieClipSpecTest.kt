@@ -135,6 +135,7 @@ class LottieClipSpecTest {
             LongSparseArray(),
             emptyMap(),
             emptyMap(),
+            1f,
             SparseArrayCompat(),
             emptyMap(),
             markers,

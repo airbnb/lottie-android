@@ -36,10 +36,10 @@ public class LottieDrawableTest extends BaseTest {
   @SuppressWarnings("SameParameterValue")
   private LottieComposition createComposition(int startFrame, int endFrame) {
     LottieComposition composition = new LottieComposition();
-    composition.init(new Rect(), startFrame, endFrame, 1000, new ArrayList<Layer>(),
-            new LongSparseArray<Layer>(0), new HashMap<String, List<Layer>>(0),
-            new HashMap<String, LottieImageAsset>(0), new SparseArrayCompat<FontCharacter>(0),
-            new HashMap<String, Font>(0), new ArrayList<Marker>());
+    composition.init(new Rect(), startFrame, endFrame, 1000, new ArrayList<>(),
+        new LongSparseArray<>(0), new HashMap<>(0),
+        new HashMap<>(0), 1f, new SparseArrayCompat<>(0),
+        new HashMap<>(0), new ArrayList<>());
     return composition;
   }
 

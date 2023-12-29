@@ -47,7 +47,7 @@ public class LottieComposition {
   private final HashSet<String> warnings = new HashSet<>();
   private Map<String, List<Layer>> precomps;
   private Map<String, LottieImageAsset> images;
-  private float imagesDpScale = Utils.dpScale();
+  private float imagesDpScale;
   /**
    * Map of font names to fonts
    */
@@ -75,7 +75,7 @@ public class LottieComposition {
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
       List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
-      List<Layer>> precomps, Map<String, LottieImageAsset> images,
+      List<Layer>> precomps, Map<String, LottieImageAsset> images, float imagesDpScale,
       SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts,
       List<Marker> markers) {
     this.bounds = bounds;
@@ -86,6 +86,7 @@ public class LottieComposition {
     this.layerMap = layerMap;
     this.precomps = precomps;
     this.images = images;
+    this.imagesDpScale = imagesDpScale;
     this.characters = characters;
     this.fonts = fonts;
     this.markers = markers;
