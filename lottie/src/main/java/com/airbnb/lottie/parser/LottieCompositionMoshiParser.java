@@ -107,7 +107,7 @@ public class LottieCompositionMoshiParser {
     Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
     composition.init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
-        images, characters, fonts, markers);
+        images, Utils.dpScale(), characters, fonts, markers);
 
     return composition;
   }

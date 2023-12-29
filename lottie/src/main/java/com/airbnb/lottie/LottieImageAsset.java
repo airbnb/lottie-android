@@ -71,6 +71,19 @@ public class LottieImageAsset {
   }
 
   /**
+   * Returns a new {@link LottieImageAsset} with the same properties as this one but with the
+   * dimensions and bitmap scaled.
+   */
+  public LottieImageAsset copyWithScale(float scale) {
+    LottieImageAsset newAsset = new LottieImageAsset((int) (width * scale), (int) (height * scale), id, fileName, dirName);
+    if (bitmap != null) {
+      Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newAsset.width, newAsset.height, true);
+      newAsset.setBitmap(scaledBitmap);
+    }
+    return newAsset;
+  }
+
+  /**
    * Returns whether this asset has an embedded Bitmap or whether the fileName is a base64 encoded bitmap.
    */
   public boolean hasBitmap() {
