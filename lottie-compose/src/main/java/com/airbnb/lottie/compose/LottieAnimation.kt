@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,12 +18,10 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
 import com.airbnb.lottie.RenderMode
-import com.airbnb.lottie.utils.Utils
 import kotlin.math.roundToInt
 
 /**
@@ -95,13 +92,13 @@ fun LottieAnimation(
 
     if (composition == null || composition.duration == 0f) return Box(modifier)
 
-    val dpScale = Utils.dpScale()
+    val bounds = composition.bounds
     Canvas(
         modifier = modifier
-            .size((composition.bounds.width() / dpScale).dp, (composition.bounds.height() / dpScale).dp)
+            .lottieSize(bounds.width(), bounds.height())
     ) {
         drawIntoCanvas { canvas ->
-            val compositionSize = Size(composition.bounds.width().toFloat(), composition.bounds.height().toFloat())
+            val compositionSize = Size(bounds.width().toFloat(), bounds.height().toFloat())
             val intSize = IntSize(size.width.roundToInt(), size.height.roundToInt())
 
             val scale = contentScale.computeScaleFactor(compositionSize, size)
@@ -125,7 +122,7 @@ fun LottieAnimation(
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.progress = progress()
-            drawable.setBounds(0, 0, composition.bounds.width(), composition.bounds.height())
+            drawable.setBounds(0, 0, bounds.width(), bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
         }
     }

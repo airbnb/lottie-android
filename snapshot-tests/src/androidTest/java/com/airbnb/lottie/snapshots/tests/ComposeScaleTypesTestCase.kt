@@ -1,11 +1,29 @@
 package com.airbnb.lottie.snapshots.tests
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.snapshots.R
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
 import com.airbnb.lottie.snapshots.loadCompositionFromAssetsSync
@@ -28,7 +46,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 { 1f },
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(720.dp, 1280.dp)
+                    .size(720.dp, 1280.dp),
             )
         }
 
@@ -39,7 +57,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
-                    .scale(2f)
+                    .scale(2f),
             )
         }
 
@@ -50,7 +68,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
-                    .scale(4f)
+                    .scale(4f),
             )
         }
 
@@ -61,7 +79,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.Crop,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(300.dp, 300.dp)
+                    .size(300.dp, 300.dp),
             )
         }
 
@@ -72,7 +90,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.Inside,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(300.dp, 300.dp)
+                    .size(300.dp, 300.dp),
             )
         }
 
@@ -83,7 +101,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(300.dp, 300.dp)
+                    .size(300.dp, 300.dp),
             )
         }
 
@@ -95,7 +113,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
-                    .scale(2f)
+                    .scale(2f),
             )
         }
 
@@ -107,7 +125,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 renderMode = renderMode,
                 modifier = Modifier
                     .size(300.dp, 300.dp)
-                    .scale(2f)
+                    .scale(2f),
             )
         }
 
@@ -118,7 +136,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.Inside,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(600.dp, 600.dp)
+                    .size(600.dp, 600.dp),
             )
         }
 
@@ -129,7 +147,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(600.dp, 600.dp)
+                    .size(600.dp, 600.dp),
             )
         }
 
@@ -140,7 +158,7 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.Fit,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(600.dp, 600.dp)
+                    .size(600.dp, 600.dp),
             )
         }
 
@@ -151,8 +169,47 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 contentScale = ContentScale.FillBounds,
                 renderMode = renderMode,
                 modifier = Modifier
-                    .size(300.dp, 600.dp)
+                    .size(300.dp, 600.dp),
             )
+        }
+
+        val largeSquareComposition = loadCompositionFromAssetsSync("Tests/LargeSquare.json")
+        snapshotComposable("Compose constrained size", "Column", renderHardwareAndSoftware = true) { renderMode ->
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier
+                    .width(128.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                LottieAnimation(
+                    composition = largeSquareComposition,
+                    progress = { 1f },
+                    renderMode = renderMode,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Other content",
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+
+        snapshotComposable("Compose constrained size", "Row", renderHardwareAndSoftware = true) { renderMode ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier
+                    .height(128.dp)
+                    .horizontalScroll(rememberScrollState()),
+            ) {
+                LottieAnimation(
+                    composition = largeSquareComposition,
+                    progress = { 1f },
+                    renderMode = renderMode,
+                    modifier = Modifier.fillMaxHeight(),
+                )
+                Text("Other content")
+            }
         }
     }
 }
