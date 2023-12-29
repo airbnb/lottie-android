@@ -175,7 +175,6 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
                 LottieAnimation(
                     composition = largeSquareComposition,
                     progress = { 1f },
-                    contentScale = ContentScale.FillWidth,
                     renderMode = renderMode,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -190,13 +189,12 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose constrained size", "Row", renderHardwareAndSoftware = true) { renderMode ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier
-                    .height(128.dp),
+                modifier = Modifier.height(128.dp),
             ) {
-                val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
                 LottieAnimation(
                     composition = largeSquareComposition,
-                    progress = { progress },
+                    progress = { 1f },
+                    renderMode = renderMode,
                     modifier = Modifier.fillMaxHeight(),
                 )
                 Text("Other content")
