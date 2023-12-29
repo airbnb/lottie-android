@@ -1,10 +1,14 @@
 package com.airbnb.lottie.compose
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
@@ -13,25 +17,28 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.constrain
 
 @Stable
-internal fun Modifier.lottieSize(width: Int, height: Int) = this.then(LottieAnimationSizeElement(width, height))
+internal fun Modifier.lottieSize(width: Int, height: Int, contentScale: ContentScale) = this.then(LottieAnimationSizeElement(width, height, contentScale))
 
 internal data class LottieAnimationSizeElement(
     val width: Int,
     val height: Int,
+    val contentScale: ContentScale,
 ) : ModifierNodeElement<LottieAnimationSizeNode>() {
     override fun create(): LottieAnimationSizeNode {
-        return LottieAnimationSizeNode(width, height)
+        return LottieAnimationSizeNode(width, height, contentScale)
     }
 
     override fun update(node: LottieAnimationSizeNode) {
         node.width = width
         node.height = height
+        node.contentScale = contentScale
     }
 
     override fun InspectorInfo.inspectableProperties() {
         name = "Lottie Size"
         properties["width"] = width
         properties["height"] = height
+        properties["contentScale"] = contentScale
     }
 
     override fun equals(other: Any?): Boolean {
@@ -40,6 +47,7 @@ internal data class LottieAnimationSizeElement(
 
         if (width != other.width) return false
         if (height != other.height) return false
+        if (contentScale != other.contentScale) return false
         return true
     }
 
@@ -54,6 +62,7 @@ internal data class LottieAnimationSizeElement(
 internal class LottieAnimationSizeNode(
     var width: Int,
     var height: Int,
+    var contentScale: ContentScale,
 ) : Modifier.Node(), LayoutModifierNode {
     override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
         val constrainedSize = constraints.constrain(IntSize(width, height))
@@ -65,45 +74,25 @@ internal class LottieAnimationSizeNode(
                 minHeight = height,
                 maxHeight = height,
             )
-            // There is enough space in the width but not height so we need to constrain the height.
-            constrainedSize.width >= width -> Constraints(
-                minWidth = constrainedSize.height * width / height,
-                maxWidth = constrainedSize.height * width / height,
-                minHeight = constrainedSize.height,
-                maxHeight = constrainedSize.height,
-            )
-            // There is enough space in the height but not width so we need to constrain the width.
-            constrainedSize.height >= height -> Constraints(
-                minWidth = constrainedSize.width,
-                maxWidth = constrainedSize.width,
-                minHeight = constrainedSize.width * height / width,
-                maxHeight = constrainedSize.width * height / width,
-            )
             else -> {
-                val constraintAspectRation = constrainedSize.height / constrainedSize.width.toFloat()
-                val aspectRatio = height / width.toFloat()
-                if (constraintAspectRation >= aspectRatio) {
-                    Constraints(
-                        minWidth = constrainedSize.width,
-                        maxWidth = constrainedSize.width,
-                        minHeight = constrainedSize.width * height / width,
-                        maxHeight = constrainedSize.width * height / width,
-                    )
-                } else {
-                    Constraints(
-                        minWidth = constrainedSize.height * width / height,
-                        maxWidth = constrainedSize.height * width / height,
-                        minHeight = constrainedSize.height,
-                        maxHeight = constrainedSize.height,
-                    )
-                }
+                val compositionSize = Size(width.toFloat(), height.toFloat())
+                val scale = contentScale.computeScaleFactor(compositionSize, Size(constrainedSize.width.toFloat(), constrainedSize.height.toFloat()))
+                Constraints(
+                    minWidth = (width * scale.scaleX).toInt(),
+                    maxWidth = (width * scale.scaleX).toInt(),
+                    minHeight = (height * scale.scaleY).toInt(),
+                    maxHeight = (height * scale.scaleY).toInt(),
+                )
             }
         }
-
 
         val placeable = measurable.measure(wrappedConstraints)
         return layout(placeable.width, placeable.height) {
             placeable.placeRelative(0, 0)
         }
     }
+}
+
+private operator fun Size.times(scale: ScaleFactor): IntSize {
+    return IntSize((width * scale.scaleX).toInt(), (height * scale.scaleY).toInt())
 }

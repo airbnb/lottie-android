@@ -97,7 +97,7 @@ fun LottieAnimation(
     val bounds = composition.bounds
     Canvas(
         modifier = modifier
-            .lottieSize((bounds.width() * dpScale).roundToInt(), (bounds.height() * dpScale).roundToInt())
+            .lottieSize((bounds.width() * dpScale).roundToInt(), (bounds.height() * dpScale).roundToInt(), contentScale)
     ) {
         drawIntoCanvas { canvas ->
             val compositionSize = Size(bounds.width().toFloat(), bounds.height().toFloat())
