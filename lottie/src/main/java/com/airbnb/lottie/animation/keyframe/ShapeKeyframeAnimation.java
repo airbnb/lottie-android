@@ -14,6 +14,8 @@ import java.util.List;
 public class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Path> {
   private final ShapeData tempShapeData = new ShapeData();
   private final Path tempPath = new Path();
+  private Path valueCallbackStartPath;
+  private Path valueCallbackEndPath;
 
   private List<ShapeModifierContent> shapeModifiers;
 
@@ -33,6 +35,20 @@ public class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Pat
       }
     }
     MiscUtils.getPathFromData(modifiedShapeData, tempPath);
+    if (valueCallback != null) {
+      if (valueCallbackStartPath == null) {
+        valueCallbackStartPath = new Path();
+        valueCallbackEndPath = new Path();
+      }
+      MiscUtils.getPathFromData(startShapeData, valueCallbackStartPath);
+      if (endShapeData != null) {
+        MiscUtils.getPathFromData(endShapeData, valueCallbackEndPath);
+      }
+
+      return valueCallback.getValueInternal(keyframe.startFrame, keyframe.endFrame,
+          valueCallbackStartPath, endShapeData ==  null ? valueCallbackStartPath : valueCallbackEndPath,
+          keyframeProgress, getLinearCurrentKeyframeProgress(), getProgress());
+    }
     return tempPath;
   }
 

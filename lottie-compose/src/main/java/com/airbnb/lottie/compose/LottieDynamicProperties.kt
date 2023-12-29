@@ -2,6 +2,7 @@ package com.airbnb.lottie.compose
 
 import android.graphics.Bitmap
 import android.graphics.ColorFilter
+import android.graphics.Path
 import android.graphics.PointF
 import android.graphics.Typeface
 import androidx.compose.runtime.Composable
@@ -102,6 +103,7 @@ class LottieDynamicProperties internal constructor(
     private val typefaceProperties: List<LottieDynamicProperty<Typeface>>,
     private val bitmapProperties: List<LottieDynamicProperty<Bitmap>>,
     private val charSequenceProperties: List<LottieDynamicProperty<CharSequence>>,
+    private val pathProperties: List<LottieDynamicProperty<Path>>,
 ) {
     @Suppress("UNCHECKED_CAST")
     constructor(properties: List<LottieDynamicProperty<*>>) : this(
@@ -114,6 +116,7 @@ class LottieDynamicProperties internal constructor(
         properties.filter { it.property is Typeface } as List<LottieDynamicProperty<Typeface>>,
         properties.filter { it.property is Bitmap } as List<LottieDynamicProperty<Bitmap>>,
         properties.filter { it.property is CharSequence } as List<LottieDynamicProperty<CharSequence>>,
+        properties.filter { it.property is Path } as List<LottieDynamicProperty<Path>>,
     )
 
     internal fun addTo(drawable: LottieDrawable) {
@@ -142,6 +145,9 @@ class LottieDynamicProperties internal constructor(
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
         charSequenceProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
+        }
+        pathProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, p.callback.toValueCallback())
         }
     }
@@ -173,6 +179,9 @@ class LottieDynamicProperties internal constructor(
         }
         charSequenceProperties.forEach { p ->
             drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<CharSequence>?)
+        }
+        pathProperties.forEach { p ->
+            drawable.addValueCallback(p.keyPath, p.property, null as LottieValueCallback<Path>?)
         }
     }
 }

@@ -168,6 +168,10 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
   }
 
+  public boolean hasValueCallback() {
+    return valueCallback != null;
+  }
+
   /**
    * keyframeProgress will be [0, 1] unless the interpolator has overshoot in which case, this
    * should be able to handle values outside of that range.
