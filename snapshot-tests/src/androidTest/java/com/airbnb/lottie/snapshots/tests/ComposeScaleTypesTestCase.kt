@@ -1,5 +1,6 @@
 package com.airbnb.lottie.snapshots.tests
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -171,7 +174,11 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
 
         val largeSquareComposition = loadCompositionFromAssetsSync("Tests/LargeSquare.json")
         snapshotComposable("Compose constrained size", "Column", renderHardwareAndSoftware = true) { renderMode ->
-            Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState()),
+            ) {
                 LottieAnimation(
                     composition = largeSquareComposition,
                     progress = { 1f },
@@ -189,7 +196,9 @@ class ComposeScaleTypesTestCase : SnapshotTestCase {
         snapshotComposable("Compose constrained size", "Row", renderHardwareAndSoftware = true) { renderMode ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
-                modifier = Modifier.height(128.dp),
+                modifier = Modifier
+                    .height(128.dp)
+                    .horizontalScroll(rememberScrollState()),
             ) {
                 LottieAnimation(
                     composition = largeSquareComposition,
