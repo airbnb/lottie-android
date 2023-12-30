@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TextLayer extends BaseLayer {
+
   // Capacity is 2 because emojis are 2 characters. Some are longer in which case, the capacity will
   // be expanded but that should be pretty rare.
   private final StringBuilder stringBuilder = new StringBuilder(2);
@@ -203,8 +204,9 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        offsetCanvas(canvas, documentData, lineIndex, line.width);
-        drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
+          drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
+        }
 
         canvas.restore();
       }
@@ -271,20 +273,24 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        offsetCanvas(canvas, documentData, lineIndex, line.width);
-        drawFontTextLine(line.text, documentData, canvas, tracking);
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
+          drawFontTextLine(line.text, documentData, canvas, tracking);
+        }
 
         canvas.restore();
       }
     }
   }
 
-  private void offsetCanvas(Canvas canvas, DocumentData documentData, int lineIndex, float lineWidth) {
+  private boolean offsetCanvas(Canvas canvas, DocumentData documentData, int lineIndex, float lineWidth) {
     PointF position = documentData.boxPosition;
     PointF size = documentData.boxSize;
     float dpScale = Utils.dpScale();
     float lineStartY = position == null ? 0f : documentData.lineHeight * dpScale + position.y;
     float lineOffset = (lineIndex * documentData.lineHeight * dpScale) + lineStartY;
+    if (lottieDrawable.getClipTextToBoundingBox() && size != null && position != null && lineOffset >= position.y + size.y + documentData.size) {
+      return false;
+    }
     float lineStart = position == null ? 0f : position.x;
     float boxWidth = size == null ? 0f : size.x;
     switch (documentData.justification) {
@@ -298,6 +304,7 @@ public class TextLayer extends BaseLayer {
         canvas.translate(lineStart + boxWidth / 2f - lineWidth / 2f, lineOffset);
         break;
     }
+    return true;
   }
 
   @Nullable
@@ -608,6 +615,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private static class TextSubLine {
+
     private String text = "";
     private float width = 0f;
 

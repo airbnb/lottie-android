@@ -23,6 +23,7 @@
         <attr name="lottie_ignoreDisabledSystemAnimations" format="boolean" />
         <attr name="lottie_useCompositionFrameRate" format="boolean" />
         <attr name="lottie_clipToCompositionBounds" format="boolean" />
+        <attr name="lottie_clipTextToBoundingBox" format="boolean" />
         <!-- The default file extension that Lottie will use when finding fonts in assets/fonts/fontFamily.* -->
         <attr name="lottie_defaultFontFileExtension" format="string" />
         <!-- These values must be kept in sync with the RenderMode enum -->

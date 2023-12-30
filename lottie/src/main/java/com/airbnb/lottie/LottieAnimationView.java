@@ -215,6 +215,10 @@ import java.util.zip.ZipInputStream;
       setClipToCompositionBounds(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipToCompositionBounds, true));
     }
 
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_clipTextToBoundingBox)) {
+      setClipTextToBoundingBox(ta.getBoolean(R.styleable.LottieAnimationView_lottie_clipTextToBoundingBox, false));
+    }
+
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_defaultFontFileExtension)) {
       setDefaultFontFileExtension(ta.getString(R.styleable.LottieAnimationView_lottie_defaultFontFileExtension));
     }
@@ -1215,6 +1219,21 @@ import java.util.zip.ZipInputStream;
    */
   public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
     lottieDrawable.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled);
+  }
+
+  /**
+   * @see #setClipTextToBoundingBox(boolean)
+   */
+  public boolean getClipTextToBoundingBox() {
+    return lottieDrawable.getClipTextToBoundingBox();
+  }
+
+  /**
+   * When true, if there is a bounding box set on a text layer (paragraph text), any text
+   * that overflows past its height will not be drawn.
+   */
+  public void setClipTextToBoundingBox(boolean clipTextToBoundingBox) {
+    lottieDrawable.setClipTextToBoundingBox(clipTextToBoundingBox);
   }
 
   /**

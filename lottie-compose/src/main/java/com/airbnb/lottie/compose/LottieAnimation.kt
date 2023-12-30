@@ -64,6 +64,8 @@ import kotlin.math.roundToInt
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
  * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
+ * @param clipTextToBoundingBox When true, if there is a bounding box set on a text layer (paragraph text), any text
+ *                              that overflows past its height will not be drawn.
  * @param fontMap A map of keys to Typefaces. The key can be: "fName", "fFamily", or "fFamily-fStyle" as specified in your Lottie file.
  * @param asyncUpdates When set to true, some parts of animation updates will be done off of the main thread.
  *                     For more details, refer to the docs of [AsyncUpdates].
@@ -83,6 +85,7 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
+    clipTextToBoundingBox: Boolean = false,
     fontMap: Map<String, Typeface>? = null,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
@@ -121,6 +124,7 @@ fun LottieAnimation(
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
+            drawable.clipTextToBoundingBox = clipTextToBoundingBox
             drawable.progress = progress()
             drawable.setBounds(0, 0, bounds.width(), bounds.height())
             drawable.draw(canvas.nativeCanvas, matrix)
@@ -194,6 +198,7 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
+    clipTextToBoundingBox: Boolean = false,
     fontMap: Map<String, Typeface>? = null,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
@@ -219,6 +224,7 @@ fun LottieAnimation(
         alignment = alignment,
         contentScale = contentScale,
         clipToCompositionBounds = clipToCompositionBounds,
+        clipTextToBoundingBox = clipTextToBoundingBox,
         fontMap = fontMap,
         asyncUpdates = asyncUpdates,
     )
