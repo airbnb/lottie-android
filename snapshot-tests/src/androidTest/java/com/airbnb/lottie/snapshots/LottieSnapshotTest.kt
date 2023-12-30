@@ -31,6 +31,7 @@ import com.airbnb.lottie.snapshots.tests.LargeCompositionSoftwareRendering
 import com.airbnb.lottie.snapshots.tests.MarkersTestCase
 import com.airbnb.lottie.snapshots.tests.NightModeTestCase
 import com.airbnb.lottie.snapshots.tests.OutlineMasksAndMattesTestCase
+import com.airbnb.lottie.snapshots.tests.PainterTestCase
 import com.airbnb.lottie.snapshots.tests.PartialFrameProgressTestCase
 import com.airbnb.lottie.snapshots.tests.PolygonStrokeTestCase
 import com.airbnb.lottie.snapshots.tests.ProdAnimationsTestCase
@@ -147,6 +148,7 @@ class LottieSnapshotTest {
             FrameBoundariesTestCase(),
             ScaleTypesTestCase(),
             ComposeScaleTypesTestCase(),
+            PainterTestCase(),
             DynamicPropertiesTestCase(),
             MarkersTestCase(),
             AssetsTestCase(),
