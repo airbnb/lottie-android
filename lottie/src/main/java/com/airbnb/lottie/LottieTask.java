@@ -25,7 +25,8 @@ import java.util.concurrent.FutureTask;
  * <p>
  * A task will produce a single result or a single failure.
  */
-@SuppressWarnings("UnusedReturnValue") public class LottieTask<T> {
+@SuppressWarnings("UnusedReturnValue")
+public class LottieTask<T> {
 
   /**
    * Set this to change the executor that LottieTasks are run on. This will be the executor that composition parsing and url
@@ -46,6 +47,10 @@ import java.util.concurrent.FutureTask;
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public LottieTask(Callable<LottieResult<T>> runnable) {
     this(runnable, false);
+  }
+
+  public LottieTask(T result) {
+    setResult(new LottieResult<>(result));
   }
 
   /**
@@ -122,6 +127,11 @@ import java.util.concurrent.FutureTask;
   public synchronized LottieTask<T> removeFailureListener(LottieListener<Throwable> listener) {
     failureListeners.remove(listener);
     return this;
+  }
+
+  @Nullable
+  public LottieResult<T> getResult() {
+    return result;
   }
 
   private void notifyListeners() {
