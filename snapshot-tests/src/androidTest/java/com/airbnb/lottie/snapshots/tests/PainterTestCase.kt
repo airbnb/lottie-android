@@ -14,7 +14,7 @@ import com.airbnb.lottie.snapshots.snapshotComposable
 
 class PainterTestCase : SnapshotTestCase {
     override suspend fun SnapshotTestCaseContext.run() {
-        snapshotComposable("Compose Dynamic Gradient", "0%") {
+        snapshotComposable("Compose Painter", "0%") {
             val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/Laugh4.json").value!!
             val painter = rememberLottiePainter(composition, 0f)
             Image(
@@ -27,7 +27,7 @@ class PainterTestCase : SnapshotTestCase {
             )
         }
 
-        snapshotComposable("Compose Dynamic Gradient", "50%") {
+        snapshotComposable("Compose Painter", "50%") {
             val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/Laugh4.json").value!!
             val painter = rememberLottiePainter(composition, 0.5f)
             Image(
@@ -40,7 +40,7 @@ class PainterTestCase : SnapshotTestCase {
             )
         }
 
-        snapshotComposable("Compose Dynamic Gradient", "100%") {
+        snapshotComposable("Compose Painter", "100%") {
             val composition = LottieCompositionFactory.fromAssetSync(context, "Tests/Laugh4.json").value!!
             val painter = rememberLottiePainter(composition, 1f)
             Image(
