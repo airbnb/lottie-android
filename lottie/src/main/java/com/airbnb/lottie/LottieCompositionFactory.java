@@ -704,7 +704,7 @@ public class LottieCompositionFactory {
     LottieTask<LottieComposition> task = null;
     final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
-      task = new LottieTask<>(() -> new LottieResult<>(cachedComposition));
+      task = new LottieTask<>(cachedComposition);
     }
     if (cacheKey != null && taskCache.containsKey(cacheKey)) {
       task = taskCache.get(cacheKey);

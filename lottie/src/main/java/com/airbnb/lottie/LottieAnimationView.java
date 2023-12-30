@@ -15,7 +15,6 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-
 import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
@@ -26,7 +25,6 @@ import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
-
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
@@ -36,7 +34,6 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.PushbackInputStream;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
@@ -609,6 +606,10 @@ import java.util.zip.ZipInputStream;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
+    LottieResult<LottieComposition> result = compositionTask.getResult();
+    if (result != null && result.getValue() == composition) {
+      return;
+    }
     userActionsTaken.add(UserActionTaken.SET_ANIMATION);
     clearComposition();
     cancelLoaderTask();
