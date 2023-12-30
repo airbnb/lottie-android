@@ -1,3 +1,7 @@
+# 6.3.0
+* Add LottiePainter and rememberLottiePainter to use Lottie anywhere a Painter can be used ([#2442](https://github.com/airbnb/lottie-android/pull/2442))
+* Constrain unconstrainted bounds when the other dimension is constrained ([#2437](https://github.com/airbnb/lottie-android/pull/2437))
+
 # 6.1.0
 * Key dynamic properties on composition to ensure that they are set if the composition changes ([#2290](https://github.com/airbnb/lottie-android/pull/2290))
 * Add `@JvmOverloads` to `LottieAnimation` to improve binary compatibility ([#2320](https://github.com/airbnb/lottie-android/pull/2320))

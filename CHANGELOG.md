@@ -1,3 +1,17 @@
+# 6.3.0
+### New Features
+* Add support dynamic path properties on shape contents ([#2439](https://github.com/airbnb/lottie-android/pull/2439))
+* Add support for gzipped and tgs files ([#2435](https://github.com/airbnb/lottie-android/pull/2435))
+* Add an option to clip text if it extends beyond its bounding box ([#2412](https://github.com/airbnb/lottie-android/pull/2412))
+
+### Bugs Fixes
+* Make all LottieAnimationView setters idempotent ([#2441](https://github.com/airbnb/lottie-android/pull/2441))
+* Fix a rendering artifact for polygons with large strokes ([#2440](https://github.com/airbnb/lottie-android/pull/2440))
+* Re-scale bitmaps if the system scale changes ([#2438](https://github.com/airbnb/lottie-android/pull/2438))
+* Handle null color callbacks in solid layer ([#2434](https://github.com/airbnb/lottie-android/pull/2434))
+* Handle null shape data end values ([#2433](https://github.com/airbnb/lottie-android/pull/2433))
+* Fix gradient colors when the progress is <0 or > 1 ([#2427](https://github.com/airbnb/lottie-android/pull/2427))
+
 # 6.2.0
 ### New Features
 * Implement screen, overlay, darken, lighten, and add blend modes ([#2408](https://github.com/airbnb/lottie-android/pull/2408))
