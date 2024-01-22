@@ -51,6 +51,7 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -794,12 +795,50 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
     if (!animationsEnabled()) {
-      setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      Marker markerForAnimationsDisabled = getMarkerForAnimationsDisabled();
+      if (markerForAnimationsDisabled != null) {
+        setFrame((int) markerForAnimationsDisabled.startFrame);
+      } else {
+        setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      }
       animator.endAnimation();
       if (!isVisible()) {
         onVisibleAction = OnVisibleAction.NONE;
       }
     }
+  }
+
+  /**
+   * The marker to use if "reduced motion" is enabled.
+   * Supported marker names are case insensitive, and include:
+   *   - reduced motion
+   *   - reducedMotion
+   *   - reduced_motion
+   *   - reduced-motion
+   */
+  private static final List<String> ALLOWED_REDUCED_MOTION_MARKERS = Arrays.asList(
+      "reduced motion",
+      "reduced_motion",
+      "reduced-motion",
+      "reducedmotion"
+  );
+
+  /**
+   * This method is used to get the marker for animations when system animations are disabled.
+   * It iterates over the list of allowed reduced motion markers and returns the first non-null marker it finds.
+   * If no non-null marker is found, it returns null.
+   *
+   * @return The first non-null marker from the list of allowed reduced motion markers, or null if no such marker is found.
+   */
+  public Marker getMarkerForAnimationsDisabled() {
+    Marker marker = null;
+    for (String markerName : ALLOWED_REDUCED_MOTION_MARKERS) {
+      marker = composition.getMarker(markerName);
+      if (marker != null) {
+        break;
+      }
+    }
+    return marker;
   }
 
   @MainThread
