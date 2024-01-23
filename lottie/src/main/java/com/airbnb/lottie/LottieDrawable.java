@@ -1225,7 +1225,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Tell Lottie that system animations are disabled. When using {@link LottieAnimationView} or Compose {@code LottieAnimation}, this is done
    * automatically. However, if you are using LottieDrawable on its own, you should set this to false when
-   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0.
+   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0. If the animation is provided a "reduced motion"
+   * marker name, they will be shown instead of the first or last frame. Supported marker names are case insensitive, and include:
+   * - reduced motion
+   * - reducedMotion
+   * - reduced_motion
+   * - reduced-motion
    */
   public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
