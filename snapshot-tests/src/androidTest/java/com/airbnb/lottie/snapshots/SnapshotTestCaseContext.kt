@@ -56,7 +56,7 @@ suspend fun SnapshotTestCaseContext.withDrawable(
     assetName: String,
     snapshotName: String,
     snapshotVariant: String,
-    callback: (LottieDrawable) -> Unit,
+    callback: suspend (LottieDrawable) -> Unit,
 ) {
     val result = LottieCompositionFactory.fromAssetSync(context, assetName)
     val composition = result.value ?: throw IllegalArgumentException("Unable to parse $assetName.", result.exception)

@@ -51,6 +51,7 @@ import com.airbnb.lottie.value.SimpleLottieValueCallback;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -90,6 +91,21 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Newer devices can call invalidate directly from whatever thread asyncUpdates runs on.
    */
   private static final boolean invalidateSelfOnMainThread = Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1;
+
+  /**
+   * The marker to use if "reduced motion" is enabled.
+   * Supported marker names are case insensitive, and include:
+   *   - reduced motion
+   *   - reducedMotion
+   *   - reduced_motion
+   *   - reduced-motion
+   */
+  private static final List<String> ALLOWED_REDUCED_MOTION_MARKERS = Arrays.asList(
+      "reduced motion",
+      "reduced_motion",
+      "reduced-motion",
+      "reducedmotion"
+  );
 
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
@@ -794,12 +810,36 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       }
     }
     if (!animationsEnabled()) {
-      setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      Marker markerForAnimationsDisabled = getMarkerForAnimationsDisabled();
+      if (markerForAnimationsDisabled != null) {
+        setFrame((int) markerForAnimationsDisabled.startFrame);
+      } else {
+        setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
+      }
       animator.endAnimation();
       if (!isVisible()) {
         onVisibleAction = OnVisibleAction.NONE;
       }
     }
+  }
+
+
+  /**
+   * This method is used to get the marker for animations when system animations are disabled.
+   * It iterates over the list of allowed reduced motion markers and returns the first non-null marker it finds.
+   * If no non-null marker is found, it returns null.
+   *
+   * @return The first non-null marker from the list of allowed reduced motion markers, or null if no such marker is found.
+   */
+  private Marker getMarkerForAnimationsDisabled() {
+    Marker marker = null;
+    for (String markerName : ALLOWED_REDUCED_MOTION_MARKERS) {
+      marker = composition.getMarker(markerName);
+      if (marker != null) {
+        break;
+      }
+    }
+    return marker;
   }
 
   @MainThread
@@ -1185,7 +1225,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * Tell Lottie that system animations are disabled. When using {@link LottieAnimationView} or Compose {@code LottieAnimation}, this is done
    * automatically. However, if you are using LottieDrawable on its own, you should set this to false when
-   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0.
+   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0. If the animation is provided a "reduced motion"
+   * marker name, they will be shown instead of the first or last frame. Supported marker names are case insensitive, and include:
+   * - reduced motion
+   * - reducedMotion
+   * - reduced_motion
+   * - reduced-motion
    */
   public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
