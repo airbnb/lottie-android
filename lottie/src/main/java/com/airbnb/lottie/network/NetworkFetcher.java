@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -59,10 +60,19 @@ public class NetworkFetcher {
     FileExtension extension = cacheResult.first;
     InputStream inputStream = cacheResult.second;
     LottieResult<LottieComposition> result;
-    if (extension == FileExtension.ZIP) {
-      result = LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), cacheKey);
-    } else {
-      result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, cacheKey);
+    switch (extension) {
+      case ZIP:
+        result = LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(inputStream), cacheKey);
+        break;
+      case GZIP:
+        try {
+          result = LottieCompositionFactory.fromJsonInputStreamSync(new GZIPInputStream(inputStream), cacheKey);
+        } catch (IOException e) {
+          result = new LottieResult<>(e);
+        }
+        break;
+      default:
+        result = LottieCompositionFactory.fromJsonInputStreamSync(inputStream, cacheKey);
     }
     if (result.getValue() != null) {
       return result.getValue();
@@ -117,6 +127,12 @@ public class NetworkFetcher {
       Logger.debug("Handling zip response.");
       extension = FileExtension.ZIP;
       result = fromZipStream(context, url, inputStream, cacheKey);
+    } else if (contentType.contains("application/gzip") ||
+        contentType.contains("application/x-gzip") ||
+        url.split("\\?")[0].endsWith(".tgs")) {
+      Logger.debug("Handling gzip response.");
+      extension = FileExtension.GZIP;
+      result = fromGzipStream(url, inputStream, cacheKey);
     } else {
       Logger.debug("Received json response.");
       extension = FileExtension.JSON;
@@ -138,6 +154,16 @@ public class NetworkFetcher {
     }
     File file = networkCache.writeTempCacheFile(url, inputStream, FileExtension.ZIP);
     return LottieCompositionFactory.fromZipStreamSync(context, new ZipInputStream(new FileInputStream(file)), url);
+  }
+
+  @NonNull
+  private LottieResult<LottieComposition> fromGzipStream(@NonNull String url, @NonNull InputStream inputStream, @Nullable String cacheKey)
+      throws IOException {
+    if (cacheKey == null || networkCache == null) {
+      return LottieCompositionFactory.fromJsonInputStreamSync(new GZIPInputStream(inputStream), null);
+    }
+    File file = networkCache.writeTempCacheFile(url, inputStream, FileExtension.GZIP);
+    return LottieCompositionFactory.fromJsonInputStreamSync(new GZIPInputStream(new FileInputStream(file)), url);
   }
 
   @NonNull
