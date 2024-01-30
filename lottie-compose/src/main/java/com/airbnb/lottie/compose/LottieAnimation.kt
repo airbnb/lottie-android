@@ -69,7 +69,7 @@ import kotlin.math.roundToInt
  * @param fontMap A map of keys to Typefaces. The key can be: "fName", "fFamily", or "fFamily-fStyle" as specified in your Lottie file.
  * @param asyncUpdates When set to true, some parts of animation updates will be done off of the main thread.
  *                     For more details, refer to the docs of [AsyncUpdates].
- * @param isSafeMode If set to true, draw will be wrapped with a try/catch which will cause Lottie to
+ * @param safeMode If set to true, draw will be wrapped with a try/catch which will cause Lottie to
  *                     render an empty frame rather than crash your app.
  */
 @Composable
@@ -90,7 +90,7 @@ fun LottieAnimation(
     clipTextToBoundingBox: Boolean = false,
     fontMap: Map<String, Typeface>? = null,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
-    isSafeMode: Boolean = false,
+    safeMode: Boolean = false,
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
@@ -114,7 +114,7 @@ fun LottieAnimation(
             matrix.preScale(scale.scaleX, scale.scaleY)
 
             drawable.enableMergePathsForKitKatAndAbove(enableMergePaths)
-            drawable.setSafeMode(isSafeMode)
+            drawable.setSafeMode(safeMode)
             drawable.renderMode = renderMode
             drawable.asyncUpdates = asyncUpdates
             drawable.composition = composition
@@ -156,7 +156,7 @@ fun LottieAnimation(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     clipToCompositionBounds: Boolean = true,
-    isSafeMode: Boolean = false,
+    safeMode: Boolean = false,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
     LottieAnimation(
@@ -173,7 +173,7 @@ fun LottieAnimation(
         contentScale = contentScale,
         clipToCompositionBounds = clipToCompositionBounds,
         asyncUpdates = asyncUpdates,
-        isSafeMode = isSafeMode
+        safeMode = safeMode
     )
 }
 
@@ -206,7 +206,7 @@ fun LottieAnimation(
     clipToCompositionBounds: Boolean = true,
     clipTextToBoundingBox: Boolean = false,
     fontMap: Map<String, Typeface>? = null,
-    isSafeMode: Boolean = false,
+    safeMode: Boolean = false,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
 ) {
     val progress by animateLottieCompositionAsState(
@@ -234,7 +234,7 @@ fun LottieAnimation(
         clipTextToBoundingBox = clipTextToBoundingBox,
         fontMap = fontMap,
         asyncUpdates = asyncUpdates,
-        isSafeMode = isSafeMode
+        safeMode = safeMode
     )
 }
 
