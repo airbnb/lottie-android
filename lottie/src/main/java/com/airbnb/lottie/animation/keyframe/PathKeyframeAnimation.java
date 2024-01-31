@@ -11,6 +11,7 @@ import java.util.List;
 public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
   private final PointF point = new PointF();
   private final float[] pos = new float[2];
+  private final float[] tangent = new float[2];
   private final PathMeasure pathMeasure = new PathMeasure();
   private PathKeyframe pathMeasureKeyframe;
 
@@ -39,8 +40,23 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
       pathMeasureKeyframe = pathKeyframe;
     }
 
-    pathMeasure.getPosTan(keyframeProgress * pathMeasure.getLength(), pos, null);
-    point.set(pos[0], pos[1]);
+    // allow bounce easings to calculate positions outside the path
+    // by using the tangent at the extremities
+
+    float length = pathMeasure.getLength();
+
+    if (keyframeProgress < 0) {
+      pathMeasure.getPosTan(0, pos, tangent);
+      float tangentAmount = keyframeProgress * length;
+      point.set(pos[0] + tangent[0] * tangentAmount, pos[1] + tangent[1] * tangentAmount);
+    } else if (keyframeProgress > 1) {
+      pathMeasure.getPosTan(length, pos, tangent);
+      float tangentAmount = (keyframeProgress - 1) * length;
+      point.set(pos[0] + tangent[0] * tangentAmount, pos[1] + tangent[1] * tangentAmount);
+    } else {
+      pathMeasure.getPosTan(keyframeProgress * length, pos, null);
+      point.set(pos[0], pos[1]);
+    }
     return point;
   }
 }
