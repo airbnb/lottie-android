@@ -45,17 +45,14 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
 
     float length = pathMeasure.getLength();
 
-    if (keyframeProgress < 0) {
-      pathMeasure.getPosTan(0, pos, tangent);
-      float tangentAmount = keyframeProgress * length;
-      point.set(pos[0] + tangent[0] * tangentAmount, pos[1] + tangent[1] * tangentAmount);
-    } else if (keyframeProgress > 1) {
-      pathMeasure.getPosTan(length, pos, tangent);
-      float tangentAmount = (keyframeProgress - 1) * length;
-      point.set(pos[0] + tangent[0] * tangentAmount, pos[1] + tangent[1] * tangentAmount);
-    } else {
-      pathMeasure.getPosTan(keyframeProgress * length, pos, null);
-      point.set(pos[0], pos[1]);
+    float distance =  keyframeProgress * length;
+    pathMeasure.getPosTan(distance, pos, tangent);
+    point.set(pos[0], pos[1]);
+
+    if (distance < 0) {
+      point.offset(tangent[0] * distance, tangent[1] * distance);
+    } else if (distance > length) {
+      point.offset(tangent[0] * (distance - length), tangent[1] * (distance - length));
     }
     return point;
   }
