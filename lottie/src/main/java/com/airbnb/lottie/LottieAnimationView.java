@@ -43,7 +43,7 @@ import java.util.zip.ZipInputStream;
 
 /**
  * This view will load, deserialize, and display an After Effects animation exported with
- * bodymovin (https://github.com/bodymovin/bodymovin).
+ * bodymovin (<a href="https://github.com/airbnb/lottie-web">github.com/airbnb/lottie-web</a>).
  * <p>
  * You may set the animation in one of two ways:
  * 1) Attrs: {@link R.styleable#LottieAnimationView_lottie_fileName}
@@ -139,10 +139,6 @@ import java.util.zip.ZipInputStream;
   private final Set<LottieOnCompositionLoadedListener> lottieOnCompositionLoadedListeners = new HashSet<>();
 
   @Nullable private LottieTask<LottieComposition> compositionTask;
-  /**
-   * Can be null because it is created async
-   */
-  @Nullable private LottieComposition composition;
 
   public LottieAnimationView(Context context) {
     super(context);
@@ -269,16 +265,22 @@ import java.util.zip.ZipInputStream;
   }
 
   @Override public void setImageResource(int resId) {
+    this.animationResId = 0;
+    animationName = null;
     cancelLoaderTask();
     super.setImageResource(resId);
   }
 
   @Override public void setImageDrawable(Drawable drawable) {
+    this.animationResId = 0;
+    animationName = null;
     cancelLoaderTask();
     super.setImageDrawable(drawable);
   }
 
   @Override public void setImageBitmap(Bitmap bm) {
+    this.animationResId = 0;
+    animationName = null;
     cancelLoaderTask();
     super.setImageBitmap(bm);
   }
@@ -607,7 +609,8 @@ import java.util.zip.ZipInputStream;
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
     LottieResult<LottieComposition> result = compositionTask.getResult();
-    if (result != null && result.getValue() == composition) {
+    LottieDrawable lottieDrawable = this.lottieDrawable;
+    if (result != null && lottieDrawable == getDrawable() && lottieDrawable.getComposition() == result.getValue()) {
       return;
     }
     userActionsTaken.add(UserActionTaken.SET_ANIMATION);
@@ -636,7 +639,6 @@ import java.util.zip.ZipInputStream;
     }
     lottieDrawable.setCallback(this);
 
-    this.composition = composition;
     ignoreUnschedule = true;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
     ignoreUnschedule = false;
@@ -663,7 +665,7 @@ import java.util.zip.ZipInputStream;
   }
 
   @Nullable public LottieComposition getComposition() {
-    return composition;
+    return getDrawable() == lottieDrawable ? lottieDrawable.getComposition() : null;
   }
 
   /**
@@ -930,7 +932,7 @@ import java.util.zip.ZipInputStream;
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
-   * the documentation at http://airbnb.io/lottie for more information about importing shapes from
+   * the documentation at <a href="http://airbnb.io/lottie">airbnb.io/lottie</a> for more information about importing shapes from
    * Sketch or Illustrator to avoid this.
    */
   public void setImageAssetsFolder(String imageAssetsFolder) {
@@ -981,7 +983,7 @@ import java.util.zip.ZipInputStream;
    * Be wary if you are using many images, however. Lottie is designed to work with vector shapes
    * from After Effects. If your images look like they could be represented with vector shapes,
    * see if it is possible to convert them to shape layers and re-export your animation. Check
-   * the documentation at http://airbnb.io/lottie for more information about importing shapes from
+   * the documentation at <a href="http://airbnb.io/lottie">airbnb.io/lottie</a> for more information about importing shapes from
    * Sketch or Illustrator to avoid this.
    */
   public void setImageAssetDelegate(ImageAssetDelegate assetDelegate) {
@@ -1122,6 +1124,7 @@ import java.util.zip.ZipInputStream;
   }
 
   public long getDuration() {
+    LottieComposition composition = getComposition();
     return composition != null ? (long) composition.getDuration() : 0;
   }
 
@@ -1135,7 +1138,6 @@ import java.util.zip.ZipInputStream;
   }
 
   private void clearComposition() {
-    composition = null;
     lottieDrawable.clearComposition();
   }
 
@@ -1247,7 +1249,7 @@ import java.util.zip.ZipInputStream;
   }
 
   public boolean addLottieOnCompositionLoadedListener(@NonNull LottieOnCompositionLoadedListener lottieOnCompositionLoadedListener) {
-    LottieComposition composition = this.composition;
+    LottieComposition composition = getComposition();
     if (composition != null) {
       lottieOnCompositionLoadedListener.onCompositionLoaded(composition);
     }
