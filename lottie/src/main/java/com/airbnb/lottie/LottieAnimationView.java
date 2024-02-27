@@ -639,6 +639,9 @@ import java.util.zip.ZipInputStream;
     this.composition = composition;
     ignoreUnschedule = true;
     boolean isNewComposition = lottieDrawable.setComposition(composition);
+    if (autoPlay) {
+      lottieDrawable.playAnimation();
+    }
     ignoreUnschedule = false;
     if (getDrawable() == lottieDrawable && !isNewComposition) {
       // We can avoid re-setting the drawable, and invalidating the view, since the composition
@@ -1078,6 +1081,7 @@ import java.util.zip.ZipInputStream;
 
   @MainThread
   public void cancelAnimation() {
+    autoPlay = false;
     userActionsTaken.add(UserActionTaken.PLAY_OPTION);
     lottieDrawable.cancelAnimation();
   }
