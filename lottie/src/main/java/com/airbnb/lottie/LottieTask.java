@@ -137,18 +137,24 @@ public class LottieTask<T> {
 
   private void notifyListeners() {
     // Listeners should be called on the main thread.
-    handler.post(() -> {
-      // Local reference in case it gets set on a background thread.
-      LottieResult<T> result = LottieTask.this.result;
-      if (result == null) {
-        return;
-      }
-      if (result.getValue() != null) {
-        notifySuccessListeners(result.getValue());
-      } else {
-        notifyFailureListeners(result.getException());
-      }
-    });
+    if (Looper.myLooper() == Looper.getMainLooper()) {
+      notifyListenersInternal();
+    } else {
+      handler.post(this::notifyListenersInternal);
+    }
+  }
+
+  private void notifyListenersInternal() {
+    // Local reference in case it gets set on a background thread.
+    LottieResult<T> result = LottieTask.this.result;
+    if (result == null) {
+      return;
+    }
+    if (result.getValue() != null) {
+      notifySuccessListeners(result.getValue());
+    } else {
+      notifyFailureListeners(result.getException());
+    }
   }
 
   private synchronized void notifySuccessListeners(T value) {
