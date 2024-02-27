@@ -8,7 +8,8 @@ import androidx.annotation.RestrictTo;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public enum FileExtension {
   JSON(".json"),
-  ZIP(".zip");
+  ZIP(".zip"),
+  GZIP(".gz");
 
   public final String extension;
 

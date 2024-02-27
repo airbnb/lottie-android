@@ -76,6 +76,8 @@ public class NetworkCache {
     FileExtension extension;
     if (cachedFile.getAbsolutePath().endsWith(".zip")) {
       extension = FileExtension.ZIP;
+    } else if (cachedFile.getAbsolutePath().endsWith(".gz")) {
+      extension = FileExtension.GZIP;
     } else {
       extension = FileExtension.JSON;
     }
@@ -142,6 +144,10 @@ public class NetworkCache {
     File zipFile = new File(parentDir(), filenameForUrl(url, FileExtension.ZIP, false));
     if (zipFile.exists()) {
       return zipFile;
+    }
+    File gzipFile = new File(parentDir(), filenameForUrl(url, FileExtension.GZIP, false));
+    if (gzipFile.exists()) {
+      return gzipFile;
     }
     return null;
   }
