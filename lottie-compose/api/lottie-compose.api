@@ -1,0 +1,269 @@
+public final class com/airbnb/lottie/compose/AnimateLottieCompositionAsStateKt {
+	public static final fun animateLottieCompositionAsState (Lcom/airbnb/lottie/LottieComposition;ZZZLcom/airbnb/lottie/compose/LottieClipSpec;FILcom/airbnb/lottie/compose/LottieCancellationBehavior;ZZLandroidx/compose/runtime/Composer;II)Lcom/airbnb/lottie/compose/LottieAnimationState;
+}
+
+public abstract interface class com/airbnb/lottie/compose/LottieAnimatable : com/airbnb/lottie/compose/LottieAnimationState {
+	public abstract fun animate (Lcom/airbnb/lottie/LottieComposition;IIZFLcom/airbnb/lottie/compose/LottieClipSpec;FZLcom/airbnb/lottie/compose/LottieCancellationBehavior;ZZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun snapTo (Lcom/airbnb/lottie/LottieComposition;FIZLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/airbnb/lottie/compose/LottieAnimatable$DefaultImpls {
+	public static synthetic fun animate$default (Lcom/airbnb/lottie/compose/LottieAnimatable;Lcom/airbnb/lottie/LottieComposition;IIZFLcom/airbnb/lottie/compose/LottieClipSpec;FZLcom/airbnb/lottie/compose/LottieCancellationBehavior;ZZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static fun getLastFrameNanos (Lcom/airbnb/lottie/compose/LottieAnimatable;)J
+	public static synthetic fun snapTo$default (Lcom/airbnb/lottie/compose/LottieAnimatable;Lcom/airbnb/lottie/LottieComposition;FIZLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/airbnb/lottie/compose/LottieAnimatableKt {
+	public static final fun LottieAnimatable ()Lcom/airbnb/lottie/compose/LottieAnimatable;
+	public static final fun rememberLottieAnimatable (Landroidx/compose/runtime/Composer;I)Lcom/airbnb/lottie/compose/LottieAnimatable;
+	public static final fun resetToBeginning (Lcom/airbnb/lottie/compose/LottieAnimatable;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/airbnb/lottie/compose/LottieAnimationKt {
+	public static final fun LottieAnimation (Lcom/airbnb/lottie/LottieComposition;FLandroidx/compose/ui/Modifier;ZZZLcom/airbnb/lottie/RenderMode;ZLcom/airbnb/lottie/compose/LottieDynamicProperties;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;ZZLcom/airbnb/lottie/AsyncUpdates;Landroidx/compose/runtime/Composer;III)V
+	public static final fun LottieAnimation (Lcom/airbnb/lottie/LottieComposition;Landroidx/compose/ui/Modifier;ZZLcom/airbnb/lottie/compose/LottieClipSpec;FIZZZLcom/airbnb/lottie/RenderMode;ZZLcom/airbnb/lottie/compose/LottieDynamicProperties;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;ZZLjava/util/Map;ZLcom/airbnb/lottie/AsyncUpdates;Landroidx/compose/runtime/Composer;IIII)V
+	public static final fun LottieAnimation (Lcom/airbnb/lottie/LottieComposition;Lkotlin/jvm/functions/Function0;Landroidx/compose/ui/Modifier;ZZZLcom/airbnb/lottie/RenderMode;ZLcom/airbnb/lottie/compose/LottieDynamicProperties;Landroidx/compose/ui/Alignment;Landroidx/compose/ui/layout/ContentScale;ZZLjava/util/Map;Lcom/airbnb/lottie/AsyncUpdates;ZLandroidx/compose/runtime/Composer;III)V
+}
+
+public abstract interface class com/airbnb/lottie/compose/LottieAnimationState : androidx/compose/runtime/State {
+	public abstract fun getClipSpec ()Lcom/airbnb/lottie/compose/LottieClipSpec;
+	public abstract fun getComposition ()Lcom/airbnb/lottie/LottieComposition;
+	public abstract fun getIteration ()I
+	public abstract fun getIterations ()I
+	public abstract fun getLastFrameNanos ()J
+	public abstract fun getProgress ()F
+	public abstract fun getReverseOnRepeat ()Z
+	public abstract fun getSpeed ()F
+	public abstract fun getUseCompositionFrameRate ()Z
+	public abstract fun isAtEnd ()Z
+	public abstract fun isPlaying ()Z
+}
+
+public final class com/airbnb/lottie/compose/LottieAnimationState$DefaultImpls {
+	public static fun getLastFrameNanos (Lcom/airbnb/lottie/compose/LottieAnimationState;)J
+}
+
+public final class com/airbnb/lottie/compose/LottieCancellationBehavior : java/lang/Enum {
+	public static final field Immediately Lcom/airbnb/lottie/compose/LottieCancellationBehavior;
+	public static final field OnIterationFinish Lcom/airbnb/lottie/compose/LottieCancellationBehavior;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieCancellationBehavior;
+	public static fun values ()[Lcom/airbnb/lottie/compose/LottieCancellationBehavior;
+}
+
+public abstract class com/airbnb/lottie/compose/LottieClipSpec {
+	public static final field $stable I
+}
+
+public final class com/airbnb/lottie/compose/LottieClipSpec$Frame : com/airbnb/lottie/compose/LottieClipSpec {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Integer;Ljava/lang/Integer;Z)V
+	public synthetic fun <init> (Ljava/lang/Integer;Ljava/lang/Integer;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Integer;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/lang/Integer;Ljava/lang/Integer;Z)Lcom/airbnb/lottie/compose/LottieClipSpec$Frame;
+	public static synthetic fun copy$default (Lcom/airbnb/lottie/compose/LottieClipSpec$Frame;Ljava/lang/Integer;Ljava/lang/Integer;ZILjava/lang/Object;)Lcom/airbnb/lottie/compose/LottieClipSpec$Frame;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMax ()Ljava/lang/Integer;
+	public final fun getMaxInclusive ()Z
+	public final fun getMin ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieClipSpec$Marker : com/airbnb/lottie/compose/LottieClipSpec {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieClipSpec$Marker;
+	public static synthetic fun copy$default (Lcom/airbnb/lottie/compose/LottieClipSpec$Marker;Ljava/lang/String;ILjava/lang/Object;)Lcom/airbnb/lottie/compose/LottieClipSpec$Marker;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMarker ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieClipSpec$Markers : com/airbnb/lottie/compose/LottieClipSpec {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Z)Lcom/airbnb/lottie/compose/LottieClipSpec$Markers;
+	public static synthetic fun copy$default (Lcom/airbnb/lottie/compose/LottieClipSpec$Markers;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/airbnb/lottie/compose/LottieClipSpec$Markers;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMax ()Ljava/lang/String;
+	public final fun getMaxInclusive ()Z
+	public final fun getMin ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieClipSpec$Progress : com/airbnb/lottie/compose/LottieClipSpec {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (FF)V
+	public synthetic fun <init> (FFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()F
+	public final fun component2 ()F
+	public final fun copy (FF)Lcom/airbnb/lottie/compose/LottieClipSpec$Progress;
+	public static synthetic fun copy$default (Lcom/airbnb/lottie/compose/LottieClipSpec$Progress;FFILjava/lang/Object;)Lcom/airbnb/lottie/compose/LottieClipSpec$Progress;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMax ()F
+	public final fun getMin ()F
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/airbnb/lottie/compose/LottieCompositionResult : androidx/compose/runtime/State {
+	public abstract fun await (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getError ()Ljava/lang/Throwable;
+	public abstract fun getValue ()Lcom/airbnb/lottie/LottieComposition;
+	public abstract fun isComplete ()Z
+	public abstract fun isFailure ()Z
+	public abstract fun isLoading ()Z
+	public abstract fun isSuccess ()Z
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionResultKt {
+	public static final fun awaitOrNull (Lcom/airbnb/lottie/compose/LottieCompositionResult;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public abstract interface class com/airbnb/lottie/compose/LottieCompositionSpec {
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$Asset : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieCompositionSpec$Asset;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getAssetName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$ContentProvider : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (Landroid/net/Uri;)Lcom/airbnb/lottie/compose/LottieCompositionSpec$ContentProvider;
+	public static fun constructor-impl (Landroid/net/Uri;)Landroid/net/Uri;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Landroid/net/Uri;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Landroid/net/Uri;Landroid/net/Uri;)Z
+	public final fun getUri ()Landroid/net/Uri;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Landroid/net/Uri;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Landroid/net/Uri;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Landroid/net/Uri;
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$File : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieCompositionSpec$File;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getFileName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$JsonString : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieCompositionSpec$JsonString;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getJsonString ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$RawRes : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (I)Lcom/airbnb/lottie/compose/LottieCompositionSpec$RawRes;
+	public static fun constructor-impl (I)I
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (ILjava/lang/Object;)Z
+	public static final fun equals-impl0 (II)Z
+	public final fun getResId ()I
+	public fun hashCode ()I
+	public static fun hashCode-impl (I)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (I)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()I
+}
+
+public final class com/airbnb/lottie/compose/LottieCompositionSpec$Url : com/airbnb/lottie/compose/LottieCompositionSpec {
+	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/airbnb/lottie/compose/LottieCompositionSpec$Url;
+	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Ljava/lang/String;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Ljava/lang/String;
+}
+
+public final class com/airbnb/lottie/compose/LottieConstants {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/airbnb/lottie/compose/LottieConstants;
+	public static final field IterateForever I
+}
+
+public final class com/airbnb/lottie/compose/LottieDynamicProperties {
+	public static final field $stable I
+	public fun <init> (Ljava/util/List;)V
+}
+
+public final class com/airbnb/lottie/compose/LottieDynamicPropertiesKt {
+	public static final fun rememberLottieDynamicProperties ([Lcom/airbnb/lottie/compose/LottieDynamicProperty;Landroidx/compose/runtime/Composer;I)Lcom/airbnb/lottie/compose/LottieDynamicProperties;
+	public static final fun rememberLottieDynamicProperty (Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/String;Landroidx/compose/runtime/Composer;I)Lcom/airbnb/lottie/compose/LottieDynamicProperty;
+	public static final fun rememberLottieDynamicProperty (Ljava/lang/Object;[Ljava/lang/String;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/airbnb/lottie/compose/LottieDynamicProperty;
+}
+
+public final class com/airbnb/lottie/compose/LottieDynamicProperty {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Lcom/airbnb/lottie/model/KeyPath;Ljava/lang/Object;)V
+}
+
+public final class com/airbnb/lottie/compose/LottiePainter : androidx/compose/ui/graphics/painter/Painter {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun getIntrinsicSize-NH-jbRc ()J
+}
+
+public final class com/airbnb/lottie/compose/LottiePainterKt {
+	public static final fun rememberLottiePainter (Lcom/airbnb/lottie/LottieComposition;FZZZLcom/airbnb/lottie/RenderMode;ZLcom/airbnb/lottie/compose/LottieDynamicProperties;ZZLjava/util/Map;Lcom/airbnb/lottie/AsyncUpdates;Landroidx/compose/runtime/Composer;III)Lcom/airbnb/lottie/compose/LottiePainter;
+}
+
+public final class com/airbnb/lottie/compose/LottieRetrySignal {
+	public static final field $stable I
+	public final fun awaitRetry (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun isAwaitingRetry ()Z
+	public final fun retry ()V
+}
+
+public final class com/airbnb/lottie/compose/LottieRetrySignalKt {
+	public static final fun rememberLottieRetrySignal (Landroidx/compose/runtime/Composer;I)Lcom/airbnb/lottie/compose/LottieRetrySignal;
+}
+
+public final class com/airbnb/lottie/compose/RememberLottieCompositionKt {
+	public static final fun rememberLottieComposition (Lcom/airbnb/lottie/compose/LottieCompositionSpec;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)Lcom/airbnb/lottie/compose/LottieCompositionResult;
+}
+
