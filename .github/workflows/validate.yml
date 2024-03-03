@@ -56,6 +56,20 @@ jobs:
         with:
           name: unit_test_reports
           path: reports.zip
+  api-compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+      - name: Setup JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: 17
+      - uses: gradle/gradle-build-action@v2
+      - name: Run API compatibility check
+        run: ./gradlew apiCheck --no-daemon
+
   snapshot-tests:
     runs-on: ubuntu-latest
     steps:

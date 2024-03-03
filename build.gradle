@@ -10,6 +10,7 @@ plugins {
   id "com.vanniktech.maven.publish" apply false
   id "org.jetbrains.dokka" apply false
   id "androidx.baselineprofile" apply false
+  id "org.jetbrains.kotlinx.binary-compatibility-validator" apply false
 }
 
 allprojects {
