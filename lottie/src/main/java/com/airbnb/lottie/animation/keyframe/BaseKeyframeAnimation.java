@@ -1,5 +1,6 @@
 package com.airbnb.lottie.animation.keyframe;
 
+import android.annotation.SuppressLint;
 import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +17,9 @@ import java.util.List;
  * @param <A> Animation type
  */
 public abstract class BaseKeyframeAnimation<K, A> {
+
   public interface AnimationListener {
+
     void onValueChanged();
   }
 
@@ -116,6 +119,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     return keyframe.interpolator.getInterpolation(getLinearCurrentKeyframeProgress());
   }
 
+  @SuppressLint("Range")
   @FloatRange(from = 0f, to = 1f)
   private float getStartDelayProgress() {
     if (cachedStartDelayProgress == -1f) {
@@ -124,6 +128,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     return cachedStartDelayProgress;
   }
 
+  @SuppressLint("Range")
   @FloatRange(from = 0f, to = 1f)
   float getEndProgress() {
     if (cachedEndProgress == -1f) {
@@ -196,6 +201,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   private interface KeyframesWrapper<T> {
+
     boolean isEmpty();
 
     boolean isValueChanged(float progress);
@@ -212,6 +218,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   private static final class EmptyKeyframeWrapper<T> implements KeyframesWrapper<T> {
+
     @Override
     public boolean isEmpty() {
       return true;
@@ -244,6 +251,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   private static final class SingleKeyframeWrapper<T> implements KeyframesWrapper<T> {
+
     @NonNull
     private final Keyframe<T> keyframe;
     private float cachedInterpolatedProgress = -1f;
@@ -288,6 +296,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   private static final class KeyframesWrapperImpl<T> implements KeyframesWrapper<T> {
+
     private final List<? extends Keyframe<T>> keyframes;
     @NonNull
     private Keyframe<T> currentKeyframe;

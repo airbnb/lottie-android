@@ -33,14 +33,6 @@ allprojects {
       kotlinOptions.jvmTarget = targetJavaVersion.toString()
     }
   }
-  ["com.android.library", "com.android.application"].forEach { androidPlugin ->
-    pluginManager.withPlugin(androidPlugin) {
-      android {
-        sourceCompatibility targetJavaVersion
-        targetCompatibility targetJavaVersion
-      }
-    }
-  }
 }
 
 ext {
