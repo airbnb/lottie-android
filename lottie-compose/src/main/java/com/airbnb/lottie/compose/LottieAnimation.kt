@@ -64,6 +64,7 @@ import kotlin.math.roundToInt
  *                  size than this composable.
  * @param contentScale Define how the animation should be scaled if it has a different size than this Composable.
  * @param clipToCompositionBounds Determines whether or not Lottie will clip the animation to the original animation composition bounds.
+ *                                The composition bounds refers to the Lottie animation composition, not the Compose composition.
  * @param clipTextToBoundingBox When true, if there is a bounding box set on a text layer (paragraph text), any text
  *                              that overflows past its height will not be drawn.
  * @param fontMap A map of keys to Typefaces. The key can be: "fName", "fFamily", or "fFamily-fStyle" as specified in your Lottie file.
