@@ -92,6 +92,7 @@ fun LottieAnimation(
     fontMap: Map<String, Typeface>? = null,
     asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
     safeMode: Boolean = false,
+    testDoNotSubmit: Boolean = false
 ) {
     val drawable = remember { LottieDrawable() }
     val matrix = remember { Matrix() }
