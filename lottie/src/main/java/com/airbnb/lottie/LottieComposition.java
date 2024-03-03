@@ -219,13 +219,13 @@ public class LottieComposition {
   public Map<String, LottieImageAsset> getImages() {
     float dpScale = Utils.dpScale();
     if (dpScale != imagesDpScale) {
-      imagesDpScale = dpScale;
       Set<Map.Entry<String, LottieImageAsset>> entries = images.entrySet();
 
       for (Map.Entry<String, LottieImageAsset> entry : entries) {
         images.put(entry.getKey(), entry.getValue().copyWithScale(imagesDpScale / dpScale));
       }
     }
+    imagesDpScale = dpScale;
     return images;
   }
 
