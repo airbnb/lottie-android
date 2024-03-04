@@ -1,30 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.airbnb.lottie.samples.views.Marquee
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:subtitleText="@string/lottiefiles_airbnb"
-        app:titleText="@string/lottiefiles" />
+        android:layout_height="wrap_content">
 
-    <com.airbnb.lottie.samples.views.LottiefilesTabBar
-        android:id="@+id/tab_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/lottiefiles_logo"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/lottiefiles_logo"
+            app:layout_constraintDimensionRatio="W,165:32"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.airbnb.lottie.samples.views.SearchInputItemView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/lottiefiles_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="24dp"
+            android:text="@string/lottiefiles_description"
+            android:textColor="#434343"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lottiefiles_logo" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layoutManager="LinearLayoutManager" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/get_it_on_play"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/get_it_on_play"
+            app:layout_constraintDimensionRatio="W,564:168"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lottiefiles_description" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@string/lottiefiles_airbnb"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/get_it_on_play"
+            app:layout_constraintStart_toEndOf="@id/get_it_on_play"
+            app:layout_constraintTop_toTopOf="@id/get_it_on_play" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="18dp"
+            android:src="@drawable/lottiefiles_screen"
+            app:layout_constraintDimensionRatio="H,360:335"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/get_it_on_play" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
