@@ -109,7 +109,10 @@ public class Layer {
   }
 
   float getStartProgress() {
-    return startFrame / composition.getDurationFrames();
+    if ("__container".equals(layerName)) {
+      return startFrame / composition.getDurationFrames();
+    }
+    return (startFrame - composition.getStartFrame()) / composition.getDurationFrames();
   }
 
   List<Keyframe<Float>> getInOutKeyframes() {

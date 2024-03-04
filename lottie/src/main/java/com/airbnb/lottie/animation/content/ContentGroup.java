@@ -169,7 +169,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     if (transformAnimation != null) {
       matrix.preConcat(transformAnimation.getMatrix());
       int opacity = transformAnimation.getOpacity() == null ? 100 : transformAnimation.getOpacity().getValue();
-      layerAlpha = (int) ((opacity / 100f * parentAlpha / 255f) * 255);
+      layerAlpha = (int) ((opacity / 100f * parentAlpha / 255f ) * 255);
     } else {
       layerAlpha = parentAlpha;
     }

@@ -160,7 +160,7 @@ public class CompositionLayer extends BaseLayer {
       progress -= layerModel.getStartProgress();
     }
     //Time stretch needs to be divided if is not "__container"
-    if (layerModel.getTimeStretch() != 0 && !"__container".equals(layerModel.getName())) {
+    if (layerModel.getTimeStretch() != 0f && layerModel.getTimeStretch() != 1f && !"__container".equals(layerModel.getName())) {
       progress /= layerModel.getTimeStretch();
     }
     for (int i = layers.size() - 1; i >= 0; i--) {

@@ -111,6 +111,7 @@ public class Keyframe<T> {
     }
     if (startProgress == Float.MIN_VALUE) {
       startProgress = (startFrame - composition.getStartFrame()) / composition.getDurationFrames();
+      // startProgress = startFrame / composition.getDurationFrames();
     }
     return startProgress;
   }
