@@ -1,3 +1,8 @@
+# 6.4.0
+### New Features
+* Add safe mode ([#2455](https://github.com/airbnb/lottie-android/pull/2455))
+* Clarify clipToCompositionBounds docs ([#2473](https://github.com/airbnb/lottie-android/pull/2473))
+
 # 6.3.0
 * Add LottiePainter and rememberLottiePainter to use Lottie anywhere a Painter can be used ([#2442](https://github.com/airbnb/lottie-android/pull/2442))
 * Constrain unconstrainted bounds when the other dimension is constrained ([#2437](https://github.com/airbnb/lottie-android/pull/2437))

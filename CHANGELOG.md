@@ -1,10 +1,22 @@
+# 6.4.0
+### New Features
+* Add support for reduced motion marker names ([#2451](https://github.com/airbnb/lottie-android/pull/2451))
+* Support GZIP and TGS network downloads ([#2454](https://github.com/airbnb/lottie-android/pull/2454))
+### Bugs Fixed
+* Allow easings to go <0 and >1 ([#2457](https://github.com/airbnb/lottie-android/pull/2457))
+* Fix a memory leak in LottieTask ([#2465](https://github.com/airbnb/lottie-android/pull/2465))
+* Prevent play from working after a non-Lottie drawable was set and then returned back ([#2468](https://github.com/airbnb/lottie-android/pull/2468))
+* Respect autoPlay in LottieAnimationView when setting a new composition ([#2469](https://github.com/airbnb/lottie-android/pull/2469))
+* Call LottieTask synchronously when already on the main thread ([#2470](https://github.com/airbnb/lottie-android/pull/2470))
+* Properly rescale bitmaps when the system scale changes ([#2475](https://github.com/airbnb/lottie-android/pull/2475))
+
 # 6.3.0
 ### New Features
 * Add support dynamic path properties on shape contents ([#2439](https://github.com/airbnb/lottie-android/pull/2439))
 * Add support for gzipped and tgs files ([#2435](https://github.com/airbnb/lottie-android/pull/2435))
 * Add an option to clip text if it extends beyond its bounding box ([#2412](https://github.com/airbnb/lottie-android/pull/2412))
 
-### Bugs Fixes
+### Bugs Fixed
 * Make all LottieAnimationView setters idempotent ([#2441](https://github.com/airbnb/lottie-android/pull/2441))
 * Fix a rendering artifact for polygons with large strokes ([#2440](https://github.com/airbnb/lottie-android/pull/2440))
 * Re-scale bitmaps if the system scale changes ([#2438](https://github.com/airbnb/lottie-android/pull/2438))
