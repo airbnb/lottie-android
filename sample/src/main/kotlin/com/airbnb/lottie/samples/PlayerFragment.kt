@@ -133,17 +133,6 @@ class PlayerFragment : BaseFragment(R.layout.player_fragment) {
 
         val args = arguments?.getParcelableCompat(EXTRA_ANIMATION_ARGS, CompositionArgs::class.java)
             ?: throw IllegalArgumentException("No composition args specified")
-        args.animationData?.bgColorInt?.let {
-            binding.controlBarBackgroundColor.backgroundButton1.setBackgroundColor(it)
-            binding.animationContainer.setBackgroundColor(it)
-            invertColor(it)
-        }
-
-        args.animationDataV2?.bgColorInt?.let {
-            binding.controlBarBackgroundColor.backgroundButton1.setBackgroundColor(it)
-            binding.animationContainer.setBackgroundColor(it)
-            invertColor(it)
-        }
 
         binding.controlBarTrim.minFrameView.setOnClickListener { showMinFrameDialog() }
         binding.controlBarTrim.maxFrameView.setOnClickListener { showMaxFrameDialog() }

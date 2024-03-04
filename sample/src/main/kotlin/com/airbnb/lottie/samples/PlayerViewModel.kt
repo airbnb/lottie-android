@@ -42,7 +42,7 @@ class PlayerViewModel(
 ) : MavericksViewModel<PlayerState>(initialState) {
 
     fun fetchAnimation(args: CompositionArgs) {
-        val url = args.url ?: args.animationDataV2?.file ?: args.animationData?.lottieLink
+        val url = args.url
 
         when {
             url != null -> LottieCompositionFactory.fromUrl(application, url, null)
