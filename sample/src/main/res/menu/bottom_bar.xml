@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/showcase"
-        android:icon="@drawable/ic_showcase"
-        android:title="@string/bottom_bar_showcase"
-        app:showAsAction="ifRoom|withText"/>
 
     <item
         android:id="@+id/preview"

@@ -2,7 +2,6 @@ package com.airbnb.lottie.samples
 
 import androidx.multidex.MultiDexApplication
 import com.airbnb.lottie.L
-import com.airbnb.lottie.samples.api.LottiefilesApi
 import com.airbnb.mvrx.Mavericks
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
@@ -33,8 +32,6 @@ class LottieApplication : MultiDexApplication() {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-
-    val lottiefilesService: LottiefilesApi by lazy { retrofit.create(LottiefilesApi::class.java) }
 
     override fun onCreate() {
         super.onCreate()

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.airbnb.lottie.samples.databinding.MainActivityBinding
 import com.airbnb.lottie.samples.utils.viewBinding
 
@@ -17,16 +18,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding.bottomNavigation.setOnItemSelectedListener listener@{ item ->
             when (item.itemId) {
-                R.id.showcase -> showFragment(ShowcaseFragment())
                 R.id.preview -> showFragment(PreviewFragment())
                 R.id.lottiefiles -> showFragment(LottiefilesFragment())
                 R.id.learn -> showShowcase()
             }
             true
         }
+        binding.bottomNavigation.itemIconTintList = null
 
         if (savedInstanceState == null) {
-            showFragment(ShowcaseFragment())
+            showFragment(PreviewFragment())
         }
     }
 
@@ -36,8 +37,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.content, fragment)
-            .commit()
+        supportFragmentManager.commit {
+            replace(R.id.content, fragment)
+        }
     }
 }
