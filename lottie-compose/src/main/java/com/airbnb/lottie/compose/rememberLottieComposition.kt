@@ -22,6 +22,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 import java.io.IOException
+import java.util.zip.GZIPInputStream
 import java.util.zip.ZipInputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -157,14 +158,19 @@ private fun lottieTask(
                 null
             } else {
                 val fis = FileInputStream(spec.fileName)
+                val actualCacheKey = if (cacheKey == DefaultCacheKey) spec.fileName else cacheKey
                 when {
                     spec.fileName.endsWith("zip") -> LottieCompositionFactory.fromZipStream(
                         ZipInputStream(fis),
-                        if (cacheKey == DefaultCacheKey) spec.fileName else cacheKey,
+                        actualCacheKey,
+                    )
+                    spec.fileName.endsWith("tgs") -> LottieCompositionFactory.fromJsonInputStream(
+                        GZIPInputStream(fis),
+                        actualCacheKey,
                     )
                     else -> LottieCompositionFactory.fromJsonInputStream(
                         fis,
-                        if (cacheKey == DefaultCacheKey) spec.fileName else cacheKey,
+                        actualCacheKey,
                     )
                 }
             }
@@ -181,8 +187,22 @@ private fun lottieTask(
             LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
         }
         is LottieCompositionSpec.ContentProvider -> {
-            val inputStream = context.contentResolver.openInputStream(spec.uri)
-            LottieCompositionFactory.fromJsonInputStream(inputStream, if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey)
+            val fis = context.contentResolver.openInputStream(spec.uri)
+            val actualCacheKey = if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey
+            when {
+                spec.uri.toString().endsWith("zip") -> LottieCompositionFactory.fromZipStream(
+                    ZipInputStream(fis),
+                    actualCacheKey,
+                )
+                spec.uri.toString().endsWith("tgs") -> LottieCompositionFactory.fromJsonInputStream(
+                    GZIPInputStream(fis),
+                    actualCacheKey,
+                )
+                else -> LottieCompositionFactory.fromJsonInputStream(
+                    fis,
+                    actualCacheKey,
+                )
+            }
         }
     }
 }
