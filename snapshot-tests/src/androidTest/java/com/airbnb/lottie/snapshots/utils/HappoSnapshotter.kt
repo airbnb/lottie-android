@@ -21,6 +21,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
@@ -175,17 +176,15 @@ class HappoSnapshotter(
     }
 
     private suspend fun OkHttpClient.executeDeferred(request: Request): Response = suspendCoroutine { continuation ->
-        newCall(request).enqueue(
-            object : Callback {
-                override fun onFailure(call: okhttp3.Call, e: IOException) {
-                    continuation.resumeWithException(e)
-                }
+        newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                continuation.resumeWithException(e)
+            }
 
-                override fun onResponse(call: okhttp3.Call, response: Response) {
-                    continuation.resume(response)
-                }
-            },
-        )
+            override fun onResponse(call: Call, response: Response) {
+                continuation.resume(response)
+            }
+        })
     }
 
     private val ByteArray.md5: String
