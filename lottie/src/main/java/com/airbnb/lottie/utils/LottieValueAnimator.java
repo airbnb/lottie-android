@@ -90,7 +90,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
       return;
     }
 
-    L.beginSection("LottieValueAnimator#doFrame");
+    if (L.isTraceEnabled()) {
+      L.beginSection("LottieValueAnimator#doFrame");
+    }
     long timeSinceFrame = lastFrameTimeNs == 0 ? 0 : frameTimeNanos - lastFrameTimeNs;
     float frameDuration = getFrameDurationNs();
     float dFrames = timeSinceFrame / frameDuration;
@@ -127,7 +129,9 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
 
     verifyFrame();
-    L.endSection("LottieValueAnimator#doFrame");
+    if (L.isTraceEnabled()) {
+      L.endSection("LottieValueAnimator#doFrame");
+    }
   }
 
   private float getFrameDurationNs() {

@@ -117,7 +117,9 @@ public class GradientFillContent
     if (hidden) {
       return;
     }
-    L.beginSection("GradientFillContent#draw");
+    if (L.isTraceEnabled()) {
+      L.beginSection("GradientFillContent#draw");
+    }
     path.reset();
     for (int i = 0; i < paths.size(); i++) {
       path.addPath(paths.get(i).getPath(), parentMatrix);
@@ -156,7 +158,9 @@ public class GradientFillContent
     paint.setAlpha(clamp(alpha, 0, 255));
 
     canvas.drawPath(path, paint);
-    L.endSection("GradientFillContent#draw");
+    if (L.isTraceEnabled()) {
+      L.endSection("GradientFillContent#draw");
+    }
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
