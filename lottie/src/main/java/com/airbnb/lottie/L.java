@@ -46,6 +46,10 @@ public class L {
     }
   }
 
+  public static boolean isTraceEnabled(){
+    return traceEnabled;
+  }
+
   public static void setNetworkCacheEnabled(boolean enabled) {
     networkCacheEnabled = enabled;
   }
