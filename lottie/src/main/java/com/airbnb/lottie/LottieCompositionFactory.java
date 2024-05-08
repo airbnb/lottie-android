@@ -640,7 +640,9 @@ public class LottieCompositionFactory {
             Logger.warning("data URL did not have correct base64 format.", e);
             return null;
           }
-          asset.setBitmap(BitmapFactory.decodeByteArray(data, 0, data.length, opts));
+          Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+          bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
+          asset.setBitmap(bitmap);
         }
       }
     }
