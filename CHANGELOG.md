@@ -1,3 +1,10 @@
+# 6.4.1
+### Bugs Fixed
+* Scale base64 encoded bitmaps ([#2501](https://github.com/airbnb/lottie-android/pull/2501))
+* Prevent systrace strings from getting created when systrace is off ([#2493](https://github.com/airbnb/lottie-android/pull/2493))
+* Allow missing end values for integer animations ([#2487](https://github.com/airbnb/lottie-android/pull/2487))
+* Add an extra null check in BaseKeyframeAnimation ([#2486](https://github.com/airbnb/lottie-android/pull/2486))
+
 # 6.4.0
 ### New Features
 * Add support for reduced motion marker names ([#2451](https://github.com/airbnb/lottie-android/pull/2451))
