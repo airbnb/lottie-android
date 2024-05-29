@@ -42,7 +42,7 @@ baselineProfile {
 }
 
 dependencies {
-  implementation libs.androidx.appcompat
+  api libs.androidx.appcompat
   // Do not upgrade to 2.0 because it will bring in Kotlin as a transitive dependency.
   //noinspection GradleDependency
   implementation libs.okio
