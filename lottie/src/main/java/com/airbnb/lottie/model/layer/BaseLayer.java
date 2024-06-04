@@ -121,10 +121,14 @@ public abstract class BaseLayer
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
     drawTraceName = layerModel.getName() + "#draw";
-    if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
+    if (layerModel.getMatteType() == Layer.MatteType.INVERT || layerModel.getMatteType() == Layer.MatteType.LUMA_INVERTED) {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
     } else {
       mattePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+    }
+
+    if (layerModel.getMatteType() == Layer.MatteType.LUMA || layerModel.getMatteType() == Layer.MatteType.LUMA_INVERTED){
+      mattePaint.setColorFilter(Utils.getLumaColorFilter());
     }
 
     this.transform = layerModel.getTransform().createAnimation();
@@ -449,7 +453,7 @@ public abstract class BaseLayer
       return;
     }
 
-    if (layerModel.getMatteType() == Layer.MatteType.INVERT) {
+    if (layerModel.getMatteType() == Layer.MatteType.INVERT || layerModel.getMatteType() == Layer.MatteType.LUMA_INVERTED) {
       // We can't trim the bounds if the mask is inverted since it extends all the way to the
       // composition bounds.
       return;
