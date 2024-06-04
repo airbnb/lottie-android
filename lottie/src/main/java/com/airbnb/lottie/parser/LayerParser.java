@@ -151,14 +151,6 @@ public class LayerParser {
             break;
           }
           matteType = Layer.MatteType.values()[matteTypeIndex];
-          switch (matteType) {
-            case LUMA:
-              composition.addWarning("Unsupported matte type: Luma");
-              break;
-            case LUMA_INVERTED:
-              composition.addWarning("Unsupported matte type: Luma Inverted");
-              break;
-          }
           composition.incrementMatteOrMaskCount(1);
           break;
         case 10:

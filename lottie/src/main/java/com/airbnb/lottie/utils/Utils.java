@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -66,6 +68,15 @@ public final class Utils {
   };
 
   private static final float INV_SQRT_2 = (float) (Math.sqrt(2) / 2.0);
+
+  private static final ColorFilter lumaColorFilter = new ColorMatrixColorFilter(
+      new float[]{
+          0f, 0f, 0f, 0f, 0f,
+          0f, 0f, 0f, 0f, 0f,
+          0f, 0f, 0f, 0f, 0f,
+          0.2126f, 0.7152f, 0.0722f, 0f, 0f
+      }
+  );
 
   private Utils() {
   }
@@ -330,5 +341,9 @@ public final class Utils {
     paint.setColor(Color.BLUE);
     canvas.drawPath(path, paint);
     return bitmap;
+  }
+
+  public static ColorFilter getLumaColorFilter() {
+    return lumaColorFilter;
   }
 }
