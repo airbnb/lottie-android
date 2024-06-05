@@ -142,7 +142,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   FontAssetDelegate fontAssetDelegate;
   @Nullable
   TextDelegate textDelegate;
-  private boolean enableMergePaths;
+  private LottieFeatureFlags lottieFeatureFlags = LottieFeatureFlags.getInstance();
+
   private boolean maintainOriginalImageBounds = false;
   private boolean clipToCompositionBounds = true;
   @Nullable
@@ -285,34 +286,15 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
-  public boolean enableMergePathsForKitKatAndAbove() {
-    return enableMergePaths;
-  }
-
-  /**
-   * Enable this to get merge path support for devices running KitKat (19) and above.
-   * <p>
-   * Merge paths currently don't work if the the operand shape is entirely contained within the
-   * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
-   * instead of using merge paths.
-   */
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
-    if (enableMergePaths == enable) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      Logger.warning("Merge paths are not supported pre-Kit Kat.");
-      return;
-    }
-    enableMergePaths = enable;
+    lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePath_19, enable);
     if (composition != null) {
       buildCompositionLayer();
     }
   }
 
   public boolean isMergePathsEnabledForKitKatAndAbove() {
-    return enableMergePaths;
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePath_19);
   }
 
   /**

@@ -60,7 +60,7 @@ public class MergePaths implements ContentModel {
   }
 
   @Override @Nullable public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
-    if (!drawable.enableMergePathsForKitKatAndAbove()) {
+    if (!drawable.isMergePathsEnabledForKitKatAndAbove()) {
       Logger.warning("Animation contains merge paths but they are disabled.");
       return null;
     }
