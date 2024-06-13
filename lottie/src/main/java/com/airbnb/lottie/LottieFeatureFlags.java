@@ -5,8 +5,7 @@ import android.os.Build;
 
 import com.airbnb.lottie.utils.Logger;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.HashSet;
 
 public class LottieFeatureFlags {
   public enum FeatureFlag {
@@ -15,7 +14,7 @@ public class LottieFeatureFlags {
      * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
      * instead of using merge paths.
      */
-    MergePath_19(Build.VERSION_CODES.KITKAT);
+    MergePathsApi19(Build.VERSION_CODES.KITKAT);
 
     public final int minRequiredSdkVersion;
 
@@ -24,28 +23,23 @@ public class LottieFeatureFlags {
     }
   }
 
-  private HashMap<FeatureFlag, Boolean> flagValues = new HashMap<>();
-
-  public LottieFeatureFlags() {
-    for (FeatureFlag f : FeatureFlag.values()) {
-      flagValues.put(f, Boolean.FALSE);
-    }
-  }
+  private final HashSet<FeatureFlag> enabledFlags = new HashSet<>();
 
   @SuppressLint("DefaultLocale")
   public void enableFlag(FeatureFlag flag, boolean enable) {
-    if (Objects.equals(flagValues.get(flag), enable)) {
-      return;
+    if (enable) {
+      if (Build.VERSION.SDK_INT < flag.minRequiredSdkVersion) {
+        Logger.warning(String.format("%s is not supported pre SDK %d", flag.name(), flag.minRequiredSdkVersion));
+        return;
+      }
+      enabledFlags.add(flag);
+    } else {
+      enabledFlags.remove(flag);
     }
-    if (Build.VERSION.SDK_INT < flag.minRequiredSdkVersion) {
-      Logger.warning(String.format("%s is not supported pre SDK %d", flag.name(), flag.minRequiredSdkVersion));
-      return;
-    }
-    flagValues.put(flag, enable);
   }
 
   public boolean isFlagEnabled(FeatureFlag flag) {
-    return Boolean.TRUE.equals(flagValues.get(flag));
+    return enabledFlags.contains(flag);
   }
 
 }
