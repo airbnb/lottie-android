@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieFeatureFlags;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.MergePathsContent;
 import com.airbnb.lottie.model.layer.BaseLayer;
@@ -60,7 +61,7 @@ public class MergePaths implements ContentModel {
   }
 
   @Override @Nullable public Content toContent(LottieDrawable drawable, LottieComposition composition, BaseLayer layer) {
-    if (!drawable.isMergePathsEnabledForKitKatAndAbove()) {
+    if (!drawable.isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19)) {
       Logger.warning("Animation contains merge paths but they are disabled.");
       return null;
     }

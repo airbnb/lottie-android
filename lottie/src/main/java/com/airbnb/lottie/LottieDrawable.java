@@ -143,7 +143,6 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @Nullable
   TextDelegate textDelegate;
   private final LottieFeatureFlags lottieFeatureFlags = new LottieFeatureFlags();
-
   private boolean maintainOriginalImageBounds = false;
   private boolean clipToCompositionBounds = true;
   @Nullable
@@ -286,6 +285,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
+  @Deprecated
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
     lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
     if (composition != null) {
@@ -293,8 +293,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
+  @Deprecated
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
+  }
+
+  public void enableFeatureFlag(LottieFeatureFlags.FeatureFlag flag, boolean enable) {
+    lottieFeatureFlags.enableFlag(flag, enable);
+  }
+
+  public boolean isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag flag) {
+    return lottieFeatureFlags.isFlagEnabled(flag);
   }
 
   /**
