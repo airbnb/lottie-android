@@ -26,18 +26,7 @@ public class LottieFeatureFlags {
 
   private HashMap<FeatureFlag, Boolean> flagValues = new HashMap<>();
 
-  private static LottieFeatureFlags INSTANCE;
-
-  public static LottieFeatureFlags getInstance() {
-    if (INSTANCE != null) {
-      return INSTANCE;
-    } else {
-      INSTANCE = new LottieFeatureFlags();
-      return INSTANCE;
-    }
-  }
-
-  private LottieFeatureFlags() {
+  public LottieFeatureFlags() {
     for (FeatureFlag f : FeatureFlag.values()) {
       flagValues.put(f, Boolean.FALSE);
     }

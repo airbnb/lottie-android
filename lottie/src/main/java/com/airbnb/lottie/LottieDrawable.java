@@ -142,7 +142,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   FontAssetDelegate fontAssetDelegate;
   @Nullable
   TextDelegate textDelegate;
-  private LottieFeatureFlags lottieFeatureFlags = LottieFeatureFlags.getInstance();
+  private final LottieFeatureFlags lottieFeatureFlags = new LottieFeatureFlags();
 
   private boolean maintainOriginalImageBounds = false;
   private boolean clipToCompositionBounds = true;
