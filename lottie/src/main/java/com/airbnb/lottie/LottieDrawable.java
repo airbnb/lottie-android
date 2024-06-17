@@ -285,6 +285,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
+  /**
+   * Enable this to get merge path support for devices running KitKat (19) and above.
+   * Deprecated: Use enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable)
+   * <p>
+   * Merge paths currently don't work if the the operand shape is entirely contained within the
+   * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
+   * instead of using merge paths.
+   */
   @Deprecated
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
     lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
@@ -293,6 +301,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
+  /**
+   * Deprecated: Use isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19)
+   */
   @Deprecated
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
