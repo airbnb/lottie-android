@@ -60,6 +60,7 @@ dependencies {
   implementation libs.compose.material
 
   implementation libs.okhttp
+  implementation libs.okhttp.tls
 
   androidTestImplementation libs.aws.android.sdk.s3
   androidTestImplementation(libs.aws.android.sdk.mobile.client) { transitive = true }

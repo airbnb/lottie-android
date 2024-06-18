@@ -49,9 +49,13 @@ public abstract class BaseKeyframeAnimation<K, A> {
   }
 
   public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    L.beginSection("BaseKeyframeAnimation#setProgress");
+    if (L.isTraceEnabled()) {
+      L.beginSection("BaseKeyframeAnimation#setProgress");
+    }
     if (keyframesWrapper.isEmpty()) {
-      L.endSection("BaseKeyframeAnimation#setProgress");
+      if (L.isTraceEnabled()) {
+        L.endSection("BaseKeyframeAnimation#setProgress");
+      }
       return;
     }
     if (progress < getStartDelayProgress()) {
@@ -61,28 +65,40 @@ public abstract class BaseKeyframeAnimation<K, A> {
     }
 
     if (progress == this.progress) {
-      L.endSection("BaseKeyframeAnimation#setProgress");
+      if (L.isTraceEnabled()) {
+        L.endSection("BaseKeyframeAnimation#setProgress");
+      }
       return;
     }
     this.progress = progress;
     if (keyframesWrapper.isValueChanged(progress)) {
       notifyListeners();
     }
-    L.endSection("BaseKeyframeAnimation#setProgress");
+    if (L.isTraceEnabled()) {
+      L.endSection("BaseKeyframeAnimation#setProgress");
+    }
   }
 
   public void notifyListeners() {
-    L.beginSection("BaseKeyframeAnimation#notifyListeners");
+    if (L.isTraceEnabled()) {
+      L.beginSection("BaseKeyframeAnimation#notifyListeners");
+    }
     for (int i = 0; i < listeners.size(); i++) {
       listeners.get(i).onValueChanged();
     }
-    L.endSection("BaseKeyframeAnimation#notifyListeners");
+    if (L.isTraceEnabled()) {
+      L.endSection("BaseKeyframeAnimation#notifyListeners");
+    }
   }
 
   protected Keyframe<K> getCurrentKeyframe() {
-    L.beginSection("BaseKeyframeAnimation#getCurrentKeyframe");
+    if (L.isTraceEnabled()) {
+      L.beginSection("BaseKeyframeAnimation#getCurrentKeyframe");
+    }
     final Keyframe<K> keyframe = keyframesWrapper.getCurrentKeyframe();
-    L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
+    if (L.isTraceEnabled()) {
+      L.endSection("BaseKeyframeAnimation#getCurrentKeyframe");
+    }
     return keyframe;
   }
 
@@ -112,7 +128,8 @@ public abstract class BaseKeyframeAnimation<K, A> {
     Keyframe<K> keyframe = getCurrentKeyframe();
     // Keyframe should not be null here but there seems to be a Xiaomi Android 10 specific crash.
     // https://github.com/airbnb/lottie-android/issues/2050
-    if (keyframe == null || keyframe.isStatic()) {
+    // https://github.com/airbnb/lottie-android/issues/2483
+    if (keyframe == null || keyframe.isStatic() || keyframe.interpolator == null) {
       return 0f;
     }
     //noinspection ConstantConditions

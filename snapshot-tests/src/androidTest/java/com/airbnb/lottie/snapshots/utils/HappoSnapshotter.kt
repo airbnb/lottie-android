@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import com.airbnb.lottie.L
 import com.airbnb.lottie.snapshots.BuildConfig
+import com.airbnb.lottie.snapshots.R
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
@@ -14,10 +15,20 @@ import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import kotlinx.coroutines.*
-import okhttp3.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Credentials
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -25,8 +36,14 @@ import java.io.IOException
 import java.math.BigInteger
 import java.net.URLEncoder
 import java.nio.charset.Charset
+import java.security.KeyStore
 import java.security.MessageDigest
-import java.util.*
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
+import java.util.UUID
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -60,7 +77,28 @@ class HappoSnapshotter(
     // private val reportNamePrefixes = listOf(System.currentTimeMillis().toString()).filter { it.isNotBlank() }
     private val reportNames = reportNamePrefixes.map { "$it-$androidVersion" }
 
-    private val okhttp = OkHttpClient()
+    private val okhttp by lazy {
+        // https://androiddev.social/@botteaap/112108241212116279
+        // https://letsencrypt.org/2023/07/10/cross-sign-expiration.html
+        // https://letsencrypt.org/certs/isrgrootx1.der
+        val ca: X509Certificate = context.resources.openRawResource(R.raw.isrgrootx1).use {
+            CertificateFactory.getInstance("X.509").generateCertificate(it) as X509Certificate
+        }
+
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        keyStore.load(null, null)
+        keyStore.setCertificateEntry("ca", ca)
+
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(keyStore)
+
+        val sslContext: SSLContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagerFactory.trustManagers, null)
+
+        OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManagerFactory.trustManagers[0] as X509TrustManager)
+            .build()
+    }
 
     private val transferUtility = TransferUtility.builder()
         .context(context)

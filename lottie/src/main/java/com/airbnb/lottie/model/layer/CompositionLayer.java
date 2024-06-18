@@ -104,7 +104,9 @@ public class CompositionLayer extends BaseLayer {
   }
 
   @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    L.beginSection("CompositionLayer#draw");
+    if (L.isTraceEnabled()) {
+      L.beginSection("CompositionLayer#draw");
+    }
     newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
     parentMatrix.mapRect(newClipRect);
 
@@ -131,7 +133,9 @@ public class CompositionLayer extends BaseLayer {
       }
     }
     canvas.restore();
-    L.endSection("CompositionLayer#draw");
+    if (L.isTraceEnabled()) {
+      L.endSection("CompositionLayer#draw");
+    }
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
@@ -144,7 +148,9 @@ public class CompositionLayer extends BaseLayer {
   }
 
   @Override public void setProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    L.beginSection("CompositionLayer#setProgress");
+    if (L.isTraceEnabled()) {
+      L.beginSection("CompositionLayer#setProgress");
+    }
     this.progress = progress;
     super.setProgress(progress);
     if (timeRemapping != null) {
@@ -166,7 +172,9 @@ public class CompositionLayer extends BaseLayer {
     for (int i = layers.size() - 1; i >= 0; i--) {
       layers.get(i).setProgress(progress);
     }
-    L.endSection("CompositionLayer#setProgress");
+    if (L.isTraceEnabled()) {
+      L.endSection("CompositionLayer#setProgress");
+    }
   }
 
   public float getProgress() {
