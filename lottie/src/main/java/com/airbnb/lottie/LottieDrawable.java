@@ -285,6 +285,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
+  @Deprecated
+  public boolean enableMergePathsForKitKatAndAbove() {
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
+  }
+
   /**
    * Enable this to get merge path support for devices running KitKat (19) and above.
    * Deprecated: Use enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable)
