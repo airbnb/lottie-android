@@ -300,8 +300,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   @Deprecated
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
-    lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
-    if (composition != null) {
+    boolean changed = lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
+    if (composition != null && changed) {
       buildCompositionLayer();
     }
   }
@@ -315,8 +315,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   public void enableFeatureFlag(LottieFeatureFlags.FeatureFlag flag, boolean enable) {
-    lottieFeatureFlags.enableFlag(flag, enable);
-    if (composition != null) {
+    boolean changed = lottieFeatureFlags.enableFlag(flag, enable);
+    if (composition != null && changed) {
       buildCompositionLayer();
     }
   }

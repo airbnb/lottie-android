@@ -25,16 +25,19 @@ public class LottieFeatureFlags {
 
   private final HashSet<FeatureFlag> enabledFlags = new HashSet<>();
 
+  /**
+   * Returns true if the flag was changed.
+   */
   @SuppressLint("DefaultLocale")
-  public void enableFlag(FeatureFlag flag, boolean enable) {
+  public boolean enableFlag(FeatureFlag flag, boolean enable) {
     if (enable) {
       if (Build.VERSION.SDK_INT < flag.minRequiredSdkVersion) {
         Logger.warning(String.format("%s is not supported pre SDK %d", flag.name(), flag.minRequiredSdkVersion));
-        return;
+        return false;
       }
-      enabledFlags.add(flag);
+      return enabledFlags.add(flag);
     } else {
-      enabledFlags.remove(flag);
+      return enabledFlags.remove(flag);
     }
   }
 
