@@ -307,13 +307,20 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Deprecated: Use isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19)
+   * @deprecated Replaced by {@link #enableFeatureFlag(LottieFeatureFlags.FeatureFlag, boolean)}
    */
   @Deprecated
   public boolean isMergePathsEnabledForKitKatAndAbove() {
     return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
   }
 
+  /**
+   * Enable the specified feature for this drawable.
+   * <p>
+   * Features guarded by LottieFeatureFlags are experimental or only supported by a subset of API levels.
+   * Please ensure that the animation supported by the enabled feature looks acceptable across all
+   * targeted API levels.
+   */
   public void enableFeatureFlag(LottieFeatureFlags.FeatureFlag flag, boolean enable) {
     boolean changed = lottieFeatureFlags.enableFlag(flag, enable);
     if (composition != null && changed) {
