@@ -403,21 +403,21 @@ import java.util.zip.ZipInputStream;
    * instead of using merge paths.
    */
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
-    lottieDrawable.enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
+    lottieDrawable.enableFeatureFlag(LottieFeatureFlag.MergePathsApi19, enable);
   }
 
   /**
    * Returns whether merge paths are enabled for KitKat and above.
    */
   public boolean isMergePathsEnabledForKitKatAndAbove() {
-    return lottieDrawable.isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
+    return lottieDrawable.isFeatureFlagEnabled(LottieFeatureFlag.MergePathsApi19);
   }
 
-  public void enableFeatureFlag(LottieFeatureFlags.FeatureFlag flag, boolean enable) {
+  public void enableFeatureFlag(LottieFeatureFlag flag, boolean enable) {
     lottieDrawable.enableFeatureFlag(flag, enable);
   }
 
-  public boolean isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag flag) {
+  public boolean isFeatureFlagEnabled(LottieFeatureFlag flag) {
     return lottieDrawable.isFeatureFlagEnabled(flag);
   }
 

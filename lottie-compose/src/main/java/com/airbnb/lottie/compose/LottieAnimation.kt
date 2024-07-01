@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.IntSize
 import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
-import com.airbnb.lottie.LottieFeatureFlags
+import com.airbnb.lottie.LottieFeatureFlag
 import com.airbnb.lottie.RenderMode
 import kotlin.math.roundToInt
 
@@ -115,7 +115,7 @@ fun LottieAnimation(
             matrix.preTranslate(translation.x.toFloat(), translation.y.toFloat())
             matrix.preScale(scale.scaleX, scale.scaleY)
 
-            drawable.enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enableMergePaths)
+            drawable.enableFeatureFlag(LottieFeatureFlag.MergePathsApi19, enableMergePaths)
             drawable.setSafeMode(safeMode)
             drawable.renderMode = renderMode
             drawable.asyncUpdates = asyncUpdates

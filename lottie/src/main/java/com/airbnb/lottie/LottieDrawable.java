@@ -287,7 +287,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
   @Deprecated
   public boolean enableMergePathsForKitKatAndAbove() {
-    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlag.MergePathsApi19);
   }
 
   /**
@@ -300,18 +300,18 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   @Deprecated
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
-    boolean changed = lottieFeatureFlags.enableFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable);
+    boolean changed = lottieFeatureFlags.enableFlag(LottieFeatureFlag.MergePathsApi19, enable);
     if (composition != null && changed) {
       buildCompositionLayer();
     }
   }
 
   /**
-   * @deprecated Replaced by {@link #enableFeatureFlag(LottieFeatureFlags.FeatureFlag, boolean)}
+   * @deprecated Replaced by {@link #enableFeatureFlag(LottieFeatureFlag, boolean)}
    */
   @Deprecated
   public boolean isMergePathsEnabledForKitKatAndAbove() {
-    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlags.FeatureFlag.MergePathsApi19);
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlag.MergePathsApi19);
   }
 
   /**
@@ -321,14 +321,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Please ensure that the animation supported by the enabled feature looks acceptable across all
    * targeted API levels.
    */
-  public void enableFeatureFlag(LottieFeatureFlags.FeatureFlag flag, boolean enable) {
+  public void enableFeatureFlag(LottieFeatureFlag flag, boolean enable) {
     boolean changed = lottieFeatureFlags.enableFlag(flag, enable);
     if (composition != null && changed) {
       buildCompositionLayer();
     }
   }
 
-  public boolean isFeatureFlagEnabled(LottieFeatureFlags.FeatureFlag flag) {
+  public boolean isFeatureFlagEnabled(LottieFeatureFlag flag) {
     return lottieFeatureFlags.isFlagEnabled(flag);
   }
 

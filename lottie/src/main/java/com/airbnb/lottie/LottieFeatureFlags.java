@@ -7,29 +7,15 @@ import com.airbnb.lottie.utils.Logger;
 
 import java.util.HashSet;
 
-public class LottieFeatureFlags {
-  public enum FeatureFlag {
-    /**
-     * Merge paths currently don't work if the the operand shape is entirely contained within the
-     * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
-     * instead of using merge paths.
-     */
-    MergePathsApi19(Build.VERSION_CODES.KITKAT);
+class LottieFeatureFlags {
 
-    public final int minRequiredSdkVersion;
-
-    FeatureFlag(int minRequiredSdkVersion) {
-      this.minRequiredSdkVersion = minRequiredSdkVersion;
-    }
-  }
-
-  private final HashSet<FeatureFlag> enabledFlags = new HashSet<>();
+  private final HashSet<LottieFeatureFlag> enabledFlags = new HashSet<>();
 
   /**
    * Returns true if the flag was changed.
    */
   @SuppressLint("DefaultLocale")
-  public boolean enableFlag(FeatureFlag flag, boolean enable) {
+  public boolean enableFlag(LottieFeatureFlag flag, boolean enable) {
     if (enable) {
       if (Build.VERSION.SDK_INT < flag.minRequiredSdkVersion) {
         Logger.warning(String.format("%s is not supported pre SDK %d", flag.name(), flag.minRequiredSdkVersion));
@@ -41,7 +27,7 @@ public class LottieFeatureFlags {
     }
   }
 
-  public boolean isFlagEnabled(FeatureFlag flag) {
+  public boolean isFlagEnabled(LottieFeatureFlag flag) {
     return enabledFlags.contains(flag);
   }
 
