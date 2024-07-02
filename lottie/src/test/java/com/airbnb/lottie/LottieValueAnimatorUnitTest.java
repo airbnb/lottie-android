@@ -5,10 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.graphics.Rect;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
-import com.airbnb.lottie.model.Font;
-import com.airbnb.lottie.model.FontCharacter;
-import com.airbnb.lottie.model.Marker;
-import com.airbnb.lottie.model.layer.Layer;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +13,6 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static junit.framework.Assert.assertEquals;
@@ -63,7 +58,7 @@ public class LottieValueAnimatorUnitTest extends BaseTest {
     composition.init(new Rect(), startFrame, endFrame, 1000, new ArrayList<>(),
         new LongSparseArray<>(0), new HashMap<>(0),
         new HashMap<>(0), 1f, new SparseArrayCompat<>(0),
-        new HashMap<>(0), new ArrayList<>());
+        new HashMap<>(0), new ArrayList<>(), 0, 0);
     return composition;
   }
 

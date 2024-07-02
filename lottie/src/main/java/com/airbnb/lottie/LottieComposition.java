@@ -72,12 +72,15 @@ public class LottieComposition {
    */
   private int maskAndMatteCount = 0;
 
+  private int width;
+  private int height;
+
   @RestrictTo(RestrictTo.Scope.LIBRARY)
   public void init(Rect bounds, float startFrame, float endFrame, float frameRate,
       List<Layer> layers, LongSparseArray<Layer> layerMap, Map<String,
       List<Layer>> precomps, Map<String, LottieImageAsset> images, float imagesDpScale,
       SparseArrayCompat<FontCharacter> characters, Map<String, Font> fonts,
-      List<Marker> markers) {
+      List<Marker> markers, int width, int height) {
     this.bounds = bounds;
     this.startFrame = startFrame;
     this.endFrame = endFrame;
@@ -90,6 +93,8 @@ public class LottieComposition {
     this.characters = characters;
     this.fonts = fonts;
     this.markers = markers;
+    this.width = width;
+    this.height = height;
   }
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -233,6 +238,13 @@ public class LottieComposition {
     return endFrame - startFrame;
   }
 
+  public int getHeight() {
+    return height;
+  }
+
+  public int getWidth() {
+    return width;
+  }
 
   @NonNull
   @Override
