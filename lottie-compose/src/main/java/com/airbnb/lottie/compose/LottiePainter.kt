@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.IntSize
 import com.airbnb.lottie.AsyncUpdates
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieDrawable
-import com.airbnb.lottie.LottieFeatureFlags
+import com.airbnb.lottie.LottieFeatureFlag
 import com.airbnb.lottie.RenderMode
 import kotlin.math.roundToInt
 
@@ -105,7 +105,7 @@ class LottiePainter internal constructor(
             matrix.reset()
             matrix.preScale(intSize.width / compositionSize.width, intSize.height / compositionSize.height)
 
-            drawable.enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enableMergePaths)
+            drawable.enableFeatureFlag(LottieFeatureFlag.MergePathsApi19, enableMergePaths)
             drawable.renderMode = renderMode
             drawable.asyncUpdates = asyncUpdates
             drawable.composition = composition
