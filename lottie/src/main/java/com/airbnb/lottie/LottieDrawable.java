@@ -142,7 +142,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   FontAssetDelegate fontAssetDelegate;
   @Nullable
   TextDelegate textDelegate;
-  private boolean enableMergePaths;
+  private final LottieFeatureFlags lottieFeatureFlags = new LottieFeatureFlags();
   private boolean maintainOriginalImageBounds = false;
   private boolean clipToCompositionBounds = true;
   @Nullable
@@ -285,34 +285,51 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return compositionLayer != null && compositionLayer.hasMatte();
   }
 
+  @Deprecated
   public boolean enableMergePathsForKitKatAndAbove() {
-    return enableMergePaths;
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlag.MergePathsApi19);
   }
 
   /**
    * Enable this to get merge path support for devices running KitKat (19) and above.
+   * Deprecated: Use enableFeatureFlag(LottieFeatureFlags.FeatureFlag.MergePathsApi19, enable)
    * <p>
    * Merge paths currently don't work if the the operand shape is entirely contained within the
    * first shape. If you need to cut out one shape from another shape, use an even-odd fill type
    * instead of using merge paths.
    */
+  @Deprecated
   public void enableMergePathsForKitKatAndAbove(boolean enable) {
-    if (enableMergePaths == enable) {
-      return;
-    }
-
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-      Logger.warning("Merge paths are not supported pre-Kit Kat.");
-      return;
-    }
-    enableMergePaths = enable;
-    if (composition != null) {
+    boolean changed = lottieFeatureFlags.enableFlag(LottieFeatureFlag.MergePathsApi19, enable);
+    if (composition != null && changed) {
       buildCompositionLayer();
     }
   }
 
+  /**
+   * @deprecated Replaced by {@link #enableFeatureFlag(LottieFeatureFlag, boolean)}
+   */
+  @Deprecated
   public boolean isMergePathsEnabledForKitKatAndAbove() {
-    return enableMergePaths;
+    return lottieFeatureFlags.isFlagEnabled(LottieFeatureFlag.MergePathsApi19);
+  }
+
+  /**
+   * Enable the specified feature for this drawable.
+   * <p>
+   * Features guarded by LottieFeatureFlags are experimental or only supported by a subset of API levels.
+   * Please ensure that the animation supported by the enabled feature looks acceptable across all
+   * targeted API levels.
+   */
+  public void enableFeatureFlag(LottieFeatureFlag flag, boolean enable) {
+    boolean changed = lottieFeatureFlags.enableFlag(flag, enable);
+    if (composition != null && changed) {
+      buildCompositionLayer();
+    }
+  }
+
+  public boolean isFeatureFlagEnabled(LottieFeatureFlag flag) {
+    return lottieFeatureFlags.isFlagEnabled(flag);
   }
 
   /**
