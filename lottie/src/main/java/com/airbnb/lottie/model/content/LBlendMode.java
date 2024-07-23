@@ -33,6 +33,8 @@ public enum LBlendMode {
     switch (this) {
       case NORMAL:
         return null;
+      case MULTIPLY:
+        return BlendModeCompat.MULTIPLY;
       case SCREEN:
         return BlendModeCompat.SCREEN;
       case OVERLAY:
@@ -48,7 +50,6 @@ public enum LBlendMode {
       // To prevent unexpected issues where animations look correct
       // during development but silently break for users with older devices
       // we won't support any of these until Q is widely used.
-      case MULTIPLY:
       case COLOR_DODGE:
       case COLOR_BURN:
       case HARD_LIGHT:
