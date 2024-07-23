@@ -14,6 +14,7 @@ import android.os.Build;
 import androidx.annotation.CallSuper;
 import androidx.annotation.FloatRange;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.PaintCompat;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieComposition;
@@ -258,7 +259,7 @@ public abstract class BaseLayer
       }
     }
     int alpha = (int) ((parentAlpha / 255f * (float) opacity / 100f) * 255);
-    if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer()) {
+    if (!hasMatteOnThisLayer() && !hasMasksOnThisLayer() && getBlendMode() == LBlendMode.NORMAL) {
       matrix.preConcat(transform.getMatrix());
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
@@ -307,6 +308,7 @@ public abstract class BaseLayer
         L.beginSection("Layer#saveLayer");
       }
       contentPaint.setAlpha(255);
+      PaintCompat.setBlendMode(contentPaint, getBlendMode().toNativeBlendMode());
       Utils.saveLayerCompat(canvas, rect, contentPaint);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#saveLayer");
