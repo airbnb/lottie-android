@@ -118,6 +118,8 @@ public abstract class BaseLayer
   float blurMaskFilterRadius = 0f;
   @Nullable BlurMaskFilter blurMaskFilter;
 
+  @Nullable LPaint solidWhitePaint;
+
   BaseLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     this.lottieDrawable = lottieDrawable;
     this.layerModel = layerModel;
@@ -326,9 +328,11 @@ public abstract class BaseLayer
         // Since white is the identity color for multiplication, this will behave as if we
         // had correctly performed an alpha-blended multiply (such as BlendMode.MULTIPLY), but
         // will work pre-Q as well.
-        Paint solidWhite = new Paint();
-        solidWhite.setColor(0xffffffff);
-        canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, solidWhite);
+        if (solidWhitePaint == null) {
+          solidWhitePaint = new LPaint();
+          solidWhitePaint.setColor(0xffffffff);
+        }
+        canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, solidWhitePaint);
       }
 
       if (L.isTraceEnabled()) {
