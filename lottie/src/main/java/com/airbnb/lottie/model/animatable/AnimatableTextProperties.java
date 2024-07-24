@@ -4,17 +4,13 @@ import androidx.annotation.Nullable;
 
 public class AnimatableTextProperties {
 
-  @Nullable public final AnimatableColorValue color;
-  @Nullable public final AnimatableColorValue stroke;
-  @Nullable public final AnimatableFloatValue strokeWidth;
-  @Nullable public final AnimatableFloatValue tracking;
+  @Nullable public final AnimatableTextStyle textStyle;
+  @Nullable public final AnimatableTextRangeSelector rangeSelector;
 
-  public AnimatableTextProperties(@Nullable AnimatableColorValue color,
-      @Nullable AnimatableColorValue stroke, @Nullable AnimatableFloatValue strokeWidth,
-      @Nullable AnimatableFloatValue tracking) {
-    this.color = color;
-    this.stroke = stroke;
-    this.strokeWidth = strokeWidth;
-    this.tracking = tracking;
+  public AnimatableTextProperties(
+      @Nullable AnimatableTextStyle textStyle,
+      @Nullable AnimatableTextRangeSelector rangeSelector) {
+    this.textStyle = textStyle;
+    this.rangeSelector = rangeSelector;
   }
 }

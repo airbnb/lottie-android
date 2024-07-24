@@ -179,23 +179,25 @@ public class LayerParser {
           }
           reader.endArray();
           break;
-        case 12:
+        case 12: // Text data
           reader.beginObject();
           while (reader.hasNext()) {
             switch (reader.selectName(TEXT_NAMES)) {
-              case 0:
+              case 0: // "d", Text contents
                 text = AnimatableValueParser.parseDocumentData(reader, composition);
                 break;
-              case 1:
+              case 1: // "a", Text ranges with custom animations and style
                 reader.beginArray();
                 if (reader.hasNext()) {
                   textProperties = AnimatableTextPropertiesParser.parse(reader, composition);
                 }
+                // TODO support more than one text range
                 while (reader.hasNext()) {
                   reader.skipValue();
                 }
                 reader.endArray();
                 break;
+              // TODO support Text follow path and Text alignment
               default:
                 reader.skipName();
                 reader.skipValue();
