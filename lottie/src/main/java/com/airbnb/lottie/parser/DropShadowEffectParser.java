@@ -67,10 +67,10 @@ public class DropShadowEffectParser {
               direction = AnimatableValueParser.parseFloat(reader, composition, false);
               break;
             case "Distance":
-              distance = AnimatableValueParser.parseFloat(reader, composition);
+              distance = AnimatableValueParser.parseFloat(reader, composition, false);
               break;
             case "Softness":
-              radius = AnimatableValueParser.parseFloat(reader, composition);
+              radius = AnimatableValueParser.parseFloat(reader, composition, false);
               break;
             default:
               reader.skipValue();

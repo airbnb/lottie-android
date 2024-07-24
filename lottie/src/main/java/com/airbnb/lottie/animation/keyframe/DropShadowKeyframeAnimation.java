@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -52,14 +53,21 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     }
     isDirty = false;
 
+    // We scale the distance and softness value from the file so that the Paint.setShadowLayer() call
+    // gives results that more closely match After Effects
+    float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.5f;
+    float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 5f;
+
     double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
-    float distance = this.distance.getValue();
+    float distance = this.distance.getValue() / AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
     float x = ((float) Math.sin(directionRad)) * distance;
     float y = ((float) Math.cos(directionRad + Math.PI)) * distance;
+
     int baseColor = color.getValue();
     int opacity = Math.round(this.opacity.getValue());
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
-    float radius = this.radius.getValue();
+
+    float radius = this.radius.getValue() / AFTER_EFFECT_SOFTNESS_SCALE_FACTOR;
     paint.setShadowLayer(radius, x, y, color);
   }
 
