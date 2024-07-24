@@ -11,7 +11,6 @@ import android.graphics.Path;
 import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
-import androidx.core.graphics.PaintCompat;
 
 import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieDrawable;
@@ -67,8 +66,6 @@ public class FillContent
       opacityAnimation = null;
       return;
     }
-
-    PaintCompat.setBlendMode(paint, layer.getBlendMode().toNativeBlendMode());
 
     path.setFillType(fill.getFillType());
 
