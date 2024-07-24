@@ -315,7 +315,22 @@ public abstract class BaseLayer
       }
 
       // Clear the off screen buffer. This is necessary for some phones.
-      clearCanvas(canvas);
+      if (getBlendMode() != LBlendMode.MULTIPLY) {
+        clearCanvas(canvas);
+      } else {
+        // Due to the difference between PorterDuffMode.MULTIPLY (which we use for compatibility
+        // with Android < Q) and BlendMode.MULTIPLY (which is the correct, alpha-blended mode),
+        // we will alpha-blend the contents of this layer on top of a white background before
+        // we multiply it with the opaque substrate below (with canvas.restore()).
+        //
+        // Since white is the identity color for multiplication, this will behave as if we
+        // had correctly performed an alpha-blended multiply (such as BlendMode.MULTIPLY), but
+        // will work pre-Q as well.
+        Paint solidWhite = new Paint();
+        solidWhite.setColor(0xffffffff);
+        canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, solidWhite);
+      }
+
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
       }

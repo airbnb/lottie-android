@@ -34,7 +34,19 @@ public enum LBlendMode {
       case NORMAL:
         return null;
       case MULTIPLY:
-        return BlendModeCompat.MULTIPLY;
+        // BlendModeCompat.MULTIPLY does not exist on Android < Q. Instead, there's
+        // BlendModeCompat.MODULATE, which maps to PorterDuff.Mode.MODULATE and not
+        // PorterDuff.Mode.MULTIPLY.
+        //
+        // MODULATE differs from MULTIPLY in that it doesn't perform
+        // any alpha blending. It just does a component-wise multiplication
+        // of the colors.
+        //
+        // For proper results on all platforms, we will map the MULTIPLY
+        // blend mode to MODULATE, and then do a slight adjustment to
+        // how we render such layers to still achieve the correct result.
+        // See BaseLayer.draw().
+        return BlendModeCompat.MODULATE;
       case SCREEN:
         return BlendModeCompat.SCREEN;
       case OVERLAY:
