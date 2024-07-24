@@ -25,6 +25,7 @@ import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
+import com.airbnb.lottie.model.content.TextRangeUnits;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -56,6 +57,7 @@ public class TextLayer extends BaseLayer {
   private final TextKeyframeAnimation textAnimation;
   private final LottieDrawable lottieDrawable;
   private final LottieComposition composition;
+  private TextRangeUnits textRangeUnits = TextRangeUnits.INDEX;
   @Nullable
   private BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   @Nullable
@@ -142,6 +144,10 @@ public class TextLayer extends BaseLayer {
       textRangeOffsetAnimation.addUpdateListener(this);
       addAnimation(textRangeOffsetAnimation);
     }
+
+    if (textProperties != null && textProperties.rangeSelector != null) {
+      textRangeUnits = textProperties.rangeSelector.units;
+    }
   }
 
   @Override
@@ -164,7 +170,7 @@ public class TextLayer extends BaseLayer {
     configurePaint(documentData, parentAlpha, 0);
 
     if (lottieDrawable.useTextGlyphs()) {
-      drawTextWithGlyphs(documentData, parentMatrix, font, canvas);
+      drawTextWithGlyphs(documentData, parentMatrix, font, canvas, parentAlpha);
     } else {
       drawTextWithFont(documentData, font, canvas, parentAlpha);
     }
@@ -216,26 +222,31 @@ public class TextLayer extends BaseLayer {
   }
 
   private boolean isIndexInRangeSelection(int indexInDocument) {
+    int textLength = textAnimation.getValue().text.length();
     if (textRangeStartAnimation != null && textRangeEndAnimation != null) {
       // After effects supports reversed text ranges where the start index is greater than the end index.
       // For the purposes of determining if the given index is inside of the range, we take the start as the smaller value.
-      int rangeStartIndex = Math.min(textRangeStartAnimation.getValue(), textRangeEndAnimation.getValue());
-      int rangeEndIndex = Math.max(textRangeStartAnimation.getValue(), textRangeEndAnimation.getValue());
+      int rangeStart = Math.min(textRangeStartAnimation.getValue(), textRangeEndAnimation.getValue());
+      int rangeEnd = Math.max(textRangeStartAnimation.getValue(), textRangeEndAnimation.getValue());
 
       if (textRangeOffsetAnimation != null) {
         int offset = textRangeOffsetAnimation.getValue();
-        rangeStartIndex += offset;
-        rangeEndIndex += offset;
+        rangeStart += offset;
+        rangeEnd += offset;
       }
 
-      return indexInDocument >= rangeStartIndex && indexInDocument < rangeEndIndex;
+      if (textRangeUnits == TextRangeUnits.INDEX) {
+        return indexInDocument >= rangeStart && indexInDocument < rangeEnd;
+      } else {
+        float currentIndexAsPercent = indexInDocument / (float) textLength * 100;
+        return currentIndexAsPercent >= rangeStart && currentIndexAsPercent < rangeEnd;
+      }
     }
-
     return true;
   }
 
   private void drawTextWithGlyphs(
-      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas) {
+      DocumentData documentData, Matrix parentMatrix, Font font, Canvas canvas, int parentAlpha) {
     float textSize;
     if (textSizeCallbackAnimation != null) {
       textSize = textSizeCallbackAnimation.getValue();
@@ -269,7 +280,7 @@ public class TextLayer extends BaseLayer {
         canvas.save();
 
         if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
-          drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking);
+          drawGlyphTextLine(line.text, documentData, font, canvas, parentScale, fontScale, tracking, parentAlpha);
         }
 
         canvas.restore();
@@ -278,7 +289,7 @@ public class TextLayer extends BaseLayer {
   }
 
   private void drawGlyphTextLine(String text, DocumentData documentData,
-      Font font, Canvas canvas, float parentScale, float fontScale, float tracking) {
+      Font font, Canvas canvas, float parentScale, float fontScale, float tracking, int parentAlpha) {
     for (int i = 0; i < text.length(); i++) {
       char c = text.charAt(i);
       int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
@@ -287,7 +298,7 @@ public class TextLayer extends BaseLayer {
         // Something is wrong. Potentially, they didn't export the text as a glyph.
         continue;
       }
-      drawCharacterAsGlyph(character, fontScale, documentData, canvas);
+      drawCharacterAsGlyph(character, fontScale, documentData, canvas, i, parentAlpha);
       float tx = (float) character.getWidth() * fontScale * Utils.dpScale() + tracking;
       canvas.translate(tx, 0);
     }
@@ -506,7 +517,10 @@ public class TextLayer extends BaseLayer {
       FontCharacter character,
       float fontScale,
       DocumentData documentData,
-      Canvas canvas) {
+      Canvas canvas,
+      int indexInDocument,
+      int parentAlpha) {
+    configurePaint(documentData, parentAlpha, indexInDocument);
     List<ContentGroup> contentGroups = getContentsForCharacter(character);
     for (int j = 0; j < contentGroups.size(); j++) {
       Path path = contentGroups.get(j).getPath();

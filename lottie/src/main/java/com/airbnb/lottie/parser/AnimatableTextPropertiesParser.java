@@ -8,6 +8,8 @@ import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.animatable.AnimatableTextRangeSelector;
 import com.airbnb.lottie.model.animatable.AnimatableTextStyle;
+import com.airbnb.lottie.model.content.LBlendMode;
+import com.airbnb.lottie.model.content.TextRangeUnits;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
 
@@ -21,7 +23,8 @@ public class AnimatableTextPropertiesParser {
   private static final JsonReader.Options ANIMATABLE_RANGE_PROPERTIES_NAMES = JsonReader.Options.of(
       "s", // start
       "e", // end
-      "o" // offset
+      "o", // offset
+      "r" // text range units (percent or index)
   );
   private static final JsonReader.Options ANIMATABLE_PROPERTIES_NAMES = JsonReader.Options.of(
       "fc",
@@ -63,6 +66,7 @@ public class AnimatableTextPropertiesParser {
     AnimatableIntegerValue start = null;
     AnimatableIntegerValue end = null;
     AnimatableIntegerValue offset = null;
+    TextRangeUnits units = null;
 
     reader.beginObject();
     while (reader.hasNext()) {
@@ -76,6 +80,15 @@ public class AnimatableTextPropertiesParser {
         case 2: // offset
           offset = AnimatableValueParser.parseInteger(reader, composition);
           break;
+        case 3: // text range units (percent or index)
+          int textRangeUnits = reader.nextInt();
+          if (textRangeUnits != 1 && textRangeUnits != 2) {
+            composition.addWarning("Unsupported text range units: " + textRangeUnits);
+            units = TextRangeUnits.INDEX;
+            break;
+          }
+          units = textRangeUnits == 1 ? TextRangeUnits.PERCENT : TextRangeUnits.INDEX;
+          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -88,7 +101,7 @@ public class AnimatableTextPropertiesParser {
       start = new AnimatableIntegerValue(Collections.singletonList(new Keyframe<>(0)));
     }
 
-    return new AnimatableTextRangeSelector(start, end, offset);
+    return new AnimatableTextRangeSelector(start, end, offset, units);
   }
 
   private static AnimatableTextStyle parseAnimatableTextStyle(
