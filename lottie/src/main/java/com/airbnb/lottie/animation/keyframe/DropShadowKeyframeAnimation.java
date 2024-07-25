@@ -2,7 +2,6 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -13,6 +12,11 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
   private static final double DEG_TO_RAD = Math.PI / 180.0;
+
+  // We scale the parsed distance and softness values by a constant factor so that the Paint.setShadowLayer() call
+  // gives results that more closely match After Effects
+  private static final float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.5f;
+  private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 5f;
 
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
@@ -52,11 +56,6 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
       return;
     }
     isDirty = false;
-
-    // We scale the distance and softness value from the file so that the Paint.setShadowLayer() call
-    // gives results that more closely match After Effects
-    float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.5f;
-    float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 5f;
 
     double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
     float distance = this.distance.getValue() / AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
