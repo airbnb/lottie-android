@@ -123,7 +123,7 @@ public class FillContent
       blurMaskFilterRadius = blurRadius;
     }
     if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint);
+      dropShadowAnimation.applyTo(paint, parentAlpha);
     }
 
     path.reset();

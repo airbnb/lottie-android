@@ -25,8 +25,6 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   private final BaseKeyframeAnimation<Float, Float> distance;
   private final BaseKeyframeAnimation<Float, Float> radius;
 
-  private boolean isDirty = true;
-
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
     color = dropShadowEffect.getColor().createAnimation();
@@ -47,16 +45,10 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   }
 
   @Override public void onValueChanged() {
-    isDirty = true;
     listener.onValueChanged();
   }
 
-  public void applyTo(Paint paint) {
-    if (!isDirty) {
-      return;
-    }
-    isDirty = false;
-
+  public void applyTo(Paint paint, int parentAlpha) {
     double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
     float distance = this.distance.getValue() / AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
     float x = ((float) Math.sin(directionRad)) * distance;
@@ -64,6 +56,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
 
     int baseColor = color.getValue();
     int opacity = Math.round(this.opacity.getValue());
+    int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
     float radius = this.radius.getValue() / AFTER_EFFECT_SOFTNESS_SCALE_FACTOR;
