@@ -16,6 +16,7 @@ import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -28,10 +29,15 @@ public class ImageLayer extends BaseLayer {
   @Nullable private final LottieImageAsset lottieImageAsset;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
+  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
     lottieImageAsset = lottieDrawable.getLottieImageAssetForId(layerModel.getRefId());
+
+    if (getDropShadowEffect() != null) {
+      dropShadowAnimation = new DropShadowKeyframeAnimation(this, this, getDropShadowEffect());
+    }
   }
 
   @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
@@ -52,6 +58,10 @@ public class ImageLayer extends BaseLayer {
       dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
     } else {
       dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
+    }
+
+    if (dropShadowAnimation != null) {
+      dropShadowAnimation.applyTo(paint, parentAlpha);
     }
 
     canvas.drawBitmap(bitmap, src, dst, paint);
