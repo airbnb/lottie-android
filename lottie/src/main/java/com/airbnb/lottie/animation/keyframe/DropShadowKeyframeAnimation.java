@@ -2,6 +2,7 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -15,8 +16,8 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
 
   // We scale the parsed distance and softness values by a constant factor so that the Paint.setShadowLayer() call
   // gives results that more closely match After Effects
-  private static final float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.5f;
-  private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 5f;
+  private static final float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = .75f;
+  private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 2f;
 
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
@@ -55,11 +56,11 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     float y = ((float) Math.cos(directionRad + Math.PI)) * distance;
 
     int baseColor = color.getValue();
-    int opacity = Math.round(this.opacity.getValue());
     int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
-    float radius = this.radius.getValue() / AFTER_EFFECT_SOFTNESS_SCALE_FACTOR;
+    // Paint.setShadowLayer() removes the shadow if radius is 0, so we use a small nonzero value in that case
+    float radius = Math.max(this.radius.getValue() / AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, Float.MIN_VALUE);
     paint.setShadowLayer(radius, x, y, color);
   }
 
