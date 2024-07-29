@@ -49,6 +49,12 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     listener.onValueChanged();
   }
 
+  /**
+   * Applies a shadow to the provided Paint object, which will be applied to the Canvas behind whatever is drawn
+   * (a shape, bitmap, path, etc.)
+   * @param parentAlpha A value between 0 and 255 representing the combined alpha of all parents of this drop shadow effect.
+   *                    E.g. The layer via transform, the fill/stroke via its opacity, etc.
+   */
   public void applyTo(Paint paint, int parentAlpha) {
     double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
     float distance = this.distance.getValue() * AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
