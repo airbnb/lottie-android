@@ -78,6 +78,10 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     if (paintRadius == radius && paintX == x && paintY == y && paintColor == color) {
       return;
     }
+    paintRadius = radius;
+    paintX = x;
+    paintY = y;
+    paintColor = color;
     paint.setShadowLayer(radius, x, y, color);
   }
 
