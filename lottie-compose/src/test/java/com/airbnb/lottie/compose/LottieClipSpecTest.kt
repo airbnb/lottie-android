@@ -139,6 +139,8 @@ class LottieClipSpecTest {
             SparseArrayCompat(),
             emptyMap(),
             markers,
+            0,
+            0,
         )
         return composition
     }

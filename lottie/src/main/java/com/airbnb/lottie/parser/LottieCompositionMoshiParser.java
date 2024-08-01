@@ -44,8 +44,8 @@ public class LottieCompositionMoshiParser {
     float frameRate = 0f;
     final LongSparseArray<Layer> layerMap = new LongSparseArray<>();
     final List<Layer> layers = new ArrayList<>();
-    int width = 0;
-    int height = 0;
+    int unscaledWidth = 0;
+    int unscaledHeight = 0;
     Map<String, List<Layer>> precomps = new HashMap<>();
     Map<String, LottieImageAsset> images = new HashMap<>();
     Map<String, Font> fonts = new HashMap<>();
@@ -57,10 +57,10 @@ public class LottieCompositionMoshiParser {
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
         case 0:
-          width = reader.nextInt();
+          unscaledWidth = reader.nextInt();
           break;
         case 1:
-          height = reader.nextInt();
+          unscaledHeight = reader.nextInt();
           break;
         case 2:
           startFrame = (float) reader.nextDouble();
@@ -102,12 +102,12 @@ public class LottieCompositionMoshiParser {
           reader.skipValue();
       }
     }
-    int scaledWidth = (int) (width * scale);
-    int scaledHeight = (int) (height * scale);
+    int scaledWidth = (int) (unscaledWidth * scale);
+    int scaledHeight = (int) (unscaledHeight * scale);
     Rect bounds = new Rect(0, 0, scaledWidth, scaledHeight);
 
     composition.init(bounds, startFrame, endFrame, frameRate, layers, layerMap, precomps,
-        images, Utils.dpScale(), characters, fonts, markers);
+        images, Utils.dpScale(), characters, fonts, markers, unscaledWidth, unscaledHeight);
 
     return composition;
   }
