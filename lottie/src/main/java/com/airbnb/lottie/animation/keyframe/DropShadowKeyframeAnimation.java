@@ -1,6 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 
 import androidx.annotation.Nullable;
@@ -33,6 +34,9 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   // 0 is a valid color but it is transparent so it will not draw anything anyway.
   private int paintColor = 0;
 
+  private final float[] distanceSrc = new float[2];
+  private final float[] distanceDst = new float[2];
+
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
     color = dropShadowEffect.getColor().createAnimation();
@@ -62,11 +66,17 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
    * @param parentAlpha A value between 0 and 255 representing the combined alpha of all parents of this drop shadow effect.
    *                    E.g. The layer via transform, the fill/stroke via its opacity, etc.
    */
-  public void applyTo(Paint paint, int parentAlpha) {
+  public void applyTo(Paint paint, Matrix parentMatrix, int parentAlpha) {
     float directionRad = this.direction.getFloatValue() * DEG_TO_RAD;
     float distance = this.distance.getValue() * AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
-    float x = ((float) Math.sin(directionRad)) * distance;
-    float y = ((float) Math.cos(directionRad + Math.PI)) * distance;
+    float rawX = ((float) Math.sin(directionRad)) * distance;
+    float rawY = ((float) Math.cos(directionRad + Math.PI)) * distance;
+
+    distanceSrc[0] = rawX;
+    distanceSrc[1] = rawY;
+    parentMatrix.mapPoints(distanceSrc, distanceDst);
+    float x = distanceDst[0];
+    float y = distanceDst[1];
 
     int baseColor = color.getValue();
     int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);

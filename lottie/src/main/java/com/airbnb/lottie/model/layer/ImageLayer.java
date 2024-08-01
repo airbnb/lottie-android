@@ -61,7 +61,7 @@ public class ImageLayer extends BaseLayer {
     }
 
     if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentAlpha);
+      dropShadowAnimation.applyTo(paint, parentMatrix, parentAlpha);
     }
 
     canvas.drawBitmap(bitmap, src, dst, paint);

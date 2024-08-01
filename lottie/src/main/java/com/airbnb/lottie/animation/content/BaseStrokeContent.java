@@ -191,7 +191,7 @@ public abstract class BaseStrokeContent
       blurMaskFilterRadius = blurRadius;
     }
     if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentAlpha);
+      dropShadowAnimation.applyTo(paint, parentMatrix, parentAlpha);
     }
 
     for (int i = 0; i < pathGroups.size(); i++) {

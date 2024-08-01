@@ -151,7 +151,7 @@ public class GradientFillContent
       blurMaskFilterRadius = blurRadius;
     }
     if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentAlpha);
+      dropShadowAnimation.applyTo(paint, parentMatrix, parentAlpha);
     }
 
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
