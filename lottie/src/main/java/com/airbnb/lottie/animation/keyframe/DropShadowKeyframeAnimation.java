@@ -12,7 +12,7 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 
 public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
-  private static final double DEG_TO_RAD = Math.PI / 180.0;
+  private static final float DEG_TO_RAD = (float) (Math.PI / 180.0);
 
   // We scale the parsed distance and softness values by a constant factor so that the Paint.setShadowLayer() call
   // gives results that more closely match After Effects
@@ -21,10 +21,17 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
 
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
-  private final BaseKeyframeAnimation<Float, Float> opacity;
-  private final BaseKeyframeAnimation<Float, Float> direction;
-  private final BaseKeyframeAnimation<Float, Float> distance;
-  private final BaseKeyframeAnimation<Float, Float> radius;
+  private final FloatKeyframeAnimation opacity;
+  private final FloatKeyframeAnimation direction;
+  private final FloatKeyframeAnimation distance;
+  private final FloatKeyframeAnimation radius;
+
+  // Cached paint values.
+  private float paintRadius = Float.NaN;
+  private float paintX = Float.NaN;
+  private float paintY = Float.NaN;
+  // 0 is a valid color but it is transparent so it will not draw anything anyway.
+  private int paintColor = 0;
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
@@ -56,7 +63,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
    *                    E.g. The layer via transform, the fill/stroke via its opacity, etc.
    */
   public void applyTo(Paint paint, int parentAlpha) {
-    double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
+    float directionRad = this.direction.getFloatValue() * DEG_TO_RAD;
     float distance = this.distance.getValue() * AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
     float x = ((float) Math.sin(directionRad)) * distance;
     float y = ((float) Math.cos(directionRad + Math.PI)) * distance;
@@ -67,6 +74,10 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
 
     // Paint.setShadowLayer() removes the shadow if radius is 0, so we use a small nonzero value in that case
     float radius = Math.max(this.radius.getValue() * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, Float.MIN_VALUE);
+
+    if (paintRadius == radius && paintX == x && paintY == y && paintColor == color) {
+      return;
+    }
     paint.setShadowLayer(radius, x, y, color);
   }
 
