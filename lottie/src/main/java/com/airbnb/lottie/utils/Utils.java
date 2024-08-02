@@ -317,6 +317,13 @@ public final class Utils {
   }
 
   /**
+   * Multiplies 2 opacities that are 0-255.
+   */
+  public static int mixOpacities(int opacity1, int opacity2) {
+    return (int) ((opacity1 / 255f * opacity2 / 255f) * 255f);
+  }
+
+  /**
    * For testing purposes only. DO NOT USE IN PRODUCTION.
    */
   @SuppressWarnings("unused")

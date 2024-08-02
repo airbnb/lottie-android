@@ -32,6 +32,7 @@ import com.airbnb.lottie.model.content.GradientFill;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -150,12 +151,13 @@ public class GradientFillContent
       }
       blurMaskFilterRadius = blurRadius;
     }
-    if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentMatrix, parentAlpha);
-    }
 
     int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
+
+    if (dropShadowAnimation != null) {
+      dropShadowAnimation.applyTo(paint, parentMatrix, Utils.mixOpacities(parentAlpha, alpha));
+    }
 
     canvas.drawPath(path, paint);
     if (L.isTraceEnabled()) {
