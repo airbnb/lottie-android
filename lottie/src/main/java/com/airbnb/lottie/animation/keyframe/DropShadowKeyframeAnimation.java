@@ -34,8 +34,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   // 0 is a valid color but it is transparent so it will not draw anything anyway.
   private int paintColor = 0;
 
-  private final float[] distanceSrc = new float[2];
-  private final float[] distanceDst = new float[2];
+  private final float[] matrixValues = new float[9];
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
@@ -72,7 +71,9 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     float rawX = ((float) Math.sin(directionRad)) * distance;
     float rawY = ((float) Math.cos(directionRad + Math.PI)) * distance;
 
-    float[] matrixValues = new float[9];
+    // The x and y coordinates are relative to the shape that is being drawn.
+    // The distance in the animation is relative to the original size of the shape.
+    // If the shape will be drawn scaled, we need to scale the distance we draw the shadow.
     parentMatrix.getValues(matrixValues);
     float scaleX = matrixValues[Matrix.MSCALE_X];
     float scaleY = matrixValues[Matrix.MSCALE_Y];
