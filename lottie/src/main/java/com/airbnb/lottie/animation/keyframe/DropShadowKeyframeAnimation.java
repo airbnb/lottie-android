@@ -16,11 +16,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
   private static final float DEG_TO_RAD = (float) (Math.PI / 180.0);
 
-  // We scale the parsed distance and softness values by a constant factor so that the Paint.setShadowLayer() call
-  // gives results that more closely match After Effects
-  private static final float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.33f;
-  private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 0.43f;
-
   private final BaseLayer layer;
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
@@ -93,7 +88,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
     // Paint.setShadowLayer() removes the shadow if radius is 0, so we use a small nonzero value in that case
-    float radius = Math.max(this.radius.getValue() * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, Float.MIN_VALUE);
+    float radius = Math.max(this.radius.getValue() * scaleX, Float.MIN_VALUE);
 
     if (paintRadius == radius && paintX == x && paintY == y && paintColor == color) {
       return;
