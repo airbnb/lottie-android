@@ -3,11 +3,8 @@ package com.airbnb.lottie.animation.keyframe;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.model.layer.ShapeLayer;
 import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -65,7 +62,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
    */
   public void applyTo(Paint paint, Matrix parentMatrix, int parentAlpha) {
     float directionRad = this.direction.getFloatValue() * DEG_TO_RAD;
-    float distance = this.distance.getValue(); // * AFTER_EFFECTS_DISTANCE_SCALE_FACTOR;
+    float distance = this.distance.getValue();
     float rawX = ((float) Math.sin(directionRad)) * distance;
     float rawY = ((float) Math.cos(directionRad + Math.PI)) * distance;
 
