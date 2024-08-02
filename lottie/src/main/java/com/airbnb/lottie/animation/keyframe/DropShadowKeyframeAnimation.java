@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.model.layer.ShapeLayer;
 import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -20,6 +21,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   private static final float AFTER_EFFECTS_DISTANCE_SCALE_FACTOR = 1.33f;
   private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 0.43f;
 
+  private final BaseLayer layer;
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
   private final FloatKeyframeAnimation opacity;
@@ -38,6 +40,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
+    this.layer = layer;
     color = dropShadowEffect.getColor().createAnimation();
     color.addUpdateListener(this);
     layer.addAnimation(color);
@@ -74,9 +77,14 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     // The x and y coordinates are relative to the shape that is being drawn.
     // The distance in the animation is relative to the original size of the shape.
     // If the shape will be drawn scaled, we need to scale the distance we draw the shadow.
+    layer.transform.getMatrix().getValues(matrixValues);
+    float layerScaleX = matrixValues[Matrix.MSCALE_X];
+    float layerScaleY = matrixValues[Matrix.MSCALE_Y];
     parentMatrix.getValues(matrixValues);
-    float scaleX = matrixValues[Matrix.MSCALE_X];
-    float scaleY = matrixValues[Matrix.MSCALE_Y];
+    float parentScaleX = matrixValues[Matrix.MSCALE_X];
+    float parentScaleY = matrixValues[Matrix.MSCALE_Y];
+    float scaleX = parentScaleX / layerScaleX;
+    float scaleY = parentScaleY / layerScaleY;
     float x = rawX * scaleX;
     float y = rawY * scaleY;
 
