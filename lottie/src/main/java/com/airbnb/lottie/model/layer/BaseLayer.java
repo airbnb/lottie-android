@@ -109,7 +109,7 @@ public abstract class BaseLayer
   private List<BaseLayer> parentLayers;
 
   private final List<BaseKeyframeAnimation<?, ?>> animations = new ArrayList<>();
-  final TransformKeyframeAnimation transform;
+  public final TransformKeyframeAnimation transform;
   private boolean visible = true;
 
   private boolean outlineMasksAndMattes;
