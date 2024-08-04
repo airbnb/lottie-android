@@ -1,3 +1,14 @@
+# 6.5.0
+### New Features
+* Apply blend modes to layers and add Multiply ([#2519](https://github.com/airbnb/lottie-android/pull/2519))
+* Add initial support for text range selectors ([#2518](https://github.com/airbnb/lottie-android/pull/2518))
+* Add a new feature flag API to allow for opting into newer platform features ([#2512](https://github.com/airbnb/lottie-android/pull/2512))
+* Add an API to get the unscaled width/height of a composition ([#2514](https://github.com/airbnb/lottie-android/pull/2514))
+
+### Bugs Fixes
+* Improve the accuracy of drop shadow position and softness ([#2523](https://github.com/airbnb/lottie-android/pull/2523))
+* Treat appcompat as an API dependency ([#2507](https://github.com/airbnb/lottie-android/pull/2507))
+
 # 6.4.1
 ### Bugs Fixed
 * Scale base64 encoded bitmaps ([#2501](https://github.com/airbnb/lottie-android/pull/2501))
