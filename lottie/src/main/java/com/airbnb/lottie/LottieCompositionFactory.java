@@ -48,6 +48,7 @@ import java.util.zip.ZipInputStream;
 
 import okio.BufferedSource;
 import okio.Okio;
+import okio.Source;
 
 /**
  * Helpers to create or cache a LottieComposition.
@@ -363,7 +364,7 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
-    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey, close);
+    return fromSourceSync(source(stream), cacheKey, close);
   }
 
   /**
@@ -384,7 +385,7 @@ public class LottieCompositionFactory {
    */
   @Deprecated
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonSync(JSONObject json, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonSync(final JSONObject json, @Nullable String cacheKey) {
     return fromJsonStringSync(json.toString(), cacheKey);
   }
 
@@ -402,7 +403,22 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
     ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
-    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
+    return fromSourceSync(source(stream), cacheKey);
+  }
+
+  public static LottieTask<LottieComposition> fromSource(final Source source, @Nullable final String cacheKey) {
+    return cache(cacheKey, () -> fromSourceSync(source, cacheKey), () -> Utils.closeQuietly(source));
+  }
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromSourceSync(final Source source, @Nullable String cacheKey) {
+    return fromJsonReaderSync(JsonReader.of(buffer(source)), cacheKey);
+  }
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromSourceSync(final Source source, @Nullable String cacheKey,
+      boolean close) {
+    return fromJsonReaderSyncInternal(JsonReader.of(buffer(source)), cacheKey, close);
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
@@ -410,18 +426,18 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonReaderSync(final JsonReader reader, @Nullable String cacheKey) {
     return fromJsonReaderSync(reader, cacheKey, true);
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey,
+  public static LottieResult<LottieComposition> fromJsonReaderSync(final JsonReader reader, @Nullable String cacheKey,
       boolean close) {
     return fromJsonReaderSyncInternal(reader, cacheKey, close);
   }
 
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
-      com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
+      JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
       final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
       if (cachedComposition != null) {
@@ -556,7 +572,7 @@ public class LottieCompositionFactory {
         } else if (entry.getName().equalsIgnoreCase("manifest.json")) { //ignore .lottie manifest
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
-          com.airbnb.lottie.parser.moshi.JsonReader reader = JsonReader.of(buffer(source(inputStream)));
+          JsonReader reader = JsonReader.of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
         } else if (entryName.contains(".png") || entryName.contains(".webp") || entryName.contains(".jpg") || entryName.contains(".jpeg")) {
           String[] splitName = entryName.split("/");
