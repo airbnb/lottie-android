@@ -538,7 +538,7 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
     Map<String, Typeface> fonts = new HashMap<>();
@@ -566,6 +566,11 @@ public class LottieCompositionFactory {
           String[] splitName = entryName.split("/");
           String fileName = splitName[splitName.length - 1];
           String fontFamily = fileName.split("\\.")[0];
+
+          if (context == null) {
+            return new LottieResult<>(new IllegalStateException("Unable to extract font " + fontFamily + " please pass a non-null Context parameter"));
+          }
+
           File tempFile = new File(context.getCacheDir(), fileName);
           FileOutputStream fos = new FileOutputStream(tempFile);
           try {
