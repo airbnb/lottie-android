@@ -231,7 +231,7 @@ public class LottieCompositionFactory {
       } else if (isGzipCompressed(source)) {
         return fromJsonInputStreamSync(new GZIPInputStream(source.inputStream()), cacheKey);
       }
-      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
+      return fromJsonReaderSync(JsonReader.of(source), cacheKey);
     } catch (IOException e) {
       return new LottieResult<>(e);
     }
@@ -312,7 +312,7 @@ public class LottieCompositionFactory {
           return new LottieResult<>(e);
         }
       }
-      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
+      return fromJsonReaderSync(JsonReader.of(source), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
