@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
@@ -364,7 +363,7 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
-    return fromSourceSync(source(stream), cacheKey, close);
+    return fromJsonSourceSync(source(stream), cacheKey, close);
   }
 
   /**
@@ -403,20 +402,20 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
     ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
-    return fromSourceSync(source(stream), cacheKey);
+    return fromJsonSourceSync(source(stream), cacheKey);
   }
 
-  public static LottieTask<LottieComposition> fromSource(final Source source, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromSourceSync(source, cacheKey), () -> Utils.closeQuietly(source));
-  }
-
-  @WorkerThread
-  public static LottieResult<LottieComposition> fromSourceSync(final Source source, @Nullable String cacheKey) {
-    return fromJsonReaderSync(JsonReader.of(buffer(source)), cacheKey);
+  public static LottieTask<LottieComposition> fromJsonSource(final Source source, @Nullable final String cacheKey) {
+    return cache(cacheKey, () -> fromJsonSourceSync(source, cacheKey), () -> Utils.closeQuietly(source));
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromSourceSync(final Source source, @Nullable String cacheKey,
+  public static LottieResult<LottieComposition> fromJsonSourceSync(final Source source, @Nullable String cacheKey) {
+    return fromJsonSourceSync(source, cacheKey, true);
+  }
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonSourceSync(final Source source, @Nullable String cacheKey,
       boolean close) {
     return fromJsonReaderSyncInternal(JsonReader.of(buffer(source)), cacheKey, close);
   }
