@@ -174,7 +174,7 @@ public abstract class BaseStrokeContent
       }
       return;
     }
-    applyDashPatternIfNeeded(parentMatrix);
+    applyDashPatternIfNeeded();
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
@@ -338,7 +338,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  private void applyDashPatternIfNeeded(Matrix parentMatrix) {
+  private void applyDashPatternIfNeeded() {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#applyDashPattern");
     }
@@ -349,7 +349,6 @@ public abstract class BaseStrokeContent
       return;
     }
 
-    float scale = Utils.getScale(parentMatrix);
     for (int i = 0; i < dashPatternAnimations.size(); i++) {
       dashPatternValues[i] = dashPatternAnimations.get(i).getValue();
       // If the value of the dash pattern or gap is too small, the number of individual sections
@@ -365,9 +364,8 @@ public abstract class BaseStrokeContent
           dashPatternValues[i] = 0.1f;
         }
       }
-      dashPatternValues[i] *= scale;
     }
-    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue() * scale;
+    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     if (L.isTraceEnabled()) {
       L.endSection("StrokeContent#applyDashPattern");

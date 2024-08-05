@@ -76,7 +76,6 @@ public class GradientStrokeContent extends BaseStrokeContent {
     } else {
       shader = getRadialGradient();
     }
-    shader.setLocalMatrix(parentMatrix);
     paint.setShader(shader);
 
     super.draw(canvas, parentMatrix, parentAlpha);
