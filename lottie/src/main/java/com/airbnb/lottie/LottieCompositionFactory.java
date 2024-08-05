@@ -567,8 +567,7 @@ public class LottieCompositionFactory {
           String fileName = splitName[splitName.length - 1];
           String fontFamily = fileName.split("\\.")[0];
           File tempFile = new File(context.getCacheDir(), fileName);
-          FileOutputStream fos = new FileOutputStream(tempFile);
-          try {
+          try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             try (OutputStream output = new FileOutputStream(tempFile)) {
               byte[] buffer = new byte[4 * 1024];
               int read;
