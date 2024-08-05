@@ -194,19 +194,21 @@ public abstract class BaseStrokeContent
       dropShadowAnimation.applyTo(paint);
     }
 
+    canvas.save();
+    canvas.concat(parentMatrix);
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
 
 
       if (pathGroup.trimPath != null) {
-        applyTrimPath(canvas, pathGroup, parentMatrix);
+        applyTrimPath(canvas, pathGroup);
       } else {
         if (L.isTraceEnabled()) {
           L.beginSection("StrokeContent#buildPath");
         }
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
-          path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
+          path.addPath(pathGroup.paths.get(j).getPath());
         }
         if (L.isTraceEnabled()) {
           L.endSection("StrokeContent#buildPath");
@@ -218,12 +220,13 @@ public abstract class BaseStrokeContent
         }
       }
     }
+    canvas.restore();
     if (L.isTraceEnabled()) {
       L.endSection("StrokeContent#draw");
     }
   }
 
-  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix) {
+  private void applyTrimPath(Canvas canvas, PathGroup pathGroup) {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#applyTrimPath");
     }
@@ -235,7 +238,7 @@ public abstract class BaseStrokeContent
     }
     path.reset();
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
-      path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
+      path.addPath(pathGroup.paths.get(j).getPath());
     }
     float animStartValue = pathGroup.trimPath.getStart().getValue() / 100f;
     float animEndValue = pathGroup.trimPath.getEnd().getValue() / 100f;
@@ -262,7 +265,6 @@ public abstract class BaseStrokeContent
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
       trimPathPath.set(pathGroup.paths.get(j).getPath());
-      trimPathPath.transform(parentMatrix);
       pm.setPath(trimPathPath, false);
       float length = pm.getLength();
       if (endLength > totalLength && endLength - totalLength < currentLength + length &&
