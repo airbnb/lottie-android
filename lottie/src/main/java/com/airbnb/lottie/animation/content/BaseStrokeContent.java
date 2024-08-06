@@ -166,7 +166,7 @@ public abstract class BaseStrokeContent
     }
     int alpha = (int) ((parentAlpha / 255f * ((IntegerKeyframeAnimation) opacityAnimation).getIntValue() / 100f) * 255);
     paint.setAlpha(clamp(alpha, 0, 255));
-    paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue() * Utils.getScale(parentMatrix));
+    paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue());
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
       if (L.isTraceEnabled()) {
@@ -174,7 +174,7 @@ public abstract class BaseStrokeContent
       }
       return;
     }
-    applyDashPatternIfNeeded(parentMatrix);
+    applyDashPatternIfNeeded();
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
@@ -194,19 +194,21 @@ public abstract class BaseStrokeContent
       dropShadowAnimation.applyTo(paint, parentMatrix, Utils.mixOpacities(parentAlpha, alpha));
     }
 
+    canvas.save();
+    canvas.concat(parentMatrix);
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
 
 
       if (pathGroup.trimPath != null) {
-        applyTrimPath(canvas, pathGroup, parentMatrix);
+        applyTrimPath(canvas, pathGroup);
       } else {
         if (L.isTraceEnabled()) {
           L.beginSection("StrokeContent#buildPath");
         }
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
-          path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
+          path.addPath(pathGroup.paths.get(j).getPath());
         }
         if (L.isTraceEnabled()) {
           L.endSection("StrokeContent#buildPath");
@@ -218,12 +220,13 @@ public abstract class BaseStrokeContent
         }
       }
     }
+    canvas.restore();
     if (L.isTraceEnabled()) {
       L.endSection("StrokeContent#draw");
     }
   }
 
-  private void applyTrimPath(Canvas canvas, PathGroup pathGroup, Matrix parentMatrix) {
+  private void applyTrimPath(Canvas canvas, PathGroup pathGroup) {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#applyTrimPath");
     }
@@ -235,7 +238,7 @@ public abstract class BaseStrokeContent
     }
     path.reset();
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
-      path.addPath(pathGroup.paths.get(j).getPath(), parentMatrix);
+      path.addPath(pathGroup.paths.get(j).getPath());
     }
     float animStartValue = pathGroup.trimPath.getStart().getValue() / 100f;
     float animEndValue = pathGroup.trimPath.getEnd().getValue() / 100f;
@@ -262,7 +265,6 @@ public abstract class BaseStrokeContent
     float currentLength = 0;
     for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
       trimPathPath.set(pathGroup.paths.get(j).getPath());
-      trimPathPath.transform(parentMatrix);
       pm.setPath(trimPathPath, false);
       float length = pm.getLength();
       if (endLength > totalLength && endLength - totalLength < currentLength + length &&
@@ -336,7 +338,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  private void applyDashPatternIfNeeded(Matrix parentMatrix) {
+  private void applyDashPatternIfNeeded() {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#applyDashPattern");
     }
@@ -347,7 +349,6 @@ public abstract class BaseStrokeContent
       return;
     }
 
-    float scale = Utils.getScale(parentMatrix);
     for (int i = 0; i < dashPatternAnimations.size(); i++) {
       dashPatternValues[i] = dashPatternAnimations.get(i).getValue();
       // If the value of the dash pattern or gap is too small, the number of individual sections
@@ -363,9 +364,8 @@ public abstract class BaseStrokeContent
           dashPatternValues[i] = 0.1f;
         }
       }
-      dashPatternValues[i] *= scale;
     }
-    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue() * scale;
+    float offset = dashPatternOffsetAnimation == null ? 0f : dashPatternOffsetAnimation.getValue();
     paint.setPathEffect(new DashPathEffect(dashPatternValues, offset));
     if (L.isTraceEnabled()) {
       L.endSection("StrokeContent#applyDashPattern");
