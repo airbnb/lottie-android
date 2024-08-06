@@ -138,6 +138,9 @@ public class ImageAssetManager {
   }
 
   public boolean hasSameContext(Context context) {
+    if (context == null) {
+      return this.context == null;
+    }
     Context contextToCompare = this.context instanceof Application ? context.getApplicationContext() : context;
     return contextToCompare == this.context;
   }
