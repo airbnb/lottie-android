@@ -1,29 +1,38 @@
 package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
-
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 
-public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
-  private static final double DEG_TO_RAD = Math.PI / 180.0;
 
+public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
+  private static final float DEG_TO_RAD = (float) (Math.PI / 180.0);
+
+  private final BaseLayer layer;
   private final BaseKeyframeAnimation.AnimationListener listener;
   private final BaseKeyframeAnimation<Integer, Integer> color;
-  private final BaseKeyframeAnimation<Float, Float> opacity;
-  private final BaseKeyframeAnimation<Float, Float> direction;
-  private final BaseKeyframeAnimation<Float, Float> distance;
-  private final BaseKeyframeAnimation<Float, Float> radius;
+  private final FloatKeyframeAnimation opacity;
+  private final FloatKeyframeAnimation direction;
+  private final FloatKeyframeAnimation distance;
+  private final FloatKeyframeAnimation radius;
 
-  private boolean isDirty = true;
+  // Cached paint values.
+  private float paintRadius = Float.NaN;
+  private float paintX = Float.NaN;
+  private float paintY = Float.NaN;
+  // 0 is a valid color but it is transparent so it will not draw anything anyway.
+  private int paintColor = 0;
+
+  private final float[] matrixValues = new float[9];
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
+    this.layer = layer;
     color = dropShadowEffect.getColor().createAnimation();
     color.addUpdateListener(this);
     layer.addAnimation(color);
@@ -42,24 +51,49 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   }
 
   @Override public void onValueChanged() {
-    isDirty = true;
     listener.onValueChanged();
   }
 
-  public void applyTo(Paint paint) {
-    if (!isDirty) {
+  /**
+   * Applies a shadow to the provided Paint object, which will be applied to the Canvas behind whatever is drawn
+   * (a shape, bitmap, path, etc.)
+   * @param parentAlpha A value between 0 and 255 representing the combined alpha of all parents of this drop shadow effect.
+   *                    E.g. The layer via transform, the fill/stroke via its opacity, etc.
+   */
+  public void applyTo(Paint paint, Matrix parentMatrix, int parentAlpha) {
+    float directionRad = this.direction.getFloatValue() * DEG_TO_RAD;
+    float distance = this.distance.getValue();
+    float rawX = ((float) Math.sin(directionRad)) * distance;
+    float rawY = ((float) Math.cos(directionRad + Math.PI)) * distance;
+
+    // The x and y coordinates are relative to the shape that is being drawn.
+    // The distance in the animation is relative to the original size of the shape.
+    // If the shape will be drawn scaled, we need to scale the distance we draw the shadow.
+    layer.transform.getMatrix().getValues(matrixValues);
+    float layerScaleX = matrixValues[Matrix.MSCALE_X];
+    float layerScaleY = matrixValues[Matrix.MSCALE_Y];
+    parentMatrix.getValues(matrixValues);
+    float parentScaleX = matrixValues[Matrix.MSCALE_X];
+    float parentScaleY = matrixValues[Matrix.MSCALE_Y];
+    float scaleX = parentScaleX / layerScaleX;
+    float scaleY = parentScaleY / layerScaleY;
+    float x = rawX * scaleX;
+    float y = rawY * scaleY;
+
+    int baseColor = color.getValue();
+    int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);
+    int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
+
+    // Paint.setShadowLayer() removes the shadow if radius is 0, so we use a small nonzero value in that case
+    float radius = Math.max(this.radius.getValue() * scaleX, Float.MIN_VALUE);
+
+    if (paintRadius == radius && paintX == x && paintY == y && paintColor == color) {
       return;
     }
-    isDirty = false;
-
-    double directionRad = ((double) direction.getValue()) * DEG_TO_RAD;
-    float distance = this.distance.getValue();
-    float x = ((float) Math.sin(directionRad)) * distance;
-    float y = ((float) Math.cos(directionRad + Math.PI)) * distance;
-    int baseColor = color.getValue();
-    int opacity = Math.round(this.opacity.getValue());
-    int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
-    float radius = this.radius.getValue();
+    paintRadius = radius;
+    paintX = x;
+    paintY = y;
+    paintColor = color;
     paint.setShadowLayer(radius, x, y, color);
   }
 

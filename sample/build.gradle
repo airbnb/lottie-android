@@ -14,7 +14,7 @@ android {
     applicationId "com.airbnb.lottie"
     minSdk 16
     targetSdk 34
-    versionCode 70
+    versionCode 71
     versionName VERSION_NAME
     multiDexEnabled true
     buildConfigField("String", "GIT_SHA", "\"" + gitSha + "\"")

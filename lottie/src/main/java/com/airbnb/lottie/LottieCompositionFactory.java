@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
@@ -48,6 +47,7 @@ import java.util.zip.ZipInputStream;
 
 import okio.BufferedSource;
 import okio.Okio;
+import okio.Source;
 
 /**
  * Helpers to create or cache a LottieComposition.
@@ -231,7 +231,7 @@ public class LottieCompositionFactory {
       } else if (isGzipCompressed(source)) {
         return fromJsonInputStreamSync(new GZIPInputStream(source.inputStream()), cacheKey);
       }
-      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
+      return fromJsonReaderSync(JsonReader.of(source), cacheKey);
     } catch (IOException e) {
       return new LottieResult<>(e);
     }
@@ -312,7 +312,7 @@ public class LottieCompositionFactory {
           return new LottieResult<>(e);
         }
       }
-      return fromJsonInputStreamSync(source.inputStream(), cacheKey);
+      return fromJsonReaderSync(JsonReader.of(source), cacheKey);
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
@@ -363,7 +363,7 @@ public class LottieCompositionFactory {
    */
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonInputStreamSync(InputStream stream, @Nullable String cacheKey, boolean close) {
-    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey, close);
+    return fromJsonSourceSync(source(stream), cacheKey, close);
   }
 
   /**
@@ -384,7 +384,7 @@ public class LottieCompositionFactory {
    */
   @Deprecated
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonSync(JSONObject json, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonSync(final JSONObject json, @Nullable String cacheKey) {
     return fromJsonStringSync(json.toString(), cacheKey);
   }
 
@@ -402,7 +402,22 @@ public class LottieCompositionFactory {
   @WorkerThread
   public static LottieResult<LottieComposition> fromJsonStringSync(String json, @Nullable String cacheKey) {
     ByteArrayInputStream stream = new ByteArrayInputStream(json.getBytes());
-    return fromJsonReaderSync(JsonReader.of(buffer(source(stream))), cacheKey);
+    return fromJsonSourceSync(source(stream), cacheKey);
+  }
+
+  public static LottieTask<LottieComposition> fromJsonSource(final Source source, @Nullable final String cacheKey) {
+    return cache(cacheKey, () -> fromJsonSourceSync(source, cacheKey), () -> Utils.closeQuietly(source));
+  }
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonSourceSync(final Source source, @Nullable String cacheKey) {
+    return fromJsonSourceSync(source, cacheKey, true);
+  }
+
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromJsonSourceSync(final Source source, @Nullable String cacheKey,
+      boolean close) {
+    return fromJsonReaderSyncInternal(JsonReader.of(buffer(source)), cacheKey, close);
   }
 
   public static LottieTask<LottieComposition> fromJsonReader(final JsonReader reader, @Nullable final String cacheKey) {
@@ -410,18 +425,18 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey) {
+  public static LottieResult<LottieComposition> fromJsonReaderSync(final JsonReader reader, @Nullable String cacheKey) {
     return fromJsonReaderSync(reader, cacheKey, true);
   }
 
   @WorkerThread
-  public static LottieResult<LottieComposition> fromJsonReaderSync(com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey,
+  public static LottieResult<LottieComposition> fromJsonReaderSync(final JsonReader reader, @Nullable String cacheKey,
       boolean close) {
     return fromJsonReaderSyncInternal(reader, cacheKey, close);
   }
 
   private static LottieResult<LottieComposition> fromJsonReaderSyncInternal(
-      com.airbnb.lottie.parser.moshi.JsonReader reader, @Nullable String cacheKey, boolean close) {
+      JsonReader reader, @Nullable String cacheKey, boolean close) {
     try {
       final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
       if (cachedComposition != null) {
@@ -538,7 +553,7 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
     Map<String, Typeface> fonts = new HashMap<>();
@@ -556,7 +571,7 @@ public class LottieCompositionFactory {
         } else if (entry.getName().equalsIgnoreCase("manifest.json")) { //ignore .lottie manifest
           inputStream.closeEntry();
         } else if (entry.getName().contains(".json")) {
-          com.airbnb.lottie.parser.moshi.JsonReader reader = JsonReader.of(buffer(source(inputStream)));
+          JsonReader reader = JsonReader.of(buffer(source(inputStream)));
           composition = LottieCompositionFactory.fromJsonReaderSyncInternal(reader, null, false).getValue();
         } else if (entryName.contains(".png") || entryName.contains(".webp") || entryName.contains(".jpg") || entryName.contains(".jpeg")) {
           String[] splitName = entryName.split("/");
@@ -566,9 +581,13 @@ public class LottieCompositionFactory {
           String[] splitName = entryName.split("/");
           String fileName = splitName[splitName.length - 1];
           String fontFamily = fileName.split("\\.")[0];
+
+          if (context == null) {
+            return new LottieResult<>(new IllegalStateException("Unable to extract font " + fontFamily + " please pass a non-null Context parameter"));
+          }
+
           File tempFile = new File(context.getCacheDir(), fileName);
-          FileOutputStream fos = new FileOutputStream(tempFile);
-          try {
+          try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             try (OutputStream output = new FileOutputStream(tempFile)) {
               byte[] buffer = new byte[4 * 1024];
               int read;
