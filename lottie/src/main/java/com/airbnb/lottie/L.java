@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
+import com.airbnb.lottie.configurations.reducemotion.ReducedMotionOption;
+import com.airbnb.lottie.configurations.reducemotion.SystemReducedMotionOption;
 import com.airbnb.lottie.network.DefaultLottieNetworkFetcher;
 import com.airbnb.lottie.network.LottieNetworkCacheProvider;
 import com.airbnb.lottie.network.LottieNetworkFetcher;
@@ -32,6 +34,7 @@ public class L {
   private static volatile NetworkFetcher networkFetcher;
   private static volatile NetworkCache networkCache;
   private static ThreadLocal<LottieTrace> lottieTrace;
+  private static ReducedMotionOption reducedMotionOption = new SystemReducedMotionOption();
 
   private L() {
   }
@@ -143,4 +146,10 @@ public class L {
   public static AsyncUpdates getDefaultAsyncUpdates() {
     return L.defaultAsyncUpdates;
   }
+
+  public static void setReducedMotionOption(ReducedMotionOption reducedMotionOption){
+    L.reducedMotionOption = reducedMotionOption;
+  }
+
+  public static ReducedMotionOption getReducedMotionOption(){return reducedMotionOption;}
 }

@@ -20,7 +20,6 @@
         <attr name="lottie_colorFilter" format="color" />
         <attr name="lottie_speed" format="float" />
         <attr name="lottie_cacheComposition" format="boolean" />
-        <attr name="lottie_ignoreDisabledSystemAnimations" format="boolean" />
         <attr name="lottie_useCompositionFrameRate" format="boolean" />
         <attr name="lottie_clipToCompositionBounds" format="boolean" />
         <attr name="lottie_clipTextToBoundingBox" format="boolean" />

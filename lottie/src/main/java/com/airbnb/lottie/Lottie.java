@@ -22,5 +22,6 @@ public class Lottie {
     L.setNetworkCacheEnabled(lottieConfig.enableNetworkCache);
     L.setDisablePathInterpolatorCache(lottieConfig.disablePathInterpolatorCache);
     L.setDefaultAsyncUpdates(lottieConfig.defaultAsyncUpdates);
+    L.setReducedMotionOption(lottieConfig.reducedMotionOption);
   }
 }

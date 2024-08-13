@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.graphics.Rect;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
+import com.airbnb.lottie.configurations.reducemotion.ReducedMotionMode;
 import com.airbnb.lottie.model.Font;
 import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.Marker;
@@ -82,10 +83,10 @@ public class LottieDrawableTest extends BaseTest {
 
   @Test
   public void testPlayWhenSystemAnimationDisabled() {
+    disableSystemAnimation();
     LottieComposition composition = createComposition(31, 391);
     LottieDrawable drawable = new LottieDrawable();
     drawable.addAnimatorListener(animatorListener);
-    drawable.setSystemAnimationsAreEnabled(false);
     drawable.setComposition(composition);
     drawable.playAnimation();
     assertEquals(391, drawable.getFrame());
@@ -94,13 +95,19 @@ public class LottieDrawableTest extends BaseTest {
 
   @Test
   public void testResumeWhenSystemAnimationDisabled() {
+    disableSystemAnimation();
     LottieComposition composition = createComposition(31, 391);
     LottieDrawable drawable = new LottieDrawable();
     drawable.addAnimatorListener(animatorListener);
-    drawable.setSystemAnimationsAreEnabled(false);
     drawable.setComposition(composition);
     drawable.resumeAnimation();
     assertEquals(391, drawable.getFrame());
     verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
+  }
+
+  private void disableSystemAnimation() {
+    Lottie.initialize(new LottieConfig.Builder().setReducedMotionOption(
+        context -> ReducedMotionMode.REDUCED_MOTION
+    ).build());
   }
 }
