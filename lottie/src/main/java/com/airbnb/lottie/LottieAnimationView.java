@@ -248,6 +248,13 @@ import java.util.zip.ZipInputStream;
       setAsyncUpdates(AsyncUpdates.values()[asyncUpdatesOrdinal]);
     }
 
+    setIgnoreDisabledSystemAnimations(
+        ta.getBoolean(
+            R.styleable.LottieAnimationView_lottie_ignoreDisabledSystemAnimations,
+            false
+        )
+    );
+
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_useCompositionFrameRate)) {
       setUseCompositionFrameRate(ta.getBoolean(R.styleable.LottieAnimationView_lottie_useCompositionFrameRate, false));
     }
@@ -360,6 +367,20 @@ import java.util.zip.ZipInputStream;
     if (!isInEditMode() && autoPlay) {
       lottieDrawable.playAnimation();
     }
+  }
+
+  /**
+   * Allows ignoring system animations settings, therefore allowing animations to run even if they are disabled.
+   * <p>
+   * Defaults to false.
+   *
+   * @param ignore if true animations will run even when they are disabled in the system settings.
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.IgnoreDisabledSystemAnimationsOption}
+   * instead and set them on the {@link LottieConfig}
+   */
+  @Deprecated
+  public void setIgnoreDisabledSystemAnimations(boolean ignore) {
+    lottieDrawable.setIgnoreDisabledSystemAnimations(ignore);
   }
 
   /**

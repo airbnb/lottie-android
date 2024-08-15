@@ -111,6 +111,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
 
+  // Call animationsEnabled() instead of using these fields directly.
+  private boolean systemAnimationsEnabled = true;
+  private boolean ignoreSystemAnimationsDisabled = false;
+
   private boolean safeMode = false;
   private OnVisibleAction onVisibleAction = OnVisibleAction.NONE;
 
@@ -1241,10 +1245,42 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private boolean animationsEnabled() {
-    return L.getReducedMotionOption().getCurrentReducedMotionMode(getContext()) == ReducedMotionMode.STANDARD_MOTION;
+    return (systemAnimationsEnabled || ignoreSystemAnimationsDisabled) &&
+        L.getReducedMotionOption().getCurrentReducedMotionMode(getContext()) == ReducedMotionMode.STANDARD_MOTION;
+  }
+
+  /**
+   * Tell Lottie that system animations are disabled. When using {@link LottieAnimationView} or Compose {@code LottieAnimation}, this is done
+   * automatically. However, if you are using LottieDrawable on its own, you should set this to false when
+   * {@link com.airbnb.lottie.utils.Utils#getAnimationScale(Context)} is 0. If the animation is provided a "reduced motion"
+   * marker name, they will be shown instead of the first or last frame. Supported marker names are case insensitive, and include:
+   * - reduced motion
+   * - reducedMotion
+   * - reduced_motion
+   * - reduced-motion
+   *
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.ReducedMotionOption} instead and set them on the {@link LottieConfig}
+   */
+  @Deprecated
+  public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
+    systemAnimationsEnabled = areEnabled;
   }
 
 // </editor-fold>
+
+  /**
+   * Allows ignoring system animations settings, therefore allowing animations to run even if they are disabled.
+   * <p>
+   * Defaults to false.
+   *
+   * @param ignore if true animations will run even when they are disabled in the system settings.
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.IgnoreDisabledSystemAnimationsOption}
+   * instead and set them on the {@link LottieConfig}
+   */
+  @Deprecated
+  public void setIgnoreDisabledSystemAnimations(boolean ignore) {
+    ignoreSystemAnimationsDisabled = ignore;
+  }
 
   /**
    * Lottie files can specify a target frame rate. By default, Lottie ignores it and re-renders
