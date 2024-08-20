@@ -1245,7 +1245,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private boolean animationsEnabled() {
-    return (systemAnimationsEnabled || ignoreSystemAnimationsDisabled) &&
+    if (ignoreSystemAnimationsDisabled) {
+      return true;
+    }
+    return systemAnimationsEnabled &&
         L.getReducedMotionOption().getCurrentReducedMotionMode(getContext()) == ReducedMotionMode.STANDARD_MOTION;
   }
 
