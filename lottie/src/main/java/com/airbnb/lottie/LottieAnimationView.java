@@ -260,8 +260,6 @@ import java.util.zip.ZipInputStream;
     }
 
     ta.recycle();
-
-    lottieDrawable.setSystemAnimationsAreEnabled(Utils.getAnimationScale(getContext()) != 0f);
   }
 
   @Override public void setImageResource(int resId) {
@@ -377,7 +375,10 @@ import java.util.zip.ZipInputStream;
    * Defaults to false.
    *
    * @param ignore if true animations will run even when they are disabled in the system settings.
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.IgnoreDisabledSystemAnimationsOption}
+   * instead and set them on the {@link LottieConfig}
    */
+  @Deprecated
   public void setIgnoreDisabledSystemAnimations(boolean ignore) {
     lottieDrawable.setIgnoreDisabledSystemAnimations(ignore);
   }

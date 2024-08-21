@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.graphics.Rect;
 import androidx.collection.LongSparseArray;
 import androidx.collection.SparseArrayCompat;
+import com.airbnb.lottie.configurations.reducemotion.ReducedMotionMode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +78,7 @@ public class LottieDrawableTest extends BaseTest {
 
   @Test
   public void testPlayWhenSystemAnimationDisabled() {
+    disableSystemAnimation();
     LottieComposition composition = createComposition(31, 391);
     LottieDrawable drawable = new LottieDrawable();
     drawable.addAnimatorListener(animatorListener);
@@ -97,5 +99,35 @@ public class LottieDrawableTest extends BaseTest {
     drawable.resumeAnimation();
     assertEquals(391, drawable.getFrame());
     verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
+  }
+
+  @Test
+  public void testPlayWhenSystemAnimationDisabledFromLottieConfig() {
+    disableSystemAnimation();
+    LottieComposition composition = createComposition(31, 391);
+    LottieDrawable drawable = new LottieDrawable();
+    drawable.addAnimatorListener(animatorListener);
+    drawable.setComposition(composition);
+    drawable.playAnimation();
+    assertEquals(391, drawable.getFrame());
+    verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
+  }
+
+  @Test
+  public void testResumeWhenSystemAnimationDisabledFromLottieConfig() {
+    disableSystemAnimation();
+    LottieComposition composition = createComposition(31, 391);
+    LottieDrawable drawable = new LottieDrawable();
+    drawable.addAnimatorListener(animatorListener);
+    drawable.setComposition(composition);
+    drawable.resumeAnimation();
+    assertEquals(391, drawable.getFrame());
+    verify(animatorListener, atLeastOnce()).onAnimationEnd(any(Animator.class), eq(false));
+  }
+
+  private void disableSystemAnimation() {
+    Lottie.initialize(new LottieConfig.Builder().setReducedMotionOption(
+        context -> ReducedMotionMode.REDUCED_MOTION
+    ).build());
   }
 }

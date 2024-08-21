@@ -33,6 +33,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 
 import com.airbnb.lottie.animation.LPaint;
+import com.airbnb.lottie.configurations.reducemotion.ReducedMotionMode;
 import com.airbnb.lottie.manager.FontAssetManager;
 import com.airbnb.lottie.manager.ImageAssetManager;
 import com.airbnb.lottie.model.Font;
@@ -1244,7 +1245,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   private boolean animationsEnabled() {
-    return systemAnimationsEnabled || ignoreSystemAnimationsDisabled;
+    if (ignoreSystemAnimationsDisabled) {
+      return true;
+    }
+    return systemAnimationsEnabled &&
+        L.getReducedMotionOption().getCurrentReducedMotionMode(getContext()) == ReducedMotionMode.STANDARD_MOTION;
   }
 
   /**
@@ -1256,7 +1261,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * - reducedMotion
    * - reduced_motion
    * - reduced-motion
+   *
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.ReducedMotionOption} instead and set them on the {@link LottieConfig}
    */
+  @Deprecated
   public void setSystemAnimationsAreEnabled(Boolean areEnabled) {
     systemAnimationsEnabled = areEnabled;
   }
@@ -1269,7 +1277,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    * Defaults to false.
    *
    * @param ignore if true animations will run even when they are disabled in the system settings.
+   * @deprecated Use {@link com.airbnb.lottie.configurations.reducemotion.IgnoreDisabledSystemAnimationsOption}
+   * instead and set them on the {@link LottieConfig}
    */
+  @Deprecated
   public void setIgnoreDisabledSystemAnimations(boolean ignore) {
     ignoreSystemAnimationsDisabled = ignore;
   }
