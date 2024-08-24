@@ -2,7 +2,7 @@
 git diff-index --quiet HEAD --
 
 if [ $? -ne 0 ]; then
-  echo "Working tree must be empty before bumping the version"
+  echo "The working tree must be empty before bumping the version"
 fi
 
 sed -i '' "s/    versionName \".*\"/    versionName \"$1\"/" lottie/build.gradle
