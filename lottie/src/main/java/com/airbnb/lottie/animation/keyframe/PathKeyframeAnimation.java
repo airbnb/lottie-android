@@ -22,17 +22,18 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
   @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
     PathKeyframe pathKeyframe = (PathKeyframe) keyframe;
     Path path = pathKeyframe.getPath();
-    if (path == null) {
-      return keyframe.startValue;
-    }
 
-    if (valueCallback != null) {
+    if (valueCallback != null && keyframe.endFrame != null) {
       PointF value = valueCallback.getValueInternal(pathKeyframe.startFrame, pathKeyframe.endFrame,
           pathKeyframe.startValue, pathKeyframe.endValue, getLinearCurrentKeyframeProgress(),
           keyframeProgress, getProgress());
       if (value != null) {
         return value;
       }
+    }
+
+    if (path == null) {
+      return keyframe.startValue;
     }
 
     if (pathMeasureKeyframe != pathKeyframe) {
