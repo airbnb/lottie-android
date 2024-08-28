@@ -1,3 +1,14 @@
+# 6.5.1
+### Bugs Fixed
+* Fix value callback is not called for PathKeyframeAnimation ([#2540](https://github.com/airbnb/lottie-android/pull/2540))
+* Fix shadow softness accuracy ([#2541](https://github.com/airbnb/lottie-android/pull/2541))
+* Add a global configuration to control reduced motion settings for a11y ([#2536](https://github.com/airbnb/lottie-android/pull/2536))
+* Fix a NPE on ImageAssetManager#getContext ([#2532](https://github.com/airbnb/lottie-android/pull/2532))
+* Improve strokes with skew ([#2531](https://github.com/airbnb/lottie-android/pull/2531))
+* LottieCompositionFactory: Avoid NPE when animation contains a Font Family and Context is null ([#2530](https://github.com/airbnb/lottie-android/pull/2530))
+* LottieCompositionFactory: Add factory methods that take an okio Source ([#2527](https://github.com/airbnb/lottie-android/pull/2527))
+* LottieCompositionFactory#fromZipStreamSyncInternal close FileOutputStream ([#2548](https://github.com/airbnb/lottie-android/pull/2548))
+
 # 6.5.0
 ### New Features
 * Apply blend modes to layers and add Multiply ([#2519](https://github.com/airbnb/lottie-android/pull/2519))
