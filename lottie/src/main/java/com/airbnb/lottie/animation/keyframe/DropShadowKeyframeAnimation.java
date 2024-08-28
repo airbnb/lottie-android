@@ -11,7 +11,12 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 
 public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.AnimationListener {
+
   private static final float DEG_TO_RAD = (float) (Math.PI / 180.0);
+
+  // We scale the "Softness" value by a constant factor so that the Paint.setShadowLayer() call
+  // gives results that more closely match After Effects
+  private static final float AFTER_EFFECT_SOFTNESS_SCALE_FACTOR = 0.33f;
 
   private final BaseLayer layer;
   private final BaseKeyframeAnimation.AnimationListener listener;
@@ -57,6 +62,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   /**
    * Applies a shadow to the provided Paint object, which will be applied to the Canvas behind whatever is drawn
    * (a shape, bitmap, path, etc.)
+   *
    * @param parentAlpha A value between 0 and 255 representing the combined alpha of all parents of this drop shadow effect.
    *                    E.g. The layer via transform, the fill/stroke via its opacity, etc.
    */
@@ -85,7 +91,7 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
     // Paint.setShadowLayer() removes the shadow if radius is 0, so we use a small nonzero value in that case
-    float radius = Math.max(this.radius.getValue() * scaleX, Float.MIN_VALUE);
+    float radius = Math.max(this.radius.getValue() * scaleX * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, Float.MIN_VALUE);
 
     if (paintRadius == radius && paintX == x && paintY == y && paintColor == color) {
       return;
@@ -97,8 +103,8 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     paint.setShadowLayer(radius, x, y, color);
   }
 
-  public void setColorCallback(@Nullable  LottieValueCallback<Integer> callback) {
-   color.setValueCallback(callback);
+  public void setColorCallback(@Nullable LottieValueCallback<Integer> callback) {
+    color.setValueCallback(callback);
   }
 
   public void setOpacityCallback(@Nullable final LottieValueCallback<Float> callback) {
