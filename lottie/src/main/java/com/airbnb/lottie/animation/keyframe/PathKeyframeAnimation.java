@@ -20,14 +20,10 @@ public class PathKeyframeAnimation extends KeyframeAnimation<PointF> {
   }
 
   @Override public PointF getValue(Keyframe<PointF> keyframe, float keyframeProgress) {
-    if (keyframe.startValue == null || keyframe.endValue == null) {
-      throw new IllegalStateException("Missing values for keyframe.");
-    }
-
     PathKeyframe pathKeyframe = (PathKeyframe) keyframe;
     Path path = pathKeyframe.getPath();
 
-    if (valueCallback != null) {
+    if (valueCallback != null && keyframe.endFrame != null) {
       PointF value = valueCallback.getValueInternal(pathKeyframe.startFrame, pathKeyframe.endFrame,
           pathKeyframe.startValue, pathKeyframe.endValue, getLinearCurrentKeyframeProgress(),
           keyframeProgress, getProgress());
