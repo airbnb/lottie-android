@@ -823,7 +823,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     computeRenderMode();
-    if (animationsEnabled() || getRepeatCount() == 0) {
+    if (animationsEnabled(getContext()) || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.playAnimation();
         onVisibleAction = OnVisibleAction.NONE;
@@ -831,7 +831,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         onVisibleAction = OnVisibleAction.PLAY;
       }
     }
-    if (!animationsEnabled()) {
+    if (!animationsEnabled(getContext())) {
       Marker markerForAnimationsDisabled = getMarkerForAnimationsDisabled();
       if (markerForAnimationsDisabled != null) {
         setFrame((int) markerForAnimationsDisabled.startFrame);
@@ -853,7 +853,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    *
    * @return The first non-null marker from the list of allowed reduced motion markers, or null if no such marker is found.
    */
-  private Marker getMarkerForAnimationsDisabled() {
+  public Marker getMarkerForAnimationsDisabled() {
     Marker marker = null;
     for (String markerName : ALLOWED_REDUCED_MOTION_MARKERS) {
       marker = composition.getMarker(markerName);
@@ -885,7 +885,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
 
     computeRenderMode();
-    if (animationsEnabled() || getRepeatCount() == 0) {
+    if (animationsEnabled(getContext()) || getRepeatCount() == 0) {
       if (isVisible()) {
         animator.resumeAnimation();
         onVisibleAction = OnVisibleAction.NONE;
@@ -893,7 +893,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         onVisibleAction = OnVisibleAction.RESUME;
       }
     }
-    if (!animationsEnabled()) {
+    if (!animationsEnabled(getContext())) {
       setFrame((int) (getSpeed() < 0 ? getMinFrame() : getMaxFrame()));
       animator.endAnimation();
       if (!isVisible()) {
@@ -1244,12 +1244,12 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
-  private boolean animationsEnabled() {
+  public boolean animationsEnabled(Context context) {
     if (ignoreSystemAnimationsDisabled) {
       return true;
     }
     return systemAnimationsEnabled &&
-        L.getReducedMotionOption().getCurrentReducedMotionMode(getContext()) == ReducedMotionMode.STANDARD_MOTION;
+        L.getReducedMotionOption().getCurrentReducedMotionMode(context) == ReducedMotionMode.STANDARD_MOTION;
   }
 
   /**
