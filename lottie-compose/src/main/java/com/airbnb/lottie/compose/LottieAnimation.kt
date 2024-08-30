@@ -133,8 +133,9 @@ fun LottieAnimation(
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.clipTextToBoundingBox = clipTextToBoundingBox
-            if (!drawable.animationsEnabled(context) && drawable.markerForAnimationsDisabled != null) {
-                drawable.progress = drawable.markerForAnimationsDisabled!!.startFrame
+            val markerForAnimationsDisabled = drawable.markerForAnimationsDisabled
+            if (!drawable.animationsEnabled(context) && markerForAnimationsDisabled != null) {
+                drawable.progress = markerForAnimationsDisabled.startFrame
             } else {
                 drawable.progress = progress()
             }

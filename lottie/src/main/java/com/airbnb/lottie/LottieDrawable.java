@@ -853,6 +853,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    *
    * @return The first non-null marker from the list of allowed reduced motion markers, or null if no such marker is found.
    */
+  @RestrictTo(RestrictTo.Scope.LIBRARY)
   public Marker getMarkerForAnimationsDisabled() {
     Marker marker = null;
     for (String markerName : ALLOWED_REDUCED_MOTION_MARKERS) {
