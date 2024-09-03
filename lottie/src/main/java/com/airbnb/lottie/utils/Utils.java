@@ -14,6 +14,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.L;
@@ -262,7 +263,7 @@ public final class Utils {
     return Resources.getSystem().getDisplayMetrics().density;
   }
 
-  public static float getAnimationScale(Context context) {
+  public static float getAnimationScale(@NonNull Context context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return Settings.Global.getFloat(context.getContentResolver(),
           Settings.Global.ANIMATOR_DURATION_SCALE, 1.0f);

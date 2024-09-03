@@ -1,6 +1,7 @@
 package com.airbnb.lottie.configurations.reducemotion;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import com.airbnb.lottie.utils.Utils;
 
 /**
@@ -18,8 +19,8 @@ import com.airbnb.lottie.utils.Utils;
 public class SystemReducedMotionOption implements ReducedMotionOption {
 
   @Override
-  public ReducedMotionMode getCurrentReducedMotionMode(Context context) {
-    if (Utils.getAnimationScale(context) != 0f) {
+  public ReducedMotionMode getCurrentReducedMotionMode(@Nullable Context context) {
+    if (context == null || Utils.getAnimationScale(context) != 0f) {
       return ReducedMotionMode.STANDARD_MOTION;
     } else {
       return ReducedMotionMode.REDUCED_MOTION;
