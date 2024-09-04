@@ -1,3 +1,8 @@
+# 6.5.2
+### Bugs Fixed
+* Fix a NPE when running Lottie in instrumentation tests ([#2546](https://github.com/airbnb/lottie-android/pull/2546))
+* Add support for new reduced motion options in Compose ([#2542](https://github.com/airbnb/lottie-android/pull/2542))
+
 # 6.5.1
 ### Bugs Fixed
 * Fix value callback is not called for PathKeyframeAnimation ([#2540](https://github.com/airbnb/lottie-android/pull/2540))
