@@ -1245,7 +1245,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     }
   }
 
-  public boolean animationsEnabled(Context context) {
+  public boolean animationsEnabled(@Nullable Context context) {
     if (ignoreSystemAnimationsDisabled) {
       return true;
     }
