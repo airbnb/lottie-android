@@ -1,7 +1,6 @@
 package com.airbnb.lottie.utils;
 
 import android.graphics.Bitmap;
-import android.graphics.BlendMode;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -25,13 +24,13 @@ import com.airbnb.lottie.animation.LPaint;
  * An OffscreenLayer encapsulates a "child surface" onto which canvas draw calls can be issued.
  * At the end, the result of these draw calls will be composited onto the parent surface, with
  * user-provided alpha, blend mode, color filter, and drop shadow.
- *
+ * <p>
  * To use the OffscreenLayer, call its start() method with the necessary parameters, draw
  * to the returned canvas, and then call finish() to composite the result onto the main canvas.
- *
+ * <p>
  * In this sense, using an OffscreenLayer is very similar to the Canvas.saveLayer() family
  * of functions, and in fact forwards to Canvas.saveLayer() when appropriate.
- *
+ * <p>
  * Unlike Canvas.saveLayer(), an OffscreenLayer also supports compositing with a drop-shadow,
  * and uses a hardware-accelerated target when available. It attempts to choose the fastest
  * approach to render and composite the contents, up to and including simply rendering
@@ -50,13 +49,6 @@ public class OffscreenLayer {
 
     public ComposeOp() {
       reset();
-    }
-
-    public ComposeOp(int alpha, BlendModeCompat blendMode, DropShadow shadow) {
-      this.alpha = alpha;
-      this.blendMode = blendMode;
-      this.colorFilter = colorFilter;
-      this.shadow = shadow;
     }
 
     public boolean isTranslucent() {
@@ -96,7 +88,7 @@ public class OffscreenLayer {
       BITMAP,
       /** Render into a RenderNode's display-list and then draw the render node. (Hardware accelerated) */
       RENDER_NODE
-  };
+  }
 
   /** Parent render surface should compose onto. null if no rendering is in progress. */
   @Nullable private Canvas parentCanvas;
@@ -106,6 +98,16 @@ public class OffscreenLayer {
   private RenderStrategy currentStrategy;
   /** Rectangle that the final composition will occupy in the screen */
   @Nullable private Rect targetRect;
+  /** targetRect with shadow render space included */
+  @Nullable private RectF rectIncludingShadow;
+  @Nullable private Rect intRectIncludingShadow;
+  @Nullable private RectF tmpRect;
+  @Nullable private RectF scaledRectIncludingShadow;
+  @Nullable private Rect shadowBitmapSrcRect;
+
+  @Nullable private RectF scaledBounds;
+
+  private final static Matrix IDENTITY_MATRIX = new Matrix();
 
   // For RenderStrategy.SAVE_LAYER:
   /** Paint passed to Utils.saveLayerCompat(). */
@@ -114,8 +116,11 @@ public class OffscreenLayer {
   // For RenderStrategy.BITMAP:
   @Nullable private Bitmap bitmap;
   @Nullable private Canvas bitmapCanvas;
-  private LPaint clearPaint;
+  @Nullable private Rect bitmapSrcRect;
+  @Nullable private LPaint clearPaint;
 
+  /** Temporary variable to store the parent canvas Matrix */
+  @Nullable Matrix parentCanvasMatrix;
   /** parentCanvas' pre-existing matrix when start() was called */
   @Nullable float[] preExistingTransform;
 
@@ -134,15 +139,12 @@ public class OffscreenLayer {
   // For RenderStrategy.RENDER_NODE:
   @Nullable private RenderNode renderNode; // Render node with the initial contents of the layer
   @Nullable private RenderNode shadowRenderNode; // Render node for the shadow
-  @Nullable private Canvas renderNodeCanvas;
   @Nullable private DropShadow lastRenderNodeShadow;
 
   public OffscreenLayer() {
-    this.clearPaint = new LPaint();
-    this.clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
   }
 
-  private RenderStrategy chooseRenderStrategy(Canvas parentCanvas, RectF bounds, ComposeOp op) {
+  private RenderStrategy chooseRenderStrategy(Canvas parentCanvas, ComposeOp op) {
     if (op.isNoop()) {
       // Can draw directly onto the final canvas, results will look the same.
       return RenderStrategy.DIRECT;
@@ -156,21 +158,26 @@ public class OffscreenLayer {
       return RenderStrategy.SAVE_LAYER;
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && parentCanvas.isHardwareAccelerated()) {
-      if (op.hasShadow() && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
-        // RenderEffect, which we need for shadows, was only introduced in S. This means that, pre-S,
-        // we have to do renderShadow() on a bitmap, like in the BITMAP case. However, since it's not
-        // possible to draw a RenderNode to a software-rendering canvas, there would be no way to get
-        // our RenderNode contents onto a bitmap where we can renderShadow(). Therefore, fall back to
-        // full bitmap mode.
-        return RenderStrategy.BITMAP;
-      }
+    // Beyond this point, we are sure that we need to render a drop shadow.
 
-      return RenderStrategy.RENDER_NODE;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !parentCanvas.isHardwareAccelerated()) {
+      // We don't have support for the RenderNode API, or we're rendering to a software canvas
+      // which doesn't support RenderNodes anyhow. This is the slowest path: render to a bitmap,
+      // add a shadow manually on CPU.
+      return RenderStrategy.BITMAP;
     }
 
-    // Slowest path: render to a bitmap, add a shadow manually.
-    return RenderStrategy.BITMAP;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+      // RenderEffect, which we need for shadows, was only introduced in S. This means that, pre-S,
+      // we have to do renderShadow() on a bitmap, like in the BITMAP case. However, since it's not
+      // possible to draw a RenderNode to a software-rendering canvas, there would be no way to get
+      // our RenderNode contents onto a bitmap where we can renderShadow(). Therefore, fall back to
+      // full bitmap mode.
+      return RenderStrategy.BITMAP;
+    }
+
+    // The RenderNode and RenderEffect APIs are available, so use hardware acceleration.
+    return RenderStrategy.RENDER_NODE;
   }
 
   private Bitmap allocateBitmap(RectF bounds, Bitmap.Config cfg) {
@@ -179,8 +186,7 @@ public class OffscreenLayer {
     // still being relatively speedy to blit and operate on.
     int width = (int)Math.ceil(bounds.width() * 1.05);
     int height = (int)Math.ceil(bounds.height() * 1.05);
-    Bitmap bmp = Bitmap.createBitmap(width, height, cfg);
-    return bmp;
+    return Bitmap.createBitmap(width, height, cfg);
   }
 
   private void deallocateBitmap(Bitmap bitmap) {
@@ -198,28 +204,27 @@ public class OffscreenLayer {
 
     // If the required area has reduced in size considerably, trigger a reallocation, since
     // we might be paying a large unnecessary penalty to work with a bitmap that big.
-    if (bounds.width() < bitmap.getWidth() * 0.75f || bounds.height() < bitmap.getHeight() * 0.75f) {
-      return true;
-    }
-
-    return false;
+    return bounds.width() < bitmap.getWidth() * 0.75f || bounds.height() < bitmap.getHeight() * 0.75f;
   }
 
   public Canvas start(Canvas parentCanvas, RectF bounds, ComposeOp op) {
     if (this.parentCanvas != null) {
-      throw new RuntimeException("Cannot nest start() calls on a single OffscreenBitmap - call finish() first");
+      throw new IllegalStateException("Cannot nest start() calls on a single OffscreenBitmap - call finish() first");
     }
 
     // Determine the scaling applied by the parentCanvas' pre-existing transform matrix. This is an optimization
     // to avoid creating bitmaps (or render nodes) with unreasonable sizes that will get scaled down when drawn
     // onto parentCanvas anyhow.
     if (preExistingTransform == null) preExistingTransform = new float[9];
-    parentCanvas.getMatrix().getValues(preExistingTransform);
+    if (parentCanvasMatrix == null) parentCanvasMatrix = new Matrix();
+    parentCanvas.getMatrix(parentCanvasMatrix);
+    parentCanvasMatrix.getValues(preExistingTransform);
 
     float pixelScaleX = preExistingTransform[Matrix.MSCALE_X];
     float pixelScaleY = preExistingTransform[Matrix.MSCALE_Y];
 
-    RectF scaledBounds = new RectF(
+    if (scaledBounds == null) scaledBounds = new RectF();
+    scaledBounds.set(
         bounds.left * pixelScaleX,
         bounds.top * pixelScaleY,
         bounds.right * pixelScaleX,
@@ -228,8 +233,9 @@ public class OffscreenLayer {
 
     this.parentCanvas = parentCanvas;
     this.op = op;
-    this.currentStrategy = chooseRenderStrategy(parentCanvas, bounds, op);
-    this.targetRect = new Rect((int)bounds.left, (int)bounds.top, (int)bounds.right, (int)bounds.bottom);
+    this.currentStrategy = chooseRenderStrategy(parentCanvas, op);
+    if (this.targetRect == null) this.targetRect = new Rect();
+    this.targetRect.set((int)bounds.left, (int)bounds.top, (int)bounds.right, (int)bounds.bottom);
 
     if (composePaint == null) composePaint = new LPaint();
     composePaint.reset();
@@ -256,6 +262,11 @@ public class OffscreenLayer {
         break;
 
       case BITMAP:
+        if (clearPaint == null) {
+          clearPaint = new LPaint();
+          clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        }
+
         if (needNewBitmap(bitmap, scaledBounds)) {
           if (bitmap != null) {
             deallocateBitmap(bitmap);
@@ -263,7 +274,10 @@ public class OffscreenLayer {
           bitmap = allocateBitmap(scaledBounds, Bitmap.Config.ARGB_8888);
           bitmapCanvas = new Canvas(bitmap);
         } else {
-          bitmapCanvas.setMatrix(new Matrix());
+          if (bitmapCanvas == null) {
+            throw new IllegalStateException("If needNewBitmap() returns true, we should have a canvas ready");
+          }
+          bitmapCanvas.setMatrix(OffscreenLayer.IDENTITY_MATRIX);
           bitmapCanvas.drawRect(-1, -1, scaledBounds.width() + 1, scaledBounds.height() + 1, this.clearPaint);
         }
 
@@ -292,11 +306,18 @@ public class OffscreenLayer {
           renderNode.setUseCompositingLayer(true, composePaint);
 
           if (op.hasShadow()) {
+            if (shadowRenderNode == null) {
+              throw new IllegalStateException("Must initialize shadowRenderNode when we have shadow");
+            }
             shadowRenderNode.setUseCompositingLayer(true, composePaint);
           }
         }
         renderNode.setAlpha(op.alpha / 255.f);
         if (op.hasShadow()) {
+          if (shadowRenderNode == null) {
+            throw new IllegalStateException("Must initialize shadowRenderNode when we have shadow");
+          }
+
           // lottie-web composes the shadow onto the canvas first, and then the
           // contents separately - mirror this behavior
           shadowRenderNode.setAlpha(op.alpha / 255.f);
@@ -304,10 +325,8 @@ public class OffscreenLayer {
         renderNode.setHasOverlappingRendering(true);
         renderNode.setPosition((int)scaledBounds.left, (int)scaledBounds.top, (int)scaledBounds.right, (int)scaledBounds.bottom);
 
-        renderNodeCanvas = renderNode.beginRecording((int)scaledBounds.width(), (int)scaledBounds.height());
-
-        childCanvas = renderNodeCanvas;
-        childCanvas.setMatrix(new Matrix());
+        childCanvas = renderNode.beginRecording((int) scaledBounds.width(), (int) scaledBounds.height());
+        childCanvas.setMatrix(OffscreenLayer.IDENTITY_MATRIX);
         childCanvas.scale(pixelScaleX, pixelScaleY); // Replicate scaling applied by parentCanvas
         childCanvas.translate(-bounds.left, -bounds.top); // So that the image begins at the top-left of the bitmap
         break;
@@ -320,8 +339,8 @@ public class OffscreenLayer {
   }
 
   public void finish() {
-    if (parentCanvas == null) {
-      throw new RuntimeException("OffscreenBitmap: finish() call without matching start()");
+    if (parentCanvas == null || op == null || preExistingTransform == null || targetRect == null) {
+      throw new IllegalStateException("OffscreenBitmap: finish() call without matching start()");
     }
 
     switch (currentStrategy) {
@@ -334,6 +353,10 @@ public class OffscreenLayer {
         break;
 
       case BITMAP:
+        if (bitmap == null) {
+          throw new IllegalStateException("Bitmap is not ready; should've been initialized at start() time");
+        }
+
         if (op.hasShadow()) {
           // Composing the shadow first and then the content like this will be incorrect in the
           // presence of op.blendMode. However, that is not used at the moment, so this
@@ -342,10 +365,16 @@ public class OffscreenLayer {
           renderBitmapShadow(parentCanvas, op.shadow);
         }
 
-        parentCanvas.drawBitmap(bitmap, new Rect(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y])), this.targetRect, composePaint);
+        if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
+        bitmapSrcRect.set(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y]));
+        parentCanvas.drawBitmap(bitmap, bitmapSrcRect, targetRect, composePaint);
         break;
 
       case RENDER_NODE:
+        if (renderNode == null) {
+          throw new IllegalStateException("RenderNode is not ready; should've been initialized at start() time");
+        }
+
         parentCanvas.save();
         parentCanvas.scale(1.0f / preExistingTransform[Matrix.MSCALE_X], 1.0f / preExistingTransform[Matrix.MSCALE_Y]);
         renderNode.endRecording();
@@ -365,36 +394,48 @@ public class OffscreenLayer {
   }
 
   private RectF calculateRectIncludingShadow(Rect rect, DropShadow shadow) {
-    RectF newRect = new RectF(rect);
-    newRect.offsetTo(rect.left + shadow.getDx(), rect.top + shadow.getDy());
-    newRect.inset(-shadow.getRadius(), -shadow.getRadius());
-    newRect.union(new RectF(rect));
-    return newRect;
+    if (rectIncludingShadow == null) rectIncludingShadow = new RectF();
+    if (tmpRect == null) tmpRect = new RectF();
+    rectIncludingShadow.set(rect);
+    rectIncludingShadow.offsetTo(rect.left + shadow.getDx(), rect.top + shadow.getDy());
+    rectIncludingShadow.inset(-shadow.getRadius(), -shadow.getRadius());
+    tmpRect.set(rect);
+    rectIncludingShadow.union(tmpRect);
+    return rectIncludingShadow;
   }
 
   /** Renders a shadow (only the shadow) of this.bitmap to the provided canvas. */
   private void renderBitmapShadow(Canvas targetCanvas, DropShadow shadow) {
+    if (targetRect == null || bitmap == null || shadowBitmap == null || shadowMaskBitmap == null) {
+      throw new IllegalStateException("Cannot render to bitmap outside a start()/finish() block");
+    }
+
     // This is an expanded rect that encompasses the full extent of the shadow.
     RectF rectIncludingShadow = calculateRectIncludingShadow(targetRect, shadow);
-    Rect intRectIncludingShadow = new Rect(
+    if (intRectIncludingShadow == null) intRectIncludingShadow = new Rect();
+    intRectIncludingShadow.set(
         (int)Math.floor(rectIncludingShadow.left),
         (int)Math.floor(rectIncludingShadow.top),
         (int)Math.ceil(rectIncludingShadow.right),
         (int)Math.ceil(rectIncludingShadow.bottom)
     );
-    float pixelScaleX = preExistingTransform[Matrix.MSCALE_X];
-    float pixelScaleY = preExistingTransform[Matrix.MSCALE_Y];
-    RectF scaledRectIncludingShadow = new RectF(
+    float pixelScaleX = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_X] : 1.0f;
+    float pixelScaleY = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_Y] : 1.0f;
+    if (scaledRectIncludingShadow == null) scaledRectIncludingShadow = new RectF();
+    scaledRectIncludingShadow.set(
         rectIncludingShadow.left * pixelScaleX,
         rectIncludingShadow.top * pixelScaleY,
         rectIncludingShadow.right * pixelScaleX,
         rectIncludingShadow.bottom * pixelScaleY
     );
 
-    Rect shadowBitmapSrcRect = new Rect(0, 0, (int)scaledRectIncludingShadow.width(), (int)scaledRectIncludingShadow.height());;
+    if (shadowBitmapSrcRect == null) shadowBitmapSrcRect = new Rect();
+    shadowBitmapSrcRect.set(0, 0, (int)scaledRectIncludingShadow.width(), (int)scaledRectIncludingShadow.height());
     if (needNewBitmap(shadowBitmap, scaledRectIncludingShadow)) {
       if (shadowBitmap != null) {
         deallocateBitmap(shadowBitmap);
+      }
+      if (shadowMaskBitmap != null) {
         deallocateBitmap(shadowMaskBitmap);
       }
 
@@ -403,6 +444,9 @@ public class OffscreenLayer {
       shadowBitmapCanvas = new Canvas(shadowBitmap);
       shadowMaskBitmapCanvas = new Canvas(shadowMaskBitmap);
     } else {
+      if (shadowBitmapCanvas == null || shadowMaskBitmapCanvas == null || clearPaint == null) {
+        throw new IllegalStateException("If needNewBitmap() returns true, we should have a canvas and bitmap ready");
+      }
       shadowBitmapCanvas.drawRect(shadowBitmapSrcRect, clearPaint);
       shadowMaskBitmapCanvas.drawRect(shadowBitmapSrcRect, clearPaint);
     }
@@ -452,14 +496,18 @@ public class OffscreenLayer {
 
   /** Renders a shadow (only the shadow) of this.renderNode to the provided canvas. */
   private void renderHardwareShadow(Canvas targetCanvas, DropShadow shadow) {
+    if (renderNode == null || shadowRenderNode == null) {
+      throw new IllegalStateException("Cannot render to render node outside a start()/finish() block");
+    }
+
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
       throw new RuntimeException("RenderEffect is not supported on API level <31");
     }
 
     // The render node canvas is in the pre-pixelscale space, so we have to scale the shadow parameters
     // by the pixel scale
-    float pixelScaleX = preExistingTransform[Matrix.MSCALE_X];
-    float pixelScaleY = preExistingTransform[Matrix.MSCALE_Y];
+    float pixelScaleX = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_X] : 1.0f;
+    float pixelScaleY = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_Y] : 1.0f;
 
     if (lastRenderNodeShadow == null || !shadow.sameAs(lastRenderNodeShadow)) {
       RenderEffect effect = RenderEffect.createColorFilterEffect(new PorterDuffColorFilter(shadow.getColor(), PorterDuff.Mode.SRC_IN));

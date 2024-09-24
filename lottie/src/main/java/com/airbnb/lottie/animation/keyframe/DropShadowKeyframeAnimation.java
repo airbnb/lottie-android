@@ -2,12 +2,10 @@ package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.utils.DropShadow;
-import com.airbnb.lottie.utils.OffscreenLayer;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -28,7 +26,9 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   private final FloatKeyframeAnimation distance;
   private final FloatKeyframeAnimation radius;
 
-  private final float[] matrixValues = new float[9];
+  private final DropShadow evaluatedDropShadow = new DropShadow();
+
+  @Nullable private Matrix layerInvMatrix;
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
     this.listener = listener;
@@ -65,17 +65,20 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
-    DropShadow shadow = new DropShadow(rawRadius * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, rawX, rawY, color);
-    shadow.transformBy(parentMatrix);
+    evaluatedDropShadow.setRadius(rawRadius * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR);
+    evaluatedDropShadow.setDx(rawX);
+    evaluatedDropShadow.setDy(rawY);
+    evaluatedDropShadow.setColor(color);
+    evaluatedDropShadow.transformBy(parentMatrix);
 
     // Since the shadow parameters are relative to the layer on which the shadow resides, correct for this
     // by undoing the layer's own transform. For example, if the layer is scaled, the screen-space blur
     // radius should stay constant.
-    Matrix layerInv = new Matrix();
-    layer.transform.getMatrix().invert(layerInv);
-    shadow.transformBy(layerInv);
+    if (layerInvMatrix == null) layerInvMatrix = new Matrix();
+    layer.transform.getMatrix().invert(layerInvMatrix);
+    evaluatedDropShadow.transformBy(layerInvMatrix);
 
-    return shadow;
+    return evaluatedDropShadow;
   }
 
   public void setColorCallback(@Nullable LottieValueCallback<Integer> callback) {

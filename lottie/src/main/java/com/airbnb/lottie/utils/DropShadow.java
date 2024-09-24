@@ -14,6 +14,8 @@ public class DropShadow {
   private float dy = 0.0f;
   private int color = 0x0;
 
+  @Nullable private float[] vecs;
+
   public DropShadow() {
   }
 
@@ -68,7 +70,9 @@ public class DropShadow {
   }
 
   public void transformBy(Matrix matrix) {
-    float[] vecs = {dx, dy};
+    if (vecs == null) vecs = new float[2];
+    vecs[0] = dx;
+    vecs[1] = dy;
     matrix.mapVectors(vecs);
 
     dx = vecs[0];
