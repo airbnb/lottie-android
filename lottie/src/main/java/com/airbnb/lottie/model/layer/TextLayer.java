@@ -18,7 +18,6 @@ import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.TextDelegate;
 import com.airbnb.lottie.animation.content.ContentGroup;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TextKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.DocumentData;

@@ -1257,7 +1257,7 @@ import java.util.zip.ZipInputStream;
    * <p>
    * When true, the behavior will be more correct: it will mimic lottie-web and other renderers, in that drop shadows will be applied to a layer
    * as a whole, no matter its contents.
-   *
+   * <p>
    * When false, the performance will be better at the expense of correctness: for each shape element individually, the first drop shadow upwards
    * in the hierarchy is applied to it directly. Visually, this may manifest as phantom shadows or artifacts where the artist has intended to treat a
    * layer as a whole, and this option exposes its internal structure.

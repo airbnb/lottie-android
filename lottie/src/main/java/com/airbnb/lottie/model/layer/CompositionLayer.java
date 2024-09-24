@@ -19,7 +19,6 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.OffscreenLayer;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;

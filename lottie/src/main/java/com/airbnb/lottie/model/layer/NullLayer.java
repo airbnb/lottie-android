@@ -6,7 +6,6 @@ import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.utils.DropShadow;
 
 public class NullLayer extends BaseLayer {

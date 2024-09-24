@@ -24,6 +24,7 @@ public class DropShadow {
     this.dx = dx;
     this.dy = dy;
     this.color = color;
+    this.vecs = null;
   }
 
   public DropShadow(DropShadow other) {
@@ -31,6 +32,7 @@ public class DropShadow {
     this.dx = other.dx;
     this.dy = other.dy;
     this.color = other.color;
+    this.vecs = null;
   }
 
   public float getRadius() {

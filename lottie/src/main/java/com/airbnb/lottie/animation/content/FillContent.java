@@ -18,14 +18,12 @@ import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ColorKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -119,8 +117,6 @@ public class FillContent
       blurMaskFilterRadius = blurRadius;
     }
     if (shadowToApply != null) {
-      Matrix layerInv = new Matrix();
-      layer.transform.getMatrix().invert(layerInv);
       shadowToApply.applyWithAlpha((int)(fillAlpha * 255), paint);
     } else {
       paint.clearShadowLayer();

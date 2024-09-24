@@ -17,7 +17,6 @@ import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ShapeGroup;
-import com.airbnb.lottie.parser.DropShadowEffect;
 import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.value.LottieValueCallback;
 

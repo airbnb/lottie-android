@@ -59,7 +59,7 @@ public class ImageLayer extends BaseLayer {
     canvas.save();
     canvas.concat(parentMatrix);
 
-    DropShadow shadowToApply = dropShadowAnimation != null
+    @Nullable DropShadow shadowToApply = dropShadowAnimation != null
         ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
         : parentShadowToApply;
 
@@ -72,13 +72,9 @@ public class ImageLayer extends BaseLayer {
       if (offscreenLayer == null) offscreenLayer = new OffscreenLayer();
       if (offscreenOp == null) offscreenOp = new OffscreenLayer.ComposeOp();
       offscreenOp.reset();
-      if (shadowToApply != null) {
-        // We don't use offscreenOp for compositing here, so we still need to account for its alpha
-        // when drawing the shadow.
-        shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
-      } else {
-        offscreenOp.shadow = null;
-      }
+      // We don't use offscreenOp for compositing here, so we still need to account for its alpha
+      // when drawing the shadow.
+      shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
 
       RectF bounds = new RectF(0, 0, 0, 0);
       getBounds(bounds, parentMatrix, true);
