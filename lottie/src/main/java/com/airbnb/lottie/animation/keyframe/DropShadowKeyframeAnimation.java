@@ -26,8 +26,6 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
   private final FloatKeyframeAnimation distance;
   private final FloatKeyframeAnimation radius;
 
-  private final DropShadow evaluatedDropShadow = new DropShadow();
-
   @Nullable private Matrix layerInvMatrix;
 
   public DropShadowKeyframeAnimation(BaseKeyframeAnimation.AnimationListener listener, BaseLayer layer, DropShadowEffect dropShadowEffect) {
@@ -65,20 +63,17 @@ public class DropShadowKeyframeAnimation implements BaseKeyframeAnimation.Animat
     int opacity = Math.round(this.opacity.getValue() * parentAlpha / 255f);
     int color = Color.argb(opacity, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
 
-    evaluatedDropShadow.setRadius(rawRadius * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR);
-    evaluatedDropShadow.setDx(rawX);
-    evaluatedDropShadow.setDy(rawY);
-    evaluatedDropShadow.setColor(color);
-    evaluatedDropShadow.transformBy(parentMatrix);
+    DropShadow shadow = new DropShadow(rawRadius * AFTER_EFFECT_SOFTNESS_SCALE_FACTOR, rawX, rawY, color);
+    shadow.transformBy(parentMatrix);
 
     // Since the shadow parameters are relative to the layer on which the shadow resides, correct for this
     // by undoing the layer's own transform. For example, if the layer is scaled, the screen-space blur
     // radius should stay constant.
     if (layerInvMatrix == null) layerInvMatrix = new Matrix();
     layer.transform.getMatrix().invert(layerInvMatrix);
-    evaluatedDropShadow.transformBy(layerInvMatrix);
+    shadow.transformBy(layerInvMatrix);
 
-    return evaluatedDropShadow;
+    return shadow;
   }
 
   public void setColorCallback(@Nullable LottieValueCallback<Integer> callback) {
