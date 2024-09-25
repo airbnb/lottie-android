@@ -406,7 +406,7 @@ public class OffscreenLayer {
 
   /** Renders a shadow (only the shadow) of this.bitmap to the provided canvas. */
   private void renderBitmapShadow(Canvas targetCanvas, DropShadow shadow) {
-    if (targetRect == null || bitmap == null || shadowBitmap == null || shadowMaskBitmap == null) {
+    if (targetRect == null || bitmap == null) {
       throw new IllegalStateException("Cannot render to bitmap outside a start()/finish() block");
     }
 
@@ -451,6 +451,8 @@ public class OffscreenLayer {
       shadowMaskBitmapCanvas.drawRect(shadowBitmapSrcRect, clearPaint);
     }
 
+    if (shadowMaskBitmap == null) throw new IllegalStateException("Expected to have allocated a shadow mask bitmap");
+    
     if (shadowPaint == null) {
       shadowPaint = new LPaint(Paint.ANTI_ALIAS_FLAG);
     }
