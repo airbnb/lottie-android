@@ -86,12 +86,27 @@ public class LottieCompositionFactory {
     LottieCompositionCache.getInstance().resize(size);
   }
 
+  /**
+   * Like {@link #clearCache(Context, boolean)} but defaults to clearing the network cache.
+   *
+   * @see #clearCache(Context, boolean)
+   */
   public static void clearCache(Context context) {
+    clearCache(context, true);
+  }
+
+  /**
+   * Clears any pending animations, animations that are parsed and in-memory, and
+   * optionally, any animations loaded from the network that are cached to disk.
+   */
+  public static void clearCache(Context context, boolean includeNetwork) {
     taskCache.clear();
     LottieCompositionCache.getInstance().clear();
-    final NetworkCache networkCache = L.networkCache(context);
-    if (networkCache != null) {
-      networkCache.clear();
+    if (includeNetwork) {
+      final NetworkCache networkCache = L.networkCache(context);
+      if (networkCache != null) {
+        networkCache.clear();
+      }
     }
   }
 
