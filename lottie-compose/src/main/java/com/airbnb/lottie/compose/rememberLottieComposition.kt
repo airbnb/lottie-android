@@ -144,6 +144,7 @@ private fun lottieTask(
                 LottieCompositionFactory.fromRawRes(context, spec.resId, cacheKey)
             }
         }
+
         is LottieCompositionSpec.Url -> {
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromUrl(context, spec.url)
@@ -151,6 +152,7 @@ private fun lottieTask(
                 LottieCompositionFactory.fromUrl(context, spec.url, cacheKey)
             }
         }
+
         is LottieCompositionSpec.File -> {
             if (isWarmingCache) {
                 // Warming the cache is done from the main thread so we can't
@@ -164,10 +166,12 @@ private fun lottieTask(
                         ZipInputStream(fis),
                         actualCacheKey,
                     )
+
                     spec.fileName.endsWith("tgs") -> LottieCompositionFactory.fromJsonInputStream(
                         GZIPInputStream(fis),
                         actualCacheKey,
                     )
+
                     else -> LottieCompositionFactory.fromJsonInputStream(
                         fis,
                         actualCacheKey,
@@ -175,6 +179,7 @@ private fun lottieTask(
                 }
             }
         }
+
         is LottieCompositionSpec.Asset -> {
             if (cacheKey == DefaultCacheKey) {
                 LottieCompositionFactory.fromAsset(context, spec.assetName)
@@ -182,22 +187,27 @@ private fun lottieTask(
                 LottieCompositionFactory.fromAsset(context, spec.assetName, cacheKey)
             }
         }
+
         is LottieCompositionSpec.JsonString -> {
             val jsonStringCacheKey = if (cacheKey == DefaultCacheKey) spec.jsonString.hashCode().toString() else cacheKey
             LottieCompositionFactory.fromJsonString(spec.jsonString, jsonStringCacheKey)
         }
+
         is LottieCompositionSpec.ContentProvider -> {
             val fis = context.contentResolver.openInputStream(spec.uri)
             val actualCacheKey = if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey
             when {
-                spec.uri.toString().endsWith("zip") -> LottieCompositionFactory.fromZipStream(
+                spec.uri.toString().endsWith("zip") ||
+                    spec.uri.toString().endsWith("lottie") -> LottieCompositionFactory.fromZipStream(
                     ZipInputStream(fis),
                     actualCacheKey,
                 )
+
                 spec.uri.toString().endsWith("tgs") -> LottieCompositionFactory.fromJsonInputStream(
                     GZIPInputStream(fis),
                     actualCacheKey,
                 )
+
                 else -> LottieCompositionFactory.fromJsonInputStream(
                     fis,
                     actualCacheKey,
