@@ -196,23 +196,7 @@ private fun lottieTask(
         is LottieCompositionSpec.ContentProvider -> {
             val fis = context.contentResolver.openInputStream(spec.uri)
             val actualCacheKey = if (cacheKey == DefaultCacheKey) spec.uri.toString() else cacheKey
-            when {
-                spec.uri.toString().endsWith("zip") ||
-                    spec.uri.toString().endsWith("lottie") -> LottieCompositionFactory.fromZipStream(
-                    ZipInputStream(fis),
-                    actualCacheKey,
-                )
-
-                spec.uri.toString().endsWith("tgs") -> LottieCompositionFactory.fromJsonInputStream(
-                    GZIPInputStream(fis),
-                    actualCacheKey,
-                )
-
-                else -> LottieCompositionFactory.fromJsonInputStream(
-                    fis,
-                    actualCacheKey,
-                )
-            }
+            return LottieCompositionFactory.fromInputStream(context, fis, actualCacheKey)
         }
     }
 }

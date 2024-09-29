@@ -225,7 +225,40 @@ public class LottieCompositionFactory {
       return new LottieResult<>(cachedComposition);
     }
     try {
-      BufferedSource source = Okio.buffer(source(context.getAssets().open(fileName)));
+      return fromInputStreamSync(context, context.getAssets().open(fileName), cacheKey);
+    } catch (IOException e) {
+      return new LottieResult<>(e);
+    }
+  }
+
+  /**
+   * Use this when you have an input stream but aren't sure if it is a json, zip, or gzip file.
+   * This will read the file headers to see if it starts with the gzip or zip magic bytes.
+   * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
+   *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
+   *                font family (fFamily) in your animation file.
+   */
+  public static LottieTask<LottieComposition> fromInputStream(@Nullable Context context, InputStream inputStream, @Nullable String cacheKey) {
+    // Prevent accidentally leaking an Activity.
+    final Context appContext = context == null ? null : context.getApplicationContext();
+    return cache(cacheKey, () -> fromInputStreamSync(appContext, inputStream, cacheKey), null);
+  }
+
+  /**
+   * Use this when you have an input stream but aren't sure if it is a json, zip, or gzip file.
+   * This will read the file headers to see if it starts with the gzip or zip magic bytes.
+   * @param context is optional and only needed if your zip file contains ttf or otf fonts. If yours doesn't, you may pass null.
+   *                Embedded fonts may be .ttf or .otf files, can be in subdirectories, but must have the same name as the
+   *                font family (fFamily) in your animation file.
+   */
+  @WorkerThread
+  public static LottieResult<LottieComposition> fromInputStreamSync(@Nullable Context context, InputStream inputStream, @Nullable String cacheKey) {
+    final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
+    if (cachedComposition != null) {
+      return new LottieResult<>(cachedComposition);
+    }
+    try {
+      BufferedSource source = Okio.buffer(source(inputStream));
       if (isZipCompressed(source)) {
         return fromZipStreamSync(context, new ZipInputStream(source.inputStream()), cacheKey);
       } else if (isGzipCompressed(source)) {
@@ -553,7 +586,8 @@ public class LottieCompositionFactory {
   }
 
   @WorkerThread
-  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(@Nullable Context context, ZipInputStream inputStream, @Nullable String cacheKey) {
+  private static LottieResult<LottieComposition> fromZipStreamSyncInternal(@Nullable Context context, ZipInputStream inputStream,
+      @Nullable String cacheKey) {
     LottieComposition composition = null;
     Map<String, Bitmap> images = new HashMap<>();
     Map<String, Typeface> fonts = new HashMap<>();
@@ -583,7 +617,8 @@ public class LottieCompositionFactory {
           String fontFamily = fileName.split("\\.")[0];
 
           if (context == null) {
-            return new LottieResult<>(new IllegalStateException("Unable to extract font " + fontFamily + " please pass a non-null Context parameter"));
+            return new LottieResult<>(
+                new IllegalStateException("Unable to extract font " + fontFamily + " please pass a non-null Context parameter"));
           }
 
           File tempFile = new File(context.getCacheDir(), fileName);
