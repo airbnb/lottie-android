@@ -70,7 +70,9 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings({"WeakerAccess"})
 public class LottieDrawable extends Drawable implements Drawable.Callback, Animatable {
+
   private interface LazyCompositionTask {
+
     void run(LottieComposition composition);
   }
 
@@ -96,10 +98,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   /**
    * The marker to use if "reduced motion" is enabled.
    * Supported marker names are case insensitive, and include:
-   *   - reduced motion
-   *   - reducedMotion
-   *   - reduced_motion
-   *   - reduced-motion
+   * - reduced motion
+   * - reducedMotion
+   * - reduced_motion
+   * - reduced-motion
    */
   private static final List<String> ALLOWED_REDUCED_MOTION_MARKERS = Arrays.asList(
       "reduced motion",
@@ -179,7 +181,9 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
    */
   private boolean isDirty = false;
 
-  /** Use the getter so that it can fall back to {@link L#getDefaultAsyncUpdates()}. */
+  /**
+   * Use the getter so that it can fall back to {@link L#getDefaultAsyncUpdates()}.
+   */
   @Nullable private AsyncUpdates asyncUpdates;
   private final ValueAnimator.AnimatorUpdateListener progressUpdateListener = animation -> {
     if (getAsyncUpdatesEnabled()) {
@@ -250,6 +254,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   @IntDef({RESTART, REVERSE})
   @Retention(RetentionPolicy.SOURCE)
   public @interface RepeatMode {
+
   }
 
   /**
@@ -766,13 +771,14 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         }
       }
 
-      if (useSoftwareRendering) {
-        canvas.save();
-        canvas.concat(matrix);
-        renderAndDrawAsBitmap(canvas, compositionLayer);
-        canvas.restore();
+      if (safeMode) {
+        try {
+          draw(canvas, matrix, compositionLayer, alpha);
+        } catch (Throwable e) {
+          Logger.error("Lottie crashed in draw!", e);
+        }
       } else {
-        compositionLayer.draw(canvas, matrix, alpha);
+        draw(canvas, matrix, compositionLayer, alpha);
       }
       isDirty = false;
     } catch (InterruptedException e) {
@@ -784,6 +790,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
           setProgressExecutor.execute(updateProgressRunnable);
         }
       }
+    }
+  }
+
+  private void draw(Canvas canvas, Matrix matrix, CompositionLayer compositionLayer, int alpha) {
+    if (useSoftwareRendering) {
+      canvas.save();
+      canvas.concat(matrix);
+      renderAndDrawAsBitmap(canvas, compositionLayer);
+      canvas.restore();
+    } else {
+      compositionLayer.draw(canvas, matrix, alpha);
     }
   }
 
