@@ -30,7 +30,7 @@ jobs:
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: lint_reports
           path: reports.zip
@@ -52,7 +52,7 @@ jobs:
         run: zip -r reports.zip . -i '**/reports/*.xml' '**/reports/*.html'
       - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: unit_test_reports
           path: reports.zip
@@ -109,7 +109,7 @@ jobs:
           mkdir -p ./env
           echo PR_NUMBER=$PR_NUMBER > ./env/env
           echo GITHUB_SHA=${{ github.sha }} >> ./env/env
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: env
           path: env/
