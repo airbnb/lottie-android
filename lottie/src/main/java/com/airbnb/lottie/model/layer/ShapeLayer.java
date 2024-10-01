@@ -4,17 +4,22 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ContentGroup;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.BlurEffect;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.parser.DropShadowEffect;
+import com.airbnb.lottie.utils.DropShadow;
+import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +27,8 @@ import java.util.List;
 public class ShapeLayer extends BaseLayer {
   private final ContentGroup contentGroup;
   private final CompositionLayer compositionLayer;
+
+  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer, LottieComposition composition) {
     super(lottieDrawable, layerModel);
@@ -31,10 +38,18 @@ public class ShapeLayer extends BaseLayer {
     ShapeGroup shapeGroup = new ShapeGroup("__container", layerModel.getShapes(), false);
     contentGroup = new ContentGroup(lottieDrawable, this, shapeGroup, composition);
     contentGroup.setContents(Collections.<Content>emptyList(), Collections.<Content>emptyList());
+
+    if (getDropShadowEffect() != null) {
+      dropShadowAnimation = new DropShadowKeyframeAnimation(this, this, getDropShadowEffect());
+    }
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
-    contentGroup.draw(canvas, parentMatrix, parentAlpha);
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply) {
+    // If a parent composition layer has a shadow and we have one too, prioritize our own.
+    DropShadow shadowToApply = dropShadowAnimation != null
+        ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
+        : parentShadowToApply;
+    contentGroup.draw(canvas, parentMatrix, parentAlpha, shadowToApply);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
@@ -50,17 +65,26 @@ public class ShapeLayer extends BaseLayer {
     return compositionLayer.getBlurEffect();
   }
 
-  @Nullable @Override public DropShadowEffect getDropShadowEffect() {
-    DropShadowEffect layerDropShadow = super.getDropShadowEffect();
-    if (layerDropShadow != null) {
-      return layerDropShadow;
-    }
-    return compositionLayer.getDropShadowEffect();
-  }
-
   @Override
   protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
       KeyPath currentPartialKeyPath) {
     contentGroup.resolveKeyPath(keyPath, depth, accumulator, currentPartialKeyPath);
+  }
+
+  @Override
+  @CallSuper
+  public <T> void addValueCallback(T property, @Nullable LottieValueCallback<T> callback) {
+    super.addValueCallback(property, callback);
+    if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
+      dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
+      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
+      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
+      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
+      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
+    }
   }
 }

@@ -29,6 +29,7 @@ import com.airbnb.lottie.model.animatable.AnimatableFloatValue;
 import com.airbnb.lottie.model.animatable.AnimatableIntegerValue;
 import com.airbnb.lottie.model.content.ShapeTrimPath;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -57,8 +58,6 @@ public abstract class BaseStrokeContent
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
-
-  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
       Paint.Join join, float miterLimit, AnimatableIntegerValue opacity, AnimatableFloatValue width,
@@ -110,9 +109,6 @@ public abstract class BaseStrokeContent
       blurAnimation.addUpdateListener(this);
       layer.addAnimation(blurAnimation);
     }
-    if (layer.getDropShadowEffect() != null) {
-      dropShadowAnimation = new DropShadowKeyframeAnimation(this, layer, layer.getDropShadowEffect());
-    }
   }
 
   @Override public void onValueChanged() {
@@ -154,7 +150,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#draw");
     }
@@ -164,8 +160,10 @@ public abstract class BaseStrokeContent
       }
       return;
     }
-    int alpha = (int) ((parentAlpha / 255f * ((IntegerKeyframeAnimation) opacityAnimation).getIntValue() / 100f) * 255);
-    paint.setAlpha(clamp(alpha, 0, 255));
+    float strokeAlpha = opacityAnimation.getValue() / 100f;
+    int alpha = (int) (parentAlpha * strokeAlpha);
+    alpha = clamp(alpha, 0, 255);
+    paint.setAlpha(alpha);
     paint.setStrokeWidth(((FloatKeyframeAnimation) widthAnimation).getFloatValue());
     if (paint.getStrokeWidth() <= 0) {
       // Android draws a hairline stroke for 0, After Effects doesn't.
@@ -190,8 +188,8 @@ public abstract class BaseStrokeContent
       }
       blurMaskFilterRadius = blurRadius;
     }
-    if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentMatrix, Utils.mixOpacities(parentAlpha, alpha));
+    if (shadowToApply != null) {
+      shadowToApply.applyWithAlpha((int)(strokeAlpha * 255), paint);
     }
 
     canvas.save();
@@ -407,16 +405,6 @@ public abstract class BaseStrokeContent
         blurAnimation.addUpdateListener(this);
         layer.addAnimation(blurAnimation);
       }
-    } else if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
-      dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
-      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
-      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
-      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
-      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
   }
 

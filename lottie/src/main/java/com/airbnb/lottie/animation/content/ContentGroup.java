@@ -4,14 +4,15 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.KeyPathElement;
@@ -19,7 +20,8 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.content.ContentModel;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.layer.BaseLayer;
-import com.airbnb.lottie.utils.Utils;
+import com.airbnb.lottie.utils.DropShadow;
+import com.airbnb.lottie.utils.OffscreenLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -28,8 +30,9 @@ import java.util.List;
 public class ContentGroup implements DrawingContent, PathContent,
     BaseKeyframeAnimation.AnimationListener, KeyPathElement {
 
-  private final Paint offScreenPaint = new LPaint();
+  private final OffscreenLayer.ComposeOp offscreenOp = new OffscreenLayer.ComposeOp();
   private final RectF offScreenRectF = new RectF();
+  private final OffscreenLayer offscreenLayer = new OffscreenLayer();
 
   private static List<Content> contentsFromModels(LottieDrawable drawable, LottieComposition composition, BaseLayer layer,
       List<ContentModel> contentModels) {
@@ -160,7 +163,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     if (hidden) {
       return;
     }
@@ -175,24 +178,40 @@ public class ContentGroup implements DrawingContent, PathContent,
     }
 
     // Apply off-screen rendering only when needed in order to improve rendering performance.
-    boolean isRenderingWithOffScreen = lottieDrawable.isApplyingOpacityToLayersEnabled() && hasTwoOrMoreDrawableContent() && layerAlpha != 255;
+    boolean isRenderingWithOffScreen =
+        (lottieDrawable.isApplyingOpacityToLayersEnabled() && hasTwoOrMoreDrawableContent() && layerAlpha != 255) ||
+        (shadowToApply != null && lottieDrawable.isApplyingShadowToLayersEnabled() && hasTwoOrMoreDrawableContent());
+    int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
+
+    Canvas contentCanvas = canvas;
     if (isRenderingWithOffScreen) {
       offScreenRectF.set(0, 0, 0, 0);
-      getBounds(offScreenRectF, matrix, true);
-      offScreenPaint.setAlpha(layerAlpha);
-      Utils.saveLayerCompat(canvas, offScreenRectF, offScreenPaint);
+      getBounds(offScreenRectF, parentMatrix, true);
+      offscreenOp.alpha = layerAlpha;
+      if (shadowToApply != null) {
+        shadowToApply.applyTo(offscreenOp);
+        shadowToApply = null; // Don't pass it to children - OffscreenLayer now takes care of this
+      } else {
+        offscreenOp.shadow = null;
+      }
+
+      contentCanvas = offscreenLayer.start(canvas, offScreenRectF, offscreenOp);
+    } else {
+      if (shadowToApply != null) {
+        shadowToApply = new DropShadow(shadowToApply);
+        shadowToApply.multiplyOpacity(childAlpha);
+      }
     }
 
-    int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
     for (int i = contents.size() - 1; i >= 0; i--) {
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(canvas, matrix, childAlpha);
+        ((DrawingContent) content).draw(contentCanvas, matrix, childAlpha, shadowToApply);
       }
     }
 
     if (isRenderingWithOffScreen) {
-      canvas.restore();
+      offscreenLayer.finish();
     }
   }
 

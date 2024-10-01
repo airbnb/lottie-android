@@ -154,6 +154,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean performanceTrackingEnabled;
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
+  private boolean isApplyingShadowToLayersEnabled;
   private boolean clipTextToBoundingBox = false;
 
   private RenderMode renderMode = RenderMode.AUTOMATIC;
@@ -569,6 +570,24 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
+   * Sets whether to apply drop shadows to each layer instead of shape.
+   * <p>
+   * When true, the behavior will be more correct: it will mimic lottie-web and other renderers, in that drop shadows will be applied to a layer
+   * as a whole, no matter its contents.
+   *
+   * When false, the performance will be better at the expense of correctness: for each shape element individually, the first drop shadow upwards
+   * in the hierarchy is applied to it directly. Visually, this may manifest as phantom shadows or artifacts where the artist has intended to treat a
+   * layer as a whole, and this option exposes its internal structure.
+   * <p>
+   * The default value is true.
+   *
+   * @see LottieDrawable::setApplyingOpacityToLayersEnabled
+   */
+  public void setApplyingShadowToLayersEnabled(boolean isApplyingShadowsToLayersEnabled) {
+    this.isApplyingShadowToLayersEnabled = isApplyingShadowsToLayersEnabled;
+  }
+
+  /**
    * This API no longer has any effect.
    */
   @Deprecated
@@ -578,6 +597,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   public boolean isApplyingOpacityToLayersEnabled() {
     return isApplyingOpacityToLayersEnabled;
   }
+
+  public boolean isApplyingShadowToLayersEnabled() { return isApplyingShadowToLayersEnabled; }
 
   /**
    * @see #setClipTextToBoundingBox(boolean)
@@ -800,7 +821,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderAndDrawAsBitmap(canvas, compositionLayer);
       canvas.restore();
     } else {
-      compositionLayer.draw(canvas, matrix, alpha);
+      compositionLayer.draw(canvas, matrix, alpha, null);
     }
   }
 
@@ -1725,7 +1746,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.preScale(scaleX, scaleY);
       renderingMatrix.preTranslate(bounds.left, bounds.top);
     }
-    compositionLayer.draw(canvas, renderingMatrix, alpha);
+    compositionLayer.draw(canvas, renderingMatrix, alpha, null);
   }
 
   /**
@@ -1789,7 +1810,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
 
       softwareRenderingBitmap.eraseColor(0);
-      compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha);
+      compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha, null);
 
       // Calculate the dst bounds.
       // We need to map the rendered coordinates back to the canvas's coordinates. To do so, we need to invert the transform

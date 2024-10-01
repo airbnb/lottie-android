@@ -1,5 +1,6 @@
 package com.airbnb.lottie.model.layer;
 
+import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.DrawingContent;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.FloatKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.MaskKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
@@ -33,6 +35,7 @@ import com.airbnb.lottie.model.content.LBlendMode;
 import com.airbnb.lottie.model.content.Mask;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.parser.DropShadowEffect;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -91,7 +94,7 @@ public abstract class BaseLayer
   private final RectF matteBoundsRect = new RectF();
   private final RectF tempMaskBoundsRect = new RectF();
   private final String drawTraceName;
-  final Matrix boundsMatrix = new Matrix();
+  protected final Matrix boundsMatrix = new Matrix();
   final LottieDrawable lottieDrawable;
   final Layer layerModel;
   @Nullable
@@ -231,7 +234,7 @@ public abstract class BaseLayer
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
@@ -266,7 +269,7 @@ public abstract class BaseLayer
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
       }
-      drawLayer(canvas, matrix, alpha);
+      drawLayer(canvas, matrix, alpha, shadowToApply);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#drawLayer");
       }
@@ -311,6 +314,7 @@ public abstract class BaseLayer
       }
       contentPaint.setAlpha(255);
       PaintCompat.setBlendMode(contentPaint, getBlendMode().toNativeBlendMode());
+
       Utils.saveLayerCompat(canvas, rect, contentPaint);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#saveLayer");
@@ -338,7 +342,7 @@ public abstract class BaseLayer
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
       }
-      drawLayer(canvas, matrix, alpha);
+      drawLayer(canvas, matrix, alpha, shadowToApply);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#drawLayer");
       }
@@ -358,7 +362,7 @@ public abstract class BaseLayer
         }
         clearCanvas(canvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha);
+        matteLayer.draw(canvas, parentMatrix, alpha, null);
         if (L.isTraceEnabled()) {
           L.beginSection("Layer#restoreLayer");
         }
@@ -483,7 +487,7 @@ public abstract class BaseLayer
     }
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     if (L.isTraceEnabled()) {

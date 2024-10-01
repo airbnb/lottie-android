@@ -12,9 +12,11 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ColorKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.content.ShapeStroke;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 public class StrokeContent extends BaseStrokeContent {
@@ -37,7 +39,7 @@ public class StrokeContent extends BaseStrokeContent {
     layer.addAnimation(colorAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     if (hidden) {
       return;
     }
@@ -45,7 +47,7 @@ public class StrokeContent extends BaseStrokeContent {
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
-    super.draw(canvas, parentMatrix, parentAlpha);
+    super.draw(canvas, parentMatrix, parentAlpha, shadowToApply);
   }
 
   @Override public String getName() {

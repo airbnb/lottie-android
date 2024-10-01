@@ -10,10 +10,12 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.TransformKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.Repeater;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.MiscUtils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -105,7 +107,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable DropShadow shadowToApply) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();
     //noinspection ConstantConditions
@@ -116,7 +118,9 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
       matrix.set(parentMatrix);
       matrix.preConcat(transform.getMatrixForRepeater(i + offset));
       float newAlpha = alpha * MiscUtils.lerp(startOpacity, endOpacity, i / copies);
-      contentGroup.draw(canvas, matrix, (int) newAlpha);
+      // A repeater renders its contents as if by simple re-rendering, so it should be fine to pass shadowToApply
+      // here, even when we have more than 1 copy.
+      contentGroup.draw(canvas, matrix, (int) newAlpha, shadowToApply);
     }
   }
 
