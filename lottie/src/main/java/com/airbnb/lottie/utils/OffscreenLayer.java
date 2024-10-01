@@ -291,6 +291,10 @@ public class OffscreenLayer {
         break;
 
       case RENDER_NODE:
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+          throw new IllegalStateException("RenderNode not supported but we chose it as render strategy");
+        }
+
         if (renderNode == null) renderNode = new RenderNode("OffscreenLayer.main");
         if (op.hasShadow() && shadowRenderNode == null) {
           shadowRenderNode = new RenderNode("OffscreenLayer.shadow");
@@ -373,6 +377,10 @@ public class OffscreenLayer {
       case RENDER_NODE:
         if (renderNode == null) {
           throw new IllegalStateException("RenderNode is not ready; should've been initialized at start() time");
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+          throw new IllegalStateException("RenderNode not supported but we chose it as render strategy");
         }
 
         parentCanvas.save();
