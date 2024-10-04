@@ -746,7 +746,7 @@ public abstract class BaseLayer
         accumulator.add(matteCurrentPartialKeyPath.resolve(matteLayer));
       }
 
-      if (keyPath.propagateToChildren(getName(), depth)) {
+      if (keyPath.matches(matteLayer.getName(), depth) && keyPath.propagateToChildren(getName(), depth)) {
         int newDepth = depth + keyPath.incrementDepthBy(matteLayer.getName(), depth);
         matteLayer.resolveChildKeyPath(keyPath, newDepth, accumulator, matteCurrentPartialKeyPath);
       }
