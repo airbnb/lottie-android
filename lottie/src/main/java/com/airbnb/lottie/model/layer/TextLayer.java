@@ -26,6 +26,7 @@ import com.airbnb.lottie.model.FontCharacter;
 import com.airbnb.lottie.model.animatable.AnimatableTextProperties;
 import com.airbnb.lottie.model.content.ShapeGroup;
 import com.airbnb.lottie.model.content.TextRangeUnits;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -158,7 +159,7 @@ public class TextLayer extends BaseLayer {
   }
 
   @Override
-  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply /* ignored for now */) {
     DocumentData documentData = textAnimation.getValue();
     Font font = composition.getFonts().get(documentData.fontName);
     if (font == null) {

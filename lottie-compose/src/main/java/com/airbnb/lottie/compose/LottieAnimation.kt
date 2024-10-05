@@ -83,6 +83,7 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
+    applyShadowToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     maintainOriginalImageBounds: Boolean = false,
@@ -130,6 +131,7 @@ fun LottieAnimation(
             }
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
+            drawable.isApplyingShadowToLayersEnabled = applyShadowToLayers
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.clipTextToBoundingBox = clipTextToBoundingBox
@@ -158,6 +160,7 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
+    applyShadowToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     maintainOriginalImageBounds: Boolean = false,
@@ -174,6 +177,7 @@ fun LottieAnimation(
         modifier = modifier,
         outlineMasksAndMattes = outlineMasksAndMattes,
         applyOpacityToLayers = applyOpacityToLayers,
+        applyShadowToLayers = applyShadowToLayers,
         enableMergePaths = enableMergePaths,
         renderMode = renderMode,
         maintainOriginalImageBounds = maintainOriginalImageBounds,
@@ -205,6 +209,7 @@ fun LottieAnimation(
     iterations: Int = 1,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
+    applyShadowToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     reverseOnRepeat: Boolean = false,
@@ -233,6 +238,7 @@ fun LottieAnimation(
         modifier = modifier,
         outlineMasksAndMattes = outlineMasksAndMattes,
         applyOpacityToLayers = applyOpacityToLayers,
+        applyShadowToLayers = applyShadowToLayers,
         enableMergePaths = enableMergePaths,
         renderMode = renderMode,
         maintainOriginalImageBounds = maintainOriginalImageBounds,

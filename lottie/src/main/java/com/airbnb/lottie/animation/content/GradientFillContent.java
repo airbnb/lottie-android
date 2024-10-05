@@ -24,15 +24,14 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
-import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.model.content.GradientFill;
 import com.airbnb.lottie.model.content.GradientType;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -64,7 +63,6 @@ public class GradientFillContent
   private final int cacheSteps;
   @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
-  @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
 
   public GradientFillContent(final LottieDrawable lottieDrawable, LottieComposition composition, BaseLayer layer, GradientFill fill) {
     this.layer = layer;
@@ -96,9 +94,6 @@ public class GradientFillContent
       blurAnimation.addUpdateListener(this);
       layer.addAnimation(blurAnimation);
     }
-    if (layer.getDropShadowEffect() != null) {
-      dropShadowAnimation = new DropShadowKeyframeAnimation(this, layer, layer.getDropShadowEffect());
-    }
   }
 
   @Override public void onValueChanged() {
@@ -114,7 +109,7 @@ public class GradientFillContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     if (hidden) {
       return;
     }
@@ -152,11 +147,13 @@ public class GradientFillContent
       blurMaskFilterRadius = blurRadius;
     }
 
-    int alpha = (int) ((parentAlpha / 255f * opacityAnimation.getValue() / 100f) * 255);
-    paint.setAlpha(clamp(alpha, 0, 255));
+    float fillAlpha = opacityAnimation.getValue() / 100f;
+    int alpha = (int) (parentAlpha * fillAlpha);
+    alpha = clamp(alpha, 0, 255);
+    paint.setAlpha(alpha);
 
-    if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentMatrix, Utils.mixOpacities(parentAlpha, alpha));
+    if (shadowToApply != null) {
+      shadowToApply.applyWithAlpha((int)(fillAlpha * 255), paint);
     }
 
     canvas.drawPath(path, paint);
@@ -306,16 +303,6 @@ public class GradientFillContent
         blurAnimation.addUpdateListener(this);
         layer.addAnimation(blurAnimation);
       }
-    } else if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
-      dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
-      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
-      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
-      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
-    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
-      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
   }
 }
