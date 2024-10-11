@@ -56,12 +56,16 @@ public class ImageLayer extends BaseLayer {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    canvas.save();
-    canvas.concat(parentMatrix);
-
     @Nullable DropShadow shadowToApply = dropShadowAnimation != null
         ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
         : parentShadowToApply;
+
+    src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
+    if (lottieDrawable.getMaintainOriginalImageBounds()) {
+      dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
+    } else {
+      dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
+    }
 
     // Render off-screen if we have a drop shadow, because:
     // - Android does not apply drop-shadows to bitmaps properly in HW accelerated contexts (blur is ignored)
@@ -76,41 +80,33 @@ public class ImageLayer extends BaseLayer {
       // when drawing the shadow.
       shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
 
-      RectF bounds = new RectF(0, 0, 0, 0);
-      getBounds(bounds, parentMatrix, true);
-
-      // Unlike shapes and other layer types, we draw images by first applying the parentMatrix to the
-      // screen and then drawing an untransformed image. We also apply density scaling manually.
-      // To replicate this in an OffscreenLayer, we have to let it know about the density multiply
-      // beforehand, so it know how big of a bitmap it *really* needs to allocate for crisp drawing.
-      // Then, we undo it on the returned targetCanvas.
-      canvas.scale(density, density);
-      RectF scaledBounds = new RectF(0, 0, bounds.width() * density, bounds.height() * density);
-      targetCanvas = offscreenLayer.start(canvas, scaledBounds, offscreenOp);
-      targetCanvas.scale(1.0f / density, 1.0f / density);
+      RectF bounds = new RectF(dst);
+      // We don't use getBounds() as it expects the parent-to-world matrix, and what we have in parentMatrix is in
+      // fact us-to-world (parent-to-world * us-to-parent)
+      parentMatrix.mapRect(bounds);
+      targetCanvas = offscreenLayer.start(canvas, bounds, offscreenOp);
     }
 
-    src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
-    if (lottieDrawable.getMaintainOriginalImageBounds()) {
-      dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
-    } else {
-      dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
-    }
-
+    targetCanvas.save();
+    targetCanvas.concat(parentMatrix);
     targetCanvas.drawBitmap(bitmap, src, dst, paint);
 
     if (renderOffScreen) {
       offscreenLayer.finish();
     }
 
-    canvas.restore();
+    targetCanvas.restore();
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     super.getBounds(outBounds, parentMatrix, applyParents);
     if (lottieImageAsset != null) {
       float scale = Utils.dpScale();
-      outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
+      if (lottieDrawable.getMaintainOriginalImageBounds()) {
+        outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
+      } else {
+        outBounds.set(0, 0, getBitmap().getWidth() * scale, getBitmap().getHeight() * scale);
+      }
       boundsMatrix.mapRect(outBounds);
     }
   }
