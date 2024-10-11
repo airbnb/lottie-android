@@ -173,6 +173,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private RectF softwareRenderingDstBoundsRectF;
   private RectF softwareRenderingTransformedBounds;
   private Matrix softwareRenderingOriginalCanvasMatrix;
+  private float[] softwareRenderingOriginalCanvasMatrixElements = new float[9];
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
   /**
@@ -1803,13 +1804,20 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     ensureSoftwareRenderingBitmap(renderWidth, renderHeight);
 
     if (isDirty) {
+      softwareRenderingOriginalCanvasMatrix.getValues(softwareRenderingOriginalCanvasMatrixElements);
+      float preExistingScaleX = softwareRenderingOriginalCanvasMatrixElements[Matrix.MSCALE_X];
+      float preExistingScaleY = softwareRenderingOriginalCanvasMatrixElements[Matrix.MSCALE_Y];
+
       renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
-      renderingMatrix.preScale(scaleX, scaleY);
+      renderingMatrix.preScale(scaleX / preExistingScaleX, scaleY / preExistingScaleY);
+
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
       // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
 
       softwareRenderingBitmap.eraseColor(0);
+      softwareRenderingCanvas.setMatrix(Matrix.IDENTITY_MATRIX);
+      softwareRenderingCanvas.scale(preExistingScaleX, preExistingScaleY);
       compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha, null);
 
       // Calculate the dst bounds.
