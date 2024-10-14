@@ -1811,11 +1811,10 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
 
       renderingMatrix.set(softwareRenderingOriginalCanvasMatrix);
       renderingMatrix.preScale(scaleX, scaleY);
-      renderingMatrix.postScale(1.0f / preExistingScaleX, 1.0f / preExistingScaleY);
-
       // We want to render the smallest bitmap possible. If the animation doesn't start at the top left, we translate the canvas and shrink the
       // bitmap to avoid allocating and copying the empty space on the left and top. renderWidth and renderHeight take this into account.
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
+      renderingMatrix.postScale(1.0f / preExistingScaleX, 1.0f / preExistingScaleY);
 
       softwareRenderingBitmap.eraseColor(0);
       softwareRenderingCanvas.setMatrix(Utils.IDENTITY_MATRIX);
