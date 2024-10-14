@@ -45,6 +45,7 @@ import com.airbnb.lottie.utils.Logger;
 import com.airbnb.lottie.utils.LottieThreadFactory;
 import com.airbnb.lottie.utils.LottieValueAnimator;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieFrameInfo;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.airbnb.lottie.value.SimpleLottieValueCallback;
@@ -1817,7 +1818,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.postTranslate(-softwareRenderingTransformedBounds.left, -softwareRenderingTransformedBounds.top);
 
       softwareRenderingBitmap.eraseColor(0);
-      softwareRenderingCanvas.setMatrix(new Matrix());
+      softwareRenderingCanvas.setMatrix(Utils.IDENTITY_MATRIX);
       softwareRenderingCanvas.scale(preExistingScaleX, preExistingScaleY);
       compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha, null);
 

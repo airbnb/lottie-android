@@ -29,6 +29,7 @@ public class CompositionLayer extends BaseLayer {
   private final List<BaseLayer> layers = new ArrayList<>();
   private final RectF rect = new RectF();
   private final RectF newClipRect = new RectF();
+  private final RectF layerBounds = new RectF();
   private final OffscreenLayer offscreenLayer = new OffscreenLayer();
   private final OffscreenLayer.ComposeOp offscreenOp = new OffscreenLayer.ComposeOp();
 
@@ -135,10 +136,8 @@ public class CompositionLayer extends BaseLayer {
       parentMatrix.mapRect(newClipRect);
     } else {
       // Calculate the union of all children layer bounds
-      RectF layerBounds = new RectF();
       newClipRect.setEmpty();
       for (BaseLayer layer : layers) {
-        layerBounds.set(0, 0, 0, 0);
         layer.getBounds(layerBounds, parentMatrix, true);
         newClipRect.union(layerBounds);
       }

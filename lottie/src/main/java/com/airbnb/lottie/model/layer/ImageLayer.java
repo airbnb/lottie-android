@@ -28,6 +28,7 @@ public class ImageLayer extends BaseLayer {
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private final Rect src = new Rect();
   private final Rect dst = new Rect();
+  private final RectF layerBounds = new RectF();
   @Nullable private final LottieImageAsset lottieImageAsset;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
@@ -80,11 +81,12 @@ public class ImageLayer extends BaseLayer {
       // when drawing the shadow.
       shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
 
-      RectF bounds = new RectF(dst);
+
       // We don't use getBounds() as it expects the parent-to-world matrix, and what we have in parentMatrix is in
       // fact us-to-world (parent-to-world * us-to-parent)
-      parentMatrix.mapRect(bounds);
-      targetCanvas = offscreenLayer.start(canvas, bounds, offscreenOp);
+      layerBounds.set(dst.left, dst.top, dst.right, dst.bottom);
+      parentMatrix.mapRect(layerBounds);
+      targetCanvas = offscreenLayer.start(canvas, layerBounds, offscreenOp);
     }
 
     targetCanvas.save();
