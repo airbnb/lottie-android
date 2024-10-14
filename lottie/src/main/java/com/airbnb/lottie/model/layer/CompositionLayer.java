@@ -114,14 +114,11 @@ public class CompositionLayer extends BaseLayer {
     if (L.isTraceEnabled()) {
       L.beginSection("CompositionLayer#draw");
     }
-    newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
-    parentMatrix.mapRect(newClipRect);
-
     // Apply off-screen rendering only when needed in order to improve rendering performance.
     boolean hasShadow = parentShadowToApply != null || dropShadowAnimation != null;
     boolean isDrawingWithOffScreen =
         (lottieDrawable.isApplyingOpacityToLayersEnabled() && layers.size() > 1 && parentAlpha != 255) ||
-        (hasShadow && lottieDrawable.isApplyingShadowToLayersEnabled());
+            (hasShadow && lottieDrawable.isApplyingShadowToLayersEnabled());
     int childAlpha = isDrawingWithOffScreen ? 255 : parentAlpha;
 
     // If we've reached this path with a parentShadowToApply, prioritize the one on our own layer, since we can only support one shadow
@@ -130,6 +127,22 @@ public class CompositionLayer extends BaseLayer {
     DropShadow shadowToApply = dropShadowAnimation != null
         ? dropShadowAnimation.evaluate(parentMatrix, childAlpha)
         : parentShadowToApply;
+
+    // Only clip precomps. This mimics the way After Effects renders animations.
+    boolean ignoreClipOnThisLayer = !clipToCompositionBounds && "__container".equals(layerModel.getName());
+    if (!ignoreClipOnThisLayer) {
+      newClipRect.set(0, 0, layerModel.getPreCompWidth(), layerModel.getPreCompHeight());
+      parentMatrix.mapRect(newClipRect);
+    } else {
+      // Calculate the union of all children layer bounds
+      RectF layerBounds = new RectF();
+      newClipRect.setEmpty();
+      for (BaseLayer layer : layers) {
+        layerBounds.set(0, 0, 0, 0);
+        layer.getBounds(layerBounds, parentMatrix, true);
+        newClipRect.union(layerBounds);
+      }
+    }
 
     Canvas targetCanvas = canvas;
     if (isDrawingWithOffScreen) {
@@ -143,14 +156,8 @@ public class CompositionLayer extends BaseLayer {
     }
 
     canvas.save();
-    for (int i = layers.size() - 1; i >= 0; i--) {
-      boolean nonEmptyClip = true;
-      // Only clip precomps. This mimics the way After Effects renders animations.
-      boolean ignoreClipOnThisLayer = !clipToCompositionBounds && "__container".equals(layerModel.getName());
-      if (!ignoreClipOnThisLayer && !newClipRect.isEmpty()) {
-        nonEmptyClip = targetCanvas.clipRect(newClipRect);
-      }
-      if (nonEmptyClip) {
+    if (canvas.clipRect(newClipRect)) {
+      for (int i = layers.size() - 1; i >= 0; i--) {
         BaseLayer layer = layers.get(i);
         layer.draw(targetCanvas, parentMatrix, childAlpha, shadowToApply);
       }
