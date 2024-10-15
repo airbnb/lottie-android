@@ -97,7 +97,7 @@ public class OffscreenLayer {
   /** Strategy that we've chosen for rendering this pass */
   private RenderStrategy currentStrategy;
   /** Rectangle that the final composition will occupy in the screen */
-  @Nullable private Rect targetRect;
+  @Nullable private RectF targetRect;
   /** targetRect with shadow render space included */
   @Nullable private RectF rectIncludingShadow;
   @Nullable private Rect intRectIncludingShadow;
@@ -234,7 +234,7 @@ public class OffscreenLayer {
     this.parentCanvas = parentCanvas;
     this.op = op;
     this.currentStrategy = chooseRenderStrategy(parentCanvas, op);
-    if (this.targetRect == null) this.targetRect = new Rect();
+    if (this.targetRect == null) this.targetRect = new RectF();
     this.targetRect.set((int)bounds.left, (int)bounds.top, (int)bounds.right, (int)bounds.bottom);
 
     if (composePaint == null) composePaint = new LPaint();
@@ -401,7 +401,7 @@ public class OffscreenLayer {
     parentCanvas = null;
   }
 
-  private RectF calculateRectIncludingShadow(Rect rect, DropShadow shadow) {
+  private RectF calculateRectIncludingShadow(RectF rect, DropShadow shadow) {
     if (rectIncludingShadow == null) rectIncludingShadow = new RectF();
     if (tmpRect == null) tmpRect = new RectF();
     rectIncludingShadow.set(rect);
@@ -438,7 +438,7 @@ public class OffscreenLayer {
     );
 
     if (shadowBitmapSrcRect == null) shadowBitmapSrcRect = new Rect();
-    shadowBitmapSrcRect.set(0, 0, (int)scaledRectIncludingShadow.width(), (int)scaledRectIncludingShadow.height());
+    shadowBitmapSrcRect.set(0, 0, (int)Math.round(scaledRectIncludingShadow.width()), (int)Math.round(scaledRectIncludingShadow.height()));
     if (needNewBitmap(shadowBitmap, scaledRectIncludingShadow)) {
       if (shadowBitmap != null) {
         deallocateBitmap(shadowBitmap);
@@ -472,7 +472,7 @@ public class OffscreenLayer {
     // Draw the image onto the mask layer first. Since the mask layer is ALPHA_8, this discards color information.
     // Align it so that when drawn in the end, it originates at targetRect.x, targetRect.y
     // the int casts are very important here - they save us from some slow path for non-integer coords
-    shadowMaskBitmapCanvas.drawBitmap(bitmap, (int)(offsetX * pixelScaleX), (int)(offsetY * pixelScaleY), null);
+    shadowMaskBitmapCanvas.drawBitmap(bitmap, (int)Math.round(offsetX * pixelScaleX), (int)Math.round(offsetY * pixelScaleY), null);
 
     // Prepare the shadow paint. This is the paint that will perform a blur and a tint of the mask
     if (shadowBlurFilter == null || lastShadowBlurRadius != shadow.getRadius()) {
@@ -496,7 +496,7 @@ public class OffscreenLayer {
     // Draw the mask onto our shadowBitmap with the shadowPaint. This bitmap now contains the final
     // look of the shadow, correctly positioned inside a rectIncludingShadow-sized area
     // the int casts are very important here - they save us from some slow path for non-integer coords
-    shadowBitmapCanvas.drawBitmap(shadowMaskBitmap, (int)(shadow.getDx() * pixelScaleX), (int)(shadow.getDy() * pixelScaleY), shadowPaint);
+    shadowBitmapCanvas.drawBitmap(shadowMaskBitmap, (int)Math.round(shadow.getDx() * pixelScaleX), (int)Math.round(shadow.getDy() * pixelScaleY), shadowPaint);
 
     // Now blit the result onto the final canvas. It might be tempting to skip shadowBitmap and draw the mask
     // directly onto the canvas with shadowPaint, but this breaks the blur, since Paint.setMaskFilter() is not
