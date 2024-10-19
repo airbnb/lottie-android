@@ -18,6 +18,8 @@ import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
+import com.airbnb.lottie.utils.DropShadow;
+import com.airbnb.lottie.utils.OffscreenLayer;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
@@ -26,10 +28,13 @@ public class ImageLayer extends BaseLayer {
   private final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
   private final Rect src = new Rect();
   private final Rect dst = new Rect();
+  private final RectF layerBounds = new RectF();
   @Nullable private final LottieImageAsset lottieImageAsset;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
+  @Nullable private OffscreenLayer offscreenLayer;
+  @Nullable private OffscreenLayer.ComposeOp offscreenOp;
 
   ImageLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
@@ -40,7 +45,7 @@ public class ImageLayer extends BaseLayer {
     }
   }
 
-  @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply) {
     Bitmap bitmap = getBitmap();
     if (bitmap == null || bitmap.isRecycled() || lottieImageAsset == null) {
       return;
@@ -51,8 +56,11 @@ public class ImageLayer extends BaseLayer {
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
-    canvas.save();
-    canvas.concat(parentMatrix);
+
+    @Nullable DropShadow shadowToApply = dropShadowAnimation != null
+        ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
+        : parentShadowToApply;
+
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
     if (lottieDrawable.getMaintainOriginalImageBounds()) {
       dst.set(0, 0, (int) (lottieImageAsset.getWidth() * density), (int) (lottieImageAsset.getHeight() * density));
@@ -60,19 +68,47 @@ public class ImageLayer extends BaseLayer {
       dst.set(0, 0, (int) (bitmap.getWidth() * density), (int) (bitmap.getHeight() * density));
     }
 
-    if (dropShadowAnimation != null) {
-      dropShadowAnimation.applyTo(paint, parentMatrix, parentAlpha);
+    // Render off-screen if we have a drop shadow, because:
+    // - Android does not apply drop-shadows to bitmaps properly in HW accelerated contexts (blur is ignored)
+    // - On some newer phones (empirically verified), no shadow is rendered at all even in software contexts.
+    boolean renderOffScreen = shadowToApply != null;
+    Canvas targetCanvas = canvas;
+    if (renderOffScreen) {
+      if (offscreenLayer == null) offscreenLayer = new OffscreenLayer();
+      if (offscreenOp == null) offscreenOp = new OffscreenLayer.ComposeOp();
+      offscreenOp.reset();
+      // We don't use offscreenOp for compositing here, so we still need to account for its alpha
+      // when drawing the shadow.
+      shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
+
+
+      // We don't use getBounds() as it expects the parent-to-world matrix, and what we have in parentMatrix is in
+      // fact us-to-world (parent-to-world * us-to-parent)
+      layerBounds.set(dst.left, dst.top, dst.right, dst.bottom);
+      parentMatrix.mapRect(layerBounds);
+      targetCanvas = offscreenLayer.start(canvas, layerBounds, offscreenOp);
     }
 
-    canvas.drawBitmap(bitmap, src, dst, paint);
-    canvas.restore();
+    targetCanvas.save();
+    targetCanvas.concat(parentMatrix);
+    targetCanvas.drawBitmap(bitmap, src, dst, paint);
+
+    if (renderOffScreen) {
+      offscreenLayer.finish();
+    }
+
+    targetCanvas.restore();
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
     super.getBounds(outBounds, parentMatrix, applyParents);
     if (lottieImageAsset != null) {
       float scale = Utils.dpScale();
-      outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
+      if (lottieDrawable.getMaintainOriginalImageBounds()) {
+        outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
+      } else {
+        outBounds.set(0, 0, getBitmap().getWidth() * scale, getBitmap().getHeight() * scale);
+      }
       boundsMatrix.mapRect(outBounds);
     }
   }
@@ -117,6 +153,16 @@ public class ImageLayer extends BaseLayer {
         imageAnimation =
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Bitmap>) callback);
       }
+    } else if (property == LottieProperty.DROP_SHADOW_COLOR && dropShadowAnimation != null) {
+        dropShadowAnimation.setColorCallback((LottieValueCallback<Integer>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_OPACITY && dropShadowAnimation != null) {
+      dropShadowAnimation.setOpacityCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DIRECTION && dropShadowAnimation != null) {
+      dropShadowAnimation.setDirectionCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_DISTANCE && dropShadowAnimation != null) {
+      dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
+      dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

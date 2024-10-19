@@ -4,14 +4,16 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 
+import androidx.annotation.Nullable;
 import com.airbnb.lottie.LottieDrawable;
+import com.airbnb.lottie.utils.DropShadow;
 
 public class NullLayer extends BaseLayer {
   NullLayer(LottieDrawable lottieDrawable, Layer layerModel) {
     super(lottieDrawable, layerModel);
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
     // Do nothing.
   }
 

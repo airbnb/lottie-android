@@ -35,6 +35,8 @@ import javax.net.ssl.SSLException;
 public final class Utils {
   public static final int SECOND_IN_NANOS = 1000000000;
 
+  public static final Matrix IDENTITY_MATRIX = new Matrix();
+
   /**
    * Wrap in Local Thread is necessary for prevent race condition in multi-threaded mode
    */

@@ -223,6 +223,11 @@ import java.util.zip.ZipInputStream;
 
     enableMergePathsForKitKatAndAbove(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
+    setApplyingOpacityToLayersEnabled(ta.getBoolean(
+        R.styleable.LottieAnimationView_lottie_applyOpacityToLayers, false));
+    setApplyingShadowToLayersEnabled(ta.getBoolean(
+        R.styleable.LottieAnimationView_lottie_applyShadowToLayers, true));
+
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
       int colorRes = ta.getResourceId(R.styleable.LottieAnimationView_lottie_colorFilter, -1);
       ColorStateList csl = AppCompatResources.getColorStateList(getContext(), colorRes);
@@ -1245,6 +1250,24 @@ import java.util.zip.ZipInputStream;
    */
   public void setApplyingOpacityToLayersEnabled(boolean isApplyingOpacityToLayersEnabled) {
     lottieDrawable.setApplyingOpacityToLayersEnabled(isApplyingOpacityToLayersEnabled);
+  }
+
+  /**
+   * Sets whether to apply drop shadows to each layer instead of shape.
+   * <p>
+   * When true, the behavior will be more correct: it will mimic lottie-web and other renderers, in that drop shadows will be applied to a layer
+   * as a whole, no matter its contents.
+   * <p>
+   * When false, the performance will be better at the expense of correctness: for each shape element individually, the first drop shadow upwards
+   * in the hierarchy is applied to it directly. Visually, this may manifest as phantom shadows or artifacts where the artist has intended to treat a
+   * layer as a whole, and this option exposes its internal structure.
+   * <p>
+   * The default value is true.
+   *
+   * @see LottieAnimationView::setApplyingOpacityToLayersEnabled
+   */
+  public void setApplyingShadowToLayersEnabled(boolean isApplyingShadowToLayersEnabled) {
+    lottieDrawable.setApplyingShadowToLayersEnabled(isApplyingShadowToLayersEnabled);
   }
 
   /**
