@@ -1745,8 +1745,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       float scaleX = bounds.width() / (float) composition.getBounds().width();
       float scaleY = bounds.height() / (float) composition.getBounds().height();
 
-      renderingMatrix.preScale(scaleX, scaleY);
       renderingMatrix.preTranslate(bounds.left, bounds.top);
+      renderingMatrix.preScale(scaleX, scaleY);
     }
     compositionLayer.draw(canvas, renderingMatrix, alpha, null);
   }
