@@ -28,7 +28,26 @@ class SeekBarTestCase : SnapshotTestCase {
         val canvas = Canvas(bitmap)
         binding.root.draw(canvas)
         snapshotter.record(bitmap, "SeekBar", "ThumbDrawable")
+
+        val compositionForScale = LottieCompositionFactory.fromAssetSync(context, "Tests/Thumb.json").value!!
+        val scaleDrawable = object : LottieDrawable() {
+            override fun getIntrinsicWidth(): Int {
+                return compositionForScale.unscaledWidth * 2
+            }
+
+            override fun getIntrinsicHeight(): Int {
+                return compositionForScale.unscaledHeight * 2
+            }
+        }
+        scaleDrawable.composition = compositionForScale
+        binding.seekBar.thumb = scaleDrawable
+        val bitmapForScale = bitmapPool.acquire(binding.root.measuredWidth, binding.root.measuredHeight)
+        val canvasForScale = Canvas(bitmapForScale)
+        binding.root.draw(canvasForScale)
+        snapshotter.record(bitmapForScale, "SeekBar", "ScaleThumbDrawable")
+
         LottieCompositionCache.getInstance().clear()
         bitmapPool.release(bitmap)
+        bitmapPool.release(bitmapForScale)
     }
 }
