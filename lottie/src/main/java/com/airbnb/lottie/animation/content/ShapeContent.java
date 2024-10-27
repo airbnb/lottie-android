@@ -62,6 +62,7 @@ public class ShapeContent implements PathContent, BaseKeyframeAnimation.Animatio
         if (shapeModifierContents == null) {
           shapeModifierContents = new ArrayList<>();
         }
+        ((ShapeModifierContent) content).addUpdateListener(this);
         shapeModifierContents.add((ShapeModifierContent) content);
       }
     }

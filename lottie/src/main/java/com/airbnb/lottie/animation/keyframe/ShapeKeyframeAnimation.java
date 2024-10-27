@@ -1,9 +1,7 @@
 package com.airbnb.lottie.animation.keyframe;
 
 import android.graphics.Path;
-
 import androidx.annotation.Nullable;
-
 import com.airbnb.lottie.animation.content.ShapeModifierContent;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.utils.MiscUtils;
@@ -21,6 +19,15 @@ public class ShapeKeyframeAnimation extends BaseKeyframeAnimation<ShapeData, Pat
 
   public ShapeKeyframeAnimation(List<Keyframe<ShapeData>> keyframes) {
     super(keyframes);
+  }
+
+  @Override protected boolean skipCache() {
+    // If there are shape modifiers but no animation on the shape itself, the shape animation
+    // will think nothing changed and will keep returning its cached value.
+    // Ideally, we would have a dirty flag rather than permanently disabling the cache
+    // when there is a modifier. However, because shape modifiers can be reused across multiple
+    // other contents, it isn't trivial to know when to flip dirty to false.
+    return shapeModifiers != null && !shapeModifiers.isEmpty();
   }
 
   @Override public Path getValue(Keyframe<ShapeData> keyframe, float keyframeProgress) {
