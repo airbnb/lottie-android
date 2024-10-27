@@ -105,18 +105,14 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
     lastFrameTimeNs = frameTimeNanos;
 
-    if (!useCompositionFrameRate || frameRaw != previousFrameRaw) {
-      notifyUpdate();
-    }
     if (ended) {
       if (getRepeatCount() != INFINITE && repeatCount >= getRepeatCount()) {
         frameRaw = speed < 0 ? getMinFrame() : getMaxFrame();
         frame = frameRaw;
         removeFrameCallback();
+        checkNotifyUpdate(previousFrameRaw);
         notifyEnd(isReversed());
       } else {
-        notifyRepeat();
-        repeatCount++;
         if (getRepeatMode() == REVERSE) {
           speedReversedForRepeatMode = !speedReversedForRepeatMode;
           reverseAnimationSpeed();
@@ -125,12 +121,23 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
           frame = frameRaw;
         }
         lastFrameTimeNs = frameTimeNanos;
+        checkNotifyUpdate(previousFrameRaw);
+        notifyRepeat();
+        repeatCount++;
       }
+    } else {
+      checkNotifyUpdate(previousFrameRaw);
     }
 
     verifyFrame();
     if (L.isTraceEnabled()) {
       L.endSection("LottieValueAnimator#doFrame");
+    }
+  }
+
+  private void checkNotifyUpdate(float previousFrameRaw) {
+    if (!useCompositionFrameRate || frameRaw != previousFrameRaw) {
+      notifyUpdate();
     }
   }
 
