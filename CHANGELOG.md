@@ -1,3 +1,20 @@
+# 6.6.0
+### New Features
+* Overhauled drop shadow support for even better correctness ([#2548](https://github.com/airbnb/lottie-android/pull/2548))
+  * Major thanks to David Davidović (who works at [Lottielab](https://www.lottielab.com/)) for his contributions here.
+  * Adds a new API: `applyShadowsToLayers` which will apply shadows to a whole layer rather than an individual shape.
+  * Use RenderNodes on APIs that support it.
+  * Lays a foundation that can potentially add RenderNode support to existing mattes and masks.
+  * Fixed a number of existing correctness issues
+* Add an overload to LottieCompositionFactory.clearCache that clears the network cache ([#2559](https://github.com/airbnb/lottie-android/pull/2559/))
+
+### Bugs Fixed
+* Fix rounded corners when the underlying shape doesn't animate ([#2567](https://github.com/airbnb/lottie-android/pull/2567/))
+* Fix animation update listener order to be called after the internal frame has updated ([#2497](https://github.com/airbnb/lottie-android/pull/2497/))
+* Unify all parsing to more reliably handle all file types including dotLottie as ZIP files ([#2558](https://github.com/airbnb/lottie-android/pull/2558/))
+* Fix keypath resolving for matte layers ([#2544](https://github.com/airbnb/lottie-android/pull/2544/))
+* Apply translate before scale in LottieDrawable ([#2565](https://github.com/airbnb/lottie-android/pull/2565/))
+
 # 6.5.2
 ### Bugs Fixed
 * Fix a NPE when running Lottie in instrumentation tests ([#2546](https://github.com/airbnb/lottie-android/pull/2546))
