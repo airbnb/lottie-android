@@ -51,6 +51,10 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
     return roundedCorners;
   }
 
+  @Override public void addUpdateListener(BaseKeyframeAnimation.AnimationListener listener) {
+    roundedCorners.addUpdateListener(listener);
+  }
+
   /**
    * Rounded corner algorithm:
    * Iterate through each vertex.

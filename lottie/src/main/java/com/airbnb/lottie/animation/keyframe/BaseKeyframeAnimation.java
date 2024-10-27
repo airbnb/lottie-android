@@ -158,7 +158,7 @@ public abstract class BaseKeyframeAnimation<K, A> {
     A value;
 
     float linearProgress = getLinearCurrentKeyframeProgress();
-    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(linearProgress)) {
+    if (valueCallback == null && keyframesWrapper.isCachedValueEnabled(linearProgress) && !skipCache()) {
       return cachedGetValue;
     }
     final Keyframe<K> keyframe = getCurrentKeyframe();
@@ -174,6 +174,10 @@ public abstract class BaseKeyframeAnimation<K, A> {
 
     cachedGetValue = value;
     return value;
+  }
+
+  protected boolean skipCache() {
+    return false;
   }
 
   public float getProgress() {
