@@ -39,6 +39,7 @@ import java.util.List;
 
 public class GradientFillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
+
   /**
    * Cache the gradients such that it runs at 30fps.
    */
@@ -109,7 +110,7 @@ public class GradientFillContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -136,15 +137,14 @@ public class GradientFillContent
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    if (blurAnimation != null) {
-      float blurRadius = blurAnimation.getValue();
-      if (blurRadius == 0f) {
-        paint.setMaskFilter(null);
-      } else if (blurRadius != blurMaskFilterRadius){
-        BlurMaskFilter blur = new BlurMaskFilter(blurRadius, BlurMaskFilter.Blur.NORMAL);
+    if (blurToApply != blurMaskFilterRadius) {
+      if (blurToApply > 0.0f) {
+        BlurMaskFilter blur = new BlurMaskFilter(blurToApply, BlurMaskFilter.Blur.NORMAL);
         paint.setMaskFilter(blur);
+      } else {
+        paint.setMaskFilter(null);
       }
-      blurMaskFilterRadius = blurRadius;
+      blurMaskFilterRadius = blurToApply;
     }
 
     float fillAlpha = opacityAnimation.getValue() / 100f;
@@ -153,7 +153,7 @@ public class GradientFillContent
     paint.setAlpha(alpha);
 
     if (shadowToApply != null) {
-      shadowToApply.applyWithAlpha((int)(fillAlpha * 255), paint);
+      shadowToApply.applyWithAlpha((int) (fillAlpha * 255), paint);
     }
 
     canvas.drawPath(path, paint);

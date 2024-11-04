@@ -49,6 +49,11 @@ import kotlin.math.roundToInt
  *                             expense of performance.
  *                             Note: This process is very expensive. The performance impact will be reduced
  *                             when hardware acceleration is enabled.
+ * @param applyEffectsToLayers Sets whether to apply effects such as drop shadow and blur to each layer instead of
+ *                             individually per shape. In case where effects are applied to shape groups and
+ *                             composition layers, this will improve correctness but at a performance cost.
+ *                             Note: This process is expensive when hardware acceleration is unavailable.
+ * @param applyShadowToLayers  Equivalent to applyEffectsToLayers, but exposed for backwards compatibility.
  * @param enableMergePaths Enables experimental merge paths support. Most animations with merge paths will
  *                         want this on but merge path support is more limited than some other rendering
  *                         features so it defaults to off. The only way to know if your animation will work
@@ -83,7 +88,8 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
-    applyShadowToLayers: Boolean = true,
+    applyShadowToLayers: Boolean? = null,
+    applyEffectsToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     maintainOriginalImageBounds: Boolean = false,
@@ -131,7 +137,10 @@ fun LottieAnimation(
             }
             drawable.setOutlineMasksAndMattes(outlineMasksAndMattes)
             drawable.isApplyingOpacityToLayersEnabled = applyOpacityToLayers
-            drawable.isApplyingShadowToLayersEnabled = applyShadowToLayers
+            drawable.isApplyingEffectsToLayersEnabled = applyEffectsToLayers
+            if (applyShadowToLayers != null) {
+                drawable.isApplyingEffectsToLayersEnabled = applyShadowToLayers;
+            }
             drawable.maintainOriginalImageBounds = maintainOriginalImageBounds
             drawable.clipToCompositionBounds = clipToCompositionBounds
             drawable.clipTextToBoundingBox = clipTextToBoundingBox
@@ -160,7 +169,7 @@ fun LottieAnimation(
     modifier: Modifier = Modifier,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
-    applyShadowToLayers: Boolean = true,
+    applyEffectsToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     maintainOriginalImageBounds: Boolean = false,
@@ -177,7 +186,7 @@ fun LottieAnimation(
         modifier = modifier,
         outlineMasksAndMattes = outlineMasksAndMattes,
         applyOpacityToLayers = applyOpacityToLayers,
-        applyShadowToLayers = applyShadowToLayers,
+        applyEffectsToLayers = applyEffectsToLayers,
         enableMergePaths = enableMergePaths,
         renderMode = renderMode,
         maintainOriginalImageBounds = maintainOriginalImageBounds,
@@ -209,7 +218,7 @@ fun LottieAnimation(
     iterations: Int = 1,
     outlineMasksAndMattes: Boolean = false,
     applyOpacityToLayers: Boolean = false,
-    applyShadowToLayers: Boolean = true,
+    applyEffectsToLayers: Boolean = true,
     enableMergePaths: Boolean = false,
     renderMode: RenderMode = RenderMode.AUTOMATIC,
     reverseOnRepeat: Boolean = false,
@@ -238,7 +247,7 @@ fun LottieAnimation(
         modifier = modifier,
         outlineMasksAndMattes = outlineMasksAndMattes,
         applyOpacityToLayers = applyOpacityToLayers,
-        applyShadowToLayers = applyShadowToLayers,
+        applyEffectsToLayers = applyEffectsToLayers,
         enableMergePaths = enableMergePaths,
         renderMode = renderMode,
         maintainOriginalImageBounds = maintainOriginalImageBounds,

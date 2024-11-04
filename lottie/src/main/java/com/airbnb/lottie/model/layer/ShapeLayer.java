@@ -13,6 +13,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.content.Content;
 import com.airbnb.lottie.animation.content.ContentGroup;
+import com.airbnb.lottie.animation.keyframe.BlurKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.model.content.BlurEffect;
@@ -28,6 +29,7 @@ public class ShapeLayer extends BaseLayer {
   private final CompositionLayer compositionLayer;
 
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
+  @Nullable private BlurKeyframeAnimation blurAnimation;
 
   ShapeLayer(LottieDrawable lottieDrawable, Layer layerModel, CompositionLayer compositionLayer, LottieComposition composition) {
     super(lottieDrawable, layerModel);
@@ -41,14 +43,20 @@ public class ShapeLayer extends BaseLayer {
     if (getDropShadowEffect() != null) {
       dropShadowAnimation = new DropShadowKeyframeAnimation(this, this, getDropShadowEffect());
     }
+
+    if (getBlurEffect() != null) {
+      blurAnimation = new BlurKeyframeAnimation(this, this, getBlurEffect());
+    }
   }
 
-  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply) {
+  @Override void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply, float parentBlurToApply) {
     // If a parent composition layer has a shadow and we have one too, prioritize our own.
     DropShadow shadowToApply = dropShadowAnimation != null
         ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
         : parentShadowToApply;
-    contentGroup.draw(canvas, parentMatrix, parentAlpha, shadowToApply);
+    float blurToApply = parentBlurToApply +
+        (blurAnimation != null ? blurAnimation.evaluate(parentMatrix) : 0.0f);
+    contentGroup.draw(canvas, parentMatrix, parentAlpha, shadowToApply, blurToApply);
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
@@ -84,6 +92,8 @@ public class ShapeLayer extends BaseLayer {
       dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
       dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.BLUR_RADIUS && blurAnimation != null) {
+      blurAnimation.setBlurrinessCallback((LottieValueCallback<Float>) callback);
     }
   }
 }
