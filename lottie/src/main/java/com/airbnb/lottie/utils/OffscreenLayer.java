@@ -164,7 +164,7 @@ public class OffscreenLayer {
 
     // Beyond this point, we are sure that we need to render a drop shadow or blur.
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || true) { // !parentCanvas.isHardwareAccelerated()) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !parentCanvas.isHardwareAccelerated()) {
       // We don't have support for the RenderNode API, or we're rendering to a software canvas
       // which doesn't support RenderNodes anyhow. This is the slowest path: render to a bitmap,
       // add a shadow/blur manually on CPU.
