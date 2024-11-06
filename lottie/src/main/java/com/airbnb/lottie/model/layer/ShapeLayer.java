@@ -64,14 +64,6 @@ public class ShapeLayer extends BaseLayer {
     contentGroup.getBounds(outBounds, boundsMatrix, applyParents);
   }
 
-  @Nullable @Override public BlurEffect getBlurEffect() {
-    BlurEffect layerBlur = super.getBlurEffect();
-    if (layerBlur != null) {
-      return layerBlur;
-    }
-    return compositionLayer.getBlurEffect();
-  }
-
   @Override
   protected void resolveChildKeyPath(KeyPath keyPath, int depth, List<KeyPath> accumulator,
       KeyPath currentPartialKeyPath) {

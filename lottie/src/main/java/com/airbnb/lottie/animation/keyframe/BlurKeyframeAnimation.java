@@ -27,7 +27,7 @@ public class BlurKeyframeAnimation implements BaseKeyframeAnimation.AnimationLis
 
   /**
    * Evaluates the blur at this layer, returning a BlurMaskFilter-compatible blur
-   * parameter (by convention). Other implementations will need adjustment.
+   * parameter (by convention). Other implementations adjust based on this.
    */
   public float evaluate(Matrix parentMatrix) {
     float rawBlurriness = blurriness.getValue();
@@ -40,7 +40,8 @@ public class BlurKeyframeAnimation implements BaseKeyframeAnimation.AnimationLis
     // here --- if the layer is scaled, the screen-space blur should stay constant.
     float factor = parentScale * (1 / layerScale);
 
-    return rawBlurriness * factor;
+    // Apply scaling factor to go from the to standard deviation to blur radius.
+    return rawBlurriness * 0.5f * factor;
   }
 
   public void setBlurrinessCallback(@Nullable LottieValueCallback<Float> callback) {

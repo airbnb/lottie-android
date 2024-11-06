@@ -720,11 +720,16 @@ public abstract class BaseLayer
     return layerModel.getBlendMode();
   }
 
+  /**
+   * Returns a blur mask filter set to the provided radius.
+   * <p>
+   * @param radius Radius as returned by BlurKeyframeAnimation::evaluate()
+   */
   public BlurMaskFilter getBlurMaskFilter(float radius) {
     if (blurMaskFilterRadius == radius) {
       return blurMaskFilter;
     }
-    blurMaskFilter = new BlurMaskFilter(radius / 2f, BlurMaskFilter.Blur.NORMAL);
+    blurMaskFilter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
     blurMaskFilterRadius = radius;
     return blurMaskFilter;
   }

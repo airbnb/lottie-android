@@ -32,8 +32,8 @@ import com.airbnb.lottie.animation.LPaint;
  * of functions, and in fact forwards to Canvas.saveLayer() when appropriate.
  * <p>
  * Unlike Canvas.saveLayer(), an OffscreenLayer also supports compositing with a drop-shadow,
- * and uses a hardware-accelerated target when available. It attempts to choose the fastest
- * approach to render and composite the contents, up to and including simply rendering
+ * and blur,and uses a hardware-accelerated target when available. It attempts to choose the
+ * fastest approach to render and composite the contents, up to and including simply rendering
  * directly, if possible.
  */
 public class OffscreenLayer {
@@ -354,6 +354,13 @@ public class OffscreenLayer {
       throw new IllegalStateException("OffscreenBitmap: finish() call without matching start()");
     }
 
+    float blurRadiusX = 0.0f;
+    float blurRadiusY = 0.0f;
+    if (op.hasBlur()) {
+      blurRadiusX = op.blur * preExistingTransform[Matrix.MSCALE_X];
+      blurRadiusY = op.blur * preExistingTransform[Matrix.MSCALE_Y];
+    }
+
     switch (currentStrategy) {
       case DIRECT:
         parentCanvas.restore();
@@ -377,7 +384,7 @@ public class OffscreenLayer {
         }
 
         if (op.hasBlur()) {
-          applySoftwareBlur(bitmap, op.blur);
+          applySoftwareBlur(bitmap, (blurRadiusX + blurRadiusY) / 2.0f);
         }
 
         if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
@@ -402,8 +409,7 @@ public class OffscreenLayer {
             throw new RuntimeException("RenderEffect is not supported on API level <31");
           }
 
-          float adjustedRadius = 1.0f / 7.0f * op.blur; // Match the look for BlurMaskFilter and RenderEffect
-          renderNode.setRenderEffect(RenderEffect.createBlurEffect(adjustedRadius, adjustedRadius, Shader.TileMode.CLAMP));
+          renderNode.setRenderEffect(RenderEffect.createBlurEffect(blurRadiusX, blurRadiusY, Shader.TileMode.CLAMP));
         }
 
         if (op.hasShadow()) {
