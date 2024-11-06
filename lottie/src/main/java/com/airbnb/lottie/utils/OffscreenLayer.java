@@ -110,6 +110,8 @@ public class OffscreenLayer {
   @Nullable private Rect shadowBitmapSrcRect;
 
   @Nullable private RectF scaledBounds;
+  /** For CPU blur. When RenderEffect is available, we won't need this. */
+  @Nullable private FastBlur blurImpl;
 
   private final static Matrix IDENTITY_MATRIX = new Matrix();
 
@@ -164,7 +166,7 @@ public class OffscreenLayer {
 
     // Beyond this point, we are sure that we need to render a drop shadow or blur.
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !parentCanvas.isHardwareAccelerated()) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || true) { // { !parentCanvas.isHardwareAccelerated()) {
       // We don't have support for the RenderNode API, or we're rendering to a software canvas
       // which doesn't support RenderNodes anyhow. This is the slowest path: render to a bitmap,
       // add a shadow/blur manually on CPU.
@@ -580,6 +582,10 @@ public class OffscreenLayer {
   }
 
   private void applySoftwareBlur(Bitmap bitmap, float radius) {
-    FastBlur.apply(bitmap, (int)Math.round(radius));
+    //FastBlur.apply(bitmap, (int)Math.round(radius));
+    if (blurImpl == null) {
+      blurImpl = new FastBlur();
+    }
+    blurImpl.applyBlur(bitmap, (int)Math.round(radius));
   }
 }

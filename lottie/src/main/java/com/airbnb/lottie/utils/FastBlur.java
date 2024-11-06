@@ -2,154 +2,279 @@ package com.airbnb.lottie.utils;
 
 import android.graphics.Bitmap;
 
-public class FastBlur {
+import java.nio.ByteBuffer;
 
-  /**
-   * WIP: Fast blur implementation
-   * <p>
-   * Still to do:
-   * - Reuse arrays
-   * - Use a Buffer to avoid unnecessary copies or colorspace conversions
-   * - Try to get ART to autovectorize the code (if at all possible)
-   * - Experiment with alternatives e.g. one-per-channel BlurMaskFilter
-   */
-  public static void apply(Bitmap image, int radius) {
-    radius /= 7; // Normalize the looks of the blur to what BlurMaskFilter produces
+public class FastBlur {
+  private ByteBuffer buf1;
+  private ByteBuffer buf2;
+
+  private void ensureCapacity(Bitmap image) {
+    int totalPixelsWithMargin = (int)((1.05f * image.getWidth()) * (1.05f * image.getHeight())); // add 5% margin to avoid reallocation
+    int requiredCapacity = totalPixelsWithMargin * 4;
+    if (buf1 == null || buf1.capacity() < requiredCapacity) {
+      buf1 = ByteBuffer.allocate(requiredCapacity);
+    }
+    if (buf2 == null || buf2.capacity() < requiredCapacity) {
+      buf2 = ByteBuffer.allocate(requiredCapacity);
+    }
+
+    buf1.rewind();
+    buf2.rewind();
+  }
+
+  private void initialAccumulateHorizontal(byte[] src, int[] sumsByChannel, int rowStart, int radius) {
+    for (int channel = 0; channel < 4; channel++) {
+      sumsByChannel[channel] = src[rowStart + channel];
+    }
+
+    // Accumulate the initial sum for the kernel centered at x=0
+    for (int i = 1; i <= radius; i++) {
+      int base = rowStart + 4 * i;
+      for (int channel = 0; channel < 4; channel++) {
+        sumsByChannel[channel] += src[base + channel]; // On the right side
+        sumsByChannel[channel] += src[rowStart + channel]; // On the left side
+      }
+    }
+  }
+
+  private void naiveHorizontalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+    int kernelSize = 2 * radius + 1;
+    int[] sumsByChannel = new int[4];
+
+    for (int y = 0; y < height; y++) {
+      int rowStart = 4 * y * width;
+      int lastPixel = rowStart + 4 * (width - 1);
+
+      initialAccumulateHorizontal(src, sumsByChannel, rowStart, radius);
+
+      int leftPixelOffset = (-radius) * 4;
+      int rightPixeloffset = (radius + 1) * 4;
+
+      int x = 0;
+
+      while (x < width) {
+        int base = rowStart + 4 * x;
+        int baseLeft = Math.max(base + leftPixelOffset, rowStart);
+        int baseRight = Math.min(base + rightPixeloffset, lastPixel);
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int left = (int)src[baseLeft + channel] & 0xff;
+          int right = (int)src[baseRight + channel] & 0xff;
+          sumsByChannel[channel] += -left + right;
+        }
+
+        x++;
+      }
+    }
+  }
+
+  private void horizontalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+    int kernelSize = 2 * radius + 1;
+    int[] sumsByChannel = new int[4];
+
+    for (int y = 0; y < height; y++) {
+      int rowStart = 4 * y * width;
+
+      initialAccumulateHorizontal(src, sumsByChannel, rowStart, radius);
+
+      int leftPixelOffset = (-radius) * 4;
+      int rightPixelOffset = (radius + 1) * 4;
+
+      int x = 0;
+
+      // X is clamped on the left side
+      while (x < radius) {
+        int base = rowStart + 4 * x;
+        int baseLeft = rowStart;
+        int baseRight = base + rightPixelOffset;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int left = (int)src[baseLeft + channel] & 0xff;
+          int right = (int)src[baseRight + channel] & 0xff;
+          sumsByChannel[channel] += -left + right;
+        }
+
+        x++;
+      }
+
+      // X is not clamped at all
+      while (x < width - radius - 1) {
+        int base = rowStart + 4 * x;
+        int baseLeft = base + leftPixelOffset;
+        int baseRight = base + rightPixelOffset;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int left = (int)src[baseLeft + channel] & 0xff;
+          int right = (int)src[baseRight + channel] & 0xff;
+          sumsByChannel[channel] += -left + right;
+        }
+
+        x++;
+      }
+
+      // X is clamped on the right side
+      int lastPixel = rowStart + 4 * (width - 1);
+      while (x < width) {
+        int base = rowStart + 4 * x;
+        int baseLeft = base + leftPixelOffset;
+        int baseRight = lastPixel;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int left = (int)src[baseLeft + channel] & 0xff;
+          int right = (int)src[baseRight + channel] & 0xff;
+          sumsByChannel[channel] += -left + right;
+        }
+
+        x++;
+      }
+    }
+  }
+
+  private void initialAccumulateVertical(byte[] src, int[] sumsByChannel, int columnStart, int stride, int radius) {
+    for (int channel = 0; channel < 4; channel++) {
+      sumsByChannel[channel] = src[columnStart + channel];
+    }
+
+    // Accumulate the initial sum for the kernel centered at y=0
+    for (int i = 1; i <= radius; i++) {
+      int base = columnStart + stride * i;
+      for (int channel = 0; channel < 4; channel++) {
+        sumsByChannel[channel] += src[base + channel]; // On the bottom side
+        sumsByChannel[channel] += src[columnStart + channel]; // On the top side
+      }
+    }
+  }
+
+  private void naiveVerticalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+    int kernelSize = 2 * radius + 1;
+    int stride = 4 * width;
+    int[] sumsByChannel = new int[4];
+
+    for (int x = 0; x < width; x++) {
+      // Init with the first element only
+      int columnStart = 4 * x;
+      int lastPixel = columnStart + stride * (height - 1);
+
+      initialAccumulateVertical(src, sumsByChannel, columnStart, stride, radius);
+
+      int topPixelOffset = (-radius) * stride;
+      int bottomPixelOffset = (radius + 1) * stride;
+
+      // Y is clamped to the top
+      int y = 0;
+      while (y < radius) {
+        int base = columnStart + stride * y;
+        int baseTop = columnStart;
+        int baseBottom = base + bottomPixelOffset;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int top = (int)src[baseTop + channel] & 0xff;
+          int bottom = (int)src[baseBottom + channel] & 0xff;
+          sumsByChannel[channel] += -top + bottom;
+        }
+
+        y++;
+      }
+
+      // Y is not clamped
+      while (y < height - radius - 1) {
+        int base = columnStart + stride * y;
+        int baseTop = base + topPixelOffset;
+        int baseBottom = base + bottomPixelOffset;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int top = (int)src[baseTop + channel] & 0xff;
+          int bottom = (int)src[baseBottom + channel] & 0xff;
+          sumsByChannel[channel] += -top + bottom;
+        }
+
+        y++;
+      }
+
+      // Y is clamped to the bottom
+      while (y < height) {
+        int base = columnStart + stride * y;
+        int baseTop = base + topPixelOffset;
+        int baseBottom = lastPixel;
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int top = (int)src[baseTop + channel] & 0xff;
+          int bottom = (int)src[baseBottom + channel] & 0xff;
+          sumsByChannel[channel] += -top + bottom;
+        }
+
+        y++;
+      }
+    }
+  }
+
+  private void verticalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+    int kernelSize = 2 * radius + 1;
+    int stride = 4 * width;
+    int[] sumsByChannel = new int[4];
+
+    for (int x = 0; x < width; x++) {
+      // Init with the first element only
+      int columnStart = 4 * x;
+      int lastPixel = columnStart + stride * (height - 1);
+
+      initialAccumulateVertical(src, sumsByChannel, columnStart, stride, radius);
+
+      int topPixelOffset = (-radius) * stride;
+      int bottomPixelOffset = (radius + 1) * stride;
+
+      int y = 0;
+      while (y < height) {
+        int base = columnStart + stride * y;
+        int baseTop = Math.max(base + topPixelOffset, columnStart);
+        int baseBottom = Math.min(base + bottomPixelOffset, lastPixel);
+        for (int channel = 0; channel < 4; channel++) {
+          dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
+
+          int top = (int)src[baseTop + channel] & 0xff;
+          int bottom = (int)src[baseBottom + channel] & 0xff;
+          sumsByChannel[channel] += -top + bottom;
+        }
+
+        y++;
+      }
+    }
+  }
+
+  public void applyBlur(Bitmap image, int radius) {
     if (radius < 1) {
       return;
     }
 
     int width = image.getWidth();
     int height = image.getHeight();
-    int totalPixels = width * height;
     int kernelSize = 2 * radius + 1;
 
-    int[] sumsByChannel = new int[4];
-    int x, y, i;
-    int pixelValue, pixel1, pixel2;
-    int yPosition, pixelIndex, yWidth;
+    // Buffer setup
+    this.ensureCapacity(image);
 
-    int[] pixels = new int[totalPixels];
-    char[] dst = new char[4 * totalPixels];
+    image.copyPixelsToBuffer(buf1);
+    buf1.rewind();
 
-    // Get the pixel data from the image
-    image.setPremultiplied(false);
-    image.getPixels(pixels, 0, width, 0, 0, width, height);
-
-    yWidth = pixelIndex = 0;
-
-    // Horizontal blur
-    for (y = 0; y < height; y++) {
-      for (int channel = 0; channel < 4; channel++) {
-        sumsByChannel[channel] = 0;
-      }
-
-      // Accumulate the sum of the color channels within the radius
-      for (i = -radius; i <= radius; i++) {
-        pixelValue = pixels[pixelIndex + Math.min(width - 1, Math.max(i, 0))];
-        sumsByChannel[0] += getRed(pixelValue);
-        sumsByChannel[1] += getGreen(pixelValue);
-        sumsByChannel[2] += getBlue(pixelValue);
-        sumsByChannel[3] += getAlpha(pixelValue);
-      }
-
-      for (x = 0; x < width; x++) {
-        // Assign the average to the blur arrays
-        int outIdx = 4 * pixelIndex;
-        for (int channel = 0; channel < 4; channel++) {
-          dst[outIdx++] = (char) (sumsByChannel[channel] / kernelSize);
-        }
-
-        // Subtract the left pixel and add the right pixel
-        int minVal = Math.min(x + radius + 1, width - 1);
-        int maxVal = Math.max(x - radius, 0);
-
-        pixel1 = pixels[yWidth + minVal];
-        pixel2 = pixels[yWidth + maxVal];
-
-        sumsByChannel[0] += getRed(pixel1) - getRed(pixel2);
-        sumsByChannel[1] += getGreen(pixel1) - getGreen(pixel2);
-        sumsByChannel[2] += getBlue(pixel1) - getBlue(pixel2);
-        sumsByChannel[3] += getAlpha(pixel1) - getAlpha(pixel2);
-
-        pixelIndex++;
-      }
-
-      yWidth += width;
+    if (width >= kernelSize) {
+      horizontalPass(buf1.array(), buf2.array(), width, height, radius);
+    } else {
+      naiveHorizontalPass(buf1.array(), buf2.array(), width, height, radius);
     }
 
-    // Vertical blur
-    for (x = 0; x < width; x++) {
-      for (int channel = 0; channel < 4; channel++) {
-        sumsByChannel[channel] = 0;
-      }
-
-      yPosition = -radius * width;
-
-      // Accumulate the sum over the radius
-      for (i = -radius; i <= radius; i++) {
-        pixelIndex = Math.max(0, yPosition) + x;
-
-        // Assign the average to the blur arrays
-        int outIdx = 4 * pixelIndex;
-        for (int channel = 0; channel < 4; channel++) {
-          dst[outIdx++] = (char) (sumsByChannel[channel] / kernelSize);
-        }
-
-        yPosition += width;
-      }
-
-      pixelIndex = x;
-      for (y = 0; y < height; y++) {
-        pixels[pixelIndex] =
-            setColor(sumsByChannel[3] / kernelSize, sumsByChannel[0] / kernelSize, sumsByChannel[1] / kernelSize, sumsByChannel[2] / kernelSize);
-
-        int minVal = (Math.min(y + radius + 1, height - 1)) * width;
-        int maxVal = (Math.max(y - radius, 0)) * width;
-
-        // Subtract the top pixel and add the bottom pixel
-        int pixel1Red = dst[4 * (x + minVal) + 0];
-        int pixel1Green = dst[4 * (x + minVal) + 1];
-        int pixel1Blue = dst[4 * (x + minVal) + 2];
-        int pixel1Alpha = dst[4 * (x + minVal) + 3];
-
-        int pixel2Red = dst[4 * (x + maxVal) + 0];
-        int pixel2Green = dst[4 * (x + maxVal) + 1];
-        int pixel2Blue = dst[4 * (x + maxVal) + 2];
-        int pixel2Alpha = dst[4 * (x + maxVal) + 3];
-
-        sumsByChannel[0] += pixel1Red - pixel2Red;
-        sumsByChannel[1] += pixel1Green - pixel2Green;
-        sumsByChannel[2] += pixel1Blue - pixel2Blue;
-        sumsByChannel[3] += pixel1Alpha - pixel2Alpha;
-
-        pixelIndex += width;
-      }
+    if (height >= kernelSize) {
+      verticalPass(buf2.array(), buf1.array(), width, height, radius);
+    } else {
+      naiveVerticalPass(buf2.array(), buf1.array(), width, height, radius);
     }
 
-    // Set the blurred pixels back to the image
-    image.setPixels(pixels, 0, width, 0, 0, width, height);
-    image.setPremultiplied(true);
-  }
-
-  // Helper methods to extract and set color components
-  private static int getAlpha(int color) {
-    return (color >> 24) & 0xFF;
-  }
-
-  private static int getRed(int color) {
-    return (color >> 16) & 0xFF;
-  }
-
-  private static int getGreen(int color) {
-    return ((color >> 8) & 0xFF);
-  }
-
-  private static int getBlue(int color) {
-    return (color & 0xFF);
-  }
-
-  private static int setColor(int alpha, int red, int green, int blue) {
-    return (alpha << 24) | (red << 16) | (green << 8) | blue;
+    image.copyPixelsFromBuffer(buf1);
   }
 }
