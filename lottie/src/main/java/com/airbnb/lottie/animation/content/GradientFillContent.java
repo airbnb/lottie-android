@@ -62,7 +62,6 @@ public class GradientFillContent
   @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
-  @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
 
   public GradientFillContent(final LottieDrawable lottieDrawable, LottieComposition composition, BaseLayer layer, GradientFill fill) {
@@ -89,12 +88,6 @@ public class GradientFillContent
     endPointAnimation = fill.getEndPoint().createAnimation();
     endPointAnimation.addUpdateListener(this);
     layer.addAnimation(endPointAnimation);
-
-    if (layer.getBlurEffect() != null) {
-      blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
-      blurAnimation.addUpdateListener(this);
-      layer.addAnimation(blurAnimation);
-    }
   }
 
   @Override public void onValueChanged() {
@@ -293,15 +286,6 @@ public class GradientFillContent
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
         colorCallbackAnimation.addUpdateListener(this);
         layer.addAnimation(colorCallbackAnimation);
-      }
-    } else if (property == LottieProperty.BLUR_RADIUS) {
-      if (blurAnimation != null) {
-        blurAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-      } else {
-        blurAnimation =
-            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
-        blurAnimation.addUpdateListener(this);
-        layer.addAnimation(blurAnimation);
       }
     }
   }
