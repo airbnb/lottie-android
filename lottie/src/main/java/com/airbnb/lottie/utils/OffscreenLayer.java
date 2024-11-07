@@ -102,6 +102,7 @@ public class OffscreenLayer {
   private RenderStrategy currentStrategy;
   /** Rectangle that the final composition will occupy in the screen */
   @Nullable private RectF targetRect;
+  @Nullable private RectF roundedTargetRect;
   /** targetRect with shadow/blur render space included */
   @Nullable private RectF rectIncludingEffects;
   @Nullable private Rect intRectIncludingEffects;
@@ -233,8 +234,8 @@ public class OffscreenLayer {
     this.op = op;
     this.currentStrategy = chooseRenderStrategy(parentCanvas, op);
     if (this.targetRect == null) this.targetRect = new RectF();
-    this.targetRect.set((int)bounds.left, (int)bounds.top, (int)bounds.right, (int)bounds.bottom);
-    this.targetRect = calculateRectIncludingEffects(targetRect, null, op.blur);
+    this.targetRect.set(bounds.left, bounds.top, bounds.right, bounds.bottom);
+    this.targetRect.set(calculateRectIncludingEffects(targetRect, null, op.blur));
     float offX = bounds.left - targetRect.left, offY = bounds.top - targetRect.top;
     if (composePaint == null) composePaint = new LPaint();
     composePaint.reset();
@@ -385,13 +386,15 @@ public class OffscreenLayer {
           renderBitmapShadow(parentCanvas, op.shadow);
         }
 
+        if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
+        bitmapSrcRect.set(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y]));
         if (op.hasBlur()) {
           applySoftwareBlur(bitmap, (blurRadiusX + blurRadiusY) / 2.0f);
         }
 
-        if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
-        bitmapSrcRect.set(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y]));
-        parentCanvas.drawBitmap(bitmap, bitmapSrcRect, targetRect, composePaint);
+        if (roundedTargetRect == null) roundedTargetRect = new RectF();
+        roundedTargetRect.set(Math.round(targetRect.left), Math.round(targetRect.top), Math.round(targetRect.right), Math.round(targetRect.bottom));
+        parentCanvas.drawBitmap(bitmap, bitmapSrcRect, roundedTargetRect, composePaint);
         break;
 
       case RENDER_NODE:
