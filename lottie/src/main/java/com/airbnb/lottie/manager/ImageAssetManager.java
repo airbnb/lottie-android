@@ -106,7 +106,19 @@ public class ImageAssetManager {
         Logger.warning("data URL did not have correct base64 format.", e);
         return null;
       }
-      bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+
+      try {
+        bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
+      } catch (IllegalArgumentException e) {
+        Logger.warning("Unable to decode image `" + id + "`.", e);
+        return null;
+      }
+
+      if (bitmap == null) {
+        Logger.warning("Decoded image `" + id + "` is null.");
+        return null;
+      }
+
       Bitmap resizedBitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
       return putBitmap(id, resizedBitmap);
     }
