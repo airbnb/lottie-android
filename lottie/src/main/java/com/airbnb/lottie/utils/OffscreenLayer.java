@@ -389,7 +389,7 @@ public class OffscreenLayer {
         if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
         bitmapSrcRect.set(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y]));
         if (op.hasBlur()) {
-          applySoftwareBlur(bitmap, (blurRadiusX + blurRadiusY) / 2.0f);
+          applySoftwareBlur(bitmap, (blurRadiusX + blurRadiusY) / 2.0f, bitmapSrcRect);
         }
 
         if (roundedTargetRect == null) roundedTargetRect = new RectF();
@@ -584,11 +584,10 @@ public class OffscreenLayer {
     targetCanvas.restore();
   }
 
-  private void applySoftwareBlur(Bitmap bitmap, float radius) {
-    //FastBlur.apply(bitmap, (int)Math.round(radius));
+  private void applySoftwareBlur(Bitmap bitmap, float radius, Rect rect) {
     if (blurImpl == null) {
       blurImpl = new FastBlur();
     }
-    blurImpl.applyBlur(bitmap, (int)Math.round(radius));
+    blurImpl.applyBlur(bitmap, (int)Math.round(radius), rect);
   }
 }

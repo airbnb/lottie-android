@@ -1,6 +1,7 @@
 package com.airbnb.lottie.utils;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 
 import java.nio.ByteBuffer;
 
@@ -9,13 +10,13 @@ public class FastBlur {
   private ByteBuffer buf2;
 
   private void ensureCapacity(Bitmap image) {
-    int totalPixelsWithMargin = (int)((1.05f * image.getWidth()) * (1.05f * image.getHeight())); // add 5% margin to avoid reallocation
-    int requiredCapacity = totalPixelsWithMargin * 4;
+    int requiredCapacity = image.getWidth() * image.getHeight() * 4;
+    int newCapacity = 4 * (int)((1.05f * image.getWidth()) * (1.05f * image.getHeight())); // add 5% margin to avoid frequent reallocation
     if (buf1 == null || buf1.capacity() < requiredCapacity) {
-      buf1 = ByteBuffer.allocate(requiredCapacity);
+      buf1 = ByteBuffer.allocate(newCapacity);
     }
     if (buf2 == null || buf2.capacity() < requiredCapacity) {
-      buf2 = ByteBuffer.allocate(requiredCapacity);
+      buf2 = ByteBuffer.allocate(newCapacity);
     }
 
     buf1.rewind();
@@ -31,18 +32,21 @@ public class FastBlur {
     for (int i = 1; i <= radius; i++) {
       int base = rowStart + 4 * i;
       for (int channel = 0; channel < 4; channel++) {
-        sumsByChannel[channel] += src[base + channel]; // On the right side
-        sumsByChannel[channel] += src[rowStart + channel]; // On the left side
+        sumsByChannel[channel] += (int)src[base + channel] & 0xff; // On the right side
+        sumsByChannel[channel] += (int)src[rowStart + channel] & 0xff; // On the left side
       }
     }
   }
 
-  private void naiveHorizontalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+  private void naiveHorizontalPass(byte[] src, byte[] dst, int stride, Rect rect, int radius) {
     int kernelSize = 2 * radius + 1;
     int[] sumsByChannel = new int[4];
 
+    int firstPixel = rect.top * stride + 4 * rect.left;
+    int height = rect.height();
+    int width = rect.width();
     for (int y = 0; y < height; y++) {
-      int rowStart = 4 * y * width;
+      int rowStart = firstPixel + y * stride;
       int lastPixel = rowStart + 4 * (width - 1);
 
       initialAccumulateHorizontal(src, sumsByChannel, rowStart, radius);
@@ -51,7 +55,6 @@ public class FastBlur {
       int rightPixeloffset = (radius + 1) * 4;
 
       int x = 0;
-
       while (x < width) {
         int base = rowStart + 4 * x;
         int baseLeft = Math.max(base + leftPixelOffset, rowStart);
@@ -69,12 +72,15 @@ public class FastBlur {
     }
   }
 
-  private void horizontalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+  private void horizontalPass(byte[] src, byte[] dst, int stride, Rect rect, int radius) {
     int kernelSize = 2 * radius + 1;
     int[] sumsByChannel = new int[4];
 
+    int firstPixel = rect.top * stride + 4 * rect.left;
+    int width = rect.width();
+    int height = rect.height();
     for (int y = 0; y < height; y++) {
-      int rowStart = 4 * y * width;
+      int rowStart = firstPixel + y * stride;
 
       initialAccumulateHorizontal(src, sumsByChannel, rowStart, radius);
 
@@ -104,6 +110,7 @@ public class FastBlur {
         int base = rowStart + 4 * x;
         int baseLeft = base + leftPixelOffset;
         int baseRight = base + rightPixelOffset;
+
         for (int channel = 0; channel < 4; channel++) {
           dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
 
@@ -143,20 +150,22 @@ public class FastBlur {
     for (int i = 1; i <= radius; i++) {
       int base = columnStart + stride * i;
       for (int channel = 0; channel < 4; channel++) {
-        sumsByChannel[channel] += src[base + channel]; // On the bottom side
-        sumsByChannel[channel] += src[columnStart + channel]; // On the top side
+        sumsByChannel[channel] += (int)src[base + channel] & 0xff; // On the bottom side
+        sumsByChannel[channel] += (int)src[columnStart + channel] & 0xff; // On the top side
       }
     }
   }
 
-  private void naiveVerticalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+  private void verticalPass(byte[] src, byte[] dst, int stride, Rect rect, int radius) {
     int kernelSize = 2 * radius + 1;
-    int stride = 4 * width;
     int[] sumsByChannel = new int[4];
 
+    int firstPixel = stride * rect.top + 4 * rect.left;
+    int width = rect.width();
+    int height = rect.height();
     for (int x = 0; x < width; x++) {
       // Init with the first element only
-      int columnStart = 4 * x;
+      int columnStart = firstPixel + 4 * x;
       int lastPixel = columnStart + stride * (height - 1);
 
       initialAccumulateVertical(src, sumsByChannel, columnStart, stride, radius);
@@ -186,6 +195,7 @@ public class FastBlur {
         int base = columnStart + stride * y;
         int baseTop = base + topPixelOffset;
         int baseBottom = base + bottomPixelOffset;
+
         for (int channel = 0; channel < 4; channel++) {
           dst[base + channel] = (byte) (sumsByChannel[channel] / kernelSize);
 
@@ -215,14 +225,16 @@ public class FastBlur {
     }
   }
 
-  private void verticalPass(byte[] src, byte[] dst, int width, int height, int radius) {
+  private void naiveVerticalPass(byte[] src, byte[] dst, int stride, Rect rect, int radius) {
     int kernelSize = 2 * radius + 1;
-    int stride = 4 * width;
     int[] sumsByChannel = new int[4];
 
+    int firstPixel = stride * rect.top + 4 * rect.left;
+    int width = rect.width();
+    int height = rect.height();
     for (int x = 0; x < width; x++) {
       // Init with the first element only
-      int columnStart = 4 * x;
+      int columnStart = firstPixel + 4 * x;
       int lastPixel = columnStart + stride * (height - 1);
 
       initialAccumulateVertical(src, sumsByChannel, columnStart, stride, radius);
@@ -248,14 +260,26 @@ public class FastBlur {
     }
   }
 
-  public void applyBlur(Bitmap image, int radius) {
+  void blurPass(byte[] src, byte[] dst, int stride, Rect rect, int radius) {
+    int kernelSize = 2 * radius - 1;
+
+    if (rect.width() >= kernelSize) {
+      horizontalPass(src, dst, stride, rect, radius);
+    } else {
+      naiveHorizontalPass(src, dst, stride, rect, radius);
+    }
+
+    if (rect.height() >= kernelSize) {
+      verticalPass(dst, src, stride, rect, radius);
+    } else {
+      naiveVerticalPass(dst, src, stride, rect, radius);
+    }
+  }
+
+  public void applyBlur(Bitmap image, int radius, Rect rect) {
     if (radius < 1) {
       return;
     }
-
-    int width = image.getWidth();
-    int height = image.getHeight();
-    int kernelSize = 2 * radius + 1;
 
     // Buffer setup
     this.ensureCapacity(image);
@@ -263,18 +287,9 @@ public class FastBlur {
     image.copyPixelsToBuffer(buf1);
     buf1.rewind();
 
-    if (width >= kernelSize) {
-      horizontalPass(buf1.array(), buf2.array(), width, height, radius);
-    } else {
-      naiveHorizontalPass(buf1.array(), buf2.array(), width, height, radius);
-    }
-
-    if (height >= kernelSize) {
-      verticalPass(buf2.array(), buf1.array(), width, height, radius);
-    } else {
-      naiveVerticalPass(buf2.array(), buf1.array(), width, height, radius);
-    }
-
+    int stride = image.getRowBytes();
+    blurPass(buf1.array(), buf2.array(), stride, rect, radius);
+    
     image.copyPixelsFromBuffer(buf1);
   }
 }
