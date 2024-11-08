@@ -46,6 +46,7 @@ public class OffscreenLayer {
     @Nullable public BlendModeCompat blendMode;
     @Nullable public ColorFilter colorFilter;
     @Nullable public DropShadow shadow;
+    /** Blur to apply as returned by BlurKeyframeAnimation::evaluate. */
     public float blur;
 
     public ComposeOp() {
@@ -167,7 +168,7 @@ public class OffscreenLayer {
 
     // Beyond this point, we are sure that we need to render a drop shadow or blur.
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || true) { // { !parentCanvas.isHardwareAccelerated()) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !parentCanvas.isHardwareAccelerated()) {
       // We don't have support for the RenderNode API, or we're rendering to a software canvas
       // which doesn't support RenderNodes anyhow. This is the slowest path: render to a bitmap,
       // add a shadow/blur manually on CPU.
@@ -506,7 +507,7 @@ public class OffscreenLayer {
     // Draw the image onto the mask layer first. Since the mask layer is ALPHA_8, this discards color information.
     // Align it so that when drawn in the end, it originates at targetRect.x, targetRect.y
     // the int casts are very important here - they save us from some slow path for non-integer coords
-    shadowMaskBitmapCanvas.drawBitmap(bitmap, (int)Math.round(offsetX * pixelScaleX), (int)Math.round(offsetY * pixelScaleY), null);
+    shadowMaskBitmapCanvas.drawBitmap(bitmap, Math.round(offsetX * pixelScaleX), Math.round(offsetY * pixelScaleY), null);
 
     // Prepare the shadow paint. This is the paint that will perform a blur and a tint of the mask
     if (shadowBlurFilter == null || lastShadowBlurRadius != shadow.getRadius()) {
