@@ -280,7 +280,7 @@ public final class Utils {
    * Resize the bitmap to exactly the same size as the specified dimension, changing the aspect ratio if needed.
    * Returns the original bitmap if the dimensions already match.
    */
-  public static Bitmap resizeBitmapIfNeeded(Bitmap bitmap, int width, int height) {
+  public static Bitmap resizeBitmapIfNeeded(@NonNull Bitmap bitmap, int width, int height) {
     if (bitmap.getWidth() == width && bitmap.getHeight() == height) {
       return bitmap;
     }

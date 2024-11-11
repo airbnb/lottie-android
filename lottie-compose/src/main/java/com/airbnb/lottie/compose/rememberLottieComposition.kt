@@ -1,6 +1,7 @@
 package com.airbnb.lottie.compose
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.util.Base64
@@ -238,15 +239,18 @@ private fun maybeLoadImageFromAsset(
         Logger.warning("Unable to open asset.", e)
         return
     }
-    try {
+    val bitmap: Bitmap? = try {
         val opts = BitmapFactory.Options()
         opts.inScaled = true
         opts.inDensity = 160
-        var bitmap = BitmapFactory.decodeStream(inputStream, null, opts)
-        bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.width, asset.height)
-        asset.bitmap = bitmap
+        BitmapFactory.decodeStream(inputStream, null, opts)
     } catch (e: IllegalArgumentException) {
         Logger.warning("Unable to decode image.", e)
+        null
+    }
+
+    if (bitmap != null) {
+        asset.bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.width, asset.height)
     }
 }
 
