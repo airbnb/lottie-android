@@ -335,36 +335,61 @@ import java.util.zip.ZipInputStream;
   }
 
   @Override protected void onRestoreInstanceState(Parcelable state) {
-    if (!(state instanceof SavedState)) {
-      super.onRestoreInstanceState(state);
-      return;
-    }
+      if (!(state instanceof SavedState)) {
+          super.onRestoreInstanceState(state);
+          return;
+      }
 
-    SavedState ss = (SavedState) state;
-    super.onRestoreInstanceState(ss.getSuperState());
-    animationName = ss.animationName;
-    if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && !TextUtils.isEmpty(animationName)) {
-      setAnimation(animationName);
-    }
-    animationResId = ss.animationResId;
-    if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && animationResId != 0) {
-      setAnimation(animationResId);
-    }
-    if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
-      setProgressInternal(ss.progress, false);
-    }
-    if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
-      playAnimation();
-    }
-    if (!userActionsTaken.contains(UserActionTaken.SET_IMAGE_ASSETS)) {
-      setImageAssetsFolder(ss.imageAssetsFolder);
-    }
-    if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_MODE)) {
-      setRepeatMode(ss.repeatMode);
-    }
-    if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_COUNT)) {
-      setRepeatCount(ss.repeatCount);
-    }
+      SavedState ss = (SavedState) state;
+      super.onRestoreInstanceState(ss.getSuperState());
+
+      setAnimationIfNotSet(ss);
+      setProgressIfNotSet(ss);
+      setPlayStateIfNotSet(ss);
+      setImageAssetsFolderIfNotSet(ss);
+      setRepeatModeIfNotSet(ss);
+      setRepeatCountIfNotSet(ss);
+  }
+
+  private void setAnimationIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION)) {
+          if (!TextUtils.isEmpty(ss.animationName)) {
+              setAnimation(ss.animationName);
+          }
+          if (ss.animationResId != 0) {
+              setAnimation(ss.animationResId);
+          }
+      }
+  }
+
+  private void setProgressIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
+          setProgressInternal(ss.progress, false);
+      }
+  }
+
+  private void setPlayStateIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
+          playAnimation();
+      }
+  }
+
+  private void setImageAssetsFolderIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.SET_IMAGE_ASSETS)) {
+          setImageAssetsFolder(ss.imageAssetsFolder);
+      }
+  }
+
+  private void setRepeatModeIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_MODE)) {
+          setRepeatMode(ss.repeatMode);
+      }
+  }
+
+  private void setRepeatCountIfNotSet(SavedState ss) {
+      if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_COUNT)) {
+          setRepeatCount(ss.repeatCount);
+      }
   }
 
   @Override protected void onAttachedToWindow() {
