@@ -340,15 +340,15 @@ import java.util.zip.ZipInputStream;
           return;
       }
 
-      SavedState ss = (SavedState) state;
-      super.onRestoreInstanceState(ss.getSuperState());
+      SavedState savedState = (SavedState) state;
+      super.onRestoreInstanceState(savedState.getSuperState());
 
-      setAnimationIfNotSet(ss);
-      setProgressIfNotSet(ss);
-      setPlayStateIfNotSet(ss);
-      setImageAssetsFolderIfNotSet(ss);
-      setRepeatModeIfNotSet(ss);
-      setRepeatCountIfNotSet(ss);
+      setAnimationIfNotSet(savedState);
+      setProgressIfNotSet(savedState);
+      setPlayStateIfNotSet(savedState);
+      setImageAssetsFolderIfNotSet(savedState);
+      setRepeatModeIfNotSet(savedState);
+      setRepeatCountIfNotSet(savedState);
   }
 
   private void setAnimationIfNotSet(SavedState ss) {
