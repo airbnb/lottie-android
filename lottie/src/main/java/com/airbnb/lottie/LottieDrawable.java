@@ -1851,16 +1851,16 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     softwareRenderingDstBoundsRectF = new RectF();
   }
 
-  private boolean canCreateNewBitmap() {
+  private boolean canCreateNewBitmap(int renderWidth, int renderHeight) {
     boolean isBitmapIsNull = softwareRenderingBitmap == null;
     boolean isBitmapWidthIsMore = softwareRenderingBitmap.getWidth() < renderWidth;
     boolean isBitmapHeightIsMore = softwareRenderingBitmap.getHeight() < renderHeight;
 
-    return softwareRenderingBitmapIsLarge = isBitmapIsNull || isBitmapWidthIsMore || isBitmapHeightIsMore;
+    return isBitmapIsNull || isBitmapWidthIsMore || isBitmapHeightIsMore;
   }
 
   private void ensureSoftwareRenderingBitmap(int renderWidth, int renderHeight) {
-    if (canCreateNewBitmap()) {
+    if (canCreateNewBitmap(renderWidth, renderHeight)) {
       // The bitmap is larger. We need to create a new one.
       softwareRenderingBitmap = Bitmap.createBitmap(renderWidth, renderHeight, Bitmap.Config.ARGB_8888);
       softwareRenderingCanvas.setBitmap(softwareRenderingBitmap);
