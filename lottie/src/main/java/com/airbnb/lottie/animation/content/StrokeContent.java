@@ -21,8 +21,6 @@ import com.airbnb.lottie.value.LottieValueCallback;
 public class StrokeContent extends BaseStrokeContent {
 
   private final BaseLayer layer;
-  private final String name;
-  private final boolean hidden;
   private final BaseKeyframeAnimation<Integer, Integer> colorAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
 

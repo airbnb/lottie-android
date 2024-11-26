@@ -46,6 +46,8 @@ public abstract class BaseStrokeContent
   protected final BaseLayer layer;
   private final List<PathGroup> pathGroups = new ArrayList<>();
   private final float[] dashPatternValues;
+  protected String name;
+  protected boolean hidden;
   final Paint paint = new LPaint(Paint.ANTI_ALIAS_FLAG);
 
 

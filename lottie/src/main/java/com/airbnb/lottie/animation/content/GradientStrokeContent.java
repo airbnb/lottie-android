@@ -27,9 +27,6 @@ public class GradientStrokeContent extends BaseStrokeContent {
    * Cache the gradients such that it runs at 30fps.
    */
   private static final int CACHE_STEPS_MS = 32;
-
-  private final String name;
-  private final boolean hidden;
   private final LongSparseArray<LinearGradient> linearGradientCache = new LongSparseArray<>();
   private final LongSparseArray<RadialGradient> radialGradientCache = new LongSparseArray<>();
   private final RectF boundsRect = new RectF();
