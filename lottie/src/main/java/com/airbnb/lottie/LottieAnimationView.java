@@ -632,10 +632,8 @@ import java.util.zip.ZipInputStream;
   }
 
   private void setCompositionTask(LottieTask<LottieComposition> compositionTask) {
-    LottieResult<LottieComposition> result = compositionTask.getResult();
-    LottieDrawable lottieDrawable = this.lottieDrawable;
-    if (result != null && lottieDrawable == getDrawable() && lottieDrawable.getComposition() == result.getValue()) {
-      return;
+    if (shouldSkipSetComposition(compositionTask)) {
+        return;
     }
     userActionsTaken.add(UserActionTaken.SET_ANIMATION);
     clearComposition();
@@ -643,7 +641,16 @@ import java.util.zip.ZipInputStream;
     this.compositionTask = compositionTask
         .addListener(loadedListener)
         .addFailureListener(wrappedFailureListener);
-  }
+}
+
+private boolean shouldSkipSetComposition(LottieTask<LottieComposition> compositionTask) {
+    LottieResult<LottieComposition> result = compositionTask.getResult();
+    LottieDrawable lottieDrawable = this.lottieDrawable;
+    if (result == null) {
+      return false;
+    }
+    return  lottieDrawable == getDrawable() && lottieDrawable.getComposition() == result.getValue();
+}
 
   private void cancelLoaderTask() {
     if (compositionTask != null) {
