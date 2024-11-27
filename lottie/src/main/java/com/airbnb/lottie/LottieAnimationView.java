@@ -323,15 +323,15 @@ import java.util.zip.ZipInputStream;
 
   @Override protected Parcelable onSaveInstanceState() {
     Parcelable superState = super.onSaveInstanceState();
-    SavedState ss = new SavedState(superState);
-    ss.animationName = animationName;
-    ss.animationResId = animationResId;
-    ss.progress = lottieDrawable.getProgress();
-    ss.isAnimating = lottieDrawable.isAnimatingOrWillAnimateOnVisible();
-    ss.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
-    ss.repeatMode = lottieDrawable.getRepeatMode();
-    ss.repeatCount = lottieDrawable.getRepeatCount();
-    return ss;
+    SavedState savedState = new SavedState(superState);
+    savedState.animationName = animationName;
+    savedState.animationResId = animationResId;
+    savedState.progress = lottieDrawable.getProgress();
+    savedState.isAnimating = lottieDrawable.isAnimatingOrWillAnimateOnVisible();
+    savedState.imageAssetsFolder = lottieDrawable.getImageAssetsFolder();
+    savedState.repeatMode = lottieDrawable.getRepeatMode();
+    savedState.repeatCount = lottieDrawable.getRepeatCount();
+    return savedState;
   }
 
   @Override protected void onRestoreInstanceState(Parcelable state) {
@@ -340,30 +340,30 @@ import java.util.zip.ZipInputStream;
       return;
     }
 
-    SavedState ss = (SavedState) state;
-    super.onRestoreInstanceState(ss.getSuperState());
-    animationName = ss.animationName;
+    SavedState savedState = (SavedState) state;
+    super.onRestoreInstanceState(savedState.getSuperState());
+    animationName = savedState.animationName;
     if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && !TextUtils.isEmpty(animationName)) {
       setAnimation(animationName);
     }
-    animationResId = ss.animationResId;
+    animationResId = savedState.animationResId;
     if (!userActionsTaken.contains(UserActionTaken.SET_ANIMATION) && animationResId != 0) {
       setAnimation(animationResId);
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_PROGRESS)) {
-      setProgressInternal(ss.progress, false);
+      setProgressInternal(savedState.progress, false);
     }
-    if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && ss.isAnimating) {
+    if (!userActionsTaken.contains(UserActionTaken.PLAY_OPTION) && savedState.isAnimating) {
       playAnimation();
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_IMAGE_ASSETS)) {
-      setImageAssetsFolder(ss.imageAssetsFolder);
+      setImageAssetsFolder(savedState.imageAssetsFolder);
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_MODE)) {
-      setRepeatMode(ss.repeatMode);
+      setRepeatMode(savedState.repeatMode);
     }
     if (!userActionsTaken.contains(UserActionTaken.SET_REPEAT_COUNT)) {
-      setRepeatCount(ss.repeatCount);
+      setRepeatCount(savedState.repeatCount);
     }
   }
 
