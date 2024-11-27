@@ -16,6 +16,30 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.List;
 
+abstract class ShapeType {
+    abstract void createPath();
+}
+
+class STAR extends ShapeType {
+    @Override
+    void createPath() {
+        createStarPath();
+    }
+
+    private void createStarPath() {
+    }
+}
+
+class POLYGON extends ShapeType {
+    @Override
+    void createPath() {
+        createPolygonPath();
+    }
+
+    private void createPolygonPath() {
+    }
+}
+
 public class PolystarContent
     implements PathContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
   /**
@@ -122,14 +146,8 @@ public class PolystarContent
       return path;
     }
 
-    switch (type) {
-      case STAR:
-        createStarPath();
-        break;
-      case POLYGON:
-        createPolygonPath();
-        break;
-    }
+    ShapeType shapeType = (type == PolystarShape.Type.STAR) ? new STAR() : new POLYGON();
+    shapeType.createPath();
 
     path.close();
 
