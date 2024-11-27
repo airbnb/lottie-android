@@ -3,6 +3,7 @@ package com.airbnb.lottie;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -226,11 +227,26 @@ public class LottieComposition {
       Set<Map.Entry<String, LottieImageAsset>> entries = images.entrySet();
 
       for (Map.Entry<String, LottieImageAsset> entry : entries) {
-        images.put(entry.getKey(), entry.getValue().copyWithScale(imagesDpScale / dpScale));
+        images.put(entry.getKey(), copyWithScale(imagesDpScale / dpScale, entry.getValue()));
       }
     }
     imagesDpScale = dpScale;
     return images;
+  }
+
+  public LottieImageAsset copyWithScale(float scale, LottieImageAsset entry) {
+    int width = entry.getWidth();
+    int height = entry.getHeight();
+    String id = entry.getId();
+    String fileName = entry.getFileName();
+    String dirName = entry.getDirName();
+    Bitmap bitmap = entry.getBitmap();
+    LottieImageAsset newAsset = new LottieImageAsset((int) (width * scale), (int) (height * scale), id, fileName, dirName);
+    if (bitmap != null) {
+      Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newAsset.width, newAsset.height, true);
+      newAsset.setBitmap(scaledBitmap);
+    }
+    return newAsset;
   }
 
   public float getDurationFrames() {

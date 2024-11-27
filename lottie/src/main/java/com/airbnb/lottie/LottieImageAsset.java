@@ -9,8 +9,8 @@ import androidx.annotation.RestrictTo;
  * Data class describing an image asset embedded in a Lottie json file.
  */
 public class LottieImageAsset {
-  private final int width;
-  private final int height;
+  protected final int width;
+  protected final int height;
   private final String id;
   private final String fileName;
   private final String dirName;
