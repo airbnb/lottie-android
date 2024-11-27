@@ -639,7 +639,8 @@ public class LottieCompositionFactory {
           File tempFile = new File(context.getCacheDir(), fileName);
           try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             try (OutputStream output = new FileOutputStream(tempFile)) {
-              byte[] buffer = new byte[4 * 1024];
+              int four_kb_size = 4 * 1024;
+              byte[] buffer = new byte[four_kb_size];
               int read;
               while ((read = inputStream.read(buffer)) != -1) {
                 output.write(buffer, 0, read);
