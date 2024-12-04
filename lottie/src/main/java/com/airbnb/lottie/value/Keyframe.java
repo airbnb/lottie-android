@@ -125,8 +125,8 @@ public class Keyframe<T> {
       } else {
         float startProgress = getStartProgress();
         float durationFrames = endFrame - startFrame;
-        float durationProgress = durationFrames / composition.getDurationFrames();
-        endProgress = startProgress + durationProgress;
+        double durationProgress = durationFrames / (double) composition.getDurationFrames();
+        endProgress = (float) (startProgress + durationProgress);
       }
     }
     return endProgress;
@@ -137,13 +137,7 @@ public class Keyframe<T> {
   }
 
   public boolean containsProgress(@FloatRange(from = 0f, to = 1f) float progress) {
-    // The containsRange check is closed on both sides.
-    // Ideally, it would be open at the end and all keyframes would be perfectly
-    // overlapping. However, due to floating point rounding errors, it is possible to have
-    // two keyframes in which one ends at 45.99998 and the next starts at 45.99999.
-    // If the progress happens to be exactly 45.99998 then it wouldn't match either keyframe
-    // unless the upper bound is closed.
-    return progress >= getStartProgress() && progress <= getEndProgress();
+    return progress >= getStartProgress() && progress < getEndProgress();
   }
 
   /**
