@@ -125,8 +125,8 @@ public class Keyframe<T> {
       } else {
         float startProgress = getStartProgress();
         float durationFrames = endFrame - startFrame;
-        float durationProgress = durationFrames / composition.getDurationFrames();
-        endProgress = startProgress + durationProgress;
+        double durationProgress = durationFrames / (double) composition.getDurationFrames();
+        endProgress = (float) (startProgress + durationProgress);
       }
     }
     return endProgress;
