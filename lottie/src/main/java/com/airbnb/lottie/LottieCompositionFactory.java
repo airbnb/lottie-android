@@ -710,8 +710,10 @@ public class LottieCompositionFactory {
             return null;
           }
           Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, opts);
-          bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
-          asset.setBitmap(bitmap);
+          if (bitmap != null) {
+            bitmap = Utils.resizeBitmapIfNeeded(bitmap, asset.getWidth(), asset.getHeight());
+            asset.setBitmap(bitmap);
+          }
         }
       }
     }
