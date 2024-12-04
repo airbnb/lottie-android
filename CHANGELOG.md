@@ -1,3 +1,7 @@
+# 6.6.1
+### Bugs Fixes
+* Fixed a floating point error calculating keyframe end progress ([#2588](https://github.com/airbnb/lottie-android/pull/2588))
+
 # 6.6.0
 ### New Features
 * Overhauled drop shadow support for even better correctness ([#2548](https://github.com/airbnb/lottie-android/pull/2548))
