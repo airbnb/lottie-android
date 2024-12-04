@@ -30,11 +30,11 @@ public class KeyframeTest {
         new SparseArrayCompat<>(),
         new HashMap<>(),
         new ArrayList<>(),
-        1400,
-        600
+        0,
+        0
     );
     Keyframe<Float> keyframe1 = new Keyframe<>(composition, 200f, 321f, new LinearInterpolator(), 28f, 48f);
     Keyframe<Float> keyframe2 = new Keyframe<>(composition, 321f, 300f, new LinearInterpolator(), 48f, 56f);
-    assertEquals(keyframe1.getEndProgress(), keyframe2.getStartProgress(), 0f);
+    assertEquals(keyframe2.getStartProgress(), keyframe1.getEndProgress(), 0f);
   }
 }
