@@ -159,7 +159,7 @@ public class TextLayer extends BaseLayer {
   }
 
   @Override
-  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply /* ignored for now */) {
+  void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply /* ignored for now */, float blurToApply /* ignored for now */) {
     DocumentData documentData = textAnimation.getValue();
     Font font = composition.getFonts().get(documentData.fontName);
     if (font == null) {

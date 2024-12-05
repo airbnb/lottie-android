@@ -65,7 +65,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     layer.addAnimation(endPointAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -79,7 +79,7 @@ public class GradientStrokeContent extends BaseStrokeContent {
     }
     paint.setShader(shader);
 
-    super.draw(canvas, parentMatrix, parentAlpha, shadowToApply);
+    super.draw(canvas, parentMatrix, parentAlpha, shadowToApply, blurToApply);
   }
 
   @Override public String getName() {

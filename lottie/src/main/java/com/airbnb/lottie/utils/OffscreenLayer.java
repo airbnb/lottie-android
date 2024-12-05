@@ -32,8 +32,8 @@ import com.airbnb.lottie.animation.LPaint;
  * of functions, and in fact forwards to Canvas.saveLayer() when appropriate.
  * <p>
  * Unlike Canvas.saveLayer(), an OffscreenLayer also supports compositing with a drop-shadow,
- * and uses a hardware-accelerated target when available. It attempts to choose the fastest
- * approach to render and composite the contents, up to and including simply rendering
+ * and blur,and uses a hardware-accelerated target when available. It attempts to choose the
+ * fastest approach to render and composite the contents, up to and including simply rendering
  * directly, if possible.
  */
 public class OffscreenLayer {
@@ -46,6 +46,8 @@ public class OffscreenLayer {
     @Nullable public BlendModeCompat blendMode;
     @Nullable public ColorFilter colorFilter;
     @Nullable public DropShadow shadow;
+    /** Blur to apply as returned by BlurKeyframeAnimation::evaluate. */
+    public float blur;
 
     public ComposeOp() {
       reset();
@@ -67,8 +69,10 @@ public class OffscreenLayer {
       return colorFilter != null;
     }
 
+    public boolean hasBlur() { return blur > 0.0f; }
+
     public boolean isNoop() {
-      return !isTranslucent() && !hasBlendMode() && !hasShadow() && !hasColorFilter();
+      return !isTranslucent() && !hasBlendMode() && !hasShadow() && !hasColorFilter() && !hasBlur();
     }
 
     public void reset() {
@@ -76,6 +80,7 @@ public class OffscreenLayer {
       blendMode = null;
       colorFilter = null;
       shadow = null;
+      blur = 0.0f;
     }
   }
 
@@ -98,14 +103,17 @@ public class OffscreenLayer {
   private RenderStrategy currentStrategy;
   /** Rectangle that the final composition will occupy in the screen */
   @Nullable private RectF targetRect;
-  /** targetRect with shadow render space included */
-  @Nullable private RectF rectIncludingShadow;
-  @Nullable private Rect intRectIncludingShadow;
+  @Nullable private RectF roundedTargetRect;
+  /** targetRect with shadow/blur render space included */
+  @Nullable private RectF rectIncludingEffects;
+  @Nullable private Rect intRectIncludingEffects;
   @Nullable private RectF tmpRect;
-  @Nullable private RectF scaledRectIncludingShadow;
+  @Nullable private RectF scaledRectIncludingEffects;
   @Nullable private Rect shadowBitmapSrcRect;
 
   @Nullable private RectF scaledBounds;
+  /** For CPU blur. When RenderEffect is available, we won't need this. */
+  @Nullable private FastBlur blurImpl;
 
   private final static Matrix IDENTITY_MATRIX = new Matrix();
 
@@ -150,7 +158,7 @@ public class OffscreenLayer {
       return RenderStrategy.DIRECT;
     }
 
-    if (!op.hasShadow()) {
+    if (!op.hasShadow() && !op.hasBlur()) {
       // Canvas.saveLayer() supports alpha-compositing, blend modes, and color filters, which is
       // sufficient for this case, and is faster than manually maintaining an off-screen bitmap.
       // It is not clear if it's faster than RENDER_NODE and when, but this is what we've been
@@ -158,21 +166,21 @@ public class OffscreenLayer {
       return RenderStrategy.SAVE_LAYER;
     }
 
-    // Beyond this point, we are sure that we need to render a drop shadow.
+    // Beyond this point, we are sure that we need to render a drop shadow or blur.
 
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !parentCanvas.isHardwareAccelerated()) {
       // We don't have support for the RenderNode API, or we're rendering to a software canvas
       // which doesn't support RenderNodes anyhow. This is the slowest path: render to a bitmap,
-      // add a shadow manually on CPU.
+      // add a shadow/blur manually on CPU.
       return RenderStrategy.BITMAP;
     }
 
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
-      // RenderEffect, which we need for shadows, was only introduced in S. This means that, pre-S,
-      // we have to do renderShadow() on a bitmap, like in the BITMAP case. However, since it's not
-      // possible to draw a RenderNode to a software-rendering canvas, there would be no way to get
-      // our RenderNode contents onto a bitmap where we can renderShadow(). Therefore, fall back to
-      // full bitmap mode.
+      // RenderEffect, which we need for shadows/blurs, was only introduced in S. This means that,
+      // pre-S, we have to do renderShadow() on a bitmap, like in the BITMAP case. However, since
+      // it's not possible to draw a RenderNode to a software-rendering canvas, there would be no
+      // way to get our RenderNode contents onto a bitmap where we can renderShadow() and/or
+      // applySoftwareBlur(). Therefore, fall back to full bitmap mode.
       return RenderStrategy.BITMAP;
     }
 
@@ -223,22 +231,23 @@ public class OffscreenLayer {
     float pixelScaleX = preExistingTransform[Matrix.MSCALE_X];
     float pixelScaleY = preExistingTransform[Matrix.MSCALE_Y];
 
-    if (scaledBounds == null) scaledBounds = new RectF();
-    scaledBounds.set(
-        bounds.left * pixelScaleX,
-        bounds.top * pixelScaleY,
-        bounds.right * pixelScaleX,
-        bounds.bottom * pixelScaleY
-    );
-
     this.parentCanvas = parentCanvas;
     this.op = op;
     this.currentStrategy = chooseRenderStrategy(parentCanvas, op);
     if (this.targetRect == null) this.targetRect = new RectF();
-    this.targetRect.set((int)bounds.left, (int)bounds.top, (int)bounds.right, (int)bounds.bottom);
-
+    this.targetRect.set(bounds.left, bounds.top, bounds.right, bounds.bottom);
+    this.targetRect.set(calculateRectIncludingEffects(targetRect, null, op.blur));
+    float offX = bounds.left - targetRect.left, offY = bounds.top - targetRect.top;
     if (composePaint == null) composePaint = new LPaint();
     composePaint.reset();
+
+    if (scaledBounds == null) scaledBounds = new RectF();
+    scaledBounds.set(
+        targetRect.left * pixelScaleX,
+        targetRect.top * pixelScaleY,
+        targetRect.right * pixelScaleX,
+        targetRect.bottom * pixelScaleY
+    );
 
     Canvas childCanvas;
     switch (currentStrategy) {
@@ -339,12 +348,21 @@ public class OffscreenLayer {
         throw new RuntimeException("Invalid render strategy for OffscreenLayer");
     }
 
+    childCanvas.translate(offX, offY);
+
     return childCanvas;
   }
 
   public void finish() {
     if (parentCanvas == null || op == null || preExistingTransform == null || targetRect == null) {
       throw new IllegalStateException("OffscreenBitmap: finish() call without matching start()");
+    }
+
+    float blurRadiusX = 0.0f;
+    float blurRadiusY = 0.0f;
+    if (op.hasBlur()) {
+      blurRadiusX = op.blur * preExistingTransform[Matrix.MSCALE_X];
+      blurRadiusY = op.blur * preExistingTransform[Matrix.MSCALE_Y];
     }
 
     switch (currentStrategy) {
@@ -371,7 +389,13 @@ public class OffscreenLayer {
 
         if (bitmapSrcRect == null) bitmapSrcRect = new Rect();
         bitmapSrcRect.set(0, 0, (int)(targetRect.width() * preExistingTransform[Matrix.MSCALE_X]), (int)(targetRect.height() * preExistingTransform[Matrix.MSCALE_Y]));
-        parentCanvas.drawBitmap(bitmap, bitmapSrcRect, targetRect, composePaint);
+        if (op.hasBlur()) {
+          applySoftwareBlur(bitmap, (blurRadiusX + blurRadiusY) / 2.0f, bitmapSrcRect);
+        }
+
+        if (roundedTargetRect == null) roundedTargetRect = new RectF();
+        roundedTargetRect.set(Math.round(targetRect.left), Math.round(targetRect.top), Math.round(targetRect.right), Math.round(targetRect.bottom));
+        parentCanvas.drawBitmap(bitmap, bitmapSrcRect, roundedTargetRect, composePaint);
         break;
 
       case RENDER_NODE:
@@ -386,6 +410,14 @@ public class OffscreenLayer {
         parentCanvas.save();
         parentCanvas.scale(1.0f / preExistingTransform[Matrix.MSCALE_X], 1.0f / preExistingTransform[Matrix.MSCALE_Y]);
         renderNode.endRecording();
+        if (op.hasBlur()) {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            throw new RuntimeException("RenderEffect is not supported on API level <31");
+          }
+
+          renderNode.setRenderEffect(RenderEffect.createBlurEffect(blurRadiusX, blurRadiusY, Shader.TileMode.CLAMP));
+        }
+
         if (op.hasShadow()) {
           // Composing the shadow first and then the content like this will be incorrect in the
           // presence of op.blendMode. However, that is not used at the moment, so this
@@ -401,15 +433,18 @@ public class OffscreenLayer {
     parentCanvas = null;
   }
 
-  private RectF calculateRectIncludingShadow(RectF rect, DropShadow shadow) {
-    if (rectIncludingShadow == null) rectIncludingShadow = new RectF();
+  private RectF calculateRectIncludingEffects(RectF rect, DropShadow shadow, float blur) {
+    if (rectIncludingEffects == null) rectIncludingEffects = new RectF();
     if (tmpRect == null) tmpRect = new RectF();
-    rectIncludingShadow.set(rect);
-    rectIncludingShadow.offsetTo(rect.left + shadow.getDx(), rect.top + shadow.getDy());
-    rectIncludingShadow.inset(-shadow.getRadius(), -shadow.getRadius());
-    tmpRect.set(rect);
-    rectIncludingShadow.union(tmpRect);
-    return rectIncludingShadow;
+    rectIncludingEffects.set(rect);
+    if (shadow != null) {
+      rectIncludingEffects.offsetTo(rect.left + shadow.getDx(), rect.top + shadow.getDy());
+      rectIncludingEffects.inset(-shadow.getRadius(), -shadow.getRadius());
+      tmpRect.set(rect);
+      rectIncludingEffects.union(tmpRect);
+    }
+    rectIncludingEffects.inset(-blur, -blur);
+    return rectIncludingEffects;
   }
 
   /** Renders a shadow (only the shadow) of this.bitmap to the provided canvas. */
@@ -419,9 +454,9 @@ public class OffscreenLayer {
     }
 
     // This is an expanded rect that encompasses the full extent of the shadow.
-    RectF rectIncludingShadow = calculateRectIncludingShadow(targetRect, shadow);
-    if (intRectIncludingShadow == null) intRectIncludingShadow = new Rect();
-    intRectIncludingShadow.set(
+    RectF rectIncludingShadow = calculateRectIncludingEffects(targetRect, shadow, 0.0f);
+    if (intRectIncludingEffects == null) intRectIncludingEffects = new Rect();
+    intRectIncludingEffects.set(
         (int)Math.floor(rectIncludingShadow.left),
         (int)Math.floor(rectIncludingShadow.top),
         (int)Math.ceil(rectIncludingShadow.right),
@@ -429,8 +464,8 @@ public class OffscreenLayer {
     );
     float pixelScaleX = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_X] : 1.0f;
     float pixelScaleY = preExistingTransform != null ? preExistingTransform[Matrix.MSCALE_Y] : 1.0f;
-    if (scaledRectIncludingShadow == null) scaledRectIncludingShadow = new RectF();
-    scaledRectIncludingShadow.set(
+    if (scaledRectIncludingEffects == null) scaledRectIncludingEffects = new RectF();
+    scaledRectIncludingEffects.set(
         rectIncludingShadow.left * pixelScaleX,
         rectIncludingShadow.top * pixelScaleY,
         rectIncludingShadow.right * pixelScaleX,
@@ -438,8 +473,8 @@ public class OffscreenLayer {
     );
 
     if (shadowBitmapSrcRect == null) shadowBitmapSrcRect = new Rect();
-    shadowBitmapSrcRect.set(0, 0, (int)Math.round(scaledRectIncludingShadow.width()), (int)Math.round(scaledRectIncludingShadow.height()));
-    if (needNewBitmap(shadowBitmap, scaledRectIncludingShadow)) {
+    shadowBitmapSrcRect.set(0, 0, (int)Math.round(scaledRectIncludingEffects.width()), (int)Math.round(scaledRectIncludingEffects.height()));
+    if (needNewBitmap(shadowBitmap, scaledRectIncludingEffects)) {
       if (shadowBitmap != null) {
         deallocateBitmap(shadowBitmap);
       }
@@ -447,8 +482,8 @@ public class OffscreenLayer {
         deallocateBitmap(shadowMaskBitmap);
       }
 
-      shadowBitmap = allocateBitmap(scaledRectIncludingShadow, Bitmap.Config.ARGB_8888);
-      shadowMaskBitmap = allocateBitmap(scaledRectIncludingShadow, Bitmap.Config.ALPHA_8);
+      shadowBitmap = allocateBitmap(scaledRectIncludingEffects, Bitmap.Config.ARGB_8888);
+      shadowMaskBitmap = allocateBitmap(scaledRectIncludingEffects, Bitmap.Config.ALPHA_8);
       shadowBitmapCanvas = new Canvas(shadowBitmap);
       shadowMaskBitmapCanvas = new Canvas(shadowMaskBitmap);
     } else {
@@ -472,7 +507,7 @@ public class OffscreenLayer {
     // Draw the image onto the mask layer first. Since the mask layer is ALPHA_8, this discards color information.
     // Align it so that when drawn in the end, it originates at targetRect.x, targetRect.y
     // the int casts are very important here - they save us from some slow path for non-integer coords
-    shadowMaskBitmapCanvas.drawBitmap(bitmap, (int)Math.round(offsetX * pixelScaleX), (int)Math.round(offsetY * pixelScaleY), null);
+    shadowMaskBitmapCanvas.drawBitmap(bitmap, Math.round(offsetX * pixelScaleX), Math.round(offsetY * pixelScaleY), null);
 
     // Prepare the shadow paint. This is the paint that will perform a blur and a tint of the mask
     if (shadowBlurFilter == null || lastShadowBlurRadius != shadow.getRadius()) {
@@ -501,7 +536,7 @@ public class OffscreenLayer {
     // Now blit the result onto the final canvas. It might be tempting to skip shadowBitmap and draw the mask
     // directly onto the canvas with shadowPaint, but this breaks the blur, since Paint.setMaskFilter() is not
     // supported on hardware canvases.
-    targetCanvas.drawBitmap(shadowBitmap, shadowBitmapSrcRect, intRectIncludingShadow, composePaint);
+    targetCanvas.drawBitmap(shadowBitmap, shadowBitmapSrcRect, intRectIncludingEffects, composePaint);
   }
 
   /** Renders a shadow (only the shadow) of this.renderNode to the provided canvas. */
@@ -529,7 +564,7 @@ public class OffscreenLayer {
       lastRenderNodeShadow = shadow;
     }
 
-    RectF rectIncludingShadow = calculateRectIncludingShadow(targetRect, shadow);
+    RectF rectIncludingShadow = calculateRectIncludingEffects(targetRect, shadow, 0.0f);
     RectF scaledRectIncludingShadow = new RectF(
         rectIncludingShadow.left * pixelScaleX,
         rectIncludingShadow.top * pixelScaleY,
@@ -548,5 +583,12 @@ public class OffscreenLayer {
     targetCanvas.translate(scaledRectIncludingShadow.left, scaledRectIncludingShadow.top);
     targetCanvas.drawRenderNode(shadowRenderNode);
     targetCanvas.restore();
+  }
+
+  private void applySoftwareBlur(Bitmap bitmap, float radius, Rect rect) {
+    if (blurImpl == null) {
+      blurImpl = new FastBlur();
+    }
+    blurImpl.applyBlur(bitmap, (int)Math.round(radius), rect);
   }
 }

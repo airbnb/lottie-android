@@ -18,7 +18,10 @@
         <attr name="lottie_progress" format="float" />
         <attr name="lottie_enableMergePathsForKitKatAndAbove" format="boolean" />
         <attr name="lottie_applyOpacityToLayers" format="boolean" />
+        <!-- applyShadowToLayers is just an alias for applyEffectsToLayers,
+             provided only for backwards compatibility. -->
         <attr name="lottie_applyShadowToLayers" format="boolean" />
+        <attr name="lottie_applyEffectsToLayers" format="boolean" />
         <attr name="lottie_colorFilter" format="color" />
         <attr name="lottie_speed" format="float" />
         <attr name="lottie_cacheComposition" format="boolean" />

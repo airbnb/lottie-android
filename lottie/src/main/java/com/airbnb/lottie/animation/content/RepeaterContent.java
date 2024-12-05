@@ -106,7 +106,7 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     float copies = this.copies.getValue();
     float offset = this.offset.getValue();
     //noinspection ConstantConditions
@@ -117,9 +117,9 @@ public class RepeaterContent implements DrawingContent, PathContent, GreedyConte
       matrix.set(parentMatrix);
       matrix.preConcat(transform.getMatrixForRepeater(i + offset));
       float newAlpha = alpha * MiscUtils.lerp(startOpacity, endOpacity, i / copies);
-      // A repeater renders its contents as if by simple re-rendering, so it should be fine to pass shadowToApply
-      // here, even when we have more than 1 copy.
-      contentGroup.draw(canvas, matrix, (int) newAlpha, shadowToApply);
+      // A repeater renders its contents as if by simple re-rendering, so it should be fine to pass shadowToApply and
+      // blurToApply here, even when we have more than 1 copy.
+      contentGroup.draw(canvas, matrix, (int) newAlpha, shadowToApply, blurToApply);
     }
   }
 

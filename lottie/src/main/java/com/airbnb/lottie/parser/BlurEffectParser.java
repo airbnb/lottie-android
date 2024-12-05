@@ -54,6 +54,7 @@ class BlurEffectParser {
         case 1:
           if (isCorrectType) {
             blurEffect = new BlurEffect(AnimatableValueParser.parseFloat(reader, composition));
+            break;
           } else {
             reader.skipValue();
           }

@@ -232,7 +232,7 @@ public abstract class BaseLayer
   }
 
   @Override
-  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     L.beginSection(drawTraceName);
     if (!visible || layerModel.isHidden()) {
       L.endSection(drawTraceName);
@@ -267,7 +267,7 @@ public abstract class BaseLayer
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
       }
-      drawLayer(canvas, matrix, alpha, shadowToApply);
+      drawLayer(canvas, matrix, alpha, shadowToApply, blurToApply);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#drawLayer");
       }
@@ -340,7 +340,7 @@ public abstract class BaseLayer
       if (L.isTraceEnabled()) {
         L.beginSection("Layer#drawLayer");
       }
-      drawLayer(canvas, matrix, alpha, shadowToApply);
+      drawLayer(canvas, matrix, alpha, shadowToApply, blurToApply);
       if (L.isTraceEnabled()) {
         L.endSection("Layer#drawLayer");
       }
@@ -360,7 +360,7 @@ public abstract class BaseLayer
         }
         clearCanvas(canvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha, null);
+        matteLayer.draw(canvas, parentMatrix, alpha, null, 0);
         if (L.isTraceEnabled()) {
           L.beginSection("Layer#restoreLayer");
         }
@@ -485,7 +485,7 @@ public abstract class BaseLayer
     }
   }
 
-  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply);
+  abstract void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply);
 
   private void applyMasks(Canvas canvas, Matrix matrix) {
     if (L.isTraceEnabled()) {
@@ -720,11 +720,16 @@ public abstract class BaseLayer
     return layerModel.getBlendMode();
   }
 
+  /**
+   * Returns a blur mask filter set to the provided radius.
+   * <p>
+   * @param radius Radius as returned by BlurKeyframeAnimation::evaluate()
+   */
   public BlurMaskFilter getBlurMaskFilter(float radius) {
     if (blurMaskFilterRadius == radius) {
       return blurMaskFilter;
     }
-    blurMaskFilter = new BlurMaskFilter(radius / 2f, BlurMaskFilter.Blur.NORMAL);
+    blurMaskFilter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
     blurMaskFilterRadius = radius;
     return blurMaskFilter;
   }

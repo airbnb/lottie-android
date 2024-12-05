@@ -37,7 +37,7 @@ public class SolidLayer extends BaseLayer {
     paint.setColor(layerModel.getSolidColor());
   }
 
-  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     int backgroundAlpha = Color.alpha(layerModel.getSolidColor());
     if (backgroundAlpha == 0) {
       return;
@@ -58,6 +58,8 @@ public class SolidLayer extends BaseLayer {
     } else {
       paint.clearShadowLayer();
     }
+
+    paint.setMaskFilter(getBlurMaskFilter(blurToApply));
 
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());

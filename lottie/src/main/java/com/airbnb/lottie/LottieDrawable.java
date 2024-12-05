@@ -155,7 +155,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private boolean performanceTrackingEnabled;
   private boolean outlineMasksAndMattes;
   private boolean isApplyingOpacityToLayersEnabled;
-  private boolean isApplyingShadowToLayersEnabled;
+  private boolean isApplyingEffectsToLayersEnabled;
   private boolean clipTextToBoundingBox = false;
 
   private RenderMode renderMode = RenderMode.AUTOMATIC;
@@ -174,7 +174,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   private RectF softwareRenderingDstBoundsRectF;
   private RectF softwareRenderingTransformedBounds;
   private Matrix softwareRenderingOriginalCanvasMatrix;
-  private float[] softwareRenderingOriginalCanvasMatrixElements = new float[9];
+  private final float[] softwareRenderingOriginalCanvasMatrixElements = new float[9];
   private Matrix softwareRenderingOriginalCanvasMatrixInverse;
 
   /**
@@ -572,21 +572,22 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
   }
 
   /**
-   * Sets whether to apply drop shadows to each layer instead of shape.
+   * Sets whether to apply drop shadows and blurs to each layer instead of shape.
    * <p>
-   * When true, the behavior will be more correct: it will mimic lottie-web and other renderers, in that drop shadows will be applied to a layer
+   * When true, the behavior will be more correct: it will mimic lottie-web and other renderers, in that effects will be applied to a layer
    * as a whole, no matter its contents.
    * <p>
    * When false, the performance will be better at the expense of correctness: for each shape element individually, the first drop shadow upwards
-   * in the hierarchy is applied to it directly. Visually, this may manifest as phantom shadows or artifacts where the artist has intended to treat a
-   * layer as a whole, and this option exposes its internal structure.
+   * in the hierarchy is applied to it directly, and the combined (summed) blur radius of all blur effects upwards in the hierarchy is applied
+   * to it directly. Visually, this may manifest as phantom shadows, unwanted blur smudges in transparent areas, or other artifacts where the artist
+   * has intended to treat a layer as a whole, and this option exposes its internal structure.
    * <p>
    * The default value is true.
    *
    * @see LottieDrawable::setApplyingOpacityToLayersEnabled
    */
-  public void setApplyingShadowToLayersEnabled(boolean isApplyingShadowsToLayersEnabled) {
-    this.isApplyingShadowToLayersEnabled = isApplyingShadowsToLayersEnabled;
+  public void setApplyingEffectsToLayersEnabled(boolean isApplyingEffectsToLayersEnabled) {
+    this.isApplyingEffectsToLayersEnabled = isApplyingEffectsToLayersEnabled;
   }
 
   /**
@@ -600,7 +601,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     return isApplyingOpacityToLayersEnabled;
   }
 
-  public boolean isApplyingShadowToLayersEnabled() { return isApplyingShadowToLayersEnabled; }
+  public boolean isApplyingEffectsToLayersEnabled() { return isApplyingEffectsToLayersEnabled; }
 
   /**
    * @see #setClipTextToBoundingBox(boolean)
@@ -823,7 +824,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderAndDrawAsBitmap(canvas, compositionLayer);
       canvas.restore();
     } else {
-      compositionLayer.draw(canvas, matrix, alpha, null);
+      compositionLayer.draw(canvas, matrix, alpha, null, 0);
     }
   }
 
@@ -1748,7 +1749,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       renderingMatrix.preTranslate(bounds.left, bounds.top);
       renderingMatrix.preScale(scaleX, scaleY);
     }
-    compositionLayer.draw(canvas, renderingMatrix, alpha, null);
+    compositionLayer.draw(canvas, renderingMatrix, alpha, null, 0);
   }
 
   /**
@@ -1819,7 +1820,7 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingBitmap.eraseColor(0);
       softwareRenderingCanvas.setMatrix(Utils.IDENTITY_MATRIX);
       softwareRenderingCanvas.scale(preExistingScaleX, preExistingScaleY);
-      compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha, null);
+      compositionLayer.draw(softwareRenderingCanvas, renderingMatrix, alpha, null, 0);
 
       // Calculate the dst bounds.
       // We need to map the rendered coordinates back to the canvas's coordinates. To do so, we need to invert the transform

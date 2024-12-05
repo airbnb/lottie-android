@@ -38,7 +38,7 @@ public class StrokeContent extends BaseStrokeContent {
     layer.addAnimation(colorAnimation);
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -46,7 +46,7 @@ public class StrokeContent extends BaseStrokeContent {
     if (colorFilterAnimation != null) {
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
-    super.draw(canvas, parentMatrix, parentAlpha, shadowToApply);
+    super.draw(canvas, parentMatrix, parentAlpha, shadowToApply, blurToApply);
   }
 
   @Override public String getName() {
