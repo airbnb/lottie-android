@@ -107,7 +107,10 @@ public class ImageLayer extends BaseLayer {
       if (lottieDrawable.getMaintainOriginalImageBounds()) {
         outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
       } else {
-        outBounds.set(0, 0, getBitmap().getWidth() * scale, getBitmap().getHeight() * scale);
+        Bitmap bitmap = getBitmap();
+        if (bitmap != null) {
+          outBounds.set(0, 0, bitmap.getWidth() * scale, bitmap.getHeight() * scale);
+        }
       }
       boundsMatrix.mapRect(outBounds);
     }
