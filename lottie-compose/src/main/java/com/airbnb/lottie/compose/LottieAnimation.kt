@@ -253,6 +253,55 @@ fun LottieAnimation(
     )
 }
 
+/**
+ * This is a fallback method for binary compatibility with < 6.6.0 releases.
+ *
+ * @see LottieAnimation
+ */
+@Composable
+@Deprecated(
+    "This is here for binary compatibility. It'll be removed after the next major release",
+    level = DeprecationLevel.HIDDEN
+)
+fun LottieAnimation(
+    composition: LottieComposition?,
+    progress: () -> Float,
+    modifier: Modifier = Modifier,
+    outlineMasksAndMattes: Boolean = false,
+    applyOpacityToLayers: Boolean = false,
+    enableMergePaths: Boolean = false,
+    renderMode: RenderMode = RenderMode.AUTOMATIC,
+    maintainOriginalImageBounds: Boolean = false,
+    dynamicProperties: LottieDynamicProperties? = null,
+    alignment: Alignment = Alignment.Center,
+    contentScale: ContentScale = ContentScale.Fit,
+    clipToCompositionBounds: Boolean = true,
+    clipTextToBoundingBox: Boolean = false,
+    fontMap: Map<String, Typeface>? = null,
+    asyncUpdates: AsyncUpdates = AsyncUpdates.AUTOMATIC,
+    safeMode: Boolean = false,
+) {
+    LottieAnimation(
+        composition = composition,
+        progress = progress,
+        modifier = modifier,
+        outlineMasksAndMattes = outlineMasksAndMattes,
+        applyOpacityToLayers = applyOpacityToLayers,
+        applyShadowToLayers = false,
+        enableMergePaths = enableMergePaths,
+        renderMode = renderMode,
+        maintainOriginalImageBounds = maintainOriginalImageBounds,
+        dynamicProperties = dynamicProperties,
+        alignment = alignment,
+        contentScale = contentScale,
+        clipToCompositionBounds = clipToCompositionBounds,
+        clipTextToBoundingBox = clipTextToBoundingBox,
+        fontMap = fontMap,
+        asyncUpdates = asyncUpdates,
+        safeMode = safeMode,
+    )
+}
+
 private operator fun Size.times(scale: ScaleFactor): IntSize {
     return IntSize((width * scale.scaleX).toInt(), (height * scale.scaleY).toInt())
 }
