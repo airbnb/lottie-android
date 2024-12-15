@@ -298,6 +298,9 @@ private class LottieAnimatableImpl : LottieAnimatable {
         }
     }
 
+    /**
+     * @return whether or not the animation should continue after this frame.
+     */
     private fun onFrame(iterations: Int, frameNanos: Long): Boolean {
         val composition = composition ?: return true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
