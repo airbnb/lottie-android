@@ -212,6 +212,20 @@ class TextTestCase : SnapshotTestCase {
                 snapshotReady.value = composition != null
             }
             val dynamicProperties = rememberLottieDynamicProperties(
+                rememberLottieDynamicProperty(LottieProperty.TEXT, "NAME") { frameInfo ->
+                    "${frameInfo.endValue}!!!"
+                },
+            )
+            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
+        }
+
+        snapshotComposable("Compose Dynamic Text", "Centered") {
+            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/CenteredText.json"))
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
+            val dynamicProperties = rememberLottieDynamicProperties(
                 rememberLottieDynamicProperty(
                     LottieProperty.TEXT,
                     // Family emoji
@@ -225,20 +239,6 @@ class TextTestCase : SnapshotTestCase {
                 dynamicProperties = dynamicProperties,
                 fontMap = mapOf("Helvetica" to Typeface.DEFAULT),
             )
-        }
-
-        snapshotComposable("Compose Dynamic Text", "Centered") {
-            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/CenteredText.json"))
-            val snapshotReady = LocalSnapshotReady.current
-            LaunchedEffect(snapshotReady, composition != null) {
-                snapshotReady.value = composition != null
-            }
-            val dynamicProperties = rememberLottieDynamicProperties(
-                rememberLottieDynamicProperty(LottieProperty.TEXT, "Text") { frameInfo ->
-                    "${frameInfo.startValue}!!!"
-                },
-            )
-            LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
         }
     }
 }
