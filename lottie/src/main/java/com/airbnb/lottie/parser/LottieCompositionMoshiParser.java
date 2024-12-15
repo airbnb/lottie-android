@@ -57,10 +57,13 @@ public class LottieCompositionMoshiParser {
     while (reader.hasNext()) {
       switch (reader.selectName(NAMES)) {
         case 0:
-          unscaledWidth = reader.nextInt();
+          // width/height should be an int. However, some exporters export doubles and we don't want to crash.
+          // Given that this is non-spec compliant, truncating to int is probably better than rounding to avoid
+          // the extra work in the vast majority of cases.
+          unscaledWidth = (int) reader.nextDouble();
           break;
         case 1:
-          unscaledHeight = reader.nextInt();
+          unscaledHeight = (int) reader.nextDouble();
           break;
         case 2:
           startFrame = (float) reader.nextDouble();
