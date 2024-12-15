@@ -360,7 +360,7 @@ public abstract class BaseLayer
         }
         clearCanvas(canvas);
         //noinspection ConstantConditions
-        matteLayer.draw(canvas, parentMatrix, alpha, null);
+        matteLayer.draw(canvas, parentMatrix, parentAlpha, null);
         if (L.isTraceEnabled()) {
           L.beginSection("Layer#restoreLayer");
         }
