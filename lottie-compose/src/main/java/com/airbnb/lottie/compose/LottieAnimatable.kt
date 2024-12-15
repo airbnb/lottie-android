@@ -298,6 +298,9 @@ private class LottieAnimatableImpl : LottieAnimatable {
         }
     }
 
+    /**
+     * @return whether or not the animation should continue after this frame.
+     */
     private fun onFrame(iterations: Int, frameNanos: Long): Boolean {
         val composition = composition ?: return true
         val dNanos = if (lastFrameNanos == AnimationConstants.UnspecifiedTime) 0L else (frameNanos - lastFrameNanos)
@@ -311,7 +314,11 @@ private class LottieAnimatableImpl : LottieAnimatable {
             frameSpeed < 0 -> minProgress - (progressRaw + dProgress)
             else -> progressRaw + dProgress - maxProgress
         }
-        if (progressPastEndOfIteration < 0f) {
+
+        if (minProgress == maxProgress) {
+            updateProgress(minProgress)
+            return false
+        } else if (progressPastEndOfIteration < 0f) {
             updateProgress(progressRaw.coerceIn(minProgress, maxProgress) + dProgress)
         } else {
             val durationProgress = maxProgress - minProgress
