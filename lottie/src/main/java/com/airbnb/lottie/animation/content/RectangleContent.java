@@ -77,8 +77,6 @@ public class RectangleContent
         TrimPathContent trimPath = (TrimPathContent) content;
         trimPaths.addTrimPath(trimPath);
         trimPath.addListener(this);
-      } else if (content instanceof RoundedCornersContent) {
-        roundedCornersAnimation = ((RoundedCornersContent) content).getRoundedCorners();
       }
     }
   }
