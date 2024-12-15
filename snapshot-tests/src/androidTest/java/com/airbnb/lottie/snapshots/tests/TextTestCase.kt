@@ -75,13 +75,19 @@ class TextTestCase : SnapshotTestCase {
         withAnimationView("Tests/DynamicText.json", "Dynamic Text", "Family and Brown Police Man") { animationView ->
             val textDelegate = TextDelegate(animationView)
             animationView.setTextDelegate(textDelegate)
-            textDelegate.setText("NAME", "\uD83D\uDC68\u200D\uD83D\uDC68\u200D\uD83D\uDC67\u200D\uD83D\uDC67\uD83D\uDC6E\uD83C\uDFFF\u200D♀️")
+            textDelegate.setText(
+                "NAME",
+                "\uD83D\uDC68\u200D\uD83D\uDC68\u200D\uD83D\uDC67\u200D\uD83D\uDC67\uD83D\uDC6E\uD83C\uDFFF\u200D♀️",
+            )
         }
 
         withAnimationView("Tests/DynamicText.json", "Dynamic Text", "Family, Brown Police Man, emoji and chars") { animationView ->
             val textDelegate = TextDelegate(animationView)
             animationView.setTextDelegate(textDelegate)
-            textDelegate.setText("NAME", "🔥\uD83D\uDC68\u200D\uD83D\uDC68\u200D\uD83D\uDC67\u200D\uD83D\uDC67\uD83D\uDC6E\uD83C\uDFFF\u200D♀的Aabc️")
+            textDelegate.setText(
+                "NAME",
+                "🔥\uD83D\uDC68\u200D\uD83D\uDC68\u200D\uD83D\uDC67\u200D\uD83D\uDC67\uD83D\uDC6E\uD83C\uDFFF\u200D♀的Aabc️",
+            )
         }
 
         withAnimationView("Tests/DynamicText.json", "Dynamic Text", "Fire English Fire Brown Police Man Fire") { animationView ->
@@ -206,8 +212,30 @@ class TextTestCase : SnapshotTestCase {
                 snapshotReady.value = composition != null
             }
             val dynamicProperties = rememberLottieDynamicProperties(
-                rememberLottieDynamicProperty(LottieProperty.TEXT, "NAME") { frameInfo ->
-                    "${frameInfo.endValue}!!!"
+                rememberLottieDynamicProperty(
+                    LottieProperty.TEXT,
+                    // Family emoji
+                    "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC66",
+                    "Text",
+                ),
+            )
+            LottieAnimation(
+                composition,
+                { 0f },
+                dynamicProperties = dynamicProperties,
+                fontMap = mapOf("Helvetica" to Typeface.DEFAULT),
+            )
+        }
+
+        snapshotComposable("Compose Dynamic Text", "Centered") {
+            val composition by rememberLottieComposition(LottieCompositionSpec.Asset("Tests/CenteredText.json"))
+            val snapshotReady = LocalSnapshotReady.current
+            LaunchedEffect(snapshotReady, composition != null) {
+                snapshotReady.value = composition != null
+            }
+            val dynamicProperties = rememberLottieDynamicProperties(
+                rememberLottieDynamicProperty(LottieProperty.TEXT, "Text") { frameInfo ->
+                    "${frameInfo.startValue}!!!"
                 },
             )
             LottieAnimation(composition, { 0f }, dynamicProperties = dynamicProperties)
