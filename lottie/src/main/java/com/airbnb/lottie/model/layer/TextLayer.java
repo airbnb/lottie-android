@@ -350,7 +350,13 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
+        float lineWidth =
+            (textAnimation == null &&
+                textSizeCallbackAnimation == null &&
+                trackingCallbackAnimation == null) ?
+                line.width :
+                fillPaint.measureText(line.text);
+        if (offsetCanvas(canvas, documentData, lineIndex, lineWidth)) {
           drawFontTextLine(line.text, documentData, canvas, tracking, characterIndexAtStartOfLine, parentAlpha);
         }
 
