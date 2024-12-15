@@ -39,6 +39,7 @@ import java.util.List;
 
 public class GradientFillContent
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElementContent {
+
   /**
    * Cache the gradients such that it runs at 30fps.
    */
@@ -61,7 +62,6 @@ public class GradientFillContent
   @Nullable private ValueCallbackKeyframeAnimation colorCallbackAnimation;
   private final LottieDrawable lottieDrawable;
   private final int cacheSteps;
-  @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
 
   public GradientFillContent(final LottieDrawable lottieDrawable, LottieComposition composition, BaseLayer layer, GradientFill fill) {
@@ -88,12 +88,6 @@ public class GradientFillContent
     endPointAnimation = fill.getEndPoint().createAnimation();
     endPointAnimation.addUpdateListener(this);
     layer.addAnimation(endPointAnimation);
-
-    if (layer.getBlurEffect() != null) {
-      blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
-      blurAnimation.addUpdateListener(this);
-      layer.addAnimation(blurAnimation);
-    }
   }
 
   @Override public void onValueChanged() {
@@ -109,7 +103,7 @@ public class GradientFillContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -136,15 +130,14 @@ public class GradientFillContent
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    if (blurAnimation != null) {
-      float blurRadius = blurAnimation.getValue();
-      if (blurRadius == 0f) {
-        paint.setMaskFilter(null);
-      } else if (blurRadius != blurMaskFilterRadius){
-        BlurMaskFilter blur = new BlurMaskFilter(blurRadius, BlurMaskFilter.Blur.NORMAL);
+    if (blurToApply != blurMaskFilterRadius) {
+      if (blurToApply > 0.0f) {
+        BlurMaskFilter blur = new BlurMaskFilter(blurToApply, BlurMaskFilter.Blur.NORMAL);
         paint.setMaskFilter(blur);
+      } else {
+        paint.setMaskFilter(null);
       }
-      blurMaskFilterRadius = blurRadius;
+      blurMaskFilterRadius = blurToApply;
     }
 
     float fillAlpha = opacityAnimation.getValue() / 100f;
@@ -153,7 +146,7 @@ public class GradientFillContent
     paint.setAlpha(alpha);
 
     if (shadowToApply != null) {
-      shadowToApply.applyWithAlpha((int)(fillAlpha * 255), paint);
+      shadowToApply.applyWithAlpha((int) (fillAlpha * 255), paint);
     }
 
     canvas.drawPath(path, paint);
@@ -293,15 +286,6 @@ public class GradientFillContent
         colorCallbackAnimation = new ValueCallbackKeyframeAnimation<>(callback);
         colorCallbackAnimation.addUpdateListener(this);
         layer.addAnimation(colorCallbackAnimation);
-      }
-    } else if (property == LottieProperty.BLUR_RADIUS) {
-      if (blurAnimation != null) {
-        blurAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-      } else {
-        blurAnimation =
-            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
-        blurAnimation.addUpdateListener(this);
-        layer.addAnimation(blurAnimation);
       }
     }
   }

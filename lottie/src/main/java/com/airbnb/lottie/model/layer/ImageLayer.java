@@ -16,6 +16,7 @@ import com.airbnb.lottie.LottieImageAsset;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.LPaint;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BlurKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.utils.DropShadow;
@@ -33,6 +34,7 @@ public class ImageLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
   @Nullable private BaseKeyframeAnimation<Bitmap, Bitmap> imageAnimation;
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
+  @Nullable private BlurKeyframeAnimation blurAnimation;
   @Nullable private OffscreenLayer offscreenLayer;
   @Nullable private OffscreenLayer.ComposeOp offscreenOp;
 
@@ -43,9 +45,13 @@ public class ImageLayer extends BaseLayer {
     if (getDropShadowEffect() != null) {
       dropShadowAnimation = new DropShadowKeyframeAnimation(this, this, getDropShadowEffect());
     }
+
+    if (getBlurEffect() != null) {
+      blurAnimation = new BlurKeyframeAnimation(this, this, getBlurEffect());
+    }
   }
 
-  @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply) {
+  @Override public void drawLayer(@NonNull Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply, float parentBlurToApply) {
     Bitmap bitmap = getBitmap();
     if (bitmap == null || bitmap.isRecycled() || lottieImageAsset == null) {
       return;
@@ -60,6 +66,10 @@ public class ImageLayer extends BaseLayer {
     @Nullable DropShadow shadowToApply = dropShadowAnimation != null
         ? dropShadowAnimation.evaluate(parentMatrix, parentAlpha)
         : parentShadowToApply;
+    float blurToApply = parentBlurToApply;
+    if (blurAnimation != null) {
+      blurToApply += blurAnimation.evaluate(parentMatrix);
+    }
 
     src.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
     if (lottieDrawable.getMaintainOriginalImageBounds()) {
@@ -71,7 +81,7 @@ public class ImageLayer extends BaseLayer {
     // Render off-screen if we have a drop shadow, because:
     // - Android does not apply drop-shadows to bitmaps properly in HW accelerated contexts (blur is ignored)
     // - On some newer phones (empirically verified), no shadow is rendered at all even in software contexts.
-    boolean renderOffScreen = shadowToApply != null;
+    boolean renderOffScreen = shadowToApply != null || blurToApply > 0.0f;
     Canvas targetCanvas = canvas;
     if (renderOffScreen) {
       if (offscreenLayer == null) offscreenLayer = new OffscreenLayer();
@@ -79,8 +89,10 @@ public class ImageLayer extends BaseLayer {
       offscreenOp.reset();
       // We don't use offscreenOp for compositing here, so we still need to account for its alpha
       // when drawing the shadow.
-      shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
-
+      if (shadowToApply != null) {
+        shadowToApply.applyWithAlpha(parentAlpha, offscreenOp);
+      }
+      offscreenOp.blur = blurToApply;
 
       // We don't use getBounds() as it expects the parent-to-world matrix, and what we have in parentMatrix is in
       // fact us-to-world (parent-to-world * us-to-parent)
@@ -92,12 +104,11 @@ public class ImageLayer extends BaseLayer {
     targetCanvas.save();
     targetCanvas.concat(parentMatrix);
     targetCanvas.drawBitmap(bitmap, src, dst, paint);
+    targetCanvas.restore();
 
     if (renderOffScreen) {
       offscreenLayer.finish();
     }
-
-    targetCanvas.restore();
   }
 
   @Override public void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents) {
@@ -163,6 +174,8 @@ public class ImageLayer extends BaseLayer {
       dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
       dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.BLUR_RADIUS && blurAnimation != null) {
+      blurAnimation.setBlurrinessCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

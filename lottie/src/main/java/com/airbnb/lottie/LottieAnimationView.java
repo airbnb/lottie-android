@@ -225,8 +225,14 @@ import java.util.zip.ZipInputStream;
         R.styleable.LottieAnimationView_lottie_enableMergePathsForKitKatAndAbove, false));
     setApplyingOpacityToLayersEnabled(ta.getBoolean(
         R.styleable.LottieAnimationView_lottie_applyOpacityToLayers, false));
-    setApplyingShadowToLayersEnabled(ta.getBoolean(
-        R.styleable.LottieAnimationView_lottie_applyShadowToLayers, true));
+    setApplyingEffectsToLayersEnabled(ta.getBoolean(
+        R.styleable.LottieAnimationView_lottie_applyEffectsToLayers, true));
+
+    // Respect the old applyShadowsToLayers if provided
+    if (ta.hasValue(R.styleable.LottieAnimationView_lottie_applyShadowToLayers)) {
+      setApplyingEffectsToLayersEnabled(ta.getBoolean(
+          R.styleable.LottieAnimationView_lottie_applyShadowToLayers, true));
+    }
 
     if (ta.hasValue(R.styleable.LottieAnimationView_lottie_colorFilter)) {
       int colorRes = ta.getResourceId(R.styleable.LottieAnimationView_lottie_colorFilter, -1);
@@ -1266,10 +1272,19 @@ import java.util.zip.ZipInputStream;
    *
    * @see LottieAnimationView::setApplyingOpacityToLayersEnabled
    */
-  public void setApplyingShadowToLayersEnabled(boolean isApplyingShadowToLayersEnabled) {
-    lottieDrawable.setApplyingShadowToLayersEnabled(isApplyingShadowToLayersEnabled);
+  public void setApplyingEffectsToLayersEnabled(boolean isApplyingEffectsToLayersEnabled) {
+    lottieDrawable.setApplyingEffectsToLayersEnabled(isApplyingEffectsToLayersEnabled);
   }
 
+  /**
+   * This has been renamed to setApplyingEffectsToLayersEnabled. Prefer using that instead.
+   *
+   * @see LottieAnimationView::setApplyingEffectsToLayersEnabled
+   */
+  @Deprecated
+  public void setApplyingShadowToLayersEnabled(boolean isApplyingShadowsToLayersEnabled) {
+    lottieDrawable.setApplyingEffectsToLayersEnabled(isApplyingShadowsToLayersEnabled);
+  }
   /**
    * @see #setClipTextToBoundingBox(boolean)
    */

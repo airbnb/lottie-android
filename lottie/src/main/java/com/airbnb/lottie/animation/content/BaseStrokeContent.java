@@ -54,7 +54,6 @@ public abstract class BaseStrokeContent
   private final List<BaseKeyframeAnimation<?, Float>> dashPatternAnimations;
   @Nullable private final BaseKeyframeAnimation<?, Float> dashPatternOffsetAnimation;
   @Nullable private BaseKeyframeAnimation<ColorFilter, ColorFilter> colorFilterAnimation;
-  @Nullable private BaseKeyframeAnimation<Float, Float> blurAnimation;
   float blurMaskFilterRadius = 0f;
 
   BaseStrokeContent(final LottieDrawable lottieDrawable, BaseLayer layer, Paint.Cap cap,
@@ -101,12 +100,6 @@ public abstract class BaseStrokeContent
     if (dashPatternOffsetAnimation != null) {
       dashPatternOffsetAnimation.addUpdateListener(this);
     }
-
-    if (layer.getBlurEffect() != null) {
-      blurAnimation = layer.getBlurEffect().getBlurriness().createAnimation();
-      blurAnimation.addUpdateListener(this);
-      layer.addAnimation(blurAnimation);
-    }
   }
 
   @Override public void onValueChanged() {
@@ -148,7 +141,7 @@ public abstract class BaseStrokeContent
     }
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (L.isTraceEnabled()) {
       L.beginSection("StrokeContent#draw");
     }
@@ -176,16 +169,14 @@ public abstract class BaseStrokeContent
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    if (blurAnimation != null) {
-      float blurRadius = blurAnimation.getValue();
-      if (blurRadius == 0f) {
-        paint.setMaskFilter(null);
-      } else if (blurRadius != blurMaskFilterRadius){
-        BlurMaskFilter blur = layer.getBlurMaskFilter(blurRadius);
-        paint.setMaskFilter(blur);
-      }
-      blurMaskFilterRadius = blurRadius;
+    if (blurToApply == 0f) {
+      paint.setMaskFilter(null);
+    } else if (blurToApply != blurMaskFilterRadius){
+      BlurMaskFilter blur = layer.getBlurMaskFilter(blurToApply);
+      paint.setMaskFilter(blur);
     }
+    blurMaskFilterRadius = blurToApply;
+
     if (shadowToApply != null) {
       shadowToApply.applyWithAlpha((int)(strokeAlpha * 255), paint);
     }
@@ -393,15 +384,6 @@ public abstract class BaseStrokeContent
             new ValueCallbackKeyframeAnimation<>((LottieValueCallback<ColorFilter>) callback);
         colorFilterAnimation.addUpdateListener(this);
         layer.addAnimation(colorFilterAnimation);
-      }
-    } else if (property == LottieProperty.BLUR_RADIUS) {
-      if (blurAnimation != null) {
-        blurAnimation.setValueCallback((LottieValueCallback<Float>) callback);
-      } else {
-        blurAnimation =
-            new ValueCallbackKeyframeAnimation<>((LottieValueCallback<Float>) callback);
-        blurAnimation.addUpdateListener(this);
-        layer.addAnimation(blurAnimation);
       }
     }
   }

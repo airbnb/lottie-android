@@ -89,7 +89,7 @@ public class FillContent
     return name;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -106,16 +106,15 @@ public class FillContent
       paint.setColorFilter(colorFilterAnimation.getValue());
     }
 
-    if (blurAnimation != null) {
-      float blurRadius = blurAnimation.getValue();
-      if (blurRadius == 0f) {
-        paint.setMaskFilter(null);
-      } else if (blurRadius != blurMaskFilterRadius) {
-        BlurMaskFilter blur = layer.getBlurMaskFilter(blurRadius);
-        paint.setMaskFilter(blur);
-      }
-      blurMaskFilterRadius = blurRadius;
+
+    if (blurToApply == 0f) {
+      paint.setMaskFilter(null);
+    } else if (blurToApply != blurMaskFilterRadius) {
+      BlurMaskFilter blur = layer.getBlurMaskFilter(blurToApply);
+      paint.setMaskFilter(blur);
     }
+    blurMaskFilterRadius = blurToApply;
+
     if (shadowToApply != null) {
       shadowToApply.applyWithAlpha((int)(fillAlpha * 255), paint);
     } else {

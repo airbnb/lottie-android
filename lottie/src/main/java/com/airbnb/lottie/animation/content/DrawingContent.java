@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import com.airbnb.lottie.utils.DropShadow;
 
 public interface DrawingContent extends Content {
-  void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable DropShadow shadowToApply);
+  void draw(Canvas canvas, Matrix parentMatrix, int alpha, @Nullable DropShadow shadowToApply, float blurToApply);
 
   void getBounds(RectF outBounds, Matrix parentMatrix, boolean applyParents);
 }

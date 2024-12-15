@@ -13,6 +13,7 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.animation.keyframe.BaseKeyframeAnimation;
+import com.airbnb.lottie.animation.keyframe.BlurKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.DropShadowKeyframeAnimation;
 import com.airbnb.lottie.animation.keyframe.ValueCallbackKeyframeAnimation;
 import com.airbnb.lottie.model.KeyPath;
@@ -40,6 +41,7 @@ public class CompositionLayer extends BaseLayer {
   private boolean clipToCompositionBounds = true;
 
   @Nullable private DropShadowKeyframeAnimation dropShadowAnimation;
+  @Nullable private BlurKeyframeAnimation blurAnimation;
 
   public CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
@@ -98,6 +100,10 @@ public class CompositionLayer extends BaseLayer {
     if (getDropShadowEffect() != null) {
       dropShadowAnimation = new DropShadowKeyframeAnimation(this, this, getDropShadowEffect());
     }
+
+    if (getBlurEffect() != null) {
+      blurAnimation = new BlurKeyframeAnimation(this, this, getBlurEffect());
+    }
   }
 
   public void setClipToCompositionBounds(boolean clipToCompositionBounds) {
@@ -111,23 +117,26 @@ public class CompositionLayer extends BaseLayer {
     }
   }
 
-  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply) {
+  @Override void drawLayer(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow parentShadowToApply, float parentBlurToApply) {
     if (L.isTraceEnabled()) {
       L.beginSection("CompositionLayer#draw");
     }
-    // Apply off-screen rendering only when needed in order to improve rendering performance.
+
+    // If we've reached this path with a parentBlurToApply, sum it up to approximate the effect of a composition of blurs along
+    // the hierarchy. If applyEffectsToLayers was true, this would never happen, since it forces the parentBlurToApply to be
+    // 0.0f (due to OffscreenLayer taking care of it.)
+    float blurToApply = parentBlurToApply;
+    if (blurAnimation != null) {
+      blurToApply += blurAnimation.evaluate(parentMatrix);
+    };
+
+    // Apply off-screen rendering only when needed in order to improve performance.
     boolean hasShadow = parentShadowToApply != null || dropShadowAnimation != null;
+    boolean hasBlur = blurToApply > 0.0f;
     boolean isDrawingWithOffScreen =
         (lottieDrawable.isApplyingOpacityToLayersEnabled() && layers.size() > 1 && parentAlpha != 255) ||
-            (hasShadow && lottieDrawable.isApplyingShadowToLayersEnabled());
+            ((hasShadow || hasBlur)  && lottieDrawable.isApplyingEffectsToLayersEnabled());
     int childAlpha = isDrawingWithOffScreen ? 255 : parentAlpha;
-
-    // If we've reached this path with a parentShadowToApply, prioritize the one on our own layer, since we can only support one shadow
-    // at a time for primitive shapes. If applyShadowsToLayers was true, this would never happen, since it forces the next
-    // parentShadowToApply to be null (see below).
-    DropShadow shadowToApply = dropShadowAnimation != null
-        ? dropShadowAnimation.evaluate(parentMatrix, childAlpha)
-        : parentShadowToApply;
 
     // Only clip precomps. This mimics the way After Effects renders animations.
     boolean ignoreClipOnThisLayer = !clipToCompositionBounds && "__container".equals(layerModel.getName());
@@ -143,14 +152,24 @@ public class CompositionLayer extends BaseLayer {
       }
     }
 
+    // Similarly as for the blur, but in this case, we cannot compose shadows easily, so we prioritize the one on our own
+    // layer if there is a conflict.
+    DropShadow shadowToApply = dropShadowAnimation != null
+        ? dropShadowAnimation.evaluate(parentMatrix, childAlpha)
+        : parentShadowToApply;
+
     Canvas targetCanvas = canvas;
     if (isDrawingWithOffScreen) {
       offscreenOp.reset();
       offscreenOp.alpha = parentAlpha;
       if (shadowToApply != null) {
         shadowToApply.applyTo(offscreenOp);
-        shadowToApply = null; // OffscreenLayer takes care of shadows when we use it
+        // OffscreenLayer takes care of effects when we use it
+        shadowToApply = null;
       }
+
+      offscreenOp.blur = blurToApply;
+      blurToApply = 0.0f;
       targetCanvas = offscreenLayer.start(canvas, newClipRect, offscreenOp);
     }
 
@@ -158,7 +177,7 @@ public class CompositionLayer extends BaseLayer {
     if (canvas.clipRect(newClipRect)) {
       for (int i = layers.size() - 1; i >= 0; i--) {
         BaseLayer layer = layers.get(i);
-        layer.draw(targetCanvas, parentMatrix, childAlpha, shadowToApply);
+        layer.draw(targetCanvas, parentMatrix, childAlpha, shadowToApply, blurToApply);
       }
     }
 
@@ -285,6 +304,8 @@ public class CompositionLayer extends BaseLayer {
       dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
       dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
+    } else if (property == LottieProperty.BLUR_RADIUS && blurAnimation != null) {
+      blurAnimation.setBlurrinessCallback((LottieValueCallback<Float>) callback);
     }
   }
 }

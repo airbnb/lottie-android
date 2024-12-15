@@ -160,7 +160,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     return path;
   }
 
-  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply) {
+  @Override public void draw(Canvas canvas, Matrix parentMatrix, int parentAlpha, @Nullable DropShadow shadowToApply, float blurToApply) {
     if (hidden) {
       return;
     }
@@ -177,7 +177,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     // Apply off-screen rendering only when needed in order to improve rendering performance.
     boolean isRenderingWithOffScreen =
         (lottieDrawable.isApplyingOpacityToLayersEnabled() && hasTwoOrMoreDrawableContent() && layerAlpha != 255) ||
-        (shadowToApply != null && lottieDrawable.isApplyingShadowToLayersEnabled() && hasTwoOrMoreDrawableContent());
+        ((shadowToApply != null || blurToApply > 0.0f) && lottieDrawable.isApplyingEffectsToLayersEnabled() && hasTwoOrMoreDrawableContent());
     int childAlpha = isRenderingWithOffScreen ? 255 : layerAlpha;
 
     Canvas contentCanvas = canvas;
@@ -187,7 +187,10 @@ public class ContentGroup implements DrawingContent, PathContent,
       offscreenOp.alpha = layerAlpha;
       if (shadowToApply != null) {
         shadowToApply.applyTo(offscreenOp);
-        shadowToApply = null; // Don't pass it to children - OffscreenLayer now takes care of this
+
+        // Don't pass effects to children - OffscreenLayer now takes care of this
+        shadowToApply = null;
+        blurToApply = 0.0f;
       } else {
         offscreenOp.shadow = null;
       }
@@ -203,7 +206,7 @@ public class ContentGroup implements DrawingContent, PathContent,
     for (int i = contents.size() - 1; i >= 0; i--) {
       Object content = contents.get(i);
       if (content instanceof DrawingContent) {
-        ((DrawingContent) content).draw(contentCanvas, matrix, childAlpha, shadowToApply);
+        ((DrawingContent) content).draw(contentCanvas, matrix, childAlpha, shadowToApply, blurToApply);
       }
     }
 
