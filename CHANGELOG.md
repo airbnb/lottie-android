@@ -1,3 +1,11 @@
+# 6.6.2
+### Bugs Fixed
+* Allow width/height to be doubles ([#2596](https://github.com/airbnb/lottie-android/pull/2596))
+* Re-measure line width when using dynamic text ([#2597](https://github.com/airbnb/lottie-android/pull/2597))
+* Only apply parent alpha to mattes ([#2598](https://github.com/airbnb/lottie-android/pull/2598))
+* Fix binary compatibility with 6.5 ([#2591](https://github.com/airbnb/lottie-android/pull/2591))
+* Better handle clip specs with minProgress == maxProgress ([#2600](https://github.com/airbnb/lottie-android/pull/2600))
+
 # 6.6.1
 ### Bugs Fixes
 * Fixed a floating point error calculating keyframe end progress ([#2588](https://github.com/airbnb/lottie-android/pull/2588))
