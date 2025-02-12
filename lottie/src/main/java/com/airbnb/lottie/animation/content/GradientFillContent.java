@@ -193,6 +193,14 @@ public class GradientFillContent
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
+
+    // Add check for minimum colors
+    if (colors.length < 2) {
+      // If only one color, duplicate it to create a solid color gradient
+      colors = new int[]{colors[0], colors[0]};
+      positions = new float[]{0f, 1f};
+    }
+    
     gradient = new LinearGradient(startPoint.x, startPoint.y, endPoint.x, endPoint.y, colors,
         positions, Shader.TileMode.CLAMP);
     linearGradientCache.put(gradientHash, gradient);
@@ -210,13 +218,21 @@ public class GradientFillContent
     GradientColor gradientColor = colorAnimation.getValue();
     int[] colors = applyDynamicColorsIfNeeded(gradientColor.getColors());
     float[] positions = gradientColor.getPositions();
+    
+    // Add check for minimum colors
+    if (colors.length < 2) {
+        // If only one color, duplicate it to create a solid color gradient
+        colors = new int[]{colors[0], colors[0]};
+        positions = new float[]{0f, 1f};
+    }
+    
     float x0 = startPoint.x;
     float y0 = startPoint.y;
     float x1 = endPoint.x;
     float y1 = endPoint.y;
     float r = (float) Math.hypot(x1 - x0, y1 - y0);
     if (r <= 0) {
-      r = 0.001f;
+        r = 0.001f;
     }
     gradient = new RadialGradient(x0, y0, r, colors, positions, Shader.TileMode.CLAMP);
     radialGradientCache.put(gradientHash, gradient);
