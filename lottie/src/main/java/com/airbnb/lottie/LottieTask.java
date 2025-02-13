@@ -28,15 +28,24 @@ import java.util.concurrent.FutureTask;
  */
 @SuppressWarnings("UnusedReturnValue")
 public class LottieTask<T> {
+  static final String DIRECT_EXECUTOR_PROPERTY_NAME = "lottie.testing.directExecutor";
 
   /**
-   * Set this to change the executor that LottieTasks are run on. This will be the executor that composition parsing and url
-   * fetching happens on.
+   * The executor which runs {@code LottieTask}s such as composition parsing and url fetching.
    * <p>
-   * You may change this to run deserialization synchronously for testing.
+   * You may change this to run synchronously for testing. Additionally, if the
+   * {@code lottie.testing.directExecutor} system property is set to "true", the initial value
+   * will be a synchronous executor suitable for use in tests.
    */
   @SuppressWarnings("WeakerAccess")
-  public static Executor EXECUTOR = Executors.newCachedThreadPool(new LottieThreadFactory());
+  public static Executor EXECUTOR;
+  static {
+    if ("true".equals(System.getProperty(DIRECT_EXECUTOR_PROPERTY_NAME))) {
+      EXECUTOR = Runnable::run;
+    } else {
+      EXECUTOR = Executors.newCachedThreadPool(new LottieThreadFactory());
+    }
+  }
 
   /* Preserve add order. */
   private final Set<LottieListener<T>> successListeners = new LinkedHashSet<>(1);
