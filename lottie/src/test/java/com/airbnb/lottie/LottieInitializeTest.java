@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.airbnb.lottie.network.LottieFetchResult;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 
 public class LottieInitializeTest extends BaseTest {
 
@@ -28,9 +30,16 @@ public class LottieInitializeTest extends BaseTest {
 
   private final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
+  private final Executor originalExecutor = LottieTask.EXECUTOR;
+
   @Before
   public void setExecutor() {
     LottieTask.EXECUTOR = Runnable::run;
+  }
+
+  @After
+  public void resetExecutor() {
+    LottieTask.EXECUTOR = originalExecutor;
   }
 
   @Test
