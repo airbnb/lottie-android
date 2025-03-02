@@ -71,7 +71,7 @@ import java.util.zip.ZipInputStream;
       Logger.warning("Unable to load composition.", throwable);
       return;
     }
-    throw new IllegalStateException("Unable to parse composition", throwable);
+    Logger.warning("Unable to parse composition", throwable);
   };
 
   private final LottieListener<LottieComposition> loadedListener = new WeakSuccessListener(this);
@@ -112,12 +112,12 @@ import java.util.zip.ZipInputStream;
       if (targetView.fallbackResource != 0) {
         targetView.setImageResource(targetView.fallbackResource);
       }
-      LottieListener<Throwable> l = targetView.failureListener;
+      LottieListener<Throwable> l = targetView.failureListener == null ? DEFAULT_FAILURE_LISTENER : targetView.failureListener;
       l.onResult(result);
     }
   }
 
-  @NonNull private LottieListener<Throwable> failureListener = result -> {};
+  @NonNull private LottieListener<Throwable> failureListener = DEFAULT_FAILURE_LISTENER;
   @DrawableRes private int fallbackResource = 0;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
