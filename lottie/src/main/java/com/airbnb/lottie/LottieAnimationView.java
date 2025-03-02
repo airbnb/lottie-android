@@ -112,12 +112,12 @@ import java.util.zip.ZipInputStream;
       if (targetView.fallbackResource != 0) {
         targetView.setImageResource(targetView.fallbackResource);
       }
-      LottieListener<Throwable> l = targetView.failureListener == null ? DEFAULT_FAILURE_LISTENER : targetView.failureListener;
+      LottieListener<Throwable> l = targetView.failureListener;
       l.onResult(result);
     }
   }
 
-  @Nullable private LottieListener<Throwable> failureListener;
+  @NonNull private LottieListener<Throwable> failureListener = result -> {};
   @DrawableRes private int fallbackResource = 0;
 
   private final LottieDrawable lottieDrawable = new LottieDrawable();
@@ -615,7 +615,7 @@ import java.util.zip.ZipInputStream;
    * <p>
    * Set the listener to null to revert to the default behavior.
    */
-  public void setFailureListener(@Nullable LottieListener<Throwable> failureListener) {
+  public void setFailureListener(@NonNull LottieListener<Throwable> failureListener) {
     this.failureListener = failureListener;
   }
 
