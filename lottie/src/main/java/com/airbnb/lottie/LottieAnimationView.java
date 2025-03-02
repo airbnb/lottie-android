@@ -112,7 +112,7 @@ import java.util.zip.ZipInputStream;
       if (targetView.fallbackResource != 0) {
         targetView.setImageResource(targetView.fallbackResource);
       }
-      LottieListener<Throwable> l = targetView.failureListener == null ? DEFAULT_FAILURE_LISTENER : targetView.failureListener;
+      LottieListener<Throwable> l = targetView.failureListener;
       l.onResult(result);
     }
   }
