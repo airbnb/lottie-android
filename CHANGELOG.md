@@ -1,4 +1,4 @@
-# 6.6.3
+# 6.6.4-SNAPSHOT
 * Support system property to set a testing executor ([#2613](https://github.com/airbnb/lottie-android/pull/2613))
 * Fix a radial gradient crash ([#2611](https://github.com/airbnb/lottie-android/pull/2611))
 * Fix a bitmap crash ([#2578](https://github.com/airbnb/lottie-android/pull/2578))
