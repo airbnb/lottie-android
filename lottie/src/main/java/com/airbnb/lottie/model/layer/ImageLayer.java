@@ -110,6 +110,9 @@ public class ImageLayer extends BaseLayer {
         Bitmap bitmap = getBitmap();
         if (bitmap != null) {
           outBounds.set(0, 0, bitmap.getWidth() * scale, bitmap.getHeight() * scale);
+        } else {
+          // If the bitmap is null, we aren't rendering anything, so set outBounds to an empty rectangle
+          outBounds.set(0, 0, 0, 0);
         }
       }
       boundsMatrix.mapRect(outBounds);
