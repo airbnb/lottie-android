@@ -111,8 +111,8 @@ public class ImageLayer extends BaseLayer {
         if (bitmap != null) {
           outBounds.set(0, 0, bitmap.getWidth() * scale, bitmap.getHeight() * scale);
         } else {
-          // If the bitmap is null, we aren't rendering anything, so set outBounds to an empty rectangle
-          outBounds.set(0, 0, 0, 0);
+          // If the bitmap is null, fall back to using the width and height of the LottieImageAsset
+          outBounds.set(0, 0, lottieImageAsset.getWidth() * scale, lottieImageAsset.getHeight() * scale);
         }
       }
       boundsMatrix.mapRect(outBounds);
