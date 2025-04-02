@@ -186,7 +186,11 @@ public class OffscreenLayer {
     // still being relatively speedy to blit and operate on.
     int width = (int)Math.ceil(bounds.width() * 1.05);
     int height = (int)Math.ceil(bounds.height() * 1.05);
-    return Bitmap.createBitmap(width, height, cfg);
+
+    // In certain cases the provided bounds can have a width or height of 0, which will cause a runtime crash
+    // when we try to allocate a Bitmap. To guard against this, use a minimum size of 1x1.
+    // See https://github.com/airbnb/lottie-android/issues/2620
+    return Bitmap.createBitmap(Math.max(width, 1), Math.max(height, 1), cfg);
   }
 
   private void deallocateBitmap(Bitmap bitmap) {
