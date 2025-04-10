@@ -1,3 +1,9 @@
+# 6.6.6
+* Guard against Bitmap allocations of size 0 ([#2626](https://github.com/airbnb/lottie-android/pull/2626))
+
+# 6.6.5
+Skipped
+
 # 6.6.4
 * Fix an image NPE ([#2623](https://github.com/airbnb/lottie-android/pull/2623))
 
