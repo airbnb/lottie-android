@@ -95,6 +95,9 @@ public class ImageLayer extends BaseLayer {
 
     if (renderOffScreen) {
       offscreenLayer.finish();
+      if (offscreenLayer.finishDecrementsCanvasSaveCount()) {
+        return; // Don't need a restore() call since it's handled by OffscreenLayer
+      }
     }
 
     targetCanvas.restore();
