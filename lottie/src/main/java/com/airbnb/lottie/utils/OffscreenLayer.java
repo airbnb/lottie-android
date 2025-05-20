@@ -553,12 +553,4 @@ public class OffscreenLayer {
     targetCanvas.drawRenderNode(shadowRenderNode);
     targetCanvas.restore();
   }
-
-  /**
-   * Whether calling finish() will decrement the save count of the [Canvas] returned by [start()].
-   */
-  public boolean finishDecrementsCanvasSaveCount() {
-    // endRecording() will decrement the save count of the Canvas returned by beginRecording()
-    return currentStrategy == RenderStrategy.RENDER_NODE;
-  }
 }
