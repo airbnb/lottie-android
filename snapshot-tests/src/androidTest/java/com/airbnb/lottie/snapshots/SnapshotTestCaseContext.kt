@@ -1,6 +1,7 @@
 package com.airbnb.lottie.snapshots
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -254,4 +255,8 @@ private suspend fun View.awaitFrame() {
             cont.resume(Unit)
         }
     }
+}
+
+internal fun SnapshotTestCaseContext.getBitmapFromAssets(name: String): Bitmap {
+    return BitmapFactory.decodeStream(context.assets.open(name), null, BitmapFactory.Options())!!
 }

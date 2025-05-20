@@ -20,6 +20,7 @@ import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 import com.airbnb.lottie.snapshots.LocalSnapshotReady
 import com.airbnb.lottie.snapshots.SnapshotTestCase
 import com.airbnb.lottie.snapshots.SnapshotTestCaseContext
+import com.airbnb.lottie.snapshots.getBitmapFromAssets
 import com.airbnb.lottie.snapshots.snapshotComposable
 
 class ComposeDynamicPropertiesTestCase : SnapshotTestCase {
@@ -107,9 +108,5 @@ class ComposeDynamicPropertiesTestCase : SnapshotTestCase {
                 dynamicProperties = dynamicProperties
             )
         }
-    }
-
-    private fun SnapshotTestCaseContext.getBitmapFromAssets(name: String): Bitmap {
-        return BitmapFactory.decodeStream(context.assets.open(name), null, BitmapFactory.Options())!!
     }
 }
