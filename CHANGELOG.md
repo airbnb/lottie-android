@@ -1,3 +1,6 @@
+# 6.6.7
+* Fix crash when drawing shadow on image using RenderNode ([#2635](https://github.com/airbnb/lottie-android/pull/2635))
+
 # 6.6.6
 * Guard against Bitmap allocations of size 0 ([#2626](https://github.com/airbnb/lottie-android/pull/2626))
 
