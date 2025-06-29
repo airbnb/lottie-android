@@ -45,7 +45,7 @@ public class LottieConfig {
     private LottieNetworkCacheProvider cacheProvider;
     private boolean enableSystraceMarkers = false;
     private boolean enableNetworkCache = true;
-    private boolean disablePathInterpolatorCache = true;
+    private boolean disablePathInterpolatorCache = false;
     private AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
     private ReducedMotionOption reducedMotionOption = new SystemReducedMotionOption();
 
