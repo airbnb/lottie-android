@@ -25,7 +25,7 @@ public class L {
 
   private static boolean traceEnabled = false;
   private static boolean networkCacheEnabled = true;
-  private static boolean disablePathInterpolatorCache = true;
+  private static boolean disablePathInterpolatorCache = false;
   private static AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
 
   private static LottieNetworkFetcher fetcher;
