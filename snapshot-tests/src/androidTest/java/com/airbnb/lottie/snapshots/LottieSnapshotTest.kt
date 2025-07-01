@@ -28,6 +28,7 @@ import com.airbnb.lottie.snapshots.tests.DisabledAnimationsTestCase
 import com.airbnb.lottie.snapshots.tests.DynamicPropertiesTestCase
 import com.airbnb.lottie.snapshots.tests.FailureTestCase
 import com.airbnb.lottie.snapshots.tests.FrameBoundariesTestCase
+import com.airbnb.lottie.snapshots.tests.ImageWithShadowsTestCase
 import com.airbnb.lottie.snapshots.tests.LargeCompositionSoftwareRendering
 import com.airbnb.lottie.snapshots.tests.MarkersTestCase
 import com.airbnb.lottie.snapshots.tests.NightModeTestCase
@@ -168,6 +169,7 @@ class LottieSnapshotTest {
             CompositionFrameRate(),
             ClipTextToBoundingBoxTestCase(),
             DisabledAnimationsTestCase(),
+            ImageWithShadowsTestCase(),
         )
 
         withTimeout(TimeUnit.MINUTES.toMillis(45)) {
