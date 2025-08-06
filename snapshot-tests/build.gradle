@@ -7,11 +7,11 @@ plugins {
 
 android {
   namespace 'com.airbnb.lottie.snapshots'
-  compileSdk 34
+  compileSdk 36
   defaultConfig {
     applicationId "com.airbnb.lottie.snapshots"
     minSdk 21
-    targetSdk 34
+    targetSdk 36
     versionCode 1
     versionName VERSION_NAME
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

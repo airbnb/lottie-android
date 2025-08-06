@@ -6,7 +6,16 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -59,8 +68,11 @@ class ComposeActivity : AppCompatActivity() {
 
         LottieTheme {
             Scaffold(
+                // Omit bottom inset padding for the scaffold to allow the BottomNavigation to extend to the edge of the screen.
+                modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
                 bottomBar = {
                     BottomNavigation(
+                        windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom),
                         backgroundColor = Color(0xFFF7F7F7),
                         elevation = 8.dp,
                         contentColor = Teal,
@@ -68,7 +80,7 @@ class ComposeActivity : AppCompatActivity() {
                         val navBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = navBackStackEntry?.destination?.route
 
-                        BottomNavItemData.values().forEach { item ->
+                        BottomNavItemData.entries.forEach { item ->
                             BottomNavigationItem(
                                 icon = {
                                     Icon(

@@ -6,7 +6,7 @@ plugins {
 
 android {
   namespace 'com.airbnb.lottie.benchmark'
-  compileSdk 34
+  compileSdk 36
 
   kotlinOptions {
     freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
@@ -14,7 +14,7 @@ android {
 
   defaultConfig {
     minSdk 30
-    targetSdk 34
+    targetSdk 36
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }

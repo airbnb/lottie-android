@@ -3,8 +3,12 @@ package com.airbnb.lottie.issues.compose
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -23,6 +27,8 @@ class ComposeIssueReproActivity : AppCompatActivity() {
     fun Content() {
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.heart))
         val progress by animateLottieCompositionAsState(composition, iterations = LottieConstants.IterateForever)
-        LottieAnimation(composition, { progress })
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            LottieAnimation(composition, { progress })
+        }
     }
 }
