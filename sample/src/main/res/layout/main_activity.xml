@@ -14,11 +14,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-
+    <!--Wrap content height to allow for bottom window insets to be included-->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:background="#F7F7F7"
         android:elevation="8dp"
         app:itemIconTint="@drawable/bottom_bar_tint_list"
