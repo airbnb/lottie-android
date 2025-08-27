@@ -63,3 +63,29 @@ Lottie 2.8.0 and above only supports projects that have been migrated to [androi
 # Contributing
 
 Because development has started for Lottie Compose, Gradle, and the Android Gradle Plugin will be kept up to date with the latest canaries. This also requires you to use Android Studio Canary builds. [Preview builds](https://developer.android.com/studio/preview) can be installed side by side with stable versions.
+
+
+<!-- GitHub Frontend Bot Testing Improvement Contribution -->
+
+This comment was added by GitHub Frontend Bot as part of a testing infrastructure improvement initiative.
+
+**Suggested Testing Improvements:**
+
+**Recommended Testing Stack:**
+- **JUnit 5** - Modern Java testing framework
+- **Mockito** - Mocking framework
+- **AssertJ** - Fluent assertions
+- **TestContainers** - Integration testing with real dependencies
+
+**Example setup:**
+```xml
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.8.2</version>
+    <scope>test</scope>
+</dependency>
+```
+
+---
+*Generated on 2025-08-27T16:43:07.531Z*
