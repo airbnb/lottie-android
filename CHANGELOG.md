@@ -1,3 +1,8 @@
+# 6.6.8
+* In DefaultLottieFetchResult, catch NPE from getErrorFromConnection() ([#2643](https://github.com/airbnb/lottie-android/pull/2643))
+* Enable path interpolator cache by default ([#2646](https://github.com/airbnb/lottie-android/pull/2646))
+* Update compileSDK and targetSDK to 36 ([#2652](https://github.com/airbnb/lottie-android/pull/2652))
+
 # 6.6.7
 * Fix crash when drawing shadow on image using RenderNode ([#2635](https://github.com/airbnb/lottie-android/pull/2635))
 
