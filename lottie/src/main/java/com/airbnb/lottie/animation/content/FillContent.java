@@ -5,9 +5,11 @@ import static com.airbnb.lottie.utils.MiscUtils.clamp;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.CornerPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathEffect;
 import android.graphics.RectF;
 
 import androidx.annotation.Nullable;
@@ -24,6 +26,7 @@ import com.airbnb.lottie.model.content.ShapeFill;
 import com.airbnb.lottie.model.layer.BaseLayer;
 import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.MiscUtils;
+import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
@@ -123,7 +126,16 @@ public class FillContent
     }
 
     path.reset();
+    float cornerRadius = 0f;
     for (int i = 0; i < paths.size(); i++) {
+      if (paths.get(i) instanceof RoundedCornersContent) {
+        float newCornerRadius = ((RoundedCornersContent) paths.get(i)).getRoundedCorners().getValue();
+        if (i > 0 || cornerRadius != newCornerRadius) {
+          canvas.drawPath(path, paint);
+          path.reset();
+        }
+        paint.setPathEffect(new CornerPathEffect(newCornerRadius / Utils.dpScale()));
+      }
       path.addPath(paths.get(i).getPath(), parentMatrix);
     }
 
