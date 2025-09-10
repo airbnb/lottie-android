@@ -113,13 +113,35 @@ fun rememberLottieComposition(
     return result
 }
 
-private suspend fun lottieComposition(
+/**
+ * Takes a [LottieCompositionSpec], attempts to load and parse the animation once, and returns a [LottieCompositionResult].
+
+ * The loaded composition will automatically load and set images that are embedded in the json as a base64 string
+ * or will load them from assets if an imageAssetsFolder is supplied.
+ *
+ * @param spec The [LottieCompositionSpec] that defines which LottieComposition should be loaded.
+ * @param imageAssetsFolder A subfolder in `src/main/assets` that contains the exported images
+ *                          that this composition uses. DO NOT rename any images from your design tool. The
+ *                          filenames must match the values that are in your json file.
+ * @param fontAssetsFolder The default folder Lottie will look in to find font files. Fonts will be matched
+ *                         based on the family name specified in the Lottie json file.
+ *                         Defaults to "fonts/" so if "Helvetica" was in the Json file, Lottie will auto-match
+ *                         fonts located at "src/main/assets/fonts/Helvetica.ttf". Missing fonts will be skipped
+ *                         and should be set via fontRemapping or via dynamic properties.
+ * @param fontFileExtension The default file extension for font files specified in the fontAssetsFolder or fontRemapping.
+ *                          Defaults to ttf.
+ * @param cacheKey Set a cache key for this composition. When set, subsequent calls to fetch this composition will
+ *                 return directly from the cache instead of having to reload and parse the animation. Set this to
+ *                 null to skip the cache. By default, this will automatically generate a cache key derived
+ *                 from your [LottieCompositionSpec].
+ */
+suspend fun lottieComposition(
     context: Context,
     spec: LottieCompositionSpec,
-    imageAssetsFolder: String?,
-    fontAssetsFolder: String?,
-    fontFileExtension: String,
-    cacheKey: String?,
+    imageAssetsFolder: String? = null,
+    fontAssetsFolder: String? = "fonts/",
+    fontFileExtension: String = ".ttf",
+    cacheKey: String? = DefaultCacheKey,
 ): LottieComposition {
     val task = requireNotNull(lottieTask(context, spec, cacheKey, isWarmingCache = false)) {
         "Unable to create parsing task for $spec."
