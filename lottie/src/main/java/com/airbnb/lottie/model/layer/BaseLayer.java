@@ -320,19 +320,21 @@ public abstract class BaseLayer
       if (getBlendMode() != LBlendMode.MULTIPLY) {
         clearCanvas(canvas);
       } else {
-        // Due to the difference between PorterDuffMode.MULTIPLY (which we use for compatibility
-        // with Android < Q) and BlendMode.MULTIPLY (which is the correct, alpha-blended mode),
-        // we will alpha-blend the contents of this layer on top of a white background before
-        // we multiply it with the opaque substrate below (with canvas.restore()).
-        //
-        // Since white is the identity color for multiplication, this will behave as if we
-        // had correctly performed an alpha-blended multiply (such as BlendMode.MULTIPLY), but
-        // will work pre-Q as well.
-        if (solidWhitePaint == null) {
-          solidWhitePaint = new LPaint();
-          solidWhitePaint.setColor(0xffffffff);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+          // Due to the difference between PorterDuffMode.MODULATE (which we use for compatibility
+          // with Android < Q) and BlendMode.MULTIPLY (which is the correct, alpha-blended mode),
+          // we will alpha-blend the contents of this layer on top of a white background before
+          // we multiply it with the opaque substrate below (with canvas.restore()).
+          //
+          // Since white is the identity color for multiplication, this will behave as if we
+          // had correctly performed an alpha-blended multiply (such as BlendMode.MULTIPLY), but
+          // will work pre-Q as well.
+          if (solidWhitePaint == null) {
+            solidWhitePaint = new LPaint();
+            solidWhitePaint.setColor(0xffffffff);
+          }
+          canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, solidWhitePaint);
         }
-        canvas.drawRect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1, solidWhitePaint);
       }
 
       if (L.isTraceEnabled()) {
