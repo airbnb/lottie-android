@@ -99,7 +99,7 @@ jobs:
           test: snapshot-tests/build/outputs/apk/androidTest/debug/snapshot-tests-debug-androidTest.apk
           devices: |
             model=Pixel2,version=23,gpu=auto
-            model=Pixel2,version=31,gpu=auto
+            model=Pixel2,version=35,gpu=auto
           outputs-dir: build/test-results
       - name: Save PR number
         if: github.event_name == 'pull_request'
