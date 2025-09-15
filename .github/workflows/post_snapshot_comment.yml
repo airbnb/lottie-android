@@ -48,4 +48,4 @@ jobs:
           message: |
             **Snapshot Tests**
             **API 23**: [Report](https://happo.io/a/27/report/${{ env.GITHUB_SHA }}-android23) [Diff](https://happo.io/a/27/p/27/compare/master-android23/${{ env.GITHUB_SHA }}-android23)
-            **API 31**: [Report](https://happo.io/a/27/report/${{ env.GITHUB_SHA }}-android35) [Diff](https://happo.io/a/27/p/27/compare/master-android35/${{ env.GITHUB_SHA }}-android35)
+            **API 35**: [Report](https://happo.io/a/27/report/${{ env.GITHUB_SHA }}-android35) [Diff](https://happo.io/a/27/p/27/compare/master-android35/${{ env.GITHUB_SHA }}-android35)
