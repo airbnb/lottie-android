@@ -42,11 +42,15 @@ public enum LBlendMode {
         // any alpha blending. It just does a component-wise multiplication
         // of the colors.
         //
-        // For proper results on all platforms, we will map the MULTIPLY
+        // For proper results on Android versions < Q, we will map the MULTIPLY
         // blend mode to MODULATE, and then do a slight adjustment to
         // how we render such layers to still achieve the correct result.
         // See BaseLayer.draw().
-        return BlendModeCompat.MODULATE;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+          return BlendModeCompat.MULTIPLY;
+        } else {
+          return BlendModeCompat.MODULATE;
+        }
       case SCREEN:
         return BlendModeCompat.SCREEN;
       case OVERLAY:
