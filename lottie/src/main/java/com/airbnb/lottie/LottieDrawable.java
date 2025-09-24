@@ -1798,7 +1798,8 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
 
-    if (renderWidth <= 0 || renderHeight <= 0) {
+    // Safeguard against errors during Bitmap creation by returning early if dimensions are invalid.
+    if (renderWidth <= 0 || renderHeight <= 0 || renderWidth > bounds.width() || renderHeight > bounds.height()) {
       return;
     }
 
