@@ -30,6 +30,7 @@ import com.airbnb.lottie.utils.DropShadow;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.LottieValueCallback;
 
+import java.text.Bidi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -357,7 +358,11 @@ public class TextLayer extends BaseLayer {
                 line.width :
                 fillPaint.measureText(line.text);
         if (offsetCanvas(canvas, documentData, lineIndex, lineWidth)) {
-          drawFontTextLine(line.text, documentData, canvas, tracking, characterIndexAtStartOfLine, parentAlpha);
+          String currentLineText = line.text;
+          if (Bidi.requiresBidi(currentLineText.toCharArray(), 0, currentLineText.length())) {
+            currentLineText = reorderLineVisually(currentLineText);
+          }
+          drawFontTextLine(currentLineText, documentData, canvas, tracking, characterIndexAtStartOfLine, parentAlpha);
         }
 
         characterIndexAtStartOfLine += line.text.length();
@@ -426,14 +431,79 @@ public class TextLayer extends BaseLayer {
       float tracking,
       int characterIndexAtStartOfLine,
       int parentAlpha) {
+    ArrayList<String> charStrings = new ArrayList<>();
     for (int i = 0; i < text.length(); ) {
       String charString = codePointToString(text, i);
+      charStrings.add(charString);
+      i += charString.length();
+    }
+
+    for (int i = 0; i < charStrings.size(); ) {
+      StringBuilder charStringBuilder = new StringBuilder(charStrings.get(i));
+      int nextIndex = i + 1;
+      while (nextIndex < charStrings.size()) {
+        String nextCharString = charStrings.get(nextIndex);
+        if (isJoiningRightToLeft(nextCharString)) {
+          // We insert at the front explicitly, string builder will actually add it to the end visually since it is rtl
+          charStringBuilder.insert(0, nextCharString);
+          nextIndex++;
+        } else {
+          break;
+        }
+      }
+
+      String charString = charStringBuilder.toString();
       drawCharacterFromFont(charString, documentData, canvas, characterIndexAtStartOfLine + i, parentAlpha);
       float charWidth = fillPaint.measureText(charString);
       float tx = charWidth + tracking;
       canvas.translate(tx, 0);
-      i += charString.length();
+
+      i = nextIndex;
     }
+  }
+
+  /**
+   * Transform string stored in logical order to visual order.
+   * For example, if an RTL language is stored as qwert in memory, it will become trewq,
+   * so we can keep the logic of drawing each character from left to right afterward.
+   *
+   * @param text the original string
+   * @return the text in visual order, written from left to right
+   */
+  private String reorderLineVisually(String text) {
+    Bidi bidi = new Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
+    int runCount = bidi.getRunCount();
+    byte[] runLevels = new byte[runCount];
+    Integer[] runs = new Integer[runCount];
+    for (int i = 0; i < runCount; i++) {
+      runLevels[i] = (byte) bidi.getRunLevel(i);
+      runs[i] = i;
+    }
+    Bidi.reorderVisually(runLevels, 0, runs, 0, runCount);
+
+    StringBuilder reorderedText = new StringBuilder();
+    for (int i = 0; i < runCount; i++) {
+      int originalIndex = runs[i];
+      int runStart = bidi.getRunStart(originalIndex);
+      int runLimit = bidi.getRunLimit(originalIndex);
+      // Even run level means LTR, odd means RTL
+      int runLevel = bidi.getRunLevel(originalIndex);
+
+      String word = text.substring(runStart, runLimit);
+      if ((runLevel & 1) == 0) {
+        reorderedText.append(word);
+      } else {
+        StringBuilder reversedWord = new StringBuilder();
+        for (int j = 0; j < word.length();) {
+          String charString = codePointToString(word, j);
+          reversedWord.insert(0, charString);
+          j += charString.length();
+        }
+        reorderedText.append(reversedWord);
+      }
+    }
+
+    return reorderedText.toString();
   }
 
   private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking,
@@ -629,6 +699,24 @@ public class TextLayer extends BaseLayer {
         Character.getType(codePoint) == Character.OTHER_SYMBOL ||
         Character.getType(codePoint) == Character.DIRECTIONALITY_NONSPACING_MARK ||
         Character.getType(codePoint) == Character.SURROGATE;
+  }
+
+  /**
+   * Whether a character is joining (connecting, such as ت + ت should become تت), and is written from right to left.
+   * This is used for determining if we should render a group of characters together,
+   * and we will pass them to the renderer to pick the correct joining glyph.
+   *
+   * @param stringChar a string that preferably contains only one visual character
+   * @return true if any character in the input is joining, and is written from right to left
+   */
+  private boolean isJoiningRightToLeft(String stringChar) {
+    for (int i = 0; i < stringChar.length(); i++) {
+      int codePoint = stringChar.codePointAt(i);
+      if (Character.getDirectionality(codePoint) == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @SuppressWarnings("unchecked")
