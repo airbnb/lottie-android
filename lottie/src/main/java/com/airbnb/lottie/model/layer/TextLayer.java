@@ -42,6 +42,9 @@ public class TextLayer extends BaseLayer {
   // Capacity is 2 because emojis are 2 characters. Some are longer in which case, the capacity will
   // be expanded but that should be pretty rare.
   private final StringBuilder stringBuilder = new StringBuilder(2);
+  private final StringBuilder charStringBuilder = new StringBuilder(0);
+  private final StringBuilder reorderingStringBuilder = new StringBuilder(0);
+  private final StringBuilder reversingStringBuilder = new StringBuilder(0);
   private final RectF rectF = new RectF();
   private final Matrix matrix = new Matrix();
   private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG) {{
@@ -52,6 +55,7 @@ public class TextLayer extends BaseLayer {
   }};
   private final Map<FontCharacter, List<ContentGroup>> contentsForCharacter = new HashMap<>();
   private final LongSparseArray<String> codePointCache = new LongSparseArray<>();
+  private final List<String> charStrings = new ArrayList<>();
   /**
    * If this is paragraph text, one line may wrap depending on the size of the document data box.
    */
@@ -431,7 +435,7 @@ public class TextLayer extends BaseLayer {
       float tracking,
       int characterIndexAtStartOfLine,
       int parentAlpha) {
-    ArrayList<String> charStrings = new ArrayList<>();
+    charStrings.clear();
     for (int i = 0; i < text.length(); ) {
       String charString = codePointToString(text, i);
       charStrings.add(charString);
@@ -439,7 +443,8 @@ public class TextLayer extends BaseLayer {
     }
 
     for (int i = 0; i < charStrings.size(); ) {
-      StringBuilder charStringBuilder = new StringBuilder(charStrings.get(i));
+      charStringBuilder.setLength(0);
+      charStringBuilder.append(charStrings.get(i));
       int nextIndex = i + 1;
       while (nextIndex < charStrings.size()) {
         String nextCharString = charStrings.get(nextIndex);
@@ -481,7 +486,7 @@ public class TextLayer extends BaseLayer {
     }
     Bidi.reorderVisually(runLevels, 0, runs, 0, runCount);
 
-    StringBuilder reorderedText = new StringBuilder();
+    reorderingStringBuilder.setLength(0);
     for (int i = 0; i < runCount; i++) {
       int originalIndex = runs[i];
       int runStart = bidi.getRunStart(originalIndex);
@@ -491,19 +496,19 @@ public class TextLayer extends BaseLayer {
 
       String word = text.substring(runStart, runLimit);
       if ((runLevel & 1) == 0) {
-        reorderedText.append(word);
+        reorderingStringBuilder.append(word);
       } else {
-        StringBuilder reversedWord = new StringBuilder();
+        reversingStringBuilder.setLength(0);
         for (int j = 0; j < word.length();) {
           String charString = codePointToString(word, j);
-          reversedWord.insert(0, charString);
+          reversingStringBuilder.insert(0, charString);
           j += charString.length();
         }
-        reorderedText.append(reversedWord);
+        reorderingStringBuilder.append(reversingStringBuilder);
       }
     }
 
-    return reorderedText.toString();
+    return reorderingStringBuilder.toString();
   }
 
   private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking,
