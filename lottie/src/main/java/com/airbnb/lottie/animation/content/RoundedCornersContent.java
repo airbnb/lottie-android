@@ -1,6 +1,10 @@
 package com.airbnb.lottie.animation.content;
 
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.RectF;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,11 +15,13 @@ import com.airbnb.lottie.model.CubicCurveData;
 import com.airbnb.lottie.model.content.RoundedCorners;
 import com.airbnb.lottie.model.content.ShapeData;
 import com.airbnb.lottie.model.layer.BaseLayer;
+import com.airbnb.lottie.utils.DropShadow;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframeAnimation.AnimationListener {
+public class RoundedCornersContent implements PathContent, BaseKeyframeAnimation.AnimationListener {
+
   /**
    * Copied from:
    * https://github.com/airbnb/lottie-web/blob/bb71072a26e03f1ca993da60915860f39aae890b/player/js/utils/common.js#L47
@@ -26,6 +32,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
   private final String name;
   private final BaseKeyframeAnimation<Float, Float> roundedCorners;
   @Nullable private ShapeData shapeData;
+  private final Path path = new Path();
 
   public RoundedCornersContent(LottieDrawable lottieDrawable, BaseLayer layer, RoundedCorners roundedCorners) {
     this.lottieDrawable = lottieDrawable;
@@ -51,7 +58,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
     return roundedCorners;
   }
 
-  @Override public void addUpdateListener(BaseKeyframeAnimation.AnimationListener listener) {
+  public void addUpdateListener(BaseKeyframeAnimation.AnimationListener listener) {
     roundedCorners.addUpdateListener(listener);
   }
 
@@ -75,7 +82,7 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
    * The distance that the vertices and control points are moved are relative to the
    * shape's vertex distances and the roundedness set in the animation.
    */
-  @Override public ShapeData modifyShape(ShapeData startingShapeData) {
+  public ShapeData modifyShape(ShapeData startingShapeData) {
     List<CubicCurveData> startingCurves = startingShapeData.getCurves();
     if (startingCurves.size() <= 2) {
       return startingShapeData;
@@ -225,5 +232,9 @@ public class RoundedCornersContent implements ShapeModifierContent, BaseKeyframe
       r--;
     }
     return r;
+  }
+
+  @Override public Path getPath() {
+    return path;
   }
 }
