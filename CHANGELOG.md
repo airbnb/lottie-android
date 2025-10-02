@@ -1,3 +1,7 @@
+# 6.6.10
+* Add RTL support to lottie-android ([#2663](https://github.com/airbnb/lottie-android/pull/2663))
+* Make `lottieComposition` public ([#2660](https://github.com/airbnb/lottie-android/pull/2660))
+
 # 6.6.9
 * Fix transparent background rendering with MULTIPLY Blend mode on Android 34+ ([#2661](https://github.com/airbnb/lottie-android/pull/2661))
 
