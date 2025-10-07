@@ -11,9 +11,15 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_SCALE;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_SKEW;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_SKEW_ANGLE;
 import static com.airbnb.lottie.LottieProperty.TRANSFORM_START_OPACITY;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION_X;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION_Y;
+import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION_Z;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Camera;
+
+import com.airbnb.lottie.utils.Transform3D;
 
 import androidx.annotation.Nullable;
 
@@ -39,6 +45,11 @@ public class TransformKeyframeAnimation {
   @Nullable private BaseKeyframeAnimation<Integer, Integer> opacity;
   @Nullable private FloatKeyframeAnimation skew;
   @Nullable private FloatKeyframeAnimation skewAngle;
+  
+  // 3D rotation properties
+  @Nullable private FloatKeyframeAnimation rotationX;
+  @Nullable private FloatKeyframeAnimation rotationY;
+  @Nullable private FloatKeyframeAnimation rotationZ;
 
   // Used for repeaters
   @Nullable private BaseKeyframeAnimation<?, Float> startOpacity;
@@ -52,8 +63,14 @@ public class TransformKeyframeAnimation {
     position = animatableTransform.getPosition() == null ? null : animatableTransform.getPosition().createAnimation();
     scale = animatableTransform.getScale() == null ? null : animatableTransform.getScale().createAnimation();
     rotation = animatableTransform.getRotation() == null ? null : animatableTransform.getRotation().createAnimation();
-    skew = animatableTransform.getSkew() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkew().createAnimation();
+    skew = animatableTransform.getSkew() == null ? null : animatableTransform.getSkew().createAnimation();
     autoOrient = animatableTransform.isAutoOrient();
+    
+    // Initialize 3D rotation animations
+    rotationX = animatableTransform.getRotationX() == null ? null : animatableTransform.getRotationX().createAnimation();
+    rotationY = animatableTransform.getRotationY() == null ? null : animatableTransform.getRotationY().createAnimation();
+    rotationZ = animatableTransform.getRotationZ() == null ? null : animatableTransform.getRotationZ().createAnimation();
+    
     if (skew != null) {
       skewMatrix1 = new Matrix();
       skewMatrix2 = new Matrix();
@@ -65,7 +82,7 @@ public class TransformKeyframeAnimation {
       skewMatrix3 = null;
       skewValues = null;
     }
-    skewAngle = animatableTransform.getSkewAngle() == null ? null : (FloatKeyframeAnimation) animatableTransform.getSkewAngle().createAnimation();
+    skewAngle = animatableTransform.getSkewAngle() == null ? null : animatableTransform.getSkewAngle().createAnimation();
     if (animatableTransform.getOpacity() != null) {
       opacity = animatableTransform.getOpacity().createAnimation();
     }
@@ -92,6 +109,9 @@ public class TransformKeyframeAnimation {
     layer.addAnimation(rotation);
     layer.addAnimation(skew);
     layer.addAnimation(skewAngle);
+    layer.addAnimation(rotationX);
+    layer.addAnimation(rotationY);
+    layer.addAnimation(rotationZ);
   }
 
   public void addListener(final BaseKeyframeAnimation.AnimationListener listener) {
@@ -122,6 +142,16 @@ public class TransformKeyframeAnimation {
     }
     if (skewAngle != null) {
       skewAngle.addUpdateListener(listener);
+    }
+    
+    if (rotationX != null) {
+      rotationX.addUpdateListener(listener);
+    }
+    if (rotationY != null) {
+      rotationY.addUpdateListener(listener);
+    }
+    if (rotationZ != null) {
+      rotationZ.addUpdateListener(listener);
     }
   }
 
@@ -154,6 +184,16 @@ public class TransformKeyframeAnimation {
     if (skewAngle != null) {
       skewAngle.setProgress(progress);
     }
+    
+    if (rotationX != null) {
+      rotationX.setProgress(progress);
+    }
+    if (rotationY != null) {
+      rotationY.setProgress(progress);
+    }
+    if (rotationZ != null) {
+      rotationZ.setProgress(progress);
+    }
   }
 
   @Nullable public BaseKeyframeAnimation<?, Integer> getOpacity() {
@@ -170,6 +210,36 @@ public class TransformKeyframeAnimation {
 
   public Matrix getMatrix() {
     matrix.reset();
+
+    // Check if 3D transformation is needed
+    float rotX = rotationX != null ? rotationX.getFloatValue() : 0f;
+    float rotY = rotationY != null ? rotationY.getFloatValue() : 0f;
+    float rotZ = rotationZ != null ? rotationZ.getFloatValue() : 0f;
+
+    // If there is 3D rotation, use the new Transform3D utility class
+    if (rotX != 0f || rotY != 0f || rotZ != 0f) {
+      PointF anchorPointValue = anchorPoint == null ? null : anchorPoint.getValue();
+      PointF positionValue = position == null ? null : position.getValue();
+      ScaleXY scaleValue = scale == null ? null : scale.getValue();
+
+      // Extract scale values (default 1f, consistent with original code)
+      float scaleX = scaleValue != null ? scaleValue.getScaleX() : 1f;
+      float scaleY = scaleValue != null ? scaleValue.getScaleY() : 1f;
+
+      // Use Transform3D to calculate complete 3D transformation
+      Matrix transform3D = Transform3D.makeTransform(
+        anchorPointValue, 
+        positionValue, 
+        scaleX, 
+        scaleY, 
+        rotX, 
+        rotY, 
+        rotZ
+      );
+      
+      matrix.set(transform3D);
+      return matrix;
+    }
     BaseKeyframeAnimation<?, PointF> position = this.position;
     if (position != null) {
       PointF positionValue = position.getValue();
@@ -353,6 +423,21 @@ public class TransformKeyframeAnimation {
         skewAngle = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
       }
       skewAngle.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == TRANSFORM_ROTATION_X) {
+      if (rotationX == null) {
+        rotationX = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
+      }
+      rotationX.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == TRANSFORM_ROTATION_Y) {
+      if (rotationY == null) {
+        rotationY = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
+      }
+      rotationY.setValueCallback((LottieValueCallback<Float>) callback);
+    } else if (property == TRANSFORM_ROTATION_Z) {
+      if (rotationZ == null) {
+        rotationZ = new FloatKeyframeAnimation(Collections.singletonList(new Keyframe<>(0f)));
+      }
+      rotationZ.setValueCallback((LottieValueCallback<Float>) callback);
     } else {
       return false;
     }
