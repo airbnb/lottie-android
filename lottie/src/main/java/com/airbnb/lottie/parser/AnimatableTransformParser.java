@@ -31,7 +31,9 @@ public class AnimatableTransformParser {
       "so", // 7
       "eo", // 8
       "sk", // 9
-      "sa"  // 10
+      "sa", // 10
+      "rx", // 11
+      "ry"  // 12
   );
   private static final JsonReader.Options ANIMATABLE_NAMES = JsonReader.Options.of("k");
 
@@ -46,6 +48,9 @@ public class AnimatableTransformParser {
     AnimatableFloatValue endOpacity = null;
     AnimatableFloatValue skew = null;
     AnimatableFloatValue skewAngle = null;
+    AnimatableFloatValue rotationX = null;
+    AnimatableFloatValue rotationY = null;
+    AnimatableFloatValue rotationZ = null;
 
     boolean isObject = reader.peek() == JsonReader.Token.BEGIN_OBJECT;
     if (isObject) {
@@ -75,7 +80,13 @@ public class AnimatableTransformParser {
           scale = AnimatableValueParser.parseScale(reader, composition);
           break;
         case 3: // rz
-          composition.addWarning("Lottie doesn't support 3D layers.");
+          rotationZ = AnimatableValueParser.parseFloat(reader, composition, false);
+          if (rotationZ.getKeyframes().isEmpty()) {
+            rotationZ.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          } else if (rotationZ.getKeyframes().get(0).startValue == null) {
+            rotationZ.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          }
+          break;
         case 4: // r
           /*
            * Sometimes split path rotation gets exported like:
@@ -109,6 +120,22 @@ public class AnimatableTransformParser {
         case 9: // sa
           skewAngle = AnimatableValueParser.parseFloat(reader, composition, false);
           break;
+        case 10: // rx
+          rotationX = AnimatableValueParser.parseFloat(reader, composition, false);
+          if (rotationX.getKeyframes().isEmpty()) {
+            rotationX.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          } else if (rotationX.getKeyframes().get(0).startValue == null) {
+            rotationX.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          }
+          break;
+        case 11: // ry
+          rotationY = AnimatableValueParser.parseFloat(reader, composition, false);
+          if (rotationY.getKeyframes().isEmpty()) {
+            rotationY.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          } else if (rotationY.getKeyframes().get(0).startValue == null) {
+            rotationY.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+          }
+          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -136,7 +163,16 @@ public class AnimatableTransformParser {
     if (isSkewAngleIdentity(skewAngle)) {
       skewAngle = null;
     }
-    return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity, skew, skewAngle);
+    if (isRotationIdentity(rotationX)) {
+      rotationX = null;
+    }
+    if (isRotationIdentity(rotationY)) {
+      rotationY = null;
+    }
+    if (isRotationIdentity(rotationZ)) {
+      rotationZ = null;
+    }
+    return new AnimatableTransform(anchorPoint, position, scale, rotation, opacity, startOpacity, endOpacity, skew, skewAngle, rotationX, rotationY, rotationZ);
   }
 
   private static boolean isAnchorPointIdentity(AnimatablePathValue anchorPoint) {

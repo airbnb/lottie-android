@@ -117,6 +117,18 @@ public interface LottieProperty {
    */
   Float TRANSFORM_ROTATION = 1f;
   /**
+   * In degrees - 3D X-axis rotation
+   */
+  Float TRANSFORM_ROTATION_X = 1.1f;
+  /**
+   * In degrees - 3D Y-axis rotation
+   */
+  Float TRANSFORM_ROTATION_Y = 1.2f;
+  /**
+   * In degrees - 3D Z-axis rotation
+   */
+  Float TRANSFORM_ROTATION_Z = 1.3f;
+  /**
    * 0-85
    */
   Float TRANSFORM_SKEW = 0f;
