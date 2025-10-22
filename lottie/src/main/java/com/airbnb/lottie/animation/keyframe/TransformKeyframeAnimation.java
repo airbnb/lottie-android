@@ -17,7 +17,6 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION_Z;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.Camera;
 
 import com.airbnb.lottie.utils.Transform3D;
 
@@ -37,6 +36,14 @@ public class TransformKeyframeAnimation {
   private final Matrix skewMatrix2;
   private final Matrix skewMatrix3;
   private final float[] skewValues;
+
+  // Temporary matrix for 3D transformations to avoid object allocation
+  private final Matrix tempMatrix3D = new Matrix();
+
+  // Cache for 3D rotation values to avoid redundant trigonometric calculations
+  private float cachedRotationX = Float.NaN;
+  private float cachedRotationY = Float.NaN;
+  private float cachedRotationZ = Float.NaN;
 
   @Nullable private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   @Nullable private BaseKeyframeAnimation<?, PointF> position;
@@ -227,17 +234,19 @@ public class TransformKeyframeAnimation {
       float scaleY = scaleValue != null ? scaleValue.getScaleY() : 1f;
 
       // Use Transform3D to calculate complete 3D transformation
-      Matrix transform3D = Transform3D.makeTransform(
-        anchorPointValue, 
-        positionValue, 
-        scaleX, 
-        scaleY, 
-        rotX, 
-        rotY, 
+      // Reuse tempMatrix3D to avoid object allocation
+      Transform3D.applyTransform(
+        matrix,
+        tempMatrix3D,
+        anchorPointValue,
+        positionValue,
+        scaleX,
+        scaleY,
+        rotX,
+        rotY,
         rotZ
       );
-      
-      matrix.set(transform3D);
+
       return matrix;
     }
     BaseKeyframeAnimation<?, PointF> position = this.position;
