@@ -81,11 +81,7 @@ public class AnimatableTransformParser {
           break;
         case 3: // rz
           rotationZ = AnimatableValueParser.parseFloat(reader, composition, false);
-          if (rotationZ.getKeyframes().isEmpty()) {
-            rotationZ.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          } else if (rotationZ.getKeyframes().get(0).startValue == null) {
-            rotationZ.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          }
+          ensureValidRotationKeyframes(rotationZ, composition);
           break;
         case 4: // r
           /*
@@ -99,11 +95,7 @@ public class AnimatableTransformParser {
            * which doesn't parse to a real keyframe.
            */
           rotation = AnimatableValueParser.parseFloat(reader, composition, false);
-          if (rotation.getKeyframes().isEmpty()) {
-            rotation.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          } else if (rotation.getKeyframes().get(0).startValue == null) {
-            rotation.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          }
+          ensureValidRotationKeyframes(rotation, composition);
           break;
         case 5: // o
           opacity = AnimatableValueParser.parseInteger(reader, composition);
@@ -122,19 +114,11 @@ public class AnimatableTransformParser {
           break;
         case 10: // rx
           rotationX = AnimatableValueParser.parseFloat(reader, composition, false);
-          if (rotationX.getKeyframes().isEmpty()) {
-            rotationX.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          } else if (rotationX.getKeyframes().get(0).startValue == null) {
-            rotationX.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          }
+          ensureValidRotationKeyframes(rotationX, composition);
           break;
         case 11: // ry
           rotationY = AnimatableValueParser.parseFloat(reader, composition, false);
-          if (rotationY.getKeyframes().isEmpty()) {
-            rotationY.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          } else if (rotationY.getKeyframes().get(0).startValue == null) {
-            rotationY.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
-          }
+          ensureValidRotationKeyframes(rotationY, composition);
           break;
         default:
           reader.skipName();
@@ -199,5 +183,17 @@ public class AnimatableTransformParser {
 
   private static boolean isSkewAngleIdentity(AnimatableFloatValue skewAngle) {
     return skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f);
+  }
+
+  /**
+   * Helper method to ensure rotation values have valid keyframes
+   * Some rotation exports may have empty or null startValue keyframes
+   */
+  private static void ensureValidRotationKeyframes(AnimatableFloatValue rotation, LottieComposition composition) {
+    if (rotation.getKeyframes().isEmpty()) {
+      rotation.getKeyframes().add(new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+    } else if (rotation.getKeyframes().get(0).startValue == null) {
+      rotation.getKeyframes().set(0, new Keyframe<>(composition, 0f, 0f, null, 0f, composition.getEndFrame()));
+    }
   }
 }
