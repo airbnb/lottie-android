@@ -66,8 +66,38 @@ public class Transform3D {
             outMatrix.preTranslate(-anchor.x, -anchor.y);
         }
     }
-    
-    
+
+    /**
+     * Apply 3D rotations (X, Y, Z) to the matrix
+     * This method can be used independently for repeater or other scenarios
+     *
+     * @param matrix Output matrix to receive the rotation transformation
+     * @param rotationX X-axis rotation in degrees
+     * @param rotationY Y-axis rotation in degrees
+     * @param rotationZ Z-axis rotation in degrees
+     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
+     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
+     */
+    public static void apply3DRotations(
+            Matrix matrix,
+            float rotationX,
+            float rotationY,
+            float rotationZ,
+            float preComputedCosX,
+            float preComputedCosY) {
+
+        // Apply rotations in order: Z -> Y -> X
+        if (rotationZ != 0) {
+            matrix.preRotate(rotationZ);
+        }
+        if (rotationY != 0) {
+            applyYRotation(matrix, preComputedCosY);
+        }
+        if (rotationX != 0) {
+            applyXRotation(matrix, preComputedCosX);
+        }
+    }
+
     /**
      * Apply X-axis rotation using pre-computed cosine value
      * On a 2D plane, X-axis rotation primarily affects Y-direction scaling

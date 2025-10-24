@@ -379,7 +379,10 @@ public class TransformKeyframeAnimation {
   }
 
   /**
-   * TODO: see if we can use this for the main {@link #getMatrix()} method.
+   * Get transformation matrix for repeater content.
+   * This method applies transformations scaled by the amount parameter.
+   *
+   * @param amount Scaling factor for all transformations (based on copy index + offset)
    */
   public Matrix getMatrixForRepeater(float amount) {
     PointF position = this.position == null ? null : this.position.getValue();
@@ -387,10 +390,13 @@ public class TransformKeyframeAnimation {
     PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
 
     matrix.reset();
+
+    // 1. Apply position transformation
     if (position != null) {
       matrix.preTranslate(position.x * amount, position.y * amount);
     }
 
+    // 2. Apply rotation transformations
     // Check for 3D rotation
     float rotX = rotationX != null ? rotationX.getFloatValue() * amount : 0f;
     float rotY = rotationY != null ? rotationY.getFloatValue() * amount : 0f;
@@ -399,24 +405,24 @@ public class TransformKeyframeAnimation {
     boolean has3DRotation = rotX != 0f || rotY != 0f || rotZ != 0f;
 
     if (has3DRotation) {
-      // Apply 3D rotations
+      // Pre-compute cosine values once for this call
+      float cosX = rotX != 0f ? (float) Math.cos(Math.toRadians(rotX)) : 1f;
+      float cosY = rotY != 0f ? (float) Math.cos(Math.toRadians(rotY)) : 1f;
+
+      // Apply Z-axis rotation around anchor point
       if (rotZ != 0f) {
         matrix.preRotate(rotZ, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
       }
-      if (rotY != 0f) {
-        float cosY = (float) Math.cos(Math.toRadians(rotY));
-        matrix.preScale(cosY, 1f);
-      }
-      if (rotX != 0f) {
-        float cosX = (float) Math.cos(Math.toRadians(rotX));
-        matrix.preScale(1f, cosX);
-      }
+
+      // Apply 3D rotations using Transform3D utility (X and Y only, as Z was already applied)
+      Transform3D.apply3DRotations(matrix, rotX, rotY, 0f, cosX, cosY);
     } else if (this.rotation != null) {
       // Fall back to 2D rotation
       float rotation = this.rotation.getValue();
       matrix.preRotate(rotation * amount, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
     }
 
+    // 3. Apply scale transformation
     if (scale != null) {
       matrix.preScale(
           (float) Math.pow(scale.getScaleX(), amount),
