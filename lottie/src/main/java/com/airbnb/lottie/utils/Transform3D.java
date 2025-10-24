@@ -14,7 +14,6 @@ public class Transform3D {
      * This method reuses the provided matrix to avoid object allocation
      *
      * @param outMatrix Output matrix to receive the transformation
-     * @param tempMatrix Temporary matrix for intermediate calculations (will be modified)
      * @param anchor Anchor point
      * @param position Position
      * @param scaleX X-axis scale
@@ -22,17 +21,20 @@ public class Transform3D {
      * @param rotationX X-axis rotation (degrees)
      * @param rotationY Y-axis rotation (degrees)
      * @param rotationZ Z-axis rotation (degrees)
+     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
+     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
      */
     public static void applyTransform(
             Matrix outMatrix,
-            Matrix tempMatrix,
             PointF anchor,
             PointF position,
             float scaleX,
             float scaleY,
             float rotationX,
             float rotationY,
-            float rotationZ) {
+            float rotationZ,
+            float preComputedCosX,
+            float preComputedCosY) {
 
         outMatrix.reset();
 
@@ -48,12 +50,12 @@ public class Transform3D {
           outMatrix.preRotate(rotationZ);
         }
         if (rotationY != 0) {
-          applyYRotation(outMatrix, tempMatrix, rotationY);
+          applyYRotation(outMatrix, preComputedCosY);
         }
         if (rotationX != 0) {
-          applyXRotation(outMatrix, tempMatrix, rotationX);
+          applyXRotation(outMatrix, preComputedCosX);
         }
-        
+
         // 3. Apply scale (Note: Lottie's scale doesn't need to be divided by 100, use ScaleXY values directly)
         if (scaleX != 1.0f || scaleY != 1.0f) {
             outMatrix.preScale(scaleX, scaleY);
@@ -67,49 +69,31 @@ public class Transform3D {
     
     
     /**
-     * Apply X-axis rotation
+     * Apply X-axis rotation using pre-computed cosine value
      * On a 2D plane, X-axis rotation primarily affects Y-direction scaling
+     * Optimized version that directly modifies matrix values to avoid allocation
      *
      * @param matrix Input/output matrix to be modified
-     * @param tempMatrix Temporary matrix for intermediate calculations
-     * @param degrees Rotation angle in degrees
+     * @param cosX Pre-computed cos(rotationX) value
      */
-    private static void applyXRotation(Matrix matrix, Matrix tempMatrix, float degrees) {
+    private static void applyXRotation(Matrix matrix, float cosX) {
         // X-axis rotation is primarily represented as Y-direction perspective scaling in 2D projection
-        float radians = (float) Math.toRadians(degrees);
-        float cosX = (float) Math.cos(radians);
-
-        // Use tempMatrix to store the current state
-        tempMatrix.set(matrix);
-
-        // Apply Y-direction scale transformation (projection of X-axis rotation)
-        tempMatrix.preScale(1f, cosX);
-
-        // Copy result back to original matrix
-        matrix.set(tempMatrix);
+        // Directly scale Y-direction without matrix copy
+        matrix.preScale(1f, cosX);
     }
 
     /**
-     * Apply Y-axis rotation
+     * Apply Y-axis rotation using pre-computed cosine value
      * On a 2D plane, Y-axis rotation primarily affects X-direction scaling
+     * Optimized version that directly modifies matrix values to avoid allocation
      *
      * @param matrix Input/output matrix to be modified
-     * @param tempMatrix Temporary matrix for intermediate calculations
-     * @param degrees Rotation angle in degrees
+     * @param cosY Pre-computed cos(rotationY) value
      */
-    private static void applyYRotation(Matrix matrix, Matrix tempMatrix, float degrees) {
+    private static void applyYRotation(Matrix matrix, float cosY) {
         // Y-axis rotation is primarily represented as X-direction perspective scaling in 2D projection
-        float radians = (float) Math.toRadians(degrees);
-        float cosY = (float) Math.cos(radians);
-
-        // Use tempMatrix to store the current state
-        tempMatrix.set(matrix);
-
-        // Apply X-direction scale transformation (projection of Y-axis rotation)
-        tempMatrix.preScale(cosY, 1f);
-
-        // Copy result back to original matrix
-        matrix.set(tempMatrix);
+        // Directly scale X-direction without matrix copy
+        matrix.preScale(cosY, 1f);
     }
     
     /**
