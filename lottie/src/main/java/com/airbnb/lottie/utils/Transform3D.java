@@ -10,8 +10,10 @@ import android.graphics.PointF;
 public class Transform3D {
 
     /**
-     * Creates a 3D transformation matrix following Lottie Android's transformation order
+     * Applies 3D transformation to the given matrix following Lottie Android's transformation order
+     * This method reuses the provided matrix to avoid object allocation
      *
+     * @param outMatrix Output matrix to receive the transformation
      * @param anchor Anchor point
      * @param position Position
      * @param scaleX X-axis scale
@@ -19,93 +21,109 @@ public class Transform3D {
      * @param rotationX X-axis rotation (degrees)
      * @param rotationY Y-axis rotation (degrees)
      * @param rotationZ Z-axis rotation (degrees)
-     * @return Calculated Matrix
+     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
+     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
      */
-    public static Matrix makeTransform(
-            PointF anchor, 
+    public static void applyTransform(
+            Matrix outMatrix,
+            PointF anchor,
             PointF position,
-            float scaleX, 
+            float scaleX,
             float scaleY,
-            float rotationX, 
-            float rotationY, 
-            float rotationZ) {
-        
-        Matrix matrix = new Matrix();
-        
+            float rotationX,
+            float rotationY,
+            float rotationZ,
+            float preComputedCosX,
+            float preComputedCosY) {
+
+        outMatrix.reset();
+
         // Follow original Lottie Android order: position → rotation → scale → anchor
 
-        // 1. Apply position transformation  
+        // 1. Apply position transformation
         if (position != null && (position.x != 0 || position.y != 0)) {
-            matrix.preTranslate(position.x, position.y);
+            outMatrix.preTranslate(position.x, position.y);
         }
-        
+
         // 2. Apply 3D rotation (rotate directly without anchor, as anchor is handled at the end)
+        if (rotationZ != 0) {
+          outMatrix.preRotate(rotationZ);
+        }
+        if (rotationY != 0) {
+          applyYRotation(outMatrix, preComputedCosY);
+        }
+        if (rotationX != 0) {
+          applyXRotation(outMatrix, preComputedCosX);
+        }
+
+        // 3. Apply scale (Note: Lottie's scale doesn't need to be divided by 100, use ScaleXY values directly)
+        if (scaleX != 1.0f || scaleY != 1.0f) {
+            outMatrix.preScale(scaleX, scaleY);
+        }
+
+        // 4. Finally translate to negative anchor position (consistent with original code)
+        if (anchor != null && (anchor.x != 0 || anchor.y != 0)) {
+            outMatrix.preTranslate(-anchor.x, -anchor.y);
+        }
+    }
+
+    /**
+     * Apply 3D rotations (X, Y, Z) to the matrix
+     * This method can be used independently for repeater or other scenarios
+     *
+     * @param matrix Output matrix to receive the rotation transformation
+     * @param rotationX X-axis rotation in degrees
+     * @param rotationY Y-axis rotation in degrees
+     * @param rotationZ Z-axis rotation in degrees
+     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
+     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
+     */
+    public static void apply3DRotations(
+            Matrix matrix,
+            float rotationX,
+            float rotationY,
+            float rotationZ,
+            float preComputedCosX,
+            float preComputedCosY) {
+
+        // Apply rotations in order: Z -> Y -> X
         if (rotationZ != 0) {
             matrix.preRotate(rotationZ);
         }
         if (rotationY != 0) {
-            matrix = applyYRotation(matrix, rotationY);
+            applyYRotation(matrix, preComputedCosY);
         }
         if (rotationX != 0) {
-            matrix = applyXRotation(matrix, rotationX);
+            applyXRotation(matrix, preComputedCosX);
         }
-        
-        // 3. Apply scale (Note: Lottie's scale doesn't need to be divided by 100, use ScaleXY values directly)
-        if (scaleX != 1.0f || scaleY != 1.0f) {
-            matrix.preScale(scaleX, scaleY);
-        }
-        
-        // 4. Finally translate to negative anchor position (consistent with original code)
-        if (anchor != null && (anchor.x != 0 || anchor.y != 0)) {
-            matrix.preTranslate(-anchor.x, -anchor.y);
-        }
-        
-        return matrix;
     }
-    
-    
+
     /**
-     * Apply X-axis rotation
+     * Apply X-axis rotation using pre-computed cosine value
      * On a 2D plane, X-axis rotation primarily affects Y-direction scaling
+     * Optimized version that directly modifies matrix values to avoid allocation
+     *
+     * @param matrix Input/output matrix to be modified
+     * @param cosX Pre-computed cos(rotationX) value
      */
-    private static Matrix applyXRotation(Matrix matrix, float degrees) {
+    private static void applyXRotation(Matrix matrix, float cosX) {
         // X-axis rotation is primarily represented as Y-direction perspective scaling in 2D projection
-        float radians = (float) Math.toRadians(degrees);
-        float cosX = (float) Math.cos(radians);
-        
-        Matrix result = new Matrix(matrix);
-        
-        // Apply Y-direction scale transformation (projection of X-axis rotation)
-        result.preScale(1f, cosX);
-        
-        return result;
+        // Directly scale Y-direction without matrix copy
+        matrix.preScale(1f, cosX);
     }
-    
+
     /**
-     * Apply Y-axis rotation
+     * Apply Y-axis rotation using pre-computed cosine value
      * On a 2D plane, Y-axis rotation primarily affects X-direction scaling
+     * Optimized version that directly modifies matrix values to avoid allocation
+     *
+     * @param matrix Input/output matrix to be modified
+     * @param cosY Pre-computed cos(rotationY) value
      */
-    private static Matrix applyYRotation(Matrix matrix, float degrees) {
+    private static void applyYRotation(Matrix matrix, float cosY) {
         // Y-axis rotation is primarily represented as X-direction perspective scaling in 2D projection
-        float radians = (float) Math.toRadians(degrees);
-        float cosY = (float) Math.cos(radians);
-        
-        Matrix result = new Matrix(matrix);
-        
-        // Apply X-direction scale transformation (projection of Y-axis rotation)
-        result.preScale(cosY, 1f);
-        
-        return result;
-    }
-    
-    /**
-     * Apply Z-axis rotation
-     * Z-axis rotation is standard 2D rotation
-     */
-    private static Matrix applyZRotation(Matrix matrix, float degrees) {
-        Matrix result = new Matrix(matrix);
-        result.preRotate(degrees);
-        return result;
+        // Directly scale X-direction without matrix copy
+        matrix.preScale(cosY, 1f);
     }
     
     /**

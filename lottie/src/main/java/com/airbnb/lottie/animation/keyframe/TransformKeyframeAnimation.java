@@ -17,7 +17,6 @@ import static com.airbnb.lottie.LottieProperty.TRANSFORM_ROTATION_Z;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.Camera;
 
 import com.airbnb.lottie.utils.Transform3D;
 
@@ -37,6 +36,14 @@ public class TransformKeyframeAnimation {
   private final Matrix skewMatrix2;
   private final Matrix skewMatrix3;
   private final float[] skewValues;
+
+  // Cache for 3D rotation values to avoid redundant trigonometric calculations
+  private float cachedRotationX = Float.NaN;
+  private float cachedRotationY = Float.NaN;
+  private float cachedRotationZ = Float.NaN;
+  private float cachedCosX = 1f;
+  private float cachedCosY = 1f;
+  private boolean rotation3DCacheDirty = true;
 
   @Nullable private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   @Nullable private BaseKeyframeAnimation<?, PointF> position;
@@ -146,12 +153,18 @@ public class TransformKeyframeAnimation {
     
     if (rotationX != null) {
       rotationX.addUpdateListener(listener);
+      // Mark cache as dirty when rotation values change
+      rotationX.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
     if (rotationY != null) {
       rotationY.addUpdateListener(listener);
+      // Mark cache as dirty when rotation values change
+      rotationY.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
     if (rotationZ != null) {
       rotationZ.addUpdateListener(listener);
+      // Mark cache as dirty when rotation values change
+      rotationZ.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
   }
 
@@ -211,13 +224,39 @@ public class TransformKeyframeAnimation {
   public Matrix getMatrix() {
     matrix.reset();
 
-    // Check if 3D transformation is needed
-    float rotX = rotationX != null ? rotationX.getFloatValue() : 0f;
-    float rotY = rotationY != null ? rotationY.getFloatValue() : 0f;
-    float rotZ = rotationZ != null ? rotationZ.getFloatValue() : 0f;
+    // Early exit: Check if 3D transformation is needed (avoid getValue() calls if null)
+    boolean has3DRotation = (rotationX != null && rotationX.getFloatValue() != 0f) ||
+                            (rotationY != null && rotationY.getFloatValue() != 0f) ||
+                            (rotationZ != null && rotationZ.getFloatValue() != 0f);
 
     // If there is 3D rotation, use the new Transform3D utility class
-    if (rotX != 0f || rotY != 0f || rotZ != 0f) {
+    if (has3DRotation) {
+      float rotX = rotationX != null ? rotationX.getFloatValue() : 0f;
+      float rotY = rotationY != null ? rotationY.getFloatValue() : 0f;
+      float rotZ = rotationZ != null ? rotationZ.getFloatValue() : 0f;
+
+      // Update cache if values changed
+      if (rotation3DCacheDirty || rotX != cachedRotationX || rotY != cachedRotationY || rotZ != cachedRotationZ) {
+        cachedRotationX = rotX;
+        cachedRotationY = rotY;
+        cachedRotationZ = rotZ;
+
+        // Pre-calculate cos values for X and Y rotations
+        if (rotX != 0f) {
+          cachedCosX = (float) Math.cos(Math.toRadians(rotX));
+        } else {
+          cachedCosX = 1f;
+        }
+
+        if (rotY != 0f) {
+          cachedCosY = (float) Math.cos(Math.toRadians(rotY));
+        } else {
+          cachedCosY = 1f;
+        }
+
+        rotation3DCacheDirty = false;
+      }
+
       PointF anchorPointValue = anchorPoint == null ? null : anchorPoint.getValue();
       PointF positionValue = position == null ? null : position.getValue();
       ScaleXY scaleValue = scale == null ? null : scale.getValue();
@@ -226,18 +265,20 @@ public class TransformKeyframeAnimation {
       float scaleX = scaleValue != null ? scaleValue.getScaleX() : 1f;
       float scaleY = scaleValue != null ? scaleValue.getScaleY() : 1f;
 
-      // Use Transform3D to calculate complete 3D transformation
-      Matrix transform3D = Transform3D.makeTransform(
-        anchorPointValue, 
-        positionValue, 
-        scaleX, 
-        scaleY, 
-        rotX, 
-        rotY, 
-        rotZ
+      // Use Transform3D to calculate complete 3D transformation with cached cos values
+      Transform3D.applyTransform(
+        matrix,
+        anchorPointValue,
+        positionValue,
+        scaleX,
+        scaleY,
+        rotX,
+        rotY,
+        rotZ,
+        cachedCosX,
+        cachedCosY
       );
-      
-      matrix.set(transform3D);
+
       return matrix;
     }
     BaseKeyframeAnimation<?, PointF> position = this.position;
@@ -338,25 +379,54 @@ public class TransformKeyframeAnimation {
   }
 
   /**
-   * TODO: see if we can use this for the main {@link #getMatrix()} method.
+   * Get transformation matrix for repeater content.
+   * This method applies transformations scaled by the amount parameter.
+   *
+   * @param amount Scaling factor for all transformations (based on copy index + offset)
    */
   public Matrix getMatrixForRepeater(float amount) {
     PointF position = this.position == null ? null : this.position.getValue();
     ScaleXY scale = this.scale == null ? null : this.scale.getValue();
+    PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
 
     matrix.reset();
+
+    // 1. Apply position transformation
     if (position != null) {
       matrix.preTranslate(position.x * amount, position.y * amount);
     }
+
+    // 2. Apply rotation transformations
+    // Check for 3D rotation
+    float rotX = rotationX != null ? rotationX.getFloatValue() * amount : 0f;
+    float rotY = rotationY != null ? rotationY.getFloatValue() * amount : 0f;
+    float rotZ = rotationZ != null ? rotationZ.getFloatValue() * amount : 0f;
+
+    boolean has3DRotation = rotX != 0f || rotY != 0f || rotZ != 0f;
+
+    if (has3DRotation) {
+      // Pre-compute cosine values once for this call
+      float cosX = rotX != 0f ? (float) Math.cos(Math.toRadians(rotX)) : 1f;
+      float cosY = rotY != 0f ? (float) Math.cos(Math.toRadians(rotY)) : 1f;
+
+      // Apply Z-axis rotation around anchor point
+      if (rotZ != 0f) {
+        matrix.preRotate(rotZ, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
+      }
+
+      // Apply 3D rotations using Transform3D utility (X and Y only, as Z was already applied)
+      Transform3D.apply3DRotations(matrix, rotX, rotY, 0f, cosX, cosY);
+    } else if (this.rotation != null) {
+      // Fall back to 2D rotation
+      float rotation = this.rotation.getValue();
+      matrix.preRotate(rotation * amount, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
+    }
+
+    // 3. Apply scale transformation
     if (scale != null) {
       matrix.preScale(
           (float) Math.pow(scale.getScaleX(), amount),
           (float) Math.pow(scale.getScaleY(), amount));
-    }
-    if (this.rotation != null) {
-      float rotation = this.rotation.getValue();
-      PointF anchorPoint = this.anchorPoint == null ? null : this.anchorPoint.getValue();
-      matrix.preRotate(rotation * amount, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
     }
 
     return matrix;
