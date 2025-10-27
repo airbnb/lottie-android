@@ -1,3 +1,7 @@
+# 6.7.0
+### New Features
+* Initial support for 3D animations ([#2666](https://github.com/airbnb/lottie-android/pull/2666) and [#2673](https://github.com/airbnb/lottie-android/pull/2673))
+
 # 6.6.10
 * Add RTL support to lottie-android ([#2663](https://github.com/airbnb/lottie-android/pull/2663))
 * Make `lottieComposition` public ([#2660](https://github.com/airbnb/lottie-android/pull/2660))
