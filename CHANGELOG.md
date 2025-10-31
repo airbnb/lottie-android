@@ -1,3 +1,6 @@
+# 6.7.1
+* Safeguard against very large Bitmap creation ([#2662](https://github.com/airbnb/lottie-android/pull/2662))
+
 # 6.7.0
 ### New Features
 * Initial support for 3D animations ([#2666](https://github.com/airbnb/lottie-android/pull/2666) and [#2673](https://github.com/airbnb/lottie-android/pull/2673))
