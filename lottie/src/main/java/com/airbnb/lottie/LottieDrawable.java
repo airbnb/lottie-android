@@ -111,6 +111,11 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       "reducedmotion"
   );
 
+  /**
+   * Significantly larger than the largest expected size, equivalent to about 1.5x an 8K display.
+   */
+  private static final long MAX_SOFTWARE_BITMAP_PIXELS = 50_000_000L;
+
   private LottieComposition composition;
   private final LottieValueAnimator animator = new LottieValueAnimator();
 
@@ -1795,10 +1800,22 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
       softwareRenderingTransformedBounds.intersect(canvasClipBounds.left, canvasClipBounds.top, canvasClipBounds.right, canvasClipBounds.bottom);
     }
 
+    if (!isFiniteRect(softwareRenderingTransformedBounds)) {
+      Logger.warning("Skipping software rendering: transformed bounds contain non-finite values.");
+      return;
+    }
+
     int renderWidth = (int) Math.ceil(softwareRenderingTransformedBounds.width());
     int renderHeight = (int) Math.ceil(softwareRenderingTransformedBounds.height());
 
     if (renderWidth <= 0 || renderHeight <= 0) {
+      Logger.warning("Skipping software rendering: transformed bounds have negative values.");
+      return;
+    }
+
+    long renderPixelCount = (long) renderWidth * (long) renderHeight;
+    if (renderPixelCount > MAX_SOFTWARE_BITMAP_PIXELS) {
+      Logger.warning("Skipping software rendering: bitmap request exceeds safe pixel count (" + renderPixelCount + ")");
       return;
     }
 
@@ -1888,6 +1905,17 @@ public class LottieDrawable extends Drawable implements Drawable.Callback, Anima
         src.top,
         src.right,
         src.bottom);
+  }
+
+  private static boolean isFiniteRect(RectF rect) {
+    return isFinite(rect.left) &&
+        isFinite(rect.top) &&
+        isFinite(rect.right) &&
+        isFinite(rect.bottom);
+  }
+
+  private static boolean isFinite(float value) {
+    return !Float.isNaN(value) && !Float.isInfinite(value);
   }
 
   private void scaleRect(RectF rect, float scaleX, float scaleY) {
