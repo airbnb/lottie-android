@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.os.Looper;
 import android.util.Base64;
 
 import androidx.annotation.Nullable;
@@ -136,13 +137,19 @@ public class LottieCompositionFactory {
     return fromUrl(context, url, "url_" + url);
   }
 
+  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    return fromUrl(context, context.getMainLooper(), url, cacheKey);
+  }
+
   /**
    * Fetch an animation from an http url. Once it is downloaded once, Lottie will cache the file to disk for
    * future use. Because of this, you may call `fromUrl` ahead of time to warm the cache if you think you
    * might need an animation in the future.
    */
-  public static LottieTask<LottieComposition> fromUrl(final Context context, final String url, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> {
+  public static LottieTask<LottieComposition> fromUrl(
+      final Context context, final Looper uiLooper, final String url, @Nullable final String cacheKey) {
+    return cache(uiLooper, cacheKey, () -> {
       LottieResult<LottieComposition> result = L.networkFetcher(context).fetchSync(context, url, cacheKey);
       if (cacheKey != null && result.getValue() != null) {
         LottieCompositionCache.getInstance().put(cacheKey, result.getValue());
@@ -187,11 +194,16 @@ public class LottieCompositionFactory {
    * <p>
    * To skip the cache, add null as a third parameter.
    *
-   * @see #fromZipStream(ZipInputStream, String)
+   * @see #fromZipStream(Context, ZipInputStream, String)
    */
   public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName) {
     String cacheKey = "asset_" + fileName;
     return fromAsset(context, fileName, cacheKey);
+  }
+
+  public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName, final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    return fromAsset(context, context.getMainLooper(), fileName, cacheKey);
   }
 
   /**
@@ -201,12 +213,12 @@ public class LottieCompositionFactory {
    * <p>
    * Pass null as the cache key to skip the cache.
    *
-   * @see #fromZipStream(ZipInputStream, String)
+   * @see #fromZipStream(Context, ZipInputStream, String)
    */
-  public static LottieTask<LottieComposition> fromAsset(Context context, final String fileName, @Nullable final String cacheKey) {
+  public static LottieTask<LottieComposition> fromAsset(Context context, Looper uiLooper, final String fileName, @Nullable final String cacheKey) {
     // Prevent accidentally leaking an Activity.
     final Context appContext = context.getApplicationContext();
-    return cache(cacheKey, () -> fromAssetSync(appContext, fileName, cacheKey), null);
+    return cache(uiLooper, cacheKey, () -> fromAssetSync(appContext, fileName, cacheKey), null);
   }
 
   /**
@@ -254,9 +266,11 @@ public class LottieCompositionFactory {
    *                font family (fFamily) in your animation file.
    */
   public static LottieTask<LottieComposition> fromInputStream(@Nullable Context context, InputStream inputStream, @Nullable String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    final Looper uiLooper = context != null ? context.getMainLooper() : Looper.getMainLooper();
     // Prevent accidentally leaking an Activity.
     final Context appContext = context == null ? null : context.getApplicationContext();
-    return cache(cacheKey, () -> fromInputStreamSync(appContext, inputStream, cacheKey), null);
+    return cache(uiLooper, cacheKey, () -> fromInputStreamSync(appContext, inputStream, cacheKey), null);
   }
 
   /**
@@ -309,10 +323,12 @@ public class LottieCompositionFactory {
    * Pass null as the cache key to skip caching.
    */
   public static LottieTask<LottieComposition> fromRawRes(Context context, @RawRes final int rawRes, @Nullable final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    final Looper uiLooper = context.getMainLooper();
     // Prevent accidentally leaking an Activity.
     final WeakReference<Context> contextRef = new WeakReference<>(context);
     final Context appContext = context.getApplicationContext();
-    return cache(cacheKey, () -> {
+    return cache(uiLooper, cacheKey, () -> {
       @Nullable Context originalContext = contextRef.get();
       Context context1 = originalContext != null ? originalContext : appContext;
       return fromRawResSync(context1, rawRes, cacheKey);
@@ -383,6 +399,11 @@ public class LottieCompositionFactory {
    *
    * @see #fromJsonInputStreamSync(InputStream, String, boolean)
    */
+  public static LottieTask<LottieComposition> fromJsonInputStream(final Context context, final InputStream stream, @Nullable final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    return cache(context.getMainLooper(), cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey), () -> closeQuietly(stream));
+  }
+
   public static LottieTask<LottieComposition> fromJsonInputStream(final InputStream stream, @Nullable final String cacheKey) {
     return cache(cacheKey, () -> fromJsonInputStreamSync(stream, cacheKey), () -> closeQuietly(stream));
   }
@@ -441,6 +462,11 @@ public class LottieCompositionFactory {
    */
   public static LottieTask<LottieComposition> fromJsonString(final String json, @Nullable final String cacheKey) {
     return cache(cacheKey, () -> fromJsonStringSync(json, cacheKey), null);
+  }
+
+  public static LottieTask<LottieComposition> fromJsonString(final Context context, final String json, @Nullable final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    return cache(context.getMainLooper(), cacheKey, () -> fromJsonStringSync(json, cacheKey), null);
   }
 
   /**
@@ -523,16 +549,21 @@ public class LottieCompositionFactory {
   /**
    * @see #fromZipStreamSync(Context, ZipInputStream, String)
    */
-  public static LottieTask<LottieComposition> fromZipStream(Context context, final ZipInputStream inputStream, @Nullable final String cacheKey) {
-    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), () -> closeQuietly(inputStream));
+  public static LottieTask<LottieComposition> fromZipStream(@Nullable Context context, final ZipInputStream inputStream,
+      @Nullable final String cacheKey) {
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    Looper uiLooper = context != null ? context.getMainLooper() : Looper.getMainLooper();
+    return cache(uiLooper, cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), () -> closeQuietly(inputStream));
   }
 
   /**
    * @see #fromZipStreamSync(Context, ZipInputStream, String)
    */
-  public static LottieTask<LottieComposition> fromZipStream(Context context, final ZipInputStream inputStream,
+  public static LottieTask<LottieComposition> fromZipStream(@Nullable Context context, final ZipInputStream inputStream,
       @Nullable final String cacheKey, boolean close) {
-    return cache(cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), close ? () -> closeQuietly(inputStream) : null);
+    // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+    Looper uiLooper = context != null ? context.getMainLooper() : Looper.getMainLooper();
+    return cache(uiLooper, cacheKey, () -> fromZipStreamSync(context, inputStream, cacheKey), close ? () -> closeQuietly(inputStream) : null);
   }
 
   /**
@@ -767,17 +798,22 @@ public class LottieCompositionFactory {
     return null;
   }
 
+  private static LottieTask<LottieComposition> cache(
+      @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable, @Nullable Runnable onCached) {
+    return cache(Looper.getMainLooper(), cacheKey, callable, onCached);
+  }
+
   /**
    * First, check to see if there are any in-progress tasks associated with the cache key and return it if there is.
    * If not, create a new task for the callable.
    * Then, add the new task to the task cache and set up listeners so it gets cleared when done.
    */
-  private static LottieTask<LottieComposition> cache(@Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable,
-      @Nullable Runnable onCached) {
+  private static LottieTask<LottieComposition> cache(
+      final Looper uiLooper, @Nullable final String cacheKey, Callable<LottieResult<LottieComposition>> callable, @Nullable Runnable onCached) {
     LottieTask<LottieComposition> task = null;
     final LottieComposition cachedComposition = cacheKey == null ? null : LottieCompositionCache.getInstance().get(cacheKey);
     if (cachedComposition != null) {
-      task = new LottieTask<>(cachedComposition);
+      task = new LottieTask<>(uiLooper, cachedComposition);
     }
     if (cacheKey != null && taskCache.containsKey(cacheKey)) {
       task = taskCache.get(cacheKey);
@@ -789,7 +825,7 @@ public class LottieCompositionFactory {
       return task;
     }
 
-    task = new LottieTask<>(callable);
+    task = new LottieTask<>(uiLooper, callable);
     if (cacheKey != null) {
       AtomicBoolean resultAlreadyCalled = new AtomicBoolean(false);
       task.addListener(result -> {

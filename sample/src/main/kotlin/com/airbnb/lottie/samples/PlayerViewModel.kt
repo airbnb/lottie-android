@@ -2,7 +2,9 @@ package com.airbnb.lottie.samples
 
 import android.animation.ValueAnimator
 import android.app.Application
+import android.content.Context
 import android.net.Uri
+import android.os.Looper
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieTask
@@ -38,16 +40,17 @@ data class PlayerState(
 
 class PlayerViewModel(
     initialState: PlayerState,
-    private val application: Application
+    private val application: Application,
+    private val uiLooper: Looper,
 ) : MavericksViewModel<PlayerState>(initialState) {
 
     fun fetchAnimation(args: CompositionArgs) {
         val url = args.url
 
         when {
-            url != null -> LottieCompositionFactory.fromUrl(application, url, null)
+            url != null -> LottieCompositionFactory.fromUrl(application, uiLooper, url, null)
             args.fileUri != null -> taskForUri(args.fileUri)
-            args.asset != null -> LottieCompositionFactory.fromAsset(application, args.asset, null)
+            args.asset != null -> LottieCompositionFactory.fromAsset(application, uiLooper, args.asset, null)
             else -> error("Don't know how to fetch animation for $args")
         }
             .addListener {
@@ -65,7 +68,7 @@ class PlayerViewModel(
             else -> error("Unknown scheme ${uri.scheme}")
         }
 
-        return LottieCompositionFactory.fromJsonInputStream(fis, null)
+        return LottieCompositionFactory.fromJsonInputStream(application, fis, null)
     }
 
     fun toggleRenderGraphVisible() = setState { copy(renderGraphVisible = !renderGraphVisible) }
@@ -114,7 +117,8 @@ class PlayerViewModel(
 
     companion object : MavericksViewModelFactory<PlayerViewModel, PlayerState> {
         override fun create(viewModelContext: ViewModelContext, state: PlayerState): PlayerViewModel {
-            return PlayerViewModel(state, viewModelContext.app())
+            // App can override {@link Context#getMainLooper()} to support lottie view on per-window ui thread.
+            return PlayerViewModel(state, viewModelContext.app(), viewModelContext.activity.mainLooper)
         }
     }
 }
