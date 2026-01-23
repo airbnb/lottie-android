@@ -12,6 +12,7 @@ import com.airbnb.lottie.model.animatable.AnimatableTransform;
 import com.airbnb.lottie.model.animatable.AnimatableValue;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.value.Keyframe;
+import com.airbnb.lottie.value.ScaleXY;
 
 import java.io.IOException;
 
@@ -160,29 +161,51 @@ public class AnimatableTransformParser {
   }
 
   private static boolean isAnchorPointIdentity(AnimatablePathValue anchorPoint) {
-    return anchorPoint == null || (anchorPoint.isStatic() && anchorPoint.getKeyframes().get(0).startValue.equals(0f, 0f));
+    if (anchorPoint == null) {
+      return true;
+    }
+    PointF startValue = anchorPoint.getKeyframes().get(0).startValue;
+    return anchorPoint.isStatic() && startValue != null && startValue.equals(0f, 0f);
   }
 
   private static boolean isPositionIdentity(AnimatableValue<PointF, PointF> position) {
-    return position == null || (
-        !(position instanceof AnimatableSplitDimensionPathValue) &&
-            position.isStatic() && position.getKeyframes().get(0).startValue.equals(0f, 0f));
+    if (position == null || position instanceof AnimatableSplitDimensionPathValue) {
+      return position == null;
+    }
+    PointF startValue = position.getKeyframes().get(0).startValue;
+    return position.isStatic() && startValue != null && startValue.equals(0f, 0f);
   }
 
   private static boolean isRotationIdentity(AnimatableFloatValue rotation) {
-    return rotation == null || (rotation.isStatic() && rotation.getKeyframes().get(0).startValue == 0f);
+    if (rotation == null) {
+      return true;
+    }
+    Float startValue = rotation.getKeyframes().get(0).startValue;
+    return rotation.isStatic() && startValue != null && startValue == 0f;
   }
 
   private static boolean isScaleIdentity(AnimatableScaleValue scale) {
-    return scale == null || (scale.isStatic() && scale.getKeyframes().get(0).startValue.equals(1f, 1f));
+    if (scale == null) {
+      return true;
+    }
+    ScaleXY startValue = scale.getKeyframes().get(0).startValue;
+    return scale.isStatic() && startValue != null && startValue.equals(1f, 1f);
   }
 
   private static boolean isSkewIdentity(AnimatableFloatValue skew) {
-    return skew == null || (skew.isStatic() && skew.getKeyframes().get(0).startValue == 0f);
+    if (skew == null) {
+      return true;
+    }
+    Float startValue = skew.getKeyframes().get(0).startValue;
+    return skew.isStatic() && startValue != null && startValue == 0f;
   }
 
   private static boolean isSkewAngleIdentity(AnimatableFloatValue skewAngle) {
-    return skewAngle == null || (skewAngle.isStatic() && skewAngle.getKeyframes().get(0).startValue == 0f);
+    if (skewAngle == null) {
+      return true;
+    }
+    Float startValue = skewAngle.getKeyframes().get(0).startValue;
+    return skewAngle.isStatic() && startValue != null && startValue == 0f;
   }
 
   /**
