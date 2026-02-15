@@ -5,6 +5,7 @@ import static com.airbnb.lottie.utils.MiscUtils.clamp;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -192,6 +193,7 @@ public abstract class BaseStrokeContent
 
     canvas.save();
     canvas.concat(parentMatrix);
+    float cornerRadius = 0f;
     for (int i = 0; i < pathGroups.size(); i++) {
       PathGroup pathGroup = pathGroups.get(i);
 
@@ -204,7 +206,16 @@ public abstract class BaseStrokeContent
         }
         path.reset();
         for (int j = pathGroup.paths.size() - 1; j >= 0; j--) {
-          path.addPath(pathGroup.paths.get(j).getPath());
+          PathContent pathContent = pathGroup.paths.get(j);
+          if (pathContent instanceof RoundedCornersContent) {
+            float newCornerRadius = ((RoundedCornersContent) pathContent).getRoundedCorners().getValue();
+            if (newCornerRadius != cornerRadius) {
+              canvas.drawPath(path, paint);
+              path.reset();
+              paint.setPathEffect(new CornerPathEffect(newCornerRadius / Utils.dpScale()));
+            }
+          }
+          path.addPath(pathContent.getPath());
         }
         if (L.isTraceEnabled()) {
           L.endSection("StrokeContent#buildPath");
