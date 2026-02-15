@@ -20,6 +20,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import android.os.Looper;
+
 public class LottieTaskTest extends BaseTest {
 
   @Mock
@@ -30,9 +32,11 @@ public class LottieTaskTest extends BaseTest {
   @Rule
   public MockitoRule rule = MockitoJUnit.rule();
 
+  private final Looper uiLooper = Looper.getMainLooper();
+
   @Test
   public void testListener() {
-    new LottieTask<>(() -> new LottieResult<>(5), true)
+    new LottieTask<>(uiLooper, () -> new LottieResult<>(5), true)
         .addListener(successListener)
         .addFailureListener(failureListener);
     verify(successListener, times(1)).onResult(5);
@@ -42,7 +46,7 @@ public class LottieTaskTest extends BaseTest {
   @Test
   public void testException() {
     final IllegalStateException exception = new IllegalStateException("foo");
-    new LottieTask<>((Callable<LottieResult<Integer>>) () -> {
+    new LottieTask<>(uiLooper, (Callable<LottieResult<Integer>>) () -> {
       throw exception;
     }, true)
         .addListener(successListener)
@@ -58,18 +62,10 @@ public class LottieTaskTest extends BaseTest {
   @Test
   public void testRemoveListener() {
     final Semaphore lock = new Semaphore(0);
-    LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
-      @Override public LottieResult<Integer> call() {
-        return new LottieResult<>(5);
-      }
-    })
+    LottieTask<Integer> task = new LottieTask<>(uiLooper, () -> new LottieResult<>(5))
         .addListener(successListener)
         .addFailureListener(failureListener)
-        .addListener(new LottieListener<Integer>() {
-          @Override public void onResult(Integer result) {
-            lock.release();
-          }
-        });
+        .addListener(result -> lock.release());
     task.removeListener(successListener);
     try {
       lock.acquire();
@@ -82,11 +78,7 @@ public class LottieTaskTest extends BaseTest {
 
   @Test
   public void testAddListenerAfter() {
-    LottieTask<Integer> task = new LottieTask<>(new Callable<LottieResult<Integer>>() {
-      @Override public LottieResult<Integer> call() {
-        return new LottieResult<>(5);
-      }
-    }, true);
+    LottieTask<Integer> task = new LottieTask<>(uiLooper, () -> new LottieResult<>(5), true);
 
     task.addListener(successListener);
     task.addFailureListener(failureListener);

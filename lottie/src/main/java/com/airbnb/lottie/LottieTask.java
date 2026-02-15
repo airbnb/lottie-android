@@ -50,23 +50,35 @@ public class LottieTask<T> {
   /* Preserve add order. */
   private final Set<LottieListener<T>> successListeners = new LinkedHashSet<>(1);
   private final Set<LottieListener<Throwable>> failureListeners = new LinkedHashSet<>(1);
-  private final Handler handler = new Handler(Looper.getMainLooper());
+
+  /**
+   * Handler to notify listener on UI thread. If view is rendered on per-window UI thread, app should override
+   * {@link Context#getMainLooper()} for the {@link WindowContext} that hosts the view tree so that uiHandler
+   * will point to the per-window ui thread.
+   */
+  private final Handler uiHandler;
 
   @Nullable private volatile LottieResult<T> result = null;
 
   @RestrictTo(RestrictTo.Scope.LIBRARY)
-  public LottieTask(Callable<LottieResult<T>> runnable) {
-    this(runnable, false);
+  public LottieTask(Looper uiLooper, Callable<LottieResult<T>> runnable) {
+    this(uiLooper, runnable, false);
   }
 
   public LottieTask(T result) {
+    this(Looper.getMainLooper(), result);
+  }
+
+  public LottieTask(Looper uiLooper, T result) {
+    uiHandler = new Handler(uiLooper);
     setResult(new LottieResult<>(result));
   }
 
   /**
    * runNow is only used for testing.
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY) LottieTask(Callable<LottieResult<T>> runnable, boolean runNow) {
+  @RestrictTo(RestrictTo.Scope.LIBRARY) LottieTask(Looper uiLooper, Callable<LottieResult<T>> runnable, boolean runNow) {
+    uiHandler = new Handler(uiLooper);
     if (runNow) {
       try {
         setResult(runnable.call());
@@ -145,11 +157,11 @@ public class LottieTask<T> {
   }
 
   private void notifyListeners() {
-    // Listeners should be called on the main thread.
-    if (Looper.myLooper() == Looper.getMainLooper()) {
+    // Listeners should be called on the ui thread.
+    if (Looper.myLooper() == uiHandler.getLooper()) {
       notifyListenersInternal();
     } else {
-      handler.post(this::notifyListenersInternal);
+      uiHandler.post(this::notifyListenersInternal);
     }
   }
 
