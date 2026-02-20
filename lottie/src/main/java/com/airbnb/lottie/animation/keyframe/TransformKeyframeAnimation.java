@@ -307,18 +307,17 @@ public class TransformKeyframeAnimation {
         double rotationValue = Math.toDegrees(Math.atan2(nextPosition.y - startY, nextPosition.x - startX));
         matrix.preRotate((float) rotationValue);
       }
-    } else {
-      BaseKeyframeAnimation<Float, Float> rotation = this.rotation;
-      if (rotation != null) {
-        float rotationValue;
-        if (rotation instanceof ValueCallbackKeyframeAnimation) {
-          rotationValue = rotation.getValue();
-        } else {
-          rotationValue = ((FloatKeyframeAnimation) rotation).getFloatValue();
-        }
-        if (rotationValue != 0f) {
-          matrix.preRotate(rotationValue);
-        }
+    }
+    BaseKeyframeAnimation<Float, Float> rotation = this.rotation;
+    if (rotation != null) {
+      float rotationValue;
+      if (rotation instanceof ValueCallbackKeyframeAnimation) {
+        rotationValue = rotation.getValue();
+      } else {
+        rotationValue = ((FloatKeyframeAnimation) rotation).getFloatValue();
+      }
+      if (rotationValue != 0f) {
+        matrix.preRotate(rotationValue);
       }
     }
 
