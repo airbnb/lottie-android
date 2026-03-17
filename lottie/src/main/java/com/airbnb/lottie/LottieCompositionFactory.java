@@ -816,7 +816,11 @@ public class LottieCompositionFactory {
       task = new LottieTask<>(uiLooper, cachedComposition);
     }
     if (cacheKey != null && taskCache.containsKey(cacheKey)) {
-      task = taskCache.get(cacheKey);
+      LottieTask<LottieComposition> cachedTask = taskCache.get(cacheKey);
+      // Only reuse the task if the Looper matches!
+      if (cachedTask.getLooper() == uiLooper) {
+        task = cachedTask;
+      }
     }
     if (task != null) {
       if (onCached != null) {

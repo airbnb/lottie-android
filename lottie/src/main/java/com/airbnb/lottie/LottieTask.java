@@ -90,6 +90,10 @@ public class LottieTask<T> {
     }
   }
 
+  public Looper getLooper() {
+    return uiHandler.getLooper();
+  }
+
   private void setResult(@Nullable LottieResult<T> result) {
     if (this.result != null) {
       throw new IllegalStateException("A task may only be set once.");
