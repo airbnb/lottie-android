@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -61,11 +62,12 @@ import okio.Source;
 public class LottieCompositionFactory {
 
   /**
-   * Keep a map of cache keys to in-progress tasks and return them for new requests.
-   * Without this, simultaneous requests to parse a composition will trigger multiple parallel
-   * parse tasks prior to the cache getting populated.
+   * Keep a thread-safe map of cache keys to in-progress tasks and return them for new requests.
+   * This prevents simultaneous requests from triggering multiple parallel parse tasks and
+   * ensures safety when accessed from different UI threads (e.g., main vs. per-window UI thread).
    */
-  private static final Map<String, LottieTask<LottieComposition>> taskCache = new HashMap<>();
+  private static final Map<String, LottieTask<LottieComposition>> taskCache =
+      new ConcurrentHashMap<>();
   private static final Set<LottieTaskIdleListener> taskIdleListeners = new HashSet<>();
 
   /**
@@ -815,8 +817,12 @@ public class LottieCompositionFactory {
     if (cachedComposition != null) {
       task = new LottieTask<>(uiLooper, cachedComposition);
     }
-    if (cacheKey != null && taskCache.containsKey(cacheKey)) {
-      task = taskCache.get(cacheKey);
+    if (cacheKey != null) {
+      LottieTask<LottieComposition> cachedTask = taskCache.get(cacheKey);
+      // Only reuse the task if the Looper matches!
+      if (cachedTask != null && cachedTask.getLooper() == uiLooper) {
+        task = cachedTask;
+      }
     }
     if (task != null) {
       if (onCached != null) {
