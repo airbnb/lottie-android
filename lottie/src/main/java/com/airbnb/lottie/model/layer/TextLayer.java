@@ -8,10 +8,8 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
@@ -355,13 +353,7 @@ public class TextLayer extends BaseLayer {
 
         canvas.save();
 
-        float lineWidth =
-            (textAnimation == null &&
-                textSizeCallbackAnimation == null &&
-                trackingCallbackAnimation == null) ?
-                line.width :
-                fillPaint.measureText(line.text);
-        if (offsetCanvas(canvas, documentData, lineIndex, lineWidth)) {
+        if (offsetCanvas(canvas, documentData, lineIndex, line.width)) {
           String currentLineText = line.text;
           if (Bidi.requiresBidi(currentLineText.toCharArray(), 0, currentLineText.length())) {
             currentLineText = reorderLineVisually(currentLineText);
@@ -499,7 +491,7 @@ public class TextLayer extends BaseLayer {
         reorderingStringBuilder.append(word);
       } else {
         reversingStringBuilder.setLength(0);
-        for (int j = 0; j < word.length();) {
+        for (int j = 0; j < word.length(); ) {
           String charString = codePointToString(word, j);
           reversingStringBuilder.insert(0, charString);
           j += charString.length();
@@ -511,32 +503,38 @@ public class TextLayer extends BaseLayer {
     return reorderingStringBuilder.toString();
   }
 
-  private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font, float fontScale, float tracking,
-      boolean usingGlyphs) {
+  private List<TextSubLine> splitGlyphTextIntoLines(String textLine, float boxWidth, Font font,
+      float fontScale, float tracking, boolean usingGlyphs) {
     int lineCount = 0;
 
     float currentLineWidth = 0;
     int currentLineStartIndex = 0;
-
     int currentWordStartIndex = 0;
     float currentWordWidth = 0f;
     boolean nextCharacterStartsWord = false;
-
-    // The measured size of a space.
     float spaceWidth = 0f;
 
-    for (int i = 0; i < textLine.length(); i++) {
-      char c = textLine.charAt(i);
+    int i = 0;
+    while (i < textLine.length()) {
       float currentCharWidth;
+      int advance; // how many Java chars we just consumed
+      char c;
+
       if (usingGlyphs) {
+        c = textLine.charAt(i);
         int characterHash = FontCharacter.hashFor(c, font.getFamily(), font.getStyle());
         FontCharacter character = composition.getCharacters().get(characterHash);
         if (character == null) {
+          i++;
           continue;
         }
         currentCharWidth = (float) character.getWidth() * fontScale * Utils.dpScale() + tracking;
+        advance = 1;
       } else {
-        currentCharWidth = fillPaint.measureText(textLine.substring(i, i + 1)) + tracking;
+        String cluster = codePointToString(textLine, i);
+        currentCharWidth = fillPaint.measureText(cluster) + tracking;
+        advance = cluster.length();
+        c = textLine.charAt(i);
       }
 
       if (c == ' ') {
@@ -553,13 +551,11 @@ public class TextLayer extends BaseLayer {
 
       if (boxWidth > 0f && currentLineWidth >= boxWidth) {
         if (c == ' ') {
-          // Spaces at the end of a line don't do anything. Ignore it.
-          // The next non-space character will hit the conditions below.
+          i += advance;
           continue;
         }
         TextSubLine subLine = ensureEnoughSubLines(++lineCount);
         if (currentWordStartIndex == currentLineStartIndex) {
-          // Only word on line is wider than box, start wrapping mid-word.
           String substr = textLine.substring(currentLineStartIndex, i);
           String trimmed = substr.trim();
           float trimmedSpace = (trimmed.length() - substr.length()) * spaceWidth;
@@ -577,11 +573,43 @@ public class TextLayer extends BaseLayer {
           currentLineWidth = currentWordWidth;
         }
       }
+      i += advance;
     }
+
     if (currentLineWidth > 0f) {
       TextSubLine line = ensureEnoughSubLines(++lineCount);
       line.set(textLine.substring(currentLineStartIndex), currentLineWidth);
     }
+
+    // For font (non-glyph) text, remeasure each line using the full string so that
+    // scripts with ligatures (e.g. Arabic) are measured correctly. Summing isolated
+    // character widths overestimates the rendered width and breaks centering/alignment.
+    if (!usingGlyphs) {
+      for (int idx = 0; idx < lineCount; idx++) {
+        TextSubLine subLine = textSubLines.get(idx);
+        float measured = fillPaint.measureText(subLine.text);
+
+        int drawnClusterCount = 0;
+        int k = 0;
+        while (k < subLine.text.length()) {
+          String cluster = codePointToString(subLine.text, k);
+          k += cluster.length();
+          while (k < subLine.text.length()) {
+            String next = codePointToString(subLine.text, k);
+            if (isJoiningRightToLeft(next)) {
+              k += next.length();
+            } else {
+              break;
+            }
+          }
+          drawnClusterCount++;
+        }
+
+        subLine.width = measured + drawnClusterCount * tracking;
+      }
+    }
+
+
     return textSubLines.subList(0, lineCount);
   }
 
