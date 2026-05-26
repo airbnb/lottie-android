@@ -215,8 +215,8 @@ public class TextLayer extends BaseLayer {
     int alpha = Math.round((transformOpacity * 255f / 100f)
         * (textRangeOpacity / 100f)
         * parentAlpha / 255f);
-    fillPaint.setAlpha(alpha);
-    strokePaint.setAlpha(alpha);
+    fillPaint.setAlpha(getTextPaintAlpha(fillPaint.getColor(), alpha));
+    strokePaint.setAlpha(getTextPaintAlpha(strokePaint.getColor(), alpha));
 
     if (strokeWidthCallbackAnimation != null) {
       strokePaint.setStrokeWidth(strokeWidthCallbackAnimation.getValue());
@@ -225,6 +225,10 @@ public class TextLayer extends BaseLayer {
     } else {
       strokePaint.setStrokeWidth(documentData.strokeWidth * Utils.dpScale());
     }
+  }
+
+  static int getTextPaintAlpha(int color, int alpha) {
+    return alpha * Color.alpha(color) / 255;
   }
 
   private boolean isIndexInRangeSelection(int indexInDocument) {
