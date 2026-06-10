@@ -252,7 +252,11 @@ public class LottieCompositionFactory {
       return new LottieResult<>(cachedComposition);
     }
     try {
-      return fromInputStreamSync(context, context.getAssets().open(fileName), cacheKey);
+      LottieResult<LottieComposition> result = fromInputStreamSync(context, context.getAssets().open(fileName), cacheKey);
+      if (result.getValue() != null) {
+        result.getValue().setSourceName(fileName);
+      }
+      return result;
     } catch (IOException e) {
       return new LottieResult<>(e);
     }
@@ -366,17 +370,27 @@ public class LottieCompositionFactory {
     }
     try {
       BufferedSource source = Okio.buffer(source(context.getResources().openRawResource(rawRes)));
+      LottieResult<LottieComposition> result;
       if (isZipCompressed(source)) {
-        return fromZipStreamSync(context, new ZipInputStream(source.inputStream()), cacheKey);
+        result = fromZipStreamSync(context, new ZipInputStream(source.inputStream()), cacheKey);
       } else if (isGzipCompressed(source)) {
         try {
-          return fromJsonInputStreamSync(new GZIPInputStream(source.inputStream()), cacheKey);
+          result = fromJsonInputStreamSync(new GZIPInputStream(source.inputStream()), cacheKey);
         } catch (IOException e) {
           // This shouldn't happen because we check the header for magic bytes.
           return new LottieResult<>(e);
         }
+      } else {
+        result = fromJsonReaderSync(JsonReader.of(source), cacheKey);
       }
-      return fromJsonReaderSync(JsonReader.of(source), cacheKey);
+      if (result.getValue() != null) {
+        try {
+          result.getValue().setSourceName(context.getResources().getResourceEntryName(rawRes));
+        } catch (Resources.NotFoundException e) {
+          // Ignore — sourceName is best-effort.
+        }
+      }
+      return result;
     } catch (Resources.NotFoundException e) {
       return new LottieResult<>(e);
     }
