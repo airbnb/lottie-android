@@ -71,6 +71,13 @@ public class LottieComposition {
    */
   private int maskAndMatteCount = 0;
 
+  /**
+   * The source name of this composition (resource entry name or asset filename).
+   * Used for trace identification.
+   */
+  @Nullable
+  private String sourceName;
+
   private int unscaledWidth;
   private int unscaledHeight;
 
@@ -243,6 +250,23 @@ public class LottieComposition {
 
   public int getUnscaledHeight() {
     return unscaledHeight;
+  }
+
+  /**
+   * Set the source name for this composition, used for trace identification.
+   * This is typically the resource entry name or asset filename.
+   */
+  public void setSourceName(@Nullable String sourceName) {
+    this.sourceName = sourceName;
+  }
+
+  /**
+   * Returns the source name of this composition (e.g., the resource entry name or asset filename).
+   * May be null if the composition was not loaded via a named source.
+   */
+  @Nullable
+  public String getSourceName() {
+    return sourceName;
   }
 
   @NonNull

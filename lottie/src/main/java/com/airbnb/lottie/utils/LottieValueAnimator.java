@@ -29,6 +29,7 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
   @Nullable private LottieComposition composition;
   @VisibleForTesting protected boolean running = false;
   private boolean useCompositionFrameRate = false;
+  private String cachedTraceName;
 
   public LottieValueAnimator() {
   }
@@ -84,14 +85,31 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     this.useCompositionFrameRate = useCompositionFrameRate;
   }
 
+  private String getDoFrameTraceName() {
+    if (cachedTraceName != null) return cachedTraceName;
+    if (composition != null && composition.getSourceName() != null) {
+      cachedTraceName = "LottieValueAnimator#doFrame[" + composition.getSourceName() + "]";
+    }
+    return cachedTraceName != null ? cachedTraceName : "LottieValueAnimator#doFrame";
+  }
+
+  private String getPlayAnimationTraceSectionName() {
+    String src = (composition != null && composition.getSourceName() != null)
+        ? composition.getSourceName() : "unknown";
+    return "LottiePlayAnimation[" + src + "]";
+  }
+
   @Override public void doFrame(long frameTimeNanos) {
     postFrameCallback();
     if (composition == null || !isRunning()) {
       return;
     }
 
-    if (L.isTraceEnabled()) {
-      L.beginSection("LottieValueAnimator#doFrame");
+    boolean isTracing = L.isAnyTracingEnabled();
+    String traceSectionName = null;
+    if (isTracing) {
+      traceSectionName = getDoFrameTraceName();
+      L.beginSection(traceSectionName);
     }
     long timeSinceFrame = lastFrameTimeNs == 0 ? 0 : frameTimeNanos - lastFrameTimeNs;
     float frameDuration = getFrameDurationNs();
@@ -130,8 +148,8 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     }
 
     verifyFrame();
-    if (L.isTraceEnabled()) {
-      L.endSection("LottieValueAnimator#doFrame");
+    if (isTracing) {
+      L.endSection(traceSectionName);
     }
   }
 
@@ -152,12 +170,14 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
     this.composition = null;
     minFrame = Integer.MIN_VALUE;
     maxFrame = Integer.MAX_VALUE;
+    cachedTraceName = null;
   }
 
   public void setComposition(LottieComposition composition) {
     // Because the initial composition is loaded async, the first min/max frame may be set
     boolean keepMinAndMaxFrames = this.composition == null;
     this.composition = composition;
+    cachedTraceName = null;
 
     if (keepMinAndMaxFrames) {
       setMinAndMaxFrames(
@@ -232,12 +252,21 @@ public class LottieValueAnimator extends BaseLottieAnimator implements Choreogra
 
   @MainThread
   public void playAnimation() {
+    boolean isTracing = L.isAnyTracingEnabled();
+    String traceSectionName = null;
+    if (isTracing) {
+      traceSectionName = getPlayAnimationTraceSectionName();
+      L.beginSection(traceSectionName);
+    }
     running = true;
     notifyStart(isReversed());
     setFrame((int) (isReversed() ? getMaxFrame() : getMinFrame()));
     lastFrameTimeNs = 0;
     repeatCount = 0;
     postFrameCallback();
+    if (isTracing) {
+      L.endSection(traceSectionName);
+    }
   }
 
   @MainThread

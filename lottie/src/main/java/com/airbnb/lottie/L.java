@@ -24,6 +24,7 @@ public class L {
   public static final String TAG = "LOTTIE";
 
   private static boolean traceEnabled = false;
+  private static boolean lightTracingEnabled = false;
   private static boolean networkCacheEnabled = true;
   private static boolean disablePathInterpolatorCache = false;
   private static AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
@@ -53,19 +54,40 @@ public class L {
     return traceEnabled;
   }
 
+  /**
+   * Enable light tracing.
+   *
+   * Unlike {@link #setTraceEnabled}, this does not trace every layer draw.
+   * It is safe to always enable this in production with near zero performance issues.
+   */
+  public static void setLightTracingEnabled(boolean enabled) {
+    lightTracingEnabled = enabled;
+    if (lightTracingEnabled && lottieTrace == null) {
+      lottieTrace = new ThreadLocal<>();
+    }
+  }
+
+  public static boolean isLightTracingEnabled() {
+    return lightTracingEnabled;
+  }
+
+  public static boolean isAnyTracingEnabled() {
+    return traceEnabled || lightTracingEnabled;
+  }
+
   public static void setNetworkCacheEnabled(boolean enabled) {
     networkCacheEnabled = enabled;
   }
 
   public static void beginSection(String section) {
-    if (!traceEnabled) {
+    if (!isAnyTracingEnabled()) {
       return;
     }
     getTrace().beginSection(section);
   }
 
   public static float endSection(String section) {
-    if (!traceEnabled) {
+    if (!isAnyTracingEnabled()) {
       return 0;
     }
     return getTrace().endSection(section);

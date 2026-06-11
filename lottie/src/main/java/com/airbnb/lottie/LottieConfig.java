@@ -20,17 +20,19 @@ public class LottieConfig {
   @Nullable final LottieNetworkFetcher networkFetcher;
   @Nullable final LottieNetworkCacheProvider cacheProvider;
   final boolean enableSystraceMarkers;
+  final boolean enableLightTracing;
   final boolean enableNetworkCache;
   final boolean disablePathInterpolatorCache;
   final AsyncUpdates defaultAsyncUpdates;
   final ReducedMotionOption reducedMotionOption;
 
   private LottieConfig(@Nullable LottieNetworkFetcher networkFetcher, @Nullable LottieNetworkCacheProvider cacheProvider,
-      boolean enableSystraceMarkers, boolean enableNetworkCache, boolean disablePathInterpolatorCache,
+      boolean enableSystraceMarkers, boolean enableLightTracing, boolean enableNetworkCache, boolean disablePathInterpolatorCache,
       AsyncUpdates defaultAsyncUpdates, ReducedMotionOption reducedMotionOption) {
     this.networkFetcher = networkFetcher;
     this.cacheProvider = cacheProvider;
     this.enableSystraceMarkers = enableSystraceMarkers;
+    this.enableLightTracing = enableLightTracing;
     this.enableNetworkCache = enableNetworkCache;
     this.disablePathInterpolatorCache = disablePathInterpolatorCache;
     this.defaultAsyncUpdates = defaultAsyncUpdates;
@@ -44,6 +46,7 @@ public class LottieConfig {
     @Nullable
     private LottieNetworkCacheProvider cacheProvider;
     private boolean enableSystraceMarkers = false;
+    private boolean enableLightTracing = false;
     private boolean enableNetworkCache = true;
     private boolean disablePathInterpolatorCache = false;
     private AsyncUpdates defaultAsyncUpdates = AsyncUpdates.AUTOMATIC;
@@ -114,6 +117,18 @@ public class LottieConfig {
     }
 
     /**
+     * Enable light tracing.
+     *
+     * Unlike {@link #setEnableSystraceMarkers}, this does not trace every layer draw.
+     * It has near zero performance overhead and is safe to be always enabled in production.
+     */
+    @NonNull
+    public Builder setEnableLightTracing(boolean enable) {
+      enableLightTracing = enable;
+      return this;
+    }
+
+    /**
      * Disable this if you want to completely disable internal Lottie cache for retrieving network animations.
      * Internal network cache is enabled by default.
      */
@@ -164,7 +179,7 @@ public class LottieConfig {
 
     @NonNull
     public LottieConfig build() {
-      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableNetworkCache, disablePathInterpolatorCache,
+      return new LottieConfig(networkFetcher, cacheProvider, enableSystraceMarkers, enableLightTracing, enableNetworkCache, disablePathInterpolatorCache,
           defaultAsyncUpdates, reducedMotionOption);
     }
   }
