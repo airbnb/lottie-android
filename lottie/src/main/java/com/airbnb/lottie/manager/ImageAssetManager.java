@@ -123,20 +123,16 @@ public class ImageAssetManager {
       return putBitmap(id, resizedBitmap);
     }
 
-    InputStream is;
-    try {
-      if (TextUtils.isEmpty(imagesFolder)) {
-        throw new IllegalStateException("You must set an images folder before loading an image." +
-            " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
-      }
-      is = context.getAssets().open(imagesFolder + filename);
+    if (TextUtils.isEmpty(imagesFolder)) {
+      throw new IllegalStateException("You must set an images folder before loading an image." +
+          " Set it with LottieComposition#setImagesFolder or LottieDrawable#setImagesFolder");
+    }
+
+    try (InputStream is = context.getAssets().open(imagesFolder + filename)) {
+      bitmap = BitmapFactory.decodeStream(is, null, opts);
     } catch (IOException e) {
       Logger.warning("Unable to open asset.", e);
       return null;
-    }
-
-    try {
-      bitmap = BitmapFactory.decodeStream(is, null, opts);
     } catch (IllegalArgumentException e) {
       Logger.warning("Unable to decode image `" + id + "`.", e);
       return null;
