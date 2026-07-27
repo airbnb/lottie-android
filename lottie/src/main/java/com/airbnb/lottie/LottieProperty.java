@@ -187,7 +187,7 @@ public interface LottieProperty {
    * of its child elements that draw. The easiest way to do this is to append "**" to your
    * Keypath after the layer name.
    */
-  Float DROP_SHADOW_OPACITY = 15f;
+  Float DROP_SHADOW_OPACITY = 15.1f;
   /**
    * Degrees from 12 o'clock.
    * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
@@ -195,7 +195,7 @@ public interface LottieProperty {
    * of its child elements that draw. The easiest way to do this is to append "**" to your
    * Keypath after the layer name.
    */
-  Float DROP_SHADOW_DIRECTION = 16f;
+  Float DROP_SHADOW_DIRECTION = 16.1f;
   /**
    * In Px
    * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
@@ -203,7 +203,7 @@ public interface LottieProperty {
    * of its child elements that draw. The easiest way to do this is to append "**" to your
    * Keypath after the layer name.
    */
-  Float DROP_SHADOW_DISTANCE = 17f;
+  Float DROP_SHADOW_DISTANCE = 17.1f;
   /**
    * In Px
    * Lottie Android resolved drop shadows on drawing content such as fills and strokes.
