@@ -1,5 +1,7 @@
 package com.airbnb.lottie;
 
+import android.graphics.Bitmap;
+
 import com.airbnb.lottie.model.LottieCompositionCache;
 
 import com.airbnb.lottie.parser.moshi.JsonReader;
@@ -8,9 +10,14 @@ import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -19,6 +26,7 @@ import static junit.framework.Assert.assertNull;
 import static okio.Okio.buffer;
 import static okio.Okio.source;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
 
 import okio.Source;
 
@@ -33,6 +41,13 @@ public class LottieCompositionFactoryTest extends BaseTest {
             "Graphic - Fill\",\"hd\":false}],\"ip\":0,\"op\":180,\"st\":0,\"bm\":0}]}";
 
     private static final String NOT_JSON = "not json";
+
+    private static final String JSON_WITH_SHARED_IMAGE =
+            "{\"v\":\"4.11.1\",\"fr\":60,\"ip\":0,\"op\":1,\"w\":100,\"h\":100," +
+                    "\"assets\":[" +
+                    "{\"id\":\"image_a\",\"w\":1,\"h\":1,\"u\":\"images/\",\"p\":\"shared.png\"}," +
+                    "{\"id\":\"image_b\",\"w\":1,\"h\":1,\"u\":\"images/\",\"p\":\"shared.png\"}" +
+                    "],\"layers\":[]}";
 
     @Before
     public void setup() {
@@ -111,6 +126,35 @@ public class LottieCompositionFactoryTest extends BaseTest {
         LottieResult<LottieComposition> result = LottieCompositionFactory.fromRawResSync(RuntimeEnvironment.application, 0);
         assertNotNull(result.getException());
         assertNull(result.getValue());
+    }
+
+    @Test
+    public void testZipImagePopulatesAllAssetsWithSharedFileName() throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+            zipOutputStream.putNextEntry(new ZipEntry("animation.json"));
+            zipOutputStream.write(JSON_WITH_SHARED_IMAGE.getBytes(StandardCharsets.UTF_8));
+            zipOutputStream.closeEntry();
+
+            zipOutputStream.putNextEntry(new ZipEntry("images/shared.png"));
+            Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, zipOutputStream);
+            zipOutputStream.closeEntry();
+        }
+
+        LottieResult<LottieComposition> result = LottieCompositionFactory.fromZipStreamSync(
+                new ZipInputStream(new ByteArrayInputStream(outputStream.toByteArray())),
+                null);
+
+        assertNull(result.getException());
+        assertNotNull(result.getValue());
+        LottieImageAsset imageA = result.getValue().getImages().get("image_a");
+        LottieImageAsset imageB = result.getValue().getImages().get("image_b");
+        assertNotNull(imageA);
+        assertNotNull(imageB);
+        assertNotNull(imageA.getBitmap());
+        assertNotNull(imageB.getBitmap());
+        assertSame(imageA.getBitmap(), imageB.getBitmap());
     }
 
     @Test
