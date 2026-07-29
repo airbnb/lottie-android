@@ -701,10 +701,7 @@ public class LottieCompositionFactory {
     }
 
     for (Map.Entry<String, Bitmap> e : images.entrySet()) {
-      LottieImageAsset imageAsset = findImageAssetForFileName(composition, e.getKey());
-      if (imageAsset != null) {
-        imageAsset.setBitmap(Utils.resizeBitmapIfNeeded(e.getValue(), imageAsset.getWidth(), imageAsset.getHeight()));
-      }
+      setBitmapForImageAssets(composition, e.getKey(), e.getValue());
     }
 
     for (Map.Entry<String, Typeface> e : fonts.entrySet()) {
@@ -788,14 +785,47 @@ public class LottieCompositionFactory {
     }
   }
 
-  @Nullable
-  private static LottieImageAsset findImageAssetForFileName(LottieComposition composition, String fileName) {
+  /**
+   * Assigns a decoded zip image to every composition asset that references its
+   * filename. Multiple asset IDs are allowed to reuse the same physical image.
+   */
+  private static void setBitmapForImageAssets(
+      LottieComposition composition,
+      String fileName,
+      Bitmap sourceBitmap) {
+    Map<String, Bitmap> bitmapsBySize = new HashMap<>();
+    boolean sourceBitmapAssigned = false;
+
     for (LottieImageAsset asset : composition.getImages().values()) {
-      if (asset.getFileName().equals(fileName)) {
-        return asset;
+      if (!asset.getFileName().equals(fileName)) {
+        continue;
       }
+
+      int width = asset.getWidth();
+      int height = asset.getHeight();
+      String sizeKey = width + "x" + height;
+      Bitmap assetBitmap = bitmapsBySize.get(sizeKey);
+
+      if (assetBitmap == null) {
+        if (sourceBitmap.getWidth() == width && sourceBitmap.getHeight() == height) {
+          assetBitmap = sourceBitmap;
+          sourceBitmapAssigned = true;
+        } else {
+          // Do not use Utils.resizeBitmapIfNeeded here. It recycles the source
+          // bitmap, which may still be needed for another matching asset.
+          assetBitmap = Bitmap.createScaledBitmap(sourceBitmap, width, height, true);
+        }
+        bitmapsBySize.put(sizeKey, assetBitmap);
+      }
+
+      asset.setBitmap(assetBitmap);
     }
-    return null;
+
+    // Match resizeBitmapIfNeeded's ownership behaviour when every matching
+    // asset required a resized copy.
+    if (!sourceBitmapAssigned && !bitmapsBySize.isEmpty()) {
+      sourceBitmap.recycle();
+    }
   }
 
   private static LottieTask<LottieComposition> cache(
