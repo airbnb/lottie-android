@@ -4,134 +4,152 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 
 /**
- * 3D transformation utility class that mimics iOS CATransform3D implementation
- * Provides more accurate 3D rotation calculations, especially for Z-axis rotation
+ * Utilities for projecting a rotated 3D plane onto Lottie's 2D canvas.
+ *
+ * <p>This is an orthographic projection. It preserves the coupling between the X, Y, and Z
+ * rotations, but it does not provide camera perspective or depth sorting between layers.</p>
  */
 public class Transform3D {
 
-    /**
-     * Applies 3D transformation to the given matrix following Lottie Android's transformation order
-     * This method reuses the provided matrix to avoid object allocation
-     *
-     * @param outMatrix Output matrix to receive the transformation
-     * @param anchor Anchor point
-     * @param position Position
-     * @param scaleX X-axis scale
-     * @param scaleY Y-axis scale
-     * @param rotationX X-axis rotation (degrees)
-     * @param rotationY Y-axis rotation (degrees)
-     * @param rotationZ Z-axis rotation (degrees)
-     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
-     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
-     */
-    public static void applyTransform(
-            Matrix outMatrix,
-            PointF anchor,
-            PointF position,
-            float scaleX,
-            float scaleY,
-            float rotationX,
-            float rotationY,
-            float rotationZ,
-            float preComputedCosX,
-            float preComputedCosY) {
+  /**
+   * Applies a complete transform to {@code outMatrix}.
+   *
+   * <p>This overload is retained for source compatibility. Rendering code that already owns
+   * scratch storage should use the scratch-storage overload of {@code apply3DRotations} to
+   * avoid allocations.</p>
+   */
+  public static void applyTransform(
+      Matrix outMatrix,
+      PointF anchor,
+      PointF position,
+      float scaleX,
+      float scaleY,
+      float rotationX,
+      float rotationY,
+      float rotationZ,
+      float preComputedCosX,
+      float preComputedCosY) {
+    outMatrix.reset();
 
-        outMatrix.reset();
-
-        // Follow original Lottie Android order: position → rotation → scale → anchor
-
-        // 1. Apply position transformation
-        if (position != null && (position.x != 0 || position.y != 0)) {
-            outMatrix.preTranslate(position.x, position.y);
-        }
-
-        // 2. Apply 3D rotation (rotate directly without anchor, as anchor is handled at the end)
-        if (rotationZ != 0) {
-          outMatrix.preRotate(rotationZ);
-        }
-        if (rotationY != 0) {
-          applyYRotation(outMatrix, preComputedCosY);
-        }
-        if (rotationX != 0) {
-          applyXRotation(outMatrix, preComputedCosX);
-        }
-
-        // 3. Apply scale (Note: Lottie's scale doesn't need to be divided by 100, use ScaleXY values directly)
-        if (scaleX != 1.0f || scaleY != 1.0f) {
-            outMatrix.preScale(scaleX, scaleY);
-        }
-
-        // 4. Finally translate to negative anchor position (consistent with original code)
-        if (anchor != null && (anchor.x != 0 || anchor.y != 0)) {
-            outMatrix.preTranslate(-anchor.x, -anchor.y);
-        }
+    if (position != null && (position.x != 0f || position.y != 0f)) {
+      outMatrix.preTranslate(position.x, position.y);
     }
 
-    /**
-     * Apply 3D rotations (X, Y, Z) to the matrix
-     * This method can be used independently for repeater or other scenarios
-     *
-     * @param matrix Output matrix to receive the rotation transformation
-     * @param rotationX X-axis rotation in degrees
-     * @param rotationY Y-axis rotation in degrees
-     * @param rotationZ Z-axis rotation in degrees
-     * @param preComputedCosX Pre-computed cos(rotationX) to avoid redundant calculation
-     * @param preComputedCosY Pre-computed cos(rotationY) to avoid redundant calculation
-     */
-    public static void apply3DRotations(
-            Matrix matrix,
-            float rotationX,
-            float rotationY,
-            float rotationZ,
-            float preComputedCosX,
-            float preComputedCosY) {
+    apply3DRotations(
+        outMatrix,
+        rotationX,
+        rotationY,
+        rotationZ,
+        preComputedCosX,
+        preComputedCosY);
 
-        // Apply rotations in order: Z -> Y -> X
-        if (rotationZ != 0) {
-            matrix.preRotate(rotationZ);
-        }
-        if (rotationY != 0) {
-            applyYRotation(matrix, preComputedCosY);
-        }
-        if (rotationX != 0) {
-            applyXRotation(matrix, preComputedCosX);
-        }
+    if (scaleX != 1f || scaleY != 1f) {
+      outMatrix.preScale(scaleX, scaleY);
     }
 
-    /**
-     * Apply X-axis rotation using pre-computed cosine value
-     * On a 2D plane, X-axis rotation primarily affects Y-direction scaling
-     * Optimized version that directly modifies matrix values to avoid allocation
-     *
-     * @param matrix Input/output matrix to be modified
-     * @param cosX Pre-computed cos(rotationX) value
-     */
-    private static void applyXRotation(Matrix matrix, float cosX) {
-        // X-axis rotation is primarily represented as Y-direction perspective scaling in 2D projection
-        // Directly scale Y-direction without matrix copy
-        matrix.preScale(1f, cosX);
+    if (anchor != null && (anchor.x != 0f || anchor.y != 0f)) {
+      outMatrix.preTranslate(-anchor.x, -anchor.y);
     }
+  }
 
-    /**
-     * Apply Y-axis rotation using pre-computed cosine value
-     * On a 2D plane, Y-axis rotation primarily affects X-direction scaling
-     * Optimized version that directly modifies matrix values to avoid allocation
-     *
-     * @param matrix Input/output matrix to be modified
-     * @param cosY Pre-computed cos(rotationY) value
-     */
-    private static void applyYRotation(Matrix matrix, float cosY) {
-        // Y-axis rotation is primarily represented as X-direction perspective scaling in 2D projection
-        // Directly scale X-direction without matrix copy
-        matrix.preScale(cosY, 1f);
-    }
-    
-    /**
-     * Check if there is 3D transformation
-     */
-    public static boolean has3DRotation(Float rotationX, Float rotationY, Float rotationZ) {
-        return (rotationX != null && rotationX != 0) ||
-               (rotationY != null && rotationY != 0) ||
-               (rotationZ != null && rotationZ != 0);
-    }
+  /**
+   * Applies an orthographic projection of rotations performed in Z, Y, X order.
+   *
+   * <p>This overload is retained for source compatibility and allocates scratch storage. It
+   * should not be used on the rendering hot path.</p>
+   */
+  public static void apply3DRotations(
+      Matrix matrix,
+      float rotationX,
+      float rotationY,
+      float rotationZ,
+      float preComputedCosX,
+      float preComputedCosY) {
+    float radiansX = (float) Math.toRadians(rotationX);
+    float radiansY = (float) Math.toRadians(rotationY);
+    float radiansZ = (float) Math.toRadians(rotationZ);
+    apply3DRotations(
+        matrix,
+        new Matrix(),
+        new float[9],
+        (float) Math.sin(radiansX),
+        preComputedCosX,
+        (float) Math.sin(radiansY),
+        preComputedCosY,
+        (float) Math.sin(radiansZ),
+        (float) Math.cos(radiansZ));
+  }
+
+  /**
+   * Applies an orthographic projection of rotations performed in Z, Y, X order without
+   * allocating objects.
+   *
+   * @param matrix matrix to which the projected rotation is prepended
+   * @param rotationMatrix reusable scratch matrix
+   * @param rotationValues reusable array with a length of at least 9
+   */
+  public static void apply3DRotations(
+      Matrix matrix,
+      Matrix rotationMatrix,
+      float[] rotationValues,
+      float sinX,
+      float cosX,
+      float sinY,
+      float cosY,
+      float sinZ,
+      float cosZ) {
+    apply3DRotations(
+        matrix,
+        rotationMatrix,
+        rotationValues,
+        sinX,
+        cosX,
+        sinY,
+        cosY,
+        sinZ,
+        cosZ,
+        0f,
+        0f);
+  }
+
+  /** Applies an orthographic 3D rotation around a 2D pivot without allocating objects. */
+  public static void apply3DRotations(
+      Matrix matrix,
+      Matrix rotationMatrix,
+      float[] rotationValues,
+      float sinX,
+      float cosX,
+      float sinY,
+      float cosY,
+      float sinZ,
+      float cosZ,
+      float pivotX,
+      float pivotY) {
+    // A point on the layer starts at z=0. Apply Rz, then Ry, then Rx and discard the
+    // resulting z coordinate. Unlike independent cosine scales, these coefficients retain
+    // the cross-axis terms when more than one rotation is present.
+    float scaleX = cosY * cosZ;
+    float skewX = -cosY * sinZ;
+    float skewY = cosX * sinZ + sinX * sinY * cosZ;
+    float scaleY = cosX * cosZ - sinX * sinY * sinZ;
+
+    rotationValues[Matrix.MSCALE_X] = scaleX;
+    rotationValues[Matrix.MSKEW_X] = skewX;
+    rotationValues[Matrix.MTRANS_X] = pivotX - scaleX * pivotX - skewX * pivotY;
+    rotationValues[Matrix.MSKEW_Y] = skewY;
+    rotationValues[Matrix.MSCALE_Y] = scaleY;
+    rotationValues[Matrix.MTRANS_Y] = pivotY - skewY * pivotX - scaleY * pivotY;
+    rotationValues[Matrix.MPERSP_0] = 0f;
+    rotationValues[Matrix.MPERSP_1] = 0f;
+    rotationValues[Matrix.MPERSP_2] = 1f;
+    rotationMatrix.setValues(rotationValues);
+    matrix.preConcat(rotationMatrix);
+  }
+
+  /** Returns whether at least one supplied rotation is non-zero. */
+  public static boolean has3DRotation(Float rotationX, Float rotationY, Float rotationZ) {
+    return (rotationX != null && rotationX != 0f)
+        || (rotationY != null && rotationY != 0f)
+        || (rotationZ != null && rotationZ != 0f);
+  }
 }

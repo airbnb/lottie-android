@@ -37,13 +37,18 @@ public class TransformKeyframeAnimation {
   private final Matrix skewMatrix3;
   private final float[] skewValues;
 
-  // Cache for 3D rotation values to avoid redundant trigonometric calculations
+  // Cache for 3D rotation values to avoid redundant trigonometric calculations.
   private float cachedRotationX = Float.NaN;
   private float cachedRotationY = Float.NaN;
   private float cachedRotationZ = Float.NaN;
+  private float cachedSinX;
   private float cachedCosX = 1f;
+  private float cachedSinY;
   private float cachedCosY = 1f;
-  private boolean rotation3DCacheDirty = true;
+  private float cachedSinZ;
+  private float cachedCosZ = 1f;
+  @Nullable private Matrix rotation3DMatrix;
+  @Nullable private float[] rotation3DValues;
 
   @Nullable private BaseKeyframeAnimation<PointF, PointF> anchorPoint;
   @Nullable private BaseKeyframeAnimation<?, PointF> position;
@@ -52,7 +57,7 @@ public class TransformKeyframeAnimation {
   @Nullable private BaseKeyframeAnimation<Integer, Integer> opacity;
   @Nullable private FloatKeyframeAnimation skew;
   @Nullable private FloatKeyframeAnimation skewAngle;
-  
+
   // 3D rotation properties
   @Nullable private FloatKeyframeAnimation rotationX;
   @Nullable private FloatKeyframeAnimation rotationY;
@@ -72,12 +77,15 @@ public class TransformKeyframeAnimation {
     rotation = animatableTransform.getRotation() == null ? null : animatableTransform.getRotation().createAnimation();
     skew = animatableTransform.getSkew() == null ? null : animatableTransform.getSkew().createAnimation();
     autoOrient = animatableTransform.isAutoOrient();
-    
+
     // Initialize 3D rotation animations
     rotationX = animatableTransform.getRotationX() == null ? null : animatableTransform.getRotationX().createAnimation();
     rotationY = animatableTransform.getRotationY() == null ? null : animatableTransform.getRotationY().createAnimation();
     rotationZ = animatableTransform.getRotationZ() == null ? null : animatableTransform.getRotationZ().createAnimation();
-    
+    if (animatableTransform.has3DRotation()) {
+      ensure3DScratchStorage();
+    }
+
     if (skew != null) {
       skewMatrix1 = new Matrix();
       skewMatrix2 = new Matrix();
@@ -150,21 +158,15 @@ public class TransformKeyframeAnimation {
     if (skewAngle != null) {
       skewAngle.addUpdateListener(listener);
     }
-    
+
     if (rotationX != null) {
       rotationX.addUpdateListener(listener);
-      // Mark cache as dirty when rotation values change
-      rotationX.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
     if (rotationY != null) {
       rotationY.addUpdateListener(listener);
-      // Mark cache as dirty when rotation values change
-      rotationY.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
     if (rotationZ != null) {
       rotationZ.addUpdateListener(listener);
-      // Mark cache as dirty when rotation values change
-      rotationZ.addUpdateListener(() -> rotation3DCacheDirty = true);
     }
   }
 
@@ -197,7 +199,7 @@ public class TransformKeyframeAnimation {
     if (skewAngle != null) {
       skewAngle.setProgress(progress);
     }
-    
+
     if (rotationX != null) {
       rotationX.setProgress(progress);
     }
@@ -223,64 +225,6 @@ public class TransformKeyframeAnimation {
 
   public Matrix getMatrix() {
     matrix.reset();
-
-    // Early exit: Check if 3D transformation is needed (avoid getValue() calls if null)
-    boolean has3DRotation = (rotationX != null && rotationX.getFloatValue() != 0f) ||
-                            (rotationY != null && rotationY.getFloatValue() != 0f) ||
-                            (rotationZ != null && rotationZ.getFloatValue() != 0f);
-
-    // If there is 3D rotation, use the new Transform3D utility class
-    if (has3DRotation) {
-      float rotX = rotationX != null ? rotationX.getFloatValue() : 0f;
-      float rotY = rotationY != null ? rotationY.getFloatValue() : 0f;
-      float rotZ = rotationZ != null ? rotationZ.getFloatValue() : 0f;
-
-      // Update cache if values changed
-      if (rotation3DCacheDirty || rotX != cachedRotationX || rotY != cachedRotationY || rotZ != cachedRotationZ) {
-        cachedRotationX = rotX;
-        cachedRotationY = rotY;
-        cachedRotationZ = rotZ;
-
-        // Pre-calculate cos values for X and Y rotations
-        if (rotX != 0f) {
-          cachedCosX = (float) Math.cos(Math.toRadians(rotX));
-        } else {
-          cachedCosX = 1f;
-        }
-
-        if (rotY != 0f) {
-          cachedCosY = (float) Math.cos(Math.toRadians(rotY));
-        } else {
-          cachedCosY = 1f;
-        }
-
-        rotation3DCacheDirty = false;
-      }
-
-      PointF anchorPointValue = anchorPoint == null ? null : anchorPoint.getValue();
-      PointF positionValue = position == null ? null : position.getValue();
-      ScaleXY scaleValue = scale == null ? null : scale.getValue();
-
-      // Extract scale values (default 1f, consistent with original code)
-      float scaleX = scaleValue != null ? scaleValue.getScaleX() : 1f;
-      float scaleY = scaleValue != null ? scaleValue.getScaleY() : 1f;
-
-      // Use Transform3D to calculate complete 3D transformation with cached cos values
-      Transform3D.applyTransform(
-        matrix,
-        anchorPointValue,
-        positionValue,
-        scaleX,
-        scaleY,
-        rotX,
-        rotY,
-        rotZ,
-        cachedCosX,
-        cachedCosY
-      );
-
-      return matrix;
-    }
     BaseKeyframeAnimation<?, PointF> position = this.position;
     if (position != null) {
       PointF positionValue = position.getValue();
@@ -289,8 +233,7 @@ public class TransformKeyframeAnimation {
       }
     }
 
-    // If autoOrient is true, the rotation should follow the derivative of the position rather
-    // than the rotation property.
+    // Auto orientation follows the position derivative in addition to the rotation property.
     if (autoOrient) {
       if (position != null) {
         float currentProgress = position.getProgress();
@@ -307,6 +250,16 @@ public class TransformKeyframeAnimation {
         double rotationValue = Math.toDegrees(Math.atan2(nextPosition.y - startY, nextPosition.x - startX));
         matrix.preRotate((float) rotationValue);
       }
+    }
+
+    boolean has3DRotation = has3DRotation();
+    if (has3DRotation) {
+      float rotationX = this.rotationX == null ? 0f : this.rotationX.getFloatValue();
+      float rotationY = this.rotationY == null ? 0f : this.rotationY.getFloatValue();
+      // Auto orientation is composed with the explicit Z rotation.
+      float rotationZ = this.rotationZ == null ? 0f : this.rotationZ.getFloatValue();
+      update3DRotationCache(rotationX, rotationY, rotationZ);
+      applyCached3DRotations(0f, 0f);
     } else {
       BaseKeyframeAnimation<Float, Float> rotation = this.rotation;
       if (rotation != null) {
@@ -372,6 +325,54 @@ public class TransformKeyframeAnimation {
     return matrix;
   }
 
+  private boolean has3DRotation() {
+    // Use property presence rather than the current value so an animation does not switch
+    // between the 2D and 3D transform pipelines whenever it crosses zero degrees.
+    return rotationX != null || rotationY != null || rotationZ != null;
+  }
+
+  private void ensure3DScratchStorage() {
+    if (rotation3DMatrix == null) {
+      rotation3DMatrix = new Matrix();
+      rotation3DValues = new float[9];
+    }
+  }
+
+  private void update3DRotationCache(float rotationX, float rotationY, float rotationZ) {
+    if (rotationX == cachedRotationX && rotationY == cachedRotationY && rotationZ == cachedRotationZ) {
+      return;
+    }
+    cachedRotationX = rotationX;
+    cachedRotationY = rotationY;
+    cachedRotationZ = rotationZ;
+
+    double radiansX = Math.toRadians(rotationX);
+    double radiansY = Math.toRadians(rotationY);
+    double radiansZ = Math.toRadians(rotationZ);
+    cachedSinX = (float) Math.sin(radiansX);
+    cachedCosX = (float) Math.cos(radiansX);
+    cachedSinY = (float) Math.sin(radiansY);
+    cachedCosY = (float) Math.cos(radiansY);
+    cachedSinZ = (float) Math.sin(radiansZ);
+    cachedCosZ = (float) Math.cos(radiansZ);
+  }
+
+  private void applyCached3DRotations(float pivotX, float pivotY) {
+    ensure3DScratchStorage();
+    Transform3D.apply3DRotations(
+        matrix,
+        rotation3DMatrix,
+        rotation3DValues,
+        cachedSinX,
+        cachedCosX,
+        cachedSinY,
+        cachedCosY,
+        cachedSinZ,
+        cachedCosZ,
+        pivotX,
+        pivotY);
+  }
+
   private void clearSkewValues() {
     for (int i = 0; i < 9; i++) {
       skewValues[i] = 0f;
@@ -396,26 +397,16 @@ public class TransformKeyframeAnimation {
       matrix.preTranslate(position.x * amount, position.y * amount);
     }
 
-    // 2. Apply rotation transformations
-    // Check for 3D rotation
-    float rotX = rotationX != null ? rotationX.getFloatValue() * amount : 0f;
-    float rotY = rotationY != null ? rotationY.getFloatValue() * amount : 0f;
-    float rotZ = rotationZ != null ? rotationZ.getFloatValue() * amount : 0f;
-
-    boolean has3DRotation = rotX != 0f || rotY != 0f || rotZ != 0f;
-
-    if (has3DRotation) {
-      // Pre-compute cosine values once for this call
-      float cosX = rotX != 0f ? (float) Math.cos(Math.toRadians(rotX)) : 1f;
-      float cosY = rotY != 0f ? (float) Math.cos(Math.toRadians(rotY)) : 1f;
-
-      // Apply Z-axis rotation around anchor point
-      if (rotZ != 0f) {
-        matrix.preRotate(rotZ, anchorPoint == null ? 0f : anchorPoint.x, anchorPoint == null ? 0f : anchorPoint.y);
-      }
-
-      // Apply 3D rotations using Transform3D utility (X and Y only, as Z was already applied)
-      Transform3D.apply3DRotations(matrix, rotX, rotY, 0f, cosX, cosY);
+    // 2. Apply rotation transformations. Property presence keeps repeaters on the same
+    // transform path when an animated rotation crosses zero degrees.
+    if (has3DRotation()) {
+      float rotationX = this.rotationX == null ? 0f : this.rotationX.getFloatValue() * amount;
+      float rotationY = this.rotationY == null ? 0f : this.rotationY.getFloatValue() * amount;
+      float rotationZ = this.rotationZ == null ? 0f : this.rotationZ.getFloatValue() * amount;
+      update3DRotationCache(rotationX, rotationY, rotationZ);
+      applyCached3DRotations(
+          anchorPoint == null ? 0f : anchorPoint.x,
+          anchorPoint == null ? 0f : anchorPoint.y);
     } else if (this.rotation != null) {
       // Fall back to 2D rotation
       float rotation = this.rotation.getValue();
