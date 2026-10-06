@@ -22,6 +22,7 @@ import com.airbnb.lottie.utils.OffscreenLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CompositionLayer extends BaseLayer {
@@ -58,26 +59,39 @@ public class CompositionLayer extends BaseLayer {
     LongSparseArray<BaseLayer> layerMap =
         new LongSparseArray<>(composition.getLayers().size());
 
-    BaseLayer mattedLayer = null;
-    for (int i = layerModels.size() - 1; i >= 0; i--) {
-      Layer lm = layerModels.get(i);
-      BaseLayer layer = BaseLayer.forModel(this, lm, lottieDrawable, composition);
+    List<BaseLayer> baseLayers = new ArrayList<>(layerModels.size());
+    for (int i = 0; i < layerModels.size(); i++) {
+      BaseLayer layer = BaseLayer.forModel(this, layerModels.get(i), lottieDrawable, composition);
       if (layer == null) {
         continue;
       }
-      layerMap.put(layer.getLayerModel().getId(), layer);
-      if (mattedLayer != null) {
-        mattedLayer.setMatteLayer(layer);
-        mattedLayer = null;
-      } else {
-        layers.add(0, layer);
-        switch (lm.getMatteType()) {
-          case ADD:
-          case INVERT:
-            mattedLayer = layer;
-            break;
-        }
+      baseLayers.add(layer);
+      long id = layer.getLayerModel().getId();
+      if (layerMap.get(id) == null) {
+        layerMap.put(id, layer);
       }
+    }
+
+    List<Layer> models = new ArrayList<>(baseLayers.size());
+    for (BaseLayer layer : baseLayers) {
+      models.add(layer.getLayerModel());
+    }
+    int[] matteIndices = resolveTrackMattes(models);
+    boolean[] isMatte = new boolean[baseLayers.size()];
+    for (int i = 0; i < matteIndices.length; i++) {
+      if (matteIndices[i] != -1) {
+        isMatte[matteIndices[i]] = true;
+      }
+    }
+    for (int i = 0; i < baseLayers.size(); i++) {
+      BaseLayer layer = baseLayers.get(i);
+      if (isMatte[i] || layer.getLayerModel().isMatteTarget()) {
+        continue;
+      }
+      if (matteIndices[i] != -1) {
+        layer.setMatteLayer(baseLayers.get(matteIndices[i]));
+      }
+      layers.add(layer);
     }
 
     for (int i = 0; i < layerMap.size(); i++) {
@@ -285,6 +299,58 @@ public class CompositionLayer extends BaseLayer {
       dropShadowAnimation.setDistanceCallback((LottieValueCallback<Float>) callback);
     } else if (property == LottieProperty.DROP_SHADOW_RADIUS && dropShadowAnimation != null) {
       dropShadowAnimation.setRadiusCallback((LottieValueCallback<Float>) callback);
+    }
+  }
+
+  /** For each layer, the index of the layer providing its track matte, or -1. */
+  static int[] resolveTrackMattes(List<Layer> layers) {
+    int count = layers.size();
+    int[] matteIndices = new int[count];
+    boolean[] isMatte = new boolean[count];
+    Arrays.fill(matteIndices, -1);
+
+    LongSparseArray<Integer> indicesById = new LongSparseArray<>(count);
+    for (int i = 0; i < count; i++) {
+      long id = layers.get(i).getId();
+      if (indicesById.get(id) == null) {
+        indicesById.put(id, i);
+      }
+    }
+
+    for (int i = 0; i < count; i++) {
+      Layer model = layers.get(i);
+      if (!usesTrackMatte(model) || model.getMatteParentId() == -1) {
+        continue;
+      }
+      Integer matteIndex = indicesById.get(model.getMatteParentId());
+      if (matteIndex == null || matteIndex == i || isMatte[matteIndex]) {
+        continue;
+      }
+      matteIndices[i] = matteIndex;
+      isMatte[matteIndex] = true;
+    }
+
+    for (int i = count - 1; i >= 0; i--) {
+      if (isMatte[i] || matteIndices[i] != -1 || !usesTrackMatte(layers.get(i))) {
+        continue;
+      }
+      int matteIndex = i - 1;
+      if (matteIndex < 0 || isMatte[matteIndex]) {
+        continue;
+      }
+      matteIndices[i] = matteIndex;
+      isMatte[matteIndex] = true;
+    }
+    return matteIndices;
+  }
+
+  private static boolean usesTrackMatte(Layer model) {
+    switch (model.getMatteType()) {
+      case ADD:
+      case INVERT:
+        return true;
+      default:
+        return false;
     }
   }
 }

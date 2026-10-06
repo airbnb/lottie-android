@@ -59,6 +59,8 @@ public class Layer {
   @Nullable private final AnimatableFloatValue timeRemapping;
   private final List<Keyframe<Float>> inOutKeyframes;
   private final MatteType matteType;
+  private final long matteParentId;
+  private final boolean isMatteTarget;
   private final boolean hidden;
   @Nullable private final BlurEffect blurEffect;
   @Nullable private final DropShadowEffect dropShadowEffect;
@@ -70,8 +72,8 @@ public class Layer {
       AnimatableTransform transform, int solidWidth, int solidHeight, int solidColor,
       float timeStretch, float startFrame, float preCompWidth, float preCompHeight,
       @Nullable AnimatableTextFrame text, @Nullable AnimatableTextProperties textProperties,
-      List<Keyframe<Float>> inOutKeyframes, MatteType matteType,
-      @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
+      List<Keyframe<Float>> inOutKeyframes, MatteType matteType, long matteParentId,
+      boolean isMatteTarget, @Nullable AnimatableFloatValue timeRemapping, boolean hidden, @Nullable BlurEffect blurEffect,
       @Nullable DropShadowEffect dropShadowEffect, LBlendMode blendMode) {
     this.shapes = shapes;
     this.composition = composition;
@@ -93,6 +95,8 @@ public class Layer {
     this.textProperties = textProperties;
     this.inOutKeyframes = inOutKeyframes;
     this.matteType = matteType;
+    this.matteParentId = matteParentId;
+    this.isMatteTarget = isMatteTarget;
     this.timeRemapping = timeRemapping;
     this.hidden = hidden;
     this.blurEffect = blurEffect;
@@ -146,6 +150,14 @@ public class Layer {
 
   MatteType getMatteType() {
     return matteType;
+  }
+
+  long getMatteParentId() {
+    return matteParentId;
+  }
+
+  boolean isMatteTarget() {
+    return isMatteTarget;
   }
 
   long getParentId() {

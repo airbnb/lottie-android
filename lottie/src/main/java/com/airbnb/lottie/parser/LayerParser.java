@@ -52,7 +52,9 @@ public class LayerParser {
       "cl", // 21
       "hd", // 22
       "ao", // 23
-      "bm"  // 24
+      "bm", // 24
+      "tp", // 25
+      "td"  // 26
   );
 
   public static Layer parse(LottieComposition composition) {
@@ -62,7 +64,7 @@ public class LayerParser {
         Layer.LayerType.PRE_COMP, -1, null, Collections.<Mask>emptyList(),
         new AnimatableTransform(), 0, 0, 0, 0, 0,
         bounds.width(), bounds.height(), null, null, Collections.<Keyframe<Float>>emptyList(),
-        Layer.MatteType.NONE, null, false, null, null,
+        Layer.MatteType.NONE, -1, false, null, false, null, null,
         LBlendMode.NORMAL);
   }
 
@@ -100,6 +102,8 @@ public class LayerParser {
     boolean autoOrient = false;
 
     Layer.MatteType matteType = Layer.MatteType.NONE;
+    long matteParentId = -1;
+    boolean isMatteTarget = false;
     LBlendMode blendMode = LBlendMode.NORMAL;
     AnimatableTransform transform = null;
     AnimatableTextFrame text = null;
@@ -276,6 +280,16 @@ public class LayerParser {
           }
           blendMode = LBlendMode.values()[blendModeIndex];
           break;
+        case 25:
+          matteParentId = reader.nextInt();
+          break;
+        case 26:
+          if (reader.peek() == JsonReader.Token.BOOLEAN) {
+            isMatteTarget = reader.nextBoolean();
+          } else {
+            isMatteTarget = reader.nextInt() == 1;
+          }
+          break;
         default:
           reader.skipName();
           reader.skipValue();
@@ -313,6 +327,6 @@ public class LayerParser {
     return new Layer(shapes, composition, layerName, layerId, layerType, parentId, refId,
         masks, transform, solidWidth, solidHeight, solidColor, timeStretch, startFrame,
         preCompWidth, preCompHeight, text, textProperties, inOutKeyframes, matteType,
-        timeRemapping, hidden, blurEffect, dropShadowEffect, blendMode);
+        matteParentId, isMatteTarget, timeRemapping, hidden, blurEffect, dropShadowEffect, blendMode);
   }
 }
