@@ -22,7 +22,9 @@ import com.airbnb.lottie.utils.OffscreenLayer;
 import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class CompositionLayer extends BaseLayer {
   @Nullable private BaseKeyframeAnimation<Float, Float> timeRemapping;
@@ -43,6 +45,11 @@ public class CompositionLayer extends BaseLayer {
 
   public CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
       LottieComposition composition) {
+    this(lottieDrawable, layerModel, layerModels, composition, Collections.emptySet());
+  }
+
+  CompositionLayer(LottieDrawable lottieDrawable, Layer layerModel, List<Layer> layerModels,
+      LottieComposition composition, Set<String> precompIds) {
     super(lottieDrawable, layerModel);
 
     AnimatableFloatValue timeRemapping = layerModel.getTimeRemapping();
@@ -61,7 +68,7 @@ public class CompositionLayer extends BaseLayer {
     BaseLayer mattedLayer = null;
     for (int i = layerModels.size() - 1; i >= 0; i--) {
       Layer lm = layerModels.get(i);
-      BaseLayer layer = BaseLayer.forModel(this, lm, lottieDrawable, composition);
+      BaseLayer layer = BaseLayer.forModel(this, lm, lottieDrawable, composition, precompIds);
       if (layer == null) {
         continue;
       }

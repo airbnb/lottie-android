@@ -40,7 +40,9 @@ import com.airbnb.lottie.value.LottieValueCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class BaseLayer
     implements DrawingContent, BaseKeyframeAnimation.AnimationListener, KeyPathElement {
@@ -56,12 +58,39 @@ public abstract class BaseLayer
   @Nullable
   static BaseLayer forModel(
       CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable, LottieComposition composition) {
+    return forModel(compositionLayer, layerModel, drawable, composition, Collections.emptySet());
+  }
+
+  /**
+   * @param precompIds the refIds of every precomposition currently being built further up the call
+   *                   stack. A precomposition that refers back to one of them closes a cycle,
+   *                   which would otherwise recurse until the stack is exhausted.
+   */
+  @Nullable
+  static BaseLayer forModel(CompositionLayer compositionLayer, Layer layerModel, LottieDrawable drawable,
+      LottieComposition composition, Set<String> precompIds) {
     switch (layerModel.getLayerType()) {
       case SHAPE:
         return new ShapeLayer(drawable, layerModel, compositionLayer, composition);
-      case PRE_COMP:
-        return new CompositionLayer(drawable, layerModel,
-            composition.getPrecomps(layerModel.getRefId()), composition);
+      case PRE_COMP: {
+        String refId = layerModel.getRefId();
+        if (refId == null) {
+          Logger.warning("Skipping precomp layer with no refId");
+          return null;
+        }
+        if (precompIds.contains(refId)) {
+          Logger.warning("Skipping precomp " + refId + " because its reference chain contains a cycle");
+          return null;
+        }
+        List<Layer> precompLayers = composition.getPrecomps(refId);
+        if (precompLayers == null) {
+          Logger.warning("Skipping precomp " + refId + " because it is not defined");
+          return null;
+        }
+        Set<String> childPrecompIds = new HashSet<>(precompIds);
+        childPrecompIds.add(refId);
+        return new CompositionLayer(drawable, layerModel, precompLayers, composition, childPrecompIds);
+      }
       case SOLID:
         return new SolidLayer(drawable, layerModel);
       case IMAGE:
