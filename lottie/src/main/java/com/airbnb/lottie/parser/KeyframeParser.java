@@ -5,7 +5,6 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.Nullable;
-import androidx.collection.SparseArrayCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import com.airbnb.lottie.L;
@@ -13,11 +12,12 @@ import com.airbnb.lottie.Lottie;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.MiscUtils;
-import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 class KeyframeParser {
   /**
@@ -27,7 +27,7 @@ class KeyframeParser {
    */
   private static final float MAX_CP_VALUE = 100;
   private static final Interpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
-  private static SparseArrayCompat<WeakReference<Interpolator>> pathInterpolatorCache;
+  private static Map<InterpolatorCacheKey, WeakReference<Interpolator>> pathInterpolatorCache;
 
   static JsonReader.Options NAMES = JsonReader.Options.of(
       "t",  // 1
@@ -45,27 +45,25 @@ class KeyframeParser {
   );
 
   // https://github.com/airbnb/lottie-android/issues/464
-  private static SparseArrayCompat<WeakReference<Interpolator>> pathInterpolatorCache() {
+  private static Map<InterpolatorCacheKey, WeakReference<Interpolator>> pathInterpolatorCache() {
     if (pathInterpolatorCache == null) {
-      pathInterpolatorCache = new SparseArrayCompat<>();
+      pathInterpolatorCache = new HashMap<>();
     }
     return pathInterpolatorCache;
   }
 
   @Nullable
-  private static WeakReference<Interpolator> getInterpolator(int hash) {
-    // This must be synchronized because get and put isn't thread safe because
-    // SparseArrayCompat has to create new sized arrays sometimes.
+  private static WeakReference<Interpolator> getInterpolator(InterpolatorCacheKey key) {
+    // The cache is shared by compositions parsed on different threads.
     synchronized (KeyframeParser.class) {
-      return pathInterpolatorCache().get(hash);
+      return pathInterpolatorCache().get(key);
     }
   }
 
-  private static void putInterpolator(int hash, WeakReference<Interpolator> interpolator) {
-    // This must be synchronized because get and put isn't thread safe because
-    // SparseArrayCompat has to create new sized arrays sometimes.
+  private static void putInterpolator(InterpolatorCacheKey key, WeakReference<Interpolator> interpolator) {
+    // The cache is shared by compositions parsed on different threads.
     synchronized (KeyframeParser.class) {
-      pathInterpolatorCache.put(hash, interpolator);
+      pathInterpolatorCache().put(key, interpolator);
     }
   }
 
@@ -333,8 +331,8 @@ class KeyframeParser {
     cp1.y = MiscUtils.clamp(cp1.y, -MAX_CP_VALUE, MAX_CP_VALUE);
     cp2.x = MiscUtils.clamp(cp2.x, -1f, 1f);
     cp2.y = MiscUtils.clamp(cp2.y, -MAX_CP_VALUE, MAX_CP_VALUE);
-    int hash = Utils.hashFor(cp1.x, cp1.y, cp2.x, cp2.y);
-    WeakReference<Interpolator> interpolatorRef = L.getDisablePathInterpolatorCache() ? null : getInterpolator(hash);
+    InterpolatorCacheKey key = new InterpolatorCacheKey(cp1, cp2);
+    WeakReference<Interpolator> interpolatorRef = L.getDisablePathInterpolatorCache() ? null : getInterpolator(key);
     if (interpolatorRef != null) {
       interpolator = interpolatorRef.get();
     }
@@ -353,17 +351,43 @@ class KeyframeParser {
         }
       }
       if (!L.getDisablePathInterpolatorCache()) {
-        try {
-          putInterpolator(hash, new WeakReference<>(interpolator));
-        } catch (ArrayIndexOutOfBoundsException e) {
-          // It is not clear why but SparseArrayCompat sometimes fails with this:
-          //     https://github.com/airbnb/lottie-android/issues/452
-          // Because this is not a critical operation, we can safely just ignore it.
-          // I was unable to repro this to attempt a proper fix.
-        }
+        putInterpolator(key, new WeakReference<>(interpolator));
       }
     }
     return interpolator;
+  }
+
+  /** Immutable control points: matching hashes alone do not identify the same curve. */
+  private static final class InterpolatorCacheKey {
+    private final int x1;
+    private final int y1;
+    private final int x2;
+    private final int y2;
+
+    InterpolatorCacheKey(PointF cp1, PointF cp2) {
+      x1 = Float.floatToIntBits(cp1.x);
+      y1 = Float.floatToIntBits(cp1.y);
+      x2 = Float.floatToIntBits(cp2.x);
+      y2 = Float.floatToIntBits(cp2.y);
+    }
+
+    @Override public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (!(other instanceof InterpolatorCacheKey)) {
+        return false;
+      }
+      InterpolatorCacheKey key = (InterpolatorCacheKey) other;
+      return x1 == key.x1 && y1 == key.y1 && x2 == key.x2 && y2 == key.y2;
+    }
+
+    @Override public int hashCode() {
+      int result = x1;
+      result = 31 * result + y1;
+      result = 31 * result + x2;
+      return 31 * result + y2;
+    }
   }
 
   private static <T> Keyframe<T> parseStaticValue(JsonReader reader,
