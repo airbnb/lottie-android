@@ -206,15 +206,12 @@ public class TextLayer extends BaseLayer {
       strokePaint.setColor(documentData.strokeColor);
     }
 
-    // These opacity values are in the range 0 to 100
-    int transformOpacity = transform.getOpacity() == null ? 100 : transform.getOpacity().getValue();
+    // This opacity value is in the range 0 to 100
     int textRangeOpacity = opacityAnimation != null && isIndexInRangeSelection(indexInDocument) ? opacityAnimation.getValue() : 100;
 
     // This alpha value needs to be in the range 0 to 255 to be applied to the Paint instances.
-    // We map the layer transform's opacity into that range and multiply it by the fractional opacity of the text range and the parent.
-    int alpha = Math.round((transformOpacity * 255f / 100f)
-        * (textRangeOpacity / 100f)
-        * parentAlpha / 255f);
+    // parentAlpha already includes this layer's transform opacity (see BaseLayer#draw), so only the text range opacity is applied here.
+    int alpha = Math.round(parentAlpha * (textRangeOpacity / 100f));
     fillPaint.setAlpha(alpha);
     strokePaint.setAlpha(alpha);
 
