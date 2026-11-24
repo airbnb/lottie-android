@@ -25,10 +25,6 @@ class GradientFillParser {
       "r",
       "hd"
   );
-  private static final JsonReader.Options GRADIENT_NAMES = JsonReader.Options.of(
-      "p",
-      "k"
-  );
 
   private GradientFillParser() {
   }
@@ -50,22 +46,7 @@ class GradientFillParser {
           name = reader.nextString();
           break;
         case 1:
-          int points = -1;
-          reader.beginObject();
-          while (reader.hasNext()) {
-            switch (reader.selectName(GRADIENT_NAMES)) {
-              case 0:
-                points = reader.nextInt();
-                break;
-              case 1:
-                color = AnimatableValueParser.parseGradientColor(reader, composition, points);
-                break;
-              default:
-                reader.skipName();
-                reader.skipValue();
-            }
-          }
-          reader.endObject();
+          color = AnimatableValueParser.parseGradientColor(reader, composition);
           break;
         case 2:
           opacity = AnimatableValueParser.parseInteger(reader, composition);

@@ -10,14 +10,21 @@ import com.airbnb.lottie.model.animatable.AnimatablePointValue;
 import com.airbnb.lottie.model.animatable.AnimatableScaleValue;
 import com.airbnb.lottie.model.animatable.AnimatableShapeValue;
 import com.airbnb.lottie.model.animatable.AnimatableTextFrame;
+import com.airbnb.lottie.model.content.GradientColor;
 import com.airbnb.lottie.parser.moshi.JsonReader;
 import com.airbnb.lottie.utils.Utils;
 import com.airbnb.lottie.value.Keyframe;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AnimatableValueParser {
+  private static final JsonReader.Options GRADIENT_NAMES = JsonReader.Options.of(
+      "p",
+      "k"
+  );
+
   private AnimatableValueParser() {
   }
 
@@ -61,6 +68,52 @@ public class AnimatableValueParser {
   static AnimatableColorValue parseColor(
       JsonReader reader, LottieComposition composition) throws IOException {
     return new AnimatableColorValue(parse(reader, composition, ColorParser.INSTANCE));
+  }
+
+  static AnimatableGradientColorValue parseGradientColor(
+      JsonReader reader, LottieComposition composition) throws IOException {
+    int points = -1;
+    AnimatableGradientColorValue color = null;
+    List<Keyframe<List<Float>>> rawKeyframes = null;
+    reader.beginObject();
+    while (reader.hasNext()) {
+      switch (reader.selectName(GRADIENT_NAMES)) {
+        case 0:
+          points = reader.nextInt();
+          break;
+        case 1:
+          if (points != -1) {
+            color = parseGradientColor(reader, composition, points);
+          } else {
+            rawKeyframes = parse(reader, composition, (r, scale) -> GradientColorParser.readFloatArray(r));
+          }
+          break;
+        default:
+          reader.skipName();
+          reader.skipValue();
+      }
+    }
+    reader.endObject();
+    if (color == null && rawKeyframes != null) {
+      GradientColorParser parser = new GradientColorParser(points);
+      List<Keyframe<GradientColor>> keyframes = new ArrayList<>(rawKeyframes.size());
+      for (int i = 0; i < rawKeyframes.size(); i++) {
+        Keyframe<List<Float>> rawKeyframe = rawKeyframes.get(i);
+        if (rawKeyframe.isStatic()) {
+          GradientColor value = rawKeyframe.startValue != null ? parser.parse(rawKeyframe.startValue) : null;
+          keyframes.add(new Keyframe<>(value));
+        } else {
+          GradientColor startValue = rawKeyframe.startValue != null ? parser.parse(rawKeyframe.startValue) : null;
+          GradientColor endValue = rawKeyframe.endValue == rawKeyframe.startValue
+              ? startValue
+              : (rawKeyframe.endValue != null ? parser.parse(rawKeyframe.endValue) : null);
+          keyframes.add(new Keyframe<>(
+              composition, startValue, endValue, rawKeyframe.interpolator, rawKeyframe.startFrame, rawKeyframe.endFrame));
+        }
+      }
+      color = new AnimatableGradientColorValue(keyframes);
+    }
+    return color;
   }
 
   static AnimatableGradientColorValue parseGradientColor(

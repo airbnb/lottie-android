@@ -36,10 +36,6 @@ class GradientStrokeParser {
       "hd",
       "d"
   );
-  private static final JsonReader.Options GRADIENT_NAMES = JsonReader.Options.of(
-      "p",
-      "k"
-  );
   private static final JsonReader.Options DASH_PATTERN_NAMES = JsonReader.Options.of(
       "n",
       "v"
@@ -69,22 +65,7 @@ class GradientStrokeParser {
           name = reader.nextString();
           break;
         case 1:
-          int points = -1;
-          reader.beginObject();
-          while (reader.hasNext()) {
-            switch (reader.selectName(GRADIENT_NAMES)) {
-              case 0:
-                points = reader.nextInt();
-                break;
-              case 1:
-                color = AnimatableValueParser.parseGradientColor(reader, composition, points);
-                break;
-              default:
-                reader.skipName();
-                reader.skipValue();
-            }
-          }
-          reader.endObject();
+          color = AnimatableValueParser.parseGradientColor(reader, composition);
           break;
         case 2:
           opacity = AnimatableValueParser.parseInteger(reader, composition);
