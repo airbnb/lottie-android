@@ -13,10 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser<GradientColor> {
+  static final ValueParser<List<Float>> FLOAT_ARRAY_PARSER =
+      (reader, scale) -> readFloatArray(reader);
+
   /**
    * The number of colors if it exists in the json or -1 if it doesn't (legacy bodymovin)
    */
-  private int colorPoints;
+  private final int colorPoints;
 
   public GradientColorParser(int colorPoints) {
     this.colorPoints = colorPoints;
@@ -42,9 +45,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
    * ...
    * ]
    */
-  @Override
-  public GradientColor parse(JsonReader reader, float scale)
-      throws IOException {
+  static List<Float> readFloatArray(JsonReader reader) throws IOException {
     List<Float> array = new ArrayList<>();
     // The array was started by Keyframe because it thought that this may be an array of keyframes
     // but peek returned a number so it considered it a static array of numbers.
@@ -55,30 +56,46 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     while (reader.hasNext()) {
       array.add((float) reader.nextDouble());
     }
+    if (isArray) {
+      reader.endArray();
+    }
+    return array;
+  }
+
+  @Override
+  public GradientColor parse(JsonReader reader, float scale)
+      throws IOException {
+    return parse(readFloatArray(reader));
+  }
+
+  GradientColor parse(List<Float> array) {
+    int effectiveColorPoints = colorPoints;
     if (array.size() == 4 && array.get(0) == 1f) {
       // If a gradient color only contains one color at position 1, add a second stop with the same
       // color at position 0. Android's LinearGradient shader requires at least two colors.
       // https://github.com/airbnb/lottie-android/issues/1967
-      array.set(0, 0f);
-      array.add(1f);
-      array.add(array.get(1));
-      array.add(array.get(2));
-      array.add(array.get(3));
-      colorPoints = 2;
+      List<Float> expanded = new ArrayList<>(8);
+      expanded.add(0f);
+      expanded.add(array.get(1));
+      expanded.add(array.get(2));
+      expanded.add(array.get(3));
+      expanded.add(1f);
+      expanded.add(array.get(1));
+      expanded.add(array.get(2));
+      expanded.add(array.get(3));
+      array = expanded;
+      effectiveColorPoints = 2;
     }
-    if (isArray) {
-      reader.endArray();
-    }
-    if (colorPoints == -1) {
-      colorPoints = array.size() / 4;
+    if (effectiveColorPoints == -1) {
+      effectiveColorPoints = array.size() / 4;
     }
 
-    float[] positions = new float[colorPoints];
-    int[] colors = new int[colorPoints];
+    float[] positions = new float[effectiveColorPoints];
+    int[] colors = new int[effectiveColorPoints];
 
     int r = 0;
     int g = 0;
-    for (int i = 0; i < colorPoints * 4; i++) {
+    for (int i = 0; i < effectiveColorPoints * 4; i++) {
       int colorIndex = i / 4;
       double value = array.get(i);
       switch (i % 4) {
@@ -105,7 +122,7 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
     }
 
     GradientColor gradientColor = new GradientColor(positions, colors);
-    gradientColor = addOpacityStopsToGradientIfNeeded(gradientColor, array);
+    gradientColor = addOpacityStopsToGradientIfNeeded(gradientColor, array, effectiveColorPoints);
     return gradientColor;
   }
 
@@ -118,8 +135,9 @@ public class GradientColorParser implements com.airbnb.lottie.parser.ValueParser
    * This should be a good approximation is nearly all cases. However, if there are many more
    * opacity stops than color stops, information will be lost.
    */
-  private GradientColor addOpacityStopsToGradientIfNeeded(GradientColor gradientColor, List<Float> array) {
-    int startIndex = colorPoints * 4;
+  private GradientColor addOpacityStopsToGradientIfNeeded(
+      GradientColor gradientColor, List<Float> array, int effectiveColorPoints) {
+    int startIndex = effectiveColorPoints * 4;
     if (array.size() <= startIndex) {
       return gradientColor;
     }
